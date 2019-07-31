@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,33 @@
 
 package com.dytech.installer.controls;
 
+import com.dytech.devlib.PropBagEx;
+import com.dytech.installer.InstallerException;
 import java.awt.Font;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dytech.devlib.PropBagEx;
-import com.dytech.installer.InstallerException;
+public class GHeading extends GuiControl {
+  public GHeading(PropBagEx controlBag) throws InstallerException {
+    super(controlBag);
+  }
 
-public class GHeading extends GuiControl
-{
-	public GHeading(PropBagEx controlBag) throws InstallerException
-	{
-		super(controlBag);
-	}
+  @Override
+  public String getSelection() {
+    return new String();
+  }
 
-	@Override
-	public String getSelection()
-	{
-		return new String();
-	}
+  @Override
+  public void generate(JPanel panel) {
+    JLabel label = new JLabel(title);
+    label.setFont(new Font("Arial", Font.BOLD, 30));
 
-	@Override
-	public void generate(JPanel panel)
-	{
-		JLabel label = new JLabel(title);
-		label.setFont(new Font("Arial", Font.BOLD, 30));
+    panel.add(label);
+  }
 
-		panel.add(label);
-	}
-
-	@Override
-	public JComponent generateControl()
-	{
-		return new JPanel();
-	}
+  @Override
+  public JComponent generateControl() {
+    return new JPanel();
+  }
 }

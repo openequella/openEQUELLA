@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.web.viewitem.info;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.annotation.Nullable;
@@ -39,140 +34,123 @@ import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.item.standard.operations.workflow.StatusOperation;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
-public class DefaultItemFileInfo implements ItemSectionInfo
-{
-	private ViewableItem<Item> viewableItem;
-	private boolean updated;
-	private Attachments attachments;
-	private boolean purged;
+public class DefaultItemFileInfo implements ItemSectionInfo {
+  private ViewableItem<Item> viewableItem;
+  private boolean updated;
+  private Attachments attachments;
+  private boolean purged;
 
-	@Inject
-	private ItemOperationFactory workflowFactory;
-	@Inject
-	private ItemService itemService;
+  @Inject private ItemOperationFactory workflowFactory;
+  @Inject private ItemService itemService;
 
-	public DefaultItemFileInfo()
-	{
-		// nothing
-	}
+  public DefaultItemFileInfo() {
+    // nothing
+  }
 
-	@Override
-	public ViewableItem<Item> getViewableItem()
-	{
-		return viewableItem;
-	}
+  @Override
+  public ViewableItem<Item> getViewableItem() {
+    return viewableItem;
+  }
 
-	@Override
-	public Item getItem()
-	{
-		return viewableItem.getItem();
-	}
+  @Override
+  public Item getItem() {
+    return viewableItem.getItem();
+  }
 
-	@Override
-	public ItemDefinition getItemdef()
-	{
-		return viewableItem.getItem().getItemDefinition();
-	}
+  @Override
+  public ItemDefinition getItemdef() {
+    return viewableItem.getItem().getItemDefinition();
+  }
 
-	@Override
-	public String getItemdir()
-	{
-		return viewableItem.getItemdir();
-	}
+  @Override
+  public String getItemdir() {
+    return viewableItem.getItemdir();
+  }
 
-	@Override
-	public ItemKey getItemId()
-	{
-		return viewableItem.getItemId();
-	}
+  @Override
+  public ItemKey getItemId() {
+    return viewableItem.getItemId();
+  }
 
-	@Override
-	public PropBagEx getItemxml()
-	{
-		return viewableItem.getItemxml();
-	}
+  @Override
+  public PropBagEx getItemxml() {
+    return viewableItem.getItemxml();
+  }
 
-	@Nullable
-	@Override
-	public WorkflowStatus getWorkflowStatus()
-	{
-		return viewableItem.getWorkflowStatus();
-	}
+  @Nullable
+  @Override
+  public WorkflowStatus getWorkflowStatus() {
+    return viewableItem.getWorkflowStatus();
+  }
 
-	@Override
-	public Set<String> getPrivileges()
-	{
-		return viewableItem.getPrivileges();
-	}
+  @Override
+  public Set<String> getPrivileges() {
+    return viewableItem.getPrivileges();
+  }
 
-	@Override
-	public boolean hasPrivilege(String privilege)
-	{
-		return getPrivileges().contains(privilege);
-	}
+  @Override
+  public boolean hasPrivilege(String privilege) {
+    return getPrivileges().contains(privilege);
+  }
 
-	public String getReferrerUrl()
-	{
-		return null;
-	}
+  public String getReferrerUrl() {
+    return null;
+  }
 
-	public boolean isUpdated()
-	{
-		return updated;
-	}
+  public boolean isUpdated() {
+    return updated;
+  }
 
-	public void setViewableItem(ViewableItem viewableItem)
-	{
-		this.viewableItem = viewableItem;
-	}
+  public void setViewableItem(ViewableItem viewableItem) {
+    this.viewableItem = viewableItem;
+  }
 
-	@Override
-	public void modify(WorkflowOperation... ops)
-	{
-		List<WorkflowOperation> workOps = new ArrayList<WorkflowOperation>();
-		workOps.add(workflowFactory.startLock());
-		workOps.addAll(Arrays.asList(ops));
-		StatusOperation statop = workflowFactory.status();
-		workOps.add(workflowFactory.save());
-		workOps.add(statop);
-		ItemPack pack = itemService.operation(viewableItem.getItemId(),
-			workOps.toArray(new WorkflowOperation[workOps.size()]));
-		viewableItem.update(pack, statop.getStatus());
-		updated = true;
-	}
+  @Override
+  public void modify(WorkflowOperation... ops) {
+    List<WorkflowOperation> workOps = new ArrayList<WorkflowOperation>();
+    workOps.add(workflowFactory.startLock());
+    workOps.addAll(Arrays.asList(ops));
+    StatusOperation statop = workflowFactory.status();
+    workOps.add(workflowFactory.save());
+    workOps.add(statop);
+    ItemPack pack =
+        itemService.operation(
+            viewableItem.getItemId(), workOps.toArray(new WorkflowOperation[workOps.size()]));
+    viewableItem.update(pack, statop.getStatus());
+    updated = true;
+  }
 
-	@Override
-	public boolean isEditing()
-	{
-		return false;
-	}
+  @Override
+  public boolean isEditing() {
+    return false;
+  }
 
-	@Override
-	public void refreshItem(boolean modified)
-	{
-		updated |= modified;
-		viewableItem.refresh();
-	}
+  @Override
+  public void refreshItem(boolean modified) {
+    updated |= modified;
+    viewableItem.refresh();
+  }
 
-	@Override
-	public Attachments getAttachments()
-	{
-		if( attachments == null )
-		{
-			attachments = new UnmodifiableAttachments(getItem());
-		}
-		return attachments;
-	}
+  @Override
+  public Attachments getAttachments() {
+    if (attachments == null) {
+      attachments = new UnmodifiableAttachments(getItem());
+    }
+    return attachments;
+  }
 
-	public boolean isPurged()
-	{
-		return purged;
-	}
+  public boolean isPurged() {
+    return purged;
+  }
 
-	public void setPurged(boolean purged)
-	{
-		this.purged = purged;
-	}
+  public void setPurged(boolean purged) {
+    this.purged = purged;
+  }
 }

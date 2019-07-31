@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,58 +18,47 @@
 
 package com.tle.upgrade.upgraders;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.configuration.PropertiesConfiguration;
-
 import com.tle.upgrade.PropertyFileModifier;
 import com.tle.upgrade.UpgradeDepends;
 import com.tle.upgrade.UpgradeResult;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
-/**
- * Changes loginService.behindProxy to userService.useXForwardedFor
- */
+/** Changes loginService.behindProxy to userService.useXForwardedFor */
 @SuppressWarnings("nls")
-public class RenameBehindProxyConfig extends AbstractUpgrader
-{
-	@Override
-	public String getId()
-	{
-		return "RenameBehindProxyConfig";
-	}
+public class RenameBehindProxyConfig extends AbstractUpgrader {
+  @Override
+  public String getId() {
+    return "RenameBehindProxyConfig";
+  }
 
-	@Override
-	public List<UpgradeDepends> getDepends()
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  public List<UpgradeDepends> getDepends() {
+    return Collections.emptyList();
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	@Override
-	public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception
-	{
-		new PropertyFileModifier(new File(new File(tleInstallDir, CONFIG_FOLDER), PropertyFileModifier.OPTIONAL_CONFIG))
-		{
-			@Override
-			protected boolean modifyProperties(PropertiesConfiguration props)
-			{
-				String v = props.getString("loginService.behindProxy");
-				if( v == null )
-				{
-					return false;
-				}
+  @Override
+  public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
+    new PropertyFileModifier(
+        new File(new File(tleInstallDir, CONFIG_FOLDER), PropertyFileModifier.OPTIONAL_CONFIG)) {
+      @Override
+      protected boolean modifyProperties(PropertiesConfiguration props) {
+        String v = props.getString("loginService.behindProxy");
+        if (v == null) {
+          return false;
+        }
 
-				props.setProperty("userService.useXForwardedFor", v);
-				props.clearProperty("loginService.behindProxy");
-				return true;
-			}
-		}.updateProperties();
-	}
+        props.setProperty("userService.useXForwardedFor", v);
+        props.clearProperty("loginService.behindProxy");
+        return true;
+      }
+    }.updateProperties();
+  }
 }

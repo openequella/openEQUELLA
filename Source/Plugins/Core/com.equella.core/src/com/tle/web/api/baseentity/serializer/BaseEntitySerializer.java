@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,25 +19,28 @@
 package com.tle.web.api.baseentity.serializer;
 
 import com.dytech.edge.common.LockedException;
-import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntity;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface BaseEntitySerializer<BE extends BaseEntity, BEB extends BaseEntityBean>
-{
-	BEB serialize(BE entity, @Nullable Object data, boolean heavy);
+public interface BaseEntitySerializer<BE extends BaseEntity, BEB extends BaseEntityBean> {
+  BEB serialize(BE entity, @Nullable Object data, boolean heavy);
 
-	@Nullable
-	BE deserializeEdit(@Nullable String uuid, BEB bean, @Nullable String stagingUuid, @Nullable String lockId,
-		boolean keepLocked, boolean importing) throws LockedException, AccessDeniedException, InvalidDataException;
+  @Nullable
+  BE deserializeEdit(
+      @Nullable String uuid,
+      BEB bean,
+      @Nullable String stagingUuid,
+      @Nullable String lockId,
+      boolean keepLocked,
+      boolean importing)
+      throws LockedException, AccessDeniedException, InvalidDataException;
 
-	BE deserializeNew(BEB bean, @Nullable String stagingUuid, boolean importing) throws AccessDeniedException,
-		InvalidDataException;
+  BE deserializeNew(BEB bean, @Nullable String stagingUuid, boolean importing)
+      throws AccessDeniedException, InvalidDataException;
 }

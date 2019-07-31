@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -35,62 +37,50 @@ import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 
 @SuppressWarnings("nls")
-public class PopupHelper extends AbstractPopupHelper
-{
-	private static final PluginResourceHelper resources = ResourcesService.getResourceHelper(PopupHelper.class);
-	private static final JSCallAndReference POPUP_FUNCTION = new ExternallyDefinedFunction("popup", new IncludeFile(
-		resources.url("js/popup.js")));
-	private static final String DEFAULT_SIZE = "80%";
+public class PopupHelper extends AbstractPopupHelper {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(PopupHelper.class);
+  private static final JSCallAndReference POPUP_FUNCTION =
+      new ExternallyDefinedFunction("popup", new IncludeFile(resources.url("js/popup.js")));
+  private static final String DEFAULT_SIZE = "80%";
 
-	@Override
-	public void setHeight(String height)
-	{
-		this.height = height;
-	}
+  @Override
+  public void setHeight(String height) {
+    this.height = height;
+  }
 
-	@Override
-	public void setWidth(String width)
-	{
-		this.width = width;
-	}
+  @Override
+  public void setWidth(String width) {
+    this.width = width;
+  }
 
-	public JSStatements getPopupCall(RenderContext info, JSExpression href)
-	{
-		return new FunctionCallStatement(POPUP_FUNCTION, href, target, width, height);
-	}
+  public JSStatements getPopupCall(RenderContext info, JSExpression href) {
+    return new FunctionCallStatement(POPUP_FUNCTION, href, target, width, height);
+  }
 
-	public JSHandler createClickHandler(SectionInfo info, String href, JSHandler handler)
-	{
-		OverrideHandler clickHandler;
-		if( handler != null )
-		{
-			clickHandler = new OverrideHandler(handler.getValidators());
-		}
-		else
-		{
-			clickHandler = new OverrideHandler();
-		}
-		JSExpression hrefExpr;
-		if( !(handler instanceof BookmarkModifier) )
-		{
-			hrefExpr = new StringExpression(href);
-		}
-		else
-		{
-			hrefExpr = new ClientSideBookmarkExpression((JSBookmarkModifier) handler);
-		}
+  public JSHandler createClickHandler(SectionInfo info, String href, JSHandler handler) {
+    OverrideHandler clickHandler;
+    if (handler != null) {
+      clickHandler = new OverrideHandler(handler.getValidators());
+    } else {
+      clickHandler = new OverrideHandler();
+    }
+    JSExpression hrefExpr;
+    if (!(handler instanceof BookmarkModifier)) {
+      hrefExpr = new StringExpression(href);
+    } else {
+      hrefExpr = new ClientSideBookmarkExpression((JSBookmarkModifier) handler);
+    }
 
-		if( Check.isEmpty(width) )
-		{
-			width = DEFAULT_SIZE;
-		}
-		if( Check.isEmpty(height) )
-		{
-			height = DEFAULT_SIZE;
-		}
+    if (Check.isEmpty(width)) {
+      width = DEFAULT_SIZE;
+    }
+    if (Check.isEmpty(height)) {
+      height = DEFAULT_SIZE;
+    }
 
-		clickHandler.addStatements(new FunctionCallStatement(POPUP_FUNCTION, hrefExpr, target, width, height));
-		return clickHandler;
-	}
-
+    clickHandler.addStatements(
+        new FunctionCallStatement(POPUP_FUNCTION, hrefExpr, target, width, height));
+    return clickHandler;
+  }
 }

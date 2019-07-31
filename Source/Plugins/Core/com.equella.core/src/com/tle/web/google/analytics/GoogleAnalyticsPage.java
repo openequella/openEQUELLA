@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.google.analytics;
-
-import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.core.settings.service.ConfigurationService;
@@ -40,110 +40,95 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class GoogleAnalyticsPage extends OneColumnLayout<GoogleAnalyticsPage.GooglePageModel>
-{
-	public static final String ANALYTICS_KEY = "GOOGLE_ANALYTICS";
+public class GoogleAnalyticsPage extends OneColumnLayout<GoogleAnalyticsPage.GooglePageModel> {
+  public static final String ANALYTICS_KEY = "GOOGLE_ANALYTICS";
 
-	@PlugKey("analytics.pagetitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("account.receipt")
-	private static Label RECEIPT_LABEL;
+  @PlugKey("analytics.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private GoogleAnalyticsPrivilegeTreeProvider securityProvider;
+  @PlugKey("account.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
+  @Inject private GoogleAnalyticsPrivilegeTreeProvider securityProvider;
 
-	@Component(name = "g", stateful = false)
-	private TextField accountId;
-	@Component
-	@PlugKey("account.save")
-	private Button save;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "g", stateful = false)
+  private TextField accountId;
 
-		save.setClickHandler(events.getNamedHandler("setup"));
-	}
+  @Component
+  @PlugKey("account.save")
+  private Button save;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void checkAuthorised(SectionInfo info)
-	{
-		securityProvider.checkAuthorised();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected TemplateResult getTemplateResult(RenderEventContext info)
-	{
-		final String acctId = configService.getProperty(ANALYTICS_KEY);
-		accountId.setValue(info, acctId);
-		getModel(info).setSetup(!Check.isEmpty(acctId));
+    save.setClickHandler(events.getNamedHandler("setup"));
+  }
 
-		GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult("body", viewFactory.createResult("googlepage.ftl", this));
-		return templateResult;
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void checkAuthorised(SectionInfo info) {
+    securityProvider.checkAuthorised();
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected TemplateResult getTemplateResult(RenderEventContext info) {
+    final String acctId = configService.getProperty(ANALYTICS_KEY);
+    accountId.setValue(info, acctId);
+    getModel(info).setSetup(!Check.isEmpty(acctId));
 
-	@EventHandlerMethod
-	public void setup(SectionInfo info)
-	{
-		final String acctId = accountId.getValue(info);
-		if( !Check.isEmpty(acctId) )
-		{
-			configService.setProperty(ANALYTICS_KEY, acctId);
-		}
-		else
-		{
-			configService.deleteProperty(ANALYTICS_KEY);
-		}
+    GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult("body", viewFactory.createResult("googlepage.ftl", this));
+    return templateResult;
+  }
 
-		receiptService.setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
+  }
 
-	public TextField getAccountId()
-	{
-		return accountId;
-	}
+  @EventHandlerMethod
+  public void setup(SectionInfo info) {
+    final String acctId = accountId.getValue(info);
+    if (!Check.isEmpty(acctId)) {
+      configService.setProperty(ANALYTICS_KEY, acctId);
+    } else {
+      configService.deleteProperty(ANALYTICS_KEY);
+    }
 
-	public Button getSave()
-	{
-		return save;
-	}
+    receiptService.setReceipt(RECEIPT_LABEL);
+  }
 
-	@Override
-	public Class<GoogleAnalyticsPage.GooglePageModel> getModelClass()
-	{
-		return GoogleAnalyticsPage.GooglePageModel.class;
-	}
+  public TextField getAccountId() {
+    return accountId;
+  }
 
-	public static class GooglePageModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		private boolean setup;
+  public Button getSave() {
+    return save;
+  }
 
-		public boolean isSetup()
-		{
-			return setup;
-		}
+  @Override
+  public Class<GoogleAnalyticsPage.GooglePageModel> getModelClass() {
+    return GoogleAnalyticsPage.GooglePageModel.class;
+  }
 
-		public void setSetup(boolean setup)
-		{
-			this.setup = setup;
-		}
-	}
+  public static class GooglePageModel extends OneColumnLayout.OneColumnLayoutModel {
+    private boolean setup;
+
+    public boolean isSetup() {
+      return setup;
+    }
+
+    public void setSetup(boolean setup) {
+      this.setup = setup;
+    }
+  }
 }

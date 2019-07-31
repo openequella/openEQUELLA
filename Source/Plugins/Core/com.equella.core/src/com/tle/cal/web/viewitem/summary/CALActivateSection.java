@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.cal.web.viewitem.summary;
 
-import javax.inject.Inject;
-
 import com.tle.cal.CALConstants;
 import com.tle.cal.web.service.CALWebServiceImpl;
 import com.tle.core.copyright.Holding;
@@ -26,38 +26,32 @@ import com.tle.web.copyright.section.AbstractActivateSection;
 import com.tle.web.copyright.service.CopyrightWebService;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.TreeIndexed;
+import javax.inject.Inject;
 
 @TreeIndexed
 @Bind
-public class CALActivateSection extends AbstractActivateSection
-{
-	@Inject
-	private CALWebServiceImpl calWebService;
-	@Inject
-	private CALPercentageOverrideSection overrideSection;
+public class CALActivateSection extends AbstractActivateSection {
+  @Inject private CALWebServiceImpl calWebService;
+  @Inject private CALPercentageOverrideSection overrideSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerSections(overrideSection, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerSections(overrideSection, id);
+  }
 
-	@Override
-	protected CALPercentageOverrideSection getOverrideSection()
-	{
-		return overrideSection;
-	}
+  @Override
+  protected CALPercentageOverrideSection getOverrideSection() {
+    return overrideSection;
+  }
 
-	@Override
-	protected String getActivationType()
-	{
-		return CALConstants.ACTIVATION_TYPE;
-	}
+  @Override
+  protected String getActivationType() {
+    return CALConstants.ACTIVATION_TYPE;
+  }
 
-	@Override
-	protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl()
-	{
-		return calWebService;
-	}
+  @Override
+  protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl() {
+    return calWebService;
+  }
 }

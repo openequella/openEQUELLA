@@ -2,16 +2,11 @@ module OEQ.SelectionUI.CourseStructure where
 
 import Prelude hiding (div)
 
-import Control.Alt ((<|>))
 import Control.MonadZero (guard)
-import Data.Argonaut (Json, decodeJson, (.?), (.??))
-import Data.Array (head, mapWithIndex)
-import Data.Either (Either)
+import Data.Array (mapWithIndex)
 import Data.Map (Map, lookup)
-import Data.Maybe (Maybe, fromMaybe, maybe)
-import Data.Newtype (class Newtype, unwrap)
+import Data.Maybe (maybe)
 import Data.String (joinWith)
-import Data.Traversable (find, traverse)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
 import MaterialUI.Enums (title)

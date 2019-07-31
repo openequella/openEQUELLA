@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -28,68 +30,59 @@ import com.tle.web.sections.render.PreRenderable;
 
 /**
  * IMPORTANT: subclasses of this will assume the body won't ever change.
- * <p>
- * If you want to change this behaviour you need to override
- * {@link #getBody(RenderContext)}.
- * 
+ *
+ * <p>If you want to change this behaviour you need to override {@link #getBody(RenderContext)}.
+ *
  * @author jolz
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractFunctionDefinition implements PreRenderable
-{
-	@Nullable
-	protected JSStatements body;
-	@Nullable
-	protected JSExpression[] params;
+public abstract class AbstractFunctionDefinition implements PreRenderable {
+  @Nullable protected JSStatements body;
+  @Nullable protected JSExpression[] params;
 
-	protected String getDefinition(@Nullable RenderContext context)
-	{
-		StringBuilder sbuf = new StringBuilder();
-		sbuf.append("function");
-		String name = getFunctionName(context);
-		if( !Check.isEmpty(name) )
-		{
-			sbuf.append(' ');
-			sbuf.append(name);
-		}
-		sbuf.append('(');
-		boolean first = true;
-		JSExpression[] paramdefs = getParams(context);
-		if( paramdefs != null )
-		{
-			for( JSExpression paramExpr : paramdefs )
-			{
-				if( !first )
-				{
-					sbuf.append(',');
-				}
-				first = false;
-				sbuf.append(paramExpr.getExpression(context));
-			}
-		}
-		sbuf.append("){").append(getBody(context).getStatements(context)).append("}").append(Js.NEWLINE);
-		return sbuf.toString();
-	}
+  protected String getDefinition(@Nullable RenderContext context) {
+    StringBuilder sbuf = new StringBuilder();
+    sbuf.append("function");
+    String name = getFunctionName(context);
+    if (!Check.isEmpty(name)) {
+      sbuf.append(' ');
+      sbuf.append(name);
+    }
+    sbuf.append('(');
+    boolean first = true;
+    JSExpression[] paramdefs = getParams(context);
+    if (paramdefs != null) {
+      for (JSExpression paramExpr : paramdefs) {
+        if (!first) {
+          sbuf.append(',');
+        }
+        first = false;
+        sbuf.append(paramExpr.getExpression(context));
+      }
+    }
+    sbuf.append("){")
+        .append(getBody(context).getStatements(context))
+        .append("}")
+        .append(Js.NEWLINE);
+    return sbuf.toString();
+  }
 
-	@Nullable
-	protected abstract String getFunctionName(@Nullable RenderContext context);
+  @Nullable
+  protected abstract String getFunctionName(@Nullable RenderContext context);
 
-	@Override
-	public void preRender(PreRenderContext context)
-	{
-		context.preRender(getBody(context));
-		context.preRender(getParams(context));
-	}
+  @Override
+  public void preRender(PreRenderContext context) {
+    context.preRender(getBody(context));
+    context.preRender(getParams(context));
+  }
 
-	protected JSStatements getBody(@Nullable RenderContext context)
-	{
-		return body;
-	}
+  protected JSStatements getBody(@Nullable RenderContext context) {
+    return body;
+  }
 
-	@Nullable
-	protected JSExpression[] getParams(@Nullable RenderContext context)
-	{
-		return params;
-	}
+  @Nullable
+  protected JSExpression[] getParams(@Nullable RenderContext context) {
+    return params;
+  }
 }

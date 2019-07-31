@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,37 @@
 
 package com.tle.common.filesystem;
 
+import com.tle.annotation.NonNullByDefault;
 import java.nio.file.Path;
 
-import com.tle.annotation.NonNullByDefault;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
-public class Filestore
-{
-	private final String id;
-	private final String name;
-	private final Path root;
+public class Filestore {
+  private final String id;
+  private final String name;
+  private final Path root;
 
-	public Filestore(String id, String name, Path root)
-	{
-		this.id = id;
-		this.name = name;
-		this.root = root;
-	}
+  public Filestore(String id, String name, Path root) {
+    this.id = id;
+    this.name = name;
+    this.root = root;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public Path getRoot()
-	{
-		return root;
-	}
+  public Path getRoot() {
+    return root;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String toString()
-	{
-		return "(" + id + ") " + name + ": " + root;
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String toString() {
+    return "(" + id + ") " + name + ": " + root;
+  }
 }

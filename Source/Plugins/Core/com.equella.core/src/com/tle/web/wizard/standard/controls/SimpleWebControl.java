@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -36,61 +38,52 @@ import com.tle.web.wizard.controls.EditableCtrl;
 import com.tle.web.wizard.controls.SimpleValueControl;
 
 @Bind
-public class SimpleWebControl extends AbstractSimpleWebControl implements SimpleValueControl
-{
-	@Component(stateful = false)
-	private TextField field;
+public class SimpleWebControl extends AbstractSimpleWebControl implements SimpleValueControl {
+  @Component(stateful = false)
+  private TextField field;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		field.setParameterId(getFormName());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    field.setParameterId(getFormName());
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		field.setValue(context, ((EditableCtrl) getWrappedControl()).getValue());
-		addDisabler(context, field);
-		TextFieldRenderer hidden = (TextFieldRenderer) SectionUtils.renderSectionResult(context, field);
-		hidden.setHidden(true);
-		return hidden;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    field.setValue(context, ((EditableCtrl) getWrappedControl()).getValue());
+    addDisabler(context, field);
+    TextFieldRenderer hidden = (TextFieldRenderer) SectionUtils.renderSectionResult(context, field);
+    hidden.setHidden(true);
+    return hidden;
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		getWrappedControl().setValues(field.getValue(info));
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    getWrappedControl().setValues(field.getValue(info));
+  }
 
-	@Override
-	public JSAssignable createEditFunction()
-	{
-		return AssignableFunction.get(field.createSetFunction());
-	}
+  @Override
+  public JSAssignable createEditFunction() {
+    return AssignableFunction.get(field.createSetFunction());
+  }
 
-	@Override
-	public JSAssignable createResetFunction()
-	{
-		return AssignableFunction.get(field.createResetFunction());
-	}
+  @Override
+  public JSAssignable createResetFunction() {
+    return AssignableFunction.get(field.createResetFunction());
+  }
 
-	@Override
-	public JSAssignable createTextFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(new NullExpression()));
-	}
+  @Override
+  public JSAssignable createTextFunction() {
+    return new AnonymousFunction(new ReturnStatement(new NullExpression()));
+  }
 
-	@Override
-	public JSAssignable createValueFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
-	}
+  @Override
+  public JSAssignable createValueFunction() {
+    return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

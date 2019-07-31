@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,261 +18,235 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class BrightspaceLtiLink
-{
-	@JsonProperty("LtiLinkId")
-	private String ltiLinkId;
-	@JsonProperty("OrgUnitId")
-	private String orgUnitId;
-	@JsonProperty("Title")
-	private String title;
-	@JsonProperty("Url")
-	private String url;
-	@JsonProperty("Description")
-	private String description;
-	@JsonProperty("Key")
-	private String key;
-	@JsonProperty("PlainSecret")
-	private String plainSecret;
-	@JsonProperty("IsVisible")
-	private boolean visible;
-	@JsonProperty("SignMessage")
-	private boolean signMessage;
-	@JsonProperty("SignWithTc")
-	private boolean signWithTc;
-	@JsonProperty("SendTcInfo")
-	private boolean sendTcInfo;
-	@JsonProperty("SendContextInfo")
-	private boolean sendContextInfo;
-	@JsonProperty("SendUserId")
-	private boolean sendUserId;
-	@JsonProperty("SendUserName")
-	private boolean sendUserName;
-	@JsonProperty("SendUserEmail")
-	private boolean sendUserEmail;
-	@JsonProperty("SendLinkTitle")
-	private boolean sendLinkTitle;
-	@JsonProperty("SendLinkDescription")
-	private boolean sendLinkDescription;
-	@JsonProperty("SendD2LUserName")
-	private boolean sendD2LUserName;
-	@JsonProperty("SendD2LOrgDefinedId")
-	private boolean sendD2LOrgDefinedId;
-	@JsonProperty("SendD2LOrgRoleId")
-	private boolean sendD2LOrgRoleId;
-	//Note: this is MANDATORY, or it won't work.
-	@JsonInclude(Include.ALWAYS)
-	@JsonProperty("CustomParameters")
-	private Object[] customParameters;
+public class BrightspaceLtiLink {
+  @JsonProperty("LtiLinkId")
+  private String ltiLinkId;
 
-	public String getLtiLinkId()
-	{
-		return ltiLinkId;
-	}
+  @JsonProperty("OrgUnitId")
+  private String orgUnitId;
 
-	public void setLtiLinkId(String ltiLinkId)
-	{
-		this.ltiLinkId = ltiLinkId;
-	}
+  @JsonProperty("Title")
+  private String title;
 
-	public String getOrgUnitId()
-	{
-		return orgUnitId;
-	}
+  @JsonProperty("Url")
+  private String url;
 
-	public void setOrgUnitId(String orgUnitId)
-	{
-		this.orgUnitId = orgUnitId;
-	}
+  @JsonProperty("Description")
+  private String description;
 
-	public String getTitle()
-	{
-		return title;
-	}
+  @JsonProperty("Key")
+  private String key;
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  @JsonProperty("PlainSecret")
+  private String plainSecret;
 
-	public String getUrl()
-	{
-		return url;
-	}
+  @JsonProperty("IsVisible")
+  private boolean visible;
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  @JsonProperty("SignMessage")
+  private boolean signMessage;
 
-	public String getDescription()
-	{
-		return description;
-	}
+  @JsonProperty("SignWithTc")
+  private boolean signWithTc;
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  @JsonProperty("SendTcInfo")
+  private boolean sendTcInfo;
 
-	public String getKey()
-	{
-		return key;
-	}
+  @JsonProperty("SendContextInfo")
+  private boolean sendContextInfo;
 
-	public void setKey(String key)
-	{
-		this.key = key;
-	}
+  @JsonProperty("SendUserId")
+  private boolean sendUserId;
 
-	public String getPlainSecret()
-	{
-		return plainSecret;
-	}
+  @JsonProperty("SendUserName")
+  private boolean sendUserName;
 
-	public void setPlainSecret(String plainSecret)
-	{
-		this.plainSecret = plainSecret;
-	}
+  @JsonProperty("SendUserEmail")
+  private boolean sendUserEmail;
 
-	public boolean isVisible()
-	{
-		return visible;
-	}
+  @JsonProperty("SendLinkTitle")
+  private boolean sendLinkTitle;
 
-	public void setVisible(boolean visible)
-	{
-		this.visible = visible;
-	}
+  @JsonProperty("SendLinkDescription")
+  private boolean sendLinkDescription;
 
-	public boolean isSignMessage()
-	{
-		return signMessage;
-	}
+  @JsonProperty("SendD2LUserName")
+  private boolean sendD2LUserName;
 
-	public void setSignMessage(boolean signMessage)
-	{
-		this.signMessage = signMessage;
-	}
+  @JsonProperty("SendD2LOrgDefinedId")
+  private boolean sendD2LOrgDefinedId;
 
-	public boolean isSignWithTc()
-	{
-		return signWithTc;
-	}
+  @JsonProperty("SendD2LOrgRoleId")
+  private boolean sendD2LOrgRoleId;
+  // Note: this is MANDATORY, or it won't work.
+  @JsonInclude(Include.ALWAYS)
+  @JsonProperty("CustomParameters")
+  private Object[] customParameters;
 
-	public void setSignWithTc(boolean signWithTc)
-	{
-		this.signWithTc = signWithTc;
-	}
+  public String getLtiLinkId() {
+    return ltiLinkId;
+  }
 
-	public boolean isSendTcInfo()
-	{
-		return sendTcInfo;
-	}
+  public void setLtiLinkId(String ltiLinkId) {
+    this.ltiLinkId = ltiLinkId;
+  }
 
-	public void setSendTcInfo(boolean sendTcInfo)
-	{
-		this.sendTcInfo = sendTcInfo;
-	}
+  public String getOrgUnitId() {
+    return orgUnitId;
+  }
 
-	public boolean isSendContextInfo()
-	{
-		return sendContextInfo;
-	}
+  public void setOrgUnitId(String orgUnitId) {
+    this.orgUnitId = orgUnitId;
+  }
 
-	public void setSendContextInfo(boolean sendContextInfo)
-	{
-		this.sendContextInfo = sendContextInfo;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public boolean isSendUserId()
-	{
-		return sendUserId;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setSendUserId(boolean sendUserId)
-	{
-		this.sendUserId = sendUserId;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public boolean isSendUserName()
-	{
-		return sendUserName;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public void setSendUserName(boolean sendUserName)
-	{
-		this.sendUserName = sendUserName;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public boolean isSendUserEmail()
-	{
-		return sendUserEmail;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setSendUserEmail(boolean sendUserEmail)
-	{
-		this.sendUserEmail = sendUserEmail;
-	}
+  public String getKey() {
+    return key;
+  }
 
-	public boolean isSendLinkTitle()
-	{
-		return sendLinkTitle;
-	}
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-	public void setSendLinkTitle(boolean sendLinkTitle)
-	{
-		this.sendLinkTitle = sendLinkTitle;
-	}
+  public String getPlainSecret() {
+    return plainSecret;
+  }
 
-	public boolean isSendLinkDescription()
-	{
-		return sendLinkDescription;
-	}
+  public void setPlainSecret(String plainSecret) {
+    this.plainSecret = plainSecret;
+  }
 
-	public void setSendLinkDescription(boolean sendLinkDescription)
-	{
-		this.sendLinkDescription = sendLinkDescription;
-	}
+  public boolean isVisible() {
+    return visible;
+  }
 
-	public boolean isSendD2LUserName()
-	{
-		return sendD2LUserName;
-	}
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
 
-	public void setSendD2LUserName(boolean sendD2LUserName)
-	{
-		this.sendD2LUserName = sendD2LUserName;
-	}
+  public boolean isSignMessage() {
+    return signMessage;
+  }
 
-	public boolean isSendD2LOrgDefinedId()
-	{
-		return sendD2LOrgDefinedId;
-	}
+  public void setSignMessage(boolean signMessage) {
+    this.signMessage = signMessage;
+  }
 
-	public void setSendD2LOrgDefinedId(boolean sendD2LOrgDefinedId)
-	{
-		this.sendD2LOrgDefinedId = sendD2LOrgDefinedId;
-	}
+  public boolean isSignWithTc() {
+    return signWithTc;
+  }
 
-	public boolean isSendD2LOrgRoleId()
-	{
-		return sendD2LOrgRoleId;
-	}
+  public void setSignWithTc(boolean signWithTc) {
+    this.signWithTc = signWithTc;
+  }
 
-	public void setSendD2LOrgRoleId(boolean sendD2LOrgRoleId)
-	{
-		this.sendD2LOrgRoleId = sendD2LOrgRoleId;
-	}
+  public boolean isSendTcInfo() {
+    return sendTcInfo;
+  }
+
+  public void setSendTcInfo(boolean sendTcInfo) {
+    this.sendTcInfo = sendTcInfo;
+  }
+
+  public boolean isSendContextInfo() {
+    return sendContextInfo;
+  }
+
+  public void setSendContextInfo(boolean sendContextInfo) {
+    this.sendContextInfo = sendContextInfo;
+  }
+
+  public boolean isSendUserId() {
+    return sendUserId;
+  }
+
+  public void setSendUserId(boolean sendUserId) {
+    this.sendUserId = sendUserId;
+  }
+
+  public boolean isSendUserName() {
+    return sendUserName;
+  }
+
+  public void setSendUserName(boolean sendUserName) {
+    this.sendUserName = sendUserName;
+  }
+
+  public boolean isSendUserEmail() {
+    return sendUserEmail;
+  }
+
+  public void setSendUserEmail(boolean sendUserEmail) {
+    this.sendUserEmail = sendUserEmail;
+  }
+
+  public boolean isSendLinkTitle() {
+    return sendLinkTitle;
+  }
+
+  public void setSendLinkTitle(boolean sendLinkTitle) {
+    this.sendLinkTitle = sendLinkTitle;
+  }
+
+  public boolean isSendLinkDescription() {
+    return sendLinkDescription;
+  }
+
+  public void setSendLinkDescription(boolean sendLinkDescription) {
+    this.sendLinkDescription = sendLinkDescription;
+  }
+
+  public boolean isSendD2LUserName() {
+    return sendD2LUserName;
+  }
+
+  public void setSendD2LUserName(boolean sendD2LUserName) {
+    this.sendD2LUserName = sendD2LUserName;
+  }
+
+  public boolean isSendD2LOrgDefinedId() {
+    return sendD2LOrgDefinedId;
+  }
+
+  public void setSendD2LOrgDefinedId(boolean sendD2LOrgDefinedId) {
+    this.sendD2LOrgDefinedId = sendD2LOrgDefinedId;
+  }
+
+  public boolean isSendD2LOrgRoleId() {
+    return sendD2LOrgRoleId;
+  }
+
+  public void setSendD2LOrgRoleId(boolean sendD2LOrgRoleId) {
+    this.sendD2LOrgRoleId = sendD2LOrgRoleId;
+  }
 }

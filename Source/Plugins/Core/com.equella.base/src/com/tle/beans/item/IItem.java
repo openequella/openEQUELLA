@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,39 @@
 
 package com.tle.beans.item;
 
-import java.util.Date;
-import java.util.List;
-
 import com.tle.annotation.NonNull;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.IItemNavigationNode;
 import com.tle.beans.item.attachments.INavigationSettings;
 import com.tle.common.util.UnmodifiableIterable;
+import java.util.Date;
+import java.util.List;
 
-public interface IItem<A extends IAttachment>
-{
-	@NonNull
-	String getUuid();
+public interface IItem<A extends IAttachment> {
+  @NonNull
+  String getUuid();
 
-	int getVersion();
+  int getVersion();
 
-	LanguageBundle getName();
+  LanguageBundle getName();
 
-	LanguageBundle getDescription();
+  LanguageBundle getDescription();
 
-	List<A> getAttachments();
+  List<A> getAttachments();
 
-	UnmodifiableIterable<A> getAttachmentsUnmodifiable();
+  UnmodifiableIterable<A> getAttachmentsUnmodifiable();
 
-	@NonNull
-	ItemId getItemId();
+  @NonNull
+  ItemId getItemId();
 
-	List<? extends IItemNavigationNode> getTreeNodes();
+  List<? extends IItemNavigationNode> getTreeNodes();
 
-	<N extends INavigationSettings> N getNavigationSettings();
+  <N extends INavigationSettings> N getNavigationSettings();
 
-	float getRating();
+  float getRating();
 
-	Date getDateCreated();
+  Date getDateCreated();
 
-	Date getDateModified();
+  Date getDateModified();
 }

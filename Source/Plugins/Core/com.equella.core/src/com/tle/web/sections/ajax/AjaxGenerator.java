@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,94 +36,118 @@ import com.tle.web.sections.js.generic.function.IncludeFile;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public interface AjaxGenerator
-{
-	PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(AjaxFunction.class);
+public interface AjaxGenerator {
+  PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(AjaxFunction.class);
 
-	String AJAX_BASEURI = "AJAX_BASEURI";
-	String AJAXID_BODY = "<BODY>";
+  String AJAX_BASEURI = "AJAX_BASEURI";
+  String AJAXID_BODY = "<BODY>";
 
-	String URL_SPINNER = urlHelper.url("images/ajax/doing.gif");
-	String URL_SPINNER_INLINE = urlHelper.url("images/ajax/ajax-loader.gif");
-	String URL_SPINNER_LOADING = urlHelper.url("images/ajax/loading.gif");
-	ScriptVariable RESULTS_VAR = new ScriptVariable("results");
-	ScriptVariable PROPERTY_VALUE = new ScriptVariable("value");
-	ScriptVariable STATUS_VAR = new ScriptVariable("status");
-	IncludeFile AJAX_LIBRARY = new IncludeFile(urlHelper.url("js/ajaxhelper.js"), JQueryCore.PRERENDER);
+  String URL_SPINNER = urlHelper.url("images/ajax/doing.gif");
+  String URL_SPINNER_INLINE = urlHelper.url("images/ajax/ajax-loader.gif");
+  String URL_SPINNER_LOADING = urlHelper.url("images/ajax/loading.gif");
+  ScriptVariable RESULTS_VAR = new ScriptVariable("results");
+  ScriptVariable PROPERTY_VALUE = new ScriptVariable("value");
+  ScriptVariable STATUS_VAR = new ScriptVariable("status");
+  IncludeFile AJAX_LIBRARY =
+      new IncludeFile(urlHelper.url("js/ajaxhelper.js"), JQueryCore.PRERENDER);
 
-	// JSCallAndReference UPDATE_INCLUDES = new ExternallyDefinedFunction(
-	// "updateIncludes", 2, AJAX_LIBRARY);
+  // JSCallAndReference UPDATE_INCLUDES = new ExternallyDefinedFunction(
+  // "updateIncludes", 2, AJAX_LIBRARY);
 
-	JSCallAndReference OPEN_AJAX_DIALOG = new ExternallyDefinedFunction("openAjaxDialog", 7, AJAX_LIBRARY);
+  JSCallAndReference OPEN_AJAX_DIALOG =
+      new ExternallyDefinedFunction("openAjaxDialog", 7, AJAX_LIBRARY);
 
-	JSCallAndReference OPEN_AJAX_DIALOGURL = new ExternallyDefinedFunction("openAjaxDialogUrl", 7, AJAX_LIBRARY);
+  JSCallAndReference OPEN_AJAX_DIALOGURL =
+      new ExternallyDefinedFunction("openAjaxDialogUrl", 7, AJAX_LIBRARY);
 
-	JSCallAndReference CLOSE_AJAX_DIALOG = new ExternallyDefinedFunction("closeAjaxDialog", 2, AJAX_LIBRARY);
+  JSCallAndReference CLOSE_AJAX_DIALOG =
+      new ExternallyDefinedFunction("closeAjaxDialog", 2, AJAX_LIBRARY);
 
-	JSCallAndReference SUBMIT_BODY = new ExternallyDefinedFunction("submitBody", -1, AJAX_LIBRARY);
+  JSCallAndReference SUBMIT_BODY = new ExternallyDefinedFunction("submitBody", -1, AJAX_LIBRARY);
 
-	enum EffectType
-	{
-		REPLACE_WITH_LOADING, REPLACE_IN_PLACE, FADEIN, FADEOUTIN, FADEOUTIN_ONRESULTS, ACTIVITY
-	}
+  enum EffectType {
+    REPLACE_WITH_LOADING,
+    REPLACE_IN_PLACE,
+    FADEIN,
+    FADEOUTIN,
+    FADEOUTIN_ONRESULTS,
+    ACTIVITY
+  }
 
-	Bookmark getModifiedAjaxUrl(SectionInfo info, BookmarkModifier modifier, String name, Object... params);
+  Bookmark getModifiedAjaxUrl(
+      SectionInfo info, BookmarkModifier modifier, String name, Object... params);
 
-	Bookmark getAjaxUrl(SectionInfo info, String name, Object... params);
+  Bookmark getAjaxUrl(SectionInfo info, String name, Object... params);
 
-	/**
-	 * Create a function which can return a JSON object from the server.
-	 * <p>
-	 * The JSCallable of the form: function(callback, args...) {}
-	 * 
-	 * @param name
-	 * @return
-	 */
-	JSCallable getAjaxFunction(String name);
+  /**
+   * Create a function which can return a JSON object from the server.
+   *
+   * <p>The JSCallable of the form: function(callback, args...) {}
+   *
+   * @param name
+   * @return
+   */
+  JSCallable getAjaxFunction(String name);
 
-	@Nullable
-	JSCallable getEffectFunction(EffectType type);
+  @Nullable
+  JSCallable getEffectFunction(EffectType type);
 
-	@Nullable
-	JSCallable getEffectFunction(EffectType type, String urlSpinner);
+  @Nullable
+  JSCallable getEffectFunction(EffectType type, String urlSpinner);
 
-	/**
-	 * @param tree
-	 * @param modalId
-	 * @param event
-	 * @param ajaxIds
-	 * @return
-	 */
-	UpdateDomFunction getAjaxUpdateDomFunction(SectionTree tree, @Nullable SectionId modalId, ParameterizedEvent event,
-		String... ajaxIds);
+  /**
+   * @param tree
+   * @param modalId
+   * @param event
+   * @param ajaxIds
+   * @return
+   */
+  UpdateDomFunction getAjaxUpdateDomFunction(
+      SectionTree tree, @Nullable SectionId modalId, ParameterizedEvent event, String... ajaxIds);
 
-	UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(SectionTree tree, @Nullable SectionId modalId,
-		ParameterizedEvent event, JSCallable onSuccess, String... ajaxIds);
+  UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(
+      SectionTree tree,
+      @Nullable SectionId modalId,
+      ParameterizedEvent event,
+      JSCallable onSuccess,
+      String... ajaxIds);
 
-	/**
-	 * @param tree
-	 * @param modalId
-	 * @param event
-	 * @param effectFunction function($oldDiv, $newContents, onSuccess)
-	 * @param ajaxIds
-	 * @return
-	 */
-	UpdateDomFunction getAjaxUpdateDomFunction(SectionTree tree, @Nullable SectionId modalId, ParameterizedEvent event,
-		JSCallable effectFunction, String... ajaxIds);
+  /**
+   * @param tree
+   * @param modalId
+   * @param event
+   * @param effectFunction function($oldDiv, $newContents, onSuccess)
+   * @param ajaxIds
+   * @return
+   */
+  UpdateDomFunction getAjaxUpdateDomFunction(
+      SectionTree tree,
+      @Nullable SectionId modalId,
+      ParameterizedEvent event,
+      JSCallable effectFunction,
+      String... ajaxIds);
 
-	/**
-	 * @param tree
-	 * @param modalId
-	 * @param event
-	 * @param effectFunction
-	 * @param onSuccess
-	 * @param ajaxIds
-	 * @return
-	 */
-	UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(SectionTree tree, @Nullable SectionId modalId,
-		ParameterizedEvent event, JSCallable effectFunction, JSCallable onSuccess, String... ajaxIds);
+  /**
+   * @param tree
+   * @param modalId
+   * @param event
+   * @param effectFunction
+   * @param onSuccess
+   * @param ajaxIds
+   * @return
+   */
+  UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(
+      SectionTree tree,
+      @Nullable SectionId modalId,
+      ParameterizedEvent event,
+      JSCallable effectFunction,
+      JSCallable onSuccess,
+      String... ajaxIds);
 
-	JSBookmarkModifier getUpdateDomModifier(SectionTree tree, @Nullable SectionId modalId, String ajaxId,
-		ParameterizedEvent event, Object... params);
-
+  JSBookmarkModifier getUpdateDomModifier(
+      SectionTree tree,
+      @Nullable SectionId modalId,
+      String ajaxId,
+      ParameterizedEvent event,
+      Object... params);
 }

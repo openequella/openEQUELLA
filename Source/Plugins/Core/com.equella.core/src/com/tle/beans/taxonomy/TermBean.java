@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,90 +18,73 @@
 
 package com.tle.beans.taxonomy;
 
+import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
-
 @XmlRootElement
-public class TermBean extends AbstractExtendableBean
-{
-	private String term;
-	private String fullTerm;
-	private String parentUuid;
-	private String uuid;
-	private int index = 0;
-	private Map<String, String> data;
-	private boolean readonly;
+public class TermBean extends AbstractExtendableBean {
+  private String term;
+  private String fullTerm;
+  private String parentUuid;
+  private String uuid;
+  private int index = 0;
+  private Map<String, String> data;
+  private boolean readonly;
 
-	public String getTerm()
-	{
-		return term;
-	}
+  public String getTerm() {
+    return term;
+  }
 
-	public void setTerm(String term)
-	{
-		this.term = term;
-	}
+  public void setTerm(String term) {
+    this.term = term;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public int getIndex()
-	{
-		return index;
-	}
+  public int getIndex() {
+    return index;
+  }
 
-	public void setIndex(int index)
-	{
-		this.index = index;
-	}
+  public void setIndex(int index) {
+    this.index = index;
+  }
 
-	public Map<String, String> getData()
-	{
-		return data;
-	}
+  public Map<String, String> getData() {
+    return data;
+  }
 
-	public void setData(Map<String, String> data)
-	{
-		this.data = data;
-	}
+  public void setData(Map<String, String> data) {
+    this.data = data;
+  }
 
-	public String getFullTerm()
-	{
-		return fullTerm;
-	}
+  public String getFullTerm() {
+    return fullTerm;
+  }
 
-	public void setFullTerm(String fullTerm)
-	{
-		this.fullTerm = fullTerm;
-	}
+  public void setFullTerm(String fullTerm) {
+    this.fullTerm = fullTerm;
+  }
 
-	public boolean isReadonly()
-	{
-		return readonly;
-	}
+  public boolean isReadonly() {
+    return readonly;
+  }
 
-	public void setReadonly(boolean readonly)
-	{
-		this.readonly = readonly;
-	}
+  public void setReadonly(boolean readonly) {
+    this.readonly = readonly;
+  }
 
-	public String getParentUuid()
-	{
-		return parentUuid;
-	}
+  public String getParentUuid() {
+    return parentUuid;
+  }
 
-	public void setParentUuid(String parentUuid)
-	{
-		this.parentUuid = parentUuid;
-	}
+  public void setParentUuid(String parentUuid) {
+    this.parentUuid = parentUuid;
+  }
 }

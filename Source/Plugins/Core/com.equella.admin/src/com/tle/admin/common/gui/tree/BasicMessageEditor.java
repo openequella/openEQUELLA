@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,37 @@
 
 package com.tle.admin.common.gui.tree;
 
+import com.tle.admin.gui.EditorException;
+import com.tle.common.LazyTreeNode;
 import java.awt.GridLayout;
-
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import com.tle.admin.gui.EditorException;
-import com.tle.common.LazyTreeNode;
+/** @author Nicholas Read */
+public class BasicMessageEditor extends AbstractTreeNodeEditor {
+  public BasicMessageEditor(String message) {
+    JLabel messageLabel = new JLabel(message);
+    messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-/**
- * @author Nicholas Read
- */
-public class BasicMessageEditor extends AbstractTreeNodeEditor
-{
-	public BasicMessageEditor(String message)
-	{
-		JLabel messageLabel = new JLabel(message);
-		messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    setLayout(new GridLayout(1, 1));
+    add(messageLabel);
+  }
 
-		setLayout(new GridLayout(1, 1));
-		add(messageLabel);
-	}
+  // None of the abstract methods should be invoked, as this editor is does
+  // nothing.
 
-	// None of the abstract methods should be invoked, as this editor is does
-	// nothing.
+  @Override
+  protected LazyTreeNode getUpdatedNode() {
+    throw new RuntimeException();
+  }
 
-	@Override
-	protected LazyTreeNode getUpdatedNode()
-	{
-		throw new RuntimeException();
-	}
+  @Override
+  protected void save() {
+    throw new RuntimeException();
+  }
 
-	@Override
-	protected void save()
-	{
-		throw new RuntimeException();
-	}
-
-	@Override
-	protected void validation() throws EditorException
-	{
-		// nothing to validate
-	}
+  @Override
+  protected void validation() throws EditorException {
+    // nothing to validate
+  }
 }

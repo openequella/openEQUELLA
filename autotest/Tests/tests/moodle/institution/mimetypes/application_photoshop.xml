@@ -1,0 +1,24 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>18337</id>
+  <institution>
+    <id>18208</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>psd</string>
+  </extensions>
+  <type>application/photoshop</type>
+  <description>Adobe Photoshop</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;googledocviewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

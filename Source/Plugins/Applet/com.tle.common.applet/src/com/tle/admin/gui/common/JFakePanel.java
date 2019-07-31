@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,42 +20,34 @@ package com.tle.admin.gui.common;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
-
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 @Deprecated
-public class JFakePanel
-{
-	protected JChangeDetectorPanel panel;
+public class JFakePanel {
+  protected JChangeDetectorPanel panel;
 
-	public JFakePanel()
-	{
-		this.panel = new JChangeDetectorPanel();
-	}
+  public JFakePanel() {
+    this.panel = new JChangeDetectorPanel();
+  }
 
-	public void add(Component comp)
-	{
-		panel.add(comp);
-	}
+  public void add(Component comp) {
+    panel.add(comp);
+  }
 
-	public void add(Component comp, Object constaint)
-	{
-		panel.add(comp, constaint);
-	}
+  public void add(Component comp, Object constaint) {
+    panel.add(comp, constaint);
+  }
 
-	public void setLayout(LayoutManager layout)
-	{
-		panel.setLayout(layout);
-	}
+  public void setLayout(LayoutManager layout) {
+    panel.setLayout(layout);
+  }
 
-	public void setBorder(Border border)
-	{
-		panel.setBorder(border);
-	}
+  public void setBorder(Border border) {
+    panel.setBorder(border);
+  }
 
-	public JPanel getComponent()
-	{
-		return panel;
-	}
+  public JPanel getComponent() {
+    return panel;
+  }
 }

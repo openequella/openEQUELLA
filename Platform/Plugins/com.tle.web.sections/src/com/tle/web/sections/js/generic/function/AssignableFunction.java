@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -28,65 +30,53 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.statement.ReturnStatement;
 
 @NonNullByDefault
-public class AssignableFunction extends AbstractFunctionDefinition implements JSAssignable
-{
-	private final JSCallable call;
+public class AssignableFunction extends AbstractFunctionDefinition implements JSAssignable {
+  private final JSCallable call;
 
-	AssignableFunction(JSCallable call)
-	{
-		this.call = call;
-	}
+  AssignableFunction(JSCallable call) {
+    this.call = call;
+  }
 
-	public static JSAssignable get(JSCallable callable)
-	{
-		if( callable instanceof JSAssignable )
-		{
-			return (JSAssignable) callable;
-		}
-		return new AssignableFunction(callable);
-	}
+  public static JSAssignable get(JSCallable callable) {
+    if (callable instanceof JSAssignable) {
+      return (JSAssignable) callable;
+    }
+    return new AssignableFunction(callable);
+  }
 
-	@Override
-	public int getNumberOfParams(@Nullable RenderContext context)
-	{
-		int numParams = call.getNumberOfParams(context);
-		if( numParams == -1 )
-		{
-			return 0;
-		}
-		return numParams;
-	}
+  @Override
+  public int getNumberOfParams(@Nullable RenderContext context) {
+    int numParams = call.getNumberOfParams(context);
+    if (numParams == -1) {
+      return 0;
+    }
+    return numParams;
+  }
 
-	@Nullable
-	@Override
-	protected String getFunctionName(@Nullable RenderContext context)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  protected String getFunctionName(@Nullable RenderContext context) {
+    return null;
+  }
 
-	@Override
-	protected JSStatements getBody(@Nullable RenderContext context)
-	{
-		if( body == null )
-		{
-			body = new ReturnStatement(new FunctionCallExpression(call, (Object[]) getParams(context)));
-		}
-		return body;
-	}
+  @Override
+  protected JSStatements getBody(@Nullable RenderContext context) {
+    if (body == null) {
+      body = new ReturnStatement(new FunctionCallExpression(call, (Object[]) getParams(context)));
+    }
+    return body;
+  }
 
-	@Override
-	protected JSExpression[] getParams(@Nullable RenderContext context)
-	{
-		if( params == null )
-		{
-			params = JSUtils.createParameters(getNumberOfParams(context));
-		}
-		return params;
-	}
+  @Override
+  protected JSExpression[] getParams(@Nullable RenderContext context) {
+    if (params == null) {
+      params = JSUtils.createParameters(getNumberOfParams(context));
+    }
+    return params;
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return getDefinition(info);
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return getDefinition(info);
+  }
 }

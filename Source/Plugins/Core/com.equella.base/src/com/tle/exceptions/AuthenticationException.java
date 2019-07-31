@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,33 +21,27 @@ package com.tle.exceptions;
 import com.dytech.edge.exceptions.QuietlyLoggable;
 import com.tle.common.beans.exception.NestedRuntimeException;
 
-public class AuthenticationException extends NestedRuntimeException implements QuietlyLoggable
-{
-	public AuthenticationException(String msg)
-	{
-		super(msg);
-	}
+public class AuthenticationException extends NestedRuntimeException implements QuietlyLoggable {
+  public AuthenticationException(String msg) {
+    super(msg);
+  }
 
-	public AuthenticationException(String msg, Throwable cause)
-	{
-		super(msg, cause);
-	}
+  public AuthenticationException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
 
-	@Override
-	public boolean isShowStackTrace()
-	{
-		return false;
-	}
+  @Override
+  public boolean isShowStackTrace() {
+    return false;
+  }
 
-	@Override
-	public boolean isSilent()
-	{
-		return false;
-	}
+  @Override
+  public boolean isSilent() {
+    return false;
+  }
 
-	@Override
-	public boolean isWarnOnly()
-	{
-		return true;
-	}
+  @Override
+  public boolean isWarnOnly() {
+    return true;
+  }
 }

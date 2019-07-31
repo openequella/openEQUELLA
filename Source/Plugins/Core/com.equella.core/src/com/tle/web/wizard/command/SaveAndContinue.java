@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.wizard.command;
 
-import javax.inject.Inject;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -27,57 +27,59 @@ import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.impl.WizardCommand;
+import com.tle.web.wizard.section.PagesSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 
-public class SaveAndContinue extends WizardCommand
-{
-	@PlugKey("command.saveandcontinue")
-	private static String KEY_SAVE_AND_CONTINUE;
-	@PlugKey("command.save.successandcontinuereceipt")
-	private static Label SUCCESS_CONTINUE_RECEIPT_LABEL;
+public class SaveAndContinue extends WizardCommand {
+  @PlugKey("command.saveandcontinue")
+  private static String KEY_SAVE_AND_CONTINUE;
 
-	@Inject
-	private WizardService wizardService;
-	@Inject
-	private ModerationService moderationService;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("command.save.successandcontinuereceipt")
+  private static Label SUCCESS_CONTINUE_RECEIPT_LABEL;
 
-	static
-	{
-		PluginResourceHandler.init(SaveAndContinue.class);
-	}
+  @Inject private WizardService wizardService;
+  @Inject private ModerationService moderationService;
+  @Inject private ReceiptService receiptService;
 
-	@SuppressWarnings("nls")
-	public SaveAndContinue()
-	{
-		super(KEY_SAVE_AND_CONTINUE, "saveAndContinue");
-	}
+  static {
+    PluginResourceHandler.init(SaveAndContinue.class);
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-		WizardState state = winfo.getWizardState();
-		wizardService.doSave(state, false);
-		receiptService.setReceipt(SUCCESS_CONTINUE_RECEIPT_LABEL);
-		if (state.getPages() != null)
-		{
-			for (WebWizardPage page : state.getPages())
-			{
-				page.removeTrees(info);
-			}
-		}
-		wizardService.reloadSaveAndContinue(state);
-		moderationService.setEditing(info, true);
-	}
+  @SuppressWarnings("nls")
+  public SaveAndContinue() {
+    super(KEY_SAVE_AND_CONTINUE, "saveAndContinue");
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		WizardState state = winfo.getWizardState();
-		return (state.isLockedForEditing() || state.isNewItem() || (!state.isLockedForEditing() && state
-			.isRedraftAfterSave()));
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
+    WizardState state = winfo.getWizardState();
+    wizardService.doSave(state, false);
+    receiptService.setReceipt(SUCCESS_CONTINUE_RECEIPT_LABEL);
+    List<WebWizardPage> pageList = new ArrayList<>();
+    PagesSection ps = info.lookupSection(PagesSection.class);
+    if (state.getPages() != null) {
+      for (WebWizardPage page : state.getPages()) {
+        page.removeTrees(info);
+        pageList.add(page);
+      }
+    }
+    wizardService.reloadSaveAndContinue(state);
+    // validate mandatory fields after reloading
+    for (WebWizardPage page : pageList) {
+      wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
+    }
+    moderationService.setEditing(info, true);
+  }
 
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    WizardState state = winfo.getWizardState();
+    return (state.isLockedForEditing()
+        || state.isNewItem()
+        || (!state.isLockedForEditing() && state.isRedraftAfterSave()));
+  }
 }

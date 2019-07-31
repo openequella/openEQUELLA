@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,25 @@
 
 package com.tle.web.selection;
 
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.web.sections.SectionInfo;
+import java.util.List;
 
 @NonNullByDefault
-public interface SelectableAttachment
-{
-	/**
-	 * 
-	 * @param info
-	 * @param item
-	 * @param attachmentUuid null in the case of determining if <em>any</em> attachment is selectable
-	 * @return
-	 */
-	boolean isAttachmentSelectable(SectionInfo info, IItem<?> item, @Nullable String attachmentUuid);
+public interface SelectableAttachment {
+  /**
+   * @param info
+   * @param item
+   * @param attachmentUuid null in the case of determining if <em>any</em> attachment is selectable
+   * @return
+   */
+  boolean isAttachmentSelectable(SectionInfo info, IItem<?> item, @Nullable String attachmentUuid);
 
-	boolean canBePushed(String attachmentUuid);
+  boolean canBePushed(String attachmentUuid);
 
-	boolean isItemCopyrighted(IItem<?> item);
+  boolean isItemCopyrighted(IItem<?> item);
 
-	List<String> getApplicableCourseCodes(String attachmentUuid);
+  List<String> getApplicableCourseCodes(String attachmentUuid);
 }

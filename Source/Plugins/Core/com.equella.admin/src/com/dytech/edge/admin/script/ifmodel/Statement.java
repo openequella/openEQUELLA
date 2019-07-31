@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,80 +21,63 @@ package com.dytech.edge.admin.script.ifmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Statement
-{
-	protected List<Block> blocks;
+public class Statement {
+  protected List<Block> blocks;
 
-	public Statement()
-	{
-		blocks = new ArrayList<Block>();
-	}
+  public Statement() {
+    blocks = new ArrayList<Block>();
+  }
 
-	public void addBlock(Block block)
-	{
-		blocks.add(block);
-		block.setParent(this);
-	}
+  public void addBlock(Block block) {
+    blocks.add(block);
+    block.setParent(this);
+  }
 
-	public boolean isEmpty()
-	{
-		return blocks.isEmpty();
-	}
+  public boolean isEmpty() {
+    return blocks.isEmpty();
+  }
 
-	public void removeAll()
-	{
-		blocks.clear();
-	}
+  public void removeAll() {
+    blocks.clear();
+  }
 
-	public void insertBlock(Block block, int index)
-	{
-		if( index >= blocks.size() )
-		{
-			addBlock(block);
-		}
-		else
-		{
-			blocks.add(index, block);
-			block.setParent(this);
-		}
-	}
+  public void insertBlock(Block block, int index) {
+    if (index >= blocks.size()) {
+      addBlock(block);
+    } else {
+      blocks.add(index, block);
+      block.setParent(this);
+    }
+  }
 
-	public void removeBlock(Block block)
-	{
-		blocks.remove(block);
-	}
+  public void removeBlock(Block block) {
+    blocks.remove(block);
+  }
 
-	public Block getBlock(int index)
-	{
-		if( index < blocks.size() )
-		{
-			return blocks.get(index);
-		}
-		else
-		{
-			return null;
-		}
-	}
+  public Block getBlock(int index) {
+    if (index < blocks.size()) {
+      return blocks.get(index);
+    } else {
+      return null;
+    }
+  }
 
-	public List<Block> getBlocks()
-	{
-		return blocks;
-	}
+  public List<Block> getBlocks() {
+    return blocks;
+  }
 
-	public String toScript()
-	{
-		StringBuilder script = new StringBuilder();
-		script.append("var bRet = false; \n");
+  public String toScript() {
+    StringBuilder script = new StringBuilder();
+    script.append("var bRet = false; \n");
 
-		boolean first = true;
-		for( Block b : blocks )
-		{
-			script.append(b.toScript(first));
-			first = false;
-		}
+    boolean first = true;
+    for (Block b : blocks) {
+      script.append(b.toScript(first));
+      first = false;
+    }
 
-		script.append("return bRet; \n");
+    script.append("return bRet; \n");
 
-		return script.toString();
-	}
+    return script.toString();
+  }
 }

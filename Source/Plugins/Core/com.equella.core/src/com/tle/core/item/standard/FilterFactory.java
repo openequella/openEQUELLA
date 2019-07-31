@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.core.item.standard;
-
-import java.util.Collection;
 
 import com.google.common.collect.Multimap;
 import com.google.inject.assistedinject.Assisted;
@@ -33,32 +33,32 @@ import com.tle.core.item.standard.filter.RemoveDeletedItemsFilter;
 import com.tle.core.item.standard.filter.UserDeletedFilter;
 import com.tle.core.item.standard.filter.workflow.ArchiveOldFilter;
 import com.tle.core.item.standard.filter.workflow.WorkflowChangeFilter;
+import java.util.Collection;
 
 @BindFactory
-public interface FilterFactory
-{
-	UserDeletedFilter userDeleted(String user);
+public interface FilterFactory {
+  UserDeletedFilter userDeleted(String user);
 
-	ChangeUserIdFilter changeUserId(@Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
+  ChangeUserIdFilter changeUserId(
+      @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
 
-	ArchiveOldFilter archiveOld(ItemKey itemKey);
+  ArchiveOldFilter archiveOld(ItemKey itemKey);
 
-	RefreshCollectionItemDataFilter refreshCollectionItems(long collectionId);
+  RefreshCollectionItemDataFilter refreshCollectionItems(long collectionId);
 
-	RefreshSchemaItemDataFilter refreshSchemaItems(long schemaId);
+  RefreshSchemaItemDataFilter refreshSchemaItems(long schemaId);
 
-	DRMUpdateFilter drmUpdate(long collectionId, Collection<String> pageIds);
+  DRMUpdateFilter drmUpdate(long collectionId, Collection<String> pageIds);
 
-	RemoveDeletedItemsFilter removeDeleted(int daysOld);
+  RemoveDeletedItemsFilter removeDeleted(int daysOld);
 
-	NotifyBadUrlFilter notifyBadUrl(ReferencedURL rurl);
+  NotifyBadUrlFilter notifyBadUrl(ReferencedURL rurl);
 
-	NewItemFilter createFilter(Multimap<String, String> collectionMap);
+  NewItemFilter createFilter(Multimap<String, String> collectionMap);
 
-	/*
-	 * Workflow
-	 */
+  /*
+   * Workflow
+   */
 
-	WorkflowChangeFilter workflowChanged(long collectionId);
-
+  WorkflowChangeFilter workflowChanged(long collectionId);
 }

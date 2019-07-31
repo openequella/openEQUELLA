@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,19 +18,17 @@
 
 package com.tle.core.dao;
 
+import com.tle.beans.UserPreference;
+import com.tle.core.hibernate.dao.GenericDao;
 import java.util.List;
 import java.util.Set;
 
-import com.tle.beans.UserPreference;
-import com.tle.core.hibernate.dao.GenericDao;
+public interface UserPreferenceDao extends GenericDao<UserPreference, UserPreference.UserPrefKey> {
+  void deleteAll();
 
-public interface UserPreferenceDao extends GenericDao<UserPreference, UserPreference.UserPrefKey>
-{
-	void deleteAll();
+  List<UserPreference> enumerateAll();
 
-	List<UserPreference> enumerateAll();
+  Set<String> getReferencedUsers();
 
-	Set<String> getReferencedUsers();
-
-	void transferUserId(final String fromUserId, final String toUserId);
+  void transferUserId(final String fromUserId, final String toUserId);
 }

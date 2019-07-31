@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.core.xstream;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 
 import com.dytech.devlib.PropBagEx;
 import com.thoughtworks.xstream.MarshallingStrategy;
@@ -35,155 +31,134 @@ import com.thoughtworks.xstream.io.xml.DomWriter;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 
-/**
- *
- */
-public class TLEXStream extends XStream
-{
-	private XppDriver xppDriver;
-	private MarshallingStrategy marshallingStrategy;
-	private boolean disallowAdd;
-	private static TLEXStream instance;
+/** */
+public class TLEXStream extends XStream {
+  private XppDriver xppDriver;
+  private MarshallingStrategy marshallingStrategy;
+  private boolean disallowAdd;
+  private static TLEXStream instance;
 
-	public TLEXStream()
-	{
-		this(false);
-	}
+  public TLEXStream() {
+    this(false);
+  }
 
-	private TLEXStream(boolean disallowAdd)
-	{
-		xppDriver = new XppDriver();
-		registerConverter(new XMLDataConverter());
-		this.disallowAdd = disallowAdd;
-	}
+  private TLEXStream(boolean disallowAdd) {
+    xppDriver = new XppDriver();
+    registerConverter(new XMLDataConverter());
+    this.disallowAdd = disallowAdd;
+  }
 
-	@Override
-	public void registerConverter(Converter converter)
-	{
-		if (!disallowAdd)
-		{
-			super.registerConverter(converter);
-		}
-		else throw new Error("Can't add converters to this instance, use: new TLEXStream() instead");
-	}
+  @Override
+  public void registerConverter(Converter converter) {
+    if (!disallowAdd) {
+      super.registerConverter(converter);
+    } else throw new Error("Can't add converters to this instance, use: new TLEXStream() instead");
+  }
 
-	public static synchronized TLEXStream instance()
-	{
-		if (instance == null)
-		{
-			instance = new TLEXStream(true);
-		}
-		return instance;
-	}
+  public static synchronized TLEXStream instance() {
+    if (instance == null) {
+      instance = new TLEXStream(true);
+    }
+    return instance;
+  }
 
-	protected HierarchicalStreamDriver getDefaultDriver()
-	{
-		return xppDriver;
-	}
+  protected HierarchicalStreamDriver getDefaultDriver() {
+    return xppDriver;
+  }
 
-	public Object fromXML(String string, Class clazz)
-	{
-		return fromXML(new StringReader(string), clazz);
-	}
+  public Object fromXML(String string, Class clazz) {
+    return fromXML(new StringReader(string), clazz);
+  }
 
-	@Override
-	public Object fromXML(String string, Object object)
-	{
-		return fromXML(new StringReader(string), object);
-	}
+  @Override
+  public Object fromXML(String string, Object object) {
+    return fromXML(new StringReader(string), object);
+  }
 
-	public Object fromXML(Reader reader, Class clazz)
-	{
-		return fromXML(getDefaultDriver(), reader, null, clazz);
-	}
+  public Object fromXML(Reader reader, Class clazz) {
+    return fromXML(getDefaultDriver(), reader, null, clazz);
+  }
 
-	@Override
-	public Object fromXML(Reader string, Object object)
-	{
-		return fromXML(getDefaultDriver(), string, object, object.getClass());
-	}
+  @Override
+  public Object fromXML(Reader string, Object object) {
+    return fromXML(getDefaultDriver(), string, object, object.getClass());
+  }
 
-	public Object fromXML(PropBagEx xml, Class clazz)
-	{
-		return fromXML(new DomReader(xml.getRootElement()), null, clazz);
-	}
+  public Object fromXML(PropBagEx xml, Class clazz) {
+    return fromXML(new DomReader(xml.getRootElement()), null, clazz);
+  }
 
-	public Object fromXML(PropBagEx xml, Object object)
-	{
-		return fromXML(new DomReader(xml.getRootElement()), object, object.getClass());
-	}
+  public Object fromXML(PropBagEx xml, Object object) {
+    return fromXML(new DomReader(xml.getRootElement()), object, object.getClass());
+  }
 
-	private Object fromXML(HierarchicalStreamDriver driver, Reader reader, Object object, final Class clazz)
-	{
-		HierarchicalStreamReader hreader = driver.createReader(reader);
-		return fromXML(hreader, object, clazz);
-	}
+  private Object fromXML(
+      HierarchicalStreamDriver driver, Reader reader, Object object, final Class clazz) {
+    HierarchicalStreamReader hreader = driver.createReader(reader);
+    return fromXML(hreader, object, clazz);
+  }
 
-	private Object fromXML(HierarchicalStreamReader hreader, Object object, final Class clazz)
-	{
-		Mapper mapper = super.getMapper();
-		mapper = new MapperWrapper(mapper)
-		{
-			@Override
-			public Class realClass(String elementName)
-			{
-				return clazz;
-			}
-		};
+  private Object fromXML(HierarchicalStreamReader hreader, Object object, final Class clazz) {
+    Mapper mapper = super.getMapper();
+    mapper =
+        new MapperWrapper(mapper) {
+          @Override
+          public Class realClass(String elementName) {
+            return clazz;
+          }
+        };
 
-		return marshallingStrategy.unmarshal(object, hreader, null, getDefaultConverterLookup(), mapper);
-	}
+    return marshallingStrategy.unmarshal(
+        object, hreader, null, getDefaultConverterLookup(), mapper);
+  }
 
-	public PropBagEx toPropBag(Object object, String rootNodeName)
-	{
-		PropBagEx xml = new PropBagEx();
-		HierarchicalStreamWriter writer = new DomWriter(xml.getRootElement());
-		toXML(writer, object, rootNodeName);
-		return xml.getSubtree(rootNodeName);
-	}
+  public PropBagEx toPropBag(Object object, String rootNodeName) {
+    PropBagEx xml = new PropBagEx();
+    HierarchicalStreamWriter writer = new DomWriter(xml.getRootElement());
+    toXML(writer, object, rootNodeName);
+    return xml.getSubtree(rootNodeName);
+  }
 
-	public String toXML(Object object, String rootNodeName) throws IOException
-	{
-		return toXML(new StringWriter(), object, rootNodeName);
-	}
+  public String toXML(Object object, String rootNodeName) throws IOException {
+    return toXML(new StringWriter(), object, rootNodeName);
+  }
 
-	public String toXML(Writer writer, Object object, String rootNodeName) throws IOException
-	{
-		HierarchicalStreamWriter hwriter = getDefaultDriver().createWriter(writer);
-		toXML(hwriter, object, rootNodeName);
+  public String toXML(Writer writer, Object object, String rootNodeName) throws IOException {
+    HierarchicalStreamWriter hwriter = getDefaultDriver().createWriter(writer);
+    toXML(hwriter, object, rootNodeName);
 
-		writer.flush();
-		writer.close();
+    writer.flush();
+    writer.close();
 
-		return writer.toString();
-	}
+    return writer.toString();
+  }
 
-	private void toXML(HierarchicalStreamWriter hwriter, Object object, final String rootNodeName)
-	{
-		Mapper mapper = super.getMapper();
-		mapper = new MapperWrapper(mapper)
-		{
-			@Override
-			public String serializedClass(Class type)
-			{
-				return rootNodeName;
-			}
-		};
+  private void toXML(HierarchicalStreamWriter hwriter, Object object, final String rootNodeName) {
+    Mapper mapper = super.getMapper();
+    mapper =
+        new MapperWrapper(mapper) {
+          @Override
+          public String serializedClass(Class type) {
+            return rootNodeName;
+          }
+        };
 
-		marshallingStrategy.marshal(hwriter, object, getDefaultConverterLookup(), mapper, null);
+    marshallingStrategy.marshal(hwriter, object, getDefaultConverterLookup(), mapper, null);
+  }
 
-	}
+  private ConverterLookup getDefaultConverterLookup() {
+    return getConverterLookup();
+  }
 
-	private ConverterLookup getDefaultConverterLookup()
-	{
-		return getConverterLookup();
-	}
-
-	@Override
-	public void setMarshallingStrategy(MarshallingStrategy marshallingStrategy)
-	{
-		this.marshallingStrategy = marshallingStrategy;
-		super.setMarshallingStrategy(marshallingStrategy);
-	}
+  @Override
+  public void setMarshallingStrategy(MarshallingStrategy marshallingStrategy) {
+    this.marshallingStrategy = marshallingStrategy;
+    super.setMarshallingStrategy(marshallingStrategy);
+  }
 }

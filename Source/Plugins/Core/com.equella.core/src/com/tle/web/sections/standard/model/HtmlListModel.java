@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,29 @@
 
 package com.tle.web.sections.standard.model;
 
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
+import com.tle.web.sections.SectionInfo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
-import com.tle.web.sections.SectionInfo;
-
 @NonNullByDefault
-public interface HtmlListModel<T>
-{
-	List<Option<T>> getOptions(SectionInfo info);
+public interface HtmlListModel<T> {
+  List<Option<T>> getOptions(SectionInfo info);
 
-	@Nullable
-	Option<T> getOption(SectionInfo info, String value);
+  @Nullable
+  Option<T> getOption(SectionInfo info, String value);
 
-	List<T> getValues(SectionInfo info, Collection<String> values);
+  List<T> getValues(SectionInfo info, Collection<String> values);
 
-	@Nullable
-	T getValue(SectionInfo info, String value);
+  @Nullable
+  T getValue(SectionInfo info, String value);
 
-	Set<String> getMatchingValues(SectionInfo info, Set<String> values);
+  Set<String> getMatchingValues(SectionInfo info, Set<String> values);
 
-	@Nullable
-	String getDefaultValue(SectionInfo info);
+  @Nullable
+  String getDefaultValue(SectionInfo info);
 
-	String getStringValue(SectionInfo info, T value);
-
+  String getStringValue(SectionInfo info, T value);
 }

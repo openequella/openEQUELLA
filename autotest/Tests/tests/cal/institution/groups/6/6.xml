@@ -1,0 +1,20 @@
+<com.tle.beans.user.TLEGroup>
+  <id>63382</id>
+  <uuid>e91205b0-684e-51e2-a1be-3ab646aa98dd</uuid>
+  <name>Users with Administrator Role</name>
+  <description>Users with Administrator Role</description>
+  <users>
+    <string>f0f49599-b053-1701-6766-060a84fece61</string>
+    <string>0e98c602-f9a9-41de-a9c5-53eb46ddc9d7</string>
+    <string>a0aa3d0a-ec40-4347-a2aa-01f1405cf8c7</string>
+    <string>445a6d62-825c-c9c1-8fcc-d738f6330bd6</string>
+    <string>62bb9f2e-fbe6-c31e-7c58-8cc369c1db0e</string>
+    <string>200be728-1a67-4ead-9c4e-24017a90110e</string>
+    <string>3e43a927-8110-4e5e-b6f3-bf77cc6501ca</string>
+    <string>0ca5859b-cd78-fddd-3a77-93d4af6903d1</string>
+    <string>b7d7074f-e8b0-c219-422e-de8457dd9b5e</string>
+    <string>90551210-1f3a-44fe-a16d-4a8ed8d76b6f</string>
+    <string>517fe0bf-9575-9f8a-debe-3fbb671cd2d9</string>
+    <string>2415a2d4-d47e-3522-1d54-9e1bd96e2f63</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

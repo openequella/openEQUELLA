@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,33 +23,32 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSStatements;
 
 @SuppressWarnings("nls")
-public interface JSHandler extends JSStatements
-{
-	String EVENT_BEFOREUNLOAD = "beforeunload";
-	String EVENT_CLICK = "click";
-	String EVENT_CHANGE = "change";
-	String EVENT_BLUR = "blur";
-	String EVENT_FOCUS = "focus";
-	String EVENT_READY = "ready";
-	String EVENT_PRESUBMIT = "presubmit";
-	String EVENT_VALIDATE = "validate";
-	String EVENT_LOAD = "load";
-	String EVENT_KEYPRESS = "keypress";
-	String EVENT_KEYUP = "keyup";
+public interface JSHandler extends JSStatements {
+  String EVENT_BEFOREUNLOAD = "beforeunload";
+  String EVENT_CLICK = "click";
+  String EVENT_CHANGE = "change";
+  String EVENT_BLUR = "blur";
+  String EVENT_FOCUS = "focus";
+  String EVENT_READY = "ready";
+  String EVENT_PRESUBMIT = "presubmit";
+  String EVENT_VALIDATE = "validate";
+  String EVENT_LOAD = "load";
+  String EVENT_KEYPRESS = "keypress";
+  String EVENT_KEYUP = "keyup";
 
-	JSCallAndReference getW3CHandler();
+  JSCallAndReference getW3CHandler();
 
-	JSCallAndReference getHandlerFunction();
+  JSCallAndReference getHandlerFunction();
 
-	JSHandler addValidator(JSStatements validator);
+  JSHandler addValidator(JSStatements validator);
 
-	JSStatements getStatements();
+  JSStatements getStatements();
 
-	JSStatements getValidators();
+  JSStatements getValidators();
 
-	JSHandler addStatements(JSStatements statements);
+  JSHandler addStatements(JSStatements statements);
 
-	JSBookmarkModifier getModifier();
+  JSBookmarkModifier getModifier();
 
-	boolean isOverrideDefault();
+  boolean isOverrideDefault();
 }

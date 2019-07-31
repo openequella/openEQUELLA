@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,21 @@
 
 package com.tle.cal.service;
 
-import javax.inject.Inject;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
+import javax.inject.Inject;
 
 @Bind
-public class CALCollectOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	private CALMetadataCollection metadataCollection;
+public class CALCollectOperation extends AbstractWorkflowOperation {
+  @Inject private CALMetadataCollection metadataCollection;
 
-	@Override
-	public boolean execute()
-	{
-		PropBagEx itemXml = getItemXml();
-		Item item = getItem();
-		metadataCollection.metadataChanged(item, itemXml);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    PropBagEx itemXml = getItemXml();
+    Item item = getItem();
+    metadataCollection.metadataChanged(item, itemXml);
+    return false;
+  }
 }

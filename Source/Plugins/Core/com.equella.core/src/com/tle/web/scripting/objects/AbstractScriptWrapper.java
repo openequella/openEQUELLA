@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,28 +20,21 @@ package com.tle.web.scripting.objects;
 
 import com.tle.common.scripting.ScriptObject;
 import com.tle.web.scripting.ScriptTypeFactory;
-
 import javax.inject.Inject;
 
-/**
- * @author aholland
- */
-public abstract class AbstractScriptWrapper implements ScriptObject
-{
-	private static final long serialVersionUID = -2982385813518349536L;
+/** @author aholland */
+public abstract class AbstractScriptWrapper implements ScriptObject {
+  private static final long serialVersionUID = -2982385813518349536L;
 
-	@Inject
-	protected ScriptTypeFactory scriptTypeFactory;
+  @Inject protected ScriptTypeFactory scriptTypeFactory;
 
-	@Override
-	public void scriptEnter()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptEnter() {
+    // Nothing by default
+  }
 
-	@Override
-	public void scriptExit()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptExit() {
+    // Nothing by default
+  }
 }

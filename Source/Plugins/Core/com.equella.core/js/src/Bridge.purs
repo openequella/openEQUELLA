@@ -1,31 +1,29 @@
 module Bridge where 
 
+
 import Prelude
 
-import Effect.Uncurried (EffectFn1)
-import Foreign (Foreign)
-import OEQ.MainUI.Routes (Route(..), routeHref)
-import OEQ.MainUI.Template (templateClass)
+import Effect (Effect)
+import OEQ.MainUI.SearchPage (searchPageClass)
+import OEQ.MainUI.SettingsPage (settingsPageClass)
 import OEQ.UI.Security.ACLEditor (aclEditorClass)
 import React (ReactClass)
-import React.SyntheticEvent (SyntheticMouseEvent)
 import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
-    routes :: Foreign,
-    router :: Route -> {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit},
-    "Template" :: forall p. ReactClass p,
-    "AclEditor" :: forall p. ReactClass p
+    "AclEditor" :: forall p. ReactClass p,
+    "SettingsPage" :: forall p. ReactClass p,
+    "SearchPage" :: forall p. ReactClass p
 }
 
 tsBridge :: Bridge 
 tsBridge = {
-    routes : unsafeCoerce $ {
-        "CoursesPage": CoursesPage, 
-        "CourseEdit": CourseEdit, 
-        "NewCourse": NewCourse
-        },
-    router : routeHref,
-    "Template" : unsafeCoerce templateClass,
-    "AclEditor" : unsafeCoerce aclEditorClass
+    "AclEditor" : unsafeCoerce aclEditorClass,
+    "SettingsPage" : unsafeCoerce settingsPageClass,
+    "SearchPage" : unsafeCoerce searchPageClass
 } 
+
+foreign import setupBridge :: Bridge -> Effect Unit 
+
+main :: Effect Unit
+main = setupBridge tsBridge

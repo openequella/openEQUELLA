@@ -1,0 +1,101 @@
+<com.tle.beans.item.Item>
+  <id>131719</id>
+  <uuid>08d319f0-e3c7-4c4a-a8b9-79802aca3766</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-12-03 15:04:33.343</dateModified>
+  <dateCreated class="sql-timestamp">2014-12-03 15:04:33.344</dateCreated>
+  <dateForIndex class="sql-timestamp">2014-12-03 15:04:33.343</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>131724</id>
+      <uuid>082c1226-b805-49d2-8787-fd8b633ff3ac</uuid>
+      <url>http://peng:8080/acl/items/5ca17142-32ab-43b8-8ee8-ccc5c6a7e1ad/1/?attachment.uuid=b7fa9698-4e25-4965-b902-c40f50e454d9&amp;attachment.stream=true</url>
+      <description>http://peng:8080/acl/items/5ca17142-32ab-43b8-8ee8-ccc5c6a7e1ad/1/?attachment.uuid=b7fa9698-4e25-4965-b902-c40f50e454d9&amp;attachment.stream=true</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="0fe08335-f674-4ce7-98fc-1978235c90ec"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>131718</id>
+      <url>http://peng:8080/acl/items/5ca17142-32ab-43b8-8ee8-ccc5c6a7e1ad/1/?attachment.uuid=b7fa9698-4e25-4965-b902-c40f50e454d9&amp;attachment.stream=true</url>
+      <urlHash>f8cae007b511e25dedd3df65adadf5f0</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2014-12-03 15:03:56.044</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>131721</id>
+    <liveApprovalDate class="sql-timestamp">2014-12-03 15:04:33.343</liveApprovalDate>
+    <start>2014-12-03 16:42:54.366 EST</start>
+    <lastAction class="sql-timestamp">2014-12-03 15:04:33.343</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>131725</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-12-03 15:04:33.343</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>131726</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-12-03 15:04:33.343</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>131727</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-12-03 15:04:33.343</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>131722</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>131723</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Link to a webpage attachment</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

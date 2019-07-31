@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,30 +24,25 @@ import com.tle.plugins.ump.UserDirectory;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 
 @SuppressWarnings("nls")
-public class UserManagementModule extends OptionalConfigModule
-{
-	@Override
-	protected void configure()
-	{
-		bindBoolean("userService.useXForwardedFor");
-		install(new UserManagementTrackerModule());
-	}
+public class UserManagementModule extends OptionalConfigModule {
+  @Override
+  protected void configure() {
+    bindBoolean("userService.useXForwardedFor");
+    install(new UserManagementTrackerModule());
+  }
 
-	public static class UserManagementTrackerModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.core.usermanagement";
-		}
+  public static class UserManagementTrackerModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.core.usermanagement";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(UserDirectory.class, "userManager", null).setIdParam("settingsClass").orderByParameter("order",
-				true);
-			bindTracker(UserManagementLogonFilter.class, "logonFilter", "bean").orderByParameter("order");
-		}
-	}
-
+    @Override
+    protected void configure() {
+      bindTracker(UserDirectory.class, "userManager", null)
+          .setIdParam("settingsClass")
+          .orderByParameter("order", true);
+      bindTracker(UserManagementLogonFilter.class, "logonFilter", "bean").orderByParameter("order");
+    }
+  }
 }

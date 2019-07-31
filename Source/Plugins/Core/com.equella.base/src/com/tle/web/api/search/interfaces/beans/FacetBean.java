@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,37 @@
 
 package com.tle.web.api.search.interfaces.beans;
 
+import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
-
 @XmlRootElement
-public class FacetBean extends AbstractExtendableBean
-{
-	private String term;
-	private int count;
-	private List<FacetBean> innerFacets;
+public class FacetBean extends AbstractExtendableBean {
+  private String term;
+  private int count;
+  private List<FacetBean> innerFacets;
 
-	public String getTerm()
-	{
-		return term;
-	}
+  public String getTerm() {
+    return term;
+  }
 
-	public void setTerm(String term)
-	{
-		this.term = term;
-	}
+  public void setTerm(String term) {
+    this.term = term;
+  }
 
-	public int getCount()
-	{
-		return count;
-	}
+  public int getCount() {
+    return count;
+  }
 
-	public void setCount(int count)
-	{
-		this.count = count;
-	}
+  public void setCount(int count) {
+    this.count = count;
+  }
 
-	public List<FacetBean> getInnerFacets()
-	{
-		return innerFacets;
-	}
+  public List<FacetBean> getInnerFacets() {
+    return innerFacets;
+  }
 
-	public void setInnerFacet(List<FacetBean> innerFacet)
-	{
-		this.innerFacets = innerFacet;
-	}
+  public void setInnerFacet(List<FacetBean> innerFacet) {
+    this.innerFacets = innerFacet;
+  }
 }

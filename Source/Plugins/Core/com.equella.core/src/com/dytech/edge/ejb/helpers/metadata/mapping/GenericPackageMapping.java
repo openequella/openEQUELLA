@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,28 @@
 
 package com.dytech.edge.ejb.helpers.metadata.mapping;
 
-import java.util.Map;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping.MappingType;
+import java.util.Map;
 
-/**
- * @author aholland
- */
-public class GenericPackageMapping extends Mapping
-{
-	private final PropBagEx xml;
+/** @author aholland */
+public class GenericPackageMapping extends Mapping {
+  private final PropBagEx xml;
 
-	public GenericPackageMapping(String path, PropBagEx xml)
-	{
-		super(path, "", MappingType.COMPOUND, false); //$NON-NLS-1$
-		this.xml = xml;
-	}
+  public GenericPackageMapping(String path, PropBagEx xml) {
+    super(path, "", MappingType.COMPOUND, false); // $NON-NLS-1$
+    this.xml = xml;
+  }
 
-	@Override
-	public void update(PropBagEx item)
-	{
-		PropBagEx sub = item.newSubtree(getPath());
-		sub.appendChildren("", xml); //$NON-NLS-1$
+  @Override
+  public void update(PropBagEx item) {
+    PropBagEx sub = item.newSubtree(getPath());
+    sub.appendChildren("", xml); // $NON-NLS-1$
 
-		// We need to do this to get attributes from the root node
-		// (Just in case - but should be rare)
-		for( Map.Entry<String, String> entry : xml.getAttributesForNode("").entrySet() )
-		{
-			sub.setNode("/@" + entry.getKey(), entry.getValue());
-		}
-	}
+    // We need to do this to get attributes from the root node
+    // (Just in case - but should be rare)
+    for (Map.Entry<String, String> entry : xml.getAttributesForNode("").entrySet()) {
+      sub.setNode("/@" + entry.getKey(), entry.getValue());
+    }
+  }
 }

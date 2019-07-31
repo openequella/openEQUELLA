@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,49 +20,48 @@ package com.tle.beans.item.attachments;
 
 import java.util.Map;
 
-public interface IAttachment
-{
-	String getDescription();
+public interface IAttachment {
+  String getDescription();
 
-	void setDescription(String description);
+  void setDescription(String description);
 
-	String getUrl();
+  String getUrl();
 
-	void setUrl(String url);
+  void setUrl(String url);
 
-	void setData(String name, Object value);
+  void setData(String name, Object value);
 
-	Object getData(String name);
+  Object getData(String name);
 
-	Map<String, Object> getDataAttributesReadOnly();
+  Map<String, Object> getDataAttributesReadOnly();
 
-	Map<String, Object> getDataAttributes();
+  Map<String, Object> getDataAttributes();
 
-	void setDataAttributes(Map<String, Object> data);
+  void setDataAttributes(Map<String, Object> data);
 
-	AttachmentType getAttachmentType();
+  AttachmentType getAttachmentType();
 
-	String getUuid();
+  String getUuid();
 
-	void setUuid(String uuid);
+  void setUuid(String uuid);
 
-	String getThumbnail();
+  String getThumbnail();
 
-	void setThumbnail(String thumbnail);
+  void setThumbnail(String thumbnail);
 
-	String getMd5sum();
+  String getMd5sum();
 
-	void setMd5sum(String md5sum);
+  void setMd5sum(String md5sum);
 
-	String getViewer();
+  String getViewer();
 
-	void setViewer(String viewer);
+  void setViewer(String viewer);
 
-	boolean isPreview();
+  boolean isPreview();
 
-	void setPreview(boolean preview);
+  void setPreview(boolean preview);
 
-	void setRestricted(boolean restricted);
+  void setRestricted(boolean restricted);
 
-	boolean isRestricted();
+  boolean isRestricted();
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +18,6 @@
 
 package com.tle.web.myresources;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.item.ItemStatus;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
@@ -29,36 +25,46 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.generic.NumberOrderComparator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind(MyResourcesService.class)
-public class MyResourcesServiceImpl implements MyResourcesService
-{
+public class MyResourcesServiceImpl implements MyResourcesService {
 
-	private PluginResourceHelper helper = ResourcesService.getResourceHelper(getClass());
-	private PluginTracker<MyResourcesSubSearch> tracker;
+  private PluginResourceHelper helper = ResourcesService.getResourceHelper(getClass());
+  private PluginTracker<MyResourcesSubSearch> tracker;
 
-	@Override
-	public List<MyResourcesSubSearch> listSearches()
-	{
-		List<MyResourcesSubSearch> subSearches = new ArrayList<MyResourcesSubSearch>();
-		subSearches.add(new ItemStatusSubSearch(helper.key("subsearch.published"), "published", 100, ItemStatus.LIVE,
-			ItemStatus.REVIEW));
-		subSearches.add(new ItemStatusSubSearch(helper.key("subsearch.draft"), "draft", 200, ItemStatus.DRAFT));
-		ItemStatusSubSearch archiveSearch = new ItemStatusSubSearch(helper.key("subsearch.archived"), "archived", 500,
-			ItemStatus.ARCHIVED);
-		archiveSearch.setShownOnPortal(false);
-		subSearches.add(archiveSearch);
-		subSearches.add(new AllResourcesSubSearch(helper.key("subsearch.all")));
-		subSearches.addAll(tracker.getNewBeanList());
-		Collections.sort(subSearches, NumberOrderComparator.LOWEST_FIRST);
-		return subSearches;
-	}
+  @Override
+  public List<MyResourcesSubSearch> listSearches() {
+    List<MyResourcesSubSearch> subSearches = new ArrayList<MyResourcesSubSearch>();
+    subSearches.add(
+        new ItemStatusSubSearch(
+            helper.key("subsearch.published"),
+            "published",
+            100,
+            ItemStatus.LIVE,
+            ItemStatus.REVIEW));
+    subSearches.add(
+        new ItemStatusSubSearch(helper.key("subsearch.draft"), "draft", 200, ItemStatus.DRAFT));
+    ItemStatusSubSearch archiveSearch =
+        new ItemStatusSubSearch(
+            helper.key("subsearch.archived"), "archived", 500, ItemStatus.ARCHIVED);
+    archiveSearch.setShownOnPortal(false);
+    subSearches.add(archiveSearch);
+    subSearches.add(new AllResourcesSubSearch(helper.key("subsearch.all")));
+    subSearches.addAll(tracker.getNewBeanList());
+    Collections.sort(subSearches, NumberOrderComparator.LOWEST_FIRST);
+    return subSearches;
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		tracker = new PluginTracker<MyResourcesSubSearch>(pluginService, "com.tle.web.myresources", "subsearch", null)
-			.setBeanKey("bean");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    tracker =
+        new PluginTracker<MyResourcesSubSearch>(
+                pluginService, "com.tle.web.myresources", "subsearch", null)
+            .setBeanKey("bean");
+  }
 }

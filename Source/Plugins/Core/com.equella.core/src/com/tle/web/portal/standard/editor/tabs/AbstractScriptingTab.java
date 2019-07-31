@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.portal.standard.editor.tabs;
-
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.userscripts.UserScriptsConstants.ScriptTypes;
@@ -43,77 +41,59 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
+import java.util.Map;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 public abstract class AbstractScriptingTab<T> extends AbstractPrototypeSection<T>
-	implements
-		HtmlRenderer,
-		ScriptingTabInterface
-{
-	@TreeLookup
-	protected FreemarkerPortletEditorSection freemarkerEditor;
+    implements HtmlRenderer, ScriptingTabInterface {
+  @TreeLookup protected FreemarkerPortletEditorSection freemarkerEditor;
 
-	@ViewFactory
-	protected FreemarkerFactory thisView;
-	@EventFactory
-	protected EventGenerator events;
-	@AjaxFactory
-	protected AjaxGenerator ajax;
+  @ViewFactory protected FreemarkerFactory thisView;
+  @EventFactory protected EventGenerator events;
+  @AjaxFactory protected AjaxGenerator ajax;
 
-	@Inject
-	private UserScriptsService userScriptService;
-	@Inject
-	private BundleCache bundleCache;
+  @Inject private UserScriptsService userScriptService;
+  @Inject private BundleCache bundleCache;
 
-	@Override
-	public JSStatements getTabShowStatements()
-	{
-		return Js.iff(getEditor(), Js.statement(Js.methodCall(getEditor(), Js.function("refresh"))));
-	}
+  @Override
+  public JSStatements getTabShowStatements() {
+    return Js.iff(getEditor(), Js.statement(Js.methodCall(getEditor(), Js.function("refresh"))));
+  }
 
-	protected abstract JSExpression getEditor();
+  protected abstract JSExpression getEditor();
 
-	@Override
-	public boolean isVisible(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean isVisible(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public void customValidate(SectionInfo info, Map<String, Object> errors)
-	{
-		// Nothing here
-	}
+  @Override
+  public void customValidate(SectionInfo info, Map<String, Object> errors) {
+    // Nothing here
+  }
 
-	public class ScriptListModel extends DynamicHtmlListModel<UserScript>
-	{
-		boolean javascript;
+  public class ScriptListModel extends DynamicHtmlListModel<UserScript> {
+    boolean javascript;
 
-		public ScriptListModel(boolean javascript)
-		{
-			this.javascript = javascript;
-		}
+    public ScriptListModel(boolean javascript) {
+      this.javascript = javascript;
+    }
 
-		@Override
-		protected Option<UserScript> convertToOption(SectionInfo info, UserScript script)
-		{
-			return new NameValueOption<UserScript>(
-				new BundleNameValue(script.getName(), script.getUuid(), bundleCache), script);
-		}
+    @Override
+    protected Option<UserScript> convertToOption(SectionInfo info, UserScript script) {
+      return new NameValueOption<UserScript>(
+          new BundleNameValue(script.getName(), script.getUuid(), bundleCache), script);
+    }
 
-		@Override
-		protected Iterable<UserScript> populateModel(SectionInfo info)
-		{
-			if( javascript )
-			{
-				return userScriptService.enumerateForType(ScriptTypes.EXECUTABLE);
-			}
-			else
-			{
-				return userScriptService.enumerateForType(ScriptTypes.DISPLAY);
-			}
-		}
-
-	}
+    @Override
+    protected Iterable<UserScript> populateModel(SectionInfo info) {
+      if (javascript) {
+        return userScriptService.enumerateForType(ScriptTypes.EXECUTABLE);
+      } else {
+        return userScriptService.enumerateForType(ScriptTypes.DISPLAY);
+      }
+    }
+  }
 }

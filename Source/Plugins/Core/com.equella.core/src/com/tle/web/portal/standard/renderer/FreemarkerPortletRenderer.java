@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,17 +17,6 @@
  */
 
 package com.tle.web.portal.standard.renderer;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.PropBagWrapper;
@@ -69,350 +60,322 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.annotations.Component;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
 @SuppressWarnings("nls")
 @Bind
 public class FreemarkerPortletRenderer
-	extends
-		PortletContentRenderer<FreemarkerPortletRenderer.FreemarkerPortletRendererModel>
-{
-	private static final Logger LOGGER = Logger.getLogger(FreemarkerPortletRenderer.class);
+    extends PortletContentRenderer<FreemarkerPortletRenderer.FreemarkerPortletRendererModel> {
+  private static final Logger LOGGER = Logger.getLogger(FreemarkerPortletRenderer.class);
 
-	private static final JSCallable HANDLE_SUBMIT_FUNCTION = new ExternallyDefinedFunction("handleSubmit",
-		new IncludeFile(ResourcesService.getResourceHelper(FreemarkerPortletRenderer.class).url(
-			"scripts/freemarkerportlet.js")));
+  private static final JSCallable HANDLE_SUBMIT_FUNCTION =
+      new ExternallyDefinedFunction(
+          "handleSubmit",
+          new IncludeFile(
+              ResourcesService.getResourceHelper(FreemarkerPortletRenderer.class)
+                  .url("scripts/freemarkerportlet.js")));
 
-	private static final String SUBMITTER_NAME_KEY = "FreemarkerPortletRenderer.SUBMITTER_NAME";
-	private static final String SUBMITTER_VALUE_KEY = "FreemarkerPortletRenderer.SUBMITTER_VALUE";
+  private static final String SUBMITTER_NAME_KEY = "FreemarkerPortletRenderer.SUBMITTER_NAME";
+  private static final String SUBMITTER_VALUE_KEY = "FreemarkerPortletRenderer.SUBMITTER_VALUE";
 
-	@PlugKey("freemarker.error.script")
-	private static String ERROR_SCRIPT_KEY;
-	@PlugKey("freemarker.error.markup")
-	private static String ERROR_MARKUP_KEY;
-	@PlugKey("freemarker.error.onload")
-	private static String ERROR_ONLOAD_KEY;
-	@PlugKey("freemarker.error.javascript")
-	private static String KEY_ERROR_JS;
+  @PlugKey("freemarker.error.script")
+  private static String ERROR_SCRIPT_KEY;
 
-	@Inject
-	private ScriptingService scriptService;
+  @PlugKey("freemarker.error.markup")
+  private static String ERROR_MARKUP_KEY;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("freemarker.error.onload")
+  private static String ERROR_ONLOAD_KEY;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@Component
-	private Div portletDiv;
+  @PlugKey("freemarker.error.javascript")
+  private static String KEY_ERROR_JS;
 
-	@Inject
-	private BasicFreemarkerFactory custFactory;
+  @Inject private ScriptingService scriptService;
 
-	private UpdateDomFunction reloadPortletHandler;
-	private UpdateDomFunction reloadPortletWithSpinnerHandler;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		reloadPortletHandler = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("handleSubmit"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), id + "freemarkerPortlet");
-		reloadPortletWithSpinnerHandler = ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("handleSubmit"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), id
-				+ "freemarkerPortlet");
-	}
+  @AjaxFactory private AjaxGenerator ajax;
+  @Component private Div portletDiv;
 
-	@EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
-	public void handleSubmit(SectionInfo info, String submitterName, String submitterValue)
-	{
-		if( !Check.isEmpty(submitterName) )
-		{
-			info.setAttribute(SUBMITTER_NAME_KEY, submitterName);
-			info.setAttribute(SUBMITTER_VALUE_KEY, new String[]{submitterValue});
-		}
-	}
+  @Inject private BasicFreemarkerFactory custFactory;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context) throws Exception
-	{
-		String markup = "";
-		String clientJs = "";
-		List<String> jsIncludes = new ArrayList<String>();
-		List<String> cssIncludes = new ArrayList<String>();
-		String config = portlet.getConfig();
-		if( !Check.isEmpty(config) )
-		{
-			PropBagEx xml = new PropBagEx(config);
-			markup = xml.getNode("markup");
-			jsIncludes.addAll(xml.getNodeList("external-javascript"));
-			cssIncludes.addAll(xml.getNodeList("external-css"));
-			clientJs = xml.getNode("clientscript");
-		}
+  private UpdateDomFunction reloadPortletHandler;
+  private UpdateDomFunction reloadPortletWithSpinnerHandler;
 
-		final ScriptContext scriptContext = getScriptContext(context);
-		final ScriptVariable thisVar = new ScriptVariable("this");
-		final OverrideHandler submitHandler = new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, reloadPortletHandler);
-		scriptContext.addScriptObject("submitJavascript", submitHandler.getStatements(context) + " return false;");
-		final OverrideHandler submitWithLoadingHandler = new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar,
-			reloadPortletWithSpinnerHandler);
-		scriptContext.addScriptObject("submitWithLoadingJavascript", submitWithLoadingHandler.getStatements(context)
-			+ " return false;");
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    reloadPortletHandler =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("handleSubmit"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            id + "freemarkerPortlet");
+    reloadPortletWithSpinnerHandler =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("handleSubmit"),
+            ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+            id + "freemarkerPortlet");
+  }
 
-		FreemarkerSectionResult result = null;
-		try
-		{
-			result = custFactory.createResult("portletFreemarker", new StringReader(markup), context);
-		}
-		catch( Exception e )
-		{
-			LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
-			return new LabelRenderer(new KeyLabel(ERROR_MARKUP_KEY, e.getMessage()));
-		}
+  @EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
+  public void handleSubmit(SectionInfo info, String submitterName, String submitterValue) {
+    if (!Check.isEmpty(submitterName)) {
+      info.setAttribute(SUBMITTER_NAME_KEY, submitterName);
+      info.setAttribute(SUBMITTER_VALUE_KEY, new String[] {submitterValue});
+    }
+  }
 
-		for( Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet() )
-		{
-			result.addExtraObject(entry.getKey(), entry.getValue());
-		}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) throws Exception {
+    String markup = "";
+    String clientJs = "";
+    List<String> jsIncludes = new ArrayList<String>();
+    List<String> cssIncludes = new ArrayList<String>();
+    String config = portlet.getConfig();
+    if (!Check.isEmpty(config)) {
+      PropBagEx xml = new PropBagEx(config);
+      markup = xml.getNode("markup");
+      jsIncludes.addAll(xml.getNodeList("external-javascript"));
+      cssIncludes.addAll(xml.getNodeList("external-css"));
+      clientJs = xml.getNode("clientscript");
+    }
 
-		FreemarkerSectionResult scriptResult = null;
-		try
-		{
-			scriptResult = custFactory.createResult("portletFreemarkerScript", new StringReader(clientJs), context);
-		}
-		catch( Exception e )
-		{
-			LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
-			return new LabelRenderer(new KeyLabel(ERROR_ONLOAD_KEY, e.getMessage()));
-		}
+    final ScriptContext scriptContext = getScriptContext(context);
+    final ScriptVariable thisVar = new ScriptVariable("this");
+    final OverrideHandler submitHandler =
+        new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, reloadPortletHandler);
+    scriptContext.addScriptObject(
+        "submitJavascript", submitHandler.getStatements(context) + " return false;");
+    final OverrideHandler submitWithLoadingHandler =
+        new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, reloadPortletWithSpinnerHandler);
+    scriptContext.addScriptObject(
+        "submitWithLoadingJavascript",
+        submitWithLoadingHandler.getStatements(context) + " return false;");
 
-		for( Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet() )
-		{
-			scriptResult.addExtraObject(entry.getKey(), entry.getValue());
-		}
+    FreemarkerSectionResult result = null;
+    try {
+      result = custFactory.createResult("portletFreemarker", new StringReader(markup), context);
+    } catch (Exception e) {
+      LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
+      return new LabelRenderer(new KeyLabel(ERROR_MARKUP_KEY, e.getMessage()));
+    }
 
-		if( !jsIncludes.isEmpty() )
-		{
-			portletDiv.addPrerenderables(new IncludeFile(jsIncludes.toArray(new String[jsIncludes.size()])));
-		}
+    for (Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet()) {
+      result.addExtraObject(entry.getKey(), entry.getValue());
+    }
 
-		getModel(context).setMarkup(result);
+    FreemarkerSectionResult scriptResult = null;
+    try {
+      scriptResult =
+          custFactory.createResult("portletFreemarkerScript", new StringReader(clientJs), context);
+    } catch (Exception e) {
+      LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
+      return new LabelRenderer(new KeyLabel(ERROR_ONLOAD_KEY, e.getMessage()));
+    }
 
-		// required!
-		portletDiv.addPrerenderables(submitHandler);
-		portletDiv.addPrerenderables(submitWithLoadingHandler);
-		if( !Check.isEmpty(clientJs) )
-		{
-			StringWriter out = new StringWriter();
-			SectionWriter writer = new SectionWriter(out, context);
-			scriptResult.realRender(writer);
+    for (Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet()) {
+      scriptResult.addExtraObject(entry.getKey(), entry.getValue());
+    }
 
-			String clientScript = out.toString();
-			if( !Check.isEmpty(clientScript) )
-			{
-				String errorTitle = JSUtils.escape(
-					CurrentLocale.get(KEY_ERROR_JS, CurrentLocale.get(portlet.getName())), true);
+    if (!jsIncludes.isEmpty()) {
+      portletDiv.addPrerenderables(
+          new IncludeFile(jsIncludes.toArray(new String[jsIncludes.size()])));
+    }
 
-				// TODO: put into a freemarker template
-				clientScript = "setTimeout(function(){ try{ eval(" + JSUtils.escape(clientJs, true)
-					+ "\n);  } catch (e) { throw (" + errorTitle + " + ':\\n' + e); }  }, 1);";
-			}
-			ScriptStatement scriptStatement = new ScriptStatement(clientScript);
-			portletDiv.addReadyStatements(context, scriptStatement);
-		}
+    getModel(context).setMarkup(result);
 
-		if( !cssIncludes.isEmpty() )
-		{
-			for( String css : cssIncludes )
-			{
-				portletDiv.addPrerenderables(CssInclude.include(css).make());
-			}
+    // required!
+    portletDiv.addPrerenderables(submitHandler);
+    portletDiv.addPrerenderables(submitWithLoadingHandler);
+    if (!Check.isEmpty(clientJs)) {
+      StringWriter out = new StringWriter();
+      SectionWriter writer = new SectionWriter(out, context);
+      scriptResult.realRender(writer);
 
-		}
+      String clientScript = out.toString();
+      if (!Check.isEmpty(clientScript)) {
+        String errorTitle =
+            JSUtils.escape(
+                CurrentLocale.get(KEY_ERROR_JS, CurrentLocale.get(portlet.getName())), true);
 
-		return view.createResult("freemarkerportlet.ftl", context);
-	}
+        // TODO: put into a freemarker template
+        clientScript =
+            "setTimeout(function(){ try{ eval("
+                + JSUtils.escape(clientJs, true)
+                + "\n);  } catch (e) { throw ("
+                + errorTitle
+                + " + ':\\n' + e); }  }, 1);";
+      }
+      ScriptStatement scriptStatement = new ScriptStatement(clientScript);
+      portletDiv.addReadyStatements(context, scriptStatement);
+    }
 
-	private ScriptContext getScriptContext(SectionInfo info)
-	{
-		StandardScriptContextParams params = new StandardScriptContextParams(null, null, false, null);
-		ScriptContext scriptContext = scriptService.createScriptContext(params);
-		FreemarkerPortletRendererModel model = getModel(info);
+    if (!cssIncludes.isEmpty()) {
+      for (String css : cssIncludes) {
+        portletDiv.addPrerenderables(CssInclude.include(css).make());
+      }
+    }
 
-		PropBagEx bag;
+    return view.createResult("freemarkerportlet.ftl", context);
+  }
 
-		if( Check.isEmpty(model.getXml()) )
-		{
-			bag = new PropBagEx();
-		}
-		else
-		{
-			bag = new PropBagEx(model.getXml());
-		}
+  private ScriptContext getScriptContext(SectionInfo info) {
+    StandardScriptContextParams params = new StandardScriptContextParams(null, null, false, null);
+    ScriptContext scriptContext = scriptService.createScriptContext(params);
+    FreemarkerPortletRendererModel model = getModel(info);
 
-		scriptContext.addScriptObject("attributes", new PropBagWrapper(bag));
+    PropBagEx bag;
 
-		Map<Object, Object> paramMap = new HashMap<Object, Object>();
-		paramMap.putAll(info.getRequest().getParameterMap());
-		String submitter = info.getAttribute(SUBMITTER_NAME_KEY);
-		if( !Check.isEmpty(submitter) )
-		{
-			paramMap.put(submitter, info.getAttribute(SUBMITTER_VALUE_KEY));
-		}
-		scriptContext.addScriptObject("request", new RequestMapScriptWrapper(getSectionId(), paramMap));
-		scriptContext.addScriptObject("prefix", getSectionId());
+    if (Check.isEmpty(model.getXml())) {
+      bag = new PropBagEx();
+    } else {
+      bag = new PropBagEx(model.getXml());
+    }
 
-		return scriptContext;
-	}
+    scriptContext.addScriptObject("attributes", new PropBagWrapper(bag));
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void onLoadScript(SectionInfo info)
-	{
-		FreemarkerPortletRendererModel model = getModel(info);
+    Map<Object, Object> paramMap = new HashMap<Object, Object>();
+    paramMap.putAll(info.getRequest().getParameterMap());
+    String submitter = info.getAttribute(SUBMITTER_NAME_KEY);
+    if (!Check.isEmpty(submitter)) {
+      paramMap.put(submitter, info.getAttribute(SUBMITTER_VALUE_KEY));
+    }
+    scriptContext.addScriptObject("request", new RequestMapScriptWrapper(getSectionId(), paramMap));
+    scriptContext.addScriptObject("prefix", getSectionId());
 
-		String script = null;
-		String config = portlet.getConfig();
-		if( !Check.isEmpty(config) )
-		{
-			PropBagEx xml = new PropBagEx(config);
-			script = xml.getNode("script");
-		}
+    return scriptContext;
+  }
 
-		try
-		{
-			execScript(info, script, getScriptContext(info));
-		}
-		catch( Exception e )
-		{
-			LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
-			model.setError(new LabelRenderer(new KeyLabel(ERROR_SCRIPT_KEY, e.getMessage())));
-		}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void onLoadScript(SectionInfo info) {
+    FreemarkerPortletRendererModel model = getModel(info);
 
-	}
+    String script = null;
+    String config = portlet.getConfig();
+    if (!Check.isEmpty(config)) {
+      PropBagEx xml = new PropBagEx(config);
+      script = xml.getNode("script");
+    }
 
-	private void execScript(SectionInfo info, String script, ScriptContext context)
-	{
-		if( !Check.isEmpty(script) )
-		{
-			FreemarkerPortletRendererModel model = getModel(info);
-			try
-			{
-				scriptService.executeScript(script, "portletScript", context, false);
-			}
-			catch( Exception e )
-			{
-				LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
-				model.setError(new LabelRenderer(new KeyLabel(ERROR_SCRIPT_KEY, e.getMessage())));
-			}
-			model.setXml(((PropBagWrapper) context.getScriptObjects().get("attributes")).asString());
-		}
-	}
+    try {
+      execScript(info, script, getScriptContext(info));
+    } catch (Exception e) {
+      LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
+      model.setError(new LabelRenderer(new KeyLabel(ERROR_SCRIPT_KEY, e.getMessage())));
+    }
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  private void execScript(SectionInfo info, String script, ScriptContext context) {
+    if (!Check.isEmpty(script)) {
+      FreemarkerPortletRendererModel model = getModel(info);
+      try {
+        scriptService.executeScript(script, "portletScript", context, false);
+      } catch (Exception e) {
+        LOGGER.warn("Error while running a Scripted portlet " + portlet.getUuid(), e);
+        model.setError(new LabelRenderer(new KeyLabel(ERROR_SCRIPT_KEY, e.getMessage())));
+      }
+      model.setXml(((PropBagWrapper) context.getScriptObjects().get("attributes")).asString());
+    }
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "pfm";
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public Class<FreemarkerPortletRendererModel> getModelClass()
-	{
-		return FreemarkerPortletRendererModel.class;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "pfm";
+  }
 
-	public Div getPortletDiv()
-	{
-		return portletDiv;
-	}
+  @Override
+  public Class<FreemarkerPortletRendererModel> getModelClass() {
+    return FreemarkerPortletRendererModel.class;
+  }
 
-	public static class FreemarkerPortletRendererModel
-	{
-		private String xml;
-		private SectionRenderable error;
-		private SectionRenderable markup;
+  public Div getPortletDiv() {
+    return portletDiv;
+  }
 
-		public void setXml(String xml)
-		{
-			this.xml = xml;
-		}
+  public static class FreemarkerPortletRendererModel {
+    private String xml;
+    private SectionRenderable error;
+    private SectionRenderable markup;
 
-		public String getXml()
-		{
-			return xml;
-		}
+    public void setXml(String xml) {
+      this.xml = xml;
+    }
 
-		public void setError(SectionRenderable error)
-		{
-			this.error = error;
-		}
+    public String getXml() {
+      return xml;
+    }
 
-		public SectionRenderable getError()
-		{
-			return error;
-		}
+    public void setError(SectionRenderable error) {
+      this.error = error;
+    }
 
-		public void setMarkup(SectionRenderable markup)
-		{
-			this.markup = markup;
-		}
+    public SectionRenderable getError() {
+      return error;
+    }
 
-		public SectionRenderable getMarkup()
-		{
-			return markup;
-		}
-	}
+    public void setMarkup(SectionRenderable markup) {
+      this.markup = markup;
+    }
 
-	/**
-	 * TODO: this is duped with the advanced script request wrapper and does not
-	 * implement the RequestMapScriptObject interface. The interface should be
-	 * moved somewhere common.
-	 */
-	public static class RequestMapScriptWrapper implements ScriptObject // implements
-	// RequestMapScriptObject
-	{
-		private static final long serialVersionUID = 1L;
+    public SectionRenderable getMarkup() {
+      return markup;
+    }
+  }
 
-		final String prefix;
-		final Map<Object, Object> requestMap;
+  /**
+   * TODO: this is duped with the advanced script request wrapper and does not implement the
+   * RequestMapScriptObject interface. The interface should be moved somewhere common.
+   */
+  public static class RequestMapScriptWrapper implements ScriptObject // implements
+  // RequestMapScriptObject
+  {
+    private static final long serialVersionUID = 1L;
 
-		public RequestMapScriptWrapper(String prefix, Map<Object, Object> requestMap)
-		{
-			this.prefix = prefix;
-			this.requestMap = requestMap;
-		}
+    final String prefix;
+    final Map<Object, Object> requestMap;
 
-		public String get(String key)
-		{
-			String[] values = getList(key);
-			if( values != null && values.length > 0 )
-			{
-				return values[0];
-			}
-			return null;
-		}
+    public RequestMapScriptWrapper(String prefix, Map<Object, Object> requestMap) {
+      this.prefix = prefix;
+      this.requestMap = requestMap;
+    }
 
-		public String[] getList(String key)
-		{
-			return (String[]) requestMap.get(prefix + key);
-		}
+    public String get(String key) {
+      String[] values = getList(key);
+      if (values != null && values.length > 0) {
+        return values[0];
+      }
+      return null;
+    }
 
-		@Override
-		public void scriptEnter()
-		{
-			// Nothing by default
-		}
+    public String[] getList(String key) {
+      return (String[]) requestMap.get(prefix + key);
+    }
 
-		@Override
-		public void scriptExit()
-		{
-			// Nothing by default
-		}
-	}
+    @Override
+    public void scriptEnter() {
+      // Nothing by default
+    }
+
+    @Override
+    public void scriptExit() {
+      // Nothing by default
+    }
+  }
 }

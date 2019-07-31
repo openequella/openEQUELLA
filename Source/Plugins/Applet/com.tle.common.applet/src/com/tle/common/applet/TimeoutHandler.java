@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,18 +18,14 @@
 
 package com.tle.common.applet;
 
-/**
- * @author Nicholas Read
- */
-public interface TimeoutHandler
-{
-	/**
-	 * Called in the event that the session has timed out, and allows the user
-	 * to log back in.
-	 * 
-	 * @param service a direct interface to the soap methods.
-	 * @param oldSession the old session ID.
-	 * @return a new session ID.
-	 */
-	void sessionTimeout();
+/** @author Nicholas Read */
+public interface TimeoutHandler {
+  /**
+   * Called in the event that the session has timed out, and allows the user to log back in.
+   *
+   * @param service a direct interface to the soap methods.
+   * @param oldSession the old session ID.
+   * @return a new session ID.
+   */
+  void sessionTimeout();
 }

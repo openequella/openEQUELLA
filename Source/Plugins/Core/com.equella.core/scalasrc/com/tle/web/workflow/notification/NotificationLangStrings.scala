@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,24 +23,25 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
 
-object NotificationLangStrings
-{
+object NotificationLangStrings {
   val r = ResourcesService.getResourceHelper(getClass)
 
   def l(key: String) = new KeyLabel(r.key(key))
 
   val KEYPFX_EMAIL_SUBJECT = r.key("email.subject.")
-  val KEY_HEADER = r.key("emailheader.reason.")
-  val KEY_USER_HEADER = r.key("email.header")
+  val KEY_HEADER           = r.key("emailheader.reason.")
+  val KEY_USER_HEADER      = r.key("email.header")
 
-  val KEY_MSG_FRMT = r.key("email.msgformat")
+  val KEY_MSG_FRMT     = r.key("email.msgformat")
   val KEY_TASK_MISSING = r.key("task.missing")
 
-  def subject(reason: String) : Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason)
-  def headerLabel(reason: String, total: Int) : Label = new PluralKeyLabel(KEY_HEADER + reason, total)
-  def userHeaderLabel(user: UserBean) : Label = new KeyLabel(KEY_USER_HEADER, user.getFirstName, user.getLastName, user.getUsername)
+  def subject(reason: String): Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT + reason)
+  def headerLabel(reason: String, total: Int): Label =
+    new PluralKeyLabel(KEY_HEADER + reason, total)
+  def userHeaderLabel(user: UserBean): Label =
+    new KeyLabel(KEY_USER_HEADER, user.getFirstName, user.getLastName, user.getUsername)
   def somethingBy(something: Label, by: Label) = new KeyLabel(KEY_MSG_FRMT, something, by)
-  def unknownTask(taskId: String) = new KeyLabel(KEY_TASK_MISSING, taskId)
+  def unknownTask(taskId: String)              = new KeyLabel(KEY_TASK_MISSING, taskId)
 
-  def pluralKey(key: String, total: Int) : String = if (total == 1) key+".1" else key
+  def pluralKey(key: String, total: Int): String = if (total == 1) key + ".1" else key
 }

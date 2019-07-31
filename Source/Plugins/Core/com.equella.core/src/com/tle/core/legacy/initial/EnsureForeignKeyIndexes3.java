@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,6 @@
 
 package com.tle.core.legacy.initial;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import org.hibernate.classic.Session;
-
 import com.tle.beans.Institution;
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.guice.Bind;
@@ -32,38 +27,41 @@ import com.tle.core.migration.AbstractHibernateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Singleton;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class EnsureForeignKeyIndexes3 extends AbstractHibernateMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(EnsureForeignKeyIndexes3.class) + ".ensurefki3.";
+public class EnsureForeignKeyIndexes3 extends AbstractHibernateMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(EnsureForeignKeyIndexes3.class) + ".ensurefki3.";
 
-	@Override
-	public void migrate(MigrationResult status) throws Exception
-	{
-		status.setupSubTaskStatus(AbstractCreateMigration.KEY_CALCULATING, 100);
-		status.setCanRetry(true);
-		HibernateMigrationHelper helper = createMigrationHelper();
-		List<String> sql = new ArrayList<String>();
-		Session session = helper.getFactory().openSession();
+  @Override
+  public void migrate(MigrationResult status) throws Exception {
+    status.setupSubTaskStatus(AbstractCreateMigration.KEY_CALCULATING, 100);
+    status.setCanRetry(true);
+    HibernateMigrationHelper helper = createMigrationHelper();
+    List<String> sql = new ArrayList<String>();
+    Session session = helper.getFactory().openSession();
 
-		sql.addAll(helper.getAddIndexesRaw("tlegroup_users", "tleguElem", "element"));
+    sql.addAll(helper.getAddIndexesRaw("tlegroup_users", "tleguElem", "element"));
 
-		session.close();
-		runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
-	}
+    session.close();
+    runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{Institution.class, TLEGroup.class,};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      Institution.class, TLEGroup.class,
+    };
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,16 +18,13 @@
 
 package com.tle.core.hibernate.event;
 
+import com.tle.core.events.listeners.ApplicationListener;
 import java.util.Collection;
 
-import com.tle.core.events.listeners.ApplicationListener;
+public interface SchemaListener extends ApplicationListener {
+  void systemSchemaUp();
 
-public interface SchemaListener extends ApplicationListener
-{
-	void systemSchemaUp();
+  void schemasAvailable(Collection<Long> schemas);
 
-	void schemasAvailable(Collection<Long> schemas);
-
-	void schemasUnavailable(Collection<Long> schemas);
-
+  void schemasUnavailable(Collection<Long> schemas);
 }

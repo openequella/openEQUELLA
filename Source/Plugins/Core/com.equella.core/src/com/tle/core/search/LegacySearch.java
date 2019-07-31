@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.core.search;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import com.dytech.edge.common.valuebean.SearchRequest;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemStatus;
@@ -28,86 +25,70 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
-public class LegacySearch extends DefaultSearch
-{
-	private static final long serialVersionUID = 1L;
+public class LegacySearch extends DefaultSearch {
+  private static final long serialVersionUID = 1L;
 
-	private SearchRequest request;
+  private SearchRequest request;
 
-	public LegacySearch(SearchRequest request, ItemDefinitionService itemDefinitionService)
-	{
-		this.request = request;
+  public LegacySearch(SearchRequest request, ItemDefinitionService itemDefinitionService) {
+    this.request = request;
 
-		Collection<String> itemdefs = request.getItemdefs();
-		if( itemdefs != null )
-		{
-			// Previous code was calling getMatchingUseableUuids, which is the
-			// same as getByUuids. I think it should probably be
-			// getMatchingSearchableUuids though...
-			List<ItemDefinition> matchingSearchable = itemDefinitionService.getByUuids(itemdefs);
-			if( matchingSearchable.isEmpty() )
-			{
-				try
-				{
-					Collection<Long> possibleIds = new ArrayList<Long>();
-					for( String possibleId : request.getItemdefs() )
-					{
-						possibleIds.add(Long.parseLong(possibleId));
-					}
-					matchingSearchable = itemDefinitionService.getByIds(possibleIds);
-				}
-				catch( NumberFormatException ex )
-				{
-					// Ignore this - assume not a list of IDs
-				}
-			}
-			setCollectionUuids(itemDefinitionService.convertToUuids(matchingSearchable));
-		}
+    Collection<String> itemdefs = request.getItemdefs();
+    if (itemdefs != null) {
+      // Previous code was calling getMatchingUseableUuids, which is the
+      // same as getByUuids. I think it should probably be
+      // getMatchingSearchableUuids though...
+      List<ItemDefinition> matchingSearchable = itemDefinitionService.getByUuids(itemdefs);
+      if (matchingSearchable.isEmpty()) {
+        try {
+          Collection<Long> possibleIds = new ArrayList<Long>();
+          for (String possibleId : request.getItemdefs()) {
+            possibleIds.add(Long.parseLong(possibleId));
+          }
+          matchingSearchable = itemDefinitionService.getByIds(possibleIds);
+        } catch (NumberFormatException ex) {
+          // Ignore this - assume not a list of IDs
+        }
+      }
+      setCollectionUuids(itemDefinitionService.convertToUuids(matchingSearchable));
+    }
 
-		FreeTextBooleanQuery ftquery = WhereParser.parse(request.getWhere());
-		setFreeTextQuery(ftquery);
+    FreeTextBooleanQuery ftquery = WhereParser.parse(request.getWhere());
+    setFreeTextQuery(ftquery);
 
-		SortType sortType1 = SortType.RANK;
-		int ot = request.getOrderType();
-		if( ot == SearchRequest.SORT_DATEMODIFIED )
-		{
-			sortType1 = SortType.DATEMODIFIED;
-		}
-		else if( ot == SearchRequest.SORT_DATECREATED )
-		{
-			sortType1 = SortType.DATECREATED;
-		}
-		else if( ot == SearchRequest.SORT_NAME )
-		{
-			sortType1 = SortType.NAME;
-		}
-		else if( ot == SearchRequest.SORT_RATING )
-		{
-			sortType1 = SortType.RATING;
-		}
-		else if( ot == SearchRequest.SORT_FORCOUNT )
-		{
-			sortType1 = SortType.FORCOUNT;
-		}
-		setSortFields(sortType1.getSortField(request.isSortReverse()));
+    SortType sortType1 = SortType.RANK;
+    int ot = request.getOrderType();
+    if (ot == SearchRequest.SORT_DATEMODIFIED) {
+      sortType1 = SortType.DATEMODIFIED;
+    } else if (ot == SearchRequest.SORT_DATECREATED) {
+      sortType1 = SortType.DATECREATED;
+    } else if (ot == SearchRequest.SORT_NAME) {
+      sortType1 = SortType.NAME;
+    } else if (ot == SearchRequest.SORT_RATING) {
+      sortType1 = SortType.RATING;
+    } else if (ot == SearchRequest.SORT_FORCOUNT) {
+      sortType1 = SortType.FORCOUNT;
+    }
+    setSortFields(sortType1.getSortField(request.isSortReverse()));
 
-		setQuery(request.getQuery());
-		if( request.isOnlyLive() )
-		{
-			setItemStatuses(ItemStatus.LIVE, ItemStatus.REVIEW);
-		}
-	}
+    setQuery(request.getQuery());
+    if (request.isOnlyLive()) {
+      setItemStatuses(ItemStatus.LIVE, ItemStatus.REVIEW);
+    }
+  }
 
-	@Override
-	public Date[] getDateRange()
-	{
-		return request.getDateRange();
-	}
+  @Override
+  public Date[] getDateRange() {
+    return request.getDateRange();
+  }
 
-	@Override
-	public String getOwner()
-	{
-		return request.getOwner();
-	}
+  @Override
+  public String getOwner() {
+    return request.getOwner();
+  }
 }

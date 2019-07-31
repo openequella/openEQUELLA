@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,78 +18,64 @@
 
 package com.tle.core.echo.entity;
 
-import javax.persistence.Entity;
-
-import org.hibernate.annotations.AccessType;
-
 import com.tle.beans.entity.BaseEntity;
+import javax.persistence.Entity;
+import org.hibernate.annotations.AccessType;
 
 @Entity
 @AccessType("field")
-public class EchoServer extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class EchoServer extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	private String applicationUrl;
-	private String contentUrl;
+  private String applicationUrl;
+  private String contentUrl;
 
-	private String consumerKey;
-	private String consumerSecret;
+  private String consumerKey;
+  private String consumerSecret;
 
-	private String echoSystemID;
+  private String echoSystemID;
 
-	public EchoServer()
-	{
-		// For hibernate
-	}
+  public EchoServer() {
+    // For hibernate
+  }
 
-	public String getApplicationUrl()
-	{
-		return applicationUrl;
-	}
+  public String getApplicationUrl() {
+    return applicationUrl;
+  }
 
-	public void setApplicationUrl(String applicationUrl)
-	{
-		this.applicationUrl = applicationUrl;
-	}
+  public void setApplicationUrl(String applicationUrl) {
+    this.applicationUrl = applicationUrl;
+  }
 
-	public String getContentUrl()
-	{
-		return contentUrl;
-	}
+  public String getContentUrl() {
+    return contentUrl;
+  }
 
-	public void setContentUrl(String contentUrl)
-	{
-		this.contentUrl = contentUrl;
-	}
+  public void setContentUrl(String contentUrl) {
+    this.contentUrl = contentUrl;
+  }
 
-	public String getConsumerKey()
-	{
-		return consumerKey;
-	}
+  public String getConsumerKey() {
+    return consumerKey;
+  }
 
-	public void setConsumerKey(String consumerKey)
-	{
-		this.consumerKey = consumerKey;
-	}
+  public void setConsumerKey(String consumerKey) {
+    this.consumerKey = consumerKey;
+  }
 
-	public String getConsumerSecret()
-	{
-		return consumerSecret;
-	}
+  public String getConsumerSecret() {
+    return consumerSecret;
+  }
 
-	public void setConsumerSecret(String consumerSecret)
-	{
-		this.consumerSecret = consumerSecret;
-	}
+  public void setConsumerSecret(String consumerSecret) {
+    this.consumerSecret = consumerSecret;
+  }
 
-	public String getEchoSystemID()
-	{
-		return echoSystemID;
-	}
+  public String getEchoSystemID() {
+    return echoSystemID;
+  }
 
-	public void setEchoSystemID(String echoSystemID)
-	{
-		this.echoSystemID = echoSystemID;
-	}
+  public void setEchoSystemID(String echoSystemID) {
+    this.echoSystemID = echoSystemID;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,27 +20,21 @@ package com.tle.mypages.parse.conversion;
 
 import org.ccil.cowan.tagsoup.AttributesImpl;
 
-/**
- * 
- */
-public class PrefixConversion implements HrefConversion
-{
-	protected final String sourcePrefix;
-	protected final String destPrefix;
+/** */
+public class PrefixConversion implements HrefConversion {
+  protected final String sourcePrefix;
+  protected final String destPrefix;
 
-	public PrefixConversion(String src, String dest)
-	{
-		sourcePrefix = src;
-		destPrefix = dest;
-	}
+  public PrefixConversion(String src, String dest) {
+    sourcePrefix = src;
+    destPrefix = dest;
+  }
 
-	@Override
-	public String convert(String href, AttributesImpl atts)
-	{
-		if( href.startsWith(sourcePrefix) )
-		{
-			return destPrefix + href.substring(sourcePrefix.length());
-		}
-		return href;
-	}
+  @Override
+  public String convert(String href, AttributesImpl atts) {
+    if (href.startsWith(sourcePrefix)) {
+      return destPrefix + href.substring(sourcePrefix.length());
+    }
+    return href;
+  }
 }

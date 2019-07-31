@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,17 +18,13 @@
 
 package com.tle.web.searching.section;
 
-import javax.inject.Inject;
-
 import com.dytech.edge.web.WebConstants;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.hierarchy.section.RootHierarchySection;
 import com.tle.web.login.LogonSection;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -39,76 +37,70 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
-import com.tle.web.template.Decorations;
-import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class RootSearchSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	public static final String SEARCHURL = "/searching.do";
-	public static final String SEARCH_SESSIONKEY = "searchContext";
-	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootSearchSection.class);
+    implements BlueBarEventListener {
+  public static final String SEARCHURL = "/searching.do";
+  public static final String SEARCH_SESSIONKEY = "searchContext";
+  private static PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(RootSearchSection.class);
 
-	@PlugKey("searching.search.title")
-	private static Label LABEL_TITLE;
+  @PlugKey("searching.search.title")
+  private static Label LABEL_TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private TLEAclManager aclManager;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return SEARCH_SESSIONKEY;
-	}
+  @Override
+  protected String getSessionKey() {
+    return SEARCH_SESSIONKEY;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty() )
-		{
-			if( CurrentUser.isGuest() )
-			{
-				LogonSection.forwardToLogon(context,
-					institutionService.removeInstitution(new InfoBookmark(context).getHref()),
-					LogonSection.STANDARD_LOGON_PATH);
-				return null;
-			}
-			throw new AccessDeniedException(
-					urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
-		}
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
+      if (CurrentUser.isGuest()) {
+        LogonSection.forwardToLogon(
+            context,
+            institutionService.removeInstitution(new InfoBookmark(context).getHref()),
+            LogonSection.STANDARD_LOGON_PATH);
+        return null;
+      }
+      throw new AccessDeniedException(
+          urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+    }
+    return super.renderHtml(context);
+  }
 
-	public static SectionInfo createForward(SectionInfo from)
-	{
-		return from.createForward(SEARCHURL);
-	}
+  public static SectionInfo createForward(SectionInfo from) {
+    return from.createForward(SEARCHURL);
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(view.createResult("searching-help.ftl", this));
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(view.createResult("searching-help.ftl", this));
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null ? super.getDefaultLayout(info)
-			: ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null
+        ? super.getDefaultLayout(info)
+        : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return SEARCHURL;
+  }
 }

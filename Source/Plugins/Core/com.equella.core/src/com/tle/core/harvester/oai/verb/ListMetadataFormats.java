@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,39 +24,31 @@ import com.tle.core.harvester.oai.data.ResumptionToken;
 import com.tle.core.harvester.oai.error.IdDoesNotExistException;
 import com.tle.core.harvester.oai.error.NoMetadataFormatsException;
 
-/**
- *
- */
-public class ListMetadataFormats extends Verb
-{
-	private static final String VERB = "ListMetadataFormats";
+/** */
+public class ListMetadataFormats extends Verb {
+  private static final String VERB = "ListMetadataFormats";
 
-	public ListMetadataFormats()
-	{
-		super();
-	}
+  public ListMetadataFormats() {
+    super();
+  }
 
-	public ListMetadataFormats(ResumptionToken token)
-	{
-		addParamater(RESUMPTION_TOKEN, token.getToken());
-	}
+  public ListMetadataFormats(ResumptionToken token) {
+    addParamater(RESUMPTION_TOKEN, token.getToken());
+  }
 
-	public ListMetadataFormats(String identifier)
-	{
-		addParamater(IDENTIFIER, identifier);
-	}
+  public ListMetadataFormats(String identifier) {
+    addParamater(IDENTIFIER, identifier);
+  }
 
-	@Override
-	public String getVerb()
-	{
-		return VERB;
-	}
+  @Override
+  public String getVerb() {
+    return VERB;
+  }
 
-	public List getResult() throws IdDoesNotExistException, NoMetadataFormatsException
-	{
-		Response response = call();
-		checkIdDoesNotExistError(response);
-		checkNoMetadataFormats(response);
-		return listFromXML(response);
-	}
+  public List getResult() throws IdDoesNotExistException, NoMetadataFormatsException {
+    Response response = call();
+    checkIdDoesNotExistError(response);
+    checkNoMetadataFormats(response);
+    return listFromXML(response);
+  }
 }

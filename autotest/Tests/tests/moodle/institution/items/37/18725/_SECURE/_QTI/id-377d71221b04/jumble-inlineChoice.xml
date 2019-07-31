@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:lip="http://www.imsglobal.org/xsd/imslip_v1p0"
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:m="http://www.w3.org/1998/Math/MathML" toolName="Mathqurate" toolVersion="1.0" xml:lang="en" 
+    identifier="jumble-inlineChoice" title="Jumble: Legend - inlineChoice" adaptive="false" timeDependent="false">
+    <responseDeclaration identifier="RESPONSE1" cardinality="single" baseType="identifier">
+        <correctResponse>
+            <value>F1</value>
+        </correctResponse>
+    </responseDeclaration>
+    <responseDeclaration identifier="RESPONSE2" cardinality="single" baseType="identifier">
+        <correctResponse>
+            <value>C2</value>
+        </correctResponse>
+    </responseDeclaration>
+    <responseDeclaration identifier="RESPONSE3" cardinality="single" baseType="identifier">
+        <correctResponse>
+            <value>H3</value>
+        </correctResponse>
+    </responseDeclaration>
+    <!--<responseDeclaration identifier="RESPONSE4" cardinality="multiple" baseType="directedPair">
+        <correctResponse>
+            <value>F G1</value>
+            <value>C G2</value>
+            <value>H G3</value>
+        </correctResponse>
+    </responseDeclaration>-->
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="SCORE1" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="SCORE2" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="SCORE3" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    
+    <itemBody>
+        <div>            
+            <blockquote>
+                <p>The bandit killed her <inlineChoiceInteraction responseIdentifier="RESPONSE1"
+                    shuffle="true">
+                    <inlineChoice identifier="C1">castle</inlineChoice>
+                    <inlineChoice identifier="F1">family</inlineChoice>
+                    <inlineChoice identifier="H1">horse</inlineChoice>
+                    <inlineChoice identifier="S1">sword</inlineChoice>
+                </inlineChoiceInteraction> and burned her <inlineChoiceInteraction responseIdentifier="RESPONSE2"
+                    shuffle="true">
+                    <inlineChoice identifier="C2">castle</inlineChoice>
+                    <inlineChoice identifier="F2">family</inlineChoice>
+                    <inlineChoice identifier="H2">horse</inlineChoice>
+                    <inlineChoice identifier="S2">sword</inlineChoice>
+                </inlineChoiceInteraction>, 
+                    then jumped on her <inlineChoiceInteraction responseIdentifier="RESPONSE3"
+                        shuffle="true">
+                        <inlineChoice identifier="C3">castle</inlineChoice>
+                        <inlineChoice identifier="F3">family</inlineChoice>
+                        <inlineChoice identifier="H3">horse</inlineChoice>
+                        <inlineChoice identifier="S3">sword</inlineChoice>
+                    </inlineChoiceInteraction> and rode away.</p>
+            </blockquote>
+        </div>
+        <!--<gapMatchInteraction responseIdentifier="RESPONSE4" shuffle="true">
+            <gapText identifier="F" matchMax="1">family</gapText>
+            <gapText identifier="C" matchMax="1">castle</gapText>
+            <gapText identifier="S" matchMax="1">sword</gapText>
+            <gapText identifier="H" matchMax="1">horse</gapText>
+            <blockquote>
+                <p>The bandit killed her <gap identifier="G1"/> and burned her <gap identifier="G2"/>, 
+                    then jumped on her <gap identifier="G3"/> and rode away.</p>
+            </blockquote>
+        </gapMatchInteraction>-->
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK">
+                Yes, that's what he did.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No">
+                No, that's not what he did.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE1"/>
+                    <correct identifier="RESPONSE1"/>
+                </match>
+                <setOutcomeValue identifier="SCORE1">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE1">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE2"/>
+                    <correct identifier="RESPONSE2"/>
+                </match>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE3"/>
+                    <correct identifier="RESPONSE3"/>
+                </match>
+                <setOutcomeValue identifier="SCORE3">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE3">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="SCORE">
+            <sum>
+                <variable identifier="SCORE1"/>
+                <variable identifier="SCORE2"/>
+                <variable identifier="SCORE3"/>
+            </sum>
+        </setOutcomeValue>
+        <!--<responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE4"/>
+                    <correct identifier="RESPONSE4"/>
+                </match>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">3.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <multiple>
+                        <variable identifier="FEEDBACK"/>
+                        <baseValue baseType="identifier">OK</baseValue>
+                    </multiple>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <multiple>
+                        <variable identifier="FEEDBACK"/>
+                        <baseValue baseType="identifier">No</baseValue>
+                    </multiple>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>-->
+        <responseCondition>
+            <responseIf>
+                <equal toleranceMode="exact">
+                    <variable identifier="SCORE"/>
+                    <baseValue baseType="float">3.0</baseValue>
+                </equal>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">OK</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">No</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

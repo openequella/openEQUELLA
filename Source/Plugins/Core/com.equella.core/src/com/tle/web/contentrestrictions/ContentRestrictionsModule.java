@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,25 +21,19 @@ package com.tle.web.contentrestrictions;
 import com.google.inject.name.Names;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/**
- * @author larry
- */
-public class ContentRestrictionsModule extends SectionsModule
-{
+/** @author larry */
+public class ContentRestrictionsModule extends SectionsModule {
 
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("/access/contentrestrictions")).toProvider(
-			contentRestrictionsTree());
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("/access/contentrestrictions"))
+        .toProvider(contentRestrictionsTree());
+  }
 
-	}
-
-	private NodeProvider contentRestrictionsTree()
-	{
-		NodeProvider node = node(RootContentRestrictionsSection.class);
-		node.innerChild(EditContentRestrictionsSection.class);
-		return node;
-	}
-
+  private NodeProvider contentRestrictionsTree() {
+    NodeProvider node = node(RootContentRestrictionsSection.class);
+    node.innerChild(EditContentRestrictionsSection.class);
+    return node;
+  }
 }

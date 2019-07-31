@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,44 +18,37 @@
 
 package com.tle.admin.remotesqlquerying;
 
-public class QueryState
-{
-	private final String key;
-	private final String name;
-	private final String description;
+public class QueryState {
+  private final String key;
+  private final String name;
+  private final String description;
 
-	private String sql;
+  private String sql;
 
-	public QueryState(String key, String name, String description)
-	{
-		this.key = key;
-		this.name = name;
-		this.description = description;
-	}
+  public QueryState(String key, String name, String description) {
+    this.key = key;
+    this.name = name;
+    this.description = description;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getKey()
-	{
-		return key;
-	}
+  public String getKey() {
+    return key;
+  }
 
-	public String getSql()
-	{
-		return sql;
-	}
+  public String getSql() {
+    return sql;
+  }
 
-	public void setSql(String sql)
-	{
-		this.sql = sql;
-	}
+  public void setSql(String sql) {
+    this.sql = sql;
+  }
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

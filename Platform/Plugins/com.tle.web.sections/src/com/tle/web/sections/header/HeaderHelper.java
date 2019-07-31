@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,45 +26,42 @@ import com.tle.web.sections.render.PreRenderable;
 
 /**
  * This interface is an abstraction of the header of a HTML page.
- * <p>
- * It is the responsibility of the "root" {@code SectionTree} to provide an
- * implementation of this interface and actually do the rendering of the header.
- * <p>
- * Typically {@link PreRenderable#preRender(PreRenderContext)} methods are
- * responsible for interacting with this interface, as they are guaranteed to be
- * called only once per page render.
- * <p>
- * You should never rely on the result of any of the JavaScript abstraction
- * calls to be a particular implementation, the examples given in each method
- * are just to give you an idea of the equivalent.
- * 
+ *
+ * <p>It is the responsibility of the "root" {@code SectionTree} to provide an implementation of
+ * this interface and actually do the rendering of the header.
+ *
+ * <p>Typically {@link PreRenderable#preRender(PreRenderContext)} methods are responsible for
+ * interacting with this interface, as they are guaranteed to be called only once per page render.
+ *
+ * <p>You should never rely on the result of any of the JavaScript abstraction calls to be a
+ * particular implementation, the examples given in each method are just to give you an idea of the
+ * equivalent.
+ *
  * @author jmaginnis
  */
-public interface HeaderHelper
-{
-	/**
-	 * Get an expression that will return the page's global form.
-	 * <p>
-	 * Equivalent to: <code>document.forms['theform']</code>
-	 * 
-	 * @return The form expression
-	 */
-	JSExpression getFormExpression();
+public interface HeaderHelper {
+  /**
+   * Get an expression that will return the page's global form.
+   *
+   * <p>Equivalent to: <code>document.forms['theform']</code>
+   *
+   * @return The form expression
+   */
+  JSExpression getFormExpression();
 
-	/**
-	 * Return a function that looks a HTML DOM element up by id.
-	 * <p>
-	 * Equivalent to: <code>document.getElementById($param1)</code>
-	 * 
-	 * @return The getElementById function
-	 */
-	JSCallable getElementFunction();
+  /**
+   * Return a function that looks a HTML DOM element up by id.
+   *
+   * <p>Equivalent to: <code>document.getElementById($param1)</code>
+   *
+   * @return The getElementById function
+   */
+  JSCallable getElementFunction();
 
-	JSCallAndReference getTriggerEventFunction();
+  JSCallAndReference getTriggerEventFunction();
 
-	// Lack of Platform branches fail
-	JSCallable getSubmitFunction(boolean validate, boolean event);
+  // Lack of Platform branches fail
+  JSCallable getSubmitFunction(boolean validate, boolean event);
 
-	JSCallable getSubmitFunction(boolean validate, boolean event, boolean blockFurtherSubmission);
-
+  JSCallable getSubmitFunction(boolean validate, boolean event, boolean blockFurtherSubmission);
 }

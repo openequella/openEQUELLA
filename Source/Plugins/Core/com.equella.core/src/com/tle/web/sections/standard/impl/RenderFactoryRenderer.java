@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.sections.standard.impl;
 
-import java.io.IOException;
-
 import com.google.common.base.Preconditions;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
@@ -25,40 +25,34 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.io.IOException;
 
-public class RenderFactoryRenderer implements SectionRenderable
-{
-	private final RendererFactory renderFactory;
-	private final HtmlComponentState state;
+public class RenderFactoryRenderer implements SectionRenderable {
+  private final RendererFactory renderFactory;
+  private final HtmlComponentState state;
 
-	private SectionRenderable realRenderer;
+  private SectionRenderable realRenderer;
 
-	public RenderFactoryRenderer(HtmlComponentState state, RendererFactory renderFactory)
-	{
-		this.state = Preconditions.checkNotNull(state);
-		this.renderFactory = Preconditions.checkNotNull(renderFactory);
-	}
+  public RenderFactoryRenderer(HtmlComponentState state, RendererFactory renderFactory) {
+    this.state = Preconditions.checkNotNull(state);
+    this.renderFactory = Preconditions.checkNotNull(renderFactory);
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		getRealRenderer(writer).realRender(writer);
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    getRealRenderer(writer).realRender(writer);
+  }
 
-	private SectionRenderable getRealRenderer(RenderContext info)
-	{
-		if( realRenderer == null )
-		{
-			realRenderer = renderFactory.getRenderer(info, state);
-			state.fireRendererCallback(info, realRenderer);
-		}
-		return realRenderer;
-	}
+  private SectionRenderable getRealRenderer(RenderContext info) {
+    if (realRenderer == null) {
+      realRenderer = renderFactory.getRenderer(info, state);
+      state.fireRendererCallback(info, realRenderer);
+    }
+    return realRenderer;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		getRealRenderer(info).preRender(info);
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    getRealRenderer(info).preRender(info);
+  }
 }

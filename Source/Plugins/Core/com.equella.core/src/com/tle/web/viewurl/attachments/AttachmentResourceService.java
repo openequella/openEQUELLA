@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.viewurl.attachments;
 
-import java.net.URI;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
@@ -27,33 +27,39 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.impl.AttachmentResourceServiceImpl.PathViewableResource;
+import java.net.URI;
 
 @NonNullByDefault
-public interface AttachmentResourceService
-{
-	ViewableResource getViewableResource(SectionInfo info, ViewableItem viewableItem, IAttachment attachment);
+public interface AttachmentResourceService {
+  ViewableResource getViewableResource(
+      SectionInfo info, ViewableItem viewableItem, IAttachment attachment);
 
-	/**
-	 * @param info
-	 * @param viewableItem
-	 * @param path
-	 * @param attachment May be null. Used to extract the associated viewer
-	 * @return
-	 */
-	PathViewableResource createPathResource(SectionInfo info, ViewableItem viewableItem, String path,
-		@Nullable IAttachment attachment);
+  /**
+   * @param info
+   * @param viewableItem
+   * @param path
+   * @param attachment May be null. Used to extract the associated viewer
+   * @return
+   */
+  PathViewableResource createPathResource(
+      SectionInfo info, ViewableItem viewableItem, String path, @Nullable IAttachment attachment);
 
-	/**
-	 * @param info
-	 * @param viewableItem
-	 * @param path
-	 * @param description
-	 * @param mimeType
-	 * @param attachment May be null. Used to extract the associated viewer
-	 * @return
-	 */
-	PathViewableResource createPathResource(SectionInfo info, ViewableItem viewableItem, String path,
-		String description, String mimeType, @Nullable IAttachment attachment);
+  /**
+   * @param info
+   * @param viewableItem
+   * @param path
+   * @param description
+   * @param mimeType
+   * @param attachment May be null. Used to extract the associated viewer
+   * @return
+   */
+  PathViewableResource createPathResource(
+      SectionInfo info,
+      ViewableItem viewableItem,
+      String path,
+      String description,
+      String mimeType,
+      @Nullable IAttachment attachment);
 
-	URI getPackageZipFileUrl(Item item, Attachment attachment);
+  URI getPackageZipFileUrl(Item item, Attachment attachment);
 }

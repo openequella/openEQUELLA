@@ -2,27 +2,25 @@ module OEQ.Search.ItemResult where
 
 import Prelude hiding (div)
 
+import Common.Strings (languageStrings)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, findMap, fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import ExtUI.TimeAgo (timeAgo)
 import MaterialUI.Button (button)
 import MaterialUI.Enums as TS
 import MaterialUI.List (list)
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, listItemText')
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
-import OEQ.Environment (prepLangStrings)
-import OEQ.UI.Common (ClickableHref)
+import OEQ.MainUI.TSRoutes (LocationDescription, link)
 import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (a, div, div', img, text)
+import React.DOM (div, div', img, text)
 import React.DOM.Props as DP
-import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -86,21 +84,21 @@ type ItemResultOptions = {
     showDivider :: Boolean, 
     result :: Result, 
     onSelect :: Maybe (ItemSelection -> Effect Unit),
-    clickable :: ClickableHref
+    clickable :: LocationDescription
 }
 
-itemResultOptions :: ClickableHref -> Result -> ItemResultOptions
+itemResultOptions :: LocationDescription -> Result -> ItemResultOptions
 itemResultOptions clickable result = {showDivider:false, result, onSelect:Nothing, clickable }
 
 itemResult :: ItemResultOptions -> ReactElement
 itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult" $ \this -> do
   let 
-    string = prepLangStrings rawStrings
+    string = languageStrings.searchpage
     render p@{classes, showDivider, onSelect, 
         result:item@(Result {name,description,displayFields,thumbnail,uuid,version,attachments,modifiedDate})} =
         let descMarkup descText = typography {} [ text descText ]
-            titleLink = typography {variant: TS.subheading, className: classes.titleLink} [ 
-                                a [DP.href p.clickable.href, DP.onClick $ runEffectFn1 $ p.clickable.onClick] [ text name ]
+            titleLink = typography {variant: TS.subtitle1, className: classes.titleLink} [ 
+                                link {to: p.clickable} [ text name ]
                             ]
             attachThumb (Attachment {thumbnailHref}) = Just $ img [
                     DP.aria {hidden:true}, 
@@ -120,7 +118,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
             itemContent = div [ DP.className classes.searchResultContent ] $ firstThumb <> [ 
                     div' $ fromFoldable (descMarkup <$> description) <> [ list {disablePadding: true} extraFields ] 
                 ]
-        in listItem {button: true, divider: showDivider, onClick: p.clickable.onClick} $ catMaybes [
+        in listItem {button: true, divider: showDivider } $ catMaybes [
             Just $ listItemText' {disableTypography: true, primary: titleLink, secondary: itemContent }, 
             (\ons -> listItemSecondaryAction_  [ button {
                     onClick: ons {item: {uuid, version, description, name}, 
@@ -158,13 +156,3 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
             color: theme.palette.primary.dark
         }
     }
-
-rawStrings :: { prefix :: String
-, strings :: { modifiedDate :: String
-             }
-}
-rawStrings = {prefix: "searchpage", 
-  strings: {
-    modifiedDate: "Modified"
-  }
-}

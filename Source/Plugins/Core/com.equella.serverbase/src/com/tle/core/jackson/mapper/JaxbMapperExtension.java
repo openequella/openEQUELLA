@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,26 @@
 
 package com.tle.core.jackson.mapper;
 
-import javax.inject.Singleton;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.MapperExtension;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class JaxbMapperExtension implements MapperExtension
-{
-	public static final String NAME = "jaxb";
+public class JaxbMapperExtension implements MapperExtension {
+  public static final String NAME = "jaxb";
 
-	@Override
-	public void extendMapper(ObjectMapper mapper)
-	{
-		// TODO: requires a new jar
-		// AnnotationIntrospector primary = new JacksonAnnotationIntrospector();
-		// AnnotationIntrospector secondary = new JaxbAnnotationIntrospector();
-		// AnnotationIntrospector pair = new
-		// AnnotationIntrospector.Pair(primary, secondary);
-		// mapper.setDeserializationConfig(mapper.getDeserializationConfig().withAnnotationIntrospector(pair));
-		// mapper.setSerializationConfig(mapper.getSerializationConfig().withAnnotationIntrospector(pair));
-	}
+  @Override
+  public void extendMapper(ObjectMapper mapper) {
+    // TODO: requires a new jar
+    // AnnotationIntrospector primary = new JacksonAnnotationIntrospector();
+    // AnnotationIntrospector secondary = new JaxbAnnotationIntrospector();
+    // AnnotationIntrospector pair = new
+    // AnnotationIntrospector.Pair(primary, secondary);
+    // mapper.setDeserializationConfig(mapper.getDeserializationConfig().withAnnotationIntrospector(pair));
+    // mapper.setSerializationConfig(mapper.getSerializationConfig().withAnnotationIntrospector(pair));
+  }
 }

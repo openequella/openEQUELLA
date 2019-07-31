@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,40 @@
 
 package com.tle.core.freetext.queries;
 
+import com.dytech.edge.queries.FreeTextQuery;
 import java.util.Collection;
 
-import com.dytech.edge.queries.FreeTextQuery;
+/** @author jmaginnis */
+public class NodeIsBlankQuery extends BaseQuery {
+  private static final long serialVersionUID = 1L;
+  protected boolean not;
+  protected Collection<String> fields;
+  protected boolean tokenise;
 
-/**
- * @author jmaginnis
- */
-public class NodeIsBlankQuery extends BaseQuery
-{
-	private static final long serialVersionUID = 1L;
-	protected boolean not;
-	protected Collection<String> fields;
-	protected boolean tokenise;
+  public NodeIsBlankQuery(boolean not, Collection<String> fields) {
+    if (fields == null || fields.size() == 0) {
+      throw new IllegalArgumentException("fields parameter must not be empty"); // $NON-NLS-1$
+    }
 
-	public NodeIsBlankQuery(boolean not, Collection<String> fields)
-	{
-		if( fields == null || fields.size() == 0 )
-		{
-			throw new IllegalArgumentException("fields parameter must not be empty"); //$NON-NLS-1$
-		}
+    this.not = not;
+    this.fields = fields;
+  }
 
-		this.not = not;
-		this.fields = fields;
-	}
+  @Override
+  public FreeTextQuery getFreeTextQuery() {
+    // FIXME: multiple fields
+    FreeTextFieldQuery query = new FreeTextFieldQuery(fields.iterator().next(), ""); // $NON-NLS-1$
+    query.setTokenise(tokenise);
+    if (!not) {
+      return query;
+    } else {
+      FreeTextBooleanQuery boolquery = new FreeTextBooleanQuery(not, false);
+      boolquery.add(query);
+      return boolquery;
+    }
+  }
 
-	@Override
-	public FreeTextQuery getFreeTextQuery()
-	{
-		// FIXME: multiple fields
-		FreeTextFieldQuery query = new FreeTextFieldQuery(fields.iterator().next(), ""); //$NON-NLS-1$
-		query.setTokenise(tokenise);
-		if( !not )
-		{
-			return query;
-		}
-		else
-		{
-			FreeTextBooleanQuery boolquery = new FreeTextBooleanQuery(not, false);
-			boolquery.add(query);
-			return boolquery;
-		}
-	}
-
-	public void setTokenise(boolean tokenise)
-	{
-		this.tokenise = tokenise;
-	}
+  public void setTokenise(boolean tokenise) {
+    this.tokenise = tokenise;
+  }
 }

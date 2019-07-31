@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.itemadmin.section;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
@@ -68,266 +64,245 @@ import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.sections.standard.model.SimpleOption;
 import com.tle.web.sections.standard.model.StringListModel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class ItemAdminWhereSection extends AbstractPrototypeSection<ItemAdminWhereSection.ItemAdminWhereSectionModel>
-	implements
-		HtmlRenderer,
-		BeforeEventsListener
-{
-	static
-	{
-		PluginResourceHandler.init(ItemAdminWhereSection.class);
-	}
+public class ItemAdminWhereSection
+    extends AbstractPrototypeSection<ItemAdminWhereSection.ItemAdminWhereSectionModel>
+    implements HtmlRenderer, BeforeEventsListener {
+  static {
+    PluginResourceHandler.init(ItemAdminWhereSection.class);
+  }
 
-	@PlugURL("js/whereclause.js")
-	private static String url;
+  @PlugURL("js/whereclause.js")
+  private static String url;
 
-	private static JSCallable CRITERIA_FUNC = new ExternallyDefinedFunction("criteria", new IncludeFile(url),
-		JQueryCore.PRERENDER, SelectModule.INCLUDE);
+  private static JSCallable CRITERIA_FUNC =
+      new ExternallyDefinedFunction(
+          "criteria", new IncludeFile(url), JQueryCore.PRERENDER, SelectModule.INCLUDE);
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	@Component
-	private ItemAdminXPathDialog xpathDialog;
+  @Inject @Component private ItemAdminXPathDialog xpathDialog;
 
-	@Component
-	private MutableList<String> whereClauses;
-	@Component
-	private SingleSelectionList<Void> whereStart;
-	@Component
-	private SingleSelectionList<Void> whereOperator;
-	@Component(stateful = false)
-	private TextField wherePath;
-	@Component(stateful = false)
-	private TextField whereValue;
-	@Component
-	private Div div;
+  @Component private MutableList<String> whereClauses;
+  @Component private SingleSelectionList<Void> whereStart;
+  @Component private SingleSelectionList<Void> whereOperator;
 
-	@PlugKey("whereclause.browse")
-	@Component
-	private Button browse;
+  @Component(stateful = false)
+  private TextField wherePath;
 
-	@PlugKey("whereclause.add")
-	@Component
-	private Button add;
+  @Component(stateful = false)
+  private TextField whereValue;
 
-	@PlugKey("whereclause.search")
-	@Component
-	private Button search;
+  @Component private Div div;
 
-	@PlugKey("whereclause.xpath.where")
-	private static String WHERE;
-	@PlugKey("whereclause.xpath.and")
-	private static String AND;
-	@PlugKey("whereclause.xpath.or")
-	private static String OR;
+  @PlugKey("whereclause.browse")
+  @Component
+  private Button browse;
 
-	@PlugKey("whereclause.xpath.is")
-	private static String IS;
-	@PlugKey("whereclause.xpath.isnot")
-	private static String ISNOT;
+  @PlugKey("whereclause.add")
+  @Component
+  private Button add;
 
-	@PlugKey("whereclause.xpath.like")
-	private static String LIKE;
-	@PlugKey("whereclause.xpath.notlike")
-	private static String NOTLIKE;
-	@PlugKey("whereclause.xpath.exists")
-	private static String EXISTS;
+  @PlugKey("whereclause.search")
+  @Component
+  private Button search;
 
-	@PlugKey("whereclause.xpath.datewarning")
-	private static String DATE_WARNING;
+  @PlugKey("whereclause.xpath.where")
+  private static String WHERE;
 
-	@PlugKey("whereclause.xpath.formwarning")
-	private static String FORM_WARNING;
+  @PlugKey("whereclause.xpath.and")
+  private static String AND;
 
-	@PlugKey("whereclause.xpath.duplicatewarning")
-	private static String DUPLICATE_WARNING;
+  @PlugKey("whereclause.xpath.or")
+  private static String OR;
 
-	@TreeLookup
-	private RootItemAdminSection rootItemAdmin;
-	@TreeLookup
-	private ItemAdminQuerySection querySection;
+  @PlugKey("whereclause.xpath.is")
+  private static String IS;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setupWhereClause();
-		search.setClickHandler(events.getNamedHandler("setupCriteria"));
+  @PlugKey("whereclause.xpath.isnot")
+  private static String ISNOT;
 
-		ObjectExpression strs = new ObjectExpression();
-		strs.put("datewarning", CurrentLocale.get(DATE_WARNING));
-		strs.put("formwarning", CurrentLocale.get(FORM_WARNING));
-		strs.put("duplicatewarning", CurrentLocale.get(DUPLICATE_WARNING));
+  @PlugKey("whereclause.xpath.like")
+  private static String LIKE;
 
-		div.addReadyStatements(new ScriptStatement(PropertyExpression.create(new JQuerySelector(div),
-			new FunctionCallExpression(CRITERIA_FUNC, strs))));
-		div.setStyleClass("criteria");
+  @PlugKey("whereclause.xpath.notlike")
+  private static String NOTLIKE;
 
-		whereClauses.setListModel(new StringListModel());
-		whereClauses.setStyle("display: none;");
+  @PlugKey("whereclause.xpath.exists")
+  private static String EXISTS;
 
-		ScriptVariable xpath = new ScriptVariable("xpath");
-		JSCallable setFunction = wherePath.createSetFunction();
-		FunctionCallStatement body = new FunctionCallStatement(setFunction, xpath);
-		xpathDialog.setOkCallback(new SimpleFunction("setXpath" + id, body, xpath));
+  @PlugKey("whereclause.xpath.datewarning")
+  private static String DATE_WARNING;
 
-		whereClauses.setStyleClass("whereclauses");
-		whereStart.setStyleClass("wherestart");
-		wherePath.setStyleClass("wherepath");
-		whereOperator.setStyleClass("whereoperator");
-		whereValue.setStyleClass("wherevalue");
+  @PlugKey("whereclause.xpath.formwarning")
+  private static String FORM_WARNING;
 
-		add.setStyleClass("whereadd");
-	}
+  @PlugKey("whereclause.xpath.duplicatewarning")
+  private static String DUPLICATE_WARNING;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		browse.setClickHandler(context, new OverrideHandler(xpathDialog.getOpenFunction(), getModel(context)
-			.getCollectionId()));
-		ContentLayout.setLayout(context, ContentLayout.ONE_COLUMN);
-		return viewFactory.createResult("whereclause.ftl", this);
-	}
+  @TreeLookup private RootItemAdminSection rootItemAdmin;
+  @TreeLookup private ItemAdminQuerySection querySection;
 
-	@EventHandlerMethod
-	public void setupCriteria(SectionInfo info)
-	{
-		getModel(info).setEditQuery(false);
-		List<String> clauses = whereClauses.getValues(info);
-		querySection.getModel(info).setCriteria(clauses);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setupWhereClause();
+    search.setClickHandler(events.getNamedHandler("setupCriteria"));
 
-	public void clearOptions(SectionInfo info)
-	{
-		List<String> empty = Collections.emptyList();
-		whereClauses.setValues(info, empty);
-	}
+    ObjectExpression strs = new ObjectExpression();
+    strs.put("datewarning", CurrentLocale.get(DATE_WARNING));
+    strs.put("formwarning", CurrentLocale.get(FORM_WARNING));
+    strs.put("duplicatewarning", CurrentLocale.get(DUPLICATE_WARNING));
 
-	private void setupWhereClause()
-	{
-		List<Option<Void>> startOps = new ArrayList<Option<Void>>();
-		startOps.add(new VoidKeyOption(WHERE, "WHERE"));
-		startOps.add(new VoidKeyOption(AND, "AND"));
-		startOps.add(new VoidKeyOption(OR, "OR"));
-		whereStart.setListModel(new SimpleHtmlListModel<Void>(startOps));
+    div.addReadyStatements(
+        new ScriptStatement(
+            PropertyExpression.create(
+                new JQuerySelector(div), new FunctionCallExpression(CRITERIA_FUNC, strs))));
+    div.setStyleClass("criteria");
 
-		List<Option<Void>> exprOps = new ArrayList<Option<Void>>();
-		exprOps.add(new VoidKeyOption(IS, "IS"));
-		exprOps.add(new VoidKeyOption(ISNOT, "IS NOT"));
-		exprOps.add(new VoidKeyOption(LIKE, "LIKE"));
-		exprOps.add(new VoidKeyOption(NOTLIKE, "NOT LIKE"));
-		exprOps.add(new VoidKeyOption(EXISTS, "EXISTS"));
-		exprOps.add(new SimpleOption<Void>("<", "<"));
-		exprOps.add(new SimpleOption<Void>("<=", "<="));
-		exprOps.add(new SimpleOption<Void>(">", ">"));
-		exprOps.add(new SimpleOption<Void>(">=", ">="));
-		whereOperator.setListModel(new SimpleHtmlListModel<Void>(exprOps));
-	}
+    whereClauses.setListModel(new StringListModel());
+    whereClauses.setStyle("display: none;");
 
-	@Override
-	public void beforeEvents(SectionInfo info)
-	{
-		if( getModel(info).isEditQuery() )
-		{
-			rootItemAdmin.setModalSection(info, this);
-		}
-	}
+    ScriptVariable xpath = new ScriptVariable("xpath");
+    JSCallable setFunction = wherePath.createSetFunction();
+    FunctionCallStatement body = new FunctionCallStatement(setFunction, xpath);
+    xpathDialog.setOkCallback(new SimpleFunction("setXpath" + id, body, xpath));
 
-	public void setEditQuery(SectionInfo info, boolean edit, String collectionId)
-	{
-		ItemAdminWhereSectionModel model = getModel(info);
-		model.setEditQuery(edit);
-		model.setCollectionId(collectionId);
-	}
+    whereClauses.setStyleClass("whereclauses");
+    whereStart.setStyleClass("wherestart");
+    wherePath.setStyleClass("wherepath");
+    whereOperator.setStyleClass("whereoperator");
+    whereValue.setStyleClass("wherevalue");
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new ItemAdminWhereSectionModel();
-	}
+    add.setStyleClass("whereadd");
+  }
 
-	public static class ItemAdminWhereSectionModel
-	{
-		@Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
-		private boolean editQuery;
-		@Bookmarked
-		private String collectionId;
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    browse.setClickHandler(
+        context,
+        new OverrideHandler(xpathDialog.getOpenFunction(), getModel(context).getCollectionId()));
+    ContentLayout.setLayout(context, ContentLayout.ONE_COLUMN);
+    return viewFactory.createResult("whereclause.ftl", this);
+  }
 
-		public boolean isEditQuery()
-		{
-			return editQuery;
-		}
+  @EventHandlerMethod
+  public void setupCriteria(SectionInfo info) {
+    getModel(info).setEditQuery(false);
+    List<String> clauses = whereClauses.getValues(info);
+    querySection.getModel(info).setCriteria(clauses);
+  }
 
-		public void setEditQuery(boolean editQuery)
-		{
-			this.editQuery = editQuery;
-		}
+  public void clearOptions(SectionInfo info) {
+    List<String> empty = Collections.emptyList();
+    whereClauses.setValues(info, empty);
+  }
 
-		public String getCollectionId()
-		{
-			return collectionId;
-		}
+  private void setupWhereClause() {
+    List<Option<Void>> startOps = new ArrayList<Option<Void>>();
+    startOps.add(new VoidKeyOption(WHERE, "WHERE"));
+    startOps.add(new VoidKeyOption(AND, "AND"));
+    startOps.add(new VoidKeyOption(OR, "OR"));
+    whereStart.setListModel(new SimpleHtmlListModel<Void>(startOps));
 
-		public void setCollectionId(String collectionId)
-		{
-			this.collectionId = collectionId;
-		}
-	}
+    List<Option<Void>> exprOps = new ArrayList<Option<Void>>();
+    exprOps.add(new VoidKeyOption(IS, "IS"));
+    exprOps.add(new VoidKeyOption(ISNOT, "IS NOT"));
+    exprOps.add(new VoidKeyOption(LIKE, "LIKE"));
+    exprOps.add(new VoidKeyOption(NOTLIKE, "NOT LIKE"));
+    exprOps.add(new VoidKeyOption(EXISTS, "EXISTS"));
+    exprOps.add(new SimpleOption<Void>("<", "<"));
+    exprOps.add(new SimpleOption<Void>("<=", "<="));
+    exprOps.add(new SimpleOption<Void>(">", ">"));
+    exprOps.add(new SimpleOption<Void>(">=", ">="));
+    whereOperator.setListModel(new SimpleHtmlListModel<Void>(exprOps));
+  }
 
-	public ItemAdminXPathDialog getXpathDialog()
-	{
-		return xpathDialog;
-	}
+  @Override
+  public void beforeEvents(SectionInfo info) {
+    if (getModel(info).isEditQuery()) {
+      rootItemAdmin.setModalSection(info, this);
+    }
+  }
 
-	public SingleSelectionList<Void> getWhereStart()
-	{
-		return whereStart;
-	}
+  public void setEditQuery(SectionInfo info, boolean edit, String collectionId) {
+    ItemAdminWhereSectionModel model = getModel(info);
+    model.setEditQuery(edit);
+    model.setCollectionId(collectionId);
+  }
 
-	public SingleSelectionList<Void> getWhereOperator()
-	{
-		return whereOperator;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new ItemAdminWhereSectionModel();
+  }
 
-	public TextField getWherePath()
-	{
-		return wherePath;
-	}
+  public static class ItemAdminWhereSectionModel {
+    @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
+    private boolean editQuery;
 
-	public TextField getWhereValue()
-	{
-		return whereValue;
-	}
+    @Bookmarked private String collectionId;
 
-	public Button getBrowse()
-	{
-		return browse;
-	}
+    public boolean isEditQuery() {
+      return editQuery;
+    }
 
-	public Button getAdd()
-	{
-		return add;
-	}
+    public void setEditQuery(boolean editQuery) {
+      this.editQuery = editQuery;
+    }
 
-	public Button getSearch()
-	{
-		return search;
-	}
+    public String getCollectionId() {
+      return collectionId;
+    }
 
-	public Div getDiv()
-	{
-		return div;
-	}
+    public void setCollectionId(String collectionId) {
+      this.collectionId = collectionId;
+    }
+  }
 
-	public MutableList<String> getWhereClauses()
-	{
-		return whereClauses;
-	}
+  public ItemAdminXPathDialog getXpathDialog() {
+    return xpathDialog;
+  }
+
+  public SingleSelectionList<Void> getWhereStart() {
+    return whereStart;
+  }
+
+  public SingleSelectionList<Void> getWhereOperator() {
+    return whereOperator;
+  }
+
+  public TextField getWherePath() {
+    return wherePath;
+  }
+
+  public TextField getWhereValue() {
+    return whereValue;
+  }
+
+  public Button getBrowse() {
+    return browse;
+  }
+
+  public Button getAdd() {
+    return add;
+  }
+
+  public Button getSearch() {
+    return search;
+  }
+
+  public Div getDiv() {
+    return div;
+  }
+
+  public MutableList<String> getWhereClauses() {
+    return whereClauses;
+  }
 }

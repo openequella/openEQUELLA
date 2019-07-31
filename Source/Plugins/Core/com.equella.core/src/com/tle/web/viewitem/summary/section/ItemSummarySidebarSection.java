@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.viewitem.summary.section;
 
-import java.util.List;
-
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -29,57 +29,45 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.ResultListCollector;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.viewitem.summary.ItemSummarySidebar;
+import java.util.List;
 
 @SuppressWarnings("nls")
 public class ItemSummarySidebarSection
-	extends
-		AbstractPrototypeSection<ItemSummarySidebarSection.ItemSummarySidebarModel>
-	implements
-		ViewableChildInterface,
-		HtmlRenderer,
-		ItemSummarySidebar
-{
-	@ViewFactory
-	private FreemarkerFactory view;
+    extends AbstractPrototypeSection<ItemSummarySidebarSection.ItemSummarySidebarModel>
+    implements ViewableChildInterface, HtmlRenderer, ItemSummarySidebar {
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		ItemSummarySidebarModel model = getModel(context);
-		model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
-		return view.createResult("viewitem/summary/itemsummarysidebar.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    ItemSummarySidebarModel model = getModel(context);
+    model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
+    return view.createResult("viewitem/summary/itemsummarysidebar.ftl", context);
+  }
 
-	@Override
-	public Class<ItemSummarySidebarModel> getModelClass()
-	{
-		return ItemSummarySidebarModel.class;
-	}
+  @Override
+  public Class<ItemSummarySidebarModel> getModelClass() {
+    return ItemSummarySidebarModel.class;
+  }
 
-	public static class ItemSummarySidebarModel
-	{
-		private List<SectionRenderable> sections;
+  public static class ItemSummarySidebarModel {
+    private List<SectionRenderable> sections;
 
-		public List<SectionRenderable> getSections()
-		{
-			return sections;
-		}
+    public List<SectionRenderable> getSections() {
+      return sections;
+    }
 
-		public void setSections(List<SectionRenderable> sections)
-		{
-			this.sections = sections;
-		}
-	}
+    public void setSections(List<SectionRenderable> sections) {
+      this.sections = sections;
+    }
+  }
 }

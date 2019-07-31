@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.wizard.standard.controls;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -83,299 +79,290 @@ import com.tle.web.wizard.controls.SimpleValueControl;
 import com.tle.web.wizard.controls.WebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.render.WizardFreemarkerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class MultiWebControl extends AbstractWebControl<MultiWebControl.MultiWebControlModel> implements JSDisableable
-{
-	static
-	{
-		PluginResourceHandler.init(MultiWebControl.class);
-	}
+public class MultiWebControl extends AbstractWebControl<MultiWebControl.MultiWebControlModel>
+    implements JSDisableable {
+  static {
+    PluginResourceHandler.init(MultiWebControl.class);
+  }
 
-	@PlugURL("js/multi.js")
-	private static String multi_url;
+  @PlugURL("js/multi.js")
+  private static String multi_url;
 
-	@PlugURL("js/dialog/controls.js")
-	private static String controls_url;
+  @PlugURL("js/dialog/controls.js")
+  private static String controls_url;
 
-	private static Label LABEL_TITLE = new KeyLabel("wizard.controls.multi.controldialog.title");
+  private static Label LABEL_TITLE = new KeyLabel("wizard.controls.multi.controldialog.title");
 
-	private static JSCallable SHUFFLEGROUP_FUNC = new ExternallyDefinedFunction("shufflegroup", new IncludeFile(
-		multi_url), new IncludeFile("scripts/utf8.js"), JQueryCore.PRERENDER, SelectModule.INCLUDE);
+  private static JSCallable SHUFFLEGROUP_FUNC =
+      new ExternallyDefinedFunction(
+          "shufflegroup",
+          new IncludeFile(multi_url),
+          new IncludeFile("scripts/utf8.js"),
+          JQueryCore.PRERENDER,
+          SelectModule.INCLUDE);
 
-	@PlugKey("shuffle.mandatory")
-	private static Label MANDATORY_ALERT;
+  @PlugKey("shuffle.mandatory")
+  private static Label MANDATORY_ALERT;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private WizardFreemarkerFactory viewFactory;
-	@Inject
-	private DialogTemplate template;
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private WizardFreemarkerFactory viewFactory;
 
-	@Component
-	private Div div;
-	@PlugKey("shuffle.add")
-	@Component
-	private Link addLink;
-	@Component(stateful = false)
-	private MutableList<String> list;
-	@Component
-	private final ControlDialog controlDialog = new ControlDialog();
+  @Inject private DialogTemplate template;
 
-	protected List<WebControl> webControls;
-	protected CMultiCtrl multi;
-	@Nullable
-	private JSCallable disableFunc;
+  @Component private Div div;
 
-	private final JSCallable EDIT_FUNC = new ExternallyDefinedFunction("setValues", new IncludeFile(controls_url));
+  @PlugKey("shuffle.add")
+  @Component
+  private Link addLink;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		list.setParameterId(getFormName());
-		list.setListModel(new ListModel());
-		list.setStyle("display: none;");
+  @Component(stateful = false)
+  private MutableList<String> list;
 
-		ObjectExpression multiObj = new ObjectExpression();
-		multiObj.put("alertmsg", CurrentLocale.get("wizard.controls.multi.please"));
-		multiObj.put("list", new ElementByIdExpression(list));
-		multiObj.put("edit", EDIT_FUNC);
-		multiObj.put("opendialog", controlDialog.getOpenFunction());
-		multiObj.put("controls", getMultiObj());
-		multiObj.put("editlabel", CurrentLocale.get("wizard.controls.multi.edit"));
-		multiObj.put("dellabel", CurrentLocale.get("wizard.controls.multi.delete"));
+  @Component private final ControlDialog controlDialog = new ControlDialog();
 
-		addLink.setClickHandler(new OverrideHandler(controlDialog.getOpenFunction()));
-		addLink.setDisablable(true);
+  protected List<WebControl> webControls;
+  protected CMultiCtrl multi;
+  @Nullable private JSCallable disableFunc;
 
-		div.setStyleClass("shuffle");
-		div.addReadyStatements(new ScriptStatement(PropertyExpression.create(new JQuerySelector(div),
-			new FunctionCallExpression(SHUFFLEGROUP_FUNC, multiObj))));
+  private final JSCallable EDIT_FUNC =
+      new ExternallyDefinedFunction("setValues", new IncludeFile(controls_url));
 
-		ScriptVariable params = new ScriptVariable("p");
-		JSStatements callTrigger = Js.statement(Jq.methodCall(div, Js.function("trigger"), "addMulti", params));
-		controlDialog.setOkCallback(CallAndReferenceFunction.get(Js.function(callTrigger, params), this));
-		controlDialog.setInline(true);
-		controlDialog.setTemplate(template);
-		controlDialog.setStyleClass("controldialog");
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    list.setParameterId(getFormName());
+    list.setListModel(new ListModel());
+    list.setStyle("display: none;");
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisablers(context, this, addLink);
-		return viewFactory.createResult("multi.ftl", context);
-	}
+    ObjectExpression multiObj = new ObjectExpression();
+    multiObj.put("alertmsg", CurrentLocale.get("wizard.controls.multi.please"));
+    multiObj.put("list", new ElementByIdExpression(list));
+    multiObj.put("edit", EDIT_FUNC);
+    multiObj.put("opendialog", controlDialog.getOpenFunction());
+    multiObj.put("controls", getMultiObj());
+    multiObj.put("editlabel", CurrentLocale.get("wizard.controls.multi.edit"));
+    multiObj.put("dellabel", CurrentLocale.get("wizard.controls.multi.delete"));
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		super.setWrappedControl(control);
-		multi = (CMultiCtrl) control;
-	}
+    addLink.setClickHandler(new OverrideHandler(controlDialog.getOpenFunction()));
+    addLink.setDisablable(true);
 
-	@Override
-	public void setWebWizardPage(WebWizardPage webWizardPage)
-	{
-		super.setWebWizardPage(webWizardPage);
-		webControls = webWizardPage.wrapControls(((CMultiCtrl) control).getControls());
+    div.setStyleClass("shuffle");
+    div.addReadyStatements(
+        new ScriptStatement(
+            PropertyExpression.create(
+                new JQuerySelector(div), new FunctionCallExpression(SHUFFLEGROUP_FUNC, multiObj))));
 
-		for( final WebControl webControl : webControls )
-		{
-			webControl.setNested(false);
-		}
-	}
+    ScriptVariable params = new ScriptVariable("p");
+    JSStatements callTrigger =
+        Js.statement(Jq.methodCall(div, Js.function("trigger"), "addMulti", params));
+    controlDialog.setOkCallback(
+        CallAndReferenceFunction.get(Js.function(callTrigger, params), this));
+    controlDialog.setInline(true);
+    controlDialog.setTemplate(template);
+    controlDialog.setStyleClass("controldialog");
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		Collection<String> vals = list.getValues(info);
-		setValues(vals.toArray(new String[vals.size()]));
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisablers(context, this, addLink);
+    return viewFactory.createResult("multi.ftl", context);
+  }
 
-	public Link getAddLink()
-	{
-		return addLink;
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    super.setWrappedControl(control);
+    multi = (CMultiCtrl) control;
+  }
 
-	public MutableList<String> getList()
-	{
-		return list;
-	}
+  @Override
+  public void setWebWizardPage(WebWizardPage webWizardPage) {
+    super.setWebWizardPage(webWizardPage);
+    webControls = webWizardPage.wrapControls(((CMultiCtrl) control).getControls());
 
-	public class ListModel extends StringListModel
-	{
-		@Override
-		public List<Option<String>> getOptions(SectionInfo info)
-		{
-			List<Option<String>> opts = new ArrayList<Option<String>>();
-			List<NameValue> nvs = multi.getNamesValues();
-			for( NameValue nameValue : nvs )
-			{
-				opts.add(new NameValueOption<String>(nameValue, nameValue.getValue()));
-			}
-			return opts;
-		}
-	}
+    for (final WebControl webControl : webControls) {
+      webControl.setNested(false);
+    }
+  }
 
-	public Div getDiv()
-	{
-		return div;
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    Collection<String> vals = list.getValues(info);
+    setValues(vals.toArray(new String[vals.size()]));
+  }
 
-	@Override
-	public final Class<MultiWebControlModel> getModelClass()
-	{
-		return MultiWebControlModel.class;
-	}
+  public Link getAddLink() {
+    return addLink;
+  }
 
-	public static class MultiWebControlModel extends WebControlModel
-	{
-		protected List<SectionResult> renderedControls = new ArrayList<SectionResult>();
+  public MutableList<String> getList() {
+    return list;
+  }
 
-		public List<SectionResult> getRenderedControls()
-		{
-			return renderedControls;
-		}
+  public class ListModel extends StringListModel {
+    @Override
+    public List<Option<String>> getOptions(SectionInfo info) {
+      List<Option<String>> opts = new ArrayList<Option<String>>();
+      List<NameValue> nvs = multi.getNamesValues();
+      for (NameValue nameValue : nvs) {
+        opts.add(new NameValueOption<String>(nameValue, nameValue.getValue()));
+      }
+      return opts;
+    }
+  }
 
-		public void addRenderedControl(SectionResult control)
-		{
-			this.renderedControls.add(control);
-		}
-	}
+  public Div getDiv() {
+    return div;
+  }
 
-	public ControlDialog getControlDialog()
-	{
-		return controlDialog;
-	}
+  @Override
+  public final Class<MultiWebControlModel> getModelClass() {
+    return MultiWebControlModel.class;
+  }
 
-	private ObjectExpression getMultiObj()
-	{
-		final ObjectExpression multiObj = new ObjectExpression();
-		multiObj.put("separator", multi.getSeparator());
-		final List<ObjectExpression> exprs = new ArrayList<ObjectExpression>();
-		for( final WebControl webControl : webControls )
-		{
-			final ObjectExpression contDef = new ObjectExpression();
-			final SimpleValueControl svControl = (SimpleValueControl) webControl;
-			contDef.put("edit", svControl.createEditFunction());
-			contDef.put("text", svControl.createTextFunction());
-			contDef.put("value", svControl.createValueFunction());
-			contDef.put("reset", svControl.createResetFunction());
-			contDef.put("mandatory", svControl.isMandatory());
-			exprs.add(contDef);
-		}
-		multiObj.put("controls", new ArrayExpression(exprs));
-		return multiObj;
-	}
+  public static class MultiWebControlModel extends WebControlModel {
+    protected List<SectionResult> renderedControls = new ArrayList<SectionResult>();
 
-	public class ControlDialog extends AbstractOkayableDialog<DialogModel>
-	{
-		private final JSCallable TEXTS_FUNC = new ExternallyDefinedFunction("getTexts", new IncludeFile(controls_url));
-		private final JSCallable VALUES_FUNC = new ExternallyDefinedFunction("getValues", new IncludeFile(controls_url));
-		private final JSCallable RESET_FUNC = new ExternallyDefinedFunction("resetControls", new IncludeFile(
-			controls_url));
-		private final JSCallable VALIDATE_FUNC = new ExternallyDefinedFunction("validateControls", new IncludeFile(
-			controls_url));
+    public List<SectionResult> getRenderedControls() {
+      return renderedControls;
+    }
 
-		@Override
-		protected Label getTitleLabel(RenderContext context)
-		{
-			return LABEL_TITLE;
-		}
+    public void addRenderedControl(SectionResult control) {
+      this.renderedControls.add(control);
+    }
+  }
 
-		@Override
-		protected SectionRenderable getRenderableContents(RenderContext context)
-		{
-			MultiWebControlModel model = MultiWebControl.this.getModel(context);
-			List<SectionResult> renderedControls = model.getRenderedControls();
-			for( WebControl control : webControls )
-			{
-				if( control.isViewable() )
-				{
-					renderedControls.add(SectionUtils.renderSection(context, control));
-				}
-			}
+  public ControlDialog getControlDialog() {
+    return controlDialog;
+  }
 
-			return viewFactory.createNormalResult("controldialog.ftl", MultiWebControl.this);
-		}
+  private ObjectExpression getMultiObj() {
+    final ObjectExpression multiObj = new ObjectExpression();
+    multiObj.put("separator", multi.getSeparator());
+    final List<ObjectExpression> exprs = new ArrayList<ObjectExpression>();
+    for (final WebControl webControl : webControls) {
+      final ObjectExpression contDef = new ObjectExpression();
+      final SimpleValueControl svControl = (SimpleValueControl) webControl;
+      contDef.put("edit", svControl.createEditFunction());
+      contDef.put("text", svControl.createTextFunction());
+      contDef.put("value", svControl.createValueFunction());
+      contDef.put("reset", svControl.createResetFunction());
+      contDef.put("mandatory", svControl.isMandatory());
+      exprs.add(contDef);
+    }
+    multiObj.put("controls", new ArrayExpression(exprs));
+    return multiObj;
+  }
 
-		@Override
-		protected int getNumberOfOpenParameters()
-		{
-			return 1;
-		}
+  public class ControlDialog extends AbstractOkayableDialog<DialogModel> {
+    private final JSCallable TEXTS_FUNC =
+        new ExternallyDefinedFunction("getTexts", new IncludeFile(controls_url));
+    private final JSCallable VALUES_FUNC =
+        new ExternallyDefinedFunction("getValues", new IncludeFile(controls_url));
+    private final JSCallable RESET_FUNC =
+        new ExternallyDefinedFunction("resetControls", new IncludeFile(controls_url));
+    private final JSCallable VALIDATE_FUNC =
+        new ExternallyDefinedFunction("validateControls", new IncludeFile(controls_url));
 
-		@Override
-		protected JSHandler createOkHandler(SectionTree tree)
-		{
-			JSStatements alert = Js.alert_s(MANDATORY_ALERT);
+    @Override
+    protected Label getTitleLabel(RenderContext context) {
+      return LABEL_TITLE;
+    }
 
-			return new OverrideHandler(Js.call_s(getCloseFunction()), createOkCallStatement(tree), Js.call_s(
-				RESET_FUNC, getMultiObj())).addValidator(Js.validator(VALIDATE_FUNC, getMultiObj())
-				.setFailureStatements(alert));
-		}
+    @Override
+    protected SectionRenderable getRenderableContents(RenderContext context) {
+      MultiWebControlModel model = MultiWebControl.this.getModel(context);
+      List<SectionResult> renderedControls = model.getRenderedControls();
+      for (WebControl control : webControls) {
+        if (control.isViewable()) {
+          renderedControls.add(SectionUtils.renderSection(context, control));
+        }
+      }
 
-		@Override
-		protected JSStatements createOkCallStatement(SectionTree tree)
-		{
-			final ObjectExpression multiObj = getMultiObj();
-			return Js.call_s(getOkCallback(),
-				new ArrayExpression(Js.call(VALUES_FUNC, multiObj), Js.call(TEXTS_FUNC, multiObj)));
-		}
+      return viewFactory.createNormalResult("controldialog.ftl", MultiWebControl.this);
+    }
 
-		@Override
-		protected JSHandler createCancelHandler(SectionTree tree)
-		{
-			final OkayableDialogCancelStatements cancelStatements = createCancelCallStatement(tree);
+    @Override
+    protected int getNumberOfOpenParameters() {
+      return 1;
+    }
 
-			return new OverrideHandler(cancelStatements.getStatements(), Js.call_s(getCloseFunction()), Js.call_s(
-				RESET_FUNC, getMultiObj()));
-		}
+    @Override
+    protected JSHandler createOkHandler(SectionTree tree) {
+      JSStatements alert = Js.alert_s(MANDATORY_ALERT);
 
-		@Override
-		public String getWidth()
-		{
-			return "717px"; //$NON-NLS-1$
-		}
+      return new OverrideHandler(
+              Js.call_s(getCloseFunction()),
+              createOkCallStatement(tree),
+              Js.call_s(RESET_FUNC, getMultiObj()))
+          .addValidator(Js.validator(VALIDATE_FUNC, getMultiObj()).setFailureStatements(alert));
+    }
 
-		protected void setTemplate(DialogTemplate template)
-		{
-			this.template = template;
-		}
+    @Override
+    protected JSStatements createOkCallStatement(SectionTree tree) {
+      final ObjectExpression multiObj = getMultiObj();
+      return Js.call_s(
+          getOkCallback(),
+          new ArrayExpression(Js.call(VALUES_FUNC, multiObj), Js.call(TEXTS_FUNC, multiObj)));
+    }
 
-		@Override
-		public DialogModel instantiateDialogModel(SectionInfo info)
-		{
-			return new DialogModel();
-		}
-	}
+    @Override
+    protected JSHandler createCancelHandler(SectionTree tree) {
+      final OkayableDialogCancelStatements cancelStatements = createCancelCallStatement(tree);
 
-	public Button getOk()
-	{
-		return controlDialog.getOk();
-	}
+      return new OverrideHandler(
+          cancelStatements.getStatements(),
+          Js.call_s(getCloseFunction()),
+          Js.call_s(RESET_FUNC, getMultiObj()));
+    }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		if( disableFunc == null )
-		{
-			ScriptVariable dis = new ScriptVariable("dis");
-			ScriptVariable elem = new ScriptVariable("elem");
-			disableFunc = new SimpleFunction("dis", this, StatementBlock.get(new DeclarationStatement(elem, div),
-				new ScriptStatement("if(dis){$(elem).addClass('disabled');}else{$(elem).removeClass('disabled');}")),
-				dis);
-		}
+    @Override
+    public String getWidth() {
+      return "717px"; //$NON-NLS-1$
+    }
 
-		return disableFunc;
-	}
+    protected void setTemplate(DialogTemplate template) {
+      this.template = template;
+    }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+    @Override
+    public DialogModel instantiateDialogModel(SectionInfo info) {
+      return new DialogModel();
+    }
+  }
+
+  public Button getOk() {
+    return controlDialog.getOk();
+  }
+
+  @Override
+  public JSCallable createDisableFunction() {
+    if (disableFunc == null) {
+      ScriptVariable dis = new ScriptVariable("dis");
+      ScriptVariable elem = new ScriptVariable("elem");
+      disableFunc =
+          new SimpleFunction(
+              "dis",
+              this,
+              StatementBlock.get(
+                  new DeclarationStatement(elem, div),
+                  new ScriptStatement(
+                      "if(dis){$(elem).addClass('disabled');}else{$(elem).removeClass('disabled');}")),
+              dis);
+    }
+
+    return disableFunc;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.web.api.oauth;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
@@ -31,80 +29,80 @@ import com.tle.core.guice.BindFactory;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
+import java.util.Objects;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuthClientBean> implements OAuthEditor
-{
-	@Inject
-	private OAuthService oauthService;
-	@Inject
-	private EncryptionService encryptionService;
+public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuthClientBean>
+    implements OAuthEditor {
+  @Inject private OAuthService oauthService;
+  @Inject private EncryptionService encryptionService;
 
-	private boolean mustDeleteTokens;
+  private boolean mustDeleteTokens;
 
-	@AssistedInject
-	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
-		@Assisted("importing") boolean importing)
-	{
-		super(entity, stagingUuid, lockId, editing, importing);
-	}
+  @AssistedInject
+  public OAuthEditorImpl(
+      @Assisted OAuthClient entity,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("lockId") @Nullable String lockId,
+      @Assisted("editing") boolean editing,
+      @Assisted("importing") boolean importing) {
+    super(entity, stagingUuid, lockId, editing, importing);
+  }
 
-	@AssistedInject
-	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("importing") boolean importing)
-	{
-		this(entity, stagingUuid, null, false, importing);
-	}
+  @AssistedInject
+  public OAuthEditorImpl(
+      @Assisted OAuthClient entity,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("importing") boolean importing) {
+    this(entity, stagingUuid, null, false, importing);
+  }
 
-	@Override
-	protected void copyCustomFields(OAuthClientBean bean)
-	{
-		super.copyCustomFields(bean);
+  @Override
+  protected void copyCustomFields(OAuthClientBean bean) {
+    super.copyCustomFields(bean);
 
-		if( !Objects.equals(bean.getClientId(), entity.getClientId())
-			|| !Objects.equals(bean.getClientSecret(), entity.getClientSecret())
-			|| !Objects.equals(bean.getRedirectUrl(), entity.getRedirectUrl())
-			|| !Objects.equals(bean.getUserId(), entity.getUserId()) )
-		{
-			mustDeleteTokens = true;
-		}
-		entity.setClientId(bean.getClientId());
-		entity.setClientSecret(encryptionService.encrypt(bean.getClientSecret()));
-		entity.setPermissions(bean.getPermissions());
-		entity.setUserId(bean.getUserId());
-		entity.setRedirectUrl(bean.getRedirectUrl());
+    if (!Objects.equals(bean.getClientId(), entity.getClientId())
+        || !Objects.equals(bean.getClientSecret(), entity.getClientSecret())
+        || !Objects.equals(bean.getRedirectUrl(), entity.getRedirectUrl())
+        || !Objects.equals(bean.getUserId(), entity.getUserId())) {
+      mustDeleteTokens = true;
+    }
+    entity.setClientId(bean.getClientId());
+    entity.setClientSecret(encryptionService.encrypt(bean.getClientSecret()));
+    entity.setPermissions(bean.getPermissions());
+    entity.setUserId(bean.getUserId());
+    entity.setRedirectUrl(bean.getRedirectUrl());
 
-		// entity.setAttribute(KEY_OAUTH_FLOW, bean.getFlow());
-	}
+    // entity.setAttribute(KEY_OAUTH_FLOW, bean.getFlow());
+  }
 
-	@Override
-	protected void afterFinishedEditing()
-	{
-		super.afterFinishedEditing();
-		if( editing && mustDeleteTokens )
-		{
-			oauthService.deleteTokens(entity);
-		}
-	}
+  @Override
+  protected void afterFinishedEditing() {
+    super.afterFinishedEditing();
+    if (editing && mustDeleteTokens) {
+      oauthService.deleteTokens(entity);
+    }
+  }
 
-	@Override
-	protected AbstractEntityService<?, OAuthClient> getEntityService()
-	{
-		return oauthService;
-	}
+  @Override
+  protected AbstractEntityService<?, OAuthClient> getEntityService() {
+    return oauthService;
+  }
 
-	@BindFactory
-	public interface OAuthEditorFactory
-	{
-		OAuthEditorImpl createExistingEditor(@Assisted OAuthClient oauthClient,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
+  @BindFactory
+  public interface OAuthEditorFactory {
+    OAuthEditorImpl createExistingEditor(
+        @Assisted OAuthClient oauthClient,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("lockId") @Nullable String lockId,
+        @Assisted("editing") boolean editing,
+        @Assisted("importing") boolean importing);
 
-		OAuthEditorImpl createNewEditor(@Assisted OAuthClient oauthClient,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
-	}
+    OAuthEditorImpl createNewEditor(
+        @Assisted OAuthClient oauthClient,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("importing") boolean importing);
+  }
 }

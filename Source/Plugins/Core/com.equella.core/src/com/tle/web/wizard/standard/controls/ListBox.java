@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,77 +32,62 @@ import com.tle.web.wizard.controls.CListBox;
 import com.tle.web.wizard.controls.Item;
 import com.tle.web.wizard.controls.SimpleValueControl;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class ListBox extends AbstractOptionControl implements SimpleValueControl
-{
-	private CListBox box;
-	@Component(stateful = false)
-	private SingleSelectionList<Item> list;
+public class ListBox extends AbstractOptionControl implements SimpleValueControl {
+  private CListBox box;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void prepareList(OptionsModel listModel)
-	{
-		if( box.isExpertSearch() )
-		{
-			listModel.setTopOption(new KeyOption<Item>("wizard.controls.listbox.all", "", null));
-		}
-		else if( box.isShowSelection() )
-		{
-			listModel.setTopOption(new KeyOption<Item>("wizard.controls.listbox.select", "", null));
-		}
-	}
+  @Component(stateful = false)
+  private SingleSelectionList<Item> list;
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		this.box = (CListBox) control;
-		super.setWrappedControl(control);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void prepareList(OptionsModel listModel) {
+    if (box.isExpertSearch()) {
+      listModel.setTopOption(new KeyOption<Item>("wizard.controls.listbox.all", "", null));
+    } else if (box.isShowSelection()) {
+      listModel.setTopOption(new KeyOption<Item>("wizard.controls.listbox.select", "", null));
+    }
+  }
 
-	@Override
-	protected String getTemplate()
-	{
-		return "listbox.ftl"; //$NON-NLS-1$
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    this.box = (CListBox) control;
+    super.setWrappedControl(control);
+  }
 
-	@Override
-	public SingleSelectionList<Item> getList()
-	{
-		return list;
-	}
+  @Override
+  protected String getTemplate() {
+    return "listbox.ftl"; //$NON-NLS-1$
+  }
 
-	@Override
-	public JSAssignable createEditFunction()
-	{
-		return AssignableFunction.get(list.createSetFunction());
-	}
+  @Override
+  public SingleSelectionList<Item> getList() {
+    return list;
+  }
 
-	@Override
-	public JSAssignable createResetFunction()
-	{
-		return AssignableFunction.get(list.createResetFunction());
-	}
+  @Override
+  public JSAssignable createEditFunction() {
+    return AssignableFunction.get(list.createSetFunction());
+  }
 
-	@Override
-	public JSAssignable createTextFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(list.createGetNameExpression()));
-	}
+  @Override
+  public JSAssignable createResetFunction() {
+    return AssignableFunction.get(list.createResetFunction());
+  }
 
-	@Override
-	public JSAssignable createValueFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(list.createGetExpression()));
-	}
+  @Override
+  public JSAssignable createTextFunction() {
+    return new AnonymousFunction(new ReturnStatement(list.createGetNameExpression()));
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return list;
-	}
+  @Override
+  public JSAssignable createValueFunction() {
+    return new AnonymousFunction(new ReturnStatement(list.createGetExpression()));
+  }
 
+  @Override
+  protected ElementId getIdForLabel() {
+    return list;
+  }
 }

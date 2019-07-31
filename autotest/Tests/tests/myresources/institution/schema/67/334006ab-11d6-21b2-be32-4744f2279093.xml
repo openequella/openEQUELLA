@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>35116</id>
+  <uuid>334006ab-11d6-21b2-be32-4744f2279093</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-03-20 11:01:14.128</dateModified>
+  <dateCreated class="sql-timestamp">2009-03-20 10:59:51.691</dateCreated>
+  <name>
+    <id>35117</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35118</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Browse By Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/title</itemNamePath>
+  <itemDescriptionPath>/item/year</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;person field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;year field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;title field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

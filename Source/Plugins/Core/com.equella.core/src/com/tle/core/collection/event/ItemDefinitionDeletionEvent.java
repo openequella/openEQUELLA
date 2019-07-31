@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,25 +22,20 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
 import com.tle.core.entity.event.BaseEntityDeletionEvent;
 
-/**
- * @author Nicholas Read
- */
-public class ItemDefinitionDeletionEvent extends BaseEntityDeletionEvent<ItemDefinition, ItemDefinitionDeletionListener>
-{
-	public ItemDefinitionDeletionEvent(ItemDefinition itemDefinition)
-	{
-		super(itemDefinition);
-	}
+/** @author Nicholas Read */
+public class ItemDefinitionDeletionEvent
+    extends BaseEntityDeletionEvent<ItemDefinition, ItemDefinitionDeletionListener> {
+  public ItemDefinitionDeletionEvent(ItemDefinition itemDefinition) {
+    super(itemDefinition);
+  }
 
-	@Override
-	public Class<ItemDefinitionDeletionListener> getListener()
-	{
-		return ItemDefinitionDeletionListener.class;
-	}
+  @Override
+  public Class<ItemDefinitionDeletionListener> getListener() {
+    return ItemDefinitionDeletionListener.class;
+  }
 
-	@Override
-	public void postEvent(ItemDefinitionDeletionListener listener)
-	{
-		listener.removeReferences(entity);
-	}
+  @Override
+  public void postEvent(ItemDefinitionDeletionListener listener) {
+    listener.removeReferences(entity);
+  }
 }

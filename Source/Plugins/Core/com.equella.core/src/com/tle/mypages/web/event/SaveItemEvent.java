@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,42 +25,36 @@ import com.tle.web.sections.SectionInfo;
 /*
  * @author aholland
  */
-public class SaveItemEvent extends AbstractMyPagesEvent<SaveItemEventListener>
-{
-	private final ItemPack itemPack;
-	private boolean commit;
+public class SaveItemEvent extends AbstractMyPagesEvent<SaveItemEventListener> {
+  private final ItemPack itemPack;
+  private boolean commit;
 
-	public SaveItemEvent(ItemPack itemPack, String sessionId)
-	{
-		super(sessionId);
-		this.itemPack = itemPack;
-		this.commit = true;
-	}
+  public SaveItemEvent(ItemPack itemPack, String sessionId) {
+    super(sessionId);
+    this.itemPack = itemPack;
+    this.commit = true;
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, SaveItemEventListener listener) throws Exception
-	{
-		listener.doSaveItemEvent(info, this);
-	}
+  @Override
+  public void fire(SectionId sectionId, SectionInfo info, SaveItemEventListener listener)
+      throws Exception {
+    listener.doSaveItemEvent(info, this);
+  }
 
-	@Override
-	public Class<SaveItemEventListener> getListenerClass()
-	{
-		return SaveItemEventListener.class;
-	}
+  @Override
+  public Class<SaveItemEventListener> getListenerClass() {
+    return SaveItemEventListener.class;
+  }
 
-	public boolean isCommit()
-	{
-		return commit;
-	}
+  public boolean isCommit() {
+    return commit;
+  }
 
-	public void setCommit(boolean commit)
-	{
-		this.commit = commit;
-	}
+  public void setCommit(boolean commit) {
+    this.commit = commit;
+  }
 
-	public ItemPack getItemPack()
-	{
-		return itemPack;
-	}
+  public ItemPack getItemPack() {
+    return itemPack;
+  }
 }

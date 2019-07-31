@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,25 @@
 
 package com.tle.web.sections.standard;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * This class creates renderers based on a renderer name string, and a
- * {@link HtmlComponentState}.
- * 
+ * This class creates renderers based on a renderer name string, and a {@link HtmlComponentState}.
+ *
  * @author jmaginnis
  */
-public interface RendererFactory
-{
-	SectionRenderable getRenderer(SectionInfo info, HtmlComponentState state);
+public interface RendererFactory {
+  SectionRenderable getRenderer(SectionInfo info, HtmlComponentState state);
 
-	SectionRenderable convertToRenderer(Object object);
+  SectionRenderable convertToRenderer(Object object);
 
-	SectionRenderable convertToRenderer(Object... objects);
+  SectionRenderable convertToRenderer(Object... objects);
 
-	SectionRenderable[] convertToRenderers(Object... objects);
+  SectionRenderable[] convertToRenderers(Object... objects);
 
-	List<SectionRenderable> convertToRenderers(Collection<?> objects);
+  List<SectionRenderable> convertToRenderers(Collection<?> objects);
 }

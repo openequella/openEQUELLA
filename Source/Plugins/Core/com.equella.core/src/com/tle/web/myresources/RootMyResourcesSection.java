@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,54 +31,50 @@ import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 
 public class RootMyResourcesSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	private static final String CONTEXT_KEY = "myResourcesContext"; //$NON-NLS-1$
-	private static final String URL = "/access/myresources.do"; //$NON-NLS-1$
+    implements BlueBarEventListener {
+  private static final String CONTEXT_KEY = "myResourcesContext"; // $NON-NLS-1$
+  private static final String URL = "/access/myresources.do"; // $NON-NLS-1$
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@PlugKey("myresources.menu")
-	private static Label title;
+  @PlugKey("myresources.menu")
+  private static Label title;
 
-	@TreeLookup
-	private MyResourcesSearchTypeSection searchTypeSection;
+  @TreeLookup private MyResourcesSearchTypeSection searchTypeSection;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return CONTEXT_KEY;
-	}
+  @Override
+  protected String getSessionKey() {
+    return CONTEXT_KEY;
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return title;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return title;
+  }
 
-	public static SectionInfo createForward(SectionInfo from)
-	{
-		return from.createForward(URL);
-	}
+  public static SectionInfo createForward(SectionInfo from) {
+    return from.createForward(URL);
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null ? super.getDefaultLayout(info)
-			: ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null
+        ? super.getDefaultLayout(info)
+        : ContentLayout.ONE_COLUMN;
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(view.createResult("mainhelp.ftl", this)); //$NON-NLS-1$
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(view.createResult("mainhelp.ftl", this)); // $NON-NLS-1$
+  }
 
-	@Override
-	protected boolean hasContextBeenSpecified(SectionInfo info)
-	{
-		return getModel(info).isUpdateContext();
-	}
+  @Override
+  protected boolean hasContextBeenSpecified(SectionInfo info) {
+    return getModel(info).isUpdateContext();
+  }
+
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }

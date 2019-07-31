@@ -1,0 +1,131 @@
+<com.tle.beans.item.Item>
+  <id>117186</id>
+  <uuid>e48edefa-e1fc-4ebe-946f-ff65938c9fae</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-10-29 16:16:12.45</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-29 16:16:12.45</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.706</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>true</moderating>
+  <status>MODERATING</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6bf51943-9d20-4934-a228-8edcec6691ae"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117190</id>
+    <start class="sql-timestamp">2012-10-29 16:16:12.457</start>
+    <lastAction class="sql-timestamp">2012-10-29 16:17:05.247</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses>
+      <com.tle.common.workflow.WorkflowNodeStatus>
+        <id>117196</id>
+        <node class="com.tle.common.workflow.node.SerialNode" workflow="0f7bd496-8466-4fa5-b166-8132cc5294e4">3bedced8-2355-42e0-aaa6-3c44c34c33be</node>
+        <status>i</status>
+        <comments/>
+      </com.tle.common.workflow.WorkflowNodeStatus>
+      <com.tle.common.workflow.WorkflowItemStatus>
+        <id>117206</id>
+        <node class="com.tle.common.workflow.node.WorkflowItem" workflow="0f7bd496-8466-4fa5-b166-8132cc5294e4">3c4926a7-4b28-4ea2-88b8-42da1902a9ed</node>
+        <status>c</status>
+        <comments/>
+        <dateDue class="sql-timestamp">2032-10-29 16:00:00.0</dateDue>
+        <started class="sql-timestamp">2012-10-29 16:16:12.45</started>
+        <overdue>false</overdue>
+        <acceptedUsers>
+          <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+        </acceptedUsers>
+        <cause reference="../../com.tle.common.workflow.WorkflowNodeStatus"/>
+      </com.tle.common.workflow.WorkflowItemStatus>
+      <com.tle.common.workflow.WorkflowItemStatus>
+        <id>117211</id>
+        <node class="com.tle.common.workflow.node.WorkflowItem" workflow="0f7bd496-8466-4fa5-b166-8132cc5294e4">723d03cf-deb9-4033-b66d-32dac9260dac</node>
+        <status>i</status>
+        <comments/>
+        <dateDue class="sql-timestamp">2032-10-29 16:00:00.0</dateDue>
+        <started class="sql-timestamp">2012-10-29 16:17:05.247</started>
+        <overdue>false</overdue>
+        <acceptedUsers/>
+        <cause class="com.tle.common.workflow.WorkflowItemStatus" reference="../../com.tle.common.workflow.WorkflowItemStatus"/>
+      </com.tle.common.workflow.WorkflowItemStatus>
+    </statuses>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117217</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:16:12.45</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117219</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:16:12.45</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117220</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:16:12.45</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117222</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:16:12.45</date>
+      <step>3bedced8-2355-42e0-aaa6-3c44c34c33be</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117223</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:17:05.247</date>
+      <step>3c4926a7-4b28-4ea2-88b8-42da1902a9ed</step>
+      <stepName>Step 1</stepName>
+      <applies>false</applies>
+      <type>approved</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117214</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117215</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>TaskApiTest - Low priority, long due date</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

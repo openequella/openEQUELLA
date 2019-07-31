@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,47 +25,43 @@ import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.JSValidator;
 import com.tle.web.sections.js.generic.statement.ScriptStatement;
 
-public class SimpleValidator implements JSValidator
-{
-	private JSStatements failureStatments;
-	private final JSExpression validatorExpression;
-	private boolean returnFalse = true;
+public class SimpleValidator implements JSValidator {
+  private JSStatements failureStatments;
+  private final JSExpression validatorExpression;
+  private boolean returnFalse = true;
 
-	public SimpleValidator(JSExpression validatorExpression)
-	{
-		failureStatments = new ScriptStatement(""); //$NON-NLS-1$
-		this.validatorExpression = validatorExpression;
-	}
+  public SimpleValidator(JSExpression validatorExpression) {
+    failureStatments = new ScriptStatement(""); // $NON-NLS-1$
+    this.validatorExpression = validatorExpression;
+  }
 
-	@Override
-	public JSValidator setFailureStatements(JSStatements statements)
-	{
-		this.failureStatments = statements;
-		return this;
-	}
+  @Override
+  public JSValidator setFailureStatements(JSStatements statements) {
+    this.failureStatments = statements;
+    return this;
+  }
 
-	public String getValidatorExpressionText(RenderContext info)
-	{
-		return validatorExpression.getExpression(info);
-	}
+  public String getValidatorExpressionText(RenderContext info) {
+    return validatorExpression.getExpression(info);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return "if (!(" + getValidatorExpressionText(info) + ")){" + failureStatments.getStatements(info)
-			+ (returnFalse ? "return false;" : "") + "}";
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getStatements(RenderContext info) {
+    return "if (!("
+        + getValidatorExpressionText(info)
+        + ")){"
+        + failureStatments.getStatements(info)
+        + (returnFalse ? "return false;" : "")
+        + "}";
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(failureStatments, validatorExpression);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(failureStatments, validatorExpression);
+  }
 
-	public void setReturnFalse(boolean returnFalse)
-	{
-		this.returnFalse = returnFalse;
-	}
-
+  public void setReturnFalse(boolean returnFalse) {
+    this.returnFalse = returnFalse;
+  }
 }

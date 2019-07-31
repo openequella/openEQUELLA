@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.api.collection.impl;
 
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
@@ -29,55 +29,57 @@ import com.tle.core.guice.BindFactory;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.collection.DynaCollectionEditor;
 import com.tle.web.api.collection.beans.DynaCollectionBean;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class DynaCollectionEditorImpl extends AbstractBaseEntityEditor<DynaCollection, DynaCollectionBean>
-	implements
-		DynaCollectionEditor
-{
-	@Inject
-	private DynaCollectionService dynaCollectionService;
+public class DynaCollectionEditorImpl
+    extends AbstractBaseEntityEditor<DynaCollection, DynaCollectionBean>
+    implements DynaCollectionEditor {
+  @Inject private DynaCollectionService dynaCollectionService;
 
-	@AssistedInject
-	public DynaCollectionEditorImpl(@Assisted DynaCollection collection,
-		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-		@Assisted("editing") boolean editing, @Assisted("importing") boolean importing)
-	{
-		super(collection, stagingUuid, lockId, editing, importing);
-	}
+  @AssistedInject
+  public DynaCollectionEditorImpl(
+      @Assisted DynaCollection collection,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("lockId") @Nullable String lockId,
+      @Assisted("editing") boolean editing,
+      @Assisted("importing") boolean importing) {
+    super(collection, stagingUuid, lockId, editing, importing);
+  }
 
-	@AssistedInject
-	public DynaCollectionEditorImpl(@Assisted DynaCollection collection,
-		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing)
-	{
-		this(collection, stagingUuid, null, false, importing);
-	}
+  @AssistedInject
+  public DynaCollectionEditorImpl(
+      @Assisted DynaCollection collection,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("importing") boolean importing) {
+    this(collection, stagingUuid, null, false, importing);
+  }
 
-	@Override
-	protected void copyCustomFields(DynaCollectionBean bean)
-	{
-		super.copyCustomFields(bean);
+  @Override
+  protected void copyCustomFields(DynaCollectionBean bean) {
+    super.copyCustomFields(bean);
 
-		// FIXME:
-	}
+    // FIXME:
+  }
 
-	@Override
-	protected AbstractEntityService<?, DynaCollection> getEntityService()
-	{
-		return dynaCollectionService;
-	}
+  @Override
+  protected AbstractEntityService<?, DynaCollection> getEntityService() {
+    return dynaCollectionService;
+  }
 
-	@BindFactory
-	public interface DynaCollectionEditorFactory
-	{
-		DynaCollectionEditorImpl createExistingEditor(@Assisted DynaCollection collection,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
+  @BindFactory
+  public interface DynaCollectionEditorFactory {
+    DynaCollectionEditorImpl createExistingEditor(
+        @Assisted DynaCollection collection,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("lockId") @Nullable String lockId,
+        @Assisted("editing") boolean editing,
+        @Assisted("importing") boolean importing);
 
-		DynaCollectionEditorImpl createNewEditor(@Assisted DynaCollection collection,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
-	}
+    DynaCollectionEditorImpl createNewEditor(
+        @Assisted DynaCollection collection,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("importing") boolean importing);
+  }
 }

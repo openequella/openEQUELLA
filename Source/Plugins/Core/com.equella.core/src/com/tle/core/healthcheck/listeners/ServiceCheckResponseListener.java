@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,37 +22,33 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.events.listeners.ApplicationListener;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 
-public interface ServiceCheckResponseListener extends ApplicationListener
-{
-	void serviceCheckResponse(String requesterNodeId, String responderNodeId,
-		ServiceStatus serviceStatus);
+public interface ServiceCheckResponseListener extends ApplicationListener {
+  void serviceCheckResponse(
+      String requesterNodeId, String responderNodeId, ServiceStatus serviceStatus);
 
-	public static class CheckServiceResponseEvent extends ApplicationEvent<ServiceCheckResponseListener>
-	{
-		String requesterNodeId;
-		String responderNodeId;
-		String eventId;
-		ServiceStatus serviceStatus;
+  public static class CheckServiceResponseEvent
+      extends ApplicationEvent<ServiceCheckResponseListener> {
+    String requesterNodeId;
+    String responderNodeId;
+    String eventId;
+    ServiceStatus serviceStatus;
 
-		public CheckServiceResponseEvent(String requesterNodeId, String responderNodeId,
-			ServiceStatus serviceStatus)
-		{
-			super(PostTo.POST_TO_ALL_CLUSTER_NODES);
-			this.requesterNodeId = requesterNodeId;
-			this.responderNodeId = responderNodeId;
-			this.serviceStatus = serviceStatus;
-		}
+    public CheckServiceResponseEvent(
+        String requesterNodeId, String responderNodeId, ServiceStatus serviceStatus) {
+      super(PostTo.POST_TO_ALL_CLUSTER_NODES);
+      this.requesterNodeId = requesterNodeId;
+      this.responderNodeId = responderNodeId;
+      this.serviceStatus = serviceStatus;
+    }
 
-		@Override
-		public Class<ServiceCheckResponseListener> getListener()
-		{
-			return ServiceCheckResponseListener.class;
-		}
+    @Override
+    public Class<ServiceCheckResponseListener> getListener() {
+      return ServiceCheckResponseListener.class;
+    }
 
-		@Override
-		public void postEvent(ServiceCheckResponseListener listener)
-		{
-			listener.serviceCheckResponse(requesterNodeId, responderNodeId, serviceStatus);
-		}
-	}
+    @Override
+    public void postEvent(ServiceCheckResponseListener listener) {
+      listener.serviceCheckResponse(requesterNodeId, responderNodeId, serviceStatus);
+    }
+  }
 }

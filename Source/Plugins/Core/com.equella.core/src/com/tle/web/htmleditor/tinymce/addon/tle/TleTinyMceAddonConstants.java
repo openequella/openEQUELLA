@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,20 +18,16 @@
 
 package com.tle.web.htmleditor.tinymce.addon.tle;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public final class TleTinyMceAddonConstants
-{
-	public static final String RESOURCE_LINKER_ID = "tle_reslinker";
-	public static final String SCRAPBOOK_PICKER_ID = "tle_scrapbookpicker";
-	public static final String FILE_UPLOADER_ID = "tle_fileuploader";
+public final class TleTinyMceAddonConstants {
+  public static final String RESOURCE_LINKER_ID = "tle_reslinker";
+  public static final String SCRAPBOOK_PICKER_ID = "tle_scrapbookpicker";
+  public static final String FILE_UPLOADER_ID = "tle_fileuploader";
 
-	public static final String FILE_UPLOAD_SELECTABLE = "mcefileupload";
+  public static final String FILE_UPLOAD_SELECTABLE = "mcefileupload";
 
-	private TleTinyMceAddonConstants()
-	{
-		throw new Error();
-	}
+  private TleTinyMceAddonConstants() {
+    throw new Error();
+  }
 }

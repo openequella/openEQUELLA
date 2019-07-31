@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,124 +31,97 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
-
 import javax.sql.DataSource;
 
-public class MigrationDataSource implements DataSource
-{
-	private Future<Connection> futureConnection;
-	private Connection connection;
-	private ExecutorService exec = Executors.newSingleThreadExecutor();
-	private String url;
-	private String username;
-	private String password;
+public class MigrationDataSource implements DataSource {
+  private Future<Connection> futureConnection;
+  private Connection connection;
+  private ExecutorService exec = Executors.newSingleThreadExecutor();
+  private String url;
+  private String username;
+  private String password;
 
-	public MigrationDataSource(String url, String username, String password)
-	{
-		this.url = url;
-		this.username = username;
-		this.password = password;
-	}
+  public MigrationDataSource(String url, String username, String password) {
+    this.url = url;
+    this.username = username;
+    this.password = password;
+  }
 
-	@Override
-	public PrintWriter getLogWriter() throws SQLException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @Override
+  public PrintWriter getLogWriter() throws SQLException {
+    throw new SQLFeatureNotSupportedException();
+  }
 
-	@Override
-	public void setLogWriter(PrintWriter out) throws SQLException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @Override
+  public void setLogWriter(PrintWriter out) throws SQLException {
+    throw new SQLFeatureNotSupportedException();
+  }
 
-	@Override
-	public void setLoginTimeout(int seconds) throws SQLException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @Override
+  public void setLoginTimeout(int seconds) throws SQLException {
+    throw new SQLFeatureNotSupportedException();
+  }
 
-	@Override
-	public int getLoginTimeout() throws SQLException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @Override
+  public int getLoginTimeout() throws SQLException {
+    throw new SQLFeatureNotSupportedException();
+  }
 
-	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException
-	{
-		return null;
-	}
+  @Override
+  public <T> T unwrap(Class<T> iface) throws SQLException {
+    return null;
+  }
 
-	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException
-	{
-		return false;
-	}
+  @Override
+  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    return false;
+  }
 
-	@Override
-	public Connection getConnection() throws SQLException
-	{
-		if( connection == null )
-		{
-			if( futureConnection == null )
-			{
-				futureConnection = exec.submit(new Callable<Connection>()
-				{
-					@Override
-					public Connection call() throws Exception
-					{
-						return DriverManager.getConnection(url, username, password);
-					}
-				});
-			}
-			try
-			{
-				connection = new MigrationConnection(futureConnection.get(15, TimeUnit.SECONDS));
-			}
-			catch( InterruptedException e )
-			{
-				throw new RuntimeException(e);
-			}
-			catch( ExecutionException e )
-			{
-				throw (SQLException) e.getCause();
-			}
-			catch( TimeoutException e )
-			{
-				throw new SQLException(e);
-			}
-		}
-		return connection;
-	}
+  @Override
+  public Connection getConnection() throws SQLException {
+    if (connection == null) {
+      if (futureConnection == null) {
+        futureConnection =
+            exec.submit(
+                new Callable<Connection>() {
+                  @Override
+                  public Connection call() throws Exception {
+                    return DriverManager.getConnection(url, username, password);
+                  }
+                });
+      }
+      try {
+        connection = new MigrationConnection(futureConnection.get(15, TimeUnit.SECONDS));
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      } catch (ExecutionException e) {
+        throw (SQLException) e.getCause();
+      } catch (TimeoutException e) {
+        throw new SQLException(e);
+      }
+    }
+    return connection;
+  }
 
-	@Override
-	public Connection getConnection(String username, String password) throws SQLException
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public Connection getConnection(String username, String password) throws SQLException {
+    throw new UnsupportedOperationException();
+  }
 
-	@SuppressWarnings("all")
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @SuppressWarnings("all")
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    throw new SQLFeatureNotSupportedException();
+  }
 
-	public void close()
-	{
-		if( connection != null && futureConnection != null )
-		{
-			try
-			{
-				Connection actConnection = futureConnection.get(1, TimeUnit.SECONDS);
-				actConnection.close();
-			}
-			catch( Exception e )
-			{
-				// ignore
-			}
-		}
-		exec.shutdownNow();
-	}
-
+  public void close() {
+    if (connection != null && futureConnection != null) {
+      try {
+        Connection actConnection = futureConnection.get(1, TimeUnit.SECONDS);
+        actConnection.close();
+      } catch (Exception e) {
+        // ignore
+      }
+    }
+    exec.shutdownNow();
+  }
 }

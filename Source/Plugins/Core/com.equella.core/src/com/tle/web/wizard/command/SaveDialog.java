@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.wizard.command;
-
-import java.util.Collection;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -54,224 +52,202 @@ import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import java.util.Collection;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@PlugKey("command.save.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("command.save.unfinishedmsg")
-	private static Label LABEL_UNFINISHEDMSG;
+public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@PlugKey("command.save.publishmsg")
-	private static Label LABEL_PUBLISHMSG;
-	@PlugKey("command.save.publishnoworkflowmsg")
-	private static Label LABEL_PUBLISH_NOMOD_MSG;
+  @PlugKey("command.save.title")
+  private static Label LABEL_TITLE;
 
-	@PlugKey("command.save.successreceipt")
-	private static Label SUCCESS_RECEIPT_LABEL;
+  @PlugKey("command.save.unfinishedmsg")
+  private static Label LABEL_UNFINISHEDMSG;
 
-	@Inject
-	private ModerationService moderationService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private WizardService wizardService;
-	@Inject
-	private WebWizardService webWizardService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+  @PlugKey("command.save.publishmsg")
+  private static Label LABEL_PUBLISHMSG;
 
-	@Component(stateful = false, name = "m")
-	private TextField message;
-	@TreeLookup
-	private WizardBodySection wizardBodySection;
+  @PlugKey("command.save.publishnoworkflowmsg")
+  private static Label LABEL_PUBLISH_NOMOD_MSG;
 
-	@Component
-	@PlugKey("command.save.savedraft")
-	private Button draft;
-	@Component
-	@PlugKey("command.save.cancel")
-	private Button cancel;
-	@Component
-	@PlugKey("command.save.complete")
-	private Button complete;
-	@Component
-	@PlugKey("command.save.submit")
-	private Button submit;
-	@Component
-	@PlugKey("command.save.submitnoworkflow")
-	private Button publish;
+  @PlugKey("command.save.successreceipt")
+  private static Label SUCCESS_RECEIPT_LABEL;
 
-	public SaveDialog()
-	{
-		setAjax(true);
-	}
+  @Inject private ModerationService moderationService;
+  @Inject private ReceiptService receiptService;
+  @Inject private WizardService wizardService;
+  @Inject private WebWizardService webWizardService;
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		final JSCallable commandExec = addParentCallable(events.getSubmitValuesFunction("save"));
-		final ScriptVariable type = new ScriptVariable("type");
-		final ScriptVariable msg = new ScriptVariable("msg");
-		final SimpleFunction execFunc = new SimpleFunction("exec", this,
-			StatementBlock.get(Js.call_s(commandExec, type, msg), Js.call_s(getCloseFunction())), type, msg);
+  @Component(stateful = false, name = "m")
+  private TextField message;
 
-		draft.setClickHandler(new OverrideHandler(execFunc, "draft", ""));
-		cancel.setClickHandler(new OverrideHandler(getCloseFunction()));
-		complete.setClickHandler(new OverrideHandler(execFunc, "check", ""));
-		submit.setClickHandler(new OverrideHandler(execFunc, "submit", message.createGetExpression()));
-		publish.setClickHandler(new OverrideHandler(execFunc, "submit", ""));
+  @TreeLookup private WizardBodySection wizardBodySection;
 
-		submit.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
-		publish.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+  @Component
+  @PlugKey("command.save.savedraft")
+  private Button draft;
 
-		super.treeFinished(id, tree);
-	}
+  @Component
+  @PlugKey("command.save.cancel")
+  private Button cancel;
 
-	@Override
-	public String getWidth()
-	{
-		return "500px";
-	}
+  @Component
+  @PlugKey("command.save.complete")
+  private Button complete;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Component
+  @PlugKey("command.save.submit")
+  private Button submit;
 
-	@Override
-	public SaveDialogModel instantiateDialogModel(@Nullable SectionInfo info)
-	{
-		return new SaveDialogModel();
-	}
+  @Component
+  @PlugKey("command.save.submitnoworkflow")
+  private Button publish;
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		final Collection<Button> buttons = Lists.newArrayList();
-		final Label prompt;
+  public SaveDialog() {
+    setAjax(true);
+  }
 
-		final SaveDialogModel model = getModel(context);
-		if( !wizardBodySection.isSaveableApartFromCurrent(context) )
-		{
-			prompt = LABEL_UNFINISHEDMSG;
-			buttons.add(complete);
-		}
-		else
-		{
-			WizardState state = context.getAttributeForClass(WizardSectionInfo.class).getWizardState();
-			if( state.getItemDefinition().getWorkflow() != null )
-			{
-				prompt = LABEL_PUBLISHMSG;
-				buttons.add(submit);
-				model.setShowMessage(true);
-			}
-			else
-			{
-				prompt = LABEL_PUBLISH_NOMOD_MSG;
-				buttons.add(publish);
-			}
-		}
-		buttons.add(draft);
-		buttons.add(cancel);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    final JSCallable commandExec = addParentCallable(events.getSubmitValuesFunction("save"));
+    final ScriptVariable type = new ScriptVariable("type");
+    final ScriptVariable msg = new ScriptVariable("msg");
+    final SimpleFunction execFunc =
+        new SimpleFunction(
+            "exec",
+            this,
+            StatementBlock.get(Js.call_s(commandExec, type, msg), Js.call_s(getCloseFunction())),
+            type,
+            msg);
 
-		model.setPrompt(prompt);
-		model.setActions(buttons);
+    draft.setClickHandler(new OverrideHandler(execFunc, "draft", ""));
+    cancel.setClickHandler(new OverrideHandler(getCloseFunction()));
+    complete.setClickHandler(new OverrideHandler(execFunc, "check", ""));
+    submit.setClickHandler(new OverrideHandler(execFunc, "submit", message.createGetExpression()));
+    publish.setClickHandler(new OverrideHandler(execFunc, "submit", ""));
 
-		return viewFactory.createResult("wizard/savedialog.ftl", this);
-	}
+    submit.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+    publish.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return getModel(context).getActions();
-	}
+    super.treeFinished(id, tree);
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info, String type, String message)
-	{
-		WizardSectionInfo winfo = info.getAttributeForClass(WizardSectionInfo.class);
-		WizardState state = winfo.getWizardState();
-		WorkflowOperation[] ops = new WorkflowOperation[]{};
-		boolean doSubmit = type.equals("submit");
-		boolean doCheck = type.equals("check");
+  @Override
+  public String getWidth() {
+    return "500px";
+  }
 
-		if( doSubmit || !state.isInDraft() || doCheck )
-		{
-			if( !wizardBodySection.isSaveable(info) && wizardBodySection.goToFirstUnfinished(info) )
-			{
-				return;
-			}
-		}
-		if( doCheck )
-		{
-			return;
-		}
-		boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
-		if( doSubmit )
-		{
-			ops = new WorkflowOperation[]{workflowFactory.submit(message)};
-			stayInWizard = false;
-		}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-		wizardService.doSave(state, true, ops);
+  @Override
+  public SaveDialogModel instantiateDialogModel(@Nullable SectionInfo info) {
+    return new SaveDialogModel();
+  }
 
-		if( !stayInWizard )
-		{
-			webWizardService.forwardToViewItem(info, state);
-			receiptService.setReceipt(SUCCESS_RECEIPT_LABEL);
-		}
-		else
-		{
-			wizardService.reload(state, false);
-			moderationService.setEditing(info, false);
-		}
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    final Collection<Button> buttons = Lists.newArrayList();
+    final Label prompt;
 
-	public static class SaveDialogModel extends DialogModel
-	{
-		private Label prompt;
-		private boolean showMessage;
-		private Collection<Button> actions;
+    final SaveDialogModel model = getModel(context);
+    if (!wizardBodySection.isSaveableApartFromCurrent(context)) {
+      prompt = LABEL_UNFINISHEDMSG;
+      buttons.add(complete);
+    } else {
+      WizardState state = context.getAttributeForClass(WizardSectionInfo.class).getWizardState();
+      if (state.getItemDefinition().getWorkflow() != null) {
+        prompt = LABEL_PUBLISHMSG;
+        buttons.add(submit);
+        model.setShowMessage(true);
+      } else {
+        prompt = LABEL_PUBLISH_NOMOD_MSG;
+        buttons.add(publish);
+      }
+    }
+    buttons.add(draft);
+    buttons.add(cancel);
 
-		public Label getPrompt()
-		{
-			return prompt;
-		}
+    model.setPrompt(prompt);
+    model.setActions(buttons);
 
-		public void setPrompt(Label prompt)
-		{
-			this.prompt = prompt;
-		}
+    return viewFactory.createResult("wizard/savedialog.ftl", this);
+  }
 
-		public boolean isShowMessage()
-		{
-			return showMessage;
-		}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return getModel(context).getActions();
+  }
 
-		public void setShowMessage(boolean showMessage)
-		{
-			this.showMessage = showMessage;
-		}
+  @EventHandlerMethod
+  public void save(SectionInfo info, String type, String message) {
+    WizardSectionInfo winfo = info.getAttributeForClass(WizardSectionInfo.class);
+    WizardState state = winfo.getWizardState();
+    WorkflowOperation[] ops = new WorkflowOperation[] {};
+    boolean doSubmit = type.equals("submit");
+    boolean doCheck = type.equals("check");
 
-		public Collection<Button> getActions()
-		{
-			return actions;
-		}
+    if (doSubmit || !state.isInDraft() || doCheck) {
+      if (!wizardBodySection.isSaveable(info) && wizardBodySection.goToFirstUnfinished(info)) {
+        return;
+      }
+    }
+    if (doCheck) {
+      return;
+    }
+    boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
+    if (doSubmit) {
+      ops = new WorkflowOperation[] {workflowFactory.submit(message)};
+      stayInWizard = false;
+    }
 
-		public void setActions(Collection<Button> actions)
-		{
-			this.actions = actions;
-		}
-	}
+    wizardService.doSave(state, true, ops);
 
-	public TextField getMessage()
-	{
-		return message;
-	}
+    if (!stayInWizard) {
+      webWizardService.forwardToViewItem(info, state);
+      receiptService.setReceipt(SUCCESS_RECEIPT_LABEL);
+    } else {
+      wizardService.reload(state, false);
+      moderationService.setEditing(info, false);
+    }
+  }
+
+  public static class SaveDialogModel extends DialogModel {
+    private Label prompt;
+    private boolean showMessage;
+    private Collection<Button> actions;
+
+    public Label getPrompt() {
+      return prompt;
+    }
+
+    public void setPrompt(Label prompt) {
+      this.prompt = prompt;
+    }
+
+    public boolean isShowMessage() {
+      return showMessage;
+    }
+
+    public void setShowMessage(boolean showMessage) {
+      this.showMessage = showMessage;
+    }
+
+    public Collection<Button> getActions() {
+      return actions;
+    }
+
+    public void setActions(Collection<Button> actions) {
+      this.actions = actions;
+    }
+  }
+
+  public TextField getMessage() {
+    return message;
+  }
 }

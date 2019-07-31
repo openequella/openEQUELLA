@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.web.favourites;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.search.DefaultSearch;
@@ -59,177 +54,161 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class FavouritesResultsSection extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
-	implements
-		BlueBarEventListener
-{
-	@PlugKey("favorites.noresults.items")
-	private static Label LABEL_NOAVAILABLE;
-	@PlugKey("favorites.noresults.items.filtered")
-	private static Label LABEL_NORESULTS;
+public class FavouritesResultsSection
+    extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
+    implements BlueBarEventListener {
+  @PlugKey("favorites.noresults.items")
+  private static Label LABEL_NOAVAILABLE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("favorites.noresults.items.filtered")
+  private static Label LABEL_NORESULTS;
 
-	@TreeLookup
-	private AbstractSearchActionsSection<?> searchActionsSection;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@EventFactory
-	private EventGenerator events;
+  @TreeLookup private AbstractSearchActionsSection<?> searchActionsSection;
 
-	@Inject
-	private GallerySearchResults galleryResults;
-	@Inject
-	private VideoSearchResults videoResults;
-	@Inject
-	private FavouritesSearchResults favouriteStandardResults;
-	@Inject
-	private ConfigurationService configService;
+  @EventFactory private EventGenerator events;
 
-	@Component(parameter = "type", supported = true, contexts = ContextableSearchSection.HISTORYURL_CONTEXT)
-	private SingleSelectionList<StandardSearchResultType> resultType;
+  @Inject private GallerySearchResults galleryResults;
+  @Inject private VideoSearchResults videoResults;
+  @Inject private FavouritesSearchResults favouriteStandardResults;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	protected SingleSelectionList<StandardSearchResultType> getResultTypeSelector(SectionInfo info)
-	{
-		return resultType;
-	}
+  @Component(
+      parameter = "type",
+      supported = true,
+      contexts = ContextableSearchSection.HISTORYURL_CONTEXT)
+  private SingleSelectionList<StandardSearchResultType> resultType;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		favouriteStandardResults.register(tree, id);
-		galleryResults.register(tree, id);
-		videoResults.register(tree, id);
+  @Override
+  protected SingleSelectionList<StandardSearchResultType> getResultTypeSelector(SectionInfo info) {
+    return resultType;
+  }
 
-		SearchTypeListModel typeListModel = new SearchTypeListModel();
-		resultType.setListModel(typeListModel);
-		resultType.setAlwaysSelect(true);
-		resultType.addChangeEventHandler(events.getNamedHandler("resultTypeChanged"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    favouriteStandardResults.register(tree, id);
+    galleryResults.register(tree, id);
+    videoResults.register(tree, id);
 
-	@EventHandlerMethod
-	public void resultTypeChanged(SectionInfo info)
-	{
-		startSearch(info);
-	}
+    SearchTypeListModel typeListModel = new SearchTypeListModel();
+    resultType.setListModel(typeListModel);
+    resultType.setAlwaysSelect(true);
+    resultType.addChangeEventHandler(events.getNamedHandler("resultTypeChanged"));
+  }
 
-	@Override
-	public AbstractItemList<StandardItemListEntry, ?> getItemList(SectionInfo info)
-	{
-		return resultType.getSelectedValue(info).getCustomItemList();
-	}
+  @EventHandlerMethod
+  public void resultTypeChanged(SectionInfo info) {
+    startSearch(info);
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		FavouritesSearch search = new FavouritesSearch();
-		if( resultType.getSelectedValue(info).isDisabled() )
-		{
-			resultType.setSelectedValue(info, favouriteStandardResults);
-		}
-		StandardSearchResultType selectedResults = resultType.getSelectedValue(info);
-		selectedResults.addResultTypeDefaultRestrictions(search);
-		return search;
-	}
+  @Override
+  public AbstractItemList<StandardItemListEntry, ?> getItemList(SectionInfo info) {
+    return resultType.getSelectedValue(info).getCustomItemList();
+  }
 
-	public class SearchTypeListModel extends DynamicHtmlListModel<StandardSearchResultType>
-	{
-		@Override
-		protected KeyOption<StandardSearchResultType> convertToOption(SectionInfo info,
-			StandardSearchResultType resultType)
-		{
-			return new KeyOption<StandardSearchResultType>(resultType.getKey(), resultType.getValue(), resultType);
-		}
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    FavouritesSearch search = new FavouritesSearch();
+    if (resultType.getSelectedValue(info).isDisabled()) {
+      resultType.setSelectedValue(info, favouriteStandardResults);
+    }
+    StandardSearchResultType selectedResults = resultType.getSelectedValue(info);
+    selectedResults.addResultTypeDefaultRestrictions(search);
+    return search;
+  }
 
-		@Override
-		public StandardSearchResultType getValue(SectionInfo info, String value)
-		{
-			StandardSearchResultType val = super.getValue(info, value);
-			return val == null ? getValue(info, getDefaultValue(info)) : val;
-		}
+  public class SearchTypeListModel extends DynamicHtmlListModel<StandardSearchResultType> {
+    @Override
+    protected KeyOption<StandardSearchResultType> convertToOption(
+        SectionInfo info, StandardSearchResultType resultType) {
+      return new KeyOption<StandardSearchResultType>(
+          resultType.getKey(), resultType.getValue(), resultType);
+    }
 
-		@Override
-		protected Iterable<StandardSearchResultType> populateModel(SectionInfo info)
-		{
-			final SearchSettings settings = getSearchSettings();
-			List<StandardSearchResultType> resultTypes = new ArrayList<StandardSearchResultType>();
-			resultTypes.add(favouriteStandardResults);
-			if( !settings.isSearchingDisableGallery() )
-			{
-				resultTypes.add(galleryResults);
-			}
-			if( !settings.isSearchingDisableVideos() )
-			{
-				resultTypes.add(videoResults);
-			}
-			return resultTypes;
-		}
-	}
+    @Override
+    public StandardSearchResultType getValue(SectionInfo info, String value) {
+      StandardSearchResultType val = super.getValue(info, value);
+      return val == null ? getValue(info, getDefaultValue(info)) : val;
+    }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		String selectedValue = resultType.getSelectedValueAsString(context);
-		Set<String> matchingValues = resultType.getListModel().getMatchingValues(context,
-			Collections.singleton(selectedValue));
-		if( matchingValues.size() == 0 )
-		{
-			String defaultValue = resultType.getListModel().getDefaultValue(context);
-			resultType.setSelectedStringValue(context, defaultValue);
-		}
-		getPaging().setIsGalleryOptions(context, resultType.getSelectedValue(context).equals(galleryResults));
-		getPaging().setIsVideoGallery(context, resultType.getSelectedValue(context).equals(videoResults));
-		searchActionsSection.disableSaveAndShare(context);
-		return super.renderHtml(context);
-	}
+    @Override
+    protected Iterable<StandardSearchResultType> populateModel(SectionInfo info) {
+      final SearchSettings settings = getSearchSettings();
+      List<StandardSearchResultType> resultTypes = new ArrayList<StandardSearchResultType>();
+      resultTypes.add(favouriteStandardResults);
+      if (!settings.isSearchingDisableGallery()) {
+        resultTypes.add(galleryResults);
+      }
+      if (!settings.isSearchingDisableVideos()) {
+        resultTypes.add(videoResults);
+      }
+      return resultTypes;
+    }
+  }
 
-	@Override
-	protected Label getNoResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		if( !searchEvent.isFiltered() )
-		{
-			return LABEL_NOAVAILABLE;
-		}
-		return LABEL_NORESULTS;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    String selectedValue = resultType.getSelectedValueAsString(context);
+    Set<String> matchingValues =
+        resultType.getListModel().getMatchingValues(context, Collections.singleton(selectedValue));
+    if (matchingValues.size() == 0) {
+      String defaultValue = resultType.getListModel().getDefaultValue(context);
+      resultType.setSelectedStringValue(context, defaultValue);
+    }
+    getPaging()
+        .setIsGalleryOptions(context, resultType.getSelectedValue(context).equals(galleryResults));
+    getPaging()
+        .setIsVideoGallery(context, resultType.getSelectedValue(context).equals(videoResults));
+    searchActionsSection.disableSaveAndShare(context);
+    return super.renderHtml(context);
+  }
 
-	public static class FavouritesSearch extends DefaultSearch
-	{
-		private static final long serialVersionUID = 1L;
+  @Override
+  protected Label getNoResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    if (!searchEvent.isFiltered()) {
+      return LABEL_NOAVAILABLE;
+    }
+    return LABEL_NORESULTS;
+  }
 
-		@Override
-		public void addExtraMusts(List<List<Field>> musts)
-		{
-			musts
-				.add(Collections.singletonList(new Field(FreeTextQuery.FIELD_BOOKMARK_OWNER, CurrentUser.getUserID())));
-		}
+  public static class FavouritesSearch extends DefaultSearch {
+    private static final long serialVersionUID = 1L;
 
-		@Override
-		public List<String> getExtraQueries()
-		{
-			return Collections.singletonList(String.format("%s:(%s)", FreeTextQuery.FIELD_BOOKMARK_TAGS, getQuery()));
-		}
-	}
+    @Override
+    public void addExtraMusts(List<List<Field>> musts) {
+      musts.add(
+          Collections.singletonList(
+              new Field(FreeTextQuery.FIELD_BOOKMARK_OWNER, CurrentUser.getUserID())));
+    }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(viewFactory.createResult("helpfavouritesresources.ftl", this));
-	}
+    @Override
+    public List<String> getExtraQueries() {
+      return Collections.singletonList(
+          String.format("%s:(%s)", FreeTextQuery.FIELD_BOOKMARK_TAGS, getQuery()));
+    }
+  }
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		// done elsewhere
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(viewFactory.createResult("helpfavouritesresources.ftl", this));
+  }
 
-	private SearchSettings getSearchSettings()
-	{
-		return configService.getProperties(new SearchSettings());
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    // done elsewhere
+  }
+
+  private SearchSettings getSearchSettings() {
+    return configService.getProperties(new SearchSettings());
+  }
 }

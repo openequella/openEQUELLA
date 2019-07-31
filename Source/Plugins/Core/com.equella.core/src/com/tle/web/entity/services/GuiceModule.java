@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,81 +32,69 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.user.UserService;
 import com.tle.core.workflow.service.WorkflowService;
 
-public class GuiceModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		// just provider
-	}
+public class GuiceModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    // just provider
+  }
 
-	@Provides
-	@Named("remoteSchemaService")
-	Object provideSchemaService(SchemaService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteSchemaService")
+  Object provideSchemaService(SchemaService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteLanguageService")
-	Object provideLanguageService(LanguageService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteLanguageService")
+  Object provideLanguageService(LanguageService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteUserService")
-	Object provideUserService(UserService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteUserService")
+  Object provideUserService(UserService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteWorkflowService")
-	Object provideWorkflowService(WorkflowService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteWorkflowService")
+  Object provideWorkflowService(WorkflowService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteItemdefinitionService")
-	Object provideItemdefinitionService(ItemDefinitionService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteItemdefinitionService")
+  Object provideItemdefinitionService(ItemDefinitionService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remotePowerSearchService")
-	Object providePowerSearchService(PowerSearchService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remotePowerSearchService")
+  Object providePowerSearchService(PowerSearchService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteItemService")
-	Object provideItemService(ItemService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteItemService")
+  Object provideItemService(ItemService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remotePrivilegeTreeService")
-	Object provideItemService(PrivilegeTreeService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remotePrivilegeTreeService")
+  Object provideItemService(PrivilegeTreeService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteAclService")
-	Object provideAclService(TLEAclManager remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteAclService")
+  Object provideAclService(TLEAclManager remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteBaseEntityService")
-	Object provideBaseEntityService(BaseEntityService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteBaseEntityService")
+  Object provideBaseEntityService(BaseEntityService remote) {
+    return remote;
+  }
 }

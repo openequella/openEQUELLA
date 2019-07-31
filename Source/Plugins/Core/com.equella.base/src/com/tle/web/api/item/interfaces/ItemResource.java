@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,17 @@
 
 package com.tle.web.api.item.interfaces;
 
+import com.tle.common.interfaces.CsvList;
+import com.tle.web.api.interfaces.beans.FileListBean;
+import com.tle.web.api.item.interfaces.beans.CommentBean;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemBean;
+import com.tle.web.api.item.interfaces.beans.ItemSummary;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.io.IOException;
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,176 +44,210 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import com.tle.web.api.item.interfaces.beans.ItemSummary;
 import org.jboss.resteasy.annotations.cache.Cache;
-
-import com.tle.common.interfaces.CsvList;
-import com.tle.web.api.interfaces.beans.FileListBean;
-import com.tle.web.api.item.interfaces.beans.CommentBean;
-import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
-import com.tle.web.api.item.interfaces.beans.ItemBean;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 
 @SuppressWarnings("nls")
 @Produces({"application/json"})
 @Path("item")
 @Api(value = "Items", description = "item")
-public interface ItemResource
-{
-	static final String APIDOC_ITEMUUID = "The uuid of the item";
-	static final String APIDOC_ITEMVERSION = "The version of the item";
-	static final String APIDOC_WAITFORINDEX = "Number of seconds to wait for the item to be indexed";
-	static final String APIDOC_FILEID = "The id of a file area to use";
+public interface ItemResource {
+  static final String APIDOC_ITEMUUID = "The uuid of the item";
+  static final String APIDOC_ITEMVERSION = "The version of the item";
+  static final String APIDOC_WAITFORINDEX = "Number of seconds to wait for the item to be indexed";
+  static final String APIDOC_FILEID = "The id of a file area to use";
 
-	static final String ALL_ALLOWABLE_INFOS = "basic,metadata,attachment,detail,navigation,drm,display,all";
+  static final String ALL_ALLOWABLE_INFOS =
+      "basic,metadata,attachment,detail,navigation,drm,display,all";
 
-	@GET
-	@Path("/{uuid}/{version}")
-	@ApiOperation(value = "Get information about an item", response = ItemBean.class)
-	public ItemBean getItem(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(value = "How much information to return for the item", required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true) @QueryParam("info") CsvList info);
-	// @formatter:on
+  @GET
+  @Path("/{uuid}/{version}")
+  @ApiOperation(value = "Get information about an item", response = ItemBean.class)
+  public ItemBean getItem(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam(
+              value = "How much information to return for the item",
+              required = false,
+              allowableValues = ALL_ALLOWABLE_INFOS,
+              allowMultiple = true)
+          @QueryParam("info")
+          CsvList info);
+  // @formatter:on
 
-	@POST
-	@Path("/copy")
-	@ApiOperation(value = "Copy an item's files to a new file area")
-	public Response createStagingFromItem(@QueryParam("uuid") String itemUuid, @QueryParam("version") int itemVersion)
-		throws IOException;
+  @POST
+  @Path("/copy")
+  @ApiOperation(value = "Copy an item's files to a new file area")
+  public Response createStagingFromItem(
+      @QueryParam("uuid") String itemUuid, @QueryParam("version") int itemVersion)
+      throws IOException;
 
-	@PUT
-	@Path("/{uuid}/{version}")
-	@Consumes("application/json")
-	@ApiOperation(value = "Edit an item", notes = "When editing an item, attachment UUIDs will be automatically generated if they are "
-		+ "left blank or if a placeholder in the format of 'uuid:0', 'uuid:1', etc. "
-		+ "You can use these placeholders to refer to the attachments in navigation nodes.")
-	public Response edit(
-	// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(value = APIDOC_FILEID) @QueryParam("file") final String stagingUuid,
-		@ApiParam(value = "The id of the lock in use, if the item is locked") @QueryParam("lock") final String lockId,
-		@ApiParam(value = "If locked, whether or not to keep the item locked after editing", allowableValues = ",true,false", defaultValue = "false") 
-			@QueryParam("keeplocked") final boolean keepLocked,
-		@ApiParam(value = APIDOC_WAITFORINDEX, required=false) @QueryParam("waitforindex") final String waitForIndex,
-		@ApiParam(value = "The uuid of the task if the item is in moderation", required=false) @QueryParam("taskUuid") final String taskUuid,
-		@ApiParam(value = "The item in json format") final ItemBean itemBean);
-	// @formatter:on
+  @PUT
+  @Path("/{uuid}/{version}")
+  @Consumes("application/json")
+  @ApiOperation(
+      value = "Edit an item",
+      notes =
+          "When editing an item, attachment UUIDs will be automatically generated if they are "
+              + "left blank or if a placeholder in the format of 'uuid:0', 'uuid:1', etc. "
+              + "You can use these placeholders to refer to the attachments in navigation nodes.")
+  public Response edit(
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam(value = APIDOC_FILEID) @QueryParam("file") final String stagingUuid,
+      @ApiParam(value = "The id of the lock in use, if the item is locked") @QueryParam("lock")
+          final String lockId,
+      @ApiParam(
+              value = "If locked, whether or not to keep the item locked after editing",
+              allowableValues = ",true,false",
+              defaultValue = "false")
+          @QueryParam("keeplocked")
+          final boolean keepLocked,
+      @ApiParam(value = APIDOC_WAITFORINDEX, required = false) @QueryParam("waitforindex")
+          final String waitForIndex,
+      @ApiParam(value = "The uuid of the task if the item is in moderation", required = false)
+          @QueryParam("taskUuid")
+          final String taskUuid,
+      @ApiParam(value = "The item in json format") final ItemBean itemBean);
+  // @formatter:on
 
-	@POST
-	@Consumes("application/json")
-	@ApiOperation(value = "Create a new item")
-	public Response newItem(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(value = APIDOC_FILEID) @QueryParam("file") String stagingUuid,
-		@ApiParam(value = "Whether or not to leave the item as a draft", allowableValues = ",true,false", defaultValue = "false") 
-			@QueryParam("draft") boolean draft,
-		@ApiParam(value = APIDOC_WAITFORINDEX, required=false) @QueryParam("waitforindex") String waitForIndex,
-		@ApiParam(value = "The item bean in json format") ItemBean itemBean);
-	// @formatter:on
+  @POST
+  @Consumes("application/json")
+  @ApiOperation(value = "Create a new item")
+  public Response newItem(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(value = APIDOC_FILEID) @QueryParam("file") String stagingUuid,
+      @ApiParam(
+              value = "Whether or not to leave the item as a draft",
+              allowableValues = ",true,false",
+              defaultValue = "false")
+          @QueryParam("draft")
+          boolean draft,
+      @ApiParam(value = APIDOC_WAITFORINDEX, required = false) @QueryParam("waitforindex")
+          String waitForIndex,
+      @ApiParam(value = "The item bean in json format") ItemBean itemBean);
+  // @formatter:on
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation(value = "Get information about all versions of this item", response = ItemBean.class)
-	public List<ItemBean> getAllVersions(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(value = "The uuid to list all the versions of", required = true) @PathParam("uuid") String uuid,
-		@ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true) @QueryParam("info") CsvList info);
-	// @formatter:on
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation(
+      value = "Get information about all versions of this item",
+      response = ItemBean.class)
+  public List<ItemBean> getAllVersions(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(value = "The uuid to list all the versions of", required = true) @PathParam("uuid")
+          String uuid,
+      @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
+          @QueryParam("info")
+          CsvList info);
+  // @formatter:on
 
-	@GET
-	@Path("/{uuid}/latest")
-	@ApiOperation(value = "Get information about the latest version of this item", response = ItemBean.class)
-	public ItemBean getLatest(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(value = "The uuid to find the latest version of", required = true) @PathParam("uuid") String uuid,
-		@ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true) @QueryParam("info") CsvList info);
-	// @formatter:on
+  @GET
+  @Path("/{uuid}/latest")
+  @ApiOperation(
+      value = "Get information about the latest version of this item",
+      response = ItemBean.class)
+  public ItemBean getLatest(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(value = "The uuid to find the latest version of", required = true)
+          @PathParam("uuid")
+          String uuid,
+      @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
+          @QueryParam("info")
+          CsvList info);
+  // @formatter:on
 
-	@GET
-	@Path("/{uuid}/latestlive")
-	@ApiOperation(value = "Get information about the latest live version of this item", response = ItemBean.class)
-	public ItemBean getLatestLive(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(value = "The uuid to find the latest live version of", required = true) @PathParam("uuid") String uuid,
-		@ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true) @QueryParam("info") CsvList info);
-	// @formatter:on
+  @GET
+  @Path("/{uuid}/latestlive")
+  @ApiOperation(
+      value = "Get information about the latest live version of this item",
+      response = ItemBean.class)
+  public ItemBean getLatestLive(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(value = "The uuid to find the latest live version of", required = true)
+          @PathParam("uuid")
+          String uuid,
+      @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
+          @QueryParam("info")
+          CsvList info);
+  // @formatter:on
 
-	@GET
-	@Path("/{uuid}/{version}/comment")
-	@ApiOperation(value = "Get all comments for an item", response = CommentBean.class)
-	public List<CommentBean> getComments(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);// @formatter:on
+  @GET
+  @Path("/{uuid}/{version}/comment")
+  @ApiOperation(value = "Get all comments for an item", response = CommentBean.class)
+  public List<CommentBean> getComments(
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version); // @formatter:on
 
-	@GET
-	@Path("/{uuid}/{version}/history")
-	@ApiOperation(value = "Get all history for an item", response = HistoryEventBean.class)
-	public List<HistoryEventBean> getHistory(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version); // @formatter:on
+  @GET
+  @Path("/{uuid}/{version}/history")
+  @ApiOperation(value = "Get all history for an item", response = HistoryEventBean.class)
+  public List<HistoryEventBean> getHistory(
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version); // @formatter:on
 
-	@DELETE
-	@Path("/{uuid}/{version}")
-	@ApiOperation(value = "Delete an item")
-	public Response deleteItem(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(value = APIDOC_WAITFORINDEX, required=false) @QueryParam("waitforindex") final String waitForIndex,
-		@ApiParam("Whether or not to purge the item completely from the database") @QueryParam("purge") boolean purge); // @formatter:on
+  @DELETE
+  @Path("/{uuid}/{version}")
+  @ApiOperation(value = "Delete an item")
+  public Response deleteItem(
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam(value = APIDOC_WAITFORINDEX, required = false) @QueryParam("waitforindex")
+          final String waitForIndex,
+      @ApiParam("Whether or not to purge the item completely from the database")
+          @QueryParam("purge")
+          boolean purge); // @formatter:on
 
-	@GET
-	@Path("/{uuid}/{version}/file")
-	@ApiOperation(value = "Get item's file listing", response = FileListBean.class)
-	@Produces(MediaType.APPLICATION_JSON)
-	public FileListBean listFiles(@Context UriInfo uriInfo,
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
-	// @formatter:on
+  @GET
+  @Path("/{uuid}/{version}/file")
+  @ApiOperation(value = "Get item's file listing", response = FileListBean.class)
+  @Produces(MediaType.APPLICATION_JSON)
+  public FileListBean listFiles(
+      @Context UriInfo uriInfo,
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
+  // @formatter:on
 
-	@GET
-	@Path("/{uuid}/{version}/summary")
-	@ApiOperation(value = "Get information suitable for displaying in a summary page")
-	public ItemSummary getSummary(@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-								  @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
+  @GET
+  @Path("/{uuid}/{version}/summary")
+  @ApiOperation(value = "Get information suitable for displaying in a summary page")
+  public ItemSummary getSummary(
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
 
+  @HEAD
+  @Path("/{uuid}/{version}/file/{path:(.*)}")
+  @ApiOperation(value = "Get file metadata")
+  @Produces(MediaType.WILDCARD)
+  public Response headFile(
+      @Context HttpHeaders headers,
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam("File path") @PathParam("path") String path);
+  // @formatter:on
 
-	@HEAD
-	@Path("/{uuid}/{version}/file/{path:(.*)}")
-	@ApiOperation(value = "Get file metadata")
-	@Produces(MediaType.WILDCARD)
-	public Response headFile(@Context HttpHeaders headers,
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,  
-		@ApiParam("File path") @PathParam("path") String path);
-	// @formatter:on
-
-	@GET
-	@Path("/{uuid}/{version}/file/{path:(.*)}")
-	@ApiOperation(value = "Read file content")
-	@Cache(maxAge = 86400, sMaxAge = 0, mustRevalidate = true)
-	@Produces(MediaType.WILDCARD)
-	public Response readFile(@Context HttpHeaders headers,
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,  
-		@ApiParam("File path") @PathParam("path") String path);
-	// @formatter:on
-
+  @GET
+  @Path("/{uuid}/{version}/file/{path:(.*)}")
+  @ApiOperation(value = "Read file content")
+  @Cache(maxAge = 86400, sMaxAge = 0, mustRevalidate = true)
+  @Produces(MediaType.WILDCARD)
+  public Response readFile(
+      @Context HttpHeaders headers,
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam("File path") @PathParam("path") String path);
+  // @formatter:on
 
 }

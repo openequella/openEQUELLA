@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,26 +22,22 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 
-public abstract class MyResourcesSubSubSearch
-{
-	private final Label name;
-	private final DefaultSearch search;
+public abstract class MyResourcesSubSubSearch {
+  private final Label name;
+  private final DefaultSearch search;
 
-	public MyResourcesSubSubSearch(Label name, DefaultSearch search)
-	{
-		this.name = name;
-		this.search = search;
-	}
+  public MyResourcesSubSubSearch(Label name, DefaultSearch search) {
+    this.name = name;
+    this.search = search;
+  }
 
-	public abstract void execute(SectionInfo info);
+  public abstract void execute(SectionInfo info);
 
-	public Label getName()
-	{
-		return name;
-	}
+  public Label getName() {
+    return name;
+  }
 
-	public DefaultSearch getSearch()
-	{
-		return search;
-	}
+  public DefaultSearch getSearch() {
+    return search;
+  }
 }

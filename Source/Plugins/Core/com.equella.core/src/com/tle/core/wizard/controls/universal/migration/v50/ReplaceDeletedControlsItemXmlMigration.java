@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,57 @@
 
 package com.tle.core.wizard.controls.universal.migration.v50;
 
-import java.util.Map;
-
-import javax.inject.Singleton;
-
 import com.dytech.devlib.PropBagEx;
 import com.google.common.collect.ImmutableMap;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
+import java.util.Map;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ReplaceDeletedControlsItemXmlMigration extends AbstractItemXmlMigrator
-{
-	private static final Map<String, String> CUSTOM_CLASS_TO_HANDLER = ImmutableMap.of("resource", "resourceHandler",
-		"youtube", "youTubeHandler", "itunesu", "iTunesUHandler", "googlebook", "googleBookHandler", "flickr",
-		"flickrHandler");
+public class ReplaceDeletedControlsItemXmlMigration extends AbstractItemXmlMigrator {
+  private static final Map<String, String> CUSTOM_CLASS_TO_HANDLER =
+      ImmutableMap.of(
+          "resource",
+          "resourceHandler",
+          "youtube",
+          "youTubeHandler",
+          "itunesu",
+          "iTunesUHandler",
+          "googlebook",
+          "googleBookHandler",
+          "flickr",
+          "flickrHandler");
 
-	// We don't handle ItemAttachments, they already have an xpath value that
-	// just needs populating
-	private static final Map<String, String> ATTACHMENT_TO_HANDLER = new ImmutableMap.Builder<String, String>()
-		.put("com.tle.beans.item.attachments.LinkAttachment", "urlHandler")
-		.put("com.tle.beans.item.attachments.HtmlAttachment", "mypagesHandler")
-		.put("com.tle.beans.item.attachments.FileAttachment", "fileHandler")
-		.put("com.tle.beans.item.attachments.ZipAttachment", "fileHandler")
-		.put("com.tle.beans.item.attachments.ImsAttachment", "fileHandler_pkg")
-		.put("com.tle.beans.item.attachments.IMSResourceAttachment", "").build();
+  // We don't handle ItemAttachments, they already have an xpath value that
+  // just needs populating
+  private static final Map<String, String> ATTACHMENT_TO_HANDLER =
+      new ImmutableMap.Builder<String, String>()
+          .put("com.tle.beans.item.attachments.LinkAttachment", "urlHandler")
+          .put("com.tle.beans.item.attachments.HtmlAttachment", "mypagesHandler")
+          .put("com.tle.beans.item.attachments.FileAttachment", "fileHandler")
+          .put("com.tle.beans.item.attachments.ZipAttachment", "fileHandler")
+          .put("com.tle.beans.item.attachments.ImsAttachment", "fileHandler_pkg")
+          .put("com.tle.beans.item.attachments.IMSResourceAttachment", "")
+          .build();
 
-	public static String getHandler(String className, String customType)
-	{
-		if( className.equals("com.tle.beans.item.attachments.CustomAttachment") )
-		{
-			return CUSTOM_CLASS_TO_HANDLER.get(customType);
-		}
-		return ATTACHMENT_TO_HANDLER.get(className);
-	}
+  public static String getHandler(String className, String customType) {
+    if (className.equals("com.tle.beans.item.attachments.CustomAttachment")) {
+      return CUSTOM_CLASS_TO_HANDLER.get(customType);
+    }
+    return ATTACHMENT_TO_HANDLER.get(className);
+  }
 
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		// NO-OP
-		// Fixed by ReplaceDeletedControlsItemXmlMigrationFixer
-		return false;
-	}
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    // NO-OP
+    // Fixed by ReplaceDeletedControlsItemXmlMigrationFixer
+    return false;
+  }
 }

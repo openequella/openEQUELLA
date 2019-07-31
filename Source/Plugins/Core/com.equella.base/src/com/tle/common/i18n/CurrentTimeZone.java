@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,46 @@
 
 package com.tle.common.i18n;
 
-import java.util.TimeZone;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginTracker;
+import java.util.TimeZone;
 
 /**
  * Based on the CurrentLocale code
- * 
+ *
  * @author aholland
  */
 @NonNullByDefault
-public final class CurrentTimeZone
-{
-	@Nullable
-	private static AbstractCurrentTimeZone impl;
+public final class CurrentTimeZone {
+  @Nullable private static AbstractCurrentTimeZone impl;
 
-	public static TimeZone get()
-	{
-		return getImpl().get();
-	}
+  public static TimeZone get() {
+    return getImpl().get();
+  }
 
-	public abstract static class AbstractCurrentTimeZone
-	{
-		public abstract TimeZone get();
-	}
+  public abstract static class AbstractCurrentTimeZone {
+    public abstract TimeZone get();
+  }
 
-	private CurrentTimeZone()
-	{
-		throw new Error();
-	}
+  private CurrentTimeZone() {
+    throw new Error();
+  }
 
-	private static synchronized AbstractCurrentTimeZone getImpl()
-	{
-		if( impl == null )
-		{
-			impl = new PluginTracker<AbstractCurrentTimeZone>(AbstractPluginService.get(), "com.tle.common.i18n",
-				"currentTimeZoneImpl", null).setBeanKey("bean").getBeanList().get(0);
-		}
-		return impl;
-	}
+  private static synchronized AbstractCurrentTimeZone getImpl() {
+    if (impl == null) {
+      impl =
+          new PluginTracker<AbstractCurrentTimeZone>(
+                  AbstractPluginService.get(), "com.tle.common.i18n", "currentTimeZoneImpl", null)
+              .setBeanKey("bean")
+              .getBeanList()
+              .get(0);
+    }
+    return impl;
+  }
 
-	public static void initialise(AbstractCurrentTimeZone tzImpl)
-	{
-		impl = tzImpl;
-	}
+  public static void initialise(AbstractCurrentTimeZone tzImpl) {
+    impl = tzImpl;
+  }
 }

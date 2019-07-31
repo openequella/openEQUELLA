@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,85 +18,73 @@
 
 package com.tle.web.sections.jquery;
 
-import java.util.Arrays;
-
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
+import java.util.Arrays;
 
 /**
- * Please note, if you add any additional javascript files, they must be
- * included in the JQueryLibrary modules list.
+ * Please note, if you add any additional javascript files, they must be included in the
+ * JQueryLibrary modules list.
  */
-public class JQueryLibraryInclude extends IncludeFile
-{
-	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryLibraryInclude.class);
+public class JQueryLibraryInclude extends IncludeFile {
+  public static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JQueryLibraryInclude.class);
 
-	public static CssInclude.CssIncludeBuilder cssb(String css)
-	{
-		return CssInclude.include(urlHelper.url("css/jquerylib/" + css));
-	}
+  public static CssInclude.CssIncludeBuilder cssb(String css) {
+    return CssInclude.include(urlHelper.url("css/jquerylib/" + css));
+  }
 
-	public static CssInclude css(String css)
-	{
-		return cssb(css).make();
-	}
+  public static CssInclude css(String css) {
+    return cssb(css).make();
+  }
 
-	private static String[] addLibFolder(String[] jses)
-	{
-		String[] fullJses = new String[jses.length];
-		int i = 0;
-		for( String js : jses )
-		{
-			if( js.startsWith("~") ) //$NON-NLS-1$
-			{
-				// strip the ~ and use the path as-is
-				fullJses[i++] = urlHelper.url(js.substring(1));
-			}
-			else
-			{
-				fullJses[i++] = urlHelper.url("jquerylib/" + js); //$NON-NLS-1$
-			}
-		}
-		return fullJses;
-	}
+  private static String[] addLibFolder(String[] jses) {
+    String[] fullJses = new String[jses.length];
+    int i = 0;
+    for (String js : jses) {
+      if (js.startsWith("~")) // $NON-NLS-1$
+      {
+        // strip the ~ and use the path as-is
+        fullJses[i++] = urlHelper.url(js.substring(1));
+      } else {
+        fullJses[i++] = urlHelper.url("jquerylib/" + js); // $NON-NLS-1$
+      }
+    }
+    return fullJses;
+  }
 
-	public JQueryLibraryInclude(String js, String css, boolean hasNew, PreRenderable... preRenderables)
-	{
-		this(js, preRenderables);
-		addPreRenderer(cssb(css).make()); //$NON-NLS-1$
-	}
+  public JQueryLibraryInclude(
+      String js, String css, boolean hasNew, PreRenderable... preRenderables) {
+    this(js, preRenderables);
+    addPreRenderer(cssb(css).make()); // $NON-NLS-1$
+  }
 
-	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)
-	{
-		this(js, css, false, preRenderables);
-	}
+  public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables) {
+    this(js, css, false, preRenderables);
+  }
 
-	public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables)
-	{
-		this(jses, preRenderables);
-		addPreRenderer(css(css));
-	}
+  public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables) {
+    this(jses, preRenderables);
+    addPreRenderer(css(css));
+  }
 
-	public JQueryLibraryInclude(String js, PreRenderable... preRenderables)
-	{
-		super(urlHelper.url("jquerylib/" + js), preRenderables); //$NON-NLS-1$
-		addPreRenderer(JQueryCore.PRERENDER);
-	}
+  public JQueryLibraryInclude(String js, PreRenderable... preRenderables) {
+    super(urlHelper.url("jquerylib/" + js), preRenderables); // $NON-NLS-1$
+    addPreRenderer(JQueryCore.PRERENDER);
+  }
 
-	/**
-	 * @param jses A js file location can be prefixed with '~' if you don't want
-	 *            it to look in the jquerylib folder
-	 * @param preRenderables
-	 */
-	public JQueryLibraryInclude(String[] jses, PreRenderable... preRenderables)
-	{
-		super(addLibFolder(jses));
-		addPreRenderers(Arrays.asList(preRenderables));
-		addPreRenderer(JQueryCore.PRERENDER);
-	}
-
+  /**
+   * @param jses A js file location can be prefixed with '~' if you don't want it to look in the
+   *     jquerylib folder
+   * @param preRenderables
+   */
+  public JQueryLibraryInclude(String[] jses, PreRenderable... preRenderables) {
+    super(addLibFolder(jses));
+    addPreRenderers(Arrays.asList(preRenderables));
+    addPreRenderer(JQueryCore.PRERENDER);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.searching.itemlist;
 
-import javax.inject.Inject;
-
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
@@ -28,53 +28,43 @@ import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import javax.inject.Inject;
 
 abstract class ItemListFileCountDisplaySection extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, StandardItemListEntry>
-{
-	@Inject
-	private ItemResolver itemResolver;
+    implements ItemlikeListEntryExtension<Item, StandardItemListEntry> {
+  @Inject private ItemResolver itemResolver;
 
-	@Inject
-	private ConfigurationService configService;
+  @Inject private ConfigurationService configService;
 
-	protected boolean isFileCountDisabled()
-	{
-		return configService.getProperties(new SearchSettings()).isFileCountDisabled();
-	}
+  protected boolean isFileCountDisabled() {
+    return configService.getProperties(new SearchSettings()).isFileCountDisabled();
+  }
 
-	protected boolean canViewRestricted(IItem<?> item)
-	{
-		return itemResolver.canViewRestrictedAttachments(item, null);
-	}
+  protected boolean canViewRestricted(IItem<?> item) {
+    return itemResolver.canViewRestrictedAttachments(item, null);
+  }
 
-	/**
-	 * 
-	 * @param item
-	 * @param attachment
-	 * @return true if the attachment is restricted AND the user doesn't have permissions to view it.
-	 */
-	protected boolean checkRestrictedAttachment(IItem<?> item, IAttachment attachment)
-	{
-		return itemResolver.checkRestrictedAttachment(item, attachment, null);
-	}
+  /**
+   * @param item
+   * @param attachment
+   * @return true if the attachment is restricted AND the user doesn't have permissions to view it.
+   */
+  protected boolean checkRestrictedAttachment(IItem<?> item, IAttachment attachment) {
+    return itemResolver.checkRestrictedAttachment(item, attachment, null);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

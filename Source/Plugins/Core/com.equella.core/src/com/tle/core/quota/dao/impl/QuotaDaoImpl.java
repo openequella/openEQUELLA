@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,32 @@
 
 package com.tle.core.quota.dao.impl;
 
-import java.util.List;
-
-import javax.inject.Singleton;
-
 import com.tle.beans.item.Item;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.quota.dao.QuotaDao;
+import java.util.List;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @Bind(QuotaDao.class)
 @Singleton
-public class QuotaDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements QuotaDao
-{
-	public QuotaDaoImpl()
-	{
-		super(Item.class);
-	}
+public class QuotaDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements QuotaDao {
+  public QuotaDaoImpl() {
+    super(Item.class);
+  }
 
-	@Override
-	public long calculateUserFileSize(UserBean user)
-	{
-		String hql = "select sum(i.totalFileSize) from Item i where i.owner = :owner";
-		List<Long> sum = getHibernateTemplate().findByNamedParam(hql, "owner", user.getUniqueID());
-		if( sum.size() > 0 )
-		{
-			Long l = sum.get(0);
-			if( l != null )
-			{
-				return l;
-			}
-		}
-		return 0;
-	}
+  @Override
+  public long calculateUserFileSize(UserBean user) {
+    String hql = "select sum(i.totalFileSize) from Item i where i.owner = :owner";
+    List<Long> sum = getHibernateTemplate().findByNamedParam(hql, "owner", user.getUniqueID());
+    if (sum.size() > 0) {
+      Long l = sum.get(0);
+      if (l != null) {
+        return l;
+      }
+    }
+    return 0;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.web.hierarchy.section;
 
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.google.common.collect.ImmutableSet;
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
@@ -29,25 +27,23 @@ import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.itemlist.item.StandardItemListEntryFactory;
 import com.tle.web.sections.SectionInfo;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
 public class HierarchyItemList
-	extends
-		AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>>
-{
-	@Inject
-	private StandardItemListEntryFactory factory;
+    extends AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>> {
+  @Inject private StandardItemListEntryFactory factory;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "hierarchy");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "hierarchy");
+  }
 
-	@Override
-	protected StandardItemListEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		return factory.createItemListItem(info, item, result);
-	}
+  @Override
+  protected StandardItemListEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
+    return factory.createItemListItem(info, item, result, index, available);
+  }
 }

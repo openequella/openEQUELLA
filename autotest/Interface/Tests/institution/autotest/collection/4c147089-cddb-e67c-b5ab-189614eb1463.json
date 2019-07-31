@@ -1,0 +1,30 @@
+{
+  "uuid": "4c147089-cddb-e67c-b5ab-189614eb1463",
+  "name": "CAL Guide Books Collection",
+  "nameStrings": {
+    "en": "CAL Guide Books Collection"
+  },
+  "description": "collection to test CAL according to the CAL contribution guide",
+  "descriptionStrings": {
+    "en": "collection to test CAL according to the CAL contribution guide"
+  },
+  "modifiedDate": "2014-05-12T15:43:41.853+10:00",
+  "createdDate": "2014-05-12T15:43:41.851+10:00",
+  "owner": {
+    "id": "system"
+  },
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
+  },
+  "schema": {
+    "uuid": "f028746b-0346-fe7e-a223-a2db1240140c"
+  },
+  "_export": {
+    "exportVersion": "1.0"
+  },
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/4c147089-cddb-e67c-b5ab-189614eb1463"
+  }
+}

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,15 +17,6 @@
  */
 
 package com.tle.web.mimetypes.section;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Random;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.Base64;
 import com.google.common.io.ByteStreams;
@@ -45,11 +38,9 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.handler.AjaxEventCreator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
-import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
@@ -66,369 +57,316 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.FileUpload;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.stream.ContentStreamWriter;
-import org.joda.time.Partial;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Random;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 public class EditIconSection extends AbstractPrototypeSection<EditIconSection.EditIconModel>
-	implements
-		HtmlRenderer,
-		MimeEditExtension
-{
-	private static final String ICON_FILENAME = "icon.gif";
-	private static final String PRE_THUMB_FILENAME = "thumb";
+    implements HtmlRenderer, MimeEditExtension {
+  private static final String ICON_FILENAME = "icon.gif";
+  private static final String PRE_THUMB_FILENAME = "thumb";
 
-	@Inject
-	private ImageMagickService imageMagickService;
-	@Inject
-	private StagingService stagingService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private WebMimeTypeService webMimeTypeService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  @Inject private ImageMagickService imageMagickService;
+  @Inject private StagingService stagingService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private WebMimeTypeService webMimeTypeService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Component(name = "iu")
-	private FileUpload iconUpload;
-	@Component(name = "ub")
-	private Button uploadButton;
-	@Component(name = "ri")
-	private Button removeIconButton;
-	private JSAssignable validateFile;
+  @Component(name = "iu")
+  private FileUpload iconUpload;
 
-	@Override
-	public Class<EditIconModel> getModelClass()
-	{
-		return EditIconModel.class;
-	}
+  @Component(name = "ub")
+  private Button uploadButton;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "mei";
-	}
+  @Component(name = "ri")
+  private Button removeIconButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		uploadButton.setClickHandler(new ReloadHandler());
-		removeIconButton.setClickHandler(events.getNamedHandler("removeIcon"));
-		validateFile = AjaxUpload.simpleUploadValidator("uploadProgress",
-				PartiallyApply.partial(events.getSubmitValuesFunction("checkFileUpload"), 2));
-	}
+  private JSAssignable validateFile;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		BookmarkAndModify stagingIcon = new BookmarkAndModify(context, events.getNamedModifier("showCurrentIcon"));
-		getModel(context).setDisplayIconUrl(stagingIcon.getHref());
-		iconUpload.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "uploadIcon"));
-		iconUpload.setValidateFile(context, validateFile);
-		return viewFactory.createResult("iconedit.ftl", context);
-	}
+  @Override
+  public Class<EditIconModel> getModelClass() {
+    return EditIconModel.class;
+  }
 
-	@EventHandlerMethod
-	public void showCurrentIcon(SectionInfo info)
-	{
-		final EditIconModel model = getModel(info);
-		if( model.isHasCustomIcon() && model.getStagingId() != null )
-		{
-			info.setRendered();
-			final StagingFile staging = new StagingFile(model.getStagingId());
-			contentStreamWriter.outputStream(info.getRequest(), info.getResponse(),
-				fileSystemService.getContentStream(staging, ICON_FILENAME, "image/gif"));
-		}
-		else
-		{
-			info.forwardToUrl(model.getIconUrl());
-		}
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "mei";
+  }
 
-	public static class UploadValidation extends AjaxCallbackResponse
-	{
-		private String errorKey;
-		private String stagingId;
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    uploadButton.setClickHandler(new ReloadHandler());
+    removeIconButton.setClickHandler(events.getNamedHandler("removeIcon"));
+    validateFile =
+        AjaxUpload.simpleUploadValidator(
+            "uploadProgress",
+            PartiallyApply.partial(events.getSubmitValuesFunction("checkFileUpload"), 2));
+  }
 
-		public String getErrorKey()
-		{
-			return errorKey;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    BookmarkAndModify stagingIcon =
+        new BookmarkAndModify(context, events.getNamedModifier("showCurrentIcon"));
+    getModel(context).setDisplayIconUrl(stagingIcon.getHref());
+    iconUpload.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "uploadIcon"));
+    iconUpload.setValidateFile(context, validateFile);
+    return viewFactory.createResult("iconedit.ftl", context);
+  }
 
-		public void setErrorKey(String errorKey)
-		{
-			this.errorKey = errorKey;
-		}
+  @EventHandlerMethod
+  public void showCurrentIcon(SectionInfo info) {
+    final EditIconModel model = getModel(info);
+    if (model.isHasCustomIcon() && model.getStagingId() != null) {
+      info.setRendered();
+      final StagingFile staging = new StagingFile(model.getStagingId());
+      contentStreamWriter.outputStream(
+          info.getRequest(),
+          info.getResponse(),
+          fileSystemService.getContentStream(staging, ICON_FILENAME, "image/gif"));
+    } else {
+      info.forwardToUrl(model.getIconUrl());
+    }
+  }
 
-		public String getStagingId()
-		{
-			return stagingId;
-		}
+  public static class UploadValidation extends AjaxCallbackResponse {
+    private String errorKey;
+    private String stagingId;
 
-		public void setStagingId(String stagingId)
-		{
-			this.stagingId = stagingId;
-		}
-	}
+    public String getErrorKey() {
+      return errorKey;
+    }
 
-	@AjaxMethod
-	public UploadValidation uploadIcon(SectionInfo info)
-	{
-		UploadValidation val = new UploadValidation();
-		EditIconModel model = getModel(info);
+    public void setErrorKey(String errorKey) {
+      this.errorKey = errorKey;
+    }
 
-		final String stagingId = model.getStagingId();
-		StagingFile stagingFile;
-		if( stagingId == null )
-		{
-			stagingFile = stagingService.createStagingArea();
-		}
-		else
-		{
-			stagingFile = new StagingFile(stagingId);
-		}
+    public String getStagingId() {
+      return stagingId;
+    }
 
-		try( InputStream iconStream = iconUpload.getInputStream(info) )
-		{
-			fileSystemService.write(stagingFile, PRE_THUMB_FILENAME, iconStream, false);
-			generateThumbnail(stagingFile);
-			val.setStagingId(stagingFile.getUuid());
-		}
-		catch (Exception e)
-		{
-			val.setErrorKey("upload");
-		}
-		return val;
-	}
+    public void setStagingId(String stagingId) {
+      this.stagingId = stagingId;
+    }
+  }
 
-	@EventHandlerMethod
-	public void checkFileUpload(SectionInfo info, String fileId, UploadValidation upload)
-	{
-		final EditIconModel model = getModel(info);
-		model.setStagingId(upload.getStagingId());
-		String errorKey = upload.getErrorKey();
-		model.setErrorKey(errorKey);
-		if (errorKey == null) {
-			model.setHasCustomIcon(true);
-			// Stop the image being cached - setting the cache control http
-			// header doesn't seem to work
-			model.setRand(new Random().nextInt(10000));
-		}
-	}
+  @AjaxMethod
+  public UploadValidation uploadIcon(SectionInfo info) {
+    UploadValidation val = new UploadValidation();
+    EditIconModel model = getModel(info);
 
-	@EventHandlerMethod
-	public void removeIcon(SectionInfo info)
-	{
-		final EditIconModel model = getModel(info);
-		model.setErrorKey(null);
-		model.setHasCustomIcon(false);
+    final String stagingId = model.getStagingId();
+    StagingFile stagingFile;
+    if (stagingId == null) {
+      stagingFile = stagingService.createStagingArea();
+    } else {
+      stagingFile = new StagingFile(stagingId);
+    }
 
-		final MimeEntry entry = webMimeTypeService.getEntryForMimeType(model.getMimeType());
-		final URL defaultIcon = webMimeTypeService.getDefaultIconForEntry(entry);
-		if( defaultIcon != null )
-		{
-			model.setIconUrl(defaultIcon.toString());
-		}
-	}
+    try (InputStream iconStream = iconUpload.getInputStream(info)) {
+      fileSystemService.write(stagingFile, PRE_THUMB_FILENAME, iconStream, false);
+      generateThumbnail(stagingFile);
+      val.setStagingId(stagingFile.getUuid());
+    } catch (Exception e) {
+      val.setErrorKey("upload");
+    }
+    return val;
+  }
 
-	@Override
-	public void loadEntry(SectionInfo info, MimeEntry entry)
-	{
-		final EditIconModel model = getModel(info);
-		if( entry != null )
-		{
-			final URL icon = webMimeTypeService.getIconForEntry(entry, false);
-			if( icon != null )
-			{
-				model.setIconUrl(icon.toString());
-				model.setHasCustomIcon(webMimeTypeService.hasCustomIcon(entry));
-			}
-			model.setMimeType(entry.getType());
-		}
-		else
-		{
-			model.setIconUrl(webMimeTypeService.getDefaultIconForEntry(null).toString());
-			model.setHasCustomIcon(false);
-		}
-	}
+  @EventHandlerMethod
+  public void checkFileUpload(SectionInfo info, String fileId, UploadValidation upload) {
+    final EditIconModel model = getModel(info);
+    model.setStagingId(upload.getStagingId());
+    String errorKey = upload.getErrorKey();
+    model.setErrorKey(errorKey);
+    if (errorKey == null) {
+      model.setHasCustomIcon(true);
+      // Stop the image being cached - setting the cache control http
+      // header doesn't seem to work
+      model.setRand(new Random().nextInt(10000));
+    }
+  }
 
-	@Override
-	public void saveEntry(SectionInfo info, MimeEntry entry)
-	{
-		final EditIconModel model = getModel(info);
-		final String stagingId = model.getStagingId();
+  @EventHandlerMethod
+  public void removeIcon(SectionInfo info) {
+    final EditIconModel model = getModel(info);
+    model.setErrorKey(null);
+    model.setHasCustomIcon(false);
 
-		if( model.isHasCustomIcon() && stagingId != null )
-		{
-			final StagingFile stagingFile = new StagingFile(stagingId);
-			try( InputStream iconStream = fileSystemService.read(stagingFile, ICON_FILENAME) )
-			{
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ByteStreams.copy(iconStream, baos);
-				String base64Icon = new Base64().encode(baos.toByteArray());
-				webMimeTypeService.setIconBase64(entry, base64Icon);
-			}
-			catch( IOException e )
-			{
-				throw new RuntimeException(e);
-			}
-			fileSystemService.removeFile(stagingFile);
-		}
-		else if( !model.isHasCustomIcon() )
-		{
-			webMimeTypeService.setIconBase64(entry, null);
-		}
-	}
+    final MimeEntry entry = webMimeTypeService.getEntryForMimeType(model.getMimeType());
+    final URL defaultIcon = webMimeTypeService.getDefaultIconForEntry(entry);
+    if (defaultIcon != null) {
+      model.setIconUrl(defaultIcon.toString());
+    }
+  }
 
-	/**
-	 * @param staging
-	 * @throws ImageMagickException
-	 */
-	private void generateThumbnail(FileHandle staging)
-	{
-		File originalImage = fileSystemService.getExternalFile(staging, PRE_THUMB_FILENAME);
-		File destImage = fileSystemService.getExternalFile(staging, ICON_FILENAME);
-		ThumbnailOptions topts = new ThumbnailOptions();
-		int height = 66;
-		int width = 88;
-		topts.setHeight(height);
-		topts.setWidth(width);
-		topts.setCropHeight(height);
-		topts.setCropWidth(width);
-		topts.setGravity("center");
-		try
-		{
-			imageMagickService.generateThumbnailAdvanced(originalImage, destImage, topts);
-		}
-		finally
-		{
-			fileSystemService.removeFile(staging, PRE_THUMB_FILENAME);
-		}
-	}
+  @Override
+  public void loadEntry(SectionInfo info, MimeEntry entry) {
+    final EditIconModel model = getModel(info);
+    if (entry != null) {
+      final URL icon = webMimeTypeService.getIconForEntry(entry, false);
+      if (icon != null) {
+        model.setIconUrl(icon.toString());
+        model.setHasCustomIcon(webMimeTypeService.hasCustomIcon(entry));
+      }
+      model.setMimeType(entry.getType());
+    } else {
+      model.setIconUrl(webMimeTypeService.getDefaultIconForEntry(null).toString());
+      model.setHasCustomIcon(false);
+    }
+  }
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return MimeTypesEditSection.TAB_DETAILS;
-	}
+  @Override
+  public void saveEntry(SectionInfo info, MimeEntry entry) {
+    final EditIconModel model = getModel(info);
+    final String stagingId = model.getStagingId();
 
-	@Override
-	public boolean isVisible(SectionInfo info)
-	{
-		return true;
-	}
+    if (model.isHasCustomIcon() && stagingId != null) {
+      final StagingFile stagingFile = new StagingFile(stagingId);
+      try (InputStream iconStream = fileSystemService.read(stagingFile, ICON_FILENAME)) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteStreams.copy(iconStream, baos);
+        String base64Icon = new Base64().encode(baos.toByteArray());
+        webMimeTypeService.setIconBase64(entry, base64Icon);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      fileSystemService.removeFile(stagingFile);
+    } else if (!model.isHasCustomIcon()) {
+      webMimeTypeService.setIconBase64(entry, null);
+    }
+  }
 
-	public FileUpload getIconUpload()
-	{
-		return iconUpload;
-	}
+  /**
+   * @param staging
+   * @throws ImageMagickException
+   */
+  private void generateThumbnail(FileHandle staging) {
+    File originalImage = fileSystemService.getExternalFile(staging, PRE_THUMB_FILENAME);
+    File destImage = fileSystemService.getExternalFile(staging, ICON_FILENAME);
+    ThumbnailOptions topts = new ThumbnailOptions();
+    int height = 66;
+    int width = 88;
+    topts.setHeight(height);
+    topts.setWidth(width);
+    topts.setCropHeight(height);
+    topts.setCropWidth(width);
+    topts.setGravity("center");
+    try {
+      imageMagickService.generateThumbnailAdvanced(originalImage, destImage, topts);
+    } finally {
+      fileSystemService.removeFile(staging, PRE_THUMB_FILENAME);
+    }
+  }
 
-	public Button getUploadButton()
-	{
-		return uploadButton;
-	}
+  @Override
+  public NameValue getTabToAppearOn() {
+    return MimeTypesEditSection.TAB_DETAILS;
+  }
 
-	public Button getRemoveIconButton()
-	{
-		return removeIconButton;
-	}
+  @Override
+  public boolean isVisible(SectionInfo info) {
+    return true;
+  }
 
-	public static class EditIconModel
-	{
-		@Bookmarked(name = "s")
-		private String stagingId;
-		@Bookmarked(name = "curl")
-		private String iconUrl;
-		@Bookmarked(name = "hc")
-		private boolean hasCustomIcon;
-		// for reference later
-		@Bookmarked(name = "mt")
-		private String mimeType;
-		// Needed to stop damn image caching
-		@Bookmarked(name = "r")
-		private int rand;
-		@Bookmarked(name = "e")
-		private String errorKey;
+  public FileUpload getIconUpload() {
+    return iconUpload;
+  }
 
-		// render time
-		private String displayIconUrl;
+  public Button getUploadButton() {
+    return uploadButton;
+  }
 
-		public String getStagingId()
-		{
-			return stagingId;
-		}
+  public Button getRemoveIconButton() {
+    return removeIconButton;
+  }
 
-		public void setStagingId(String stagingId)
-		{
-			this.stagingId = stagingId;
-		}
+  public static class EditIconModel {
+    @Bookmarked(name = "s")
+    private String stagingId;
 
-		public String getIconUrl()
-		{
-			return iconUrl;
-		}
+    @Bookmarked(name = "curl")
+    private String iconUrl;
 
-		public void setIconUrl(String iconUrl)
-		{
-			this.iconUrl = iconUrl;
-		}
+    @Bookmarked(name = "hc")
+    private boolean hasCustomIcon;
+    // for reference later
+    @Bookmarked(name = "mt")
+    private String mimeType;
+    // Needed to stop damn image caching
+    @Bookmarked(name = "r")
+    private int rand;
 
-		public boolean isHasCustomIcon()
-		{
-			return hasCustomIcon;
-		}
+    @Bookmarked(name = "e")
+    private String errorKey;
 
-		public void setHasCustomIcon(boolean hasCustomIcon)
-		{
-			this.hasCustomIcon = hasCustomIcon;
-		}
+    // render time
+    private String displayIconUrl;
 
-		public String getMimeType()
-		{
-			return mimeType;
-		}
+    public String getStagingId() {
+      return stagingId;
+    }
 
-		public void setMimeType(String mimeType)
-		{
-			this.mimeType = mimeType;
-		}
+    public void setStagingId(String stagingId) {
+      this.stagingId = stagingId;
+    }
 
-		public int getRand()
-		{
-			return rand;
-		}
+    public String getIconUrl() {
+      return iconUrl;
+    }
 
-		public void setRand(int rand)
-		{
-			this.rand = rand;
-		}
+    public void setIconUrl(String iconUrl) {
+      this.iconUrl = iconUrl;
+    }
 
-		public String getDisplayIconUrl()
-		{
-			return displayIconUrl;
-		}
+    public boolean isHasCustomIcon() {
+      return hasCustomIcon;
+    }
 
-		public void setDisplayIconUrl(String displayIconUrl)
-		{
-			this.displayIconUrl = displayIconUrl;
-		}
+    public void setHasCustomIcon(boolean hasCustomIcon) {
+      this.hasCustomIcon = hasCustomIcon;
+    }
 
-		public String getErrorKey()
-		{
-			return errorKey;
-		}
+    public String getMimeType() {
+      return mimeType;
+    }
 
-		public void setErrorKey(String errorKey)
-		{
-			this.errorKey = errorKey;
-		}
-	}
+    public void setMimeType(String mimeType) {
+      this.mimeType = mimeType;
+    }
+
+    public int getRand() {
+      return rand;
+    }
+
+    public void setRand(int rand) {
+      this.rand = rand;
+    }
+
+    public String getDisplayIconUrl() {
+      return displayIconUrl;
+    }
+
+    public void setDisplayIconUrl(String displayIconUrl) {
+      this.displayIconUrl = displayIconUrl;
+    }
+
+    public String getErrorKey() {
+      return errorKey;
+    }
+
+    public void setErrorKey(String errorKey) {
+      this.errorKey = errorKey;
+    }
+  }
 }

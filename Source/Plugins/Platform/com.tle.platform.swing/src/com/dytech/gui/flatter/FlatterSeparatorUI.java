@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,57 +21,45 @@ package com.dytech.gui.flatter;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.Serializable;
-
 import javax.swing.JComponent;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSeparatorUI;
 
-public class FlatterSeparatorUI extends BasicSeparatorUI implements Serializable
-{
-	private static final FlatterSeparatorUI m_separatorUI = new FlatterSeparatorUI();
+public class FlatterSeparatorUI extends BasicSeparatorUI implements Serializable {
+  private static final FlatterSeparatorUI m_separatorUI = new FlatterSeparatorUI();
 
-	public FlatterSeparatorUI()
-	{
-		// Nothing to do here.
-	}
+  public FlatterSeparatorUI() {
+    // Nothing to do here.
+  }
 
-	public static ComponentUI createUI(JComponent c)
-	{
-		return m_separatorUI;
-	}
+  public static ComponentUI createUI(JComponent c) {
+    return m_separatorUI;
+  }
 
-	@Override
-	public void paint(Graphics g, JComponent c)
-	{
-		JSeparator sep = (JSeparator) c;
-		Dimension dim = sep.getSize();
+  @Override
+  public void paint(Graphics g, JComponent c) {
+    JSeparator sep = (JSeparator) c;
+    Dimension dim = sep.getSize();
 
-		g.setColor(sep.getForeground());
+    g.setColor(sep.getForeground());
 
-		if( sep.getOrientation() == SwingConstants.VERTICAL )
-		{
-			int x = dim.width / 2;
-			g.drawLine(x, 0, x, dim.height);
-		}
-		else
-		{
-			int y = dim.height / 2;
-			g.drawLine(0, y, dim.width, y);
-		}
-	}
+    if (sep.getOrientation() == SwingConstants.VERTICAL) {
+      int x = dim.width / 2;
+      g.drawLine(x, 0, x, dim.height);
+    } else {
+      int y = dim.height / 2;
+      g.drawLine(0, y, dim.width, y);
+    }
+  }
 
-	@Override
-	public Dimension getPreferredSize(JComponent c)
-	{
-		if( ((JSeparator) c).getOrientation() == SwingConstants.VERTICAL )
-		{
-			return new Dimension(1, 0);
-		}
-		else
-		{
-			return new Dimension(0, 1);
-		}
-	}
+  @Override
+  public Dimension getPreferredSize(JComponent c) {
+    if (((JSeparator) c).getOrientation() == SwingConstants.VERTICAL) {
+      return new Dimension(1, 0);
+    } else {
+      return new Dimension(0, 1);
+    }
+  }
 }

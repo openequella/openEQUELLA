@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.mypages.web.section;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.common.Check;
@@ -56,302 +54,265 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractMyPagesPageActionsSection
-	extends
-		AbstractMyPagesSection<AbstractMyPagesPageActionsSection.MyPagesPageActionsModel>
-	implements
-		HtmlRenderer,
-		LoadItemEventListener,
-		ChangePageEventListener
-{
-	@PlugKey("pagetitle.untitled")
-	private static Label LABEL_PAGE_UNTITLED;
-	@PlugKey("button.deletepage")
-	private static Label LABEL_DELETE_PAGE;
-	@PlugKey("nopages")
-	private static Label LABEL_NO_PAGES;
+    extends AbstractMyPagesSection<AbstractMyPagesPageActionsSection.MyPagesPageActionsModel>
+    implements HtmlRenderer, LoadItemEventListener, ChangePageEventListener {
+  @PlugKey("pagetitle.untitled")
+  private static Label LABEL_PAGE_UNTITLED;
 
-	@Inject
-	private MyPagesService myPagesService;
+  @PlugKey("button.deletepage")
+  private static Label LABEL_DELETE_PAGE;
 
-	@Component(name = "p")
-	private SelectionsTable pagesTable;
-	@PlugKey("button.addpage")
-	@Component(name = "a")
-	protected Link addPage;
-	@TreeLookup
-	protected MyPagesContributeSection contribSection;
-	@ViewFactory(fixed = true)
-	protected FreemarkerFactory fixedFactory;
+  @PlugKey("nopages")
+  private static Label LABEL_NO_PAGES;
 
-	private SectionTree mytree;
+  @Inject private MyPagesService myPagesService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final MyPagesPageActionsModel model = getModel(context);
-		if( !model.isDisabled() )
-		{
-			return fixedFactory.createResult("mypagespageactions.ftl", context);
-		}
-		return null;
-	}
+  @Component(name = "p")
+  private SelectionsTable pagesTable;
 
-	@EventHandlerMethod
-	public void addPage(SectionInfo info)
-	{
-		if( !getModel(info).isNoAdd() )
-		{
-			final MyPagesContributeModel model2 = contribSection.getModel(info);
-			myPagesService.savePage(info, mytree, model2.getSession(), model2.getPageUuid());
-			createPage(info);
-		}
-	}
+  @PlugKey("button.addpage")
+  @Component(name = "a")
+  protected Link addPage;
 
-	public HtmlAttachment createPage(SectionInfo info)
-	{
-		final MyPagesContributeModel model = contribSection.getModel(info);
-		final HtmlAttachment newPage = myPagesService.newPage(info, model.getSession(), LABEL_PAGE_UNTITLED.getText());
-		setPageUuid(info, newPage.getUuid());
-		return newPage;
-	}
+  @TreeLookup protected MyPagesContributeSection contribSection;
 
-	@EventHandlerMethod
-	public void deletePage(SectionInfo info, String pageUuid)
-	{
-		final MyPagesContributeModel model = contribSection.getModel(info);
-		myPagesService.deletePage(info, model.getSession(), pageUuid);
-		final String currentPageUuid = model.getPageUuid();
-		if( currentPageUuid != null && currentPageUuid.equals(pageUuid) )
-		{
-			final HtmlAttachment nextPage = myPagesService.findNextAvailablePage(info, model.getSession(), pageUuid);
-			final String newPageUuid = (nextPage == null ? null : nextPage.getUuid());
-			setPageUuid(info, newPageUuid);
-		}
-	}
+  @ViewFactory(fixed = true)
+  protected FreemarkerFactory fixedFactory;
 
-	@Override
-	public void changePage(SectionInfo info, ChangePageEvent event)
-	{
-		changePage(info, event.getNewPageUuid());
-	}
+  private SectionTree mytree;
 
-	@EventHandlerMethod
-	public void changePage(SectionInfo info, String pageUuid)
-	{
-		MyPagesContributeModel model = contribSection.getModel(info);
-		myPagesService.savePage(info, mytree, model.getSession(), model.getPageUuid());
-		setPageUuid(info, pageUuid);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final MyPagesPageActionsModel model = getModel(context);
+    if (!model.isDisabled()) {
+      return fixedFactory.createResult("mypagespageactions.ftl", context);
+    }
+    return null;
+  }
 
-	@Override
-	public void doLoadItemEvent(SectionInfo info, LoadItemEvent event)
-	{
-		// pick the first page (if a uuid is not specified)
-		List<HtmlAttachment> allOfThem = myPagesService.getPageAttachments(info, event.getSessionId(), null);
+  @EventHandlerMethod
+  public void addPage(SectionInfo info) {
+    if (!getModel(info).isNoAdd()) {
+      final MyPagesContributeModel model2 = contribSection.getModel(info);
+      myPagesService.savePage(info, mytree, model2.getSession(), model2.getPageUuid());
+      createPage(info);
+    }
+  }
 
-		String pageUuid = event.getPageUuid();
-		if( Check.isEmpty(pageUuid) )
-		{
-			if( allOfThem.size() > 0 )
-			{
-				setPageUuid(info, allOfThem.get(0).getUuid());
-			}
-			else
-			{
-				setPageUuid(info, null);
-			}
-		}
-		else
-		{
-			for( HtmlAttachment page : allOfThem )
-			{
-				if( page.getUuid().equals(pageUuid) )
-				{
-					setPageUuid(info, page.getUuid());
-					return;
-				}
-			}
-			throw new RuntimeException("Cannot find the page with UUID " + pageUuid);
-		}
-	}
+  public HtmlAttachment createPage(SectionInfo info) {
+    final MyPagesContributeModel model = contribSection.getModel(info);
+    final HtmlAttachment newPage =
+        myPagesService.newPage(info, model.getSession(), LABEL_PAGE_UNTITLED.getText());
+    setPageUuid(info, newPage.getUuid());
+    return newPage;
+  }
 
-	private List<HtmlAttachment> getPageAttachments(SectionInfo info, String sessionId, String itemId)
-	{
-		final List<HtmlAttachment> nonDeletedAttachments = myPagesService.getNonDeletedPageAttachments(info, sessionId,
-			itemId);
-		final MyPagesPageFilter filter = getModel(info).getPageFilter();
-		if( filter != null )
-		{
-			return filter.filterPages(nonDeletedAttachments);
-		}
-		return nonDeletedAttachments;
-	}
+  @EventHandlerMethod
+  public void deletePage(SectionInfo info, String pageUuid) {
+    final MyPagesContributeModel model = contribSection.getModel(info);
+    myPagesService.deletePage(info, model.getSession(), pageUuid);
+    final String currentPageUuid = model.getPageUuid();
+    if (currentPageUuid != null && currentPageUuid.equals(pageUuid)) {
+      final HtmlAttachment nextPage =
+          myPagesService.findNextAvailablePage(info, model.getSession(), pageUuid);
+      final String newPageUuid = (nextPage == null ? null : nextPage.getUuid());
+      setPageUuid(info, newPageUuid);
+    }
+  }
 
-	public void setDisabled(SectionInfo info, boolean disabled)
-	{
-		MyPagesPageActionsModel model = getModel(info);
-		model.setDisabled(disabled);
-	}
+  @Override
+  public void changePage(SectionInfo info, ChangePageEvent event) {
+    changePage(info, event.getNewPageUuid());
+  }
 
-	public void setDisallowAdd(SectionInfo info, boolean disallow)
-	{
-		MyPagesPageActionsModel model = getModel(info);
-		model.setNoAdd(disallow);
-	}
+  @EventHandlerMethod
+  public void changePage(SectionInfo info, String pageUuid) {
+    MyPagesContributeModel model = contribSection.getModel(info);
+    myPagesService.savePage(info, mytree, model.getSession(), model.getPageUuid());
+    setPageUuid(info, pageUuid);
+  }
 
-	public void setScrapbookCommand(SectionInfo info, HtmlComponentState scrapbook)
-	{
-		MyPagesPageActionsModel model = getModel(info);
-		model.setScrapbook(scrapbook);
-	}
+  @Override
+  public void doLoadItemEvent(SectionInfo info, LoadItemEvent event) {
+    // pick the first page (if a uuid is not specified)
+    List<HtmlAttachment> allOfThem =
+        myPagesService.getPageAttachments(info, event.getSessionId(), null);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setupAddHandler(tree);
-		pagesTable.setNothingSelectedText(LABEL_NO_PAGES);
-		pagesTable.setSelectionsModel(new MyPagesModel());
+    String pageUuid = event.getPageUuid();
+    if (Check.isEmpty(pageUuid)) {
+      if (allOfThem.size() > 0) {
+        setPageUuid(info, allOfThem.get(0).getUuid());
+      } else {
+        setPageUuid(info, null);
+      }
+    } else {
+      for (HtmlAttachment page : allOfThem) {
+        if (page.getUuid().equals(pageUuid)) {
+          setPageUuid(info, page.getUuid());
+          return;
+        }
+      }
+      throw new RuntimeException("Cannot find the page with UUID " + pageUuid);
+    }
+  }
 
-	}
+  private List<HtmlAttachment> getPageAttachments(
+      SectionInfo info, String sessionId, String itemId) {
+    final List<HtmlAttachment> nonDeletedAttachments =
+        myPagesService.getNonDeletedPageAttachments(info, sessionId, itemId);
+    final MyPagesPageFilter filter = getModel(info).getPageFilter();
+    if (filter != null) {
+      return filter.filterPages(nonDeletedAttachments);
+    }
+    return nonDeletedAttachments;
+  }
 
-	protected abstract void setupAddHandler(SectionTree tree);
+  public void setDisabled(SectionInfo info, boolean disabled) {
+    MyPagesPageActionsModel model = getModel(info);
+    model.setDisabled(disabled);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		this.mytree = tree;
-	}
+  public void setDisallowAdd(SectionInfo info, boolean disallow) {
+    MyPagesPageActionsModel model = getModel(info);
+    model.setNoAdd(disallow);
+  }
 
-	private void setPageUuid(SectionInfo info, String pageUuid)
-	{
-		MyPagesContributeModel model = contribSection.getModel(info);
-		model.setPageUuid(pageUuid);
-	}
+  public void setScrapbookCommand(SectionInfo info, HtmlComponentState scrapbook) {
+    MyPagesPageActionsModel model = getModel(info);
+    model.setScrapbook(scrapbook);
+  }
 
-	public String getCurrentPageUuid(SectionInfo info)
-	{
-		return contribSection.getModel(info).getPageUuid();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setupAddHandler(tree);
+    pagesTable.setNothingSelectedText(LABEL_NO_PAGES);
+    pagesTable.setSelectionsModel(new MyPagesModel());
+  }
 
-	public void setPageFilter(SectionInfo info, MyPagesPageFilter pageFilter)
-	{
-		getModel(info).setPageFilter(pageFilter);
-	}
+  protected abstract void setupAddHandler(SectionTree tree);
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new MyPagesPageActionsModel();
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    this.mytree = tree;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return MyPagesConstants.SECTION_PAGE_ACTIONS;
-	}
+  private void setPageUuid(SectionInfo info, String pageUuid) {
+    MyPagesContributeModel model = contribSection.getModel(info);
+    model.setPageUuid(pageUuid);
+  }
 
-	public Link getAddPageLink()
-	{
-		return addPage;
-	}
+  public String getCurrentPageUuid(SectionInfo info) {
+    return contribSection.getModel(info).getPageUuid();
+  }
 
-	public SelectionsTable getPagesTable()
-	{
-		return pagesTable;
-	}
+  public void setPageFilter(SectionInfo info, MyPagesPageFilter pageFilter) {
+    getModel(info).setPageFilter(pageFilter);
+  }
 
-	private class MyPagesModel extends DynamicSelectionsTableModel<HtmlAttachment>
-	{
-		@Override
-		protected List<HtmlAttachment> getSourceList(SectionInfo info)
-		{
-			final MyPagesContributeModel contribModel = contribSection.getModel(info);
-			return getPageAttachments(info, contribModel.getSession(), contribModel.getItemId());
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new MyPagesPageActionsModel();
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, HtmlAttachment page,
-			List<SectionRenderable> actions, int index)
-		{
-			final String pageName = page.getDescription();
-			final HtmlLinkState view = new HtmlLinkState(events.getNamedHandler("changePage", page.getUuid()));
-			final LinkRenderer viewLink = new LinkRenderer(view);
-			viewLink.setLabel(new TextLabel(pageName));
-			viewLink.addClass("focus");
-			selection.setViewAction(viewLink);
+  @Override
+  public String getDefaultPropertyName() {
+    return MyPagesConstants.SECTION_PAGE_ACTIONS;
+  }
 
-			final JSHandler deleteHandler = events.getNamedHandler("deletePage", page.getUuid());
-			deleteHandler.addValidator(new Confirm(new KeyLabel(RESOURCES.key("delete.confirm"), pageName)));
-			actions.add(makeRemoveAction(LABEL_DELETE_PAGE, deleteHandler));
-		}
-	}
+  public Link getAddPageLink() {
+    return addPage;
+  }
 
-	public static class MyPagesPageActionsModel
-	{
-		@Bookmarked(name = "d")
-		private boolean disabled;
-		@Bookmarked(name = "n")
-		private boolean noAdd;
-		private SelectionsTableState pages;
-		private HtmlComponentState scrapbook;
-		private MyPagesPageFilter pageFilter;
+  public SelectionsTable getPagesTable() {
+    return pagesTable;
+  }
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+  private class MyPagesModel extends DynamicSelectionsTableModel<HtmlAttachment> {
+    @Override
+    protected List<HtmlAttachment> getSourceList(SectionInfo info) {
+      final MyPagesContributeModel contribModel = contribSection.getModel(info);
+      return getPageAttachments(info, contribModel.getSession(), contribModel.getItemId());
+    }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        HtmlAttachment page,
+        List<SectionRenderable> actions,
+        int index) {
+      final String pageName = page.getDescription();
+      final HtmlLinkState view =
+          new HtmlLinkState(events.getNamedHandler("changePage", page.getUuid()));
+      final LinkRenderer viewLink = new LinkRenderer(view);
+      viewLink.setLabel(new TextLabel(pageName));
+      viewLink.addClass("focus");
+      selection.setViewAction(viewLink);
 
-		public boolean isNoAdd()
-		{
-			return noAdd;
-		}
+      final JSHandler deleteHandler = events.getNamedHandler("deletePage", page.getUuid());
+      deleteHandler.addValidator(
+          new Confirm(new KeyLabel(RESOURCES.key("delete.confirm"), pageName)));
+      actions.add(makeRemoveAction(LABEL_DELETE_PAGE, deleteHandler));
+    }
+  }
 
-		public void setNoAdd(boolean noAdd)
-		{
-			this.noAdd = noAdd;
-		}
+  public static class MyPagesPageActionsModel {
+    @Bookmarked(name = "d")
+    private boolean disabled;
 
-		public SelectionsTableState getPages()
-		{
-			return pages;
-		}
+    @Bookmarked(name = "n")
+    private boolean noAdd;
 
-		public void setPages(SelectionsTableState pages)
-		{
-			this.pages = pages;
-		}
+    private SelectionsTableState pages;
+    private HtmlComponentState scrapbook;
+    private MyPagesPageFilter pageFilter;
 
-		public HtmlComponentState getScrapbook()
-		{
-			return scrapbook;
-		}
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-		public void setScrapbook(HtmlComponentState scrapbook)
-		{
-			this.scrapbook = scrapbook;
-		}
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
 
-		public MyPagesPageFilter getPageFilter()
-		{
-			return pageFilter;
-		}
+    public boolean isNoAdd() {
+      return noAdd;
+    }
 
-		public void setPageFilter(MyPagesPageFilter pageFilter)
-		{
-			this.pageFilter = pageFilter;
-		}
-	}
+    public void setNoAdd(boolean noAdd) {
+      this.noAdd = noAdd;
+    }
+
+    public SelectionsTableState getPages() {
+      return pages;
+    }
+
+    public void setPages(SelectionsTableState pages) {
+      this.pages = pages;
+    }
+
+    public HtmlComponentState getScrapbook() {
+      return scrapbook;
+    }
+
+    public void setScrapbook(HtmlComponentState scrapbook) {
+      this.scrapbook = scrapbook;
+    }
+
+    public MyPagesPageFilter getPageFilter() {
+      return pageFilter;
+    }
+
+    public void setPageFilter(MyPagesPageFilter pageFilter) {
+      this.pageFilter = pageFilter;
+    }
+  }
 }

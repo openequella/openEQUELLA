@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309910</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>dxf</string>
+  </extensions>
+  <type>application/x-autocad</type>
+  <description>Autodesk AutoCad</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;googledocviewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

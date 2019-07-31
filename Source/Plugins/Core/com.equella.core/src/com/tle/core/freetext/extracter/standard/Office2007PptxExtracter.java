@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,38 @@
 
 package com.tle.core.freetext.extracter.standard;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class Office2007PptxExtracter extends AbstractOffice2007Extracter
-{
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().startsWith("application/vnd.openxmlformats-officedocument.presentationml.");
-	}
+public class Office2007PptxExtracter extends AbstractOffice2007Extracter {
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry
+        .getType()
+        .startsWith("application/vnd.openxmlformats-officedocument.presentationml.");
+  }
 
-	@Override
-	public String getFileToIndex()
-	{
-		return "ppt/slides/slide";
-	}
+  @Override
+  public String getFileToIndex() {
+    return "ppt/slides/slide";
+  }
 
-	@Override
-	public String getNameOfElementToIndex()
-	{
-		return "a:t";
-	}
+  @Override
+  public String getNameOfElementToIndex() {
+    return "a:t";
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().contains("presentationml");
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().contains("presentationml");
+  }
 
-	@Override
-	public boolean multipleFiles()
-	{
-		return true;
-	}
+  @Override
+  public boolean multipleFiles() {
+    return true;
+  }
 }

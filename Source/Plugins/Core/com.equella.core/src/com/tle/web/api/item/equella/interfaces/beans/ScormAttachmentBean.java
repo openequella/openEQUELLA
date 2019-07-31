@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,56 +19,46 @@
 package com.tle.web.api.item.equella.interfaces.beans;
 
 @SuppressWarnings("nls")
-public class ScormAttachmentBean extends EquellaAttachmentBean
-{
-	private String packageFile;
-	private String scormVersion;
-	private long size;
-	private String md5;
+public class ScormAttachmentBean extends EquellaAttachmentBean {
+  private String packageFile;
+  private String scormVersion;
+  private long size;
+  private String md5;
 
-	public String getScormVersion()
-	{
-		return scormVersion;
-	}
+  public String getScormVersion() {
+    return scormVersion;
+  }
 
-	public void setScormVersion(String scormVersion)
-	{
-		this.scormVersion = scormVersion;
-	}
+  public void setScormVersion(String scormVersion) {
+    this.scormVersion = scormVersion;
+  }
 
-	@Override
-	public String getRawAttachmentType()
-	{
-		return "custom/scorm";
-	}
+  @Override
+  public String getRawAttachmentType() {
+    return "custom/scorm";
+  }
 
-	public String getPackageFile()
-	{
-		return packageFile;
-	}
+  public String getPackageFile() {
+    return packageFile;
+  }
 
-	public void setPackageFile(String packageFile)
-	{
-		this.packageFile = packageFile;
-	}
+  public void setPackageFile(String packageFile) {
+    this.packageFile = packageFile;
+  }
 
-	public long getSize()
-	{
-		return size;
-	}
+  public long getSize() {
+    return size;
+  }
 
-	public void setSize(long size)
-	{
-		this.size = size;
-	}
+  public void setSize(long size) {
+    this.size = size;
+  }
 
-	public String getMd5()
-	{
-		return md5;
-	}
+  public String getMd5() {
+    return md5;
+  }
 
-	public void setMd5(String md5)
-	{
-		this.md5 = md5;
-	}
+  public void setMd5(String md5) {
+    this.md5 = md5;
+  }
 }

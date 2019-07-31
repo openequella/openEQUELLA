@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,43 +20,36 @@ package com.tle.web.bulk.operation;
 
 import java.io.Serializable;
 
-public class BulkResult implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+public class BulkResult implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private final boolean succeeded;
-	private String name;
-	private String reason;
+  private final boolean succeeded;
+  private String name;
+  private String reason;
 
-	public BulkResult(boolean succeeded, String name, String reason)
-	{
-		this.name = name;
-		this.reason = reason;
-		this.succeeded = succeeded;
-	}
+  public BulkResult(boolean succeeded, String name, String reason) {
+    this.name = name;
+    this.reason = reason;
+    this.succeeded = succeeded;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getReason()
-	{
-		return reason;
-	}
+  public String getReason() {
+    return reason;
+  }
 
-	public void setReason(String reason)
-	{
-		this.reason = reason;
-	}
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
 
-	public boolean isSucceeded()
-	{
-		return succeeded;
-	}
+  public boolean isSucceeded() {
+    return succeeded;
+  }
 }

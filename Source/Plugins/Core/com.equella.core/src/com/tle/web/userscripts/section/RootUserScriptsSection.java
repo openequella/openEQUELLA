@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.userscripts.section;
 
-import javax.inject.Inject;
-
 import com.tle.common.userscripts.UserScriptsConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
@@ -28,34 +28,31 @@ import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
+import javax.inject.Inject;
 
 @Bind
-public class RootUserScriptsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
-{
+public class RootUserScriptsSection extends AbstractRootEntitySection<OneColumnLayoutModel> {
 
-	@PlugKey("scripts.settings.title")
-	private static Label TITLE_LABEL;
-	
-	@Inject
-	private TLEAclManager aclManager;
+  @PlugKey("scripts.settings.title")
+  private static Label TITLE_LABEL;
 
-	@Override
-	protected boolean canView(SectionInfo info)
-	{
-		return !aclManager.filterNonGrantedPrivileges(UserScriptsConstants.PRIV_CREATE_SCRIPT,
-			UserScriptsConstants.PRIV_EDIT_SCRIPT).isEmpty();
-	}
+  @Inject private TLEAclManager aclManager;
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected boolean canView(SectionInfo info) {
+    return !aclManager
+        .filterNonGrantedPrivileges(
+            UserScriptsConstants.PRIV_CREATE_SCRIPT, UserScriptsConstants.PRIV_EDIT_SCRIPT)
+        .isEmpty();
+  }
 
-	@Override
-	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
-	{
-		return SettingsList.asLinkOrNull(SettingsList.userScriptSettings());
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
+  @Override
+  protected HtmlLinkState getShowEntitiesLink(SectionInfo info) {
+    return SettingsList.asLinkOrNull(SettingsList.userScriptSettings());
+  }
 }

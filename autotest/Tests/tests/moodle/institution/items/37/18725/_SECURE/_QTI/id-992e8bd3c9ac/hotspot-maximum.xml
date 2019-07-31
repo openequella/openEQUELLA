@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="hotspot-maximum" title="Local Maximum" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="point">
+		<correctResponse>
+			<value>216 90</value>
+		</correctResponse>
+		<areaMapping defaultValue="0">
+			<areaMapEntry shape="rect" coords="184,78,244,112" mappedValue="1.0"/>
+		</areaMapping>
+	</responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="1.0"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+	<itemBody>
+		<selectPointInteraction responseIdentifier="RESPONSE" maxChoices="1">
+			<prompt>Identify the local maximum on the graph:</prompt>
+		    <object type="image/png" width="627" height="511" data="images/cubic_xpw3d6m2xp3.png">Graph of cubic</object>
+		</selectPointInteraction>
+	    <feedbackBlock outcomeIdentifier="FEEDBACK" showHide="show" identifier="Correct">
+	        <p>That's right.</p>
+	    </feedbackBlock>
+	    <feedbackBlock outcomeIdentifier="FEEDBACK" showHide="show" identifier="Incorrect">
+	        <p>No, that's not the local maximum.</p>
+	    </feedbackBlock>
+	</itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <mapResponsePoint identifier="RESPONSE"/>
+                </setOutcomeValue>
+                <responseCondition>
+                    <responseIf>
+                        <inside shape="rect" coords="184,78,244,112">
+                            <variable identifier="RESPONSE"/>
+                        </inside>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">Correct</baseValue>
+                        </setOutcomeValue>
+                    </responseIf>
+                    <responseElse>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">Incorrect</baseValue>
+                        </setOutcomeValue>
+                    </responseElse>
+                </responseCondition>
+             </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

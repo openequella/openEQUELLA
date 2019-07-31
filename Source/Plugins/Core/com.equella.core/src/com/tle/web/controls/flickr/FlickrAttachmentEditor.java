@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,73 +18,58 @@
 
 package com.tle.web.controls.flickr;
 
-import java.util.Date;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.item.edit.attachment.AbstractCustomAttachmentEditor;
+import java.util.Date;
 
 @Bind
-public class FlickrAttachmentEditor extends AbstractCustomAttachmentEditor
-{
-	@Override
-	public String getCustomType()
-	{
-		return FlickrUtils.ATTACHMENT_TYPE;
-	}
+public class FlickrAttachmentEditor extends AbstractCustomAttachmentEditor {
+  @Override
+  public String getCustomType() {
+    return FlickrUtils.ATTACHMENT_TYPE;
+  }
 
-	public void editImageDimensions(String imageDimensions)
-	{
-		editCustomData(FlickrUtils.PROPERTY_IMAGE_SIZE, imageDimensions);
-	}
+  public void editImageDimensions(String imageDimensions) {
+    editCustomData(FlickrUtils.PROPERTY_IMAGE_SIZE, imageDimensions);
+  }
 
-	public void editAuthor(String author)
-	{
-		editCustomData(FlickrUtils.PROPERTY_AUTHOR, author);
-	}
+  public void editAuthor(String author) {
+    editCustomData(FlickrUtils.PROPERTY_AUTHOR, author);
+  }
 
-	public void editDatePosted(Date datePosted)
-	{
-		editCustomData(FlickrUtils.PROPERTY_DATE_POSTED, datePosted);
-	}
+  public void editDatePosted(Date datePosted) {
+    editCustomData(FlickrUtils.PROPERTY_DATE_POSTED, datePosted);
+  }
 
-	public void editDateTaken(Date dateTaken)
-	{
-		editCustomData(FlickrUtils.PROPERTY_DATE_TAKEN, dateTaken);
-	}
+  public void editDateTaken(Date dateTaken) {
+    editCustomData(FlickrUtils.PROPERTY_DATE_TAKEN, dateTaken);
+  }
 
-	public void editLicenseName(String licenseName)
-	{
-		editCustomData(FlickrUtils.PROPERTY_LICENCE_NAME, licenseName);
-	}
+  public void editLicenseName(String licenseName) {
+    editCustomData(FlickrUtils.PROPERTY_LICENCE_NAME, licenseName);
+  }
 
-	public void editViewUrl(String viewUrl)
-	{
-		editCustomData(FlickrUtils.PROPERTY_SHOW_URL, viewUrl);
-	}
+  public void editViewUrl(String viewUrl) {
+    editCustomData(FlickrUtils.PROPERTY_SHOW_URL, viewUrl);
+  }
 
-	public void editThumbUrl(String thumbUrl)
-	{
-		editCustomData(FlickrUtils.PROPERTY_THUMB_URL, thumbUrl);
-	}
+  public void editThumbUrl(String thumbUrl) {
+    editCustomData(FlickrUtils.PROPERTY_THUMB_URL, thumbUrl);
+  }
 
-	public void editLicenseCode(String licenseCode)
-	{
-		editCustomData(FlickrUtils.PROPERTY_LICENCE_CODE, licenseCode);
-	}
+  public void editLicenseCode(String licenseCode) {
+    editCustomData(FlickrUtils.PROPERTY_LICENCE_CODE, licenseCode);
+  }
 
-	public void editLicenseKey(String licenseKey)
-	{
-		editCustomData(FlickrUtils.PROPERTY_LICENCE_KEY, licenseKey);
-	}
+  public void editLicenseKey(String licenseKey) {
+    editCustomData(FlickrUtils.PROPERTY_LICENCE_KEY, licenseKey);
+  }
 
-	public void editPhotoId(String photoId)
-	{
-		editCustomData(FlickrUtils.PROPERTY_ID, photoId);
-	}
+  public void editPhotoId(String photoId) {
+    editCustomData(FlickrUtils.PROPERTY_ID, photoId);
+  }
 
-	public void editMediumUrl(String mediumUrl)
-	{
-		editCustomData(FlickrUtils.PROPERTY_MEDIUM_URL, mediumUrl);
-	}
-
+  public void editMediumUrl(String mediumUrl) {
+    editCustomData(FlickrUtils.PROPERTY_MEDIUM_URL, mediumUrl);
+  }
 }

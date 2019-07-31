@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.search.base;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.sections.Bookmark;
@@ -35,163 +32,159 @@ import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.RespondingListener;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import java.util.HashMap;
+import java.util.Map;
+import javax.inject.Inject;
 
 public abstract class ContextableSearchSection<M extends ContextableSearchSection.Model>
-	extends
-		AbstractRootSearchSection<M> implements PublicBookmarkFactory, AfterParametersListener, ReadyToRespondListener
-{
-	public static final String HISTORYURL_CONTEXT = "css-historyUrl"; //$NON-NLS-1$
+    extends AbstractRootSearchSection<M>
+    implements PublicBookmarkFactory,
+        AfterParametersListener,
+        ReadyToRespondListener,
+        RespondingListener {
+  public static final String HISTORYURL_CONTEXT = "css-historyUrl"; // $NON-NLS-1$
+  public static final String SEARCHPAGE_ATTR = "SEARCH_PAGE";
+  @Inject private UserSessionService userSessionService;
+  @Inject protected SelectionService selectionService;
 
-	@Inject
-	private UserSessionService userSessionService;
-	@Inject
-	protected SelectionService selectionService;
-	@TreeLookup(mandatory = false)
-	private AbstractQuerySection<?, ?> querySection;
+  @TreeLookup(mandatory = false)
+  private AbstractQuerySection<?, ?> querySection;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		// tree.setAttribute(PublicBookmarkFactory.class, this);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    // tree.setAttribute(PublicBookmarkFactory.class, this);
+  }
 
-	@Override
-	public Bookmark getPublicBookmark(SectionInfo info)
-	{
-		BookmarkEvent bookmarkEvent = new BookmarkEvent(BookmarkEvent.CONTEXT_SESSION,
-			BookmarkEvent.CONTEXT_BROWSERURL, HISTORYURL_CONTEXT);
-		return new InfoBookmark(info, bookmarkEvent);
-	}
+  @Override
+  public Bookmark getPublicBookmark(SectionInfo info) {
+    BookmarkEvent bookmarkEvent =
+        new BookmarkEvent(
+            BookmarkEvent.CONTEXT_SESSION, BookmarkEvent.CONTEXT_BROWSERURL, HISTORYURL_CONTEXT);
+    return new InfoBookmark(info, bookmarkEvent);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		getModel(context).setUpdateContext(true);
-		getModel(context).setCourseSelectionSession(isCourseSelectionSession(context));
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    getModel(context).setUpdateContext(true);
+    getModel(context).setCourseSelectionSession(isCourseSelectionSession(context));
+    return super.renderHtml(context);
+  }
 
-	@Override
-	public void afterParameters(SectionInfo info, ParametersEvent event)
-	{
-		M model = getModel(info);
-		if( !event.isInitial() || info.getBooleanAttribute(SectionInfo.KEY_FOR_URLS_ONLY) )
-		{
-			return;
-		}
-		if( hasContextBeenSpecified(info) || model.isUpdateContext() )
-		{
-			model.setUpdateContext(true);
-			return;
-		}
-		Map<String, String[]> searchContext;
-		SelectionSession selectionSession = selectionService.getCurrentSession(info);
-		if( selectionSession == null )
-		{
-			searchContext = userSessionService.getAttribute(getSessionKey());
-		}
-		else
-		{
-			searchContext = selectionSession.getSearchContext(getSessionKey());
-		}
-		if( searchContext != null )
-		{
-			model.setContext(searchContext);
-			Map<String, String[]> context = new HashMap<String, String[]>(searchContext);
-			context.keySet().removeAll(event.getParameterNames());
-			info.processEvent(new ParametersEvent(context, false));
-		}
-	}
+  @Override
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    M model = getModel(info);
+    if (!event.isInitial() || info.getBooleanAttribute(SectionInfo.KEY_FOR_URLS_ONLY)) {
+      return;
+    }
+    if (hasContextBeenSpecified(info) || model.isUpdateContext()) {
+      model.setUpdateContext(true);
+      return;
+    }
+    Map<String, String[]> searchContext;
+    SelectionSession selectionSession = selectionService.getCurrentSession(info);
+    if (selectionSession == null) {
+      searchContext = userSessionService.getAttribute(getSessionKey());
+    } else {
+      searchContext = selectionSession.getSearchContext(getSessionKey());
+    }
+    if (searchContext != null) {
+      model.setContext(searchContext);
+      Map<String, String[]> context = new HashMap<String, String[]>(searchContext);
+      context.keySet().removeAll(event.getParameterNames());
+      info.processEvent(new ParametersEvent(context, false));
+    }
+  }
 
-	private boolean isCourseSelectionSession(SectionInfo info)
-	{
-		SelectionSession currentSession = selectionService.getCurrentSession(info);
-		if( currentSession != null && currentSession.getLayout() == Layout.COURSE )
-		{
-			return true;
-		}
-		return false;
-	}
+  private boolean isCourseSelectionSession(SectionInfo info) {
+    SelectionSession currentSession = selectionService.getCurrentSession(info);
+    if (currentSession != null && currentSession.getLayout() == Layout.COURSE) {
+      return true;
+    }
+    return false;
+  }
 
-	protected boolean hasContextBeenSpecified(SectionInfo info)
-	{
-		return querySection.getQueryField().getValue(info) != null;
-	}
+  protected boolean hasContextBeenSpecified(SectionInfo info) {
+    return querySection.getQueryField().getValue(info) != null;
+  }
 
-	@Override
-	public void readyToRespond(SectionInfo info, boolean redirect)
-	{
-		if( redirect || getModel(info).isUpdateContext() )
-		{
-			final Map<String, String[]> searchContext = buildSearchContext(info);
-			final SelectionSession selectionSession = selectionService.getCurrentSession(info);
-			if( selectionSession == null )
-			{
-				userSessionService.setAttribute(getSessionKey(), searchContext);
-			}
-			else
-			{
-				selectionSession.setSearchContext(getSessionKey(), searchContext);
-			}
-		}
-	}
+  @Override
+  public void responding(SectionInfo info) {
+    if (getModel(info).isUpdateContext()) {
+      final Map<String, String[]> searchContext = buildSearchContext(info);
+      final SelectionSession selectionSession = selectionService.getCurrentSession(info);
+      if (selectionSession == null) {
+        userSessionService.setAttribute(getSessionKey(), searchContext);
+      } else {
+        selectionSession.setSearchContext(getSessionKey(), searchContext);
+      }
+    }
+  }
 
-	protected Map<String, String[]> buildSearchContext(SectionInfo info)
-	{
-		final BookmarkEvent bookmarkEvent = new BookmarkEvent();
-		bookmarkEvent.setIgnoredContexts(BookmarkEvent.CONTEXT_SESSION, BookmarkEvent.CONTEXT_BROWSERURL);
-		info.processEvent(bookmarkEvent);
-		return bookmarkEvent.getBookmarkState();
-	}
+  @Override
+  public void readyToRespond(SectionInfo info, boolean redirect) {
+    if (redirect) {
+      getModel(info).setUpdateContext(true);
+    }
+  }
 
-	protected abstract String getSessionKey();
+  protected Map<String, String[]> buildSearchContext(SectionInfo info) {
+    final BookmarkEvent bookmarkEvent = new BookmarkEvent();
+    bookmarkEvent.setIgnoredContexts(
+        BookmarkEvent.CONTEXT_SESSION, BookmarkEvent.CONTEXT_BROWSERURL);
+    info.processEvent(bookmarkEvent);
+    return bookmarkEvent.getBookmarkState();
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setAttribute(SEARCHPAGE_ATTR, getPageName());
+  }
 
-	public static class Model extends AbstractRootSearchSection.Model
-	{
-		@Bookmarked(stateful = false, parameter = "uc")
-		private boolean updateContext;
-		private Map<String, String[]> context;
-		private boolean courseSelectionSession;
+  protected abstract String getSessionKey();
 
-		public boolean isUpdateContext()
-		{
-			return updateContext;
-		}
+  protected abstract String getPageName();
 
-		public void setUpdateContext(boolean updateContext)
-		{
-			this.updateContext = updateContext;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		public Map<String, String[]> getContext()
-		{
-			return context;
-		}
+  public static class Model extends AbstractRootSearchSection.Model {
+    @Bookmarked(stateful = false, parameter = "uc")
+    private boolean updateContext;
 
-		public void setContext(Map<String, String[]> context)
-		{
-			this.context = context;
-		}
+    private Map<String, String[]> context;
+    private boolean courseSelectionSession;
 
-		public boolean isCourseSelectionSession()
-		{
-			return courseSelectionSession;
-		}
+    public boolean isUpdateContext() {
+      return updateContext;
+    }
 
-		public void setCourseSelectionSession(boolean courseSelectionSession)
-		{
-			this.courseSelectionSession = courseSelectionSession;
-		}
-	}
+    public void setUpdateContext(boolean updateContext) {
+      this.updateContext = updateContext;
+    }
+
+    public Map<String, String[]> getContext() {
+      return context;
+    }
+
+    public void setContext(Map<String, String[]> context) {
+      this.context = context;
+    }
+
+    public boolean isCourseSelectionSession() {
+      return courseSelectionSession;
+    }
+
+    public void setCourseSelectionSession(boolean courseSelectionSession) {
+      this.courseSelectionSession = courseSelectionSession;
+    }
+  }
 }

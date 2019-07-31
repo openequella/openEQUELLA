@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,28 @@
 
 package com.tle.core.javascript;
 
-import java.io.Serializable;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import java.io.Serializable;
 
 /**
- * The JavascriptLibrary is the top level (e.g. JQuery), the JavascriptModule is
- * a subset of the library (e.g. JQuery UI)
- * 
+ * The JavascriptLibrary is the top level (e.g. JQuery), the JavascriptModule is a subset of the
+ * library (e.g. JQuery UI)
+ *
  * @author aholland
  */
 @NonNullByDefault
-public interface JavascriptModule extends Serializable
-{
-	String getId();
+public interface JavascriptModule extends Serializable {
+  String getId();
 
-	String getDisplayName();
+  String getDisplayName();
 
-	/**
-	 * Don't assume that you won't get a null back from this. You may very well
-	 * get one.
-	 * 
-	 * @return Usually (ok, always) a sections PreRenderable. Obviously a core
-	 *         plugin cannot reference a web one though.
-	 */
-	@Nullable
-	Object getPreRenderer();
+  /**
+   * Don't assume that you won't get a null back from this. You may very well get one.
+   *
+   * @return Usually (ok, always) a sections PreRenderable. Obviously a core plugin cannot reference
+   *     a web one though.
+   */
+  @Nullable
+  Object getPreRenderer();
 }

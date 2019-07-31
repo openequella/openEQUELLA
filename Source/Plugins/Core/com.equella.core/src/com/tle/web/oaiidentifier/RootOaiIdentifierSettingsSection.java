@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.oaiidentifier;
-
-import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.common.settings.standard.OAISettings;
@@ -41,205 +41,169 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
-public class RootOaiIdentifierSettingsSection extends OneColumnLayout<RootOaiIdentifierSettingsSection.OaiSettingsModel>
-{
-	@PlugKey("oai.title")
-	private static Label TITLE_LABEL;
+/** @author larry */
+public class RootOaiIdentifierSettingsSection
+    extends OneColumnLayout<RootOaiIdentifierSettingsSection.OaiSettingsModel> {
+  @PlugKey("oai.title")
+  private static Label TITLE_LABEL;
 
-	@Component(stateful = false)
-	private TextField oaiSchemeText;
+  @Component(stateful = false)
+  private TextField oaiSchemeText;
 
-	@Component(stateful = false)
-	private TextField namespaceText;
+  @Component(stateful = false)
+  private TextField namespaceText;
 
-	@Component(stateful = false)
-	private TextField emailText;
+  @Component(stateful = false)
+  private TextField emailText;
 
-	@Component(stateful = false)
-	private Checkbox useDownloadItemAcl;
+  @Component(stateful = false)
+  private Checkbox useDownloadItemAcl;
 
-	@PlugKey("oai.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @PlugKey("oai.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-	@Inject
-	private OaiIdentifierSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Inject private OaiIdentifierSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-		OaiSettingsModel model = getModel(info);
-		if( !model.isLoaded() )
-		{
-			OAISettings oaiSettings = getOAISettings();
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
 
-			oaiSchemeText.setValue(info, oaiSettings.getScheme());
-			namespaceText.setValue(info, oaiSettings.getNamespaceIdentifier());
-			emailText.setValue(info, oaiSettings.getEmailAddress());
-			useDownloadItemAcl.setChecked(info, oaiSettings.isUseDownloadItemAcl());
-			model.setLoaded(true);
-		}
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "oaiidentifier.ftl", this));
-	}
+    OaiSettingsModel model = getModel(info);
+    if (!model.isLoaded()) {
+      OAISettings oaiSettings = getOAISettings();
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+      oaiSchemeText.setValue(info, oaiSettings.getScheme());
+      namespaceText.setValue(info, oaiSettings.getNamespaceIdentifier());
+      emailText.setValue(info, oaiSettings.getEmailAddress());
+      useDownloadItemAcl.setChecked(info, oaiSettings.isUseDownloadItemAcl());
+      model.setLoaded(true);
+    }
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "oaiidentifier.ftl", this));
+  }
 
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-	private OAISettings getOAISettings()
-	{
-		return configService.getProperties(new OAISettings());
-	}
+  private OAISettings getOAISettings() {
+    return configService.getProperties(new OAISettings());
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		boolean altered = saveSystemConstants(info);
-		if( altered )
-		{
-			receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-		}
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    boolean altered = saveSystemConstants(info);
+    if (altered) {
+      receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+    }
+  }
 
-	private boolean saveSystemConstants(SectionInfo info)
-	{
-		boolean altered = false;
-		OAISettings settings = getOAISettings();
+  private boolean saveSystemConstants(SectionInfo info) {
+    boolean altered = false;
+    OAISettings settings = getOAISettings();
 
-		String oldOaiScheme = settings.getScheme();
-		String newOaiScheme = oaiSchemeText.getValue(info);
-		if( !(Check.isEmpty(oldOaiScheme) && Check.isEmpty(newOaiScheme)) )
-		{
-			String old = oldOaiScheme != null ? oldOaiScheme : "";
-			if( !old.equals(newOaiScheme) )
-			{
-				altered |= true;
-				settings.setScheme(newOaiScheme);
-			}
-		}
+    String oldOaiScheme = settings.getScheme();
+    String newOaiScheme = oaiSchemeText.getValue(info);
+    if (!(Check.isEmpty(oldOaiScheme) && Check.isEmpty(newOaiScheme))) {
+      String old = oldOaiScheme != null ? oldOaiScheme : "";
+      if (!old.equals(newOaiScheme)) {
+        altered |= true;
+        settings.setScheme(newOaiScheme);
+      }
+    }
 
-		String oldNamespace = settings.getNamespaceIdentifier();
-		String newNamespace = namespaceText.getValue(info);
-		if( !(Check.isEmpty(oldNamespace) && Check.isEmpty(newNamespace)) )
-		{
-			String old = oldNamespace != null ? oldNamespace : "";
-			if( !old.equals(newNamespace) )
-			{
-				altered |= true;
-				settings.setNamespaceIdentifier(newNamespace);
-			}
-		}
+    String oldNamespace = settings.getNamespaceIdentifier();
+    String newNamespace = namespaceText.getValue(info);
+    if (!(Check.isEmpty(oldNamespace) && Check.isEmpty(newNamespace))) {
+      String old = oldNamespace != null ? oldNamespace : "";
+      if (!old.equals(newNamespace)) {
+        altered |= true;
+        settings.setNamespaceIdentifier(newNamespace);
+      }
+    }
 
-		String oldEmail = settings.getEmailAddress();
-		String newEmail = emailText.getValue(info);
-		if( !(Check.isEmpty(oldEmail) && Check.isEmpty(newEmail)) )
-		{
-			String old = oldEmail != null ? oldEmail : "";
-			if( !old.equals(newEmail) )
-			{
-				altered |= true;
-				settings.setEmailAddress(newEmail);
-			}
-		}
-		boolean downloadItemAcl = settings.isUseDownloadItemAcl();
-		if( !useDownloadItemAcl.isChecked(info) == downloadItemAcl )
-		{
-			altered |= true;
-			settings.setUseDownloadItemAcl(useDownloadItemAcl.isChecked(info));
-		}
+    String oldEmail = settings.getEmailAddress();
+    String newEmail = emailText.getValue(info);
+    if (!(Check.isEmpty(oldEmail) && Check.isEmpty(newEmail))) {
+      String old = oldEmail != null ? oldEmail : "";
+      if (!old.equals(newEmail)) {
+        altered |= true;
+        settings.setEmailAddress(newEmail);
+      }
+    }
+    boolean downloadItemAcl = settings.isUseDownloadItemAcl();
+    if (!useDownloadItemAcl.isChecked(info) == downloadItemAcl) {
+      altered |= true;
+      settings.setUseDownloadItemAcl(useDownloadItemAcl.isChecked(info));
+    }
 
-		// and finally, persist (if any alterations).
-		if( altered )
-		{
-			configService.setProperties(settings);
-			OaiSettingsModel model = getModel(info);
-			model.setLoaded(false);
-		}
-		return altered;
-	}
+    // and finally, persist (if any alterations).
+    if (altered) {
+      configService.setProperties(settings);
+      OaiSettingsModel model = getModel(info);
+      model.setLoaded(false);
+    }
+    return altered;
+  }
 
-	/**
-	 * @return the oaiSchemeText
-	 */
-	public TextField getOaiSchemeText()
-	{
-		return oaiSchemeText;
-	}
+  /** @return the oaiSchemeText */
+  public TextField getOaiSchemeText() {
+    return oaiSchemeText;
+  }
 
-	/**
-	 * @return the namespaceText
-	 */
-	public TextField getNamespaceText()
-	{
-		return namespaceText;
-	}
+  /** @return the namespaceText */
+  public TextField getNamespaceText() {
+    return namespaceText;
+  }
 
-	/**
-	 * @return the emailText
-	 */
-	public TextField getEmailText()
-	{
-		return emailText;
-	}
+  /** @return the emailText */
+  public TextField getEmailText() {
+    return emailText;
+  }
 
-	public Checkbox getUseDownloadItemAcl()
-	{
-		return useDownloadItemAcl;
-	}
+  public Checkbox getUseDownloadItemAcl() {
+    return useDownloadItemAcl;
+  }
 
-	/**
-	 * @return the saveButton
-	 */
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  /** @return the saveButton */
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-	@Override
-	public Class<OaiSettingsModel> getModelClass()
-	{
-		return OaiSettingsModel.class;
-	}
+  @Override
+  public Class<OaiSettingsModel> getModelClass() {
+    return OaiSettingsModel.class;
+  }
 
-	public static class OaiSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		@Bookmarked(stateful = false)
-		private boolean loaded;
+  public static class OaiSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    @Bookmarked(stateful = false)
+    private boolean loaded;
 
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
+    public boolean isLoaded() {
+      return loaded;
+    }
 
-		public void setLoaded(boolean loaded)
-		{
-			this.loaded = loaded;
-		}
-	}
+    public void setLoaded(boolean loaded) {
+      this.loaded = loaded;
+    }
+  }
 }

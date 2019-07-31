@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.favourites.itemlist;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
@@ -34,41 +30,41 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.render.DateRendererFactory;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @Bind
-public class FavouritesItemList extends StandardItemList
-{
-	@PlugKey("keywords")
-	private static Label KEYWORDS_LABEL;
-	@PlugKey("datefavourited")
-	private static Label DATE_FAVOURITED_LABEL;
+public class FavouritesItemList extends StandardItemList {
+  @PlugKey("keywords")
+  private static Label KEYWORDS_LABEL;
 
-	@Inject
-	private BookmarkService bookmarkService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("datefavourited")
+  private static Label DATE_FAVOURITED_LABEL;
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		super.customiseListEntries(context, entries);
-		final Map<Item, Bookmark> bookmarks = bookmarkService.getBookmarksForItems(AbstractItemlikeListEntry
-			.getItems(entries));
+  @Inject private BookmarkService bookmarkService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		for( StandardItemListEntry entry : entries )
-		{
-			Bookmark b = bookmarks.get(entry.getItem());
-			if( b != null )
-			{
-				Collection<String> keywords = b.getKeywords();
-				if( !keywords.isEmpty() )
-				{
-					entry.addDelimitedMetadata(KEYWORDS_LABEL, keywords);
-				}
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    super.customiseListEntries(context, entries);
+    final Map<Item, Bookmark> bookmarks =
+        bookmarkService.getBookmarksForItems(AbstractItemlikeListEntry.getItems(entries));
 
-				entry.addMetadata(new StdMetadataEntry(DATE_FAVOURITED_LABEL, dateRendererFactory.createDateRenderer(b
-					.getDateModified())));
-			}
-		}
-	}
+    for (StandardItemListEntry entry : entries) {
+      Bookmark b = bookmarks.get(entry.getItem());
+      if (b != null) {
+        Collection<String> keywords = b.getKeywords();
+        if (!keywords.isEmpty()) {
+          entry.addDelimitedMetadata(KEYWORDS_LABEL, keywords);
+        }
+
+        entry.addMetadata(
+            new StdMetadataEntry(
+                DATE_FAVOURITED_LABEL,
+                dateRendererFactory.createDateRenderer(b.getDateModified())));
+      }
+    }
+  }
 }

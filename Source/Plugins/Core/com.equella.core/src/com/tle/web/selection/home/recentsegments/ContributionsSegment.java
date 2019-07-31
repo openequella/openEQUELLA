@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.selection.home.recentsegments;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemStatus;
@@ -38,63 +34,56 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.home.model.RecentSelectionSegmentModel.RecentSelection;
 import com.tle.web.viewurl.ViewItemUrlFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
-public class ContributionsSegment extends AbstractRecentSegment
-{
-	@PlugKey("recently.contributed")
-	private static Label TITLE;
-	@Inject
-	private FreeTextService searchService;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private SelectionService selectionService;
+/** @author aholland */
+public class ContributionsSegment extends AbstractRecentSegment {
+  @PlugKey("recently.contributed")
+  private static Label TITLE;
 
-	@Override
-	protected List<RecentSelection> getSelections(SectionInfo info, SelectionSession session, int maximum)
-	{
-		List<RecentSelection> selections = new ArrayList<RecentSelection>();
-		DefaultSearch search = new DefaultSearch();
-		search.setOwner(CurrentUser.getUserID());
-		search.setPrivilege(selectionService.getSearchPrivilege(info));
-		if( !session.isAllCollections() )
-		{
-			Set<String> collectionUuids = session.getCollectionUuids();
-			if( !collectionUuids.isEmpty() )
-			{
-				search.setCollectionUuids(collectionUuids);
-			}
-			else
-			{
-				// there is nothing available...
-				return selections;
-			}
-		}
-		Set<String> mimeTypes = session.getMimeTypes();
-		if( mimeTypes != null && !mimeTypes.isEmpty() )
-		{
-			search.setMimeTypes(mimeTypes);
-		}
+  @Inject private FreeTextService searchService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private SelectionService selectionService;
 
-		search.setNotItemStatuses(ItemStatus.PERSONAL);
-		search.setSortType(SortType.DATEMODIFIED);
+  @Override
+  protected List<RecentSelection> getSelections(
+      SectionInfo info, SelectionSession session, int maximum) {
+    List<RecentSelection> selections = new ArrayList<RecentSelection>();
+    DefaultSearch search = new DefaultSearch();
+    search.setOwner(CurrentUser.getUserID());
+    search.setPrivilege(selectionService.getSearchPrivilege(info));
+    if (!session.isAllCollections()) {
+      Set<String> collectionUuids = session.getCollectionUuids();
+      if (!collectionUuids.isEmpty()) {
+        search.setCollectionUuids(collectionUuids);
+      } else {
+        // there is nothing available...
+        return selections;
+      }
+    }
+    Set<String> mimeTypes = session.getMimeTypes();
+    if (mimeTypes != null && !mimeTypes.isEmpty()) {
+      search.setMimeTypes(mimeTypes);
+    }
 
-		SearchResults<Item> results = searchService.search(search, 0, maximum);
-		List<Item> items = results.getResults();
-		for( Item item : items )
-		{
-			HtmlLinkState state = new HtmlLinkState(urlFactory.createItemUrl(info, item.getItemId()));
-			selections.add(new RecentSelection(CurrentLocale.get(item.getName(), item.getIdString()), state));
-		}
-		return selections;
-	}
+    search.setNotItemStatuses(ItemStatus.PERSONAL);
+    search.setSortType(SortType.DATEMODIFIED);
 
-	@Override
-	public String getTitle(SectionInfo info, SelectionSession session)
-	{
-		return TITLE.getText(); //$NON-NLS-1$
-	}
+    SearchResults<Item> results = searchService.search(search, 0, maximum);
+    List<Item> items = results.getResults();
+    for (Item item : items) {
+      HtmlLinkState state = new HtmlLinkState(urlFactory.createItemUrl(info, item.getItemId()));
+      selections.add(
+          new RecentSelection(CurrentLocale.get(item.getName(), item.getIdString()), state));
+    }
+    return selections;
+  }
+
+  @Override
+  public String getTitle(SectionInfo info, SelectionSession session) {
+    return TITLE.getText(); // $NON-NLS-1$
+  }
 }

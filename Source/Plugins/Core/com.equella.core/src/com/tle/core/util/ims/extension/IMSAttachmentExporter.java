@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,27 @@
 
 package com.tle.core.util.ims.extension;
 
-import java.util.List;
-
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.util.ims.beans.IMSResource;
+import java.util.List;
 
-/**
- * @author Aaron
- */
-public interface IMSAttachmentExporter
-{
-	/**
-	 * @param info Would be nice if we didn't need this. Required for generating
-	 *            URLs
-	 * @param item
-	 * @param attachment
-	 * @param resources A list of current IMSResources. You need to add the
-	 *            exported attachment to this list
-	 * @return true if the attachment was handled
-	 */
-	boolean exportAttachment(Item item, IAttachment attachment, List<IMSResource> resources, FileHandle imsRoot);
+/** @author Aaron */
+public interface IMSAttachmentExporter {
+  /**
+   * @param info Would be nice if we didn't need this. Required for generating URLs
+   * @param item
+   * @param attachment
+   * @param resources A list of current IMSResources. You need to add the exported attachment to
+   *     this list
+   * @return true if the attachment was handled
+   */
+  boolean exportAttachment(
+      Item item, IAttachment attachment, List<IMSResource> resources, FileHandle imsRoot);
 
-	/**
-	 * @return null if unhandled
-	 */
-	Attachment importAttachment(Item item, IMSResource resource, FileHandle root, String packageFolder);
+  /** @return null if unhandled */
+  Attachment importAttachment(
+      Item item, IMSResource resource, FileHandle root, String packageFolder);
 }

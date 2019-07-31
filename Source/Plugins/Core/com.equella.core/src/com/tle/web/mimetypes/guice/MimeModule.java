@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,42 +27,37 @@ import com.tle.web.search.filter.SimpleResetFiltersQuerySection;
 import com.tle.web.search.guice.AbstractSearchModule;
 
 @SuppressWarnings("nls")
-public class MimeModule extends AbstractSearchModule
-{
-	@Override
-	protected void configure()
-	{
-		super.configure();
-		bind(Object.class).annotatedWith(Names.named("/access/mimeedit")).toProvider(node(MimeTypesEditSection.class));
-	}
+public class MimeModule extends AbstractSearchModule {
+  @Override
+  protected void configure() {
+    super.configure();
+    bind(Object.class)
+        .annotatedWith(Names.named("/access/mimeedit"))
+        .toProvider(node(MimeTypesEditSection.class));
+  }
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(RootMimeSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(RootMimeSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(SimpleResetFiltersQuerySection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(SimpleResetFiltersQuerySection.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(MimeResultsSection.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(MimeResultsSection.class);
+  }
 
-	@Override
-	protected void addActions(NodeProvider node)
-	{
-		node.child(AddMimeAction.class);
-	}
+  @Override
+  protected void addActions(NodeProvider node) {
+    node.child(AddMimeAction.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/mime";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/mime";
+  }
 }

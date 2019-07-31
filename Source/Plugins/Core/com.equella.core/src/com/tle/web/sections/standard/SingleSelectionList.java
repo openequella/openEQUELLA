@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.sections.standard;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.js.JSHandler;
@@ -26,87 +25,73 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.StatementHandler;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A single selection list component.
- * <p>
- * It provides methods for getting and setting the single value. <br>
+ *
+ * <p>It provides methods for getting and setting the single value. <br>
  * The default renderer is usually {@link DropDownRenderer}.
- * 
+ *
  * @author jmaginnis
  */
-public class SingleSelectionList<T> extends MultiSelectionList<T>
-{
-	private boolean grouped;
+public class SingleSelectionList<T> extends MultiSelectionList<T> {
+  private boolean grouped;
 
-	@Override
-	protected void extraHtmlRender(SectionInfo info)
-	{
-		HtmlListState state = getState(info);
-		state.setMultiple(false);
-		state.setGrouped(grouped);
-	}
+  @Override
+  protected void extraHtmlRender(SectionInfo info) {
+    HtmlListState state = getState(info);
+    state.setMultiple(false);
+    state.setGrouped(grouped);
+  }
 
-	@Override
-	protected void handleListParameters(SectionInfo info, ParametersEvent event)
-	{
-		String param = event.getParameter(getParameterId(), false);
-		if( param != null )
-		{
-			setValuesInternal(info, Collections.singleton(param));
-		}
-	}
+  @Override
+  protected void handleListParameters(SectionInfo info, ParametersEvent event) {
+    String param = event.getParameter(getParameterId(), false);
+    if (param != null) {
+      setValuesInternal(info, Collections.singleton(param));
+    }
+  }
 
-	public T getSelectedValue(SectionInfo info)
-	{
-		Collection<T> vals = getSelectedValues(info);
-		if( !vals.isEmpty() )
-		{
-			return vals.iterator().next();
-		}
-		return null;
-	}
+  public T getSelectedValue(SectionInfo info) {
+    Collection<T> vals = getSelectedValues(info);
+    if (!vals.isEmpty()) {
+      return vals.iterator().next();
+    }
+    return null;
+  }
 
-	public void setSelectedValue(SectionInfo info, T type)
-	{
-		if( type == null )
-		{
-			setSelectedStringValue(info, null);
-		}
-		else
-		{
-			setSelectedStringValue(info, listModel.getStringValue(info, type));
-		}
-	}
+  public void setSelectedValue(SectionInfo info, T type) {
+    if (type == null) {
+      setSelectedStringValue(info, null);
+    } else {
+      setSelectedStringValue(info, listModel.getStringValue(info, type));
+    }
+  }
 
-	public String getSelectedValueAsString(SectionInfo info)
-	{
-		Collection<String> vals = getSelectedValuesAsStrings(info);
-		if( vals != null && !vals.isEmpty() )
-		{
-			return vals.iterator().next();
-		}
-		return null;
-	}
+  public String getSelectedValueAsString(SectionInfo info) {
+    Collection<String> vals = getSelectedValuesAsStrings(info);
+    if (vals != null && !vals.isEmpty()) {
+      return vals.iterator().next();
+    }
+    return null;
+  }
 
-	public void addChangeEventHandler(JSHandler handler)
-	{
-		setEventHandler(JSHandler.EVENT_CHANGE, handler);
-	}
+  public void addChangeEventHandler(JSHandler handler) {
+    setEventHandler(JSHandler.EVENT_CHANGE, handler);
+  }
 
-	public void addChangeEventHandler(JSCallable callable, Object... args)
-	{
-		setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(callable, args));
-	}
+  public void addChangeEventHandler(JSCallable callable, Object... args) {
+    setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(callable, args));
+  }
 
-	@Override
-	protected String getValueType()
-	{
-		return String.class.getName();
-	}
+  @Override
+  protected String getValueType() {
+    return String.class.getName();
+  }
 
-	public void setGrouped(boolean grouped)
-	{
-		this.grouped = grouped;
-	}
+  public void setGrouped(boolean grouped) {
+    this.grouped = grouped;
+  }
 }

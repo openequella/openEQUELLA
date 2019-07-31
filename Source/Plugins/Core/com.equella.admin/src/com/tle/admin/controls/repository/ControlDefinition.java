@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,86 +18,29 @@
 
 package com.tle.admin.controls.repository;
 
-import java.util.HashSet;
+import com.dytech.edge.admin.wizard.editor.Editor;
+import com.dytech.edge.admin.wizard.model.Control;
+import com.tle.admin.controls.EditorFactory;
+import com.tle.admin.schema.SchemaModel;
 import java.util.Set;
 
-import org.java.plugin.registry.Extension;
+/** @author Nicholas Read */
+public interface ControlDefinition {
+  EditorFactory editorFactory();
 
-/**
- * @author Nicholas Read
- */
-public class ControlDefinition
-{
-	private Set<String> contexts = new HashSet<String>();
+  Set<String> getContexts();
 
-	private String id;
-	private String name;
-	private String editorFactoryClass;
-	private Extension extension;
+  String getName();
 
-	public ControlDefinition()
-	{
-		super();
-	}
+  String getId();
 
-	public Extension getExtension()
-	{
-		return extension;
-	}
+  boolean hasContext(String context);
 
-	public void setExtension(Extension extension)
-	{
-		this.extension = extension;
-	}
+  Editor createEditor(Control control, int type, SchemaModel schema);
 
-	public String getId()
-	{
-		return id;
-	}
+  String getIcon();
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  Control createControlModel();
 
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
-
-	public String getEditorFactoryClass()
-	{
-		return editorFactoryClass;
-	}
-
-	public void setEditorFactoryClass(String editorFactoryClass)
-	{
-		this.editorFactoryClass = editorFactoryClass;
-	}
-
-	public Set<String> getContexts()
-	{
-		return contexts;
-	}
-
-	public void setContexts(Set<String> contexts)
-	{
-		this.contexts = contexts;
-	}
-
-	public boolean hasContext(String context)
-	{
-		return contexts.contains(context);
-	}
+  Object createWrappedObject();
 }

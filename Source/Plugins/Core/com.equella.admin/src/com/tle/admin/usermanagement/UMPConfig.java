@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,32 @@
 
 package com.tle.admin.usermanagement;
 
+import com.tle.admin.plugin.PluginSetting;
 import org.java.plugin.registry.Extension;
 
-import com.tle.admin.plugin.PluginSetting;
+public class UMPConfig extends PluginSetting {
+  private String settingsClass;
 
-public class UMPConfig extends PluginSetting
-{
-	private String settingsClass;
+  public UMPConfig(
+      String className,
+      String settingsClass,
+      String name,
+      int width,
+      int height,
+      Extension extension) {
+    this.setPluginClass(className);
+    this.setName(name);
+    this.settingsClass = settingsClass;
+    setExtension(extension);
+    setWidth(width);
+    setHeight(height);
+  }
 
-	public UMPConfig(String className, String settingsClass, String name, int width, int height, Extension extension)
-	{
-		this.setPluginClass(className);
-		this.setName(name);
-		this.settingsClass = settingsClass;
-		setExtension(extension);
-		setWidth(width);
-		setHeight(height);
-	}
+  public String getSettingsClass() {
+    return settingsClass;
+  }
 
-	public String getSettingsClass()
-	{
-		return settingsClass;
-	}
-
-	public void setSettingsClass(String settingsClass)
-	{
-		this.settingsClass = settingsClass;
-	}
-
+  public void setSettingsClass(String settingsClass) {
+    this.settingsClass = settingsClass;
+  }
 }

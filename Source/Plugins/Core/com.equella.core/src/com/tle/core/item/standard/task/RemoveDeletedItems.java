@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,28 @@
 
 package com.tle.core.item.standard.task;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.google.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.scheduler.ScheduledTask;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind
 @Singleton
-public class RemoveDeletedItems implements ScheduledTask
-{
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private FilterFactory filterFactory;
-	@Inject(optional = true)
-	// can be overrode by the optional-config.properties
-	@Named("com.tle.core.tasks.RemoveDeletedItems.daysBeforeRemoval")
-	private int daysBeforeRemoval = 7;
+public class RemoveDeletedItems implements ScheduledTask {
+  @Inject private ItemService itemService;
+  @Inject private FilterFactory filterFactory;
 
-	@Override
-	public void execute()
-	{
-		itemService.operateAll(filterFactory.removeDeleted(daysBeforeRemoval));
-	}
+  @Inject(optional = true)
+  // can be overrode by the optional-config.properties
+  @Named("com.tle.core.tasks.RemoveDeletedItems.daysBeforeRemoval")
+  private int daysBeforeRemoval = 7;
+
+  @Override
+  public void execute() {
+    itemService.operateAll(filterFactory.removeDeleted(daysBeforeRemoval));
+  }
 }

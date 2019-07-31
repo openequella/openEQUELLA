@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,22 +17,6 @@
  */
 
 package com.tle.freetext;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.inject.Singleton;
-
-import com.tle.core.migration.impl.MigrationGlobalTask;
-import com.tle.core.plugins.impl.PluginServiceImpl;
-import org.apache.log4j.Logger;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.NRTManager;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.exceptions.InvalidSearchQueryException;
@@ -47,6 +33,10 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.settings.standard.SearchSettings;
+import com.tle.core.events.services.EventService;
+import com.tle.core.freetext.index.AbstractIndexEngine.IndexBuilder;
+import com.tle.core.freetext.index.ItemIndex;
+import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.healthcheck.listeners.ServiceCheckRequestListener;
 import com.tle.core.healthcheck.listeners.ServiceCheckResponseListener.CheckServiceResponseEvent;
@@ -62,419 +52,367 @@ import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
+import com.tle.core.plugins.impl.PluginServiceImpl;
 import com.tle.core.remoting.MatrixResults;
-import com.tle.core.events.services.EventService;
-import com.tle.core.freetext.index.ItemIndex;
-import com.tle.core.freetext.index.AbstractIndexEngine.IndexBuilder;
-import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.zookeeper.ZookeeperService;
-
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import javax.inject.Singleton;
+import org.apache.log4j.Logger;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind(FreetextIndex.class)
 @Singleton
 @SuppressWarnings("nls")
-public class FreetextIndexImpl implements FreetextIndex, InstitutionListener, ServiceCheckRequestListener
-{
-	private static final Logger LOGGER = Logger.getLogger(FreetextIndexImpl.class);
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
+public class FreetextIndexImpl
+    implements FreetextIndex, InstitutionListener, ServiceCheckRequestListener {
+  private static final Logger LOGGER = Logger.getLogger(FreetextIndexImpl.class);
+  private static final String KEY_PFX =
+      PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
 
-	private final File indexPath;
+  private final File indexPath;
 
-	@Inject
-	private ConfigurationService configConstants;
-	@Inject
-	private ItemDao itemDao;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemHelper itemHelper;
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private EventService eventService;
-	@Inject
-	private ZookeeperService zkService;
+  @Inject private ConfigurationService configConstants;
+  @Inject private ItemDao itemDao;
+  @Inject private ItemService itemService;
+  @Inject private ItemHelper itemHelper;
+  @Inject private RunAsInstitution runAs;
+  @Inject private EventService eventService;
+  @Inject private ZookeeperService zkService;
 
-	@Inject(optional = true)
-	@Named("freetextIndex.defaultOperator")
-	private String defaultOperator = "AND";
-	@Inject(optional = true)
-	@Named("freetextIndex.synchroiseMinutes")
-	private int synchroniseMinutes = 5;
+  @Inject(optional = true)
+  @Named("freetextIndex.defaultOperator")
+  private String defaultOperator = "AND";
 
-	@Inject
-	@Named("freetext.stopwords.file")
-	private File stopWordsFile;
+  @Inject(optional = true)
+  @Named("freetextIndex.synchroiseMinutes")
+  private int synchroniseMinutes = 5;
 
-	@Inject
-	private UserPreferenceService userPrefs;
+  @Inject
+  @Named("freetext.stopwords.file")
+  private File stopWordsFile;
 
-	private int maxBooleanClauses = 8192;
+  @Inject
+  @Named("freetext.analyzer.language")
+  private String analyzerLanguage;
 
-	private PluginTracker<IndexingExtension> indexingTracker;
-	private PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
+  @Inject private UserPreferenceService userPrefs;
 
-	private boolean indexesHaveBeenInited;
+  private int maxBooleanClauses = 8192;
 
-	@Inject
-	public FreetextIndexImpl(@Named("freetext.index.location") File indexPath)
-	{
-		this.indexPath = indexPath;
-	}
+  private PluginTracker<IndexingExtension> indexingTracker;
+  private PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
 
-	public File getIndexPath()
-	{
-		return this.indexPath;
-	}
+  private boolean indexesHaveBeenInited;
 
-	/**
-	 * Invoked by Spring framework.
-	 */
-	public void setSynchroniseMinutes(int synchroniseMinutes)
-	{
-		this.synchroniseMinutes = synchroniseMinutes;
-	}
+  @Inject
+  public FreetextIndexImpl(@Named("freetext.index.location") File indexPath) {
+    this.indexPath = indexPath;
+  }
 
-	/**
-	 * For backwards compatibility.
-	 * 
-	 * @param synchroniseMinutes
-	 */
-	public void setSynchroiseMinutes(int synchroniseMinutes)
-	{
-		this.synchroniseMinutes = synchroniseMinutes;
-	}
+  public File getIndexPath() {
+    return this.indexPath;
+  }
 
-	private Collection<ItemIndex<? extends FreetextResult>> getAllIndexes()
-	{
-		return getIndexerMap().values();
-	}
+  /** Invoked by Spring framework. */
+  public void setSynchroniseMinutes(int synchroniseMinutes) {
+    this.synchroniseMinutes = synchroniseMinutes;
+  }
 
-	@Override
-	public SearchSettings getSearchSettings()
-	{
-		return configConstants.getProperties(new SearchSettings());
-	}
+  /**
+   * For backwards compatibility.
+   *
+   * @param synchroniseMinutes
+   */
+  public void setSynchroiseMinutes(int synchroniseMinutes) {
+    this.synchroniseMinutes = synchroniseMinutes;
+  }
 
-	private boolean isSearchAttachment()
-	{
-		return userPrefs.isSearchAttachment();
-	}
+  private Collection<ItemIndex<? extends FreetextResult>> getAllIndexes() {
+    return getIndexerMap().values();
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count)
+  @Override
+  public SearchSettings getSearchSettings() {
+    return configConstants.getProperties(new SearchSettings());
+  }
 
-	{
-		try
-		{
-			return (SearchResults<T>) getIndexer(searchReq.getSearchType()).search(searchReq, start, count,
-				isSearchAttachment());
-		}
-		catch( SearchingException ex )
-		{
-			if( !ex.isLogged() )
-			{
-				LOGGER.error(ex);
-			}
-			throw ex;
-		}
-	}
+  private boolean isSearchAttachment() {
+    return userPrefs.isSearchAttachment();
+  }
 
-	@Override
-	public LongSet searchBitSet(Search searchReq)
-	{
-		try
-		{
-			return getIndexer(searchReq.getSearchType()).searchBitSet(searchReq, isSearchAttachment());
-		}
-		catch( InvalidSearchQueryException iqe )
-		{
-			throw iqe;
-		}
-		catch( SearchingException ex )
-		{
-			if( !ex.isLogged() )
-			{
-				LOGGER.error(ex);
-			}
-			throw ex;
-		}
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends FreetextResult> SearchResults<T> search(
+      Search searchReq, int start, int count) {
 
-	/*
-	 * @see com.dytech.edge.search.FTE#count(java.lang.String)
-	 * @throws InvalidSearchQueryException
-	 */
-	@Override
-	public int count(Search searchReq)
-	{
-		try
-		{
-			boolean searchNotInAttachment = isSearchAttachment();
-			return getIndexer(searchReq.getSearchType()).count(searchReq, searchNotInAttachment);
-		}
-		catch( SearchingException ex )
-		{
-			if( !ex.isLogged() )
-			{
-				LOGGER.error(ex);
-			}
-			throw ex;
-		}
-	}
+    try {
+      return (SearchResults<T>)
+          getIndexer(searchReq.getSearchType())
+              .search(searchReq, start, count, isSearchAttachment());
+    } catch (SearchingException ex) {
+      if (!ex.isLogged()) {
+        LOGGER.error(ex);
+      }
+      throw ex;
+    }
+  }
 
-	@Override
-	public ItemIndex<? extends FreetextResult> getIndexer(String index)
-	{
-		return getIndexerMap().get(index);
-	}
+  @Override
+  public LongSet searchBitSet(Search searchReq) {
+    try {
+      return getIndexer(searchReq.getSearchType()).searchBitSet(searchReq, isSearchAttachment());
+    } catch (InvalidSearchQueryException iqe) {
+      throw iqe;
+    } catch (SearchingException ex) {
+      if (!ex.isLogged()) {
+        LOGGER.error(ex);
+      }
+      throw ex;
+    }
+  }
 
-	@Override
-	public synchronized void deleteIndexes()
-	{
-		Map<String, ItemIndex<? extends FreetextResult>> indexers = indexTracker.getBeanMap();
-		for( ItemIndex<? extends FreetextResult> index : indexers.values() )
-		{
-			index.deleteDirectory();
-		}
-		indexesHaveBeenInited = false;
-	}
+  /*
+   * @see com.dytech.edge.search.FTE#count(java.lang.String)
+   * @throws InvalidSearchQueryException
+   */
+  @Override
+  public int count(Search searchReq) {
+    try {
+      boolean searchNotInAttachment = isSearchAttachment();
+      return getIndexer(searchReq.getSearchType()).count(searchReq, searchNotInAttachment);
+    } catch (SearchingException ex) {
+      if (!ex.isLogged()) {
+        LOGGER.error(ex);
+      }
+      throw ex;
+    }
+  }
 
-	private synchronized Map<String, ItemIndex<? extends FreetextResult>> getIndexerMap()
-	{
-		Map<String, ItemIndex<? extends FreetextResult>> indexerMap = indexTracker.getBeanMap();
-		if( !indexesHaveBeenInited )
-		{
-			// This simply exists in order to reset the indices for the first
-			// time.
-			IndexBuilder resetBuilder = new IndexBuilder()
-			{
-				@Override
-				public long buildIndex(NRTManager nrtManager) throws Exception
-				{
-					return nrtManager.getCurrentSearchingGen(true);
-				}
-			};
-			for( ItemIndex<? extends FreetextResult> itemIndex : indexerMap.values() )
-			{
-				itemIndex.modifyIndex(resetBuilder);
-			}
-			indexesHaveBeenInited = true;
-		}
-		return indexerMap;
-	}
+  @Override
+  public ItemIndex<? extends FreetextResult> getIndexer(String index) {
+    return getIndexerMap().get(index);
+  }
 
-	@Override
-	public Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields)
-	{
-		return getIndexer(Search.INDEX_ITEM).facetCount(search, fields);
-	}
+  @Override
+  public synchronized void deleteIndexes() {
+    Map<String, ItemIndex<? extends FreetextResult>> indexers = indexTracker.getBeanMap();
+    for (ItemIndex<? extends FreetextResult> index : indexers.values()) {
+      index.deleteDirectory();
+    }
+    indexesHaveBeenInited = false;
+  }
 
-	@Override
-	public MatrixResults matrixSearch(Search search, List<String> fields, boolean countOnly)
-	{
-		return getIndexer(Search.INDEX_ITEM).matrixSearch(search, fields, countOnly);
-	}
+  private synchronized Map<String, ItemIndex<? extends FreetextResult>> getIndexerMap() {
+    Map<String, ItemIndex<? extends FreetextResult>> indexerMap = indexTracker.getBeanMap();
+    if (!indexesHaveBeenInited) {
+      // This simply exists in order to reset the indices for the first
+      // time.
+      IndexBuilder resetBuilder =
+          new IndexBuilder() {
+            @Override
+            public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+                throws Exception {
+              return nrtManager.getCurrentSearchingGen();
+            }
+          };
+      for (ItemIndex<? extends FreetextResult> itemIndex : indexerMap.values()) {
+        itemIndex.modifyIndex(resetBuilder);
+      }
+      indexesHaveBeenInited = true;
+    }
+    return indexerMap;
+  }
 
-	public int getMaxBooleanClauses()
-	{
-		return maxBooleanClauses;
-	}
+  @Override
+  public Multimap<String, Pair<String, Integer>> facetCount(
+      Search search, Collection<String> fields) {
+    return getIndexer(Search.INDEX_ITEM).facetCount(search, fields);
+  }
 
-	public void setMaxBooleanClauses(int maxBooleanClauses)
-	{
-		this.maxBooleanClauses = maxBooleanClauses;
-		BooleanQuery.setMaxClauseCount(maxBooleanClauses);
-	}
+  @Override
+  public MatrixResults matrixSearch(
+      Search search, List<String> fields, boolean countOnly, boolean searchAttachments) {
+    return getIndexer(Search.INDEX_ITEM).matrixSearch(search, fields, countOnly, searchAttachments);
+  }
 
-	@Override
-	public void indexBatch(List<IndexedItem> batch)
-	{
-		Collection<ItemIndex<?>> allIndexes = getAllIndexes();
-		for( ItemIndex<?> itemIndex : allIndexes )
-		{
-			itemIndex.indexBatch(batch);
-		}
-	}
+  public int getMaxBooleanClauses() {
+    return maxBooleanClauses;
+  }
 
-	@Override
-	public Collection<IndexingExtension> getIndexingExtensions()
-	{
-		Map<String, IndexingExtension> beans = indexingTracker.getBeanMap();
-		return beans.values();
-	}
+  public void setMaxBooleanClauses(int maxBooleanClauses) {
+    this.maxBooleanClauses = maxBooleanClauses;
+    BooleanQuery.setMaxClauseCount(maxBooleanClauses);
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		indexingTracker = new PluginTracker<IndexingExtension>(pluginService, "com.tle.core.freetext", "indexingExtension", null); //$NON-NLS-1$
-		indexingTracker.setBeanKey("class"); //$NON-NLS-1$
-		indexTracker = new PluginTracker<ItemIndex<?>>(pluginService, "com.tle.core.freetext", "freetextIndex", "id"); //$NON-NLS-1$ //$NON-NLS-2$
-		indexTracker.setBeanKey("class"); //$NON-NLS-1$
-	}
+  @Override
+  public void indexBatch(List<IndexedItem> batch) {
+    Collection<ItemIndex<?>> allIndexes = getAllIndexes();
+    for (ItemIndex<?> itemIndex : allIndexes) {
+      itemIndex.indexBatch(batch);
+    }
+  }
 
-	@Transactional(readOnly = true)
-	@Override
-	public void prepareItemsForIndexing(Collection<IndexedItem> indexitems)
-	{
-		Collection<IndexingExtension> extensions = getIndexingExtensions();
-		ItemSelect select = new ItemSelect();
-		for( IndexingExtension indexingExtension : extensions )
-		{
-			indexingExtension.prepareForLoad(select);
-		}
-		ArrayList<Long> idList = new ArrayList<Long>();
-		for( IndexedItem item : indexitems )
-		{
-			idList.add(item.getItemIdKey().getKey());
-		}
-		List<Item> items = itemDao.getItems(idList, select, null);
-		List<IndexedItem> existantItems = new ArrayList<IndexedItem>();
-		int i = 0;
-		for( final IndexedItem inditem : indexitems )
-		{
-			final Item item = items.get(i++);
-			try
-			{
-				if( item != null )
-				{
-					inditem.setItem(item);
-					runAs.executeAsSystem(item.getInstitution(), new Callable<Void>()
-					{
-						@Override
-						public Void call()
-						{
-							PropBagEx itemxml = itemService.getItemXmlPropBag(item);
-							ItemPack itemPack = new ItemPack();
-							itemPack.setItem(item);
-							itemPack.setXml(itemxml);
-							inditem
-								.setItemXml(itemHelper.convertToXml(itemPack, new ItemHelper.ItemHelperSettings(true)));
-							return null;
-						}
-					});
-					existantItems.add(inditem);
-				}
-				else
-				{
-					inditem.setAdd(false);
-				}
-			}
-			catch( Exception e )
-			{
-				LOGGER.error("Error getting xml for " + item, e); //$NON-NLS-1$
-				inditem.setError(e);
-			}
-		}
-		for( IndexingExtension indexingExtension : extensions )
-		{
-			indexingExtension.loadForIndexing(existantItems);
-		}
-		for( final IndexedItem inditem : indexitems )
-		{
-			inditem.setPrepared(true);
-		}
-	}
+  @Override
+  public Collection<IndexingExtension> getIndexingExtensions() {
+    Map<String, IndexingExtension> beans = indexingTracker.getBeanMap();
+    return beans.values();
+  }
 
-	public void setDefaultOperator(String defaultOperator)
-	{
-		this.defaultOperator = defaultOperator;
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    indexingTracker =
+        new PluginTracker<IndexingExtension>(
+            pluginService, "com.tle.core.freetext", "indexingExtension", null); // $NON-NLS-1$
+    indexingTracker.setBeanKey("class"); // $NON-NLS-1$
+    indexTracker =
+        new PluginTracker<ItemIndex<?>>(
+            pluginService,
+            "com.tle.core.freetext",
+            "freetextIndex",
+            "id"); //$NON-NLS-1$ //$NON-NLS-2$
+    indexTracker.setBeanKey("class"); // $NON-NLS-1$
+  }
 
-	@Override
-	public File getStopWordsFile()
-	{
-		return stopWordsFile;
-	}
+  @Transactional(readOnly = true)
+  @Override
+  public void prepareItemsForIndexing(Collection<IndexedItem> indexitems) {
+    Collection<IndexingExtension> extensions = getIndexingExtensions();
+    ItemSelect select = new ItemSelect();
+    for (IndexingExtension indexingExtension : extensions) {
+      indexingExtension.prepareForLoad(select);
+    }
+    ArrayList<Long> idList = new ArrayList<Long>();
+    for (IndexedItem item : indexitems) {
+      idList.add(item.getItemIdKey().getKey());
+    }
+    List<Item> items = itemDao.getItems(idList, select, null);
+    List<IndexedItem> existantItems = new ArrayList<IndexedItem>();
+    int i = 0;
+    for (final IndexedItem inditem : indexitems) {
+      final Item item = items.get(i++);
+      try {
+        if (item != null) {
+          inditem.setItem(item);
+          runAs.executeAsSystem(
+              item.getInstitution(),
+              new Callable<Void>() {
+                @Override
+                public Void call() {
+                  PropBagEx itemxml = itemService.getItemXmlPropBag(item);
+                  ItemPack itemPack = new ItemPack();
+                  itemPack.setItem(item);
+                  itemPack.setXml(itemxml);
+                  inditem.setItemXml(
+                      itemHelper.convertToXml(itemPack, new ItemHelper.ItemHelperSettings(true)));
+                  return null;
+                }
+              });
+          existantItems.add(inditem);
+        } else {
+          inditem.setAdd(false);
+        }
+      } catch (Exception e) {
+        LOGGER.error("Error getting xml for " + item, e); // $NON-NLS-1$
+        inditem.setError(e);
+      }
+    }
+    for (IndexingExtension indexingExtension : extensions) {
+      indexingExtension.loadForIndexing(existantItems);
+    }
+    for (final IndexedItem inditem : indexitems) {
+      inditem.setPrepared(true);
+    }
+  }
 
-	@Override
-	public String getDefaultOperator()
-	{
-		return defaultOperator;
-	}
+  public void setDefaultOperator(String defaultOperator) {
+    this.defaultOperator = defaultOperator;
+  }
 
-	@Override
-	public File getRootIndexPath()
-	{
-		return indexPath;
-	}
+  @Override
+  public File getStopWordsFile() {
+    return stopWordsFile;
+  }
 
-	@Override
-	public int getSynchroniseMinutes()
-	{
-		return synchroniseMinutes;
-	}
+  @Override
+  public String getAnalyzerLanguage() {
+    return analyzerLanguage;
+  }
 
-	@Override
-	public void institutionEvent(InstitutionEvent event)
-	{
-		if( event.getEventType() == InstitutionEventType.DELETED )
-		{
-			Collection<Institution> insts = event.getChanges().values();
-			for( Institution institution : insts )
-			{
-				Collection<ItemIndex<?>> allIndexes = getAllIndexes();
-				for( ItemIndex<?> itemIndex : allIndexes )
-				{
-					itemIndex.deleteForInstitution(institution.getUniqueId());
-				}
-			}
-		}
-	}
+  @Override
+  public String getDefaultOperator() {
+    return defaultOperator;
+  }
 
-	/**
-	 * @see com.tle.freetext.FreetextIndex#suggestTerm(com.tle.common.searching.Search,
-	 *      java.lang.String)
-	 * @throws InvalidSearchQueryException
-	 */
-	@Override
-	public String suggestTerm(Search request, String prefix)
-	{
-		try
-		{
-			return getIndexer("item").suggestTerm(request, prefix, isSearchAttachment());
-		}
-		catch( SearchingException ex )
-		{
-			if( !ex.isLogged() )
-			{
-				LOGGER.error(ex);
-			}
-			throw ex;
-		}
-	}
+  @Override
+  public File getRootIndexPath() {
+    return indexPath;
+  }
 
-	@Override
-	public void checkServiceRequest(CheckServiceRequestEvent request)
-	{
-		ServiceStatus status = new ServiceStatus(ServiceName.INDEX);
-		try
-		{
+  @Override
+  public int getSynchroniseMinutes() {
+    return synchroniseMinutes;
+  }
 
-			for( ItemIndex<? extends FreetextResult> currentIndex : getAllIndexes() )
-			{
-				currentIndex.checkHealth();
-			}
-			status.setServiceStatus(Status.GOOD);
-			status.setMoreInfo(
-				CurrentLocale.get(KEY_PFX+"servicecheck.moreinfo", getIndexPath().getAbsolutePath()));
+  @Override
+  public void institutionEvent(InstitutionEvent event) {
+    if (event.getEventType() == InstitutionEventType.DELETED) {
+      Collection<Institution> insts = event.getChanges().values();
+      for (Institution institution : insts) {
+        Collection<ItemIndex<?>> allIndexes = getAllIndexes();
+        for (ItemIndex<?> itemIndex : allIndexes) {
+          itemIndex.deleteForInstitution(institution.getUniqueId());
+        }
+      }
+    }
+  }
 
-		}
+  /**
+   * @see com.tle.freetext.FreetextIndex#suggestTerm(com.tle.common.searching.Search,
+   *     java.lang.String)
+   * @throws InvalidSearchQueryException
+   */
+  @Override
+  public String suggestTerm(Search request, String prefix) {
+    try {
+      return getIndexer("item").suggestTerm(request, prefix, isSearchAttachment());
+    } catch (SearchingException ex) {
+      if (!ex.isLogged()) {
+        LOGGER.error(ex);
+      }
+      throw ex;
+    }
+  }
 
-		catch( Exception e )
-		{
-			status.setServiceStatus(Status.BAD);
-			status.setMoreInfo(e.getMessage());
-		}
-		eventService.publishApplicationEvent(
-			new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
-	}
+  @Override
+  public void checkServiceRequest(CheckServiceRequestEvent request) {
+    ServiceStatus status = new ServiceStatus(ServiceName.INDEX);
+    try {
+
+      for (ItemIndex<? extends FreetextResult> currentIndex : getAllIndexes()) {
+        currentIndex.checkHealth();
+      }
+      status.setServiceStatus(Status.GOOD);
+      status.setMoreInfo(
+          CurrentLocale.get(KEY_PFX + "servicecheck.moreinfo", getIndexPath().getAbsolutePath()));
+
+    } catch (Exception e) {
+      status.setServiceStatus(Status.BAD);
+      status.setMoreInfo(e.getMessage());
+    }
+    eventService.publishApplicationEvent(
+        new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
+  }
 }

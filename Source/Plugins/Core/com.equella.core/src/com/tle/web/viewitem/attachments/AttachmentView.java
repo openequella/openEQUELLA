@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,35 +22,29 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.web.sections.equella.utils.AbstractCombinedRenderer;
 import com.tle.web.viewurl.ViewableResource;
 
-public class AttachmentView extends AbstractCombinedRenderer
-{
-	private final IAttachment attachment;
-	private final ViewableResource viewableResource;
-	private String overrideViewer;
+public class AttachmentView extends AbstractCombinedRenderer {
+  private final IAttachment attachment;
+  private final ViewableResource viewableResource;
+  private String overrideViewer;
 
-	public AttachmentView(IAttachment attachment, ViewableResource resource)
-	{
-		this.attachment = attachment;
-		this.viewableResource = resource;
-	}
+  public AttachmentView(IAttachment attachment, ViewableResource resource) {
+    this.attachment = attachment;
+    this.viewableResource = resource;
+  }
 
-	public IAttachment getAttachment()
-	{
-		return attachment;
-	}
+  public IAttachment getAttachment() {
+    return attachment;
+  }
 
-	public ViewableResource getViewableResource()
-	{
-		return viewableResource;
-	}
+  public ViewableResource getViewableResource() {
+    return viewableResource;
+  }
 
-	public String getOverrideViewer()
-	{
-		return overrideViewer;
-	}
+  public String getOverrideViewer() {
+    return overrideViewer;
+  }
 
-	public void setOverrideViewer(String overrideViewer)
-	{
-		this.overrideViewer = overrideViewer;
-	}
+  public void setOverrideViewer(String overrideViewer) {
+    this.overrideViewer = overrideViewer;
+  }
 }

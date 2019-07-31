@@ -1,0 +1,13 @@
+{
+  "id" : "45e552c2-e4e8-4061-a19b-22f4e0a7c608",
+  "username" : "AutoLogin",
+  "firstName" : "Auto",
+  "lastName" : "Login",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:f085ed90ecc5e9d050eb7067fe86e72e9c3137e6ec8e3489d401717a43d74d1d"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/45e552c2-e4e8-4061-a19b-22f4e0a7c608"
+  }
+}

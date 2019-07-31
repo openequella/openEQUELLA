@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.core.item.standard;
-
-import java.util.List;
-import java.util.Set;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.collect.Multimap;
@@ -78,133 +77,143 @@ import com.tle.core.item.standard.operations.workflow.StatusOperation;
 import com.tle.core.item.standard.operations.workflow.SubmitOperation;
 import com.tle.core.item.standard.operations.workflow.SuspendOperation;
 import com.tle.core.item.standard.operations.workflow.WorkflowCommentOperation;
+import java.util.List;
+import java.util.Set;
 
 @BindFactory
-public interface ItemOperationFactory
-{
-	StartLockOperation startLock();
+public interface ItemOperationFactory {
+  StartLockOperation startLock();
 
-	StartEditForRedraft editForRedraft();
+  StartEditForRedraft editForRedraft();
 
-	StartEditForMoveOperation editForMove();
+  StartEditForMoveOperation editForMove();
 
-	StartEditOperation startEdit(boolean modifyAttachments);
+  StartEditOperation startEdit(boolean modifyAttachments);
 
-	StartEditForSaveAndContinueOperation startEditForSaveAndContinue(String stagingUuid);
+  StartEditForSaveAndContinueOperation startEditForSaveAndContinue(String stagingUuid);
 
-	SaveOperation save();
+  SaveOperation save();
 
-	SaveBackgroundOperation saveBackground();
+  SaveBackgroundOperation saveBackground();
 
-	SaveNoIndexingOperation saveNoIndexing(boolean noAutoArchive, String stagingID);
+  SaveNoIndexingOperation saveNoIndexing(boolean noAutoArchive, String stagingID);
 
-	SaveNoSaveScript saveNoSaveScript(boolean noSaveScript);
+  SaveNoSaveScript saveNoSaveScript(boolean noSaveScript);
 
-	SaveOperation saveUnlock(boolean unlock);
+  SaveOperation saveUnlock(boolean unlock);
 
-	SaveOperation saveWithOperations(boolean unlock, @Assisted("pre") List<WorkflowOperation> preSave,
-		@Assisted("post") List<WorkflowOperation> postSave);
+  SaveOperation saveWithOperations(
+      boolean unlock,
+      @Assisted("pre") List<WorkflowOperation> preSave,
+      @Assisted("post") List<WorkflowOperation> postSave);
 
-	EditMetadataOperation editMetadata(ItemPack<Item> pack);
+  EditMetadataOperation editMetadata(ItemPack<Item> pack);
 
-	CreateOperation create();
+  CreateOperation create();
 
-	CreateOperation create(ItemDefinition collection, ItemStatus status);
+  CreateOperation create(ItemDefinition collection, ItemStatus status);
 
-	CreateOperation create(ItemDefinition collection, StagingFile staging);
+  CreateOperation create(ItemDefinition collection, StagingFile staging);
 
-	CreateOperation create(ItemDefinition collection);
+  CreateOperation create(ItemDefinition collection);
 
-	CreateOperation create(PropBagEx initialXml, ItemDefinition definition, StagingFile staging);
+  CreateOperation create(PropBagEx initialXml, ItemDefinition definition, StagingFile staging);
 
-	MetadataMapOperation metadataMap();
+  MetadataMapOperation metadataMap();
 
-	NewVersionOperation newVersion();
+  NewVersionOperation newVersion();
 
-	NewVersionOperation newVersion(boolean attachments);
+  NewVersionOperation newVersion(boolean attachments);
 
-	ReindexOnlyOperation reindexOnly(@Assisted("wait") boolean wait);
+  ReindexOnlyOperation reindexOnly(@Assisted("wait") boolean wait);
 
-	DeleteOperation delete();
+  DeleteOperation delete();
 
-	PurgeOperation purge(@Assisted("wait") boolean wait);
+  PurgeOperation purge(@Assisted("wait") boolean wait);
 
-	ReactivateOperation reactivate();
+  ReactivateOperation reactivate();
 
-	RestoreDeletedOperation restore();
+  RestoreDeletedOperation restore();
 
-	SuspendOperation suspend();
+  SuspendOperation suspend();
 
-	CancelEditOperation cancelEdit(@Assisted("stagingId") @Nullable String stagingId,
-		@Assisted("unlock") boolean unlock);
+  CancelEditOperation cancelEdit(
+      @Assisted("stagingId") @Nullable String stagingId, @Assisted("unlock") boolean unlock);
 
-	ReassignOwnershipOperation changeOwner(@Assisted("toOwner") String toOwner);
+  ReassignOwnershipOperation changeOwner(@Assisted("toOwner") String toOwner);
 
-	UserDeletedOperation userDeleted(String userID);
+  UserDeletedOperation userDeleted(String userID);
 
-	ModifyCollaboratorsOperation modifyCollaborators(String userId, boolean remove);
+  ModifyCollaboratorsOperation modifyCollaborators(String userId, boolean remove);
 
-	ChangeUserIdOperation changeUserId(@Assisted("fromUserId") String fromUserId,
-		@Assisted("toUserId") String toUserId);
+  ChangeUserIdOperation changeUserId(
+      @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
 
-	ModifyCollaboratorsOperation addCollaborators(Set<String> allCollabs);
+  ModifyCollaboratorsOperation addCollaborators(Set<String> allCollabs);
 
-	ModifyNotificationsOperation modifyNotifications(Set<String> userIds);
+  ModifyNotificationsOperation modifyNotifications(Set<String> userIds);
 
-	ClearNotificationOperation clearNotification(long notificationId);
+  ClearNotificationOperation clearNotification(long notificationId);
 
-	ReIndexIfRequiredOperation reIndexIfRequired();
+  ReIndexIfRequiredOperation reIndexIfRequired();
 
-	ForceModificationOperation forceModify();
+  ForceModificationOperation forceModify();
 
-	EditExistingItemMetadataOperation editExistingItemMetadata();
+  EditExistingItemMetadataOperation editExistingItemMetadata();
 
-	ResumeOperation resume();
+  ResumeOperation resume();
 
-	UpdateReferencedURLsOperation updateReferencedUrls();
+  UpdateReferencedURLsOperation updateReferencedUrls();
 
-	NotifyBadUrlOperation notifyBadUrl();
+  NotifyBadUrlOperation notifyBadUrl();
 
-	SetItemThumbnailOperation setItemThumbnail(String thumb);
+  SetItemThumbnailOperation setItemThumbnail(String thumb);
 
-	NewItemOperation createOperation(Multimap<String, String> collectionMap);
+  NewItemOperation createOperation(Multimap<String, String> collectionMap);
 
-	/*
-	 * Workflow
-	 */
+  /*
+   * Workflow
+   */
 
-	AcceptOperation accept(@Assisted("taskId") String taskId, @Assisted("comment") String comment,
-		@Assisted("messageUuid") String messageUuid);
+  AcceptOperation accept(
+      @Assisted("taskId") String taskId,
+      @Assisted("comment") String comment,
+      @Assisted("messageUuid") String messageUuid);
 
-	RejectOperation reject(@Assisted("taskId") String taskId, @Assisted("comment") String comment,
-		@Assisted("step") String step, @Assisted("messageUuid") String messageUuid);
+  RejectOperation reject(
+      @Assisted("taskId") String taskId,
+      @Assisted("comment") String comment,
+      @Assisted("step") String step,
+      @Assisted("messageUuid") String messageUuid);
 
-	WorkflowCommentOperation comment(@Assisted("taskId") String taskId, @Assisted("comment") String comment,
-		@Assisted("messageUuid") String messageUuid);
+  WorkflowCommentOperation comment(
+      @Assisted("taskId") String taskId,
+      @Assisted("comment") String comment,
+      @Assisted("messageUuid") String messageUuid);
 
-	AssignOperation assign(String taskId);
+  AssignOperation assign(String taskId);
 
-	ResetOperation reset();
+  ResetOperation reset();
 
-	ReviewOperation review();
+  ReviewOperation review();
 
-	ReviewOperation review(boolean force);
+  ReviewOperation review(boolean force);
 
-	RedraftOperation redraft();
+  RedraftOperation redraft();
 
-	OfflineRedraft offlineRedraft();
+  OfflineRedraft offlineRedraft();
 
-	SubmitOperation submit();
+  SubmitOperation submit();
 
-	SecureSubmitOperation secureSubmit(String message);
+  SecureSubmitOperation secureSubmit(String message);
 
-	SubmitOperation submit(String message);
+  SubmitOperation submit(String message);
 
-	ArchiveOperation archive();
+  ArchiveOperation archive();
 
-	InsecureArchiveOperation insecureArchive();
+  InsecureArchiveOperation insecureArchive();
 
-	StatusOperation status();
+  StatusOperation status();
 
-	CheckStepOperation checkSteps();
+  CheckStepOperation checkSteps();
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,28 @@
 
 package com.tle.admin.gui;
 
-/**
- * @author Nicholas Read
- */
-public class EditorException extends Exception
-{
-	private static final long serialVersionUID = 1L;
-	private boolean isFatal;
-	private String category;
+/** @author Nicholas Read */
+public class EditorException extends Exception {
+  private static final long serialVersionUID = 1L;
+  private boolean isFatal;
+  private String category;
 
-	public EditorException(String message)
-	{
-		super(message);
-		isFatal = false;
-	}
+  public EditorException(String message) {
+    super(message);
+    isFatal = false;
+  }
 
-	public EditorException(String errorCategory, Throwable th)
-	{
-		super(th);
-		this.category = errorCategory;
-		isFatal = true;
-	}
+  public EditorException(String errorCategory, Throwable th) {
+    super(th);
+    this.category = errorCategory;
+    isFatal = true;
+  }
 
-	public String getCategory()
-	{
-		return category;
-	}
+  public String getCategory() {
+    return category;
+  }
 
-	public boolean isFatal()
-	{
-		return isFatal;
-	}
+  public boolean isFatal() {
+    return isFatal;
+  }
 }

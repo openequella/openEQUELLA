@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,21 +18,19 @@
 
 package com.tle.core.institution.migration.v61;
 
-import javax.inject.Singleton;
-
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class DeleteBadUrlsInKeyResourcesMigration extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		// Nothing to do
-	}
+public class DeleteBadUrlsInKeyResourcesMigration extends XmlMigrator {
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    // Nothing to do
+  }
 }

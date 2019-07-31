@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,6 @@
 
 package com.tle.core.settings.convert;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
@@ -33,62 +28,65 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.settings.convert.extension.ConfigurationConverterExtension;
 import com.tle.core.settings.service.ConfigurationService;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ConfigurationConverter extends AbstractConverter<Map<String, String>>
-{
-	public static final String PROPERTIES_FILE = "properties/properties.xml"; //$NON-NLS-1$
+public class ConfigurationConverter extends AbstractConverter<Map<String, String>> {
+  public static final String PROPERTIES_FILE = "properties/properties.xml"; // $NON-NLS-1$
 
-	@Inject
-	private ConfigurationService configurationService;
-	// Guice plugin tracker modules can't handle '?'
-	private PluginTracker<ConfigurationConverterExtension<?>> extensions;
+  @Inject private ConfigurationService configurationService;
+  // Guice plugin tracker modules can't handle '?'
+  private PluginTracker<ConfigurationConverterExtension<?>> extensions;
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams params)
-	{
-		configurationService.deleteAllInstitutionProperties();
-	}
+  @Override
+  public void doDelete(Institution institution, ConverterParams params) {
+    configurationService.deleteAllInstitutionProperties();
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-		throws IOException
-	{
-		Map<String, String> allProperties = configurationService.getAllProperties();
-		xmlHelper.writeXmlFile(staging, PROPERTIES_FILE, allProperties);
-	}
+  @Override
+  public void doExport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    Map<String, String> allProperties = configurationService.getAllProperties();
+    xmlHelper.writeXmlFile(staging, PROPERTIES_FILE, allProperties);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, final ConverterParams params)
-		throws IOException
-	{
-		if( !fileSystemService.fileExists(staging, PROPERTIES_FILE) )
-		{
-			return;
-		}
+  @SuppressWarnings("unchecked")
+  @Override
+  public void doImport(
+      TemporaryFileHandle staging, Institution institution, final ConverterParams params)
+      throws IOException {
+    if (!fileSystemService.fileExists(staging, PROPERTIES_FILE)) {
+      return;
+    }
 
-		Map<String, String> allProperties = (Map<String, String>) xmlHelper.readXmlFile(staging, PROPERTIES_FILE);
-		Collection<PostReadMigrator<Map<String, String>>> migrations = getMigrations(params);
-		runMigrations(migrations, allProperties);
-		configurationService.importInstitutionProperties(allProperties);
-		for( ConfigurationConverterExtension<?> stub : extensions.getBeanList() )
-		{
-			stub.run(params.getOld2new());
-		}
-	}
+    Map<String, String> allProperties =
+        (Map<String, String>) xmlHelper.readXmlFile(staging, PROPERTIES_FILE);
+    Collection<PostReadMigrator<Map<String, String>>> migrations = getMigrations(params);
+    runMigrations(migrations, allProperties);
+    configurationService.importInstitutionProperties(allProperties);
+    for (ConfigurationConverterExtension<?> stub : extensions.getBeanList()) {
+      stub.run(params.getOld2new());
+    }
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "CONFIGURATION";
-	}
+  @Override
+  public String getStringId() {
+    return "CONFIGURATION";
+  }
 
-	@Inject
-	public void setPluginService2(PluginService pluginService)
-	{
-		extensions = new PluginTracker<ConfigurationConverterExtension<?>>(pluginService, "com.tle.core.settings.convert",
-			"configurationConverterExtension", null);
-	}
+  @Inject
+  public void setPluginService2(PluginService pluginService) {
+    extensions =
+        new PluginTracker<ConfigurationConverterExtension<?>>(
+            pluginService,
+            "com.tle.core.settings.convert",
+            "configurationConverterExtension",
+            null);
+  }
 }

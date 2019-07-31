@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,37 +18,29 @@
 
 package com.tle.core.xstream.mapping;
 
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+/** */
+public class URLMapping extends NodeMapping {
+  public URLMapping(String name, String node) {
+    super(name, node);
+  }
 
-/**
- * 
- */
-public class URLMapping extends NodeMapping
-{
-	public URLMapping(String name, String node)
-	{
-		super(name, node);
-	}
+  @Override
+  protected Object getUnmarshalledValue(
+      Object object, HierarchicalStreamReader reader, UnmarshallingContext context) {
+    Object value = super.getUnmarshalledValue(object, reader, context);
 
-	@Override
-	protected Object getUnmarshalledValue(Object object, HierarchicalStreamReader reader, UnmarshallingContext context)
-	{
-		Object value = super.getUnmarshalledValue(object, reader, context);
+    try {
+      value = new URL(value.toString());
+    } catch (MalformedURLException e) {
+      value = null;
+      // IGNORE
+    }
 
-		try
-		{
-			value = new URL(value.toString());
-		}
-		catch( MalformedURLException e )
-		{
-			value = null;
-			// IGNORE
-		}
-
-		return value;
-	}
+    return value;
+  }
 }

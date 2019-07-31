@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,73 +18,62 @@
 
 package com.tle.admin.taxonomy.tool.internal;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-
-import net.miginfocom.swing.MigLayout;
-
 import com.tle.admin.taxonomy.tool.DataSourceChoice;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("nls")
-public class InternalDataSourceChoice extends DataSourceChoice
-{
-	private InternalDataSourceTab tab;
-	private JCheckBox allowNewTerms;
+public class InternalDataSourceChoice extends DataSourceChoice {
+  private InternalDataSourceTab tab;
+  private JCheckBox allowNewTerms;
 
-	public InternalDataSourceChoice()
-	{
-		super(new MigLayout("wrap 1"));
+  public InternalDataSourceChoice() {
+    super(new MigLayout("wrap 1"));
 
-		allowNewTerms = new JCheckBox(getString("internal.allownewterms"));
+    allowNewTerms = new JCheckBox(getString("internal.allownewterms"));
 
-		add(new JLabel("<html>" + getString("internal.choicedescription")));
-		add(allowNewTerms);
+    add(new JLabel("<html>" + getString("internal.choicedescription")));
+    add(allowNewTerms);
 
-		changeDetector.watch(allowNewTerms);
-	}
+    changeDetector.watch(allowNewTerms);
+  }
 
-	@Override
-	public void choiceSelected()
-	{
-		ensureTab();
-		addTab(getString("internal.tab.title"), tab);
-	}
+  @Override
+  public void choiceSelected() {
+    ensureTab();
+    addTab(getString("internal.tab.title"), tab);
+  }
 
-	@Override
-	public void load(Taxonomy state)
-	{
-		ensureTab();
-		tab.load(state);
-		allowNewTerms.setSelected(state.getAttribute(TaxonomyConstants.TERM_ALLOW_ADDITION, false));
-	}
+  @Override
+  public void load(Taxonomy state) {
+    ensureTab();
+    tab.load(state);
+    allowNewTerms.setSelected(state.getAttribute(TaxonomyConstants.TERM_ALLOW_ADDITION, false));
+  }
 
-	@Override
-	public void save(Taxonomy state)
-	{
-		state.setAttribute(TaxonomyConstants.TERM_ALLOW_ADDITION, Boolean.toString(allowNewTerms.isSelected()));
-		tab.save(state);
-	}
+  @Override
+  public void save(Taxonomy state) {
+    state.setAttribute(
+        TaxonomyConstants.TERM_ALLOW_ADDITION, Boolean.toString(allowNewTerms.isSelected()));
+    tab.save(state);
+  }
 
-	@Override
-	public void afterSave()
-	{
-		tab.afterSave();
-	}
+  @Override
+  public void afterSave() {
+    tab.afterSave();
+  }
 
-	@Override
-	public void removeSavedState(Taxonomy state)
-	{
-		// TODO?
-	}
+  @Override
+  public void removeSavedState(Taxonomy state) {
+    // TODO?
+  }
 
-	private void ensureTab()
-	{
-		if( tab == null )
-		{
-			tab = new InternalDataSourceTab(getClientService(), getPluginService());
-		}
-	}
+  private void ensureTab() {
+    if (tab == null) {
+      tab = new InternalDataSourceTab(getClientService(), getPluginService());
+    }
+  }
 }

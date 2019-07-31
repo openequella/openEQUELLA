@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,122 +18,99 @@
 
 package com.tle.core.lti.consumers.service.session;
 
-import java.util.Set;
-
 import com.tle.common.Pair;
 import com.tle.core.entity.EntityEditingBean;
+import java.util.Set;
 
-public class LtiConsumerEditingBean extends EntityEditingBean
-{
-	private String consumerKey;
-	private String consumerSecret;
-	private String prefix;
-	private String postfix;
-	private String allowedExpression;
-	private Set<String> instructorRoles;
-	private Set<String> otherRoles;
-	private int unknownUser;
-	private Set<String> unknownGroups;
-	private Set<Pair<String, String>> customRoles;
+public class LtiConsumerEditingBean extends EntityEditingBean {
+  private String consumerKey;
+  private String consumerSecret;
+  private String prefix;
+  private String postfix;
+  private String allowedExpression;
+  private Set<String> instructorRoles;
+  private Set<String> otherRoles;
+  private int unknownUser;
+  private Set<String> unknownGroups;
+  private Set<Pair<String, String>> customRoles;
 
-	public String getConsumerKey()
-	{
-		return consumerKey;
-	}
+  public String getConsumerKey() {
+    return consumerKey;
+  }
 
-	public void setConsumerKey(String consumerKey)
-	{
-		this.consumerKey = consumerKey;
-	}
+  public void setConsumerKey(String consumerKey) {
+    this.consumerKey = consumerKey;
+  }
 
-	public String getConsumerSecret()
-	{
-		return consumerSecret;
-	}
+  public String getConsumerSecret() {
+    return consumerSecret;
+  }
 
-	public void setConsumerSecret(String consumerSecret)
-	{
-		this.consumerSecret = consumerSecret;
-	}
+  public void setConsumerSecret(String consumerSecret) {
+    this.consumerSecret = consumerSecret;
+  }
 
-	public int getUnknownUser()
-	{
-		return unknownUser;
-	}
+  public int getUnknownUser() {
+    return unknownUser;
+  }
 
-	public void setUnknownUser(int unknownUser)
-	{
-		this.unknownUser = unknownUser;
-	}
+  public void setUnknownUser(int unknownUser) {
+    this.unknownUser = unknownUser;
+  }
 
-	public Set<String> getInstructorRoles()
-	{
-		return instructorRoles;
-	}
+  public Set<String> getInstructorRoles() {
+    return instructorRoles;
+  }
 
-	public void setInstructorRoles(Set<String> instructorRoles)
-	{
-		this.instructorRoles = instructorRoles;
-	}
+  public void setInstructorRoles(Set<String> instructorRoles) {
+    this.instructorRoles = instructorRoles;
+  }
 
-	public Set<String> getOtherRoles()
-	{
-		return otherRoles;
-	}
+  public Set<String> getOtherRoles() {
+    return otherRoles;
+  }
 
-	public void setOtherRoles(Set<String> otherRoles)
-	{
-		this.otherRoles = otherRoles;
-	}
+  public void setOtherRoles(Set<String> otherRoles) {
+    this.otherRoles = otherRoles;
+  }
 
-	public String getPrefix()
-	{
-		return prefix;
-	}
+  public String getPrefix() {
+    return prefix;
+  }
 
-	public void setPrefix(String prefix)
-	{
-		this.prefix = prefix;
-	}
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
 
-	public String getPostfix()
-	{
-		return postfix;
-	}
+  public String getPostfix() {
+    return postfix;
+  }
 
-	public void setPostfix(String postfix)
-	{
-		this.postfix = postfix;
-	}
+  public void setPostfix(String postfix) {
+    this.postfix = postfix;
+  }
 
-	public String getAllowedExpression()
-	{
-		return allowedExpression;
-	}
+  public String getAllowedExpression() {
+    return allowedExpression;
+  }
 
-	public void setAllowedExpression(String allowedExpression)
-	{
-		this.allowedExpression = allowedExpression;
-	}
+  public void setAllowedExpression(String allowedExpression) {
+    this.allowedExpression = allowedExpression;
+  }
 
-	public Set<String> getUnknownGroups()
-	{
-		return unknownGroups;
-	}
+  public Set<String> getUnknownGroups() {
+    return unknownGroups;
+  }
 
-	public void setUnknownGroups(Set<String> unknownGroups)
-	{
-		this.unknownGroups = unknownGroups;
-	}
+  public void setUnknownGroups(Set<String> unknownGroups) {
+    this.unknownGroups = unknownGroups;
+  }
 
-	public Set<Pair<String, String>> getCustomRoles()
-	{
-		return customRoles;
-	}
+  public Set<Pair<String, String>> getCustomRoles() {
+    return customRoles;
+  }
 
-	public void setCustomRoles(Set<Pair<String, String>> customRoles)
-	{
-		this.customRoles = customRoles;
-	}
-
+  public void setCustomRoles(Set<Pair<String, String>> customRoles) {
+    this.customRoles = customRoles;
+  }
 }

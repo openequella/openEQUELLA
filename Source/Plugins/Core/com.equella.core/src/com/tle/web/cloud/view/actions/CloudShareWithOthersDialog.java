@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.cloud.view.actions;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
@@ -34,65 +31,58 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import java.util.Collection;
+import java.util.Collections;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class CloudShareWithOthersDialog extends EquellaDialog<DialogModel>
-{
-	@PlugKey("share.cloud.sharewithothers.dialog.title")
-	public static Label DIALOG_TITLE;
+public class CloudShareWithOthersDialog extends EquellaDialog<DialogModel> {
+  @PlugKey("share.cloud.sharewithothers.dialog.title")
+  public static Label DIALOG_TITLE;
 
-	@Inject
-	private CloudShareWithOthersContentSection content;
+  @Inject private CloudShareWithOthersContentSection content;
 
-	protected JSCallable reloadParent;
+  protected JSCallable reloadParent;
 
-	public CloudShareWithOthersDialog()
-	{
-		setAjax(true);
-	}
+  public CloudShareWithOthersDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(content, id);
-		reloadParent = addParentCallable(new ReloadFunction(false));
-		content.getSendEmailButton().setComponentAttribute(ButtonType.class, ButtonType.SAVE);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(content, id);
+    reloadParent = addParentCallable(new ReloadFunction(false));
+    content.getSendEmailButton().setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return renderSection(context, content);
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return renderSection(context, content);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return DIALOG_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return DIALOG_TITLE;
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 
-	public JSCallable getReloadParent()
-	{
-		return reloadParent;
-	}
+  public JSCallable getReloadParent() {
+    return reloadParent;
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Collections.singleton(content.getSendEmailButton());
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Collections.singleton(content.getSendEmailButton());
+  }
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "shareclouddialog";
-	}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "shareclouddialog";
+  }
 }

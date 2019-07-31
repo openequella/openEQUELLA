@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,61 +18,53 @@
 
 package com.tle.core.security.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.google.common.collect.Maps;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.PrivilegeTreeProvider;
 import com.tle.core.security.PrivilegeTreeService;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind(PrivilegeTreeService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class PrivilegeTreeServiceImpl implements PrivilegeTreeService
-{
-	private PluginTracker<PrivilegeTreeProvider> providers;
+public class PrivilegeTreeServiceImpl implements PrivilegeTreeService {
+  private PluginTracker<PrivilegeTreeProvider> providers;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		providers = new PluginTracker<PrivilegeTreeProvider>(pluginService, "com.tle.core.security",
-			"privilegeTreeProviders", null);
-		providers.setBeanKey("provider");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    providers =
+        new PluginTracker<PrivilegeTreeProvider>(
+            pluginService, "com.tle.core.security", "privilegeTreeProviders", null);
+    providers.setBeanKey("provider");
+  }
 
-	@Override
-	public Map<TargetId, String> mapTargetIdsToNames(Collection<TargetId> targetIds)
-	{
-		Map<TargetId, String> rv = Maps.newHashMap();
-		for( PrivilegeTreeProvider provider : providers.getBeanList() )
-		{
-			provider.mapTargetIdsToNames(targetIds, rv);
+  @Override
+  public Map<TargetId, String> mapTargetIdsToNames(Collection<TargetId> targetIds) {
+    Map<TargetId, String> rv = Maps.newHashMap();
+    for (PrivilegeTreeProvider provider : providers.getBeanList()) {
+      provider.mapTargetIdsToNames(targetIds, rv);
 
-			targetIds.removeAll(rv.keySet());
-			if( targetIds.isEmpty() )
-			{
-				break;
-			}
-		}
-		return rv;
-	}
+      targetIds.removeAll(rv.keySet());
+      if (targetIds.isEmpty()) {
+        break;
+      }
+    }
+    return rv;
+  }
 
-	@Override
-	public List<SecurityTarget> getChildTargets(SecurityTarget target)
-	{
-		List<SecurityTarget> rv = new ArrayList<SecurityTarget>();
-		for( PrivilegeTreeProvider provider : providers.getBeanList() )
-		{
-			provider.gatherChildTargets(rv, target);
-		}
-		return rv;
-	}
+  @Override
+  public List<SecurityTarget> getChildTargets(SecurityTarget target) {
+    List<SecurityTarget> rv = new ArrayList<SecurityTarget>();
+    for (PrivilegeTreeProvider provider : providers.getBeanList()) {
+      provider.gatherChildTargets(rv, target);
+    }
+    return rv;
+  }
 }

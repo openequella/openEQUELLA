@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,31 @@
 
 package com.tle.core.remoterepo.merlot.syndication.impl;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-
 import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.io.ModuleGenerator;
 import com.tle.core.remoterepo.merlot.syndication.MerlotModule;
+import java.util.Collections;
+import java.util.Set;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
-/**
- * @author aholland
- */
-public class MerlotModuleGenerator implements ModuleGenerator
-{
-	private static final Set<Namespace> NAMESPACES = Collections.unmodifiableSet(Collections
-		.singleton(MerlotModule.NAMESPACE));
+/** @author aholland */
+public class MerlotModuleGenerator implements ModuleGenerator {
+  private static final Set<Namespace> NAMESPACES =
+      Collections.unmodifiableSet(Collections.singleton(MerlotModule.NAMESPACE));
 
-	@Override
-	public void generate(Module module, Element element)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void generate(Module module, Element element) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public String getNamespaceUri()
-	{
-		return MerlotModule.URI;
-	}
+  @Override
+  public String getNamespaceUri() {
+    return MerlotModule.URI;
+  }
 
-	@Override
-	public Set<Namespace> getNamespaces()
-	{
-		return NAMESPACES;
-	}
+  @Override
+  public Set<Namespace> getNamespaces() {
+    return NAMESPACES;
+  }
 }

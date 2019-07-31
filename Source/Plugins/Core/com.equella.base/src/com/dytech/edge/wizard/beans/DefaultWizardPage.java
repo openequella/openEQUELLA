@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,66 +18,55 @@
 
 package com.dytech.edge.wizard.beans;
 
+import com.dytech.edge.wizard.beans.control.WizardControl;
+import com.tle.beans.entity.LanguageBundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dytech.edge.wizard.beans.control.WizardControl;
-import com.tle.beans.entity.LanguageBundle;
+public class DefaultWizardPage extends WizardPage {
+  private static final long serialVersionUID = 1;
 
-public class DefaultWizardPage extends WizardPage
-{
-	private static final long serialVersionUID = 1;
+  public static final String TYPE = "page"; // $NON-NLS-1$
 
-	public static final String TYPE = "page"; //$NON-NLS-1$
+  private LanguageBundle title;
+  private String customName;
+  private List<WizardControl> controls = new ArrayList<WizardControl>();
+  private String additionalCssClass;
 
-	private LanguageBundle title;
-	private String customName;
-	private List<WizardControl> controls = new ArrayList<WizardControl>();
-	private String additionalCssClass;
+  @Override
+  public String getType() {
+    return TYPE;
+  }
 
-	@Override
-	public String getType()
-	{
-		return TYPE;
-	}
+  public String getCustomName() {
+    return customName;
+  }
 
-	public String getCustomName()
-	{
-		return customName;
-	}
+  public void setCustomName(String customName) {
+    this.customName = customName;
+  }
 
-	public void setCustomName(String customName)
-	{
-		this.customName = customName;
-	}
+  public LanguageBundle getTitle() {
+    return title;
+  }
 
-	public LanguageBundle getTitle()
-	{
-		return title;
-	}
+  public void setTitle(LanguageBundle title) {
+    this.title = title;
+  }
 
-	public void setTitle(LanguageBundle title)
-	{
-		this.title = title;
-	}
+  public List<WizardControl> getControls() {
+    return controls;
+  }
 
-	public List<WizardControl> getControls()
-	{
-		return controls;
-	}
+  public void setControls(List<WizardControl> controls) {
+    this.controls = controls;
+  }
 
-	public void setControls(List<WizardControl> controls)
-	{
-		this.controls = controls;
-	}
+  public String getAdditionalCssClass() {
+    return additionalCssClass;
+  }
 
-	public String getAdditionalCssClass()
-	{
-		return additionalCssClass;
-	}
-
-	public void setAdditionalCssClass(String additionalCssClass)
-	{
-		this.additionalCssClass = additionalCssClass;
-	}
+  public void setAdditionalCssClass(String additionalCssClass) {
+    this.additionalCssClass = additionalCssClass;
+  }
 }

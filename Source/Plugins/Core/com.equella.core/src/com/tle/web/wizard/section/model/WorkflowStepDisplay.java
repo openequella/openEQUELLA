@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,47 +24,38 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.render.SectionRenderable;
 
-public class WorkflowStepDisplay
-{
-	private final LanguageBundle displayName;
-	private final LanguageBundle description;
-	private SectionRenderable assign;
-	private UserBean assignedTo;
+public class WorkflowStepDisplay {
+  private final LanguageBundle displayName;
+  private final LanguageBundle description;
+  private SectionRenderable assign;
+  private UserBean assignedTo;
 
-	public WorkflowStepDisplay(WorkflowStep step, UserService userService)
-	{
-		this.displayName = step.getDisplayName();
-		this.description = step.getDescription();
-		this.assignedTo = null;
-		if( step.getAssignedTo() != null )
-		{
-			assignedTo = userService.getInformationForUser(step.getAssignedTo());
-		}
-	}
+  public WorkflowStepDisplay(WorkflowStep step, UserService userService) {
+    this.displayName = step.getDisplayName();
+    this.description = step.getDescription();
+    this.assignedTo = null;
+    if (step.getAssignedTo() != null) {
+      assignedTo = userService.getInformationForUser(step.getAssignedTo());
+    }
+  }
 
-	public UserBean getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public UserBean getAssignedTo() {
+    return assignedTo;
+  }
 
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	public LanguageBundle getDisplayName()
-	{
-		return displayName;
-	}
+  public LanguageBundle getDisplayName() {
+    return displayName;
+  }
 
-	public SectionRenderable getAssign()
-	{
-		return assign;
-	}
+  public SectionRenderable getAssign() {
+    return assign;
+  }
 
-	public void setAssign(SectionRenderable assign)
-	{
-		this.assign = assign;
-	}
-
+  public void setAssign(SectionRenderable assign) {
+    this.assign = assign;
+  }
 }

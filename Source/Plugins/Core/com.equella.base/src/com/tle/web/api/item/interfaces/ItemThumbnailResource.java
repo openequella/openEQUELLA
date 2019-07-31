@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,9 @@
 
 package com.tle.web.api.item.interfaces;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,23 +28,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 @Produces(MediaType.APPLICATION_JSON)
 @Path("item/{uuid}/{version}/thumb/")
 @Api(value = "Item thumbnails", description = "item-thumbnail")
 @SuppressWarnings("nls")
-public interface ItemThumbnailResource
-{
-	static final String APIDOC_UUID = "The uuid of the item to perform that action on";
-	static final String APIDOC_VERSION = "The version of the item to perform that action on";
+public interface ItemThumbnailResource {
+  static final String APIDOC_UUID = "The uuid of the item to perform that action on";
+  static final String APIDOC_VERSION = "The version of the item to perform that action on";
 
-	@GET
-	@Path("/{attachuuid}")
-	@ApiOperation("Redirect to thumbnail")
-	@Produces(MediaType.WILDCARD)
-	public Response getThumb(@ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_VERSION) @PathParam("version") int version, @PathParam("attachuuid") String attachUuid);
+  @GET
+  @Path("/{attachuuid}")
+  @ApiOperation("Redirect to thumbnail")
+  @Produces(MediaType.WILDCARD)
+  public Response getThumb(
+      @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_VERSION) @PathParam("version") int version,
+      @PathParam("attachuuid") String attachUuid);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,17 +18,15 @@
 
 package com.tle.beans;
 
+import com.tle.beans.entity.BaseEntity;
 import java.io.Serializable;
 
-import com.tle.beans.entity.BaseEntity;
+public interface EntityScript<T extends BaseEntity> extends Serializable {
+  T getEntity();
 
-public interface EntityScript<T extends BaseEntity> extends Serializable
-{
-	T getEntity();
+  void setEntity(T entity);
 
-	void setEntity(T entity);
+  String getScript();
 
-	String getScript();
-
-	void setScript(String script);
+  void setScript(String script);
 }

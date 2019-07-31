@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.qti.viewer;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.qti.QtiConstants;
 import com.tle.web.sections.SectionId;
@@ -25,33 +25,28 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.equella.viewers.AbstractResourceViewer;
 import com.tle.web.viewurl.ViewableResource;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class QtiPlayViewer extends AbstractResourceViewer
-{
-	static
-	{
-		PluginResourceHandler.init(QtiPlayViewer.class);
-	}
+public class QtiPlayViewer extends AbstractResourceViewer {
+  static {
+    PluginResourceHandler.init(QtiPlayViewer.class);
+  }
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		return resource.getMimeType().equals(QtiConstants.TEST_MIME_TYPE);
-	}
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    return resource.getMimeType().equals(QtiConstants.TEST_MIME_TYPE);
+  }
 
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return QtiPlayViewerSection.class;
-	}
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return QtiPlayViewerSection.class;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getViewerId()
-	{
-		return "qtiTestViewer";
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public String getViewerId() {
+    return "qtiTestViewer";
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,38 @@
 
 package com.tle.core.services.impl;
 
+import com.tle.core.services.TaskStatusChange;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.tle.core.services.TaskStatusChange;
+public class FinishedStatusChange implements TaskStatusChange<FinishedStatusChange> {
+  private static final long serialVersionUID = 1L;
 
-public class FinishedStatusChange implements TaskStatusChange<FinishedStatusChange>
-{
-	private static final long serialVersionUID = 1L;
+  private String errorMessage;
 
-	private String errorMessage;
+  public FinishedStatusChange() {
+    // no error
+  }
 
-	public FinishedStatusChange()
-	{
-		// no error
-	}
+  public FinishedStatusChange(Throwable t) {
+    if (t != null) {
+      StringWriter out = new StringWriter();
+      t.printStackTrace(new PrintWriter(out));
+      errorMessage = out.toString();
+    }
+  }
 
-	public FinishedStatusChange(Throwable t)
-	{
-		if( t != null )
-		{
-			StringWriter out = new StringWriter();
-			t.printStackTrace(new PrintWriter(out));
-			errorMessage = out.toString();
-		}
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void merge(FinishedStatusChange newChanges) {
+    throw new Error("Shouldn't ever be merged");
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void merge(FinishedStatusChange newChanges)
-	{
-		throw new Error("Shouldn't ever be merged");
-	}
-
-	@Override
-	public void modifyStatus(TaskStatusImpl taskStatus)
-	{
-		taskStatus.setFinished(true);
-		if( errorMessage != null )
-		{
-			taskStatus.setErrorMessage(errorMessage);
-		}
-	}
-
+  @Override
+  public void modifyStatus(TaskStatusImpl taskStatus) {
+    taskStatus.setFinished(true);
+    if (errorMessage != null) {
+      taskStatus.setErrorMessage(errorMessage);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,26 @@
 
 package com.tle.core.util.archive;
 
-public class ArchiveEntry
-{
-	private final String name;
-	private final boolean directory;
-	private final long size;
+public class ArchiveEntry {
+  private final String name;
+  private final boolean directory;
+  private final long size;
 
-	public ArchiveEntry(String name, boolean directory, long size)
-	{
-		this.name = name;
-		this.directory = directory;
-		this.size = size;
-	}
+  public ArchiveEntry(String name, boolean directory, long size) {
+    this.name = name;
+    this.directory = directory;
+    this.size = size;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public boolean isDirectory()
-	{
-		return directory;
-	}
+  public boolean isDirectory() {
+    return directory;
+  }
 
-	public long getSize()
-	{
-		return size;
-	}
+  public long getSize() {
+    return size;
+  }
 }

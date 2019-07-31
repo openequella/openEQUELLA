@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,31 +22,26 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-public interface RemotePluginDownloadService
-{
-	List<PluginDetails> getAllPluginDetails(String pluginType);
+public interface RemotePluginDownloadService {
+  List<PluginDetails> getAllPluginDetails(String pluginType);
 
-	class PluginDetails implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  class PluginDetails implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		private final URL baseUrl;
-		private final String manifestXml;
+    private final URL baseUrl;
+    private final String manifestXml;
 
-		public PluginDetails(URL baseUrl, String manifestXml)
-		{
-			this.baseUrl = baseUrl;
-			this.manifestXml = manifestXml;
-		}
+    public PluginDetails(URL baseUrl, String manifestXml) {
+      this.baseUrl = baseUrl;
+      this.manifestXml = manifestXml;
+    }
 
-		public URL getBaseUrl()
-		{
-			return baseUrl;
-		}
+    public URL getBaseUrl() {
+      return baseUrl;
+    }
 
-		public String getManifestXml()
-		{
-			return manifestXml;
-		}
-	}
+    public String getManifestXml() {
+      return manifestXml;
+    }
+  }
 }

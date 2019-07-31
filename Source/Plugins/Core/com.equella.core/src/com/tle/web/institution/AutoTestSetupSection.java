@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.institution;
-
-import javax.inject.Inject;
 
 import com.tle.common.filesystem.handle.AllExportFile;
 import com.tle.common.filesystem.handle.AllImportFile;
@@ -38,50 +38,40 @@ import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
-public class AutoTestSetupSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@Component
-	private Button clearButton;
+public class AutoTestSetupSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @Component private Button clearButton;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private FreetextIndex freetextIndex;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private FreetextIndex freetextIndex;
+  @Inject private InstitutionService institutionService;
 
-	@SuppressWarnings("nls")
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		clearButton.setClickHandler(events.getNamedHandler("clearData"));
-		clearButton.setLabel(new TextLabel("Clear filestore and freetext"));
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    clearButton.setClickHandler(events.getNamedHandler("clearData"));
+    clearButton.setLabel(new TextLabel("Clear filestore and freetext"));
+  }
 
-	@EventHandlerMethod
-	public void clearData(SectionInfo info)
-	{
-		fileSystemService.removeFile(new AllStagingFile());
-		fileSystemService.removeFile(new AllInstitutionsFile());
-		fileSystemService.removeFile(new AllImportFile());
-		fileSystemService.removeFile(new AllExportFile());
-		freetextIndex.deleteIndexes();
-	}
+  @EventHandlerMethod
+  public void clearData(SectionInfo info) {
+    fileSystemService.removeFile(new AllStagingFile());
+    fileSystemService.removeFile(new AllInstitutionsFile());
+    fileSystemService.removeFile(new AllImportFile());
+    fileSystemService.removeFile(new AllExportFile());
+    freetextIndex.deleteIndexes();
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( institutionService.getAllInstitutions().size() > 0 )
-		{
-			return new SimpleSectionResult("You must have no institutions before using this");
-		}
-		return renderSection(context, clearButton);
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (institutionService.getAllInstitutions().size() > 0) {
+      return new SimpleSectionResult("You must have no institutions before using this");
+    }
+    return renderSection(context, clearButton);
+  }
 }

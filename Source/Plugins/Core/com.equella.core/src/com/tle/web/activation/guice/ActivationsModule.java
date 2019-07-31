@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,67 +32,56 @@ import com.tle.web.search.guice.AbstractSearchModule;
 import com.tle.web.search.sort.SortOptionsSection;
 
 @SuppressWarnings("nls")
-public class ActivationsModule extends AbstractSearchModule
-{
-	@Override
-	protected void configure()
-	{
-		super.configure();
-		install(new TrackerModule());
-	}
+public class ActivationsModule extends AbstractSearchModule {
+  @Override
+  protected void configure() {
+    super.configure();
+    install(new TrackerModule());
+  }
 
-	@Override
-	protected void addActions(NodeProvider node)
-	{
-		node.child(ActivationSelectionSection.class);
-	}
+  @Override
+  protected void addActions(NodeProvider node) {
+    node.child(ActivationSelectionSection.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(SortOptionsSection.class);
-		node.child(FilterByActivationStatusSection.class);
-		node.child(FilterByCourseSection.class);
-		node.child(FilterByOwnerSection.class);
-		node.child(FilterByActivationDateRangeSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(SortOptionsSection.class);
+    node.child(FilterByActivationStatusSection.class);
+    node.child(FilterByCourseSection.class);
+    node.child(FilterByOwnerSection.class);
+    node.child(FilterByActivationDateRangeSection.class);
+  }
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(RootActivationSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(RootActivationSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(SimpleResetFiltersQuerySection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(SimpleResetFiltersQuerySection.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(ActivationResultsSection.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(ActivationResultsSection.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/activations";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/activations";
+  }
 
-	public static class TrackerModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.web.activation";
-		}
+  public static class TrackerModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.web.activation";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(ActivationResultsModifier.class, "resultsModifier", "bean");
-		}
-	}
+    @Override
+    protected void configure() {
+      bindTracker(ActivationResultsModifier.class, "resultsModifier", "bean");
+    }
+  }
 }

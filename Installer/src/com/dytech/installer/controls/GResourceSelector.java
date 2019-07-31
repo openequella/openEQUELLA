@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,12 @@
 
 package com.dytech.installer.controls;
 
+import com.dytech.devlib.PropBagEx;
+import com.dytech.installer.InstallerException;
+import com.dytech.installer.Item;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -29,59 +33,50 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.dytech.devlib.PropBagEx;
-import com.dytech.installer.InstallerException;
-import com.dytech.installer.Item;
+public abstract class GResourceSelector extends GuiControl implements ActionListener {
+  protected JTextField field;
 
-public abstract class GResourceSelector extends GuiControl implements ActionListener
-{
-	protected JTextField field;
+  public GResourceSelector(PropBagEx controlBag) throws InstallerException {
+    super(controlBag);
+  }
 
-	public GResourceSelector(PropBagEx controlBag) throws InstallerException
-	{
-		super(controlBag);
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.installer.controls.GuiControl#getSelection()
+   */
+  @Override
+  public String getSelection() {
+    return field.getText();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.installer.controls.GuiControl#getSelection()
-	 */
-	@Override
-	public String getSelection()
-	{
-		return field.getText();
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.installer.controls.GuiControl#generateControl()
+   */
+  @Override
+  public JComponent generateControl() {
+    field = new JTextField();
+    field.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.installer.controls.GuiControl#generateControl()
-	 */
-	@Override
-	public JComponent generateControl()
-	{
-		field = new JTextField();
-		field.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
+    if (items.size() >= 1) {
+      field.setText(((Item) items.get(0)).getValue());
+    }
 
-		if( items.size() >= 1 )
-		{
-			field.setText(((Item) items.get(0)).getValue());
-		}
+    JButton browse = new JButton("Browse");
+    browse.setIcon(new ImageIcon(getClass().getResource("/images/browse.gif")));
+    browse.setHorizontalTextPosition(SwingConstants.RIGHT);
+    Dimension browseSize = browse.getPreferredSize();
+    browseSize.height = 20;
+    browse.setMaximumSize(browseSize);
+    browse.addActionListener(this);
 
-		JButton browse = new JButton("Browse");
-		browse.setIcon(new ImageIcon(getClass().getResource("/images/browse.gif")));
-		browse.setHorizontalTextPosition(SwingConstants.RIGHT);
-		Dimension browseSize = browse.getPreferredSize();
-		browseSize.height = 20;
-		browse.setMaximumSize(browseSize);
-		browse.addActionListener(this);
+    JPanel group = new JPanel();
+    group.setLayout(new BoxLayout(group, BoxLayout.X_AXIS));
+    group.add(field);
+    group.add(Box.createRigidArea(new Dimension(5, 0)));
+    group.add(browse);
+    group.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		JPanel group = new JPanel();
-		group.setLayout(new BoxLayout(group, BoxLayout.X_AXIS));
-		group.add(field);
-		group.add(Box.createRigidArea(new Dimension(5, 0)));
-		group.add(browse);
-		group.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		return group;
-	}
+    return group;
+  }
 }

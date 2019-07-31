@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,52 +28,44 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.js.generic.statement.StatementBlock;
 
-public class WrappedFunctionDefinition implements FunctionDefinition
-{
-	private final String name;
-	private final ElementId elementId;
-	private final JSCallable callable;
-	private final JSStatements[] startStatements;
+public class WrappedFunctionDefinition implements FunctionDefinition {
+  private final String name;
+  private final ElementId elementId;
+  private final JSCallable callable;
+  private final JSStatements[] startStatements;
 
-	public WrappedFunctionDefinition(String name, ElementId id, JSCallable callable, JSStatements... startStatements)
-	{
-		this.elementId = id;
-		this.name = name;
-		this.callable = callable;
-		this.startStatements = startStatements;
-	}
+  public WrappedFunctionDefinition(
+      String name, ElementId id, JSCallable callable, JSStatements... startStatements) {
+    this.elementId = id;
+    this.name = name;
+    this.callable = callable;
+    this.startStatements = startStatements;
+  }
 
-	@Override
-	public JSStatements createFunctionBody(RenderContext context, JSExpression[] params)
-	{
-		FunctionCallStatement call = new FunctionCallStatement(callable, (Object[]) params);
-		if( startStatements != null )
-		{
-			JSStatements block = StatementBlock.get(startStatements);
-			return StatementBlock.get(block, call);
-		}
-		return call;
-	}
+  @Override
+  public JSStatements createFunctionBody(RenderContext context, JSExpression[] params) {
+    FunctionCallStatement call = new FunctionCallStatement(callable, (Object[]) params);
+    if (startStatements != null) {
+      JSStatements block = StatementBlock.get(startStatements);
+      return StatementBlock.get(block, call);
+    }
+    return call;
+  }
 
-	@Override
-	public String getFunctionName(RenderContext context)
-	{
-		if( elementId == null )
-		{
-			return name;
-		}
-		return name + elementId.getElementId(context);
-	}
+  @Override
+  public String getFunctionName(RenderContext context) {
+    if (elementId == null) {
+      return name;
+    }
+    return name + elementId.getElementId(context);
+  }
 
-	@Override
-	public JSExpression[] getFunctionParams(RenderContext context)
-	{
-		int numParams = callable.getNumberOfParams(context);
-		if( numParams < 0 )
-		{
-			throw new SectionsRuntimeException("Unknown number of parameters for " + name); //$NON-NLS-1$
-		}
-		return JSUtils.createParameters(numParams);
-	}
-
+  @Override
+  public JSExpression[] getFunctionParams(RenderContext context) {
+    int numParams = callable.getNumberOfParams(context);
+    if (numParams < 0) {
+      throw new SectionsRuntimeException("Unknown number of parameters for " + name); // $NON-NLS-1$
+    }
+    return JSUtils.createParameters(numParams);
+  }
 }

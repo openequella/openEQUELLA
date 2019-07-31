@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,72 +18,62 @@
 
 package com.tle.web.wizard.render;
 
-import java.io.IOException;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.AbstractBufferedRenderable;
 import com.tle.web.sections.render.SectionRenderable;
+import java.io.IOException;
 
 @NonNullByDefault
-public class DefaultWizardResult extends AbstractBufferedRenderable implements WizardSectionResult
-{
-	private SectionRenderable title;
-	private SectionRenderable html;
-	private SectionRenderable tail;
+public class DefaultWizardResult extends AbstractBufferedRenderable implements WizardSectionResult {
+  private SectionRenderable title;
+  private SectionRenderable html;
+  private SectionRenderable tail;
 
-	public DefaultWizardResult(SectionRenderable title, SectionRenderable html, SectionRenderable tail)
-	{
-		this.title = title;
-		this.html = html;
-		this.tail = tail;
-	}
+  public DefaultWizardResult(
+      SectionRenderable title, SectionRenderable html, SectionRenderable tail) {
+    this.title = title;
+    this.html = html;
+    this.tail = tail;
+  }
 
-	@Override
-	public SectionRenderable getTitle()
-	{
-		return title;
-	}
+  @Override
+  public SectionRenderable getTitle() {
+    return title;
+  }
 
-	public void setTitle(SectionRenderable title)
-	{
-		this.title = title;
-	}
+  public void setTitle(SectionRenderable title) {
+    this.title = title;
+  }
 
-	@Override
-	public SectionRenderable getHtml()
-	{
-		return html;
-	}
+  @Override
+  public SectionRenderable getHtml() {
+    return html;
+  }
 
-	public void setHtml(SectionRenderable html)
-	{
-		this.html = html;
-	}
+  public void setHtml(SectionRenderable html) {
+    this.html = html;
+  }
 
-	public SectionRenderable getTail()
-	{
-		return tail;
-	}
+  public SectionRenderable getTail() {
+    return tail;
+  }
 
-	public void setTail(SectionRenderable tail)
-	{
-		this.tail = tail;
-	}
+  public void setTail(SectionRenderable tail) {
+    this.tail = tail;
+  }
 
-	@Override
-	public void render(SectionWriter writer) throws IOException
-	{
-		title.realRender(writer);
-		html.realRender(writer);
-		tail.realRender(writer);
-	}
+  @Override
+  public void render(SectionWriter writer) throws IOException {
+    title.realRender(writer);
+    html.realRender(writer);
+    tail.realRender(writer);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(title, html, tail);
-		super.preRender(info);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(title, html, tail);
+    super.preRender(info);
+  }
 }

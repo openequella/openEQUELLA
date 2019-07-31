@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.controls.filemanager.popup;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
@@ -44,94 +44,96 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind
-public class FileManagerDialog extends EquellaDialog<DialogModel>
-{
-	@PlugKey("title.untitled")
-	private static Label LABEL_FILE_MANAGER;
+public class FileManagerDialog extends EquellaDialog<DialogModel> {
+  @PlugKey("title.untitled")
+  private static Label LABEL_FILE_MANAGER;
 
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private InstitutionService institutionService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component
-	private Div filemanagerDiv;
+  @Component private Div filemanagerDiv;
 
-	private FileManagerWebControl fileManagerControl;
+  private FileManagerWebControl fileManagerControl;
 
-	public FileManagerDialog()
-	{
-		setAjax(true);
-		// the filemanager sits in a dynamically generated tree so the
-		// RuntimeStatements is not really needed, but this may not always be
-		// the case.
-		setDialogOpenedCallback(new FileManagerFunction());
-	}
+  public FileManagerDialog() {
+    setAjax(true);
+    // the filemanager sits in a dynamically generated tree so the
+    // RuntimeStatements is not really needed, but this may not always be
+    // the case.
+    setDialogOpenedCallback(new FileManagerFunction());
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		final String title = fileManagerControl.getTitle();
-		return Check.isEmpty(title) ? LABEL_FILE_MANAGER : new TextLabel(title);
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    final String title = fileManagerControl.getTitle();
+    return Check.isEmpty(title) ? LABEL_FILE_MANAGER : new TextLabel(title);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("filemanager/filemanpopup.ftl", this);
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("filemanager/filemanpopup.ftl", this);
+  }
 
-	public class FileManagerFunction extends RuntimeFunction
-	{
-		@Override
-		protected JSCallable createFunction(RenderContext info)
-		{
-			final String jarUrl = institutionService.institutionalise(FileManagerConstants.FILEMANAGER_APPLET_JAR_URL);
+  public class FileManagerFunction extends RuntimeFunction {
+    @Override
+    protected JSCallable createFunction(RenderContext info) {
+      final String jarUrl =
+          institutionService.institutionalise(FileManagerConstants.FILEMANAGER_APPLET_JAR_URL);
 
-			final ObjectExpression options = new ObjectExpression();
-			options.put(AppletWebCommon.PARAMETER_PREFIX + "WIZARD", fileManagerControl.getRepository().getWizid());
-			options.put(AppletWebCommon.PARAMETER_PREFIX + "AUTOMARK", fileManagerControl.isAutoMarkAsResource());
-			options.put(AppletWebCommon.PARAMETER_PREFIX + "BACKEND",
-				"com.tle.web.filemanager.applet.backend.ServerBackendConnector");
+      final ObjectExpression options = new ObjectExpression();
+      options.put(
+          AppletWebCommon.PARAMETER_PREFIX + "WIZARD",
+          fileManagerControl.getRepository().getWizid());
+      options.put(
+          AppletWebCommon.PARAMETER_PREFIX + "AUTOMARK", fileManagerControl.isAutoMarkAsResource());
+      options.put(
+          AppletWebCommon.PARAMETER_PREFIX + "BACKEND",
+          "com.tle.web.filemanager.applet.backend.ServerBackendConnector");
 
-			return CallAndReferenceFunction.get(Js.function(Js.call_s(AppletWebCommon.WRITE_APPLET,
-				Jq.$(filemanagerDiv), jarUrl, "com.tle.web.filemanager.applet.AppletLauncher",
-				CurrentLocale.getLocale().toString(), CurrentLocale.isRightToLeft(),
-				institutionService.getInstitutionUrl().toString(), "534px", "100%", options, "fileManager")),
-				FileManagerDialog.this);
-		}
-	}
+      return CallAndReferenceFunction.get(
+          Js.function(
+              Js.call_s(
+                  AppletWebCommon.WRITE_APPLET,
+                  Jq.$(filemanagerDiv),
+                  jarUrl,
+                  "com.tle.web.filemanager.applet.AppletLauncher",
+                  CurrentLocale.getLocale().toString(),
+                  CurrentLocale.isRightToLeft(),
+                  institutionService.getInstitutionUrl().toString(),
+                  "534px",
+                  "100%",
+                  options,
+                  "fileManager")),
+          FileManagerDialog.this);
+    }
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "75%";
-	}
+  @Override
+  public String getWidth() {
+    return "75%";
+  }
 
-	@Override
-	public String getHeight()
-	{
-		return "600px";
-	}
+  @Override
+  public String getHeight() {
+    return "600px";
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 
-	public void setFileManagerControl(FileManagerWebControl fileManagerControl)
-	{
-		this.fileManagerControl = fileManagerControl;
-	}
+  public void setFileManagerControl(FileManagerWebControl fileManagerControl) {
+    this.fileManagerControl = fileManagerControl;
+  }
 
-	public Div getFilemanagerDiv()
-	{
-		return filemanagerDiv;
-	}
+  public Div getFilemanagerDiv() {
+    return filemanagerDiv;
+  }
 }

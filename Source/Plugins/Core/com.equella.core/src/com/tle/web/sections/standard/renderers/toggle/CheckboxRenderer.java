@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.sections.standard.renderers.toggle;
-
-import java.io.IOException;
-import java.util.Map;
 
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.js.JSHandler;
@@ -34,94 +33,82 @@ import com.tle.web.sections.standard.js.JSValueComponent;
 import com.tle.web.sections.standard.model.HtmlBooleanState;
 import com.tle.web.sections.standard.renderers.AbstractInputRenderer;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
+import java.io.IOException;
+import java.util.Map;
 
 @SuppressWarnings("nls")
-public class CheckboxRenderer extends AbstractInputRenderer implements JSValueComponent, JSDisableable
-{
-	private final HtmlBooleanState bstate;
+public class CheckboxRenderer extends AbstractInputRenderer
+    implements JSValueComponent, JSDisableable {
+  private final HtmlBooleanState bstate;
 
-	public CheckboxRenderer(HtmlBooleanState state, String type)
-	{
-		super(state, type);
-		this.bstate = state;
-	}
+  public CheckboxRenderer(HtmlBooleanState state, String type) {
+    super(state, type);
+    this.bstate = state;
+  }
 
-	public CheckboxRenderer(HtmlBooleanState state)
-	{
-		this(state, "checkbox");
-	}
+  public CheckboxRenderer(HtmlBooleanState state) {
+    this(state, "checkbox");
+  }
 
-	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-	{
-		super.prepareFirstAttributes(writer, attrs);
-		if( bstate.isDisabled() )
-		{
-			attrs.put("disabled", "disabled");
-		}
-		if( bstate.getTitle() != null )
-		{
-			attrs.put("title", bstate.getTitle().getText());
-		}
-		attrs.put("value", bstate.getValue());
-		attrs.put("checked", bstate.isChecked() ? "checked" : null);
-	}
+  @Override
+  protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+      throws IOException {
+    super.prepareFirstAttributes(writer, attrs);
+    if (bstate.isDisabled()) {
+      attrs.put("disabled", "disabled");
+    }
+    if (bstate.getTitle() != null) {
+      attrs.put("title", bstate.getTitle().getText());
+    }
+    attrs.put("value", bstate.getValue());
+    attrs.put("checked", bstate.isChecked() ? "checked" : null);
+  }
 
-	@Override
-	public SectionRenderable getNestedRenderable()
-	{
-		if( nestedRenderable == null )
-		{
-			if( state.getLabel() != null )
-			{
-				nestedRenderable = new LabelTagRenderer(this, null, state.createLabelRenderer());
-			}
-		}
-		return nestedRenderable;
-	}
+  @Override
+  public SectionRenderable getNestedRenderable() {
+    if (nestedRenderable == null) {
+      if (state.getLabel() != null) {
+        nestedRenderable = new LabelTagRenderer(this, null, state.createLabelRenderer());
+      }
+    }
+    return nestedRenderable;
+  }
 
-	@Override
-	public TagRenderer setNestedRenderable(SectionRenderable nested)
-	{
-		nestedRenderable = new LabelTagRenderer(this, "", nested);
-		return this;
-	}
+  @Override
+  public TagRenderer setNestedRenderable(SectionRenderable nested) {
+    nestedRenderable = new LabelTagRenderer(this, "", nested);
+    return this;
+  }
 
-	@Override
-	protected void processHandler(SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler)
-	{
-		if( event.equals(JSHandler.EVENT_CHANGE) )
-		{
-			super.processHandler(writer, attrs, JSHandler.EVENT_CLICK, handler);
-		}
-		else
-		{
-			super.processHandler(writer, attrs, event, handler);
-		}
-	}
+  @Override
+  protected void processHandler(
+      SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler) {
+    if (event.equals(JSHandler.EVENT_CHANGE)) {
+      super.processHandler(writer, attrs, JSHandler.EVENT_CLICK, handler);
+    } else {
+      super.processHandler(writer, attrs, event, handler);
+    }
+  }
 
-	@Override
-	public JSExpression createGetExpression()
-	{
-		return PropertyExpression.create(new ElementByIdExpression(this), "checked");
-	}
+  @Override
+  public JSExpression createGetExpression() {
+    return PropertyExpression.create(new ElementByIdExpression(this), "checked");
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return new DefaultDisableFunction(this);
-	}
+  @Override
+  public JSCallable createDisableFunction() {
+    return new DefaultDisableFunction(this);
+  }
 
-	@Override
-	public JSCallable createSetFunction()
-	{
-		return new AssignAsFunction(createGetExpression());
-	}
+  @Override
+  public JSCallable createSetFunction() {
+    return new AssignAsFunction(createGetExpression());
+  }
 
-	@Override
-	public JSCallable createResetFunction()
-	{
-		return new AssignAsFunction(createGetExpression(), PropertyExpression.create(new ElementByIdExpression(this),
-			"defaultChecked"));
-	}
+  @Override
+  public JSCallable createResetFunction() {
+    return new AssignAsFunction(
+        createGetExpression(),
+        PropertyExpression.create(new ElementByIdExpression(this), "defaultChecked"));
+  }
 }

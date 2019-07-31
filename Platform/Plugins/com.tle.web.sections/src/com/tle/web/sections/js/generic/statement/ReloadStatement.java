@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,29 +23,24 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.function.ReloadFunction;
 
-public class ReloadStatement implements JSStatements
-{
-	private final JSStatements statement;
+public class ReloadStatement implements JSStatements {
+  private final JSStatements statement;
 
-	public ReloadStatement()
-	{
-		this(true);
-	}
+  public ReloadStatement() {
+    this(true);
+  }
 
-	public ReloadStatement(boolean validate)
-	{
-		this.statement = new FunctionCallStatement(new ReloadFunction(validate));
-	}
+  public ReloadStatement(boolean validate) {
+    this.statement = new FunctionCallStatement(new ReloadFunction(validate));
+  }
 
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return statement.getStatements(info);
-	}
+  @Override
+  public String getStatements(RenderContext info) {
+    return statement.getStatements(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(statement);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(statement);
+  }
 }

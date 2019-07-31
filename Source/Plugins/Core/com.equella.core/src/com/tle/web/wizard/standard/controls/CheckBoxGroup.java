@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,67 +28,57 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.CCheckBoxGroup;
 import com.tle.web.wizard.controls.Item;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class CheckBoxGroup extends AbstractOptionControl
-{
-	@Component(stateful = false, register = false)
-	private MultiSelectionList<Item> checkList;
-	@Component(stateful = false, register = false)
-	private SingleSelectionList<Item> radioList;
+public class CheckBoxGroup extends AbstractOptionControl {
+  @Component(stateful = false, register = false)
+  private MultiSelectionList<Item> checkList;
 
-	private boolean radio;
-	private int columnPercent;
+  @Component(stateful = false, register = false)
+  private SingleSelectionList<Item> radioList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		MultiSelectionList<Item> list = getList();
-		tree.registerInnerSection(list, id);
-		super.registered(id, tree);
-		setGroupLabellNeeded(true);
-	}
+  private boolean radio;
+  private int columnPercent;
 
-	@SuppressWarnings("nls")
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		if( control.getSize1() == 0 )
-		{
-			control.setSize1(1);
-		}
-		radio = ((CCheckBoxGroup) control).getType().equals("radio");
-		this.columnPercent = 100 / control.getSize1();
-		super.setWrappedControl(control);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    MultiSelectionList<Item> list = getList();
+    tree.registerInnerSection(list, id);
+    super.registered(id, tree);
+    setGroupLabellNeeded(true);
+  }
 
-	@Override
-	protected String getTemplate()
-	{
-		return "checkboxgroup.ftl"; //$NON-NLS-1$
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    if (control.getSize1() == 0) {
+      control.setSize1(1);
+    }
+    radio = ((CCheckBoxGroup) control).getType().equals("radio");
+    this.columnPercent = 100 / control.getSize1();
+    super.setWrappedControl(control);
+  }
 
-	@Override
-	public MultiSelectionList<Item> getList()
-	{
-		return radio ? radioList : checkList;
-	}
+  @Override
+  protected String getTemplate() {
+    return "checkboxgroup.ftl"; //$NON-NLS-1$
+  }
 
-	public boolean isRadio()
-	{
-		return radio;
-	}
+  @Override
+  public MultiSelectionList<Item> getList() {
+    return radio ? radioList : checkList;
+  }
 
-	public int getColumnPercent()
-	{
-		return columnPercent;
-	}
+  public boolean isRadio() {
+    return radio;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return radio ? radioList : checkList;
-	}
+  public int getColumnPercent() {
+    return columnPercent;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return radio ? radioList : checkList;
+  }
 }

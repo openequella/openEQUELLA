@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,21 +22,17 @@ import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.core.guice.Bind;
 import com.tle.core.metadata.scripting.objects.MetadataScriptObject;
 import com.tle.core.scripting.service.ScriptObjectContributor;
-
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
 
 @Bind
 @Singleton
-public class MetadataScriptContributor implements ScriptObjectContributor
-{
-	@Inject
-	private MetadataScriptObject metadataScriptObject;
+public class MetadataScriptContributor implements ScriptObjectContributor {
+  @Inject private MetadataScriptObject metadataScriptObject;
 
-	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
-	{
-		objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
-	}
+  @Override
+  public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params) {
+    objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
+  }
 }

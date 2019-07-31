@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.core.workflow.migrate.beans.node;
 
+import com.tle.beans.entity.LanguageBundle;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.entity.LanguageBundle;
 
 @Entity(name = "WorkflowSerial")
 @AccessType("field")
 @DiscriminatorValue("s")
-public class SerialNode extends WorkflowNode
-{
-	private static final long serialVersionUID = 1;
+public class SerialNode extends WorkflowNode {
+  private static final long serialVersionUID = 1;
 
-	public SerialNode(LanguageBundle name)
-	{
-		super(name);
-	}
+  public SerialNode(LanguageBundle name) {
+    super(name);
+  }
 
-	public SerialNode()
-	{
-		super();
-	}
+  public SerialNode() {
+    super();
+  }
 
-	@Override
-	public char getType()
-	{
-		return 's';
-	}
+  @Override
+  public char getType() {
+    return 's';
+  }
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return true;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return true;
+  }
 }

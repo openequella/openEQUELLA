@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,41 +28,33 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
-public class ShowcasePortletRenderer extends PortletContentRenderer<Object>
-{
-	private static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(ShowcasePortletRenderer.class);
+public class ShowcasePortletRenderer extends PortletContentRenderer<Object> {
+  private static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(ShowcasePortletRenderer.class);
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context) throws Exception
-	{
-		context.getPreRenderContext().addCss(RESOURCES.url("css/showcase.css"));
-		return view.createResult("showcaseportlet.ftl", context);
-	}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) throws Exception {
+    context.getPreRenderContext().addCss(RESOURCES.url("css/showcase.css"));
+    return view.createResult("showcaseportlet.ftl", context);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "psc";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "psc";
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 }

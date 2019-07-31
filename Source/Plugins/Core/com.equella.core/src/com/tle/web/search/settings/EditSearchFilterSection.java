@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.search.settings;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
 import com.tle.annotation.NonNullByDefault;
@@ -66,298 +62,261 @@ import com.tle.web.sections.standard.renderers.list.CheckListRenderer;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class EditSearchFilterSection extends AbstractPrototypeSection<EditSearchFilterSection.EditSearchFilterModel>
-	implements
-		HtmlRenderer
-{
-	@PlugKey("searching.settings.title")
-	private static Label BREADCRUMB_LABEL;
-	@PlugKey("settings.filter.edit.page.title")
-	private static Label EDIT_FILTER_LABEL;
-	@PlugKey("settings.filter.new.page.title")
-	private static Label NEW_FILTER_LABEL;
-	@PlugKey("settings.filter.save.success")
-	private static Label SAVE_FILTER_SUCCESS_LABEL;
+public class EditSearchFilterSection
+    extends AbstractPrototypeSection<EditSearchFilterSection.EditSearchFilterModel>
+    implements HtmlRenderer {
+  @PlugKey("searching.settings.title")
+  private static Label BREADCRUMB_LABEL;
 
-	private static final String NEW_FILTER_ID = "new"; //$NON-NLS-1$
+  @PlugKey("settings.filter.edit.page.title")
+  private static Label EDIT_FILTER_LABEL;
 
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ConfigurationService configConstants;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("settings.filter.new.page.title")
+  private static Label NEW_FILTER_LABEL;
 
-	@TreeLookup
-	private OneColumnLayout<?> rootSection;
+  @PlugKey("settings.filter.save.success")
+  private static Label SAVE_FILTER_SUCCESS_LABEL;
 
-	@Component
-	private TextField name;
-	@Component
-	private MimeTypesList mimeTypes;
-	@Component
-	@PlugKey("settings.filter.button.ok")
-	private Button saveButton;
-	@Component
-	@PlugKey("settings.filter.button.cancel")
-	private Button cancelButton;
+  private static final String NEW_FILTER_ID = "new"; // $NON-NLS-1$
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @Inject private MimeTypeService mimeService;
+  @Inject private ConfigurationService configConstants;
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		saveButton.setClickHandler(events.getNamedHandler("save")); //$NON-NLS-1$
-		cancelButton.setClickHandler(events.getNamedHandler("cancel")); //$NON-NLS-1$
+  @TreeLookup private OneColumnLayout<?> rootSection;
 
-		mimeTypes.setListModel(new DynamicHtmlListModel<MimeEntry>()
-		{
-			@Override
-			protected Iterable<MimeEntry> populateModel(SectionInfo info)
-			{
-				return mimeService.searchByMimeType(Constants.BLANK, 0, -1).getResults();
-			}
+  @Component private TextField name;
+  @Component private MimeTypesList mimeTypes;
 
-			@Override
-			protected Option<MimeEntry> convertToOption(SectionInfo info, MimeEntry mime)
-			{
-				String desc = mime.getDescription();
-				if( !Check.isEmpty(desc) )
-				{
-					desc = desc + " (" + mime.getType() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-				}
-				else
-				{
-					desc = mime.getType();
-				}
-				return new NameValueOption<MimeEntry>(new NameValue(desc, mime.getType()), mime);
-			}
-		});
-	}
+  @Component
+  @PlugKey("settings.filter.button.ok")
+  private Button saveButton;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
-	public void checkModal(SectionInfo info)
-	{
-		final EditSearchFilterModel model = getModel(info);
-		if( !Check.isEmpty(model.getFilterUuid()) )
-		{
-			rootSection.setModalSection(info, this);
-		}
-	}
+  @Component
+  @PlugKey("settings.filter.button.cancel")
+  private Button cancelButton;
 
-	@Override
-	@SuppressWarnings("nls")
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final EditSearchFilterModel model = getModel(context);
-		final String filterId = model.getFilterUuid();
-		final Label titleLabel = (filterId.equals(NEW_FILTER_ID) ? NEW_FILTER_LABEL : EDIT_FILTER_LABEL);
-		model.setTitle(titleLabel);
-		Decorations.getDecorations(context).setTitle(titleLabel);
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-		HtmlLinkState linkState = new HtmlLinkState(BREADCRUMB_LABEL);
-		linkState.setClickHandler(events.getNamedHandler("cancel"));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    saveButton.setClickHandler(events.getNamedHandler("save")); // $NON-NLS-1$
+    cancelButton.setClickHandler(events.getNamedHandler("cancel")); // $NON-NLS-1$
 
-		Breadcrumbs crumbs = Breadcrumbs.get(context);
-		crumbs.add(linkState);
+    mimeTypes.setListModel(
+        new DynamicHtmlListModel<MimeEntry>() {
+          @Override
+          protected Iterable<MimeEntry> populateModel(SectionInfo info) {
+            return mimeService.searchByMimeType(Constants.BLANK, 0, -1).getResults();
+          }
 
-		GenericTemplateResult gtr = new GenericTemplateResult();
-		gtr.addNamedResult(OneColumnLayout.BODY, view.createResult("settings/editfilter.ftl", this));
-		HelpAndScreenOptionsSection.addHelp(context, view.createResult("settings/editfilterhelp.ftl", this));
-		return gtr;
-	}
+          @Override
+          protected Option<MimeEntry> convertToOption(SectionInfo info, MimeEntry mime) {
+            String desc = mime.getDescription();
+            if (!Check.isEmpty(desc)) {
+              desc = desc + " (" + mime.getType() + ")"; // $NON-NLS-1$ //$NON-NLS-2$
+            } else {
+              desc = mime.getType();
+            }
+            return new NameValueOption<MimeEntry>(new NameValue(desc, mime.getType()), mime);
+          }
+        });
+  }
 
-	@SuppressWarnings("nls")
-	private boolean validate(SectionInfo info, EditSearchFilterModel model)
-	{
-		boolean valid = true;
-		model.setNameError(null);
-		model.setMimeError(null);
-		if( Check.isEmpty(name.getValue(info)) )
-		{
-			model.setNameError("settings.filter.errors.name");
-			valid = false;
-		}
+  @DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
+  public void checkModal(SectionInfo info) {
+    final EditSearchFilterModel model = getModel(info);
+    if (!Check.isEmpty(model.getFilterUuid())) {
+      rootSection.setModalSection(info, this);
+    }
+  }
 
-		final List<MimeEntry> selectedMimeTypes = mimeTypes.getSelectedValues(info);
-		if( Check.isEmpty(selectedMimeTypes) )
-		{
-			model.setMimeError("settings.filter.errors.mimetypes");
-			valid = false;
-		}
+  @Override
+  @SuppressWarnings("nls")
+  public SectionResult renderHtml(RenderEventContext context) {
+    final EditSearchFilterModel model = getModel(context);
+    final String filterId = model.getFilterUuid();
+    final Label titleLabel =
+        (filterId.equals(NEW_FILTER_ID) ? NEW_FILTER_LABEL : EDIT_FILTER_LABEL);
+    model.setTitle(titleLabel);
+    Decorations.getDecorations(context).setTitle(titleLabel);
 
-		return valid;
-	}
+    HtmlLinkState linkState = new HtmlLinkState(BREADCRUMB_LABEL);
+    linkState.setClickHandler(events.getNamedHandler("cancel"));
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final EditSearchFilterModel model = getModel(info);
-		if( validate(info, model) )
-		{
-			final SearchSettings settings = configConstants.getProperties(new SearchSettings());
-			SearchFilter f = getFilter(settings, model.getFilterUuid());
-			if( f == null )
-			{
-				f = new SearchFilter();
-				f.setId(UUID.randomUUID().toString());
-				settings.getFilters().add(f);
-			}
-			f.setName(name.getValue(info));
-			f.setMimeTypes(new ArrayList<String>(mimeTypes.getSelectedValuesAsStrings(info)));
-			configConstants.setProperties(settings);
+    Breadcrumbs crumbs = Breadcrumbs.get(context);
+    crumbs.add(linkState);
 
-			clear(info, model);
-			receiptService.setReceipt(SAVE_FILTER_SUCCESS_LABEL);
-		}
-	}
+    GenericTemplateResult gtr = new GenericTemplateResult();
+    gtr.addNamedResult(OneColumnLayout.BODY, view.createResult("settings/editfilter.ftl", this));
+    HelpAndScreenOptionsSection.addHelp(
+        context, view.createResult("settings/editfilterhelp.ftl", this));
+    return gtr;
+  }
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		final EditSearchFilterModel model = getModel(info);
-		clear(info, model);
-	}
+  @SuppressWarnings("nls")
+  private boolean validate(SectionInfo info, EditSearchFilterModel model) {
+    boolean valid = true;
+    model.setNameError(null);
+    model.setMimeError(null);
+    if (Check.isEmpty(name.getValue(info))) {
+      model.setNameError("settings.filter.errors.name");
+      valid = false;
+    }
 
-	private void clear(SectionInfo info, EditSearchFilterModel model)
-	{
-		// removes all the bollocks from the URL
-		name.setValue(info, null);
-		mimeTypes.setSelectedStringValues(info, null);
-		model.setNameError(null);
-		model.setMimeError(null);
-		model.setFilterUuid(null);
-	}
+    final List<MimeEntry> selectedMimeTypes = mimeTypes.getSelectedValues(info);
+    if (Check.isEmpty(selectedMimeTypes)) {
+      model.setMimeError("settings.filter.errors.mimetypes");
+      valid = false;
+    }
 
-	@Nullable
-	private SearchFilter getFilter(SearchSettings settings, String filterUuid)
-	{
-		for( SearchFilter filter : settings.getFilters() )
-		{
-			if( filter.getId().equals(filterUuid) )
-			{
-				return filter;
-			}
-		}
-		return null;
-	}
+    return valid;
+  }
 
-	// called from SearchSettingsSection
-	public void setFilter(SectionInfo info, @Nullable SearchFilter filter)
-	{
-		if( filter != null )
-		{
-			getModel(info).setFilterUuid(filter.getId());
-			name.setValue(info, filter.getName());
-			mimeTypes.setSelectedStringValues(info, filter.getMimeTypes());
-		}
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final EditSearchFilterModel model = getModel(info);
+    if (validate(info, model)) {
+      final SearchSettings settings = configConstants.getProperties(new SearchSettings());
+      SearchFilter f = getFilter(settings, model.getFilterUuid());
+      if (f == null) {
+        f = new SearchFilter();
+        f.setId(UUID.randomUUID().toString());
+        settings.getFilters().add(f);
+      }
+      f.setName(name.getValue(info));
+      f.setMimeTypes(new ArrayList<String>(mimeTypes.getSelectedValuesAsStrings(info)));
+      configConstants.setProperties(settings);
 
-	// called from SearchSettingsSection
-	public void newFilter(SectionInfo info)
-	{
-		getModel(info).setFilterUuid(NEW_FILTER_ID);
-	}
+      clear(info, model);
+      receiptService.setReceipt(SAVE_FILTER_SUCCESS_LABEL);
+    }
+  }
 
-	@Override
-	public Class<EditSearchFilterModel> getModelClass()
-	{
-		return EditSearchFilterModel.class;
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    final EditSearchFilterModel model = getModel(info);
+    clear(info, model);
+  }
 
-	public TextField getName()
-	{
-		return name;
-	}
+  private void clear(SectionInfo info, EditSearchFilterModel model) {
+    // removes all the bollocks from the URL
+    name.setValue(info, null);
+    mimeTypes.setSelectedStringValues(info, null);
+    model.setNameError(null);
+    model.setMimeError(null);
+    model.setFilterUuid(null);
+  }
 
-	public MimeTypesList getMimeTypes()
-	{
-		return mimeTypes;
-	}
+  @Nullable
+  private SearchFilter getFilter(SearchSettings settings, String filterUuid) {
+    for (SearchFilter filter : settings.getFilters()) {
+      if (filter.getId().equals(filterUuid)) {
+        return filter;
+      }
+    }
+    return null;
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  // called from SearchSettingsSection
+  public void setFilter(SectionInfo info, @Nullable SearchFilter filter) {
+    if (filter != null) {
+      getModel(info).setFilterUuid(filter.getId());
+      name.setValue(info, filter.getName());
+      mimeTypes.setSelectedStringValues(info, filter.getMimeTypes());
+    }
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  // called from SearchSettingsSection
+  public void newFilter(SectionInfo info) {
+    getModel(info).setFilterUuid(NEW_FILTER_ID);
+  }
 
-	public static class EditSearchFilterModel
-	{
-		@Bookmarked(name = "f")
-		private String filterUuid;
-		@Bookmarked(name = "en")
-		private String nameError;
-		@Bookmarked(name = "em")
-		private String mimeError;
-		private Label title;
+  @Override
+  public Class<EditSearchFilterModel> getModelClass() {
+    return EditSearchFilterModel.class;
+  }
 
-		public String getFilterUuid()
-		{
-			return filterUuid;
-		}
+  public TextField getName() {
+    return name;
+  }
 
-		public void setFilterUuid(String filterUuid)
-		{
-			this.filterUuid = filterUuid;
-		}
+  public MimeTypesList getMimeTypes() {
+    return mimeTypes;
+  }
 
-		public String getNameError()
-		{
-			return nameError;
-		}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-		public void setNameError(String nameError)
-		{
-			this.nameError = nameError;
-		}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		public String getMimeError()
-		{
-			return mimeError;
-		}
+  public static class EditSearchFilterModel {
+    @Bookmarked(name = "f")
+    private String filterUuid;
 
-		public void setMimeError(String mimeError)
-		{
-			this.mimeError = mimeError;
-		}
+    @Bookmarked(name = "en")
+    private String nameError;
 
-		public Label getTitle()
-		{
-			return title;
-		}
+    @Bookmarked(name = "em")
+    private String mimeError;
 
-		public void setTitle(Label titleKey)
-		{
-			this.title = titleKey;
-		}
-	}
+    private Label title;
 
-	public static class MimeTypesList extends MultiSelectionList<MimeEntry>
-	{
-		public MimeTypesList()
-		{
-			super();
-			setDefaultRenderer("checklist"); //$NON-NLS-1$
-		}
+    public String getFilterUuid() {
+      return filterUuid;
+    }
 
-		@Override
-		public void rendererSelected(RenderContext info, SectionRenderable renderer)
-		{
-			CheckListRenderer clrenderer = (CheckListRenderer) renderer;
-			clrenderer.setAsList(true);
-		}
-	}
+    public void setFilterUuid(String filterUuid) {
+      this.filterUuid = filterUuid;
+    }
+
+    public String getNameError() {
+      return nameError;
+    }
+
+    public void setNameError(String nameError) {
+      this.nameError = nameError;
+    }
+
+    public String getMimeError() {
+      return mimeError;
+    }
+
+    public void setMimeError(String mimeError) {
+      this.mimeError = mimeError;
+    }
+
+    public Label getTitle() {
+      return title;
+    }
+
+    public void setTitle(Label titleKey) {
+      this.title = titleKey;
+    }
+  }
+
+  public static class MimeTypesList extends MultiSelectionList<MimeEntry> {
+    public MimeTypesList() {
+      super();
+      setDefaultRenderer("checklist"); // $NON-NLS-1$
+    }
+
+    @Override
+    public void rendererSelected(RenderContext info, SectionRenderable renderer) {
+      CheckListRenderer clrenderer = (CheckListRenderer) renderer;
+      clrenderer.setAsList(true);
+    }
+  }
 }

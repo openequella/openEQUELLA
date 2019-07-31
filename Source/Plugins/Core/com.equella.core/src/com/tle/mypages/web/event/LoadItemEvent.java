@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,40 +22,33 @@ import com.tle.beans.item.Item;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
-public class LoadItemEvent extends AbstractMyPagesEvent<LoadItemEventListener>
-{
-	private final Item item;
-	private final String pageUuid;
+/** @author aholland */
+public class LoadItemEvent extends AbstractMyPagesEvent<LoadItemEventListener> {
+  private final Item item;
+  private final String pageUuid;
 
-	public LoadItemEvent(String sessionId, Item item, String pageUuid)
-	{
-		super(sessionId);
-		this.item = item;
-		this.pageUuid = pageUuid;
-	}
+  public LoadItemEvent(String sessionId, Item item, String pageUuid) {
+    super(sessionId);
+    this.item = item;
+    this.pageUuid = pageUuid;
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, LoadItemEventListener listener) throws Exception
-	{
-		listener.doLoadItemEvent(info, this);
-	}
+  @Override
+  public void fire(SectionId sectionId, SectionInfo info, LoadItemEventListener listener)
+      throws Exception {
+    listener.doLoadItemEvent(info, this);
+  }
 
-	@Override
-	public Class<LoadItemEventListener> getListenerClass()
-	{
-		return LoadItemEventListener.class;
-	}
+  @Override
+  public Class<LoadItemEventListener> getListenerClass() {
+    return LoadItemEventListener.class;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public String getPageUuid()
-	{
-		return pageUuid;
-	}
+  public String getPageUuid() {
+    return pageUuid;
+  }
 }

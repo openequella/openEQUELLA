@@ -1,25 +1,22 @@
 package com.tle.jpfclasspath.model;
 
+import com.tle.jpfclasspath.parser.ModelPluginManifest;
 import java.util.List;
-
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 
-import com.tle.jpfclasspath.parser.ModelPluginManifest;
+public interface IPluginModel extends IModel {
+  String DEFAULT_REGISTRY = "default";
 
-public interface IPluginModel extends IModel
-{
-	String DEFAULT_REGISTRY = "default";
+  IJavaProject getJavaProject();
 
-	IJavaProject getJavaProject();
+  boolean isFragmentModel();
 
-	boolean isFragmentModel();
+  ModelPluginManifest getParsedManifest();
 
-	ModelPluginManifest getParsedManifest();
+  List<IClasspathEntry> createClasspathEntries();
 
-	List<IClasspathEntry> createClasspathEntries();
+  String getRegistryName();
 
-	String getRegistryName();
-
-	boolean isJarModel();
+  boolean isJarModel();
 }

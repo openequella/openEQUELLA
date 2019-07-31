@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,48 +18,37 @@
 
 package com.tle.web.errors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.errors.SectionsExceptionHandler;
 import com.tle.web.sections.events.SectionEvent;
+import javax.servlet.http.HttpServletRequest;
 
-public abstract class AbstractExceptionHandler implements SectionsExceptionHandler
-{
-	protected Throwable getFirstCause(Throwable ex)
-	{
-		if( ex == null )
-		{
-			return null;
-		}
-		if( ex.getCause() == null )
-		{
-			return ex;
-		}
-		return getFirstCause(ex.getCause());
-	}
+public abstract class AbstractExceptionHandler implements SectionsExceptionHandler {
+  protected Throwable getFirstCause(Throwable ex) {
+    if (ex == null) {
+      return null;
+    }
+    if (ex.getCause() == null) {
+      return ex;
+    }
+    return getFirstCause(ex.getCause());
+  }
 
-	@Override
-	public boolean canHandle(SectionInfo info, Throwable ex, SectionEvent<?> event)
-	{
-		return !hasAlreadyBeenHandled(info, ex, event);
-	}
+  @Override
+  public boolean canHandle(SectionInfo info, Throwable ex, SectionEvent<?> event) {
+    return !hasAlreadyBeenHandled(info, ex, event);
+  }
 
-	protected boolean hasAlreadyBeenHandled(SectionInfo info, Throwable ex, SectionEvent<?> event)
-	{
-		HttpServletRequest request = info.getRequest();
-		if( request == null )
-		{
-			return true;
-		}
-		else
-		{
-			return (request.getAttribute(getClass().getName()) != null);
-		}
-	}
+  protected boolean hasAlreadyBeenHandled(SectionInfo info, Throwable ex, SectionEvent<?> event) {
+    HttpServletRequest request = info.getRequest();
+    if (request == null) {
+      return true;
+    } else {
+      return (request.getAttribute(getClass().getName()) != null);
+    }
+  }
 
-	protected void markHandled(SectionInfo info)
-	{
-		info.getRequest().setAttribute(getClass().getName(), true);
-	}
+  protected void markHandled(SectionInfo info) {
+    info.getRequest().setAttribute(getClass().getName(), true);
+  }
 }

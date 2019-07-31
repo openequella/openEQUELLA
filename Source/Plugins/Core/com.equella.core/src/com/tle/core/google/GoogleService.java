@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,44 @@
 
 package com.tle.core.google;
 
-import java.util.List;
-
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.gdata.data.books.VolumeEntry;
 import com.google.gdata.data.books.VolumeFeed;
+import java.util.List;
 
-/**
- * @author Aaron
- */
-public interface GoogleService
-{
-	// YouTube
-	Video getVideo(String videoId);
+/** @author Aaron */
+public interface GoogleService {
+  // YouTube
+  Video getVideo(String videoId);
 
-	List<Video> getVideos(List<String> videoIds);
+  List<Video> getVideos(List<String> videoIds);
 
-	List<SearchResult> searchVideos(String query, String orderBy, long limit) throws GoogleJsonResponseException;
+  List<SearchResult> searchVideos(String query, String orderBy, long limit)
+      throws GoogleJsonResponseException;
 
-	List<SearchResult> searchVideoIds(String query, String orderBy, long limit) throws GoogleJsonResponseException;
+  List<SearchResult> searchVideoIds(String query, String orderBy, long limit)
+      throws GoogleJsonResponseException;
 
-	List<SearchResult> searchVideoIdsWithinChannel(String query, String orderBy, String channel, long limit)
-		throws GoogleJsonResponseException;
+  List<SearchResult> searchVideoIdsWithinChannel(
+      String query, String orderBy, String channel, long limit) throws GoogleJsonResponseException;
 
-	Channel getChannel(String channelId);
+  Channel getChannel(String channelId);
 
-	Channel getChannelForUser(String userId);
+  Channel getChannelForUser(String userId);
 
-	List<Channel> getChannels(List<String> channelIds);
+  List<Channel> getChannels(List<String> channelIds);
 
-	// Google books
-	// Volume getBook(String bookId);
+  // Google books
+  // Volume getBook(String bookId);
 
-	// List<SearchResult> searchBooks(String query, int offset, int limit);
+  // List<SearchResult> searchBooks(String query, int offset, int limit);
 
-	VolumeEntry getBook(String bookId);
+  VolumeEntry getBook(String bookId);
 
-	VolumeFeed searchBooks(String query, int offset, int limit);
+  VolumeFeed searchBooks(String query, int offset, int limit);
 
-	boolean isEnabled();
-
+  boolean isEnabled();
 }

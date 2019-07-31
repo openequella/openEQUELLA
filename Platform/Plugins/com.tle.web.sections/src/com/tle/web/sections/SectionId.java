@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,35 +23,28 @@ import com.tle.annotation.Nullable;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 /**
- * This interface holds the registered Id of a {@link Section}. Generally
- * {@code Section} classes themselves will implement this.
- * 
+ * This interface holds the registered Id of a {@link Section}. Generally {@code Section} classes
+ * themselves will implement this.
+ *
  * @see AbstractPrototypeSection
  * @author jmaginnis
  */
 @NonNullByDefault
-public interface SectionId
-{
-	/**
-	 * Returns the section id.
-	 * 
-	 * @return The id
-	 */
-	// TODO: is it really nullable?
-	@Nullable
-	String getSectionId();
+public interface SectionId {
+  /**
+   * Returns the section id.
+   *
+   * @return The id
+   */
+  // TODO: is it really nullable?
+  @Nullable
+  String getSectionId();
 
-	/**
-	 * @return
-	 */
-	@Nullable
-	SectionTree getTree();
+  /** @return */
+  @Nullable
+  SectionTree getTree();
 
-	/**
-	 * @return The <code>Section</code> associated with this
-	 *         <code>SectionContext</code>s id.
-	 */
-	@Nullable
-	Section getSectionObject();
-
+  /** @return The <code>Section</code> associated with this <code>SectionContext</code>s id. */
+  @Nullable
+  Section getSectionObject();
 }

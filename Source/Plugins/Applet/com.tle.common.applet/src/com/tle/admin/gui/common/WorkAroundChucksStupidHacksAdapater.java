@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,38 @@
 
 package com.tle.admin.gui.common;
 
+import com.dytech.gui.Changeable;
 import java.awt.GridLayout;
-
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import com.dytech.gui.Changeable;
+/** @author Nicholas Read */
+public class WorkAroundChucksStupidHacksAdapater extends JPanel implements Changeable {
+  private static final long serialVersionUID = 1L;
+  private final Changeable changeable;
 
-/**
- * @author Nicholas Read
- */
-public class WorkAroundChucksStupidHacksAdapater extends JPanel implements Changeable
-{
-	private static final long serialVersionUID = 1L;
-	private final Changeable changeable;
+  public WorkAroundChucksStupidHacksAdapater(JComponent component, Changeable changeable) {
+    this.changeable = changeable;
 
-	public WorkAroundChucksStupidHacksAdapater(JComponent component, Changeable changeable)
-	{
-		this.changeable = changeable;
+    setLayout(new GridLayout(1, 1));
+    add(component);
+  }
 
-		setLayout(new GridLayout(1, 1));
-		add(component);
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.Changeable#clearChanges()
+   */
+  @Override
+  public void clearChanges() {
+    changeable.clearChanges();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.Changeable#clearChanges()
-	 */
-	@Override
-	public void clearChanges()
-	{
-		changeable.clearChanges();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.Changeable#hasDetectedChanges()
-	 */
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return changeable.hasDetectedChanges();
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.Changeable#hasDetectedChanges()
+   */
+  @Override
+  public boolean hasDetectedChanges() {
+    return changeable.hasDetectedChanges();
+  }
 }

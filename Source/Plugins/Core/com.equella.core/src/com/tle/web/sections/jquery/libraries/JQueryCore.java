@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,7 +21,6 @@ package com.tle.web.sections.jquery.libraries;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
-import com.tle.web.DebugSettings;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.events.PreRenderContext;
@@ -31,55 +32,52 @@ import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class JQueryCore implements PreRenderable, JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryCore implements PreRenderable, JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	private static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryCore.class);
+  private static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JQueryCore.class);
 
-	private static final IncludeFile CORE_URL = new IncludeFile(urlHelper.url("jquerycore/jquery.js"));
-	private static final IncludeFile JQ_SHIM = new IncludeFile(urlHelper.url("jquerycore/jquery-migrate.js"), CORE_URL);
-	public static final IncludeFile PRERENDER = JQ_SHIM;
-	public static final ExternallyDefinedFunction JQUERY = new ExternallyDefinedFunction("$", PRERENDER);
+  private static final IncludeFile CORE_URL =
+      new IncludeFile(urlHelper.url("jquerycore/jquery.js"));
+  private static final IncludeFile JQ_SHIM =
+      new IncludeFile(urlHelper.url("jquerycore/jquery-migrate.js"), CORE_URL);
+  public static final IncludeFile PRERENDER = JQ_SHIM;
+  public static final ExternallyDefinedFunction JQUERY =
+      new ExternallyDefinedFunction("$", PRERENDER);
 
-	public static IncludeFile getJQueryCoreUrl()
-	{
-		return CORE_URL;
-	}
+  public static IncludeFile getJQueryCoreUrl() {
+    return CORE_URL;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(PRERENDER);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(PRERENDER);
+  }
 
-	/**
-	 * Use someElement.addReadyStatements(JSStatements) instead.
-	 * 
-	 * @param info
-	 * @param statement
-	 */
-	@Deprecated
-	public static void appendReady(RenderContext info, JSStatements statement)
-	{
-		info.getPreRenderContext().addReadyStatements(statement);
-	}
+  /**
+   * Use someElement.addReadyStatements(JSStatements) instead.
+   *
+   * @param info
+   * @param statement
+   */
+  @Deprecated
+  public static void appendReady(RenderContext info, JSStatements statement) {
+    info.getPreRenderContext().addReadyStatements(statement);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.core.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.core.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "core";
-	}
+  @Override
+  public String getId() {
+    return "core";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

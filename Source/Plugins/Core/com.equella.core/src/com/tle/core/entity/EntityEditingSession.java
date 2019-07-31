@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,48 +18,44 @@
 
 package com.tle.core.entity;
 
+import com.tle.beans.entity.BaseEntity;
+import com.tle.common.EntityPack;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.tle.beans.entity.BaseEntity;
-import com.tle.common.EntityPack;
+/** @author aholland */
+public interface EntityEditingSession<B extends EntityEditingBean, E extends BaseEntity>
+    extends Serializable {
+  @Deprecated
+  <P extends EntityPack<E>> P getPack();
 
-/**
- * @author aholland
- */
-public interface EntityEditingSession<B extends EntityEditingBean, E extends BaseEntity> extends Serializable
-{
-	@Deprecated
-	<P extends EntityPack<E>> P getPack();
+  /**
+   * Use getBean instead
+   *
+   * @return
+   */
+  @Deprecated
+  E getEntity();
 
-	/**
-	 * Use getBean instead
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	E getEntity();
+  boolean isNew();
 
-	boolean isNew();
+  B getBean();
 
-	B getBean();
+  String getSessionId();
 
-	String getSessionId();
+  String getStagingId();
 
-	String getStagingId();
+  void setStagingId(String stagingId);
 
-	void setStagingId(String stagingId);
+  Map<String, Object> getValidationErrors();
 
-	Map<String, Object> getValidationErrors();
+  Map<Class<? extends Serializable>, Serializable> getAttributes();
 
-	Map<Class<? extends Serializable>, Serializable> getAttributes();
+  <T extends Serializable> T getAttribute(Class<T> key);
 
-	<T extends Serializable> T getAttribute(Class<T> key);
+  <T extends Serializable> void setAttribute(Class<T> key, T value);
 
-	<T extends Serializable> void setAttribute(Class<T> key, T value);
+  void setValid(boolean valid);
 
-	void setValid(boolean valid);
-
-	boolean isValid();
-
+  boolean isValid();
 }

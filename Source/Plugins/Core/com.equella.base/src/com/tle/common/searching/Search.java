@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,76 +18,72 @@
 
 package com.tle.common.searching;
 
+import com.dytech.edge.queries.FreeTextQuery;
+import com.tle.beans.item.ItemSelect;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import com.dytech.edge.queries.FreeTextQuery;
-import com.tle.beans.item.ItemSelect;
+public interface Search {
+  String INDEX_TASK = "task";
+  String INDEX_ITEM = "item";
+  String INDEX_SCRIPT_TASK = "scripttask";
 
-public interface Search
-{
-	String INDEX_TASK = "task";
-	String INDEX_ITEM = "item";
-	String INDEX_SCRIPT_TASK = "scripttask";
+  public enum SortType {
+    RANK(null, false),
+    DATEMODIFIED(FreeTextQuery.FIELD_REALLASTMODIFIED, true),
+    DATECREATED(FreeTextQuery.FIELD_REALCREATED, true),
+    NAME(FreeTextQuery.FIELD_NAME, false),
+    FORCOUNT(null, false),
+    RATING(FreeTextQuery.FIELD_RATING, true);
 
-	public enum SortType
-	{
-		RANK(null, false), DATEMODIFIED(FreeTextQuery.FIELD_REALLASTMODIFIED, true), DATECREATED(
-			FreeTextQuery.FIELD_REALCREATED, true), NAME(FreeTextQuery.FIELD_NAME, false), FORCOUNT(null, false),
-		RATING(FreeTextQuery.FIELD_RATING, true);
+    private final String field;
+    private final boolean reverse;
 
-		private final String field;
-		private final boolean reverse;
+    private SortType(String field, boolean reverse) {
+      this.field = field;
+      this.reverse = reverse;
+    }
 
-		private SortType(String field, boolean reverse)
-		{
-			this.field = field;
-			this.reverse = reverse;
-		}
+    public SortField getSortField() {
+      return getSortField(false);
+    }
 
-		public SortField getSortField()
-		{
-			return getSortField(false);
-		}
+    public SortField getSortField(boolean reverseTheDefault) {
+      boolean r = reverseTheDefault ? !reverse : reverse;
+      return new SortField(field, r, field == null ? SortField.Type.SCORE : SortField.Type.STRING);
+    }
+  }
 
-		public SortField getSortField(boolean reverseTheDefault)
-		{
-			boolean r = reverseTheDefault ? !reverse : reverse;
-			return new SortField(field, r, field == null ? SortField.Type.SCORE : SortField.Type.STRING);
-		}
-	}
+  ItemSelect getSelect();
 
-	ItemSelect getSelect();
+  FreeTextQuery getFreeTextQuery();
 
-	FreeTextQuery getFreeTextQuery();
+  String getQuery();
 
-	String getQuery();
+  List<String> getExtraQueries();
 
-	List<String> getExtraQueries();
+  Collection<String> getTokenisedQuery();
 
-	Collection<String> getTokenisedQuery();
+  SortField[] getSortFields();
 
-	SortField[] getSortFields();
+  boolean isSortReversed();
 
-	boolean isSortReversed();
+  Date[] getDateRange();
 
-	Date[] getDateRange();
+  String getSearchType();
 
-	String getSearchType();
+  List<Field> getMatrixFields();
 
-	List<Field> getMatrixFields();
+  List<List<Field>> getMust();
 
-	List<List<Field>> getMust();
+  List<List<Field>> getMustNot();
 
-	List<List<Field>> getMustNot();
+  String getPrivilege();
 
-	String getPrivilege();
+  String getPrivilegePrefix();
 
-	String getPrivilegePrefix();
+  String getPrivilegeToCollect();
 
-	String getPrivilegeToCollect();
-
-	Collection<DateFilter> getDateFilters();
-
+  Collection<DateFilter> getDateFilters();
 }

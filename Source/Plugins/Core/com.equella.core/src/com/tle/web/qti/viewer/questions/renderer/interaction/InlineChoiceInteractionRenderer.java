@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,17 +17,6 @@
  */
 
 package com.tle.web.qti.viewer.questions.renderer.interaction;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import uk.ac.ed.ph.jqtiplus.node.content.variable.TextOrVariable;
-import uk.ac.ed.ph.jqtiplus.node.item.interaction.InlineChoiceInteraction;
-import uk.ac.ed.ph.jqtiplus.node.item.interaction.choice.InlineChoice;
-import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
-import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
-import uk.ac.ed.ph.jqtiplus.types.Identifier;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -48,108 +39,102 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
+import java.util.List;
+import javax.inject.Inject;
+import uk.ac.ed.ph.jqtiplus.node.content.variable.TextOrVariable;
+import uk.ac.ed.ph.jqtiplus.node.item.interaction.InlineChoiceInteraction;
+import uk.ac.ed.ph.jqtiplus.node.item.interaction.choice.InlineChoice;
+import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
+import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
+import uk.ac.ed.ph.jqtiplus.types.Identifier;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class InlineChoiceInteractionRenderer extends QtiNodeRenderer
-{
-	@PlugKey("viewer.question.inlinechoice.novalue")
-	private static Label LABEL_NO_RESPONSE;
-	static
-	{
-		PluginResourceHandler.init(InlineChoiceInteractionRenderer.class);
-	}
+public class InlineChoiceInteractionRenderer extends QtiNodeRenderer {
+  @PlugKey("viewer.question.inlinechoice.novalue")
+  private static Label LABEL_NO_RESPONSE;
 
-	private final InlineChoiceInteraction model;
+  static {
+    PluginResourceHandler.init(InlineChoiceInteractionRenderer.class);
+  }
 
-	/**
-	 * Standard sections components factory
-	 */
-	@Inject
-	private RendererFactory renderFactory;
+  private final InlineChoiceInteraction model;
 
-	@AssistedInject
-	protected InlineChoiceInteractionRenderer(@Assisted InlineChoiceInteraction model,
-		@Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  /** Standard sections components factory */
+  @Inject private RendererFactory renderFactory;
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final QtiViewerContext context = getContext();
+  @AssistedInject
+  protected InlineChoiceInteractionRenderer(
+      @Assisted InlineChoiceInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-		final List<Option<?>> options = Lists.newArrayList();
-		// blank top option
-		final String noSelectionText = LABEL_NO_RESPONSE.getText();
-		options.add(new NameValueOption<InlineChoice>(new NameValue(noSelectionText, ""), null));
-		int maxTextLength = noSelectionText.length();
-		for( InlineChoice choice : model.getInlineChoices() )
-		{
-			final List<TextOrVariable> children = choice.getChildren();
-			SectionRenderable childRenderable = null;
-			for( TextOrVariable textNode : children )
-			{
-				childRenderable = CombinedRenderer.combineMultipleResults(childRenderable,
-					qfac.chooseRenderer(textNode, context));
-			}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final QtiViewerContext context = getContext();
 
-			final String label = renderToText(childRenderable);
-			if( label.length() > maxTextLength )
-			{
-				maxTextLength = label.length();
-			}
-			options.add(new NameValueOption<InlineChoice>(new NameValue(label, id(choice.getIdentifier())), choice));
-		}
+    final List<Option<?>> options = Lists.newArrayList();
+    // blank top option
+    final String noSelectionText = LABEL_NO_RESPONSE.getText();
+    options.add(new NameValueOption<InlineChoice>(new NameValue(noSelectionText, ""), null));
+    int maxTextLength = noSelectionText.length();
+    for (InlineChoice choice : model.getInlineChoices()) {
+      final List<TextOrVariable> children = choice.getChildren();
+      SectionRenderable childRenderable = null;
+      for (TextOrVariable textNode : children) {
+        childRenderable =
+            CombinedRenderer.combineMultipleResults(
+                childRenderable, qfac.chooseRenderer(textNode, context));
+      }
 
-		final Identifier responseId = model.getResponseIdentifier();
-		final HtmlListState list = new HtmlListState();
-		list.addClass("inlineChoice");
-		list.setName(QtiViewerConstants.CONTROL_PREFIX + id(responseId));
-		list.setOptions(options);
-		list.setStyle("width:" + (maxTextLength * 0.7) + "em");
-		final List<String> responseValues = context.getValues(responseId);
-		if( responseValues != null )
-		{
-			list.setSelectedValues(Sets.newHashSet(responseValues));
-		}
-		else
-		{
-			list.setSelectedValues(Sets.<String> newHashSet());
-		}
+      final String label = renderToText(childRenderable);
+      if (label.length() > maxTextLength) {
+        maxTextLength = label.length();
+      }
+      options.add(
+          new NameValueOption<InlineChoice>(
+              new NameValue(label, id(choice.getIdentifier())), choice));
+    }
 
-		final ItemSessionController itemSessionController = context.getItemSessionController();
-		final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
-		if( itemSessionState.isEnded() )
-		{
-			list.setDisabled(true);
-		}
-		else
-		{
-			list.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(context.getValueChangedFunction()));
-		}
+    final Identifier responseId = model.getResponseIdentifier();
+    final HtmlListState list = new HtmlListState();
+    list.addClass("inlineChoice");
+    list.setName(QtiViewerConstants.CONTROL_PREFIX + id(responseId));
+    list.setOptions(options);
+    list.setStyle("width:" + (maxTextLength * 0.7) + "em");
+    final List<String> responseValues = context.getValues(responseId);
+    if (responseValues != null) {
+      list.setSelectedValues(Sets.newHashSet(responseValues));
+    } else {
+      list.setSelectedValues(Sets.<String>newHashSet());
+    }
 
-		return renderFactory.getRenderer(context.getRenderContext(), list);
-	}
+    final ItemSessionController itemSessionController = context.getItemSessionController();
+    final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
+    if (itemSessionState.isEnded()) {
+      list.setDisabled(true);
+    } else {
+      list.setEventHandler(
+          JSHandler.EVENT_CHANGE, new StatementHandler(context.getValueChangedFunction()));
+    }
 
-	@Override
-	protected boolean isNestedTop()
-	{
-		return false;
-	}
+    return renderFactory.getRenderer(context.getRenderContext(), list);
+  }
 
-	@Nullable
-	@Override
-	protected SectionRenderable createNestedRenderable()
-	{
-		return null;
-	}
+  @Override
+  protected boolean isNestedTop() {
+    return false;
+  }
 
-	@Override
-	protected String getTagName()
-	{
-		return "select";
-	}
+  @Nullable
+  @Override
+  protected SectionRenderable createNestedRenderable() {
+    return null;
+  }
+
+  @Override
+  protected String getTagName() {
+    return "select";
+  }
 }

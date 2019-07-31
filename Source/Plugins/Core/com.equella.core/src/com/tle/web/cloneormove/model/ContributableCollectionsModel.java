@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.cloneormove.model;
-
-import java.util.Collections;
-import java.util.List;
 
 import com.dytech.common.text.NumberStringComparator;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -32,52 +31,48 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class ContributableCollectionsModel extends DynamicHtmlListModel<ItemDefinition>
-{
-	private final ItemDefinitionService itemdefService;
-	private final BundleCache bundleCache;
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(ContributableCollectionsModel.class)+".";
+public class ContributableCollectionsModel extends DynamicHtmlListModel<ItemDefinition> {
+  private final ItemDefinitionService itemdefService;
+  private final BundleCache bundleCache;
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(ContributableCollectionsModel.class) + ".";
 
+  public ContributableCollectionsModel(
+      ItemDefinitionService itemdefService, BundleCache bundleCache) {
+    this.itemdefService = itemdefService;
+    this.bundleCache = bundleCache;
+  }
 
-	public ContributableCollectionsModel(ItemDefinitionService itemdefService, BundleCache bundleCache)
-	{
-		this.itemdefService = itemdefService;
-		this.bundleCache = bundleCache;
-	}
+  @Override
+  protected Iterable<ItemDefinition> populateModel(SectionInfo info) {
+    List<ItemDefinition> itemDefs = itemdefService.enumerateCreateable();
+    Collections.sort(
+        itemDefs,
+        new NumberStringComparator<ItemDefinition>() {
+          private static final long serialVersionUID = 1L;
 
-	@Override
-	protected Iterable<ItemDefinition> populateModel(SectionInfo info)
-	{
-		List<ItemDefinition> itemDefs = itemdefService.enumerateCreateable();
-		Collections.sort(itemDefs, new NumberStringComparator<ItemDefinition>()
-		{
-			private static final long serialVersionUID = 1L;
+          @Override
+          public String convertToString(ItemDefinition t) {
+            return TextBundle.getLocalString(t.getName(), bundleCache, null, "");
+          }
+        });
+    itemDefs.add(0, null);
+    return itemDefs;
+  }
 
-			@Override
-			public String convertToString(ItemDefinition t)
-			{
-				return TextBundle.getLocalString(t.getName(), bundleCache, null, "");
-			}
-		});
-		itemDefs.add(0, null);
-		return itemDefs;
-	}
-
-	@Override
-	protected Option<ItemDefinition> convertToOption(SectionInfo info, ItemDefinition itemDef)
-	{
-		if( itemDef == null )
-		{
-			return new NameValueOption<ItemDefinition>(
-				new NameValue(CurrentLocale.get(KEY_PFX+"selectcollection.option.collection.none"), ""),
-				null);
-		}
-		return new NameValueOption<ItemDefinition>(
-			new BundleNameValue(itemDef.getName(), itemDef.getUuid(), bundleCache), itemDef);
-	}
+  @Override
+  protected Option<ItemDefinition> convertToOption(SectionInfo info, ItemDefinition itemDef) {
+    if (itemDef == null) {
+      return new NameValueOption<ItemDefinition>(
+          new NameValue(CurrentLocale.get(KEY_PFX + "selectcollection.option.collection.none"), ""),
+          null);
+    }
+    return new NameValueOption<ItemDefinition>(
+        new BundleNameValue(itemDef.getName(), itemDef.getUuid(), bundleCache), itemDef);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,62 +18,52 @@
 
 package com.tle.web.remoting.rest.resource;
 
+import com.google.inject.Singleton;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.guice.Bind;
+import com.tle.core.security.impl.SecureOnCallSystem;
+import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.api.interfaces.Institutional;
 import java.io.IOException;
-
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 
-import com.google.inject.Singleton;
-import com.tle.core.guice.Bind;
-import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.common.institution.CurrentInstitution;
-import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.exceptions.AccessDeniedException;
-import com.tle.web.api.interfaces.Institutional;
-
 /**
- * An invoking class that is annotated with
- * Institutional.Type.NON_INSTITUTIONAL, requires that the CurrentInstitution be
- * set by the InstitutionFilter.
- * 
+ * An invoking class that is annotated with Institutional.Type.NON_INSTITUTIONAL, requires that the
+ * CurrentInstitution be set by the InstitutionFilter.
+ *
  * @author (stolen from) EPS
  */
 @Bind
 @Singleton
-public class InstitutionSecurityFilter implements ContainerRequestFilter
-{
+public class InstitutionSecurityFilter implements ContainerRequestFilter {
 
-	@SuppressWarnings("nls")
-	@Override
-	public void filter(ContainerRequestContext context) throws IOException
-	{
-		ResourceMethodInvoker invoker = (ResourceMethodInvoker) context.getProperty(ResourceMethodInvoker.class
-			.getName());
-		Class<?> clazz = invoker.getResourceClass();
-		Institutional.Type instType = Institutional.Type.INSTITUTIONAL;
-		Institutional instanno = clazz.getAnnotation(Institutional.class);
-		if( instanno != null )
-		{
-			instType = instanno.value();
-		}
-		boolean hasInst = CurrentInstitution.get() != null;
-		if( instType != Institutional.Type.BOTH && (hasInst != (instType == Institutional.Type.INSTITUTIONAL)) )
-		{
-			throw new NotFoundException();
-		}
-		// Class or calling method system restricted?
-		SecureOnCallSystem system = clazz.getAnnotation(SecureOnCallSystem.class);
-		if( system == null )
-		{
-			system = invoker.getMethod().getAnnotation(SecureOnCallSystem.class);
-		}
-		if( system != null && !CurrentUser.getUserState().isSystem() )
-		{
-			throw new AccessDeniedException("You do not have the privileges to access this endpoint");
-		}
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public void filter(ContainerRequestContext context) throws IOException {
+    ResourceMethodInvoker invoker =
+        (ResourceMethodInvoker) context.getProperty(ResourceMethodInvoker.class.getName());
+    Class<?> clazz = invoker.getResourceClass();
+    Institutional.Type instType = Institutional.Type.INSTITUTIONAL;
+    Institutional instanno = clazz.getAnnotation(Institutional.class);
+    if (instanno != null) {
+      instType = instanno.value();
+    }
+    boolean hasInst = CurrentInstitution.get() != null;
+    if (instType != Institutional.Type.BOTH
+        && (hasInst != (instType == Institutional.Type.INSTITUTIONAL))) {
+      throw new NotFoundException();
+    }
+    // Class or calling method system restricted?
+    SecureOnCallSystem system = clazz.getAnnotation(SecureOnCallSystem.class);
+    if (system == null) {
+      system = invoker.getMethod().getAnnotation(SecureOnCallSystem.class);
+    }
+    if (system != null && !CurrentUser.getUserState().isSystem()) {
+      throw new AccessDeniedException("You do not have the privileges to access this endpoint");
+    }
+  }
 }

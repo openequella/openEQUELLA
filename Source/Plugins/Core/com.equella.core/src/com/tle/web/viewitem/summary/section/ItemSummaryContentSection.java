@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.section;
-
-import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -49,197 +49,159 @@ import com.tle.web.viewitem.summary.ItemSummaryContent;
 import com.tle.web.viewitem.summary.content.AbstractContentSection;
 import com.tle.web.viewitem.summary.content.MainItemContentSection;
 import com.tle.web.viewurl.ViewItemResource;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class ItemSummaryContentSection
-	extends
-		AbstractPrototypeSection<ItemSummaryContentSection.ItemSummaryContentModel>
-	implements
-		ItemSummaryContent,
-		HtmlRenderer,
-		BlueBarEventListener
-{
-	public static final String SUMMARY_TAB_ID = "summary";
-	public static final String DETAILS_TAB_ID = "details";
+    extends AbstractPrototypeSection<ItemSummaryContentSection.ItemSummaryContentModel>
+    implements ItemSummaryContent, HtmlRenderer, BlueBarEventListener {
+  public static final String SUMMARY_TAB_ID = "summary";
+  public static final String DETAILS_TAB_ID = "details";
 
-	@TreeLookup
-	private MainItemContentSection defaultSection;
-	@TreeLookup
-	private ItemDetailsAndActionsSummarySection itemDetailsAndActionsSummarySection;
-	@Inject
-	protected SelectionService selectionService;
-	@ViewFactory
-	protected FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @TreeLookup private MainItemContentSection defaultSection;
+  @TreeLookup private ItemDetailsAndActionsSummarySection itemDetailsAndActionsSummarySection;
+  @Inject protected SelectionService selectionService;
+  @ViewFactory protected FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Component
-	@PlugKey("summary.content.tab.summary")
-	private Link summaryTabLink;
-	@Component
-	@PlugKey("summary.content.tab.details")
-	private Link detailsTabLink;
+  @Component
+  @PlugKey("summary.content.tab.summary")
+  private Link summaryTabLink;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		SectionRenderable renderSection = renderSection(context, getSummaryId(context));
-		SelectionSession currentSession = selectionService.getCurrentSession(context);
+  @Component
+  @PlugKey("summary.content.tab.details")
+  private Link detailsTabLink;
 
-		if( currentSession != null && currentSession.getLayout() == Layout.COURSE )
-		{
-			summaryTabLink.setClickHandler(context, events.getNamedHandler("onTabChange", SUMMARY_TAB_ID));
-			detailsTabLink.setClickHandler(context, events.getNamedHandler("onTabChange", DETAILS_TAB_ID));
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    SectionRenderable renderSection = renderSection(context, getSummaryId(context));
+    SelectionSession currentSession = selectionService.getCurrentSession(context);
 
-			ItemSummaryContentModel model = getModel(context);
-			if( model.getTabId() == null )
-			{
-				model.setTabId(SUMMARY_TAB_ID);
-			}
-			model.setRenderable(renderSection);
+    if (currentSession != null && currentSession.getLayout() == Layout.COURSE) {
+      summaryTabLink.setClickHandler(
+          context, events.getNamedHandler("onTabChange", SUMMARY_TAB_ID));
+      detailsTabLink.setClickHandler(
+          context, events.getNamedHandler("onTabChange", DETAILS_TAB_ID));
 
-			HelpAndScreenOptionsSection.addHelp(context,
-				view.createResult("viewitem/summary/help/itemselectionhelp.ftl", this));
+      ItemSummaryContentModel model = getModel(context);
+      if (model.getTabId() == null) {
+        model.setTabId(SUMMARY_TAB_ID);
+      }
+      model.setRenderable(renderSection);
 
-			return view.createResult("viewitem/summary_and_details_tabs.ftl", context);
-		}
+      HelpAndScreenOptionsSection.addHelp(
+          context, view.createResult("viewitem/summary/help/itemselectionhelp.ftl", this));
 
-		return new DivRenderer("area", renderSection);
-	}
+      return view.createResult("viewitem/summary_and_details_tabs.ftl", context);
+    }
 
-	@EventHandlerMethod
-	public void onTabChange(SectionInfo info, String tabId)
-	{
-		if( tabId.equals(SUMMARY_TAB_ID) )
-		{
-			getModel(info).setTabId(SUMMARY_TAB_ID);
-			setSummaryId(info, null);
-		}
-		else
-		{
-			getModel(info).setTabId(DETAILS_TAB_ID);
-			setSummaryId(info, itemDetailsAndActionsSummarySection);
-		}
-	}
+    return new DivRenderer("area", renderSection);
+  }
 
-	private SectionId getSummaryId(RenderContext context)
-	{
-		final ItemSummaryContentModel model = getModel(context);
-		// if the subsiduarySectionId has been set, it has priority (so as to
-		// enable the showing of a DRMFilterSection, for example)
-		if( model.getSubsiduarySectionId() != null )
-		{
-			return model.getSubsiduarySectionId();
-		}
+  @EventHandlerMethod
+  public void onTabChange(SectionInfo info, String tabId) {
+    if (tabId.equals(SUMMARY_TAB_ID)) {
+      getModel(info).setTabId(SUMMARY_TAB_ID);
+      setSummaryId(info, null);
+    } else {
+      getModel(info).setTabId(DETAILS_TAB_ID);
+      setSummaryId(info, itemDetailsAndActionsSummarySection);
+    }
+  }
 
-		String sid = model.getSummaryId();
-		if( Check.isEmpty(sid) )
-		{
-			sid = defaultSection.getSectionId();
-		}
-		return new SimpleSectionId(sid);
-	}
+  private SectionId getSummaryId(RenderContext context) {
+    final ItemSummaryContentModel model = getModel(context);
+    // if the subsiduarySectionId has been set, it has priority (so as to
+    // enable the showing of a DRMFilterSection, for example)
+    if (model.getSubsiduarySectionId() != null) {
+      return model.getSubsiduarySectionId();
+    }
 
-	public void setSummaryId(SectionInfo info, SectionId sid)
-	{
-		getModel(info).setSummaryId(sid == null ? null : sid.getSectionId());
-	}
+    String sid = model.getSummaryId();
+    if (Check.isEmpty(sid)) {
+      sid = defaultSection.getSectionId();
+    }
+    return new SimpleSectionId(sid);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "is";
-	}
+  public void setSummaryId(SectionInfo info, SectionId sid) {
+    getModel(info).setSummaryId(sid == null ? null : sid.getSectionId());
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		SectionId s = context.getSectionForId(getSummaryId(context));
-		if( s instanceof AbstractContentSection<?> )
-		{
-			event.addHelp(((AbstractContentSection<?>) s).renderHelp(context));
-		}
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "is";
+  }
 
-	public void setSubsiduarySectionId(SectionInfo info, SectionId sectionId)
-	{
-		getModel(info).setSubsiduarySectionId(sectionId);
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    SectionId s = context.getSectionForId(getSummaryId(context));
+    if (s instanceof AbstractContentSection<?>) {
+      event.addHelp(((AbstractContentSection<?>) s).renderHelp(context));
+    }
+  }
 
-	public void ensureTree(SectionInfo info, ViewItemResource resource)
-	{
-		defaultSection.ensureTree(info, resource);
-	}
+  public void setSubsiduarySectionId(SectionInfo info, SectionId sectionId) {
+    getModel(info).setSubsiduarySectionId(sectionId);
+  }
 
-	@Override
-	public Class<ItemSummaryContentModel> getModelClass()
-	{
-		return ItemSummaryContentModel.class;
-	}
+  public void ensureTree(SectionInfo info, ViewItemResource resource) {
+    defaultSection.ensureTree(info, resource);
+  }
 
-	public Link getSummaryTabLink()
-	{
-		return summaryTabLink;
-	}
+  @Override
+  public Class<ItemSummaryContentModel> getModelClass() {
+    return ItemSummaryContentModel.class;
+  }
 
-	public Link getDetailsTabLink()
-	{
-		return detailsTabLink;
-	}
+  public Link getSummaryTabLink() {
+    return summaryTabLink;
+  }
 
-	public static class ItemSummaryContentModel
-	{
-		@Bookmarked
-		private String summaryId;
+  public Link getDetailsTabLink() {
+    return detailsTabLink;
+  }
 
-		/**
-		 * Other sections can set this value as an override. Where it is set it
-		 * will have priority.
-		 */
-		private SectionId subsiduarySectionId;
-		private SectionRenderable renderable;
+  public static class ItemSummaryContentModel {
+    @Bookmarked private String summaryId;
 
-		@Bookmarked
-		private String tabId;
+    /** Other sections can set this value as an override. Where it is set it will have priority. */
+    private SectionId subsiduarySectionId;
 
-		public String getSummaryId()
-		{
-			return summaryId;
-		}
+    private SectionRenderable renderable;
 
-		public void setSummaryId(String summaryId)
-		{
-			this.summaryId = summaryId;
-		}
+    @Bookmarked private String tabId;
 
-		public SectionId getSubsiduarySectionId()
-		{
-			return subsiduarySectionId;
-		}
+    public String getSummaryId() {
+      return summaryId;
+    }
 
-		public void setSubsiduarySectionId(SectionId subsiduarySectionId)
-		{
-			this.subsiduarySectionId = subsiduarySectionId;
-		}
+    public void setSummaryId(String summaryId) {
+      this.summaryId = summaryId;
+    }
 
-		public SectionRenderable getRenderable()
-		{
-			return renderable;
-		}
+    public SectionId getSubsiduarySectionId() {
+      return subsiduarySectionId;
+    }
 
-		public void setRenderable(SectionRenderable renderable)
-		{
-			this.renderable = renderable;
-		}
+    public void setSubsiduarySectionId(SectionId subsiduarySectionId) {
+      this.subsiduarySectionId = subsiduarySectionId;
+    }
 
-		public String getTabId()
-		{
-			return tabId;
-		}
+    public SectionRenderable getRenderable() {
+      return renderable;
+    }
 
-		public void setTabId(String tabId)
-		{
-			this.tabId = tabId;
-		}
-	}
+    public void setRenderable(SectionRenderable renderable) {
+      this.renderable = renderable;
+    }
+
+    public String getTabId() {
+      return tabId;
+    }
+
+    public void setTabId(String tabId) {
+      this.tabId = tabId;
+    }
+  }
 }

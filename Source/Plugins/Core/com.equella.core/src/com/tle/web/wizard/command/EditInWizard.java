@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,59 @@
 
 package com.tle.web.wizard.command;
 
-import javax.inject.Inject;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
+import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.impl.WizardCommand;
+import com.tle.web.wizard.section.PagesSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class EditInWizard extends WizardCommand
-{
-	static
-	{
-		PluginResourceHandler.init(EditInWizard.class);
-	}
+public class EditInWizard extends WizardCommand {
+  static {
+    PluginResourceHandler.init(EditInWizard.class);
+  }
 
-	@PlugKey("command.edit.name")
-	private static String KEY_NAME;
+  @PlugKey("command.edit.name")
+  private static String KEY_NAME;
 
-	@Inject
-	private ModerationService moderationService;
-	@Inject
-	private WizardService wizardService;
+  @Inject private ModerationService moderationService;
+  @Inject private WizardService wizardService;
 
-	public EditInWizard()
-	{
-		super(KEY_NAME, "edit"); //$NON-NLS-1$
-	}
+  public EditInWizard() {
+    super(KEY_NAME, "edit"); // $NON-NLS-1$
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		return !(winfo.isLockedForEditing() || winfo.isNewItem()) && winfo.isAvailableForEditing()
-			&& winfo.hasPrivilege("EDIT_ITEM");
-	}
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    return !(winfo.isLockedForEditing() || winfo.isNewItem())
+        && winfo.isAvailableForEditing()
+        && winfo.hasPrivilege("EDIT_ITEM");
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-		wizardService.reload(winfo.getWizardState(), true);
-		moderationService.setEditing(info, true);
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
+    wizardService.reload(winfo.getWizardState(), true);
+    moderationService.setEditing(info, true);
+    // validate mandatory fields when moderating items
+    PagesSection ps = info.lookupSection(PagesSection.class);
+    for (WebWizardPage page : winfo.getWizardState().getPages()) {
+      wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
+    }
+    info.forceRedirect();
+  }
 
-	@Override
-	public boolean isMajorAction()
-	{
-		return true;
-	}
+  @Override
+  public boolean isMajorAction() {
+    return true;
+  }
 
-	@Override
-	public String getStyleClass()
-	{
-		return "edit";
-	}
+  @Override
+  public String getStyleClass() {
+    return "edit";
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,16 @@
 
 package com.tle.web.plugin.download;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.io.Resources;
+import com.tle.common.filters.EqFilter;
+import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
+import com.tle.core.plugins.PluginService;
+import com.tle.core.remoting.RemotePluginDownloadService;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,129 +37,108 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.PluginAttribute;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.util.IoUtil;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Resources;
-import com.tle.common.filters.EqFilter;
-import com.tle.core.guice.Bind;
-import com.tle.core.institution.InstitutionService;
-import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
-import com.tle.core.plugins.PluginService;
-import com.tle.core.remoting.RemotePluginDownloadService;
-
 @Bind
 @Singleton
-public class PluginDownloadService implements RemotePluginDownloadService
-{
-	private String jarPath;
+public class PluginDownloadService implements RemotePluginDownloadService {
+  private String jarPath;
 
-	@Inject
-	private PluginService pluginService;
-	@Inject
-	private InstitutionService institutionService;
-	@SuppressWarnings("nls")
-	private Set<String> DISALLOWED = ImmutableSet.of("com.tle.core.guice", "com.tle.core.spring", "org.hibernate",
-		"org.springframework.httpinvoker", "com.tle.webstart.admin");
+  @Inject private PluginService pluginService;
+  @Inject private InstitutionService institutionService;
 
-	/**
-	 * Don't use directly - call getJarMap().
-	 */
-	private Map<String, TLEPluginLocation> jarMap;
+  @SuppressWarnings("nls")
+  private Set<String> DISALLOWED =
+      ImmutableSet.of(
+          "com.tle.core.guice",
+          "com.tle.core.spring",
+          "org.hibernate",
+          "org.springframework.httpinvoker",
+          "com.tle.webstart.admin");
 
-	@Override
-	@SuppressWarnings("nls")
-	public List<PluginDetails> getAllPluginDetails(String pluginType)
-	{
-		final Set<PluginDescriptor> plugins = pluginService.getAllPluginsAndDependencies(new FilterByType(pluginType),
-			DISALLOWED, false);
-		final Map<String, TLEPluginLocation> manifestToLocation = pluginService.getPluginIdToLocation();
+  /** Don't use directly - call getJarMap(). */
+  private Map<String, TLEPluginLocation> jarMap;
 
-		List<PluginDetails> details = new ArrayList<PluginDetails>();
-		for( PluginDescriptor desc : plugins )
-		{
-			TLEPluginLocation location = manifestToLocation.get(desc.getId());
-			if( !pluginService.isPluginDisabled(location) )
-			{
-				StringWriter manWriter = new StringWriter();
-				try
-				{
-					Resources.asCharSource(location.getManifestLocation(), Charsets.UTF_8).copyTo(manWriter);
+  @Override
+  @SuppressWarnings("nls")
+  public List<PluginDetails> getAllPluginDetails(String pluginType) {
+    final Set<PluginDescriptor> plugins =
+        pluginService.getAllPluginsAndDependencies(new FilterByType(pluginType), DISALLOWED, false);
+    final Map<String, TLEPluginLocation> manifestToLocation = pluginService.getPluginIdToLocation();
 
-					URL jarUrl = location.getContextLocation();
-					if( jarUrl.getProtocol().equals("jar") )
-					{
-						jarUrl = new URL("jar", "",
-							new URL(institutionService.getInstitutionUrl(), jarPath + location.getJar() + "!/")
-								.toString());
-					}
-					details.add(new PluginDetails(jarUrl, manWriter.toString()));
-				}
-				catch( IOException e )
-				{
-					throw Throwables.propagate(e);
-				}
-			}
-		}
-		return details;
-	}
+    List<PluginDetails> details = new ArrayList<PluginDetails>();
+    for (PluginDescriptor desc : plugins) {
+      TLEPluginLocation location = manifestToLocation.get(desc.getId());
+      if (!pluginService.isPluginDisabled(location)) {
+        StringWriter manWriter = new StringWriter();
+        try {
+          Resources.asCharSource(location.getManifestLocation(), Charsets.UTF_8).copyTo(manWriter);
 
-	@SuppressWarnings("nls")
-	@PostConstruct
-	void setupMapping()
-	{
-		Extension extension = pluginService.getPluginForObject(getClass()).getDescriptor()
-			.getExtension("downloadServletMapping");
-		String jarFilePath = extension.getParameter("url-pattern").valueAsString(); //$NON-NLS-1$
-		this.jarPath = jarFilePath.substring(1, jarFilePath.length() - 1);
-	}
+          URL jarUrl = location.getContextLocation();
+          if (jarUrl.getProtocol().equals("jar")) {
+            jarUrl =
+                new URL(
+                    "jar",
+                    "",
+                    new URL(
+                            institutionService.getInstitutionUrl(),
+                            jarPath + location.getJar() + "!/")
+                        .toString());
+          }
+          details.add(new PluginDetails(jarUrl, manWriter.toString()));
+        } catch (IOException e) {
+          throw Throwables.propagate(e);
+        }
+      }
+    }
+    return details;
+  }
 
-	private synchronized Map<String, TLEPluginLocation> getJarMap()
-	{
-		if( jarMap == null )
-		{
-			jarMap = new HashMap<String, TLEPluginLocation>();
-			for( TLEPluginLocation loc : pluginService.getPluginIdToLocation().values() )
-			{
-				jarMap.put(loc.getJar(), loc);
-			}
-		}
-		return jarMap;
-	}
+  @SuppressWarnings("nls")
+  @PostConstruct
+  void setupMapping() {
+    Extension extension =
+        pluginService
+            .getPluginForObject(getClass())
+            .getDescriptor()
+            .getExtension("downloadServletMapping");
+    String jarFilePath = extension.getParameter("url-pattern").valueAsString(); // $NON-NLS-1$
+    this.jarPath = jarFilePath.substring(1, jarFilePath.length() - 1);
+  }
 
-	public File getFileForJar(String jarFile)
-	{
-		TLEPluginLocation location = getJarMap().get(jarFile);
-		if( location != null )
-		{
-			return IoUtil.url2file(location.getContextLocation());
-		}
-		return null;
-	}
+  private synchronized Map<String, TLEPluginLocation> getJarMap() {
+    if (jarMap == null) {
+      jarMap = new HashMap<String, TLEPluginLocation>();
+      for (TLEPluginLocation loc : pluginService.getPluginIdToLocation().values()) {
+        jarMap.put(loc.getJar(), loc);
+      }
+    }
+    return jarMap;
+  }
 
-	private static class FilterByType extends EqFilter<PluginDescriptor>
-	{
-		public FilterByType(String pluginType)
-		{
-			super(pluginType);
-		}
+  public File getFileForJar(String jarFile) {
+    TLEPluginLocation location = getJarMap().get(jarFile);
+    if (location != null) {
+      return IoUtil.url2file(location.getContextLocation());
+    }
+    return null;
+  }
 
-		@Override
-		protected Object getForComparison(PluginDescriptor d)
-		{
-			PluginAttribute attr = d.getAttribute("type"); //$NON-NLS-1$
-			return attr == null ? null : attr.getValue();
-		}
-	}
+  private static class FilterByType extends EqFilter<PluginDescriptor> {
+    public FilterByType(String pluginType) {
+      super(pluginType);
+    }
+
+    @Override
+    protected Object getForComparison(PluginDescriptor d) {
+      PluginAttribute attr = d.getAttribute("type"); // $NON-NLS-1$
+      return attr == null ? null : attr.getValue();
+    }
+  }
 }

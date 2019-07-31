@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.portal.standard.editor.tabs;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
@@ -62,232 +59,227 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.js.modules.CodeMirrorLibrary.EditorType;
 import com.tle.web.sections.standard.model.MutableListModel;
 import com.tle.web.sections.standard.model.StringListModel;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class FreemarkerTab extends AbstractScriptingTab<FreemarkerTab.FreemarkerTabModel>
-{
-	private static final NameValue NAME = new BundleNameValue(ResourcesService.getResourceHelper(FreemarkerTab.class)
-		.key("editor.freemarker.tab.markup.name"), "markup");
+public class FreemarkerTab extends AbstractScriptingTab<FreemarkerTab.FreemarkerTabModel> {
+  private static final NameValue NAME =
+      new BundleNameValue(
+          ResourcesService.getResourceHelper(FreemarkerTab.class)
+              .key("editor.freemarker.tab.markup.name"),
+          "markup");
 
-	@PlugKey("editor.freemarker.tab.freemarker.link.delete")
-	private static Label LABEL_LINK_DELETE;
+  @PlugKey("editor.freemarker.tab.freemarker.link.delete")
+  private static Label LABEL_LINK_DELETE;
 
-	@PlugKey("editor.freemarker.tab.freemarker.column.link")
-	private static Label LABEL_CSS;
-	@PlugKey("editor.freemarker.tab.freemarker.empty")
-	private static Label LABEL_EMPTY_LIST;
+  @PlugKey("editor.freemarker.tab.freemarker.column.link")
+  private static Label LABEL_CSS;
 
-	@Inject
-	private PortletService portletService;
-	@Inject
-	private UserScriptsService userScriptService;
+  @PlugKey("editor.freemarker.tab.freemarker.empty")
+  private static Label LABEL_EMPTY_LIST;
 
-	@Component
-	@PlugKey("editor.freemarker.tab.freemarker.link.add")
-	private Link addCssLink;
-	@Component(name = "ecss", stateful = false)
-	private TextField externalCss;
-	@Component(name = "cfl", stateful = false)
-	private MutableList<String> cssFileList;
-	@Component(name = "ct")
-	private SelectionsTable cssTable;
-	@Component(name = "fml")
-	@PlugKey("freemarker.scriptlist.action")
-	private SingleSelectionList<UserScript> freeMarkerList;
+  @Inject private PortletService portletService;
+  @Inject private UserScriptsService userScriptService;
 
-	private JSCallable deleteFunction;
+  @Component
+  @PlugKey("editor.freemarker.tab.freemarker.link.add")
+  private Link addCssLink;
 
-	@Component(name = "m", stateful = false)
-	private CodeMirror scriptEditor;
+  @Component(name = "ecss", stateful = false)
+  private TextField externalCss;
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return NAME;
-	}
+  @Component(name = "cfl", stateful = false)
+  private MutableList<String> cssFileList;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		freeMarkerList.setDisplayed(context, userScriptService.displayScriptsAvailable());
-		return thisView.createResult("edit/tabs/freemarkertab.ftl", context);
-	}
+  @Component(name = "ct")
+  private SelectionsTable cssTable;
 
-	@Override
-	public Class<FreemarkerTabModel> getModelClass()
-	{
-		return FreemarkerTabModel.class;
-	}
+  @Component(name = "fml")
+  @PlugKey("freemarker.scriptlist.action")
+  private SingleSelectionList<UserScript> freeMarkerList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		scriptEditor.setEditorType(EditorType.FREEMARKER_EDITOR);
-		scriptEditor.setAllowFullScreen(true);
-		scriptEditor.setShowHelp(true);
+  private JSCallable deleteFunction;
 
-		cssFileList.setListModel(new StringListModel());
-		cssFileList.setStyle("display: none;");
+  @Component(name = "m", stateful = false)
+  private CodeMirror scriptEditor;
 
-		addCssLink.setClickHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("addCss"), "selectedCss"),
-			externalCss.createGetExpression());
+  @Override
+  public NameValue getTabToAppearOn() {
+    return NAME;
+  }
 
-		deleteFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteCss"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "selectedCss");
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    freeMarkerList.setDisplayed(context, userScriptService.displayScriptsAvailable());
+    return thisView.createResult("edit/tabs/freemarkertab.ftl", context);
+  }
 
-		cssTable.setColumnHeadings(LABEL_CSS, null);
-		cssTable.setColumnSorts(Sort.PRIMARY_ASC);
-		cssTable.setSelectionsModel(new CssTableModel());
-		cssTable.setNothingSelectedText(LABEL_EMPTY_LIST);
+  @Override
+  public Class<FreemarkerTabModel> getModelClass() {
+    return FreemarkerTabModel.class;
+  }
 
-		freeMarkerList.setListModel(new ScriptListModel(false));
-		freeMarkerList.addChangeEventHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("loadUserScript"), "fm-editor")));
-		freeMarkerList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    scriptEditor.setEditorType(EditorType.FREEMARKER_EDITOR);
+    scriptEditor.setAllowFullScreen(true);
+    scriptEditor.setShowHelp(true);
 
-	@EventHandlerMethod
-	public void addCss(SectionInfo info, String url)
-	{
-		if( !Check.isEmpty(url) )
-		{
-			MutableListModel<String> listModel = cssFileList.getListModel();
-			if( !listModel.contains(info, url) )
-			{
-				listModel.add(info, url);
-			}
-			externalCss.setValue(info, "");
-		}
-	}
+    cssFileList.setListModel(new StringListModel());
+    cssFileList.setStyle("display: none;");
 
-	@EventHandlerMethod
-	public void deleteCss(SectionInfo info, String url)
-	{
-		if( !Check.isEmpty(url) )
-		{
-			cssFileList.getListModel().remove(info, url);
-			PortletEditingBean portlet = portletService.loadSession(freemarkerEditor.getModel(info).getSessionId())
-				.getBean();
+    addCssLink.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("addCss"), "selectedCss"),
+        externalCss.createGetExpression());
 
-			PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig())
-				: new PropBagEx();
-			config.deleteAll("external-css");
-			Collection<String> values = cssFileList.getListModel().getValues(info);
-			for( String val : values )
-			{
-				config.createNode("external-css", val);
-			}
-			portlet.setConfig(config.toString());
-		}
-	}
+    deleteFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("deleteCss"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            "selectedCss");
 
-	@Override
-	public void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		scriptEditor.setValue(info, config.getNode("markup"));
+    cssTable.setColumnHeadings(LABEL_CSS, null);
+    cssTable.setColumnSorts(Sort.PRIMARY_ASC);
+    cssTable.setSelectionsModel(new CssTableModel());
+    cssTable.setNothingSelectedText(LABEL_EMPTY_LIST);
 
-		List<String> csses = config.getNodeList("external-css");
-		MutableListModel<String> listModel = cssFileList.getListModel();
-		for( String css : csses )
-		{
-			if( !listModel.contains(info, css) )
-			{
-				listModel.add(info, css);
-			}
-		}
-	}
+    freeMarkerList.setListModel(new ScriptListModel(false));
+    freeMarkerList.addChangeEventHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("loadUserScript"), "fm-editor")));
+    freeMarkerList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+  }
 
-	@Override
-	public void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		if( scriptEditor.getValue(info) != null )
-		{
-			config.setNode("markup", scriptEditor.getValue(info));
-		}
+  @EventHandlerMethod
+  public void addCss(SectionInfo info, String url) {
+    if (!Check.isEmpty(url)) {
+      MutableListModel<String> listModel = cssFileList.getListModel();
+      if (!listModel.contains(info, url)) {
+        listModel.add(info, url);
+      }
+      externalCss.setValue(info, "");
+    }
+  }
 
-		config.deleteAll("external-css");
-		Collection<String> values = cssFileList.getListModel().getValues(info);
-		for( String url : values )
-		{
-			config.createNode("external-css", url);
-		}
-		portlet.setConfig(config.toString());
-	}
+  @EventHandlerMethod
+  public void deleteCss(SectionInfo info, String url) {
+    if (!Check.isEmpty(url)) {
+      cssFileList.getListModel().remove(info, url);
+      PortletEditingBean portlet =
+          portletService.loadSession(freemarkerEditor.getModel(info).getSessionId()).getBean();
 
-	@Override
-	public void customClear(SectionInfo info)
-	{
-		scriptEditor.setValue(info, Constants.BLANK);
-		cssFileList.getListModel().clear(info);
-	}
+      PropBagEx config =
+          !Check.isEmpty(portlet.getConfig())
+              ? new PropBagEx(portlet.getConfig())
+              : new PropBagEx();
+      config.deleteAll("external-css");
+      Collection<String> values = cssFileList.getListModel().getValues(info);
+      for (String val : values) {
+        config.createNode("external-css", val);
+      }
+      portlet.setConfig(config.toString());
+    }
+  }
 
-	public CodeMirror getScriptEditor()
-	{
-		return scriptEditor;
-	}
+  @Override
+  public void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    scriptEditor.setValue(info, config.getNode("markup"));
 
-	public Link getAddCssLink()
-	{
-		return addCssLink;
-	}
+    List<String> csses = config.getNodeList("external-css");
+    MutableListModel<String> listModel = cssFileList.getListModel();
+    for (String css : csses) {
+      if (!listModel.contains(info, css)) {
+        listModel.add(info, css);
+      }
+    }
+  }
 
-	public MutableList<String> getCssFileList()
-	{
-		return cssFileList;
-	}
+  @Override
+  public void customSave(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    if (scriptEditor.getValue(info) != null) {
+      config.setNode("markup", scriptEditor.getValue(info));
+    }
 
-	public TextField getExternalCss()
-	{
-		return externalCss;
-	}
+    config.deleteAll("external-css");
+    Collection<String> values = cssFileList.getListModel().getValues(info);
+    for (String url : values) {
+      config.createNode("external-css", url);
+    }
+    portlet.setConfig(config.toString());
+  }
 
-	public SelectionsTable getCssTable()
-	{
-		return cssTable;
-	}
+  @Override
+  public void customClear(SectionInfo info) {
+    scriptEditor.setValue(info, Constants.BLANK);
+    cssFileList.getListModel().clear(info);
+  }
 
-	private class CssTableModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return cssFileList.getListModel().getValues(info);
-		}
+  public CodeMirror getScriptEditor() {
+    return scriptEditor;
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String url,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(url)));
-			actions.add(makeRemoveAction(LABEL_LINK_DELETE, new OverrideHandler(deleteFunction, url)));
-		}
-	}
+  public Link getAddCssLink() {
+    return addCssLink;
+  }
 
-	public static class FreemarkerTabModel
-	{
-		// nothing needs to exist in this model ...?
-	}
+  public MutableList<String> getCssFileList() {
+    return cssFileList;
+  }
 
-	@EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
-	public void loadUserScript(SectionInfo info)
-	{
-		String script = userScriptService.getByUuid(freeMarkerList.getSelectedValueAsString(info)).getScript();
-		scriptEditor.setValue(info, script);
-	}
+  public TextField getExternalCss() {
+    return externalCss;
+  }
 
-	public SingleSelectionList<UserScript> getFreeMarkerList()
-	{
-		return freeMarkerList;
-	}
+  public SelectionsTable getCssTable() {
+    return cssTable;
+  }
 
-	@Override
-	protected JSExpression getEditor()
-	{
-		ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
-		return cm;
-	}
+  private class CssTableModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return cssFileList.getListModel().getValues(info);
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String url,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LabelRenderer(new TextLabel(url)));
+      actions.add(makeRemoveAction(LABEL_LINK_DELETE, new OverrideHandler(deleteFunction, url)));
+    }
+  }
+
+  public static class FreemarkerTabModel {
+    // nothing needs to exist in this model ...?
+  }
+
+  @EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
+  public void loadUserScript(SectionInfo info) {
+    String script =
+        userScriptService.getByUuid(freeMarkerList.getSelectedValueAsString(info)).getScript();
+    scriptEditor.setValue(info, script);
+  }
+
+  public SingleSelectionList<UserScript> getFreeMarkerList() {
+    return freeMarkerList;
+  }
+
+  @Override
+  protected JSExpression getEditor() {
+    ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
+    return cm;
+  }
 }

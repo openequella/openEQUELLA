@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,109 +18,90 @@
 
 package com.tle.core.services.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.tle.core.services.TaskStatusChange;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.tle.core.services.TaskStatusChange;
+public class StandardStatusChange implements TaskStatusChange<StandardStatusChange> {
+  private static final long serialVersionUID = 1L;
 
-public class StandardStatusChange implements TaskStatusChange<StandardStatusChange>
-{
-	private static final long serialVersionUID = 1L;
+  private int doneWork;
+  private int maxWork;
+  private String titleKey;
+  private String statusKey;
+  private List<Serializable> log = Lists.newArrayList();
+  private Map<String, Serializable> subStatuses = Maps.newHashMap();
 
-	private int doneWork;
-	private int maxWork;
-	private String titleKey;
-	private String statusKey;
-	private List<Serializable> log = Lists.newArrayList();
-	private Map<String, Serializable> subStatuses = Maps.newHashMap();
+  @Override
+  public void modifyStatus(TaskStatusImpl taskStatus) {
+    taskStatus.setDoneWork(doneWork);
+    taskStatus.setMaxWork(maxWork);
+    taskStatus.setTitleKey(titleKey);
+    taskStatus.setStatusKey(statusKey);
+    taskStatus.getStateMap().putAll(subStatuses);
+    taskStatus.addToTaskLog(log);
+    if (maxWork > 0 && doneWork > 0) {
+      taskStatus.setPercentage((int) (((float) doneWork) / maxWork * 100.0));
+    } else {
+      taskStatus.setPercentage(0);
+    }
+  }
 
-	@Override
-	public void modifyStatus(TaskStatusImpl taskStatus)
-	{
-		taskStatus.setDoneWork(doneWork);
-		taskStatus.setMaxWork(maxWork);
-		taskStatus.setTitleKey(titleKey);
-		taskStatus.setStatusKey(statusKey);
-		taskStatus.getStateMap().putAll(subStatuses);
-		taskStatus.addToTaskLog(log);
-		if( maxWork > 0 && doneWork > 0 )
-		{
-			taskStatus.setPercentage((int) (((float) doneWork) / maxWork * 100.0));
-		}
-		else
-		{
-			taskStatus.setPercentage(0);
-		}
-	}
+  public StandardStatusChange() {
+    // nothing
+  }
 
-	public StandardStatusChange()
-	{
-		// nothing
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void merge(StandardStatusChange newChanges) {
+    throw new Error("Shouldn't ever be merged");
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void merge(StandardStatusChange newChanges)
-	{
-		throw new Error("Shouldn't ever be merged");
-	}
+  public void reset() {
+    log.clear();
+    subStatuses.clear();
+  }
 
-	public void reset()
-	{
-		log.clear();
-		subStatuses.clear();
-	}
+  public int getDoneWork() {
+    return doneWork;
+  }
 
-	public int getDoneWork()
-	{
-		return doneWork;
-	}
+  public void setDoneWork(int doneWork) {
+    this.doneWork = doneWork;
+  }
 
-	public void setDoneWork(int doneWork)
-	{
-		this.doneWork = doneWork;
-	}
+  public int getMaxWork() {
+    return maxWork;
+  }
 
-	public int getMaxWork()
-	{
-		return maxWork;
-	}
+  public void setMaxWork(int maxWork) {
+    this.maxWork = maxWork;
+  }
 
-	public void setMaxWork(int maxWork)
-	{
-		this.maxWork = maxWork;
-	}
+  public String getTitleKey() {
+    return titleKey;
+  }
 
-	public String getTitleKey()
-	{
-		return titleKey;
-	}
+  public void setTitleKey(String titleKey) {
+    this.titleKey = titleKey;
+  }
 
-	public void setTitleKey(String titleKey)
-	{
-		this.titleKey = titleKey;
-	}
+  public String getStatusKey() {
+    return statusKey;
+  }
 
-	public String getStatusKey()
-	{
-		return statusKey;
-	}
+  public void setStatusKey(String statusKey) {
+    this.statusKey = statusKey;
+  }
 
-	public void setStatusKey(String statusKey)
-	{
-		this.statusKey = statusKey;
-	}
+  public void addLog(Serializable o) {
+    log.add(o);
+  }
 
-	public void addLog(Serializable o)
-	{
-		log.add(o);
-	}
-
-	public void putStatus(String name, Serializable o)
-	{
-		subStatuses.put(name, o);
-	}
+  public void putStatus(String name, Serializable o) {
+    subStatuses.put(name, o);
+  }
 }

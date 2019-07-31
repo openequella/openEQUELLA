@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,26 +18,20 @@
 
 package com.tle.core.powersearch;
 
-import java.util.List;
-
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemotePowerSearchService;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 public interface PowerSearchService
-	extends
-		AbstractEntityService<EntityEditingBean, PowerSearch>,
-		RemotePowerSearchService
-{
-	List<BaseEntityLabel> listSearchable();
+    extends AbstractEntityService<EntityEditingBean, PowerSearch>, RemotePowerSearchService {
+  List<BaseEntityLabel> listSearchable();
 
-	List<BaseEntityLabel> listAllForSchema(long schemaId);
+  List<BaseEntityLabel> listAllForSchema(long schemaId);
 
-	List<BaseEntityLabel> listAllForSchema(Schema schema);
+  List<BaseEntityLabel> listAllForSchema(Schema schema);
 }

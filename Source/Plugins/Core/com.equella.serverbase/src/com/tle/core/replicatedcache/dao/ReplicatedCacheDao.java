@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,22 @@
 
 package com.tle.core.replicatedcache.dao;
 
+import com.tle.beans.Institution;
+import com.tle.core.hibernate.dao.GenericDao;
 import java.util.Collection;
 import java.util.Date;
 
-import com.tle.beans.Institution;
-import com.tle.core.hibernate.dao.GenericDao;
+public interface ReplicatedCacheDao extends GenericDao<CachedValue, Long> {
+  CachedValue get(String cacheId, String key);
 
-public interface ReplicatedCacheDao extends GenericDao<CachedValue, Long>
-{
-	CachedValue get(String cacheId, String key);
+  void put(String cacheId, String key, Date ttl, byte[] value);
 
-	void put(String cacheId, String key, Date ttl, byte[] value);
+  void invalidate(String cacheId, String... keys);
 
-	void invalidate(String cacheId, String... keys);
+  void invalidateAllForInstitution(Institution inst);
 
-	void invalidateAllForInstitution(Institution inst);
+  Collection<CachedValue> getBatch(
+      String cacheId, String keyPrefixFilter, long startId, int batchSize);
 
-	Collection<CachedValue> getBatch(String cacheId, String keyPrefixFilter, long startId, int batchSize);
-
-	void invalidateExpiredEntries();
+  void invalidateExpiredEntries();
 }

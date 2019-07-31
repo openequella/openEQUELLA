@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,53 +28,45 @@ import com.tle.web.sections.js.JSExpression;
 
 /**
  * A JSCallAndReference which can be created or decided on at runtime.
- * 
+ *
  * @author jolz
  */
 @NonNullByDefault
-public abstract class RuntimeFunction implements JSCallable
-{
-	@Override
-	public String getExpressionForCall(RenderContext info, JSExpression... params)
-	{
-		return getRealFunction(info).getExpressionForCall(info, params);
-	}
+public abstract class RuntimeFunction implements JSCallable {
+  @Override
+  public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    return getRealFunction(info).getExpressionForCall(info, params);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(getRealFunction(info));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(getRealFunction(info));
+  }
 
-	protected JSCallable getRealFunction(RenderContext info)
-	{
-		JSCallable callable = info.getAttribute(this);
-		if( callable == null )
-		{
-			callable = createFunction(info);
-			info.setAttribute(this, callable);
-		}
-		return callable;
-	}
+  protected JSCallable getRealFunction(RenderContext info) {
+    JSCallable callable = info.getAttribute(this);
+    if (callable == null) {
+      callable = createFunction(info);
+      info.setAttribute(this, callable);
+    }
+    return callable;
+  }
 
-	public boolean hasBeenSet(SectionInfo info)
-	{
-		return info.getAttribute(this) != null;
-	}
+  public boolean hasBeenSet(SectionInfo info) {
+    return info.getAttribute(this) != null;
+  }
 
-	public void setFunction(SectionInfo info, JSCallable callable)
-	{
-		info.setAttribute(this, callable);
-	}
+  public void setFunction(SectionInfo info, JSCallable callable) {
+    info.setAttribute(this, callable);
+  }
 
-	protected JSCallable createFunction(RenderContext info)
-	{
-		throw new SectionsRuntimeException("Function not set and createFunction() not overridden"); //$NON-NLS-1$
-	}
+  protected JSCallable createFunction(RenderContext info) {
+    throw new SectionsRuntimeException(
+        "Function not set and createFunction() not overridden"); //$NON-NLS-1$
+  }
 
-	@Override
-	public int getNumberOfParams(RenderContext context)
-	{
-		return getRealFunction(context).getNumberOfParams(context);
-	}
+  @Override
+  public int getNumberOfParams(RenderContext context) {
+    return getRealFunction(context).getNumberOfParams(context);
+  }
 }

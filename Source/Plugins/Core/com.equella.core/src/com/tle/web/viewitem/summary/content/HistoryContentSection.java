@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.content;
-
-import java.util.Date;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Strings;
 import com.tle.beans.item.HistoryEvent.Type;
@@ -68,391 +65,356 @@ import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.sections.standard.model.TableState.TableCell;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.Date;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class HistoryContentSection extends AbstractContentSection<HistoryContentSection.HistoryModel>
-{
-	public static final String VIEW_PRIVILEGE = "VIEW_HISTORY_ITEM";
+public class HistoryContentSection
+    extends AbstractContentSection<HistoryContentSection.HistoryModel> {
+  public static final String VIEW_PRIVILEGE = "VIEW_HISTORY_ITEM";
 
-	@PlugKey("summary.content.history.pagetitle")
-	private static Label LABEL_TITLE;
-	@PlugKey("summary.content.history.showcomment")
-	private static Label LABEL_SHOWCOMMENT;
-	@PlugKey("summary.content.history.unknownstepname")
-	private static Label LABEL_UNKNOWNSTEP;
-	@PlugKey("summary.content.history.event.")
-	private static String KEY_EVENTPFX;
-	@PlugKey("summary.content.history.column.event")
-	private static Label LABEL_EVENT;
-	@PlugKey("summary.content.history.column.user")
-	private static Label LABEL_USER;
-	@PlugKey("summary.content.history.column.date")
-	private static Label LABEL_DATE;
+  @PlugKey("summary.content.history.pagetitle")
+  private static Label LABEL_TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@AjaxFactory
-	private AjaxGenerator ajaxFactory;
+  @PlugKey("summary.content.history.showcomment")
+  private static Label LABEL_SHOWCOMMENT;
 
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+  @PlugKey("summary.content.history.unknownstepname")
+  private static Label LABEL_UNKNOWNSTEP;
 
-	@Component
-	private SingleSelectionList<NameValue> detailsSelection;
+  @PlugKey("summary.content.history.event.")
+  private static String KEY_EVENTPFX;
 
-	@PlugKey("summary.content.history.basicdetails")
-	private static String basicKey;
-	@PlugKey("summary.content.history.includeedits")
-	private static String showEditsKey;
-	@PlugKey("summary.content.history.all")
-	private static String showAllKey;
+  @PlugKey("summary.content.history.column.event")
+  private static Label LABEL_EVENT;
 
-	@Component
-	@Inject
-	private HistoryCommentDialog commentDialog;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
-	@Component(name = "h")
-	private Table historyTable;
+  @PlugKey("summary.content.history.column.user")
+  private static Label LABEL_USER;
 
-	private final TagState eventsTable = new TagState();
+  @PlugKey("summary.content.history.column.date")
+  private static Label LABEL_DATE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @AjaxFactory private AjaxGenerator ajaxFactory;
 
-		StatementHandler showHistoryTableFunc = new StatementHandler(ajaxFactory.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("reload"), ajaxFactory.getEffectFunction(EffectType.FADEOUTIN), "historyevents"));
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-		detailsSelection.setEventHandler(JSHandler.EVENT_CHANGE, showHistoryTableFunc);
-		SimpleHtmlListModel<NameValue> listModel = new SimpleHtmlListModel<NameValue>();
-		listModel.add(new BundleNameValue(basicKey, "basicKey"));
-		listModel.add(new BundleNameValue(showEditsKey, "showEditsKey"));
-		listModel.add(new BundleNameValue(showAllKey, "showAllKey"));
-		detailsSelection.setListModel(listModel);
-		detailsSelection.setAlwaysSelect(true);
-		userLinkSection = userLinkService.register(tree, id);
+  @Component private SingleSelectionList<NameValue> detailsSelection;
 
-		historyTable.setColumnHeadings(LABEL_EVENT, LABEL_USER, LABEL_DATE);
-		historyTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
-	}
+  @PlugKey("summary.content.history.basicdetails")
+  private static String basicKey;
 
-	private boolean canView(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.getItemInfo(info).hasPrivilege(VIEW_PRIVILEGE);
-	}
+  @PlugKey("summary.content.history.includeedits")
+  private static String showEditsKey;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
+  @PlugKey("summary.content.history.all")
+  private static String showAllKey;
 
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		final WorkflowStatus status = itemInfo.getWorkflowStatus();
-		if( status == null )
-		{
-			return null;
-		}
+  @Component @Inject private HistoryCommentDialog commentDialog;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		showHistoryTable(context);
+  @Component(name = "h")
+  private Table historyTable;
 
-		addDefaultBreadcrumbs(context, itemInfo, LABEL_TITLE);
-		displayBackButton(context);
+  private final TagState eventsTable = new TagState();
 
-		final Item item = itemInfo.getItem();
-		final ModerationStatus modStatus = item.getModeration();
-		if( modStatus != null )
-		{
-			final Date reviewDate = item.getModeration().getReviewDate();
-			if( reviewDate != null )
-			{
-				HistoryModel model = getModel(context);
-				model.setReviewDate(JQueryTimeAgo.timeAgoTag(reviewDate));
-				model.setReviewTense(reviewDate.before(new Date()) ? "past" : "future");
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-				JQueryTimeAgo.enableFutureTimes(context);
-			}
-		}
+    StatementHandler showHistoryTableFunc =
+        new StatementHandler(
+            ajaxFactory.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("reload"),
+                ajaxFactory.getEffectFunction(EffectType.FADEOUTIN),
+                "historyevents"));
 
-		return viewFactory.createResult("viewitem/summary/content/history.ftl", context);
-	}
+    detailsSelection.setEventHandler(JSHandler.EVENT_CHANGE, showHistoryTableFunc);
+    SimpleHtmlListModel<NameValue> listModel = new SimpleHtmlListModel<NameValue>();
+    listModel.add(new BundleNameValue(basicKey, "basicKey"));
+    listModel.add(new BundleNameValue(showEditsKey, "showEditsKey"));
+    listModel.add(new BundleNameValue(showAllKey, "showAllKey"));
+    detailsSelection.setListModel(listModel);
+    detailsSelection.setAlwaysSelect(true);
+    userLinkSection = userLinkService.register(tree, id);
 
-	@EventHandlerMethod
-	public void reload(SectionInfo info)
-	{
-		// noop
-	}
+    historyTable.setColumnHeadings(LABEL_EVENT, LABEL_USER, LABEL_DATE);
+    historyTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
+  }
 
-	private void showHistoryTable(SectionInfo info)
-	{
-		final WorkflowStatus status = ParentViewItemSectionUtils.getItemInfo(info).getWorkflowStatus();
+  private boolean canView(SectionInfo info) {
+    return ParentViewItemSectionUtils.getItemInfo(info).hasPrivilege(VIEW_PRIVILEGE);
+  }
 
-		final WorkflowEvent[] workflowEvents = status.getEvents();
-		if( workflowEvents == null || workflowEvents.length == 0 )
-		{
-			return;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      return null;
+    }
 
-		final TableState allEvents = historyTable.getState(info);
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    final WorkflowStatus status = itemInfo.getWorkflowStatus();
+    if (status == null) {
+      return null;
+    }
 
-		boolean showEdits = false;
-		boolean showAllDetails = false;
+    showHistoryTable(context);
 
-		String value = Strings.nullToEmpty(detailsSelection.getSelectedValueAsString(info));
-		if( value.equals("showEditsKey") )
-		{
-			showEdits = true;
-		}
-		else if( value.equals("showAllKey") )
-		{
-			showEdits = true;
-			showAllDetails = true;
-		}
+    addDefaultBreadcrumbs(context, itemInfo, LABEL_TITLE);
+    displayBackButton(context);
 
-		final Map<String, WorkflowStep> refMap = status.getReferencedSteps();
+    final Item item = itemInfo.getItem();
+    final ModerationStatus modStatus = item.getModeration();
+    if (modStatus != null) {
+      final Date reviewDate = item.getModeration().getReviewDate();
+      if (reviewDate != null) {
+        HistoryModel model = getModel(context);
+        model.setReviewDate(JQueryTimeAgo.timeAgoTag(reviewDate));
+        model.setReviewTense(reviewDate.before(new Date()) ? "past" : "future");
 
-		for( int i = workflowEvents.length - 1; i >= 0; i-- )
-		{
-			final WorkflowEvent event = workflowEvents[i];
-			final Label atStepName = getStepName(event.getStep(), event.getStepName(), refMap);
+        JQueryTimeAgo.enableFutureTimes(context);
+      }
+    }
 
-			// Fudge the date a little so that events that occurred at
-			// "the same time"
-			// get preserved in order
-			final Date eventDate = new Date(event.getDate().getTime() + i);
+    return viewFactory.createResult("viewitem/summary/content/history.ftl", context);
+  }
 
-			Label label = null;
+  @EventHandlerMethod
+  public void reload(SectionInfo info) {
+    // noop
+  }
 
-			switch( event.getIntType() )
-			{
-				case resetworkflow:
-					if( showAllDetails )
-					{
-						label = s("reset");
-					}
-					break;
+  private void showHistoryTable(SectionInfo info) {
+    final WorkflowStatus status = ParentViewItemSectionUtils.getItemInfo(info).getWorkflowStatus();
 
-				case approved:
-					if( showAllDetails )
-					{
-						label = s("accepted", atStepName);
-					}
-					break;
+    final WorkflowEvent[] workflowEvents = status.getEvents();
+    if (workflowEvents == null || workflowEvents.length == 0) {
+      return;
+    }
 
-				case rejected:
-					final String tostep = event.getTostep();
-					if( Check.isEmpty(tostep) )
-					{
-						label = s("rejected", atStepName);
-					}
-					else if( showAllDetails )
-					{
-						label = s("rejectedtostep", atStepName, getStepName(tostep, event.getToStepName(), refMap));
-					}
-					break;
+    final TableState allEvents = historyTable.getState(info);
 
-				case edit:
-					if( showEdits )
-					{
-						label = s("edited");
-					}
-					break;
+    boolean showEdits = false;
+    boolean showAllDetails = false;
 
-				case newversion:
-					label = s("newversion");
-					break;
+    String value = Strings.nullToEmpty(detailsSelection.getSelectedValueAsString(info));
+    if (value.equals("showEditsKey")) {
+      showEdits = true;
+    } else if (value.equals("showAllKey")) {
+      showEdits = true;
+      showAllDetails = true;
+    }
 
-				case workflowremoved:
-					if( showAllDetails )
-					{
-						label = s("workflowremoved");
-					}
-					break;
+    final Map<String, WorkflowStep> refMap = status.getReferencedSteps();
 
-				case comment:
-					if( showAllDetails )
-					{
-						label = s("comment", atStepName);
-					}
-					break;
+    for (int i = workflowEvents.length - 1; i >= 0; i--) {
+      final WorkflowEvent event = workflowEvents[i];
+      final Label atStepName = getStepName(event.getStep(), event.getStepName(), refMap);
 
-				case scriptComplete:
-					if( showAllDetails )
-					{
-						label = s("scriptcomplete", atStepName);
-					}
-					break;
+      // Fudge the date a little so that events that occurred at
+      // "the same time"
+      // get preserved in order
+      final Date eventDate = new Date(event.getDate().getTime() + i);
 
-				case scriptError:
-					label = s("scripterror", atStepName);
-					break;
+      Label label = null;
 
-				case statechange:
-					ItemStatus state = ((StateChangeEvent) event).getState();
-					switch( state )
-					{
-						case DRAFT:
-							label = s("statechanged.draft");
-							break;
+      switch (event.getIntType()) {
+        case resetworkflow:
+          if (showAllDetails) {
+            label = s("reset");
+          }
+          break;
 
-						case LIVE:
-							label = s("statechanged.live");
-							break;
+        case approved:
+          if (showAllDetails) {
+            label = s("accepted", atStepName);
+          }
+          break;
 
-						case MODERATING:
-							if( showAllDetails )
-							{
-								label = s("statechanged.moderating");
-							}
-							break;
-						case REJECTED:
-							if( showAllDetails )
-							{
-								label = s("statechanged", new KeyLabel(ItemStatusKeys.get(state)));
-							}
-							break;
+        case rejected:
+          final String tostep = event.getTostep();
+          if (Check.isEmpty(tostep)) {
+            label = s("rejected", atStepName);
+          } else if (showAllDetails) {
+            label =
+                s("rejectedtostep", atStepName, getStepName(tostep, event.getToStepName(), refMap));
+          }
+          break;
 
-						default:
-							label = s("statechanged", new KeyLabel(ItemStatusKeys.get(state)));
-					}
-					break;
+        case edit:
+          if (showEdits) {
+            label = s("edited");
+          }
+          break;
 
-				case clone:
-					if( showEdits )
-					{
-						label = s("cloned");
-					}
-					break;
+        case newversion:
+          label = s("newversion");
+          break;
 
-				case changeCollection:
-					if( showEdits )
-					{
-						label = s("moved");
-					}
-					break;
+        case workflowremoved:
+          if (showAllDetails) {
+            label = s("workflowremoved");
+          }
+          break;
 
-				case contributed:
-					label = s("contributed");
-					break;
-				case taskMove:
-					label = s("move", getStepName(event.getTostep(), event.getToStepName(), refMap));
-					break;
+        case comment:
+          if (showAllDetails) {
+            label = s("comment", atStepName);
+          }
+          break;
 
-				default:
-					// 'promoted' unloved?
-					break;
-			}
+        case scriptComplete:
+          if (showAllDetails) {
+            label = s("scriptcomplete", atStepName);
+          }
+          break;
 
-			if( label != null )
-			{
-				TableCell cell1;
-				final String comment = event.getComment();
-				if( !Check.isEmpty(comment) )
-				{
-					final HtmlLinkState hcs = new HtmlLinkState(new OverrideHandler(commentDialog.getOpenFunction(),
-						event.getId()));
-					hcs.setLabel(LABEL_SHOWCOMMENT);
-					cell1 = new TableCell(label, " (", hcs, ")");
-				}
-				else
-				{
-					cell1 = new TableCell(label);
-				}
+        case scriptError:
+          label = s("scripterror", atStepName);
+          break;
 
-				if( event.getIntType() == Type.scriptComplete || event.getIntType() == Type.scriptError )
-				{
-					allEvents.addRow(cell1, "", dateRendererFactory.createDateRenderer(eventDate)).setSortData(label,
-						"", eventDate);
-				}
-				else
-				{
-					final HtmlLinkState userLink = userLinkSection.createLink(info, event.getUserid());
-					allEvents.addRow(cell1, userLink, dateRendererFactory.createDateRenderer(eventDate)).setSortData(
-						label, userLink.getLabel(), eventDate);
-				}
-			}
-		}
-	}
+        case statechange:
+          ItemStatus state = ((StateChangeEvent) event).getState();
+          switch (state) {
+            case DRAFT:
+              label = s("statechanged.draft");
+              break;
 
-	@EventHandlerMethod
-	public void backToSummaryClicked(SectionInfo info)
-	{
-		itemSummaryContentSection.setSummaryId(info, null);
-	}
+            case LIVE:
+              label = s("statechanged.live");
+              break;
 
-	private Label s(String keyPart, Label... values)
-	{
-		return new KeyLabel(KEY_EVENTPFX + keyPart, values);
-	}
+            case MODERATING:
+              if (showAllDetails) {
+                label = s("statechanged.moderating");
+              }
+              break;
+            case REJECTED:
+              if (showAllDetails) {
+                label = s("statechanged", new KeyLabel(ItemStatusKeys.get(state)));
+              }
+              break;
 
-	private Label getStepName(String step, String stepname, Map<String, WorkflowStep> refMap)
-	{
-		if( !Check.isEmpty(step) )
-		{
-			WorkflowStep refStep = refMap.get(step);
-			if( refStep != null )
-			{
-				return new BundleLabel(refStep.getDisplayName(), bundleCache);
-			}
-		}
+            default:
+              label = s("statechanged", new KeyLabel(ItemStatusKeys.get(state)));
+          }
+          break;
 
-		if( stepname != null )
-		{
-			return new TextLabel(stepname);
-		}
+        case clone:
+          if (showEdits) {
+            label = s("cloned");
+          }
+          break;
 
-		return LABEL_UNKNOWNSTEP;
-	}
+        case changeCollection:
+          if (showEdits) {
+            label = s("moved");
+          }
+          break;
 
-	@Override
-	public Class<HistoryModel> getModelClass()
-	{
-		return HistoryModel.class;
-	}
+        case contributed:
+          label = s("contributed");
+          break;
+        case taskMove:
+          label = s("move", getStepName(event.getTostep(), event.getToStepName(), refMap));
+          break;
 
-	public static class HistoryModel
-	{
-		private TagRenderer reviewDate;
-		private String reviewTense;
+        default:
+          // 'promoted' unloved?
+          break;
+      }
 
-		public TagRenderer getReviewDate()
-		{
-			return reviewDate;
-		}
+      if (label != null) {
+        TableCell cell1;
+        final String comment = event.getComment();
+        if (!Check.isEmpty(comment)) {
+          final HtmlLinkState hcs =
+              new HtmlLinkState(
+                  new OverrideHandler(commentDialog.getOpenFunction(), event.getId()));
+          hcs.setLabel(LABEL_SHOWCOMMENT);
+          cell1 = new TableCell(label, " (", hcs, ")");
+        } else {
+          cell1 = new TableCell(label);
+        }
 
-		public void setReviewDate(TagRenderer reviewDate)
-		{
-			this.reviewDate = reviewDate;
-		}
+        if (event.getIntType() == Type.scriptComplete || event.getIntType() == Type.scriptError) {
+          allEvents
+              .addRow(cell1, "", dateRendererFactory.createDateRenderer(eventDate))
+              .setSortData(label, "", eventDate);
+        } else {
+          final HtmlLinkState userLink =
+              userLinkSection.createLink(info, event.getUserid(), event.getImpersonatedBy());
+          allEvents
+              .addRow(cell1, userLink, dateRendererFactory.createDateRenderer(eventDate))
+              .setSortData(label, userLink.getLabel(), eventDate);
+        }
+      }
+    }
+  }
 
-		public String getReviewTense()
-		{
-			return reviewTense;
-		}
+  @EventHandlerMethod
+  public void backToSummaryClicked(SectionInfo info) {
+    itemSummaryContentSection.setSummaryId(info, null);
+  }
 
-		public void setReviewTense(String reviewTense)
-		{
-			this.reviewTense = reviewTense;
-		}
-	}
+  private Label s(String keyPart, Label... values) {
+    return new KeyLabel(KEY_EVENTPFX + keyPart, values);
+  }
 
-	public TagState getEventsTable()
-	{
-		return eventsTable;
-	}
+  private Label getStepName(String step, String stepname, Map<String, WorkflowStep> refMap) {
+    if (!Check.isEmpty(step)) {
+      WorkflowStep refStep = refMap.get(step);
+      if (refStep != null) {
+        return new BundleLabel(refStep.getDisplayName(), bundleCache);
+      }
+    }
 
-	public SingleSelectionList<NameValue> getDetailsSelection()
-	{
-		return detailsSelection;
-	}
+    if (stepname != null) {
+      return new TextLabel(stepname);
+    }
 
-	public Table getHistoryTable()
-	{
-		return historyTable;
-	}
+    return LABEL_UNKNOWNSTEP;
+  }
+
+  @Override
+  public Class<HistoryModel> getModelClass() {
+    return HistoryModel.class;
+  }
+
+  public static class HistoryModel {
+    private TagRenderer reviewDate;
+    private String reviewTense;
+
+    public TagRenderer getReviewDate() {
+      return reviewDate;
+    }
+
+    public void setReviewDate(TagRenderer reviewDate) {
+      this.reviewDate = reviewDate;
+    }
+
+    public String getReviewTense() {
+      return reviewTense;
+    }
+
+    public void setReviewTense(String reviewTense) {
+      this.reviewTense = reviewTense;
+    }
+  }
+
+  public TagState getEventsTable() {
+    return eventsTable;
+  }
+
+  public SingleSelectionList<NameValue> getDetailsSelection() {
+    return detailsSelection;
+  }
+
+  public Table getHistoryTable() {
+    return historyTable;
+  }
 }

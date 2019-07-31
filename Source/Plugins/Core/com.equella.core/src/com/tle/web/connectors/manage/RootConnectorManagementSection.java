@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.connectors.manage;
 
-import javax.inject.Inject;
-
 import com.tle.web.connectors.service.ConnectorManagementPrivilegeTreeProvider;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
@@ -25,33 +25,35 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import javax.inject.Inject;
 
-public class RootConnectorManagementSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	@PlugKey("connector.manage.title")
-	private static Label LABEL_TITLE;
-	@Inject
-	private ConnectorManagementPrivilegeTreeProvider securityProvider;
+public class RootConnectorManagementSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  @PlugKey("connector.manage.title")
+  private static Label LABEL_TITLE;
 
-	private static final String SESSION_KEY = "connectorKey"; //$NON-NLS-1$
+  @Inject private ConnectorManagementPrivilegeTreeProvider securityProvider;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return SESSION_KEY;
-	}
+  private static final String SESSION_KEY = "connectorKey"; // $NON-NLS-1$
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getSessionKey() {
+    return SESSION_KEY;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
-		return super.renderHtml(context);
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    securityProvider.checkAuthorised();
+    return super.renderHtml(context);
+  }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

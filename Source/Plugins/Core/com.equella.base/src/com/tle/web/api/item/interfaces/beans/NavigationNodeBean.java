@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,83 +18,65 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
+import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
-
-
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
-public class NavigationNodeBean extends AbstractExtendableBean
-{
-	private String uuid;
-	private String name;
-	private String icon;
-	private String imsId;
-	private List<NavigationTabBean> tabs;
-	private List<NavigationNodeBean> nodes;
+public class NavigationNodeBean extends AbstractExtendableBean {
+  private String uuid;
+  private String name;
+  private String icon;
+  private String imsId;
+  private List<NavigationTabBean> tabs;
+  private List<NavigationNodeBean> nodes;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getIcon()
-	{
-		return icon;
-	}
+  public String getIcon() {
+    return icon;
+  }
 
-	public void setIcon(String icon)
-	{
-		this.icon = icon;
-	}
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
 
-	public String getImsId()
-	{
-		return imsId;
-	}
+  public String getImsId() {
+    return imsId;
+  }
 
-	public void setImsId(String imsId)
-	{
-		this.imsId = imsId;
-	}
+  public void setImsId(String imsId) {
+    this.imsId = imsId;
+  }
 
-	public List<NavigationTabBean> getTabs()
-	{
-		return tabs;
-	}
+  public List<NavigationTabBean> getTabs() {
+    return tabs;
+  }
 
-	public void setTabs(List<NavigationTabBean> tabs)
-	{
-		this.tabs = tabs;
-	}
+  public void setTabs(List<NavigationTabBean> tabs) {
+    this.tabs = tabs;
+  }
 
-	public List<NavigationNodeBean> getNodes()
-	{
-		return nodes;
-	}
+  public List<NavigationNodeBean> getNodes() {
+    return nodes;
+  }
 
-	public void setNodes(List<NavigationNodeBean> nodes)
-	{
-		this.nodes = nodes;
-	}
+  public void setNodes(List<NavigationNodeBean> nodes) {
+    this.nodes = nodes;
+  }
 }

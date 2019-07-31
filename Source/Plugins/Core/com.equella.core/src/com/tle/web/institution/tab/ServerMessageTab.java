@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.institution.tab;
-
-import javax.inject.Inject;
 
 import com.tle.core.system.SystemConfigService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -37,79 +37,65 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class ServerMessageTab extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@Inject
-	private SystemConfigService systemConfigService;
+public class ServerMessageTab extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @Inject private SystemConfigService systemConfigService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@TreeLookup
-	private InstitutionSection institutionSection;
+  @TreeLookup private InstitutionSection institutionSection;
 
-	@Component
-	private Checkbox enabled;
-	@Component
-	private TextField message;
-	@Component
-	@PlugKey(value = "institutions.server.message.save", global = true)
-	private Button save;
+  @Component private Checkbox enabled;
+  @Component private TextField message;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		save.setClickHandler(events.getNamedHandler("saveClicked"));
-	}
+  @Component
+  @PlugKey(value = "institutions.server.message.save", global = true)
+  private Button save;
 
-	@EventHandlerMethod
-	public void saveClicked(SectionContext context)
-	{
-		systemConfigService.setServerMessage(message.getValue(context), enabled.isChecked(context));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    save.setClickHandler(events.getNamedHandler("saveClicked"));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( systemConfigService.adminPasswordNotSet() )
-		{
-			return null;
-		}
+  @EventHandlerMethod
+  public void saveClicked(SectionContext context) {
+    systemConfigService.setServerMessage(message.getValue(context), enabled.isChecked(context));
+  }
 
-		enabled.setChecked(context, systemConfigService.isServerMessageEnabled());
-		message.setValue(context, systemConfigService.getServerMessage());
-		return viewFactory.createResult("tab/servermessage.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (systemConfigService.adminPasswordNotSet()) {
+      return null;
+    }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+    enabled.setChecked(context, systemConfigService.isServerMessageEnabled());
+    message.setValue(context, systemConfigService.getServerMessage());
+    return viewFactory.createResult("tab/servermessage.ftl", context);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "server_message";
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	public Checkbox getEnabled()
-	{
-		return enabled;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "server_message";
+  }
 
-	public TextField getMessage()
-	{
-		return message;
-	}
+  public Checkbox getEnabled() {
+    return enabled;
+  }
 
-	public Button getSave()
-	{
-		return save;
-	}
+  public TextField getMessage() {
+    return message;
+  }
+
+  public Button getSave() {
+    return save;
+  }
 }

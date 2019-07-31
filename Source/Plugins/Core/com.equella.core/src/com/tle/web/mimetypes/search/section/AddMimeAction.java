@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -33,34 +35,29 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
-public class AddMimeAction extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@EventFactory
-	protected EventGenerator events;
+public class AddMimeAction extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @EventFactory protected EventGenerator events;
 
-	@Component
-	@PlugKey("searchtypes.button.add")
-	private Button addMimeButton;
+  @Component
+  @PlugKey("searchtypes.button.add")
+  private Button addMimeButton;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-		addMimeButton.setStyleClass("add-mime");
-		addMimeButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		addMimeButton.setClickHandler(events.getNamedHandler("addMime"));
-	}
+    addMimeButton.setStyleClass("add-mime");
+    addMimeButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    addMimeButton.setClickHandler(events.getNamedHandler("addMime"));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return SectionUtils.renderSectionResult(context, addMimeButton);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return SectionUtils.renderSectionResult(context, addMimeButton);
+  }
 
-	@EventHandlerMethod
-	public void addMime(SectionInfo info)
-	{
-		MimeTypesEditSection.newEntry(info);
-	}
+  @EventHandlerMethod
+  public void addMime(SectionInfo info) {
+    MimeTypesEditSection.newEntry(info);
+  }
 }

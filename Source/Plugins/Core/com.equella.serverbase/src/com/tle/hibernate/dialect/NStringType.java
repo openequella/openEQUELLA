@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,43 +24,36 @@ import org.hibernate.type.DiscriminatorType;
 import org.hibernate.type.descriptor.java.StringTypeDescriptor;
 
 @SuppressWarnings("nls")
-public class NStringType extends AbstractSingleColumnStandardBasicType<String> implements DiscriminatorType<String>
-{
-	private static final long serialVersionUID = 1L;
+public class NStringType extends AbstractSingleColumnStandardBasicType<String>
+    implements DiscriminatorType<String> {
+  private static final long serialVersionUID = 1L;
 
-	public NStringType()
-	{
-		super(NVarcharTypeDescriptor.INSTANCE, StringTypeDescriptor.INSTANCE);
-	}
+  public NStringType() {
+    super(NVarcharTypeDescriptor.INSTANCE, StringTypeDescriptor.INSTANCE);
+  }
 
-	@Override
-	public String getName()
-	{
-		return "string";
-	}
+  @Override
+  public String getName() {
+    return "string";
+  }
 
-	@Override
-	protected boolean registerUnderJavaType()
-	{
-		return true;
-	}
+  @Override
+  protected boolean registerUnderJavaType() {
+    return true;
+  }
 
-	@Override
-	public String objectToSQLString(String value, Dialect dialect)
-	{
-		return '\'' + value + '\'';
-	}
+  @Override
+  public String objectToSQLString(String value, Dialect dialect) {
+    return '\'' + value + '\'';
+  }
 
-	@Override
-	public String stringToObject(String xml)
-	{
-		return xml;
-	}
+  @Override
+  public String stringToObject(String xml) {
+    return xml;
+  }
 
-	@Override
-	public String toString(String value)
-	{
-		return value;
-	}
-
+  @Override
+  public String toString(String value) {
+    return value;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,30 +18,25 @@
 
 package com.tle.web.api.search.interfaces.beans;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.web.api.interfaces.beans.RestBean;
+import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Dustin<br>
- * <br>
- *         A bit pointless right now, might add to it later though
+ *     <br>
+ *     A bit pointless right now, might add to it later though
  */
 @XmlRootElement
-public class FacetSearchBean implements RestBean
-{
-	private List<FacetBean> results;
+public class FacetSearchBean implements RestBean {
+  private List<FacetBean> results;
 
-	public List<FacetBean> getResults()
-	{
-		return results;
-	}
+  public List<FacetBean> getResults() {
+    return results;
+  }
 
-	public FacetSearchBean setResults(List<FacetBean> results)
-	{
-		this.results = results;
-		return this;
-	}
+  public FacetSearchBean setResults(List<FacetBean> results) {
+    this.results = results;
+    return this;
+  }
 }

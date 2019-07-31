@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,106 +18,92 @@
 
 package com.tle.web.sections.events;
 
-import java.util.EventListener;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import java.util.EventListener;
 
 @NonNullByDefault
-public abstract class WrappedEvent implements SectionEvent<EventListener>
-{
-	private SectionEvent<EventListener> inner;
+public abstract class WrappedEvent implements SectionEvent<EventListener> {
+  private SectionEvent<EventListener> inner;
 
-	@SuppressWarnings("unchecked")
-	public WrappedEvent(SectionEvent<?> inner)
-	{
-		this.inner = (SectionEvent<EventListener>) inner;
-	}
+  @SuppressWarnings("unchecked")
+  public WrappedEvent(SectionEvent<?> inner) {
+    this.inner = (SectionEvent<EventListener>) inner;
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, @Nullable EventListener listener) throws Exception
-	{
-		prefire(sectionId, info, listener);
-		inner.fire(sectionId, info, listener);
-	}
+  @Override
+  public void fire(SectionId sectionId, SectionInfo info, @Nullable EventListener listener)
+      throws Exception {
+    prefire(sectionId, info, listener);
+    inner.fire(sectionId, info, listener);
+  }
 
-	protected abstract void prefire(SectionId sectionId, SectionInfo info, @Nullable EventListener listener);
+  protected abstract void prefire(
+      SectionId sectionId, SectionInfo info, @Nullable EventListener listener);
 
-	@Nullable
-	@Override
-	public Class<? extends EventListener> getListenerClass()
-	{
-		return inner.getListenerClass();
-	}
+  @Nullable
+  @Override
+  public Class<? extends EventListener> getListenerClass() {
+    return inner.getListenerClass();
+  }
 
-	@Override
-	public void abortProcessing()
-	{
-		inner.abortProcessing();
-	}
+  @Override
+  public void abortProcessing() {
+    inner.abortProcessing();
+  }
 
-	@Override
-	public void beforeFiring(SectionInfo info, @Nullable SectionTree tree)
-	{
-		inner.beforeFiring(info, tree);
-	}
+  @Override
+  public void beforeFiring(SectionInfo info, @Nullable SectionTree tree) {
+    inner.beforeFiring(info, tree);
+  }
 
-	@NonNullByDefault(false)
-	@Override
-	public int compareTo(SectionEvent<EventListener> o)
-	{
-		return inner.compareTo(o);
-	}
+  @NonNullByDefault(false)
+  @Override
+  public int compareTo(SectionEvent<EventListener> o) {
+    return inner.compareTo(o);
+  }
 
-	@Override
-	public void finishedFiring(SectionInfo info, @Nullable SectionTree tree)
-	{
-		inner.finishedFiring(info, tree);
-	}
+  @Override
+  public void finishedFiring(SectionInfo info, @Nullable SectionTree tree) {
+    inner.finishedFiring(info, tree);
+  }
 
-	@Override
-	public SectionId getForSectionId()
-	{
-		return inner.getForSectionId();
-	}
+  @Override
+  public SectionId getForSectionId() {
+    return inner.getForSectionId();
+  }
 
-	@Nullable
-	@Override
-	public String getListenerId()
-	{
-		return inner.getListenerId();
-	}
+  @Nullable
+  @Override
+  public String getListenerId() {
+    return inner.getListenerId();
+  }
 
-	@Override
-	public int getPriority()
-	{
-		return inner.getPriority();
-	}
+  @Override
+  public int getPriority() {
+    return inner.getPriority();
+  }
 
-	@Override
-	public boolean isAbortProcessing()
-	{
-		return inner.isAbortProcessing();
-	}
+  @Override
+  public boolean isAbortProcessing() {
+    return inner.isAbortProcessing();
+  }
 
-	@Override
-	public boolean isStopProcessing()
-	{
-		return inner.isStopProcessing();
-	}
+  @Override
+  public boolean isStopProcessing() {
+    return inner.isStopProcessing();
+  }
 
-	@Override
-	public void stopProcessing()
-	{
-		inner.stopProcessing();
-	}
+  @Override
+  public void stopProcessing() {
+    inner.stopProcessing();
+  }
 
-	@Override
-	public boolean isContinueAfterException()
-	{
-		return inner.isContinueAfterException();
-	}
+  @Override
+  public boolean isContinueAfterException() {
+    return inner.isContinueAfterException();
+  }
 }

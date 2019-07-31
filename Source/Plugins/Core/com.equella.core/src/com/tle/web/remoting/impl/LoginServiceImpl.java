@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,33 @@
 
 package com.tle.web.remoting.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
 import com.tle.core.remoting.RemoteLoginService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class LoginServiceImpl implements RemoteLoginService
-{
-	@Inject
-	private UserService userService;
-	@Inject
-	private UserSessionService sessionService;
+public class LoginServiceImpl implements RemoteLoginService {
+  @Inject private UserService userService;
+  @Inject private UserSessionService sessionService;
 
-	@Override
-	public String getLoggedInUserId()
-	{
-		return CurrentUser.getUserID();
-	}
+  @Override
+  public String getLoggedInUserId() {
+    return CurrentUser.getUserID();
+  }
 
-	@Override
-	public void keepAlive()
-	{
-		userService.keepAlive();
-	}
+  @Override
+  public void keepAlive() {
+    userService.keepAlive();
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void logout()
-	{
-		sessionService.setAttribute("$LOGOUT$", Boolean.TRUE);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void logout() {
+    sessionService.setAttribute("$LOGOUT$", Boolean.TRUE);
+  }
 }

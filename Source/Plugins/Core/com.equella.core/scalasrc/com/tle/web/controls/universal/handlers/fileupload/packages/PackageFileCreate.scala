@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,7 +22,11 @@ import com.tle.beans.item.attachments.{Attachment, CustomAttachment, ImsAttachme
 import com.tle.common.filesystem.FileSystemConstants
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import com.tle.web.controls.universal.handlers.fileupload._
-import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{commitFiles, standardPackageDetails, unzipPackage}
+import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{
+  commitFiles,
+  standardPackageDetails,
+  unzipPackage
+}
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.render.Label
@@ -29,7 +35,7 @@ import com.tle.web.wizard.PackageInfo
 import scala.collection.JavaConverters._
 
 trait PackageAttachmentExtension {
-  def treatAsLabel : Label
+  def treatAsLabel: Label
 
   def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean
 
@@ -39,20 +45,29 @@ trait PackageAttachmentExtension {
 
   def handles(a: Attachment): Boolean
 
-  def order : Int = 0
+  def order: Int = 0
 }
 
 object PackageFileCreate {
 
-  lazy val tracker = new PluginTracker[PackageAttachmentExtension](AbstractPluginService.get(),
-    "com.tle.web.wizard.controls.universal", "packageAttachmentHandler", "type").setBeanKey("class")
+  lazy val tracker =
+    new PluginTracker[PackageAttachmentExtension](AbstractPluginService.get(),
+                                                  "com.tle.web.wizard.controls.universal",
+                                                  "packageAttachmentHandler",
+                                                  "type").setBeanKey("class")
 
-  lazy val packageCreateById: Map[String, PackageAttachmentExtension] = tracker.getBeanMap.asScala.toMap
-  lazy val packageTypes: Seq[PackageAttachmentExtension] = packageCreateById.values.toSeq.sortBy(_.order)
+  lazy val packageCreateById: Map[String, PackageAttachmentExtension] =
+    tracker.getBeanMap.asScala.toMap
+  lazy val packageTypes: Seq[PackageAttachmentExtension] =
+    packageCreateById.values.toSeq.sortBy(_.order)
 
-  def extensionForAttachment(a: Attachment) : Option[PackageAttachmentExtension] = packageTypes.find(_.handles(a))
+  def extensionForAttachment(a: Attachment): Option[PackageAttachmentExtension] =
+    packageTypes.find(_.handles(a))
 
-  def createForUpload(info: SectionInfo, ctx: ControlContext, upload: SuccessfulUpload, d: Seq[PackageType]): AttachmentCreate = {
+  def createForUpload(info: SectionInfo,
+                      ctx: ControlContext,
+                      upload: SuccessfulUpload,
+                      d: Seq[PackageType]): AttachmentCreate = {
     packageTypes.find(_.handlesPackage(upload, d)).get.create(info, ctx, upload)
   }
 }
@@ -60,24 +75,29 @@ object PackageFileCreate {
 object IMSPackageExtension extends PackageAttachmentExtension {
   override def order = 1000
 
-  def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean = d.contains(IMSPackage)
+  def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean =
+    d.contains(IMSPackage)
 
-  def unzipPackage(info: SectionInfo, upload: SuccessfulUpload, ctx: ControlContext): (PackageInfo, String) = {
+  def unzipPackage(info: SectionInfo,
+                   upload: SuccessfulUpload,
+                   ctx: ControlContext): (PackageInfo, String) = {
     val pkgUnzip = upload.temporaryPath("pkg")
     ctx.repo.unzipFile(upload.uploadPath, pkgUnzip, true)
     (ctx.repo.readPackageInfo(info, pkgUnzip), pkgUnzip)
   }
 
-  def standardPackageDetails(a: Attachment, pkgInfo: PackageInfo, upload: SuccessfulUpload): Unit = {
+  def standardPackageDetails(a: Attachment,
+                             pkgInfo: PackageInfo,
+                             upload: SuccessfulUpload): Unit = {
     val pkgFolder = upload.originalFilename
     a.setMd5sum(upload.fileInfo.getMd5CheckSum)
     a.setUrl(pkgFolder)
     a.setDescription(Option(pkgInfo.getTitle).getOrElse(pkgFolder))
   }
 
-  def handles(a: Attachment) : Boolean = a match {
+  def handles(a: Attachment): Boolean = a match {
     case ims: ImsAttachment => true
-    case _ => false
+    case _                  => false
   }
 
   def commitFiles(stg: StagingContext, pkgUnzip: String, upload: SuccessfulUpload): Unit = {
@@ -95,19 +115,24 @@ object IMSPackageExtension extends PackageAttachmentExtension {
   }
 
   override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(
-    a +: WebFileUploads.imsResources(ctx.repo), stg => deleteIMSFiles(stg, a)
+    a +: WebFileUploads.imsResources(ctx.repo),
+    stg => deleteIMSFiles(stg, a)
   )
 
   def create(info: SectionInfo, ctx: ControlContext, upload: SuccessfulUpload): AttachmentCreate = {
     val (pkgInfo, pkgUnzip) = unzipPackage(info, upload, ctx)
-    AttachmentCreate({ stg =>
-      val imsa = new ImsAttachment
-      imsa.setSize(upload.fileInfo.getLength)
-      imsa.setExpand(false)
-      standardPackageDetails(imsa, pkgInfo, upload)
-      commitFiles(stg, pkgUnzip, upload)
-      imsa
-    }, (a,stg) => a, (a,stg) => deleteIMSFiles(stg, a))
+    AttachmentCreate(
+      { stg =>
+        val imsa = new ImsAttachment
+        imsa.setSize(upload.fileInfo.getLength)
+        imsa.setExpand(false)
+        standardPackageDetails(imsa, pkgInfo, upload)
+        commitFiles(stg, pkgUnzip, upload)
+        imsa
+      },
+      (a, stg) => a,
+      (a, stg) => deleteIMSFiles(stg, a)
+    )
   }
 
   val treatAsLabel = WebFileUploads.label("handlers.file.packageoptions.aspackage")
@@ -118,26 +143,31 @@ object ScormPackageExtension extends PackageAttachmentExtension {
 
   val treatAsLabel = WebFileUploads.label("handlers.file.packageoptions.asscorm")
 
-  def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean = d.contains(SCORMPackage)
+  def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean =
+    d.contains(SCORMPackage)
 
   def create(info: SectionInfo, ctx: ControlContext, upload: SuccessfulUpload): AttachmentCreate = {
     val (pkgInfo, pkgUnzip) = unzipPackage(info, upload, ctx)
-    AttachmentCreate({ stg =>
-      val attachment = new CustomAttachment
-      attachment.setType("scorm")
-      attachment.setData("fileSize", upload.fileInfo.getLength)
-      standardPackageDetails(attachment, pkgInfo, upload)
-      commitFiles(stg, pkgUnzip, upload)
-      attachment
-    }, (a,stg) => a, (a, stg) => IMSPackageExtension.deleteIMSFiles(stg, a))
+    AttachmentCreate(
+      { stg =>
+        val attachment = new CustomAttachment
+        attachment.setType("scorm")
+        attachment.setData("fileSize", upload.fileInfo.getLength)
+        standardPackageDetails(attachment, pkgInfo, upload)
+        commitFiles(stg, pkgUnzip, upload)
+        attachment
+      },
+      (a, stg) => a,
+      (a, stg) => IMSPackageExtension.deleteIMSFiles(stg, a)
+    )
   }
 
-  override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(Seq(a),
-    stg => IMSPackageExtension.deleteIMSFiles(stg, a))
+  override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete =
+    AttachmentDelete(Seq(a), stg => IMSPackageExtension.deleteIMSFiles(stg, a))
 
-  def handles(a: Attachment) : Boolean = a match {
+  def handles(a: Attachment): Boolean = a match {
     case ca: CustomAttachment if ca.getType == "scorm" => true
-    case _ => false
+    case _                                             => false
   }
 
 }

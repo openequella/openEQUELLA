@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.web.viewable.servlet;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.viewable.NewDefaultViewableItem;
 import com.tle.web.viewable.NewViewableItemState;
 import com.tle.web.viewable.ViewableItem;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class LegacyItemServlet extends ItemServlet
-{
-	@Override
-	protected ItemUrlParser getItemUrlParser()
-	{
-		return new NewItemUrlParser()
-		{
-			@Override
-			protected void setupContext()
-			{
-				String itemdef = partList.get(0);
-				context = request.getServletPath().substring(1) + '/' + itemdef + '/';
-				partList = partList.subList(1, partList.size());
-			}
+public class LegacyItemServlet extends ItemServlet {
+  @Override
+  protected ItemUrlParser getItemUrlParser() {
+    return new NewItemUrlParser() {
+      @Override
+      protected void setupContext() {
+        String itemdef = partList.get(0);
+        context = request.getServletPath().substring(1) + '/' + itemdef + '/';
+        partList = partList.subList(1, partList.size());
+      }
 
-			@Override
-			public ViewableItem createViewableItem()
-			{
-				NewDefaultViewableItem viewableItem = (NewDefaultViewableItem) super.createViewableItem();
-				NewViewableItemState state = viewableItem.getState();
-				state.setContext(context);
-				return viewableItem;
-			}
-
-		};
-	}
+      @Override
+      public ViewableItem createViewableItem() {
+        NewDefaultViewableItem viewableItem = (NewDefaultViewableItem) super.createViewableItem();
+        NewViewableItemState state = viewableItem.getState();
+        state.setContext(context);
+        return viewableItem;
+      }
+    };
+  }
 }

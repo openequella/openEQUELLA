@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,24 +21,18 @@ package com.tle.core.i18n.guice;
 import com.google.inject.AbstractModule;
 import com.tle.core.config.guice.OptionalConfigModule;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class I18nModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		install(new I18nOptionalConfigModule());
-	}
+public class I18nModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    install(new I18nOptionalConfigModule());
+  }
 
-	public static class I18nOptionalConfigModule extends OptionalConfigModule
-	{
-		@Override
-		protected void configure()
-		{
-			bindProp("timeZone.default");
-		}
-	}
+  public static class I18nOptionalConfigModule extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindProp("timeZone.default");
+    }
+  }
 }

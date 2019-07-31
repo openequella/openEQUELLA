@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,6 @@
 
 package com.tle.core.freetext.migration;
 
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.hibernate.classic.Session;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.CurrentDataSource;
 import com.tle.core.hibernate.HibernateFactoryService;
@@ -30,49 +25,50 @@ import com.tle.core.migration.AbstractHibernateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.Date;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
-public class ReIndexMigration extends AbstractHibernateMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(ReIndexMigration.class) + "."; //$NON-NLS-1$
+public class ReIndexMigration extends AbstractHibernateMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(ReIndexMigration.class) + "."; // $NON-NLS-1$
 
-	@Inject
-	private HibernateFactoryService hibernateService;
+  @Inject private HibernateFactoryService hibernateService;
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {};
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PREFIX + "reindex.title", KEY_PREFIX + "reindex.desc");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PREFIX + "reindex.title", KEY_PREFIX + "reindex.desc");
+  }
 
-	@Override
-	public void migrate(MigrationResult status) throws Exception
-	{
-		runInTransaction(hibernateService.createConfiguration(CurrentDataSource.get(), getDomainClasses())
-			.getSessionFactory(), new HibernateCall()
-		{
-			@SuppressWarnings("nls")
-			@Override
-			public void run(Session session) throws Exception
-			{
-				session.createSQLQuery("update item set date_for_index = ?").setParameter(0, new Date())
-					.executeUpdate();
-
-			}
-		});
-	}
+  @Override
+  public void migrate(MigrationResult status) throws Exception {
+    runInTransaction(
+        hibernateService
+            .createConfiguration(CurrentDataSource.get(), getDomainClasses())
+            .getSessionFactory(),
+        new HibernateCall() {
+          @SuppressWarnings("nls")
+          @Override
+          public void run(Session session) throws Exception {
+            session
+                .createSQLQuery("update item set date_for_index = ?")
+                .setParameter(0, new Date())
+                .executeUpdate();
+          }
+        });
+  }
 }

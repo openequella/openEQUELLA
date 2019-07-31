@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,37 +27,32 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.RenderNewTemplate;
 
 @SuppressWarnings("nls")
-public final class SettingsUtils
-{
-	private static final KeyLabel BREADCRUMB_LABEL = new KeyLabel(ResourcesService.getResourceHelper(
-		SettingsUtils.class).key("breadcrumb"));
+public final class SettingsUtils {
+  private static final KeyLabel BREADCRUMB_LABEL =
+      new KeyLabel(ResourcesService.getResourceHelper(SettingsUtils.class).key("breadcrumb"));
 
-	private static final SimpleBookmark SETTINGS_BOOKMARK = new SimpleBookmark("access/settings.do");
-	private static final SimpleBookmark NEW_SETTINGS_BOOKMARK = new SimpleBookmark("page/settings");
+  private static final SimpleBookmark SETTINGS_BOOKMARK = new SimpleBookmark("access/settings.do");
+  private static final SimpleBookmark NEW_SETTINGS_BOOKMARK = new SimpleBookmark("page/settings");
 
-	private static final KeyLabel BREADCRUMB_TITLE = new KeyLabel(ResourcesService.getResourceHelper(
-		SettingsUtils.class).key("settings.breadcrumb.title"));
+  private static final KeyLabel BREADCRUMB_TITLE =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(SettingsUtils.class).key("settings.breadcrumb.title"));
 
-	public static final Bookmark getBookmark(SectionInfo info)
-	{
-		if (RenderNewTemplate.isNewLayout(info))
-		{
-			return NEW_SETTINGS_BOOKMARK;
-		}
-		return SETTINGS_BOOKMARK;
-	}
+  public static final Bookmark getBookmark(SectionInfo info) {
+    if (RenderNewTemplate.isNewLayout(info)) {
+      return NEW_SETTINGS_BOOKMARK;
+    }
+    return SETTINGS_BOOKMARK;
+  }
 
+  public static HtmlLinkState getBreadcrumb(SectionInfo info) {
+    HtmlLinkState link = new HtmlLinkState(getBookmark(info));
+    link.setLabel(BREADCRUMB_LABEL);
+    link.setTitle(BREADCRUMB_TITLE);
+    return link;
+  }
 
-	public static HtmlLinkState getBreadcrumb(SectionInfo info)
-	{
-		HtmlLinkState link = new HtmlLinkState(getBookmark(info));
-		link.setLabel(BREADCRUMB_LABEL);
-		link.setTitle(BREADCRUMB_TITLE);
-		return link;
-	}
-
-	private SettingsUtils()
-	{
-		throw new Error();
-	}
+  private SettingsUtils() {
+    throw new Error();
+  }
 }

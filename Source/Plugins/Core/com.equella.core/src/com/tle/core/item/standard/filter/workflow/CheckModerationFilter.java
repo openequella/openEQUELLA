@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,28 @@
 
 package com.tle.core.item.standard.filter.workflow;
 
-import javax.inject.Inject;
-
 import com.google.inject.Provider;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.item.standard.filter.AbstractStandardOperationFilter;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.core.item.standard.operations.workflow.EscalateOperation;
+import javax.inject.Inject;
 
 @Bind
-public class CheckModerationFilter extends AbstractStandardOperationFilter
-{
-	@Inject
-	private Provider<EscalateOperation> escalateFactory;
-	@Inject
-	private ItemOperationFactory itemOperationFactory;
+public class CheckModerationFilter extends AbstractStandardOperationFilter {
+  @Inject private Provider<EscalateOperation> escalateFactory;
+  @Inject private ItemOperationFactory itemOperationFactory;
 
-	@Override
-	public AbstractStandardWorkflowOperation[] createOperations()
-	{
-		return new AbstractStandardWorkflowOperation[]{escalateFactory.get(), itemOperationFactory.checkSteps(),
-				operationFactory.save()};
-	}
+  @Override
+  public AbstractStandardWorkflowOperation[] createOperations() {
+    return new AbstractStandardWorkflowOperation[] {
+      escalateFactory.get(), itemOperationFactory.checkSteps(), operationFactory.save()
+    };
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "moderating = true"; //$NON-NLS-1$
-	}
+  @Override
+  public String getWhereClause() {
+    return "moderating = true"; //$NON-NLS-1$
+  }
 }

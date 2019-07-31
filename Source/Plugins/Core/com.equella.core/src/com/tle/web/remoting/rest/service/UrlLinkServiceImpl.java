@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,25 @@
 
 package com.tle.web.remoting.rest.service;
 
+import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import java.net.URISyntaxException;
-
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
-import com.tle.core.guice.Bind;
-import com.tle.core.institution.InstitutionService;
-
-/**
- * 
- */
+/** */
 @Bind(UrlLinkService.class)
-public class UrlLinkServiceImpl implements UrlLinkService
-{
-	@Inject
-	private InstitutionService institutionService;
+public class UrlLinkServiceImpl implements UrlLinkService {
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public UriBuilder getMethodUriBuilder(Class<?> resource, String method)
-	{
-		try
-		{
-			UriBuilder builder = UriBuilder.fromUri(institutionService.getInstitutionUrl().toURI());
-			builder.path("api");
-			return builder.path(resource).path(resource, method);
-		}
-		catch( URISyntaxException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public UriBuilder getMethodUriBuilder(Class<?> resource, String method) {
+    try {
+      UriBuilder builder = UriBuilder.fromUri(institutionService.getInstitutionUrl().toURI());
+      builder.path("api");
+      return builder.path(resource).path(resource, method);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

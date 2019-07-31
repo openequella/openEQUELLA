@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,43 +26,52 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 
 @NonNullByDefault
-public interface ViewItemUrlFactory
-{
-	/**
-	 * Uses flags: FLAG_NO_BACK|FLAG_FULL_URL
-	 * 
-	 * @param itemId
-	 * @return
-	 */
-	ViewItemUrl createFullItemUrl(ItemKey itemId);
+public interface ViewItemUrlFactory {
+  /**
+   * Uses flags: FLAG_NO_BACK|FLAG_FULL_URL
+   *
+   * @param itemId
+   * @return
+   */
+  ViewItemUrl createFullItemUrl(ItemKey itemId);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId, int flags);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId, int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem);
+  ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> vieableItem, int flag);
+  ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> vieableItem, int flag);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath);
 
-	ViewItemUrl createItemUrl(SectionInfo info, String itemServletContext, ItemKey item, UrlEncodedString filePath,
-		int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info,
+      String itemServletContext,
+      ItemKey item,
+      UrlEncodedString filePath,
+      int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath, String queryString, int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info, ItemKey item, UrlEncodedString filePath, String queryString, int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
 
-	/**
-	 * SCORM and IMS resources may contain a query string component
-	 * 
-	 * @param info
-	 * @param viewableItem
-	 * @param filePath
-	 * @param queryString
-	 * @param flags
-	 * @return
-	 */
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
-		String queryString, int flags);
+  /**
+   * SCORM and IMS resources may contain a query string component
+   *
+   * @param info
+   * @param viewableItem
+   * @param filePath
+   * @param queryString
+   * @param flags
+   * @return
+   */
+  ViewItemUrl createItemUrl(
+      SectionInfo info,
+      ViewableItem<Item> viewableItem,
+      UrlEncodedString filePath,
+      String queryString,
+      int flags);
 }

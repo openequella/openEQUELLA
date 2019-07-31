@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,32 +22,26 @@ import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 
 @SuppressWarnings("nls")
-public class SpanRenderer extends DivRenderer
-{
-	public SpanRenderer(HtmlComponentState tagState)
-	{
-		this((TagState) tagState);
-	}
+public class SpanRenderer extends DivRenderer {
+  public SpanRenderer(HtmlComponentState tagState) {
+    this((TagState) tagState);
+  }
 
-	public SpanRenderer(Object innerContent)
-	{
-		this((String) null, innerContent);
-	}
+  public SpanRenderer(Object innerContent) {
+    this((String) null, innerContent);
+  }
 
-	public SpanRenderer(String styleClass, Object text)
-	{
-		super(styleClass, text);
-		setTag("span");
-	}
+  public SpanRenderer(String styleClass, Object text) {
+    super(styleClass, text);
+    setTag("span");
+  }
 
-	public SpanRenderer(TagState tagState)
-	{
-		super(tagState);
-		setTag("span");
-	}
+  public SpanRenderer(TagState tagState) {
+    super(tagState);
+    setTag("span");
+  }
 
-	public SpanRenderer(TagState state, Object content)
-	{
-		super(state, "span", null, content);
-	}
+  public SpanRenderer(TagState state, Object content) {
+    super(state, "span", null, content);
+  }
 }

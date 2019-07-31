@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.controls.groupselector;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
@@ -63,224 +61,208 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.CCustomControl;
 import com.tle.web.wizard.controls.WebControlModel;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class GroupSelectorWebControl extends AbstractWebControl<GroupSelectorWebControl.GroupSelectorWebControlModel>
-	implements
-		CurrentGroupsCallback
-{
-	@PlugKey("groupsel.prompt.selectsingle")
-	private static Label LABEL_PROMPTSINGLE;
-	@PlugKey("groupsel.prompt.selectmultiple")
-	private static Label LABEL_PROMPTMULTIPLE;
-	@PlugKey("groupsel.title.selectsingle")
-	private static Label LABEL_TITLESINGLE;
-	@PlugKey("groupsel.title.selectmultiple")
-	private static Label LABEL_TITLEMULTIPLE;
+public class GroupSelectorWebControl
+    extends AbstractWebControl<GroupSelectorWebControl.GroupSelectorWebControlModel>
+    implements CurrentGroupsCallback {
+  @PlugKey("groupsel.prompt.selectsingle")
+  private static Label LABEL_PROMPTSINGLE;
 
-	@PlugKey("groupsel.confirmremove")
-	private static Confirm KEY_CONFIRM;
-	@PlugKey("groupsel.remove")
-	private static Label LABEL_REMOVE;
+  @PlugKey("groupsel.prompt.selectmultiple")
+  private static Label LABEL_PROMPTMULTIPLE;
 
-	private GroupSelectorControl definitionControl;
-	private CCustomControl storageControl;
+  @PlugKey("groupsel.title.selectsingle")
+  private static Label LABEL_TITLESINGLE;
 
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private SelectGroupDialog selectGroupDialog;
-	@Inject
-	private UserService userService;
+  @PlugKey("groupsel.title.selectmultiple")
+  private static Label LABEL_TITLEMULTIPLE;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("groupsel.confirmremove")
+  private static Confirm KEY_CONFIRM;
 
-	@Component
-	private SelectionsTable groupsTable;
-	@Component
-	@PlugKey("groupsel.button.selectgroup")
-	private Link addLink;
+  @PlugKey("groupsel.remove")
+  private static Label LABEL_REMOVE;
 
-	private JSCallable removeGroupFunction;
+  private GroupSelectorControl definitionControl;
+  private CCustomControl storageControl;
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new GroupSelectorControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @Inject private ComponentFactory componentFactory;
+  @Inject private SelectGroupDialog selectGroupDialog;
+  @Inject private UserService userService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisabler(context, addLink);
-		return viewFactory.createResult("groupselectorwebcontrol.ftl", context);
-	}
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(final String id, final SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		final boolean multiple = definitionControl.isSelectMultiple();
+  @Component private SelectionsTable groupsTable;
 
-		selectGroupDialog.setMultipleGroups(multiple);
-		selectGroupDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
-		selectGroupDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
-		selectGroupDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
-		selectGroupDialog.setGroupsCallback(this);
-		selectGroupDialog.setGroupFilter(definitionControl.isRestricted(GroupSelectorControl.KEY_RESTRICT_GROUPS)
-			? definitionControl.getRestrictedTo(GroupSelectorControl.KEY_RESTRICT_GROUPS) : null);
+  @Component
+  @PlugKey("groupsel.button.selectgroup")
+  private Link addLink;
 
-		componentFactory.registerComponent(id, "s", tree, selectGroupDialog);
-		removeGroupFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeGroup"),
-			id + "groupselector");
+  private JSCallable removeGroupFunction;
 
-		addLink.setClickHandler(selectGroupDialog.getOpenFunction());
-		addLink.setDisablable(true);
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new GroupSelectorControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-		groupsTable.setSelectionsModel(new GroupsModel());
-		groupsTable.setAddAction(addLink);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisabler(context, addLink);
+    return viewFactory.createResult("groupselectorwebcontrol.ftl", context);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return storageControl.getValues().size() == 0;
-	}
+  @Override
+  public void registered(final String id, final SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		if( storageControl.hasTargets() )
-		{
-			return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
-		}
-		return null;
-	}
+    final boolean multiple = definitionControl.isSelectMultiple();
 
-	@EventHandlerMethod
-	public void select(final SectionContext context, final String groupsJson) throws Exception
-	{
-		final GroupSelectorWebControlModel model = getModel(context);
-		model.setSelectedGroups(SelectGroupDialog.groupsFromJsonString(groupsJson));
-	}
+    selectGroupDialog.setMultipleGroups(multiple);
+    selectGroupDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
+    selectGroupDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
+    selectGroupDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
+    selectGroupDialog.setGroupsCallback(this);
+    selectGroupDialog.setGroupFilter(
+        definitionControl.isRestricted(GroupSelectorControl.KEY_RESTRICT_GROUPS)
+            ? definitionControl.getRestrictedTo(GroupSelectorControl.KEY_RESTRICT_GROUPS)
+            : null);
 
-	@EventHandlerMethod
-	public void removeGroup(final SectionContext context, final String groupId) throws Exception
-	{
-		storageControl.getValues().remove(groupId);
-	}
+    componentFactory.registerComponent(id, "s", tree, selectGroupDialog);
+    removeGroupFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("removeGroup"), id + "groupselector");
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		final GroupSelectorWebControlModel model = getModel(info);
+    addLink.setClickHandler(selectGroupDialog.getOpenFunction());
+    addLink.setDisablable(true);
 
-		if( model.getSelectedGroups() != null )
-		{
-			final List<String> controlValues = storageControl.getValues();
-			controlValues.clear();
-			controlValues.addAll(Lists.transform(model.getSelectedGroups(), new Function<SelectedGroup, String>()
-			{
-				@Override
-				public String apply(SelectedGroup group)
-				{
-					return group.getUuid();
-				}
-			}));
-		}
-	}
+    groupsTable.setSelectionsModel(new GroupsModel());
+    groupsTable.setAddAction(addLink);
+  }
 
-	@Override
-	public Class<GroupSelectorWebControlModel> getModelClass()
-	{
-		return GroupSelectorWebControlModel.class;
-	}
+  @Override
+  public boolean isEmpty() {
+    return storageControl.getValues().size() == 0;
+  }
 
-	@Override
-	public List<SelectedGroup> getCurrentSelectedGroups(final SectionInfo info)
-	{
-		return Lists.transform(storageControl.getValues(), new Function<String, SelectedGroup>()
-		{
-			@Override
-			public SelectedGroup apply(String id)
-			{
-				final GroupBean groupBean = userService.getInformationForGroup(id);
-				final String displayName;
-				if( groupBean == null )
-				{
-					displayName = id;
-				}
-				else
-				{
-					displayName = Format.format(groupBean);
-				}
-				return new SelectedGroup(id, displayName);
-			}
-		});
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    if (storageControl.hasTargets()) {
+      return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
+    }
+    return null;
+  }
 
-	public SelectGroupDialog getSelectGroupDialog()
-	{
-		return selectGroupDialog;
-	}
+  @EventHandlerMethod
+  public void select(final SectionContext context, final String groupsJson) throws Exception {
+    final GroupSelectorWebControlModel model = getModel(context);
+    model.setSelectedGroups(SelectGroupDialog.groupsFromJsonString(groupsJson));
+  }
 
-	public SelectionsTable getGroupsTable()
-	{
-		return groupsTable;
-	}
+  @EventHandlerMethod
+  public void removeGroup(final SectionContext context, final String groupId) throws Exception {
+    storageControl.getValues().remove(groupId);
+  }
 
-	private class GroupsModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return storageControl.getValues();
-		}
+  @Override
+  public void doEdits(SectionInfo info) {
+    final GroupSelectorWebControlModel model = getModel(info);
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String groupId,
-			List<SectionRenderable> actions, int index)
-		{
-			selection
-				.setViewAction(new LabelRenderer(new TextLabel(userService.getInformationForGroup(groupId).getName())));
-			if( isEnabled() )
-			{
-				actions.add(makeRemoveAction(LABEL_REMOVE,
-					new OverrideHandler(removeGroupFunction, groupId).addValidator(KEY_CONFIRM)));
-			}
-		}
-	}
+    if (model.getSelectedGroups() != null) {
+      final List<String> controlValues = storageControl.getValues();
+      controlValues.clear();
+      controlValues.addAll(
+          Lists.transform(
+              model.getSelectedGroups(),
+              new Function<SelectedGroup, String>() {
+                @Override
+                public String apply(SelectedGroup group) {
+                  return group.getUuid();
+                }
+              }));
+    }
+  }
 
-	public static class GroupSelectorWebControlModel extends WebControlModel
-	{
-		/**
-		 * For shoving de-JSONed results into.
-		 */
-		private List<SelectedGroup> selectedGroups;
+  @Override
+  public Class<GroupSelectorWebControlModel> getModelClass() {
+    return GroupSelectorWebControlModel.class;
+  }
 
-		public List<SelectedGroup> getSelectedGroups()
-		{
-			return selectedGroups;
-		}
+  @Override
+  public List<SelectedGroup> getCurrentSelectedGroups(final SectionInfo info) {
+    return Lists.transform(
+        storageControl.getValues(),
+        new Function<String, SelectedGroup>() {
+          @Override
+          public SelectedGroup apply(String id) {
+            final GroupBean groupBean = userService.getInformationForGroup(id);
+            final String displayName;
+            if (groupBean == null) {
+              displayName = id;
+            } else {
+              displayName = Format.format(groupBean);
+            }
+            return new SelectedGroup(id, displayName);
+          }
+        });
+  }
 
-		public void setSelectedGroups(final List<SelectedGroup> selectedGroups)
-		{
-			this.selectedGroups = selectedGroups;
-		}
-	}
+  public SelectGroupDialog getSelectGroupDialog() {
+    return selectGroupDialog;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  public SelectionsTable getGroupsTable() {
+    return groupsTable;
+  }
+
+  private class GroupsModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return storageControl.getValues();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String groupId,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(
+          new LabelRenderer(new TextLabel(userService.getInformationForGroup(groupId).getName())));
+      if (isEnabled()) {
+        actions.add(
+            makeRemoveAction(
+                LABEL_REMOVE,
+                new OverrideHandler(removeGroupFunction, groupId).addValidator(KEY_CONFIRM)));
+      }
+    }
+  }
+
+  public static class GroupSelectorWebControlModel extends WebControlModel {
+    /** For shoving de-JSONed results into. */
+    private List<SelectedGroup> selectedGroups;
+
+    public List<SelectedGroup> getSelectedGroups() {
+      return selectedGroups;
+    }
+
+    public void setSelectedGroups(final List<SelectedGroup> selectedGroups) {
+      this.selectedGroups = selectedGroups;
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

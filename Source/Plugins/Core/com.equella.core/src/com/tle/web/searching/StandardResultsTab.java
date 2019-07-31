@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,65 +29,55 @@ import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.selection.section.CourseListSection;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class StandardResultsTab extends AbstractPrototypeSection<StandardResultsTab.StandardResultsTabModel>
-	implements
-		SearchTab
-{
-	@PlugKey("results.tab.resultcount")
-	private static String KEY_STANDARD_RESULTS_TAB_COUNT;
-	private boolean active;
+public class StandardResultsTab
+    extends AbstractPrototypeSection<StandardResultsTab.StandardResultsTabModel>
+    implements SearchTab {
+  @PlugKey("results.tab.resultcount")
+  private static String KEY_STANDARD_RESULTS_TAB_COUNT;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		// TODO: count
-		return new LabelRenderer(new PluralKeyLabel(KEY_STANDARD_RESULTS_TAB_COUNT, 0));
-	}
+  private boolean active;
 
-	@Override
-	public String getId()
-	{
-		return "standard";
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    // TODO: count
+    return new LabelRenderer(new PluralKeyLabel(KEY_STANDARD_RESULTS_TAB_COUNT, 0));
+  }
 
-	@Override
-	public SectionInfo getForward(SectionInfo info)
-	{
-		// TODO: this is less hacky than before, but still sub-ottstimal.
-		final CourseListSection cls = info.lookupSection(CourseListSection.class);
-		if( cls != null && cls.isApplicable(info) )
-		{
-			return cls.createSearchForward(info);
-		}
-		return info.createForward("/searching.do");
-	}
+  @Override
+  public String getId() {
+    return "standard";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new StandardResultsTabModel();
-	}
+  @Override
+  public SectionInfo getForward(SectionInfo info) {
+    // TODO: this is less hacky than before, but still sub-ottstimal.
+    final CourseListSection cls = info.lookupSection(CourseListSection.class);
+    if (cls != null && cls.isApplicable(info)) {
+      return cls.createSearchForward(info);
+    }
+    return info.createForward("/searching.do");
+  }
 
-	@Override
-	public void setActive()
-	{
-		active = true;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new StandardResultsTabModel();
+  }
 
-	@Override
-	public boolean isActive()
-	{
-		return active;
-	}
+  @Override
+  public void setActive() {
+    active = true;
+  }
 
-	public static class StandardResultsTabModel
-	{
-		// Empty, for now
-	}
+  @Override
+  public boolean isActive() {
+    return active;
+  }
+
+  public static class StandardResultsTabModel {
+    // Empty, for now
+  }
 }

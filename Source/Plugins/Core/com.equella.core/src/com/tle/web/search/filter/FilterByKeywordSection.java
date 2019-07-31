@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,47 +32,38 @@ import com.tle.web.sections.events.RenderEventContext;
 @SuppressWarnings("nls")
 @TreeIndexed
 public class FilterByKeywordSection extends AbstractQuerySection<Object, FreetextSearchEvent>
-	implements
-		ResetFiltersListener
-{
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+    implements ResetFiltersListener {
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("filter/filterbykeyword.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("filter/filterbykeyword.ftl", context);
+  }
 
-	@Override
-	protected boolean isIncludeUnfiltered()
-	{
-		return false;
-	}
+  @Override
+  protected boolean isIncludeUnfiltered() {
+    return false;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "fbkw";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "fbkw";
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		queryField.setValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    queryField.setValue(info, null);
+  }
 }

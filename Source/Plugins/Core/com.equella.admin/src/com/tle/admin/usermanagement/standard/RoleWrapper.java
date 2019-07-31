@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,33 +24,28 @@ import com.tle.beans.usermanagement.standard.wrapper.RoleWrapperSettings;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteUserService;
 
-public class RoleWrapper extends GeneralPlugin<RoleWrapperSettings>
-{
-	private RoleAssigner roleAssigner;
+public class RoleWrapper extends GeneralPlugin<RoleWrapperSettings> {
+  private RoleAssigner roleAssigner;
 
-	@Override
-	public void init()
-	{
-		roleAssigner = new RoleAssigner(clientService.getService(RemoteUserService.class));
-		addFillComponent(roleAssigner);
-	}
+  @Override
+  public void init() {
+    roleAssigner = new RoleAssigner(clientService.getService(RemoteUserService.class));
+    addFillComponent(roleAssigner);
+  }
 
-	@Override
-	public void load(RoleWrapperSettings settings)
-	{
-		roleAssigner.setRoleMappings(settings.getRoles());
-	}
+  @Override
+  public void load(RoleWrapperSettings settings) {
+    roleAssigner.setRoleMappings(settings.getRoles());
+  }
 
-	@Override
-	public boolean save(RoleWrapperSettings settings)
-	{
-		settings.setRoles(roleAssigner.getRoleMappings());
-		return true;
-	}
+  @Override
+  public boolean save(RoleWrapperSettings settings) {
+    settings.setRoles(roleAssigner.getRoleMappings());
+    return true;
+  }
 
-	@Override
-	public String getDocumentName()
-	{
-		return CurrentLocale.get("com.tle.admin.usermanagement.rolewrapper.docname"); //$NON-NLS-1$
-	}
+  @Override
+  public String getDocumentName() {
+    return CurrentLocale.get("com.tle.admin.usermanagement.rolewrapper.docname"); // $NON-NLS-1$
+  }
 }

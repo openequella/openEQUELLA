@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,55 +18,42 @@
 
 package com.tle.core.activation.validation;
 
+import com.tle.beans.activation.ActivateRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.tle.beans.activation.ActivateRequest;
+public class ActivationPeriodHelper {
+  private final List<ActivateRequest> requests;
 
-public class ActivationPeriodHelper
-{
-	private final List<ActivateRequest> requests;
+  public ActivationPeriodHelper(List<ActivateRequest> requests) {
+    this.requests = requests;
+  }
 
-	public ActivationPeriodHelper(List<ActivateRequest> requests)
-	{
-		this.requests = requests;
-	}
+  public Set<Date> calculatePoints() {
+    Set<Date> points = new HashSet<Date>();
+    for (ActivateRequest request : requests) {
+      if (request.getFrom() != null && request.getUntil() != null) {
+        points.add(request.getFrom());
+        points.add(request.getUntil());
+      }
+    }
+    return points;
+  }
 
-	public Set<Date> calculatePoints()
-	{
-		Set<Date> points = new HashSet<Date>();
-		for( ActivateRequest request : requests )
-		{
-			if( request.getFrom() != null && request.getUntil() != null )
-			{
-				points.add(request.getFrom());
-				points.add(request.getUntil());
-			}
-		}
-		return points;
-	}
+  /** Collection of reports which contain the given date. */
+  public List<ActivateRequest> calculateIntersections(Date time) {
+    List<ActivateRequest> intersects = new ArrayList<ActivateRequest>();
+    for (ActivateRequest report : requests) {
+      if (report.getFrom() != null && report.getUntil() != null) {
+        if (!(report.getFrom().after(time) || report.getUntil().before(time))) {
+          intersects.add(report);
+        }
+      }
+    }
 
-	/**
-	 * Collection of reports which contain the given date.
-	 */
-	public List<ActivateRequest> calculateIntersections(Date time)
-	{
-		List<ActivateRequest> intersects = new ArrayList<ActivateRequest>();
-		for( ActivateRequest report : requests )
-		{
-			if( report.getFrom() != null && report.getUntil() != null )
-			{
-				if( !(report.getFrom().after(time) || report.getUntil().before(time)) )
-				{
-					intersects.add(report);
-				}
-			}
-		}
-
-		return intersects;
-	}
-
+    return intersects;
+  }
 }

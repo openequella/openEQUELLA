@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,8 +23,8 @@ import com.tle.web.sections.{Section, SectionInfo, SectionTree}
 abstract class AbstractScalaSection extends Section {
   type M <: Any
 
-  var treeRegisteredIn : SectionTree = _
-  var sectionId : String = _
+  var treeRegisteredIn: SectionTree = _
+  var sectionId: String             = _
 
   def getModel(info: SectionInfo): M = info.getModelForId(getSectionId)
   def newModel: SectionInfo => M
@@ -46,7 +48,9 @@ abstract class AbstractScalaSection extends Section {
 
   override def getDefaultPropertyName: String = {
     val _className = getClass.getSimpleName
-    val className = if (_className.endsWith("Section")) _className.substring(0, _className.length - 7) else _className
+    val className =
+      if (_className.endsWith("Section")) _className.substring(0, _className.length - 7)
+      else _className
     val caps: Array[String] = className.split("[a-z0-9]*")
     caps.mkString("").toLowerCase
   }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,33 @@
 
 package com.tle.web.core.servlet;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.tle.core.filesystem.EntityFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Bind
 @Singleton
-public class EntityAttachmentsServlet extends AbstractIdPathServlet
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+public class EntityAttachmentsServlet extends AbstractIdPathServlet {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MimeTypeService mimeService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response, String entityId, String path)
-		throws ServletException, IOException
-	{
-		EntityFile entFile = new EntityFile(Long.parseLong(entityId));
-		FileContentStream stream = fileSystemService.getContentStream(entFile, path,
-			mimeService.getMimeTypeForFilename(path));
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+  @Override
+  protected void service(
+      HttpServletRequest request, HttpServletResponse response, String entityId, String path)
+      throws ServletException, IOException {
+    EntityFile entFile = new EntityFile(Long.parseLong(entityId));
+    FileContentStream stream =
+        fileSystemService.getContentStream(entFile, path, mimeService.getMimeTypeForFilename(path));
+    contentStreamWriter.outputStream(request, response, stream);
+  }
 }

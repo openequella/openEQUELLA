@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,9 @@
 
 package com.tle.common.old.workflow;
 
+import com.tle.beans.IdCloneable;
+import com.tle.common.old.workflow.node.WorkflowNode;
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -28,83 +31,69 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.IdCloneable;
-import com.tle.common.old.workflow.node.WorkflowNode;
 
 @Entity
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "acttype")
 @DiscriminatorValue("node")
-public class WorkflowNodeStatus implements Serializable, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowNodeStatus implements Serializable, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	public static final char INCOMPLETE = 'i';
-	public static final char COMPLETE = 'c';
+  public static final char INCOMPLETE = 'i';
+  public static final char COMPLETE = 'c';
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Column(length = 40)
-	private String nodeId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	private char status;
-	private int type;
+  @Column(length = 40)
+  private String nodeId;
 
-	public WorkflowNodeStatus()
-	{
-		super();
-	}
+  private char status;
+  private int type;
 
-	public WorkflowNodeStatus(WorkflowNode node)
-	{
-		this.type = node.getType();
-		nodeId = node.getId();
-	}
+  public WorkflowNodeStatus() {
+    super();
+  }
 
-	public String getNodeId()
-	{
-		return nodeId;
-	}
+  public WorkflowNodeStatus(WorkflowNode node) {
+    this.type = node.getType();
+    nodeId = node.getId();
+  }
 
-	public void setNodeId(String nodeId)
-	{
-		this.nodeId = nodeId;
-	}
+  public String getNodeId() {
+    return nodeId;
+  }
 
-	public char getStatus()
-	{
-		return status;
-	}
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
+  }
 
-	public void setStatus(char status)
-	{
-		this.status = status;
-	}
+  public char getStatus() {
+    return status;
+  }
 
-	public int getType()
-	{
-		return type;
-	}
+  public void setStatus(char status) {
+    this.status = status;
+  }
 
-	public void setType(int type)
-	{
-		this.type = type;
-	}
+  public int getType() {
+    return type;
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  public void setType(int type) {
+    this.type = type;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 }

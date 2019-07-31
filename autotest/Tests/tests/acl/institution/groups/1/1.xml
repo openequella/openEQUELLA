@@ -1,0 +1,11 @@
+<com.tle.beans.user.TLEGroup>
+  <id>131422</id>
+  <uuid>de08f3ac-33ec-465d-853a-c6fd4e6f4b5e</uuid>
+  <name>INT - System Administrators</name>
+  <description></description>
+  <users>
+    <string>74d5ab31-7148-4457-84e8-507b146073fd</string>
+    <string>andrew.gibb</string>
+    <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

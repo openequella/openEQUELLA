@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,23 +25,22 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
-public interface PortletEditor
-{
-	void create(SectionInfo info, String type, boolean admin);
+public interface PortletEditor {
+  void create(SectionInfo info, String type, boolean admin);
 
-	void edit(SectionInfo info, String portletUuid, boolean admin);
+  void edit(SectionInfo info, String portletUuid, boolean admin);
 
-	SectionRenderable render(RenderContext info);
+  SectionRenderable render(RenderContext info);
 
-	void saveToSession(SectionInfo info);
+  void saveToSession(SectionInfo info);
 
-	void loadFromSession(SectionInfo info);
+  void loadFromSession(SectionInfo info);
 
-	void restore(SectionInfo info);
+  void restore(SectionInfo info);
 
-	void register(SectionTree tree, String parentId);
+  void register(SectionTree tree, String parentId);
 
-	void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
+  void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
 
-	SectionRenderable renderHelp(RenderContext context);
+  SectionRenderable renderHelp(RenderContext context);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.contribute;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
@@ -42,61 +40,55 @@ import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.wizard.WebWizardService;
 import com.tle.web.wizard.WizardInfo;
 import com.tle.web.wizard.WizardService;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class ResumeSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("resume.confirm")
-	private static Confirm RESUME_CONFIRM;
+public class ResumeSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @PlugKey("resume.confirm")
+  private static Confirm RESUME_CONFIRM;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private WizardService wizardService;
+  @Inject private WizardService wizardService;
 
-	@Inject
-	private WebWizardService webWizardService;
+  @Inject private WebWizardService webWizardService;
 
-	@Component
-	@PlugKey("resume")
-	private Button resume;
+  @Component
+  @PlugKey("resume")
+  private Button resume;
 
-	private SubmitValuesFunction resumeHandler;
+  private SubmitValuesFunction resumeHandler;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		resumeHandler = events.getSubmitValuesFunction("resume");
-	}
+    resumeHandler = events.getSubmitValuesFunction("resume");
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		Item item = itemInfo.getItem();
-		List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
-		if( resumableWizards.size() > 0 )
-		{
-			for( WizardInfo wizInfo : resumableWizards )
-			{
-				if( wizInfo.getItemUuid().equals(item.getUuid()) && wizInfo.getItemVersion() == item.getVersion() )
-				{
-					resume.setClickHandler(context,
-						new OverrideHandler(resumeHandler, wizInfo.getUuid()).addValidator(RESUME_CONFIRM));
-					return renderSection(context, resume);
-				}
-			}
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    Item item = itemInfo.getItem();
+    List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
+    if (resumableWizards.size() > 0) {
+      for (WizardInfo wizInfo : resumableWizards) {
+        if (wizInfo.getItemUuid().equals(item.getUuid())
+            && wizInfo.getItemVersion() == item.getVersion()) {
+          resume.setClickHandler(
+              context,
+              new OverrideHandler(resumeHandler, wizInfo.getUuid()).addValidator(RESUME_CONFIRM));
+          return renderSection(context, resume);
+        }
+      }
+    }
+    return null;
+  }
 
-	@EventHandlerMethod
-	public void resume(SectionInfo info, String wizardUuid)
-	{
-		webWizardService.forwardToLoadWizard(info, wizardUuid);
-	}
+  @EventHandlerMethod
+  public void resume(SectionInfo info, String wizardUuid) {
+    webWizardService.forwardToLoadWizard(info, wizardUuid);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,67 +18,59 @@
 
 package com.tle.web.contribute;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ContributeMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(
-		ResourcesService.getResourceHelper(ContributeMenuContributor.class).key("contribute.menu"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(ContributeMenuContributor.class)
-		.url("images/menu-icon-contribute.png");
-	private static final String SESSION_KEY = "CONTRIBUTE-MENU";
+public class ContributeMenuContributor extends AbstractUpdatableMenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(ContributeMenuContributor.class)
+              .key("contribute.menu"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(ContributeMenuContributor.class)
+          .url("images/menu-icon-contribute.png");
+  private static final String SESSION_KEY = "CONTRIBUTE-MENU";
 
-	@Inject
-	private UserSessionService userSessionService;
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
+  @Inject private ItemDefinitionService itemDefinitionService;
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		Boolean b = (Boolean) userSessionService.getAttribute(SESSION_KEY);
-		if( b == null )
-		{
-			b = !itemDefinitionService.listCreateable().isEmpty();
-			userSessionService.setAttribute(SESSION_KEY, b);
-		}
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    Boolean b = (Boolean) userSessionService.getAttribute(SESSION_KEY);
+    if (b == null) {
+      b = !itemDefinitionService.listCreateable().isEmpty();
+      userSessionService.setAttribute(SESSION_KEY, b);
+    }
 
-		if( !b.booleanValue() )
-		{
-			return Collections.emptyList();
-		}
+    if (!b.booleanValue()) {
+      return Collections.emptyList();
+    }
 
-		// TODO: We should be generating a bookmark to the section rather than
-		// hard-coding the URL. If there is only one wizard, we should go
-		// straight to it, like what we do in ContributeSelectable.
+    // TODO: We should be generating a bookmark to the section rather than
+    // hard-coding the URL. If there is only one wizard, we should go
+    // straight to it, like what we do in ContributeSelectable.
 
-		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/contribute.do"));
-		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 30, "create");
-		return Collections.singletonList(mc);
-	}
+    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/contribute.do"));
+    hls.setLabel(LABEL_KEY);
+    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 30, "create");
+    return Collections.singletonList(mc);
+  }
 
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public String getSessionKey() {
+    return SESSION_KEY;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.bulk.workflowtask.operations;
 
-import java.util.Collections;
-import java.util.Set;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.common.i18n.CurrentLocale;
@@ -26,40 +25,40 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
 import com.tle.core.security.impl.SecureInModeration;
 import com.tle.exceptions.AccessDeniedException;
+import java.util.Collections;
+import java.util.Set;
 
 @SecureInModeration
-public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperation
-{
-	private final String toUser;
+public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperation {
+  private final String toUser;
 
-	@AssistedInject
-	private TaskReassignModeratorOperation(@Assisted("toUser") String toUser)
-	{
-		this.toUser = toUser;
-	}
+  @AssistedInject
+  private TaskReassignModeratorOperation(@Assisted("toUser") String toUser) {
+    this.toUser = toUser;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		TaskStatus status = init("MANAGE_WORKFLOW");
-		Set<String> usersToModerate = status.getUsersToModerate(this);
-		if( usersToModerate.contains(toUser) )
-		{
-			String oldUser = status.getAssignedTo();
-			if (toUser.equals(oldUser))
-			{
-				return false;
-			}
-			status.setAssignedTo(toUser);
-			if (oldUser != null)
-			{
-				removeNotificationForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
-			}
-			addModerationNotifications(getTaskId(), Collections.singleton(toUser), Notification.REASON_REASSIGN, false);
-			return true;
-		}
+  @Override
+  public boolean execute() {
+    TaskStatus status = init("MANAGE_WORKFLOW");
+    Set<String> usersToModerate = status.getUsersToModerate(this);
+    if (usersToModerate.contains(toUser)) {
+      String oldUser = status.getAssignedTo();
+      if (toUser.equals(oldUser)) {
+        return false;
+      }
+      status.setAssignedTo(toUser);
+      if (oldUser != null) {
+        removeNotificationForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
+      }
+      addModerationNotifications(
+          getTaskId(), Collections.singleton(toUser), Notification.REASON_REASSIGN, false);
+      return true;
+    }
 
-		throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.notmoderatingtask",
-			CurrentLocale.get(getItem().getName()), CurrentLocale.get(status.getWorkflowNode().getName())));
-	}
+    throw new AccessDeniedException(
+        CurrentLocale.get(
+            "com.tle.core.services.item.error.notmoderatingtask",
+            CurrentLocale.get(getItem().getName()),
+            CurrentLocale.get(status.getWorkflowNode().getName())));
+  }
 }

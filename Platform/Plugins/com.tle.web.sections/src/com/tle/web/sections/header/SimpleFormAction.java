@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,25 +21,20 @@ package com.tle.web.sections.header;
 import java.util.Collections;
 import java.util.Map;
 
-public class SimpleFormAction implements FormAction
-{
-	private String action;
+public class SimpleFormAction implements FormAction {
+  private String action;
 
-	public SimpleFormAction(String action)
-	{
-		this.action = action;
-	}
+  public SimpleFormAction(String action) {
+    this.action = action;
+  }
 
-	@Override
-	public String getFormAction()
-	{
-		return action;
-	}
+  @Override
+  public String getFormAction() {
+    return action;
+  }
 
-	@Override
-	public Map<String, String[]> getHiddenState()
-	{
-		return Collections.emptyMap();
-	}
-
+  @Override
+  public Map<String, String[]> getHiddenState() {
+    return Collections.emptyMap();
+  }
 }

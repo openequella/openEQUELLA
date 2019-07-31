@@ -1,0 +1,71 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>217190</id>
+  <uuid>82ba1155-074e-4861-9d1f-d75939fc289a</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-03-28 12:28:43.123</dateModified>
+  <dateCreated class="sql-timestamp">2012-03-27 17:03:19.867</dateCreated>
+  <description>
+    <id>217191</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>217192</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>fiveo</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>217193</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>217194</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>fiveo</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>secretvalue</key>
+      <value>token</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>insturl</key>
+      <value>http://tle-autotest:83/fiveo/</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>userloggedinuser</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>secretid</key>
+      <value>token</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>LEdgeSearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>1b193c28-9c94-47de-afaa-1e5803b547d1</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

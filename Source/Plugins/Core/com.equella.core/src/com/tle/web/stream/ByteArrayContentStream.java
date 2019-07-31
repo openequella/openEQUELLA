@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,27 +22,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ByteArrayContentStream extends AbstractContentStream
-{
-	private final byte[] bytes;
-	private final ByteArrayInputStream inp;
+public class ByteArrayContentStream extends AbstractContentStream {
+  private final byte[] bytes;
+  private final ByteArrayInputStream inp;
 
-	public ByteArrayContentStream(byte[] bytes, String filename, String mimeType)
-	{
-		super(filename, mimeType);
-		inp = new ByteArrayInputStream(bytes);
-		this.bytes = bytes;
-	}
+  public ByteArrayContentStream(byte[] bytes, String filename, String mimeType) {
+    super(filename, mimeType);
+    inp = new ByteArrayInputStream(bytes);
+    this.bytes = bytes;
+  }
 
-	@Override
-	public long getContentLength()
-	{
-		return bytes.length;
-	}
+  @Override
+  public long getContentLength() {
+    return bytes.length;
+  }
 
-	@Override
-	public InputStream getInputStream() throws IOException
-	{
-		return inp;
-	}
+  @Override
+  public InputStream getInputStream() throws IOException {
+    return inp;
+  }
 }

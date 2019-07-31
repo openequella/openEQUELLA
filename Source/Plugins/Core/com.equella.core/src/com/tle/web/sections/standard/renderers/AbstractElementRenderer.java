@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,30 +18,26 @@
 
 package com.tle.web.sections.standard.renderers;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.io.IOException;
+import java.util.Map;
 
-public abstract class AbstractElementRenderer extends AbstractComponentRenderer
-{
+public abstract class AbstractElementRenderer extends AbstractComponentRenderer {
 
-	public AbstractElementRenderer(HtmlComponentState state)
-	{
-		super(state);
-	}
+  public AbstractElementRenderer(HtmlComponentState state) {
+    super(state);
+  }
 
-	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-	{
-		super.prepareFirstAttributes(writer, attrs);
-		attrs.put("name", getName(writer)); //$NON-NLS-1$
-	}
+  @Override
+  protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+      throws IOException {
+    super.prepareFirstAttributes(writer, attrs);
+    attrs.put("name", getName(writer)); // $NON-NLS-1$
+  }
 
-	protected String getName(SectionInfo info)
-	{
-		return state.getName();
-	}
+  protected String getName(SectionInfo info) {
+    return state.getName();
+  }
 }

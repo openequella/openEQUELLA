@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.portal.section.admin;
-
-import javax.inject.Inject;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.exceptions.AccessDeniedException;
@@ -35,79 +35,73 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class RootPortletAdminSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	private static final String CONTEXT_KEY = "portletAdminContext";
+public class RootPortletAdminSection
+    extends ContextableSearchSection<ContextableSearchSection.Model>
+    implements BlueBarEventListener {
+  private static final String CONTEXT_KEY = "portletAdminContext";
 
-	@PlugKey("page.admin.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("admin.error.accessdenied")
-	private static String ERROR_KEY;
+  @PlugKey("page.admin.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private PortletWebService portletWebService;
+  @PlugKey("admin.error.accessdenied")
+  private static String ERROR_KEY;
 
-	@DirectEvent
-	public void ensurePrivs(SectionInfo info)
-	{
-		if( !portletWebService.canAdminister() )
-		{
-			throw new AccessDeniedException(CurrentLocale.get(ERROR_KEY));
-		}
-	}
+  @Inject private PortletWebService portletWebService;
 
-	@Override
-	protected String getContentBodyClasses()
-	{
-		return super.getContentBodyClasses() + " portaladmin";
-	}
+  @DirectEvent
+  public void ensurePrivs(SectionInfo info) {
+    if (!portletWebService.canAdminister()) {
+      throw new AccessDeniedException(CurrentLocale.get(ERROR_KEY));
+    }
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		TwoColumnModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		if( modalSection != null )
-		{
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof ModalPortletSection )
-			{
-				((ModalPortletSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-				return;
-			}
-		}
-		super.addBreadcrumbsAndTitle(info, decorations, crumbs);
-		Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected String getContentBodyClasses() {
+    return super.getContentBodyClasses() + " portaladmin";
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    TwoColumnModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    if (modalSection != null) {
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof ModalPortletSection) {
+        ((ModalPortletSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
+        return;
+      }
+    }
+    super.addBreadcrumbsAndTitle(info, decorations, crumbs);
+    Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb(info));
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return CONTEXT_KEY;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(viewFactory.createResult("admin/help.ftl", this));
-	}
+  @Override
+  protected String getSessionKey() {
+    return CONTEXT_KEY;
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(viewFactory.createResult("admin/help.ftl", this));
+  }
+
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

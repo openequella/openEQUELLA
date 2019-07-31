@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,49 +31,42 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class MoveItemSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("moveonly.title")
-	private static Label MOVE_TITLE_LABEL;
+public class MoveItemSection extends GenericMinorActionWithPageSection {
+  @PlugKey("moveonly.title")
+  private static Label MOVE_TITLE_LABEL;
 
-	@TreeLookup
-	private RootCloneOrMoveSection rootCloneOrMoveSection;
+  @TreeLookup private RootCloneOrMoveSection rootCloneOrMoveSection;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return MOVE_TITLE_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return MOVE_TITLE_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege(CloneOrMoveSection.MOVE_ITEM) && !status.isLocked();
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege(CloneOrMoveSection.MOVE_ITEM) && !status.isLocked();
+  }
 
-	@Override
-	public void execute(SectionInfo info)
-	{
-		final Item item = getItemInfo(info).getItem();
+  @Override
+  public void execute(SectionInfo info) {
+    final Item item = getItemInfo(info).getItem();
 
-		rootCloneOrMoveSection.setCurrentItemdef(info, item.getItemDefinition().getUuid());
+    rootCloneOrMoveSection.setCurrentItemdef(info, item.getItemDefinition().getUuid());
 
-		RootCloneOrMoveModel model = rootCloneOrMoveSection.getModel(info);
-		model.setUuid(item.getUuid());
-		model.setVersion(item.getVersion());
-		model.setIsMove(true);
-		super.execute(info);
-	}
+    RootCloneOrMoveModel model = rootCloneOrMoveSection.getModel(info);
+    model.setUuid(item.getUuid());
+    model.setVersion(item.getVersion());
+    model.setIsMove(true);
+    super.execute(info);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return rootCloneOrMoveSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return rootCloneOrMoveSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return MOVE_TITLE_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return MOVE_TITLE_LABEL.getText();
+  }
 }

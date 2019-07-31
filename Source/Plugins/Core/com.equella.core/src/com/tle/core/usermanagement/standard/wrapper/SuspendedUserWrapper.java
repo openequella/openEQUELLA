@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,38 +18,32 @@
 
 package com.tle.core.usermanagement.standard.wrapper;
 
+import com.tle.beans.ump.UserManagementSettings;
+import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
+import com.tle.common.usermanagement.user.ModifiableUserState;
+import com.tle.core.guice.Bind;
+import com.tle.exceptions.DisabledException;
+import com.tle.plugins.ump.AbstractUserDirectory;
 import java.util.Collections;
 import java.util.Set;
 
-import com.tle.beans.ump.UserManagementSettings;
-import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
-import com.tle.core.guice.Bind;
-import com.tle.common.usermanagement.user.ModifiableUserState;
-import com.tle.exceptions.DisabledException;
-import com.tle.plugins.ump.AbstractUserDirectory;
-
 @Bind
-public class SuspendedUserWrapper extends AbstractUserDirectory
-{
-	private Set<String> suspendedUsers;
+public class SuspendedUserWrapper extends AbstractUserDirectory {
+  private Set<String> suspendedUsers;
 
-	@Override
-	protected boolean initialise(UserManagementSettings settings)
-	{
-		this.suspendedUsers = ((SuspendedUserWrapperSettings) settings).getSuspendedUsers();
-		if( suspendedUsers == null )
-		{
-			suspendedUsers = Collections.emptySet();
-		}
-		return false;
-	}
+  @Override
+  protected boolean initialise(UserManagementSettings settings) {
+    this.suspendedUsers = ((SuspendedUserWrapperSettings) settings).getSuspendedUsers();
+    if (suspendedUsers == null) {
+      suspendedUsers = Collections.emptySet();
+    }
+    return false;
+  }
 
-	@Override
-	public void initUserState(ModifiableUserState state)
-	{
-		if( suspendedUsers.contains(state.getUserBean().getUniqueID()) )
-		{
-			throw new DisabledException("User account has been suspended");
-		}
-	}
+  @Override
+  public void initUserState(ModifiableUserState state) {
+    if (suspendedUsers.contains(state.getUserBean().getUniqueID())) {
+      throw new DisabledException("User account has been suspended");
+    }
+  }
 }

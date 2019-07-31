@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.search.actions;
-
-import java.util.Collection;
-import java.util.Collections;
 
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -33,70 +32,63 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import java.util.Collection;
+import java.util.Collections;
 
-public abstract class AbstractFavouriteSearchDialog extends EquellaDialog<DialogModel>
-{
-	@PlugKey("actions.favourite.dialog.title")
-	private static Label LABEL_TITLE;
+public abstract class AbstractFavouriteSearchDialog extends EquellaDialog<DialogModel> {
+  @PlugKey("actions.favourite.dialog.title")
+  private static Label LABEL_TITLE;
 
-	private JSCallable reloadParent;
+  private JSCallable reloadParent;
 
-	@Component
-	@PlugKey("actions.favourite.button.name")
-	private Button okButton;
+  @Component
+  @PlugKey("actions.favourite.button.name")
+  private Button okButton;
 
-	protected abstract AbstractFavouriteSearchSection getContentSection();
+  protected abstract AbstractFavouriteSearchSection getContentSection();
 
-	protected AbstractFavouriteSearchDialog()
-	{
-		setAjax(true);
-	}
+  protected AbstractFavouriteSearchDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		AbstractFavouriteSearchSection contentSection = getContentSection();
-		contentSection.setContainerDialog(this);
-		tree.registerInnerSection(contentSection, id);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    AbstractFavouriteSearchSection contentSection = getContentSection();
+    contentSection.setContainerDialog(this);
+    tree.registerInnerSection(contentSection, id);
 
-		okButton.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
-		okButton.setClickHandler(contentSection.getAddHandler());
-	}
+    okButton.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+    okButton.setClickHandler(contentSection.getAddHandler());
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		reloadParent = addParentCallable(new ReloadFunction(false));
-		super.treeFinished(id, tree);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    reloadParent = addParentCallable(new ReloadFunction(false));
+    super.treeFinished(id, tree);
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Collections.singleton(okButton);
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Collections.singleton(okButton);
+  }
 
-	public void close(SectionInfo info)
-	{
-		closeDialog(info, reloadParent);
-	}
+  public void close(SectionInfo info) {
+    closeDialog(info, reloadParent);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return SectionUtils.renderSection(context, getContentSection());
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return SectionUtils.renderSection(context, getContentSection());
+  }
 }

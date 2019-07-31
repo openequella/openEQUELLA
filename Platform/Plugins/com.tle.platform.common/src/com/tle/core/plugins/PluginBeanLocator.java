@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,18 +20,16 @@ package com.tle.core.plugins;
 
 import java.util.Collection;
 
-public interface PluginBeanLocator
-{
-	<T> T getBean(String beanId);
+public interface PluginBeanLocator {
+  <T> T getBean(String beanId);
 
-	<T> T getBeanForType(Class<T> type);
+  <T> T getBeanForType(Class<T> type);
 
-	<T> void autowire(T bean);
+  <T> void autowire(T bean);
 
-	boolean isInitialised();
+  boolean isInitialised();
 
-	<T> Collection<T> getBeansOfType(Class<T> clazz);
+  <T> Collection<T> getBeansOfType(Class<T> clazz);
 
-	<T> Class<T> loadClass(String name) throws ClassNotFoundException;
-
+  <T> Class<T> loadClass(String name) throws ClassNotFoundException;
 }

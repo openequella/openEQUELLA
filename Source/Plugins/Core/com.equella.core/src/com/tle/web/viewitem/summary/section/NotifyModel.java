@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,38 +20,33 @@ package com.tle.web.viewitem.summary.section;
 
 import com.tle.web.sections.equella.component.model.SelectionsTableState;
 
-public class NotifyModel
-{
-	/* private List<UserBean> users; */
-	private SelectionsTableState selectedStuff;
-	private boolean editable;
+public class NotifyModel {
+  /* private List<UserBean> users; */
+  private SelectionsTableState selectedStuff;
+  private boolean editable;
 
-	// public List<UserBean> getUsers()
-	// {
-	// return users;
-	// }
-	//
-	// public void setUsers(List<UserBean> users)
-	// {
-	// this.users = users;
-	// }
-	public SelectionsTableState getSelectedStuff()
-	{
-		return selectedStuff;
-	}
+  // public List<UserBean> getUsers()
+  // {
+  // return users;
+  // }
+  //
+  // public void setUsers(List<UserBean> users)
+  // {
+  // this.users = users;
+  // }
+  public SelectionsTableState getSelectedStuff() {
+    return selectedStuff;
+  }
 
-	public void setSelectedStuff(SelectionsTableState selectedStuff)
-	{
-		this.selectedStuff = selectedStuff;
-	}
+  public void setSelectedStuff(SelectionsTableState selectedStuff) {
+    this.selectedStuff = selectedStuff;
+  }
 
-	public boolean isEditable()
-	{
-		return editable;
-	}
+  public boolean isEditable() {
+    return editable;
+  }
 
-	public void setEditable(boolean editable)
-	{
-		this.editable = editable;
-	}
+  public void setEditable(boolean editable) {
+    this.editable = editable;
+  }
 }

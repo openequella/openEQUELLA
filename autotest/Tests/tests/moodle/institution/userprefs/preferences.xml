@@ -1,0 +1,34 @@
+<list>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>18208</institution>
+      <userID>7c06adb3-5be4-4148-b0cc-d701042b9505</userID>
+      <preferenceID>recent.selections</preferenceID>
+    </key>
+    <data>[{&quot;uuid&quot;:&quot;82d9a918-200a-4b67-91f0-404c41d23161&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;a13e541f0-098f-4cd4-8e57-83e544027759&quot;,&quot;title&quot;:&quot;page.html&quot;,&quot;selectedDate&quot;:1409011990985}]</data>
+  </com.tle.beans.UserPreference>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>18208</institution>
+      <userID>aca3959f-8d0c-4046-b1c3-e9592635c4cc</userID>
+      <preferenceID>recent.selections</preferenceID>
+    </key>
+    <data>[{&quot;uuid&quot;:&quot;72e846ba-5e0f-4591-9828-bad4b5bf14ca&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;a888ac3d1-d0c4-4df4-8565-b505c9518ab9&quot;,&quot;title&quot;:&quot;http://www.google.com&quot;,&quot;selectedDate&quot;:1316498213826},{&quot;uuid&quot;:&quot;9ea04987-597b-4b11-bafd-7b904a3cc716&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;BasicUTF8Selection &apos; хцч with other characters&quot;,&quot;selectedDate&quot;:1316498242266},{&quot;uuid&quot;:&quot;443594bf-382e-4361-8190-f072914eac7e&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;ptreenav.jsp&quot;,&quot;title&quot;:&quot;LargeImageViewer&quot;,&quot;selectedDate&quot;:1316498318726},{&quot;uuid&quot;:&quot;b27873f0-173a-47b2-8ac0-77a0d4b5182e&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;ae1b867e1-da2e-45fa-856d-8db087aab35b&quot;,&quot;title&quot;:&quot;google.png&quot;,&quot;selectedDate&quot;:1316498336621},{&quot;uuid&quot;:&quot;300fc68c-98fb-49b9-917a-534cae262c65&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Basic DRM Item&quot;,&quot;selectedDate&quot;:1316498501865},{&quot;uuid&quot;:&quot;b9c151cb-9c70-4c0c-b020-da8d8333cf59&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;BasicSelectionItem&quot;,&quot;selectedDate&quot;:1317619729098},{&quot;uuid&quot;:&quot;c9c0f6a5-a5cf-4dc9-90a1-0bb90206776d&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;BasicSelectionPackage&quot;,&quot;selectedDate&quot;:1317620015952},{&quot;uuid&quot;:&quot;21ff03e5-ade5-432d-a938-5c59ab0260b0&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;ItemVersion1&quot;,&quot;selectedDate&quot;:1317620476443},{&quot;uuid&quot;:&quot;0516d5d4-74d0-41db-bcb9-0444f71eca20&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle25&quot;,&quot;selectedDate&quot;:1386308492274},{&quot;uuid&quot;:&quot;e782e908-672b-456f-898d-c5842f185fa8&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle24&quot;,&quot;selectedDate&quot;:1386308525529},{&quot;uuid&quot;:&quot;16c764a6-00e5-4ab7-aae7-27d1213f64d8&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle26&quot;,&quot;selectedDate&quot;:1386734748315}]</data>
+  </com.tle.beans.UserPreference>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>18208</institution>
+      <userID>de6a23b5-4124-46fe-8384-b7df783cac40</userID>
+      <preferenceID>recent.selections</preferenceID>
+    </key>
+    <data>[{&quot;selectedDate&quot;:1317615460725,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;MoodleSelectionTest_21 - selectHtmlTitle &lt;script&gt;alert(&apos;escape fail&apos;)&lt;\/script&gt;&quot;,&quot;uuid&quot;:&quot;cdd043c0-f2af-404e-ac11-f42e53004ba6&quot;,&quot;version&quot;:1},{&quot;selectedDate&quot;:1317615461189,&quot;selection&quot;:&quot;ada20f9d4-6cc2-4466-a236-25e59837c2c3&quot;,&quot;title&quot;:&quot;&lt;script&gt;alert(&apos;escape fail&apos;)&lt;\/script&gt;&quot;,&quot;uuid&quot;:&quot;cdd043c0-f2af-404e-ac11-f42e53004ba6&quot;,&quot;version&quot;:1},{&quot;selectedDate&quot;:1317623302440,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;ItemVersion1&quot;,&quot;uuid&quot;:&quot;21ff03e5-ade5-432d-a938-5c59ab0260b0&quot;,&quot;version&quot;:1},{&quot;selectedDate&quot;:1317623311142,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;ItemVersion2&quot;,&quot;uuid&quot;:&quot;21ff03e5-ade5-432d-a938-5c59ab0260b0&quot;,&quot;version&quot;:2},{&quot;selectedDate&quot;:1317623563414,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;MoodleSelectionTest - selectHtmlTitle &lt;script&gt;alert(&apos;escape fail&apos;)&lt;\/script&gt;&quot;,&quot;uuid&quot;:&quot;cdd043c0-f2af-404e-ac11-f42e53004ba6&quot;,&quot;version&quot;:1},{&quot;selectedDate&quot;:1317623564110,&quot;selection&quot;:&quot;a265b48b7-f752-4187-a605-feecd8d876c8&quot;,&quot;title&quot;:&quot;&lt;script&gt;alert(&apos;escape fail&apos;)&lt;\/script&gt;&quot;,&quot;uuid&quot;:&quot;cdd043c0-f2af-404e-ac11-f42e53004ba6&quot;,&quot;version&quot;:1}]</data>
+  </com.tle.beans.UserPreference>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>18208</institution>
+      <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+      <preferenceID>recent.selections</preferenceID>
+    </key>
+    <data>[{&quot;uuid&quot;:&quot;f05027d3-3c48-41f5-ad05-51333ed0df11&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle27&quot;,&quot;selectedDate&quot;:1409011247282},{&quot;uuid&quot;:&quot;16c764a6-00e5-4ab7-aae7-27d1213f64d8&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle26&quot;,&quot;selectedDate&quot;:1409011326710},{&quot;uuid&quot;:&quot;5f0f88b2-ebae-43f8-8025-28b087001ed8&quot;,&quot;version&quot;:1,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book moodle28&quot;,&quot;selectedDate&quot;:1432268431780}]</data>
+  </com.tle.beans.UserPreference>
+</list>

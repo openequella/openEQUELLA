@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.institution.section;
-
-import javax.inject.Inject;
 
 import com.tle.beans.Institution;
 import com.tle.common.Check;
@@ -47,150 +47,138 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class EditSection extends AbstractEditSection<EditInstitutionModel>
-{
-	@PlugKey("institutions.edit.warning")
-	private static Label LABEL_URLWARNING;
-	@PlugKey("institutions.edit.filewarning")
-	private static Label LABEL_FILEWARNING;
+public class EditSection extends AbstractEditSection<EditInstitutionModel> {
+  @PlugKey("institutions.edit.warning")
+  private static Label LABEL_URLWARNING;
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private InstitutionImportService instImportService;
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private QuotaService quotaService;
+  @PlugKey("institutions.edit.filewarning")
+  private static Label LABEL_FILEWARNING;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@EventFactory
-	private EventGenerator events;
+  @Inject private InstitutionService institutionService;
+  @Inject private InstitutionImportService instImportService;
+  @Inject private RunAsInstitution runAs;
+  @Inject private QuotaService quotaService;
 
-	@Component
-	@PlugKey("institutions.edit.unlock")
-	private Button unlockUrlButton;
-	@Component
-	@PlugKey("institutions.edit.unlock")
-	private Button unlockFilestoreButton;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory private EventGenerator events;
 
-	private JSHandler usageRefreshHandler;
+  @Component
+  @PlugKey("institutions.edit.unlock")
+  private Button unlockUrlButton;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "edi";
-	}
+  @Component
+  @PlugKey("institutions.edit.unlock")
+  private Button unlockFilestoreButton;
 
-	@Override
-	public Class<EditInstitutionModel> getModelClass()
-	{
-		return EditInstitutionModel.class;
-	}
+  private JSHandler usageRefreshHandler;
 
-	public void setupEdit(SectionInfo info, long institutionId)
-	{
-		final Institution insti = institutionService.getInstitution(institutionId);
-		setupFieldsFromInstitution(info, insti);
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "edi";
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		EditInstitutionModel model = getModel(context);
-		if( model.getId() != 0 && (!model.isNavigateAway() || model.getFileSystemUsage() != null) )
-		{
-			model.setNavigateAway(true);
-			context.getBody().addReadyStatements(usageRefreshHandler);
-			return viewFactory.createResult("edit.ftl", context);
-		}
-		return null;
-	}
+  @Override
+  public Class<EditInstitutionModel> getModelClass() {
+    return EditInstitutionModel.class;
+  }
 
-	@EventHandlerMethod
-	public void calculateUsage(SectionInfo info)
-	{
-		final EditInstitutionModel model = getModel(info);
-		Institution insti = institutionService.getInstitution(model.getId());
+  public void setupEdit(SectionInfo info, long institutionId) {
+    final Institution insti = institutionService.getInstitution(institutionId);
+    setupFieldsFromInstitution(info, insti);
+  }
 
-		runAs.executeAsSystem(insti, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				model.setFileSystemUsage(quotaService.getInstitutionalConsumption(insti));
-			}
-		});
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    EditInstitutionModel model = getModel(context);
+    if (model.getId() != 0 && (!model.isNavigateAway() || model.getFileSystemUsage() != null)) {
+      model.setNavigateAway(true);
+      context.getBody().addReadyStatements(usageRefreshHandler);
+      return viewFactory.createResult("edit.ftl", context);
+    }
+    return null;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		TextField urlField = getUrl();
-		urlField.setDisabled(true);
-		TextField filestore = getFilestore();
-		filestore.setDisabled(true);
+  @EventHandlerMethod
+  public void calculateUsage(SectionInfo info) {
+    final EditInstitutionModel model = getModel(info);
+    Institution insti = institutionService.getInstitution(model.getId());
 
-		unlockUrlButton.setClickHandler(new StatementHandler(Js.call_s(unlockUrlButton.createDisableFunction(), true),
-			Js.call_s(urlField.createDisableFunction(), false)).addValidator(new Confirm(LABEL_URLWARNING)));
+    runAs.executeAsSystem(
+        insti,
+        new Runnable() {
+          @Override
+          public void run() {
+            model.setFileSystemUsage(quotaService.getInstitutionalConsumption(insti));
+          }
+        });
+  }
 
-		unlockFilestoreButton
-			.setClickHandler(new StatementHandler(Js.call_s(unlockFilestoreButton.createDisableFunction(), true),
-				Js.call_s(filestore.createDisableFunction(), false)).addValidator(new Confirm(LABEL_FILEWARNING)));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    TextField urlField = getUrl();
+    urlField.setDisabled(true);
+    TextField filestore = getFilestore();
+    filestore.setDisabled(true);
 
-		usageRefreshHandler = new OverrideHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("calculateUsage"),
-				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "usage-ajax"));
-	}
+    unlockUrlButton.setClickHandler(
+        new StatementHandler(
+                Js.call_s(unlockUrlButton.createDisableFunction(), true),
+                Js.call_s(urlField.createDisableFunction(), false))
+            .addValidator(new Confirm(LABEL_URLWARNING)));
 
-	@Override
-	public void doAction(SectionInfo info)
-	{
-		getModel(info).setNavigateAway(true);
-		EditInstitutionModel model = getModel(info);
-		Institution oldInst = institutionService.getInstitution(model.getId());
-		TextField urlField = getUrl();
-		if( Check.isEmpty(urlField.getValue(info)) )
-		{
-			urlField.setValue(info, oldInst.getUrl());
-		}
-		TextField filestoreField = getFilestore();
-		if( Check.isEmpty(filestoreField.getValue(info)) )
-		{
-			filestoreField.setValue(info, oldInst.getFilestoreId());
-		}
+    unlockFilestoreButton.setClickHandler(
+        new StatementHandler(
+                Js.call_s(unlockFilestoreButton.createDisableFunction(), true),
+                Js.call_s(filestore.createDisableFunction(), false))
+            .addValidator(new Confirm(LABEL_FILEWARNING)));
 
-		Institution newInst = getInstitutionDetails(info);
-		if( validate(info, newInst) )
-		{
-			instImportService.update(newInst);
-			cancel(info);
-		}
-		else
-		{
-			// Stay on page, because there's an error to show, and also obliges
-			// user to either correct the error of to specifically cancel &
-			// return
-			getModel(info).setNavigateAway(false);
-		}
+    usageRefreshHandler =
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("calculateUsage"),
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                "usage-ajax"));
+  }
 
-	}
+  @Override
+  public void doAction(SectionInfo info) {
+    getModel(info).setNavigateAway(true);
+    EditInstitutionModel model = getModel(info);
+    Institution oldInst = institutionService.getInstitution(model.getId());
+    TextField urlField = getUrl();
+    if (Check.isEmpty(urlField.getValue(info))) {
+      urlField.setValue(info, oldInst.getUrl());
+    }
+    TextField filestoreField = getFilestore();
+    if (Check.isEmpty(filestoreField.getValue(info))) {
+      filestoreField.setValue(info, oldInst.getFilestoreId());
+    }
 
-	public Button getUnlockUrlButton()
-	{
-		return unlockUrlButton;
-	}
+    Institution newInst = getInstitutionDetails(info);
+    if (validate(info, newInst)) {
+      instImportService.update(newInst);
+      cancel(info);
+    } else {
+      // Stay on page, because there's an error to show, and also obliges
+      // user to either correct the error of to specifically cancel &
+      // return
+      getModel(info).setNavigateAway(false);
+    }
+  }
 
-	public Button getUnlockFilestoreButton()
-	{
-		return unlockFilestoreButton;
-	}
+  public Button getUnlockUrlButton() {
+    return unlockUrlButton;
+  }
 
+  public Button getUnlockFilestoreButton() {
+    return unlockFilestoreButton;
+  }
 }

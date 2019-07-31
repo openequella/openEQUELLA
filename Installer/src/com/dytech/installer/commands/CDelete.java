@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,35 @@
 
 package com.dytech.installer.commands;
 
-import java.io.IOException;
-
 import com.dytech.common.io.FileWrapper;
 import com.dytech.installer.InstallerException;
+import java.io.IOException;
 
-public class CDelete extends Command
-{
-	protected String source;
+public class CDelete extends Command {
+  protected String source;
 
-	public CDelete(String source)
-	{
-		this.source = source;
-	}
+  public CDelete(String source) {
+    this.source = source;
+  }
 
-	@Override
-	public void execute() throws InstallerException
-	{
-		propogateTaskStarted(1);
+  @Override
+  public void execute() throws InstallerException {
+    propogateTaskStarted(1);
 
-		FileWrapper f = new FileWrapper(source);
+    FileWrapper f = new FileWrapper(source);
 
-		try
-		{
-			f.recursiveDelete();
-		}
-		catch( IOException ex )
-		{
-			throw new InstallerException("Fatal Error Deleting File: " + f.getAbsolutePath(), ex);
-		}
+    try {
+      f.recursiveDelete();
+    } catch (IOException ex) {
+      throw new InstallerException("Fatal Error Deleting File: " + f.getAbsolutePath(), ex);
+    }
 
-		propogateSubtaskCompleted();
-		propogateTaskCompleted();
-	}
+    propogateSubtaskCompleted();
+    propogateTaskCompleted();
+  }
 
-	@Override
-	public String toString()
-	{
-		return new String("Deleting " + source);
-	}
+  @Override
+  public String toString() {
+    return new String("Deleting " + source);
+  }
 }

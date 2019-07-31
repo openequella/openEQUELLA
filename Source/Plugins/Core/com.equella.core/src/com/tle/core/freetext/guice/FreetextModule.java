@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,35 +19,39 @@
 package com.tle.core.freetext.guice;
 
 import com.tle.core.config.guice.MandatoryConfigModule;
+import com.tle.core.config.guice.OptionalConfigModule;
 import com.tle.core.config.guice.PropertiesModule;
 
 @SuppressWarnings("nls")
-public class FreetextModule extends PropertiesModule
-{
-	@Override
-	protected String getFilename()
-	{
-		return "/plugins/com.tle.core.freetext/optional.properties";
-	}
+public class FreetextModule extends PropertiesModule {
+  @Override
+  protected String getFilename() {
+    return "/plugins/com.tle.core.freetext/optional.properties";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindInt("freetextIndex.synchroiseMinutes");
-		bindProp("freetextIndex.defaultOperator");
-		bindBoolean("textExtracter.indexAttachments");
-		bindBoolean("textExtracter.indexImsPackages");
-		bindLong("textExtracter.parseDurationCap");
-		install(new FreetextMandatoryModule());
-	}
+  @Override
+  protected void configure() {
+    bindInt("freetextIndex.synchroiseMinutes");
+    bindProp("freetextIndex.defaultOperator");
+    bindBoolean("textExtracter.indexAttachments");
+    bindBoolean("textExtracter.indexImsPackages");
+    bindLong("textExtracter.parseDurationCap");
+    install(new FreetextMandatoryModule());
+    install(new FreetextOptionalModule());
+  }
 
-	public static class FreetextMandatoryModule extends MandatoryConfigModule
-	{
-		@Override
-		protected void configure()
-		{
-			bindFile("freetext.stopwords.file");
-			bindFile("freetext.index.location");
-		}
-	}
+  public static class FreetextMandatoryModule extends MandatoryConfigModule {
+    @Override
+    protected void configure() {
+      bindFile("freetext.stopwords.file");
+      bindFile("freetext.index.location");
+    }
+  }
+
+  public static class FreetextOptionalModule extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindProp("freetext.analyzer.language", "en");
+    }
+  }
 }

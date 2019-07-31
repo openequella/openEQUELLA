@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,60 +36,51 @@ import com.tle.web.workflow.tasks.TaskSortSection;
 import com.tle.web.workflow.tasks.WorkflowFromCollectionSection;
 
 @SuppressWarnings("nls")
-public class TaskSearchModule extends AbstractSearchModule
-{
+public class TaskSearchModule extends AbstractSearchModule {
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(RootTaskListSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(RootTaskListSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(SimpleResetFiltersQuerySection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(SimpleResetFiltersQuerySection.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(TaskListResultsSection.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(TaskListResultsSection.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(RssFeedSection.class);
-		node.child(TaskSortSection.class);
-		node.child(FilterByAssignment.class);
-		node.child(FilterByCollectionSection.class);
-		node.child(WorkflowFromCollectionSection.class);
-		node.child(new NodeProvider(FilterByWorkflowTaskSection.class)
-			{
-				@Override
-				protected void customize(Section section)
-				{
-					FilterByWorkflowTaskSection s = (FilterByWorkflowTaskSection) section;
-					s.setIsMyTasks(true);
-				}
-			}
-		);
-		node.child(FilterByOwnerSection.class);
-		node.child(FilterByDateRangeSection.class);
-		node.child(FilterByMimeTypeSection.class);
-		node.child(FilterByItemStatusTaskSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(RssFeedSection.class);
+    node.child(TaskSortSection.class);
+    node.child(FilterByAssignment.class);
+    node.child(FilterByCollectionSection.class);
+    node.child(WorkflowFromCollectionSection.class);
+    node.child(
+        new NodeProvider(FilterByWorkflowTaskSection.class) {
+          @Override
+          protected void customize(Section section) {
+            FilterByWorkflowTaskSection s = (FilterByWorkflowTaskSection) section;
+            s.setIsMyTasks(true);
+          }
+        });
+    node.child(FilterByOwnerSection.class);
+    node.child(FilterByDateRangeSection.class);
+    node.child(FilterByMimeTypeSection.class);
+    node.child(FilterByItemStatusTaskSection.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/tasklist";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/tasklist";
+  }
 
-	@Override
-	protected void addActions(NodeProvider node)
-	{
-		node.child(ModerateSelectedButton.class);
-	}
+  @Override
+  protected void addActions(NodeProvider node) {
+    node.child(ModerateSelectedButton.class);
+  }
 }

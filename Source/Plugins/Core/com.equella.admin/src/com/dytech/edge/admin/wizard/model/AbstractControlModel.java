@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,124 +18,103 @@
 
 package com.dytech.edge.admin.wizard.model;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.dytech.edge.admin.wizard.WizardHelper;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.beans.entity.LanguageBundle;
+import java.util.Collections;
+import java.util.List;
 
-public abstract class AbstractControlModel<T extends WizardControl> extends Control
-{
-	private T control;
+public abstract class AbstractControlModel<T extends WizardControl> extends Control {
+  private T control;
 
-	public AbstractControlModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+  public AbstractControlModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setWrappedObject(Object wrappedObject)
-	{
-		super.setWrappedObject(wrappedObject);
-		this.control = (T) wrappedObject;
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setWrappedObject(Object wrappedObject) {
+    super.setWrappedObject(wrappedObject);
+    this.control = (T) wrappedObject;
+  }
 
-	public T getControl()
-	{
-		return control;
-	}
+  public T getControl() {
+    return control;
+  }
 
-	@Override
-	public List<String> getTargets()
-	{
-		return Collections.unmodifiableList(WizardHelper.convertTargetNodes(control.getTargetnodes()));
-	}
+  @Override
+  public List<String> getTargets() {
+    return Collections.unmodifiableList(WizardHelper.convertTargetNodes(control.getTargetnodes()));
+  }
 
-	@Override
-	public List<?> getChildObjects()
-	{
-		return null;
-	}
+  @Override
+  public List<?> getChildObjects() {
+    return null;
+  }
 
-	@Override
-	public String getControlClass()
-	{
-		return control.getClassType();
-	}
+  @Override
+  public String getControlClass() {
+    return control.getClassType();
+  }
 
-	@Override
-	public String getScript()
-	{
-		return control.getScript();
-	}
+  @Override
+  public String getScript() {
+    return control.getScript();
+  }
 
-	@Override
-	public LanguageBundle getTitle()
-	{
-		return control.getTitle();
-	}
+  @Override
+  public LanguageBundle getTitle() {
+    return control.getTitle();
+  }
 
-	@Override
-	public boolean isPowerSearchInclude()
-	{
-		return control.isInclude();
-	}
+  @Override
+  public boolean isPowerSearchInclude() {
+    return control.isInclude();
+  }
 
-	@Override
-	public String getCustomName()
-	{
-		return control.getCustomName();
-	}
+  @Override
+  public String getCustomName() {
+    return control.getCustomName();
+  }
 
-	@Override
-	public void setCustomName(String customName)
-	{
-		control.setCustomName(customName);
+  @Override
+  public void setCustomName(String customName) {
+    control.setCustomName(customName);
+  }
 
-	}
+  @Override
+  public void setPowerSearchInclude(boolean b) {
+    control.setInclude(b);
+  }
 
-	@Override
-	public void setPowerSearchInclude(boolean b)
-	{
-		control.setInclude(b);
-	}
+  @Override
+  public void setScript(String script) {
+    control.setScript(script);
+  }
 
-	@Override
-	public void setScript(String script)
-	{
-		control.setScript(script);
-	}
+  @Override
+  public Object save() {
+    if (allowsChildren()) {
+      @SuppressWarnings("unchecked")
+      List<Object> childObjects = (List<Object>) getChildObjects();
 
-	@Override
-	public Object save()
-	{
-		if( allowsChildren() )
-		{
-			@SuppressWarnings("unchecked")
-			List<Object> childObjects = (List<Object>) getChildObjects();
+      childObjects.clear();
+      for (Control c : getChildren()) {
+        childObjects.add(c.save());
+      }
+    }
 
-			childObjects.clear();
-			for( Control c : getChildren() )
-			{
-				childObjects.add(c.save());
-			}
-		}
+    return control;
+  }
 
-		return control;
-	}
+  @Override
+  public boolean isRemoveable() {
+    return control.isRemoveable();
+  }
 
-	@Override
-	public boolean isRemoveable()
-	{
-		return control.isRemoveable();
-	}
-
-	@Override
-	public boolean isScriptable()
-	{
-		return control.isScriptable();
-	}
+  @Override
+  public boolean isScriptable() {
+    return control.isScriptable();
+  }
 }

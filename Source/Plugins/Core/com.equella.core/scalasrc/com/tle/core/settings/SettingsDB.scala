@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,44 +21,51 @@ package com.tle.core.settings
 import cats.data.{Kleisli, OptionT}
 import cats.syntax.applicative._
 import com.tle.core.db.tables.Setting
-import com.tle.core.db.{DB, DBSchema}
+import com.tle.core.db._
 import com.tle.core.security.AclChecks
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
-
-
+import fs2.Stream
 
 object SettingsDB {
 
   def ensureEditSystem[A](db: DB[A]): DB[A] = AclChecks.ensureOnePriv("EDIT_SYSTEM_SETTINGS")(db)
 
-  def q = DBSchema.queries.settingsQueries
+  private val q = DBSchema.queries.settingsQueries
 
   def singleProperty(name: String): OptionT[DB, Setting] = OptionT {
-    Kleisli {
-      uc => q.query(uc.inst, name).compile.last
+    Kleisli { uc =>
+      q.query(uc.inst, name).compile.last
     }
   }
 
-  def jsonProperty[A](name: String)(implicit dec: Decoder[A]): OptionT[DB, A] = singleProperty(name).map {
-    s => parse(s.value).flatMap(dec.decodeJson).fold(throw _, identity)
+  def multiProperties(prefix: String): Stream[DB, Setting] =
+    dbStream(uc => q.prefixQuery(uc.inst, prefix))
+
+  def decodeSetting[A](f: Setting => A => A)(s: Setting)(implicit dec: Decoder[A]): A =
+    parse(s.value).flatMap(dec.decodeJson).fold(throw _, f(s))
+
+  def jsonProperty[A: Decoder](name: String): OptionT[DB, A] =
+    singleProperty(name).map(decodeSetting[A](_ => identity))
+
+  def jsonProperties[A: Decoder](prefix: String, f: String => A => A): Stream[DB, A] =
+    multiProperties(prefix + "%").map(decodeSetting[A](s => f(s.property.substring(prefix.length))))
+
+  def mkSetting(name: String, value: String): DB[Setting] = Kleisli { uc =>
+    Setting(uc.inst, name, value).pure[JDBCIO]
   }
 
-  def mkSetting(name: String, value: String): DB[Setting] = Kleisli {
-    uc => Setting(uc.inst, name, value).pure[JDBCIO]
-  }
-
-  def setJsonProperty[A : Encoder : Decoder](name: String, value: A): DB[Unit] = {
+  def setJsonProperty[A: Encoder: Decoder](name: String, value: A): DB[Unit] = {
     val newJson = value.asJson.noSpaces
     for {
       newSetting <- mkSetting(name, newJson)
-      existProp <- singleProperty(name).value
+      existProp  <- singleProperty(name).value
       _ <- Kleisli.liftF {
         (existProp match {
-          case None => q.write.insert(newSetting)
+          case None           => q.write.insert(newSetting)
           case Some(existing) => q.write.update(existing, newSetting)
         }).flush.compile.drain
       }

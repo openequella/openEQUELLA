@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,39 +20,32 @@ package com.tle.core.copyright.service;
 
 import com.tle.common.filesystem.handle.FileHandle;
 
-public class AgreementStatus
-{
-	private boolean inactive;
-	private boolean needsAgreement;
-	private FileHandle agreementFile;
+public class AgreementStatus {
+  private boolean inactive;
+  private boolean needsAgreement;
+  private FileHandle agreementFile;
 
-	public boolean isInactive()
-	{
-		return inactive;
-	}
+  public boolean isInactive() {
+    return inactive;
+  }
 
-	public void setInactive(boolean inactive)
-	{
-		this.inactive = inactive;
-	}
+  public void setInactive(boolean inactive) {
+    this.inactive = inactive;
+  }
 
-	public FileHandle getAgreementFile()
-	{
-		return agreementFile;
-	}
+  public FileHandle getAgreementFile() {
+    return agreementFile;
+  }
 
-	public void setAgreementFile(FileHandle agreementFile)
-	{
-		this.agreementFile = agreementFile;
-	}
+  public void setAgreementFile(FileHandle agreementFile) {
+    this.agreementFile = agreementFile;
+  }
 
-	public boolean isNeedsAgreement()
-	{
-		return needsAgreement;
-	}
+  public boolean isNeedsAgreement() {
+    return needsAgreement;
+  }
 
-	public void setNeedsAgreement(boolean needsAgreement)
-	{
-		this.needsAgreement = needsAgreement;
-	}
+  public void setNeedsAgreement(boolean needsAgreement) {
+    this.needsAgreement = needsAgreement;
+  }
 }

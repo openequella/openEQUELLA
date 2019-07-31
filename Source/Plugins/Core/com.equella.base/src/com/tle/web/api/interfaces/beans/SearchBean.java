@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,57 +19,45 @@
 package com.tle.web.api.interfaces.beans;
 
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
-public class SearchBean<T> extends AbstractExtendableBean
-{
-	private int start;
-	private int length;
-	private int available;
-	private List<T> results;
+public class SearchBean<T> extends AbstractExtendableBean {
+  private int start;
+  private int length;
+  private int available;
+  private List<T> results;
 
-	public int getStart()
-	{
-		return start;
-	}
+  public int getStart() {
+    return start;
+  }
 
-	public void setStart(int start)
-	{
-		this.start = start;
-	}
+  public void setStart(int start) {
+    this.start = start;
+  }
 
-	public int getLength()
-	{
-		return length;
-	}
+  public int getLength() {
+    return length;
+  }
 
-	public void setLength(int length)
-	{
-		this.length = length;
-	}
+  public void setLength(int length) {
+    this.length = length;
+  }
 
-	public int getAvailable()
-	{
-		return available;
-	}
+  public int getAvailable() {
+    return available;
+  }
 
-	public void setAvailable(int available)
-	{
-		this.available = available;
-	}
+  public void setAvailable(int available) {
+    this.available = available;
+  }
 
-	public List<T> getResults()
-	{
-		return results;
-	}
+  public List<T> getResults() {
+    return results;
+  }
 
-	public void setResults(List<T> results)
-	{
-		this.results = results;
-	}
+  public void setResults(List<T> results) {
+    this.results = results;
+  }
 }

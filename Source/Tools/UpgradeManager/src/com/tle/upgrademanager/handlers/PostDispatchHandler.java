@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,27 @@
 
 package com.tle.upgrademanager.handlers;
 
+import com.sun.net.httpserver.HttpExchange;
 import java.util.Map;
 
-import com.sun.net.httpserver.HttpExchange;
+public abstract class PostDispatchHandler extends UrlDispatchHandler {
+  private static final String ACTION_PREFIX = "action-"; // $NON-NLS-1$
 
-public abstract class PostDispatchHandler extends UrlDispatchHandler
-{
-	private static final String ACTION_PREFIX = "action-"; //$NON-NLS-1$
+  @Override
+  public void doHandle(HttpExchange exchange) throws Exception {
+    if (HttpExchangeUtils.isPost(exchange)) {
+      invokeAction(exchange, determineAction(getParameters(exchange)));
+    } else {
+      super.doHandle(exchange);
+    }
+  }
 
-	@Override
-	public void doHandle(HttpExchange exchange) throws Exception
-	{
-		if( HttpExchangeUtils.isPost(exchange) )
-		{
-			invokeAction(exchange, determineAction(getParameters(exchange)));
-		}
-		else
-		{
-			super.doHandle(exchange);
-		}
-	}
-
-	private String determineAction(Map<String, ?> fields)
-	{
-		for( String key : fields.keySet() )
-		{
-			if( key.startsWith(ACTION_PREFIX) )
-			{
-				return key.substring(ACTION_PREFIX.length());
-			}
-		}
-		return null;
-	}
+  private String determineAction(Map<String, ?> fields) {
+    for (String key : fields.keySet()) {
+      if (key.startsWith(ACTION_PREFIX)) {
+        return key.substring(ACTION_PREFIX.length());
+      }
+    }
+    return null;
+  }
 }

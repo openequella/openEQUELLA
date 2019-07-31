@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,43 +23,35 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 
-/**
- * @author dustin
- */
+/** @author dustin */
 @NonNullByDefault
-public class OrExpression extends BooleanExpression
-{
-	protected final JSExpression first;
-	protected final JSExpression second;
+public class OrExpression extends BooleanExpression {
+  protected final JSExpression first;
+  protected final JSExpression second;
 
-	public OrExpression(JSExpression first, JSExpression second)
-	{
-		this.first = first;
-		this.second = second;
-	}
+  public OrExpression(JSExpression first, JSExpression second) {
+    this.first = first;
+    this.second = second;
+  }
 
-	public OrExpression(String first, JSExpression second)
-	{
-		this(new ScriptExpression(first), second);
-	}
+  public OrExpression(String first, JSExpression second) {
+    this(new ScriptExpression(first), second);
+  }
 
-	public OrExpression(String first, String second)
-	{
-		this(new ScriptExpression(first), new ScriptExpression(second));
-	}
+  public OrExpression(String first, String second) {
+    this(new ScriptExpression(first), new ScriptExpression(second));
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		StringBuilder text = new StringBuilder(first.getExpression(info));
-		text.append(" || "); //$NON-NLS-1$
-		text.append(second.getExpression(info));
-		return text.toString();
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    StringBuilder text = new StringBuilder(first.getExpression(info));
+    text.append(" || "); // $NON-NLS-1$
+    text.append(second.getExpression(info));
+    return text.toString();
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(first, second);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(first, second);
+  }
 }

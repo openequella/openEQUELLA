@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,64 +18,52 @@
 
 package com.tle.common.security;
 
+import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.beans.item.ItemStatus;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.item.ItemStatus;
+/** @author Nicholas Read */
+public class ItemStatusTarget implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-/**
- * @author Nicholas Read
- */
-public class ItemStatusTarget implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private final ItemStatus itemStatus;
+  private ItemDefinition itemDefinition;
 
-	private final ItemStatus itemStatus;
-	private ItemDefinition itemDefinition;
+  public ItemStatusTarget(ItemStatus itemStatus, ItemDefinition itemDefinition) {
+    this.itemStatus = itemStatus;
+    this.itemDefinition = itemDefinition;
+  }
 
-	public ItemStatusTarget(ItemStatus itemStatus, ItemDefinition itemDefinition)
-	{
-		this.itemStatus = itemStatus;
-		this.itemDefinition = itemDefinition;
-	}
+  public ItemStatus getItemStatus() {
+    return itemStatus;
+  }
 
-	public ItemStatus getItemStatus()
-	{
-		return itemStatus;
-	}
+  public ItemDefinition getItemDefinition() {
+    return itemDefinition;
+  }
 
-	public ItemDefinition getItemDefinition()
-	{
-		return itemDefinition;
-	}
+  public void setItemDefinition(ItemDefinition itemDefinition) {
+    this.itemDefinition = itemDefinition;
+  }
 
-	public void setItemDefinition(ItemDefinition itemDefinition)
-	{
-		this.itemDefinition = itemDefinition;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+    if (!(obj instanceof ItemStatusTarget)) {
+      return false;
+    }
 
-		if( !(obj instanceof ItemStatusTarget) )
-		{
-			return false;
-		}
+    ItemStatusTarget rhs = (ItemStatusTarget) obj;
+    return getItemStatus().equals(rhs.getItemStatus())
+        && Objects.equals(itemDefinition, rhs.getItemDefinition());
+  }
 
-		ItemStatusTarget rhs = (ItemStatusTarget) obj;
-		return getItemStatus().equals(rhs.getItemStatus())
-			&& Objects.equals(itemDefinition, rhs.getItemDefinition());
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return getItemStatus().hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return getItemStatus().hashCode();
+  }
 }

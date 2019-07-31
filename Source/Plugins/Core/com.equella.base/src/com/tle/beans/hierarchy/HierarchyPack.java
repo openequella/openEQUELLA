@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,68 +18,54 @@
 
 package com.tle.beans.hierarchy;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.security.TargetList;
+import java.io.Serializable;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public class HierarchyPack implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class HierarchyPack implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private HierarchyTopic topic;
-	private TargetList targetList;
-	private List<ItemDefinition> inheritedItemDefinitions;
-	private List<Schema> inheritedSchemas;
+  private HierarchyTopic topic;
+  private TargetList targetList;
+  private List<ItemDefinition> inheritedItemDefinitions;
+  private List<Schema> inheritedSchemas;
 
-	public HierarchyPack()
-	{
-		super();
-	}
+  public HierarchyPack() {
+    super();
+  }
 
-	public List<ItemDefinition> getInheritedItemDefinitions()
-	{
-		return inheritedItemDefinitions;
-	}
+  public List<ItemDefinition> getInheritedItemDefinitions() {
+    return inheritedItemDefinitions;
+  }
 
-	public void setInheritedItemDefinitions(List<ItemDefinition> inheritedItemDefinitions)
-	{
-		this.inheritedItemDefinitions = inheritedItemDefinitions;
-	}
+  public void setInheritedItemDefinitions(List<ItemDefinition> inheritedItemDefinitions) {
+    this.inheritedItemDefinitions = inheritedItemDefinitions;
+  }
 
-	public List<Schema> getInheritedSchemas()
-	{
-		return inheritedSchemas;
-	}
+  public List<Schema> getInheritedSchemas() {
+    return inheritedSchemas;
+  }
 
-	public void setInheritedSchemas(List<Schema> inheritedSchemas)
-	{
-		this.inheritedSchemas = inheritedSchemas;
-	}
+  public void setInheritedSchemas(List<Schema> inheritedSchemas) {
+    this.inheritedSchemas = inheritedSchemas;
+  }
 
-	public HierarchyTopic getTopic()
-	{
-		return topic;
-	}
+  public HierarchyTopic getTopic() {
+    return topic;
+  }
 
-	public void setTopic(HierarchyTopic topic)
-	{
-		this.topic = topic;
-	}
+  public void setTopic(HierarchyTopic topic) {
+    this.topic = topic;
+  }
 
-	public TargetList getTargetList()
-	{
-		return targetList;
-	}
+  public TargetList getTargetList() {
+    return targetList;
+  }
 
-	public void setTargetList(TargetList targetList)
-	{
-		this.targetList = targetList;
-	}
-
+  public void setTargetList(TargetList targetList) {
+    this.targetList = targetList;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.entities.section;
-
-import java.util.Collection;
 
 import com.google.common.base.Throwables;
 import com.tle.beans.entity.BaseEntity;
@@ -50,358 +50,305 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
+import java.util.Collection;
 
 @SuppressWarnings("nls")
 @TreeIndexed
-public abstract class AbstractEntityContributeSection<B extends EntityEditingBean, E extends BaseEntity, M extends AbstractEntityContributeSection<B, E, M>.EntityContributeModel>
-	extends
-		AbstractPrototypeSection<M>
-	implements HtmlRenderer
-{
-	@PlugKey("editor.error.accessdenied")
-	private static String KEY_ACCESS_DENIED;
+public abstract class AbstractEntityContributeSection<
+        B extends EntityEditingBean,
+        E extends BaseEntity,
+        M extends AbstractEntityContributeSection<B, E, M>.EntityContributeModel>
+    extends AbstractPrototypeSection<M> implements HtmlRenderer {
+  @PlugKey("editor.error.accessdenied")
+  private static String KEY_ACCESS_DENIED;
 
-	@TreeLookup
-	private AbstractRootEntitySection<?> rootSection;
+  @TreeLookup private AbstractRootEntitySection<?> rootSection;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory view;
 
-	@PlugKey("editor.button.save")
-	@Component(name = "sv", stateful = false)
-	private Button saveButton;
-	@PlugKey("editor.button.cancel")
-	@Component(name = "cl", stateful = false)
-	private Button cancelButton;
+  @PlugKey("editor.button.save")
+  @Component(name = "sv", stateful = false)
+  private Button saveButton;
 
-	protected abstract AbstractEntityService<B, E> getEntityService();
+  @PlugKey("editor.button.cancel")
+  @Component(name = "cl", stateful = false)
+  private Button cancelButton;
 
-	protected abstract Label getCreatingLabel(SectionInfo info);
+  protected abstract AbstractEntityService<B, E> getEntityService();
 
-	protected abstract Label getEditingLabel(SectionInfo info);
+  protected abstract Label getCreatingLabel(SectionInfo info);
 
-	protected abstract EntityEditor<B, E> getEditor(SectionInfo info);
+  protected abstract Label getEditingLabel(SectionInfo info);
 
-	// Can probably remove this
-	protected abstract String getCreatePriv();
+  protected abstract EntityEditor<B, E> getEditor(SectionInfo info);
 
-	// Can probably remove this
-	protected abstract String getEditPriv();
+  // Can probably remove this
+  protected abstract String getCreatePriv();
 
-	/**
-	 * Only called once, on registered
-	 * 
-	 * @return A list of all possible editors
-	 */
-	protected abstract Collection<EntityEditor<B, E>> getAllEditors();
+  // Can probably remove this
+  protected abstract String getEditPriv();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final M model = getModel(context);
+  /**
+   * Only called once, on registered
+   *
+   * @return A list of all possible editors
+   */
+  protected abstract Collection<EntityEditor<B, E>> getAllEditors();
 
-		model.setPageTitle(getPageTitle(context));
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final M model = getModel(context);
 
-		final EntityEditor<B, E> ed = getEditorPrivate(context);
-		if( ed != null )
-		{
-			// check edit priv
-			final EntityEditingBean editedEnt = ed.getEditedEntity(context);
-			if( editedEnt.getId() == 0 )
-			{
-				ensureCreatePriv(context);
-			}
-			else if( !canEdit(context, editedEnt) )
-			{
-				throw accessDenied(getEditPriv());
-			}
+    model.setPageTitle(getPageTitle(context));
 
-			HelpAndScreenOptionsSection.addHelp(context, ed.renderHelp(context));
-			model.setEditorRenderable(ed.renderEditor(context));
-		}
-		else
-		{
-			ensureCreatePriv(context);
-		}
+    final EntityEditor<B, E> ed = getEditorPrivate(context);
+    if (ed != null) {
+      // check edit priv
+      final EntityEditingBean editedEnt = ed.getEditedEntity(context);
+      if (editedEnt.getId() == 0) {
+        ensureCreatePriv(context);
+      } else if (!canEdit(context, editedEnt)) {
+        throw accessDenied(getEditPriv());
+      }
 
-		final GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult("body", view.createResult("editentity.ftl", context));
-		return templateResult;
-	}
+      HelpAndScreenOptionsSection.addHelp(context, ed.renderHelp(context));
+      model.setEditorRenderable(ed.renderEditor(context));
+    } else {
+      ensureCreatePriv(context);
+    }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    final GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult("body", view.createResult("editentity.ftl", context));
+    return templateResult;
+  }
 
-		for( EntityEditor<B, E> ed : getAllEditors() )
-		{
-			ed.register(tree, id);
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
-	}
+    for (EntityEditor<B, E> ed : getAllEditors()) {
+      ed.register(tree, id);
+    }
 
-	protected boolean canEdit(SectionInfo info, EntityEditingBean editedEnt)
-	{
-		// TODO: rather dodgy
-		E entityTemplate;
-		try
-		{
-			entityTemplate = getEntityService().getEntityClass().newInstance();
-		}
-		catch( Exception e )
-		{
-			throw Throwables.propagate(e);
-		}
-		entityTemplate.setId(editedEnt.getId());
-		return getEntityService().canEdit(entityTemplate);
-	}
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+  }
 
-	protected AccessDeniedException accessDenied(String priv)
-	{
-		return new AccessDeniedException(CurrentLocale.get(KEY_ACCESS_DENIED, priv));
-	}
+  protected boolean canEdit(SectionInfo info, EntityEditingBean editedEnt) {
+    // TODO: rather dodgy
+    E entityTemplate;
+    try {
+      entityTemplate = getEntityService().getEntityClass().newInstance();
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+    entityTemplate.setId(editedEnt.getId());
+    return getEntityService().canEdit(entityTemplate);
+  }
 
-	protected boolean canCreate(SectionInfo info)
-	{
-		return getEntityService().canCreate();
-	}
+  protected AccessDeniedException accessDenied(String priv) {
+    return new AccessDeniedException(CurrentLocale.get(KEY_ACCESS_DENIED, priv));
+  }
 
-	protected void ensureCreatePriv(SectionInfo info)
-	{
-		if( !canCreate(info) )
-		{
-			throw accessDenied(CurrentLocale.get(KEY_ACCESS_DENIED, getCreatePriv()));
-		}
-	}
+  protected boolean canCreate(SectionInfo info) {
+    return getEntityService().canCreate();
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final EntityEditor<B, E> ed = getEditorPrivate(info);
-		if( ed.save(info) )
-		{
-			returnFromEdit(info, false);
-		}
-	}
+  protected void ensureCreatePriv(SectionInfo info) {
+    if (!canCreate(info)) {
+      throw accessDenied(CurrentLocale.get(KEY_ACCESS_DENIED, getCreatePriv()));
+    }
+  }
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		final EntityEditor<B, E> ed = getEditorPrivate(info);
-		if( ed != null )
-		{
-			ed.cancel(info);
-		}
-		returnFromEdit(info, true);
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final EntityEditor<B, E> ed = getEditorPrivate(info);
+    if (ed.save(info)) {
+      returnFromEdit(info, false);
+    }
+  }
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
-	public void checkModal(SectionInfo info)
-	{
-		final M model = getModel(info);
-		if( model.isEditing() )
-		{
-			rootSection.setModalSection(info, this);
-		}
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    final EntityEditor<B, E> ed = getEditorPrivate(info);
+    if (ed != null) {
+      ed.cancel(info);
+    }
+    returnFromEdit(info, true);
+  }
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void includeHandler(SectionInfo info)
-	{
-		final M model = getModel(info);
-		if( model.isRendered() )
-		{
-			EntityEditor<B, E> ed = getEditorPrivate(info);
-			if( ed != null )
-			{
-				ed.saveToSession(info);
-			}
-		}
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
+  public void checkModal(SectionInfo info) {
+    final M model = getModel(info);
+    if (model.isEditing()) {
+      rootSection.setModalSection(info, this);
+    }
+  }
 
-	@DirectEvent
-	public void loadFromSession(SectionInfo info)
-	{
-		final M model = getModel(info);
-		model.setRendered(true);
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void includeHandler(SectionInfo info) {
+    final M model = getModel(info);
+    if (model.isRendered()) {
+      EntityEditor<B, E> ed = getEditorPrivate(info);
+      if (ed != null) {
+        ed.saveToSession(info);
+      }
+    }
+  }
 
-		final EntityEditor<B, E> ed = getEditorPrivate(info);
-		if( ed != null )
-		{
-			ed.loadFromSession(info);
-		}
-	}
+  @DirectEvent
+  public void loadFromSession(SectionInfo info) {
+    final M model = getModel(info);
+    model.setRendered(true);
 
-	public void returnFromEdit(SectionInfo info, boolean cancelled)
-	{
-		final M model = getModel(info);
-		model.setEditor(null);
-		model.setEditing(false);
-	}
+    final EntityEditor<B, E> ed = getEditorPrivate(info);
+    if (ed != null) {
+      ed.loadFromSession(info);
+    }
+  }
 
-	private EntityEditor<B, E> getEditorPrivate(SectionInfo info)
-	{
-		EntityEditor<B, E> ed = getEditor(info);
-		getModel(info).setEditor(ed);
-		return ed;
-	}
+  public void returnFromEdit(SectionInfo info, boolean cancelled) {
+    final M model = getModel(info);
+    model.setEditor(null);
+    model.setEditing(false);
+  }
 
-	public void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		ContentLayout.setLayout(info, ContentLayout.ONE_COLUMN);
+  private EntityEditor<B, E> getEditorPrivate(SectionInfo info) {
+    EntityEditor<B, E> ed = getEditor(info);
+    getModel(info).setEditor(ed);
+    return ed;
+  }
 
-		final M model = getModel(info);
-		final Label pageTitle = getPageTitle(info);
+  public void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    ContentLayout.setLayout(info, ContentLayout.ONE_COLUMN);
 
-		final EntityEditor<B, E> editor = getEditorPrivate(info);
-		if( editor != null )
-		{
-			decorations.setContentBodyClass("entityedit");
-			crumbs.setForcedLastCrumb(pageTitle);
-		}
+    final M model = getModel(info);
+    final Label pageTitle = getPageTitle(info);
 
-		model.setPageTitle(pageTitle);
-		decorations.setTitle(pageTitle);
-	}
+    final EntityEditor<B, E> editor = getEditorPrivate(info);
+    if (editor != null) {
+      decorations.setContentBodyClass("entityedit");
+      crumbs.setForcedLastCrumb(pageTitle);
+    }
 
-	protected Label getPageTitle(SectionInfo info)
-	{
-		final M model = getModel(info);
-		final EntityEditor<B, E> editor = getEditorPrivate(info);
-		Label pageTitle = getCreatingLabel(info);
-		if( editor != null )
-		{
-			final EntityEditingBean editedEnt = editor.getEditedEntity(info);
-			final boolean editExisting = editedEnt.getId() != 0;
-			model.setEditExisting(editExisting);
-			pageTitle = (editExisting ? getEditingLabel(info) : pageTitle);
-		}
-		return pageTitle;
-	}
+    model.setPageTitle(pageTitle);
+    decorations.setTitle(pageTitle);
+  }
 
-	/**
-	 * @param info
-	 * @param type
-	 */
-	public void createNew(SectionInfo info)
-	{
-		final M model = getModel(info);
-		model.setEditing(true);
+  protected Label getPageTitle(SectionInfo info) {
+    final M model = getModel(info);
+    final EntityEditor<B, E> editor = getEditorPrivate(info);
+    Label pageTitle = getCreatingLabel(info);
+    if (editor != null) {
+      final EntityEditingBean editedEnt = editor.getEditedEntity(info);
+      final boolean editExisting = editedEnt.getId() != 0;
+      model.setEditExisting(editExisting);
+      pageTitle = (editExisting ? getEditingLabel(info) : pageTitle);
+    }
+    return pageTitle;
+  }
 
-		final EntityEditor<B, E> ed = getEditorPrivate(info);
-		if( ed != null )
-		{
-			ed.create(info);
-		}
-	}
+  /**
+   * @param info
+   * @param type
+   */
+  public void createNew(SectionInfo info) {
+    final M model = getModel(info);
+    model.setEditing(true);
 
-	/**
-	 * @param info
-	 * @param entityUuid
-	 * @param type
-	 */
-	public void startEdit(SectionInfo info, String entityUuid, boolean clone)
-	{
-		final M model = getModel(info);
-		final EntityEditor<B, E> ed = getEditorPrivate(info);
-		model.setEditing(true);
-		if( ed != null )
-		{
-			ed.edit(info, entityUuid, clone);
-		}
-	}
+    final EntityEditor<B, E> ed = getEditorPrivate(info);
+    if (ed != null) {
+      ed.create(info);
+    }
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new EntityContributeModel();
-	}
+  /**
+   * @param info
+   * @param entityUuid
+   * @param type
+   */
+  public void startEdit(SectionInfo info, String entityUuid, boolean clone) {
+    final M model = getModel(info);
+    final EntityEditor<B, E> ed = getEditorPrivate(info);
+    model.setEditing(true);
+    if (ed != null) {
+      ed.edit(info, entityUuid, clone);
+    }
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new EntityContributeModel();
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-	public class EntityContributeModel
-	{
-		@Bookmarked(name = "ed")
-		private boolean editing;
-		@Bookmarked(stateful = false)
-		private boolean rendered;
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		private Label pageTitle;
-		private boolean editExisting;
-		private EntityEditor<B, E> editor;
-		private SectionRenderable editorRenderable;
+  public class EntityContributeModel {
+    @Bookmarked(name = "ed")
+    private boolean editing;
 
-		public boolean isEditing()
-		{
-			return editing;
-		}
+    @Bookmarked(stateful = false)
+    private boolean rendered;
 
-		public void setEditing(boolean editing)
-		{
-			this.editing = editing;
-		}
+    private Label pageTitle;
+    private boolean editExisting;
+    private EntityEditor<B, E> editor;
+    private SectionRenderable editorRenderable;
 
-		public boolean isRendered()
-		{
-			return rendered;
-		}
+    public boolean isEditing() {
+      return editing;
+    }
 
-		public void setRendered(boolean rendered)
-		{
-			this.rendered = rendered;
-		}
+    public void setEditing(boolean editing) {
+      this.editing = editing;
+    }
 
-		public Label getPageTitle()
-		{
-			return pageTitle;
-		}
+    public boolean isRendered() {
+      return rendered;
+    }
 
-		public void setPageTitle(Label pageTitle)
-		{
-			this.pageTitle = pageTitle;
-		}
+    public void setRendered(boolean rendered) {
+      this.rendered = rendered;
+    }
 
-		public boolean isEditExisting()
-		{
-			return editExisting;
-		}
+    public Label getPageTitle() {
+      return pageTitle;
+    }
 
-		public void setEditExisting(boolean editExisting)
-		{
-			this.editExisting = editExisting;
-		}
+    public void setPageTitle(Label pageTitle) {
+      this.pageTitle = pageTitle;
+    }
 
-		public EntityEditor<B, E> getEditor()
-		{
-			return editor;
-		}
+    public boolean isEditExisting() {
+      return editExisting;
+    }
 
-		public void setEditor(EntityEditor<B, E> editor)
-		{
-			this.editor = editor;
-		}
+    public void setEditExisting(boolean editExisting) {
+      this.editExisting = editExisting;
+    }
 
-		public SectionRenderable getEditorRenderable()
-		{
-			return editorRenderable;
-		}
+    public EntityEditor<B, E> getEditor() {
+      return editor;
+    }
 
-		public void setEditorRenderable(SectionRenderable editorRenderable)
-		{
-			this.editorRenderable = editorRenderable;
-		}
-	}
+    public void setEditor(EntityEditor<B, E> editor) {
+      this.editor = editor;
+    }
+
+    public SectionRenderable getEditorRenderable() {
+      return editorRenderable;
+    }
+
+    public void setEditorRenderable(SectionRenderable editorRenderable) {
+      this.editorRenderable = editorRenderable;
+    }
+  }
 }

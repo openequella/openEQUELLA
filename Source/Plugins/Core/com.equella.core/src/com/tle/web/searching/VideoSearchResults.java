@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.searching;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.search.DefaultSearch;
@@ -31,53 +31,47 @@ import com.tle.web.search.base.AbstractSearchResultsSection.SearchResultsModel;
 import com.tle.web.searching.itemlist.VideoItemList;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel> implements StandardSearchResultType
-{
-	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(VideoSearchResults.class);
+public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel>
+    implements StandardSearchResultType {
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(VideoSearchResults.class);
 
-	@Inject
-	private VideoItemList videoItemList;
-	@Inject
-	private ConfigurationService configService;
+  @Inject private VideoItemList videoItemList;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	public AbstractItemList<StandardItemListEntry, ?> getCustomItemList()
-	{
-		return videoItemList;
-	}
+  @Override
+  public AbstractItemList<StandardItemListEntry, ?> getCustomItemList() {
+    return videoItemList;
+  }
 
-	@Override
-	public String getKey()
-	{
-		return helper.key("result.type.video");
-	}
+  @Override
+  public String getKey() {
+    return helper.key("result.type.video");
+  }
 
-	@Override
-	public String getValue()
-	{
-		return "video";
-	}
+  @Override
+  public String getValue() {
+    return "video";
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-		tree.registerInnerSection(videoItemList, parentId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+    tree.registerInnerSection(videoItemList, parentId);
+  }
 
-	@Override
-	public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch)
-	{
-		defaultSearch.addMust(FreeTextQuery.FIELD_VIDEO_THUMB, "true");
-	}
+  @Override
+  public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch) {
+    defaultSearch.addMust(FreeTextQuery.FIELD_VIDEO_THUMB, "true");
+  }
 
-	@Override
-	public boolean isDisabled()
-	{
-		SearchSettings properties = configService.getProperties(new SearchSettings());
-		return properties.isSearchingDisableVideos();
-	}
+  @Override
+  public boolean isDisabled() {
+    SearchSettings properties = configService.getProperties(new SearchSettings());
+    return properties.isSearchingDisableVideos();
+  }
 }

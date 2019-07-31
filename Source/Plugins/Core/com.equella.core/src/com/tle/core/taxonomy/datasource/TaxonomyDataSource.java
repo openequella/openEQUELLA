@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,92 +18,87 @@
 
 package com.tle.core.taxonomy.datasource;
 
+import com.tle.common.Pair;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.taxonomy.SelectionRestriction;
+import com.tle.core.taxonomy.TermResult;
 import java.util.List;
 import java.util.Map;
 
-import com.tle.common.beans.exception.InvalidDataException;
-import com.tle.common.Pair;
-import com.tle.common.taxonomy.SelectionRestriction;
-import com.tle.core.taxonomy.TermResult;
+public interface TaxonomyDataSource {
+  TermResult getTerm(String fullTermPath);
 
-public interface TaxonomyDataSource
-{
-	TermResult getTerm(String fullTermPath);
+  /** @param parentFullTermPath use null or empty string to retrieve root terms. */
+  List<TermResult> getChildTerms(String parentFullTermPath);
 
-	/**
-	 * @param parentFullTermPath use null or empty string to retrieve root
-	 *            terms.
-	 */
-	List<TermResult> getChildTerms(String parentFullTermPath);
+  /**
+   * @param query
+   * @param restriction
+   * @param limit
+   * @return The first value is the total available results, the second is the returned results
+   *     which may be limited by limit
+   */
+  Pair<Long, List<TermResult>> searchTerms(
+      String query, SelectionRestriction restriction, int limit, boolean searchFullTerm);
 
-	/**
-	 * @param query
-	 * @param restriction
-	 * @param limit
-	 * @return The first value is the total available results, the second is the
-	 *         returned results which may be limited by limit
-	 */
-	Pair<Long, List<TermResult>> searchTerms(String query, SelectionRestriction restriction, int limit,
-		boolean searchFullTerm);
+  /**
+   * Retrieve custom data from a taxonomy node.
+   *
+   * @param fullTermPath
+   * @param key
+   * @return
+   */
+  String getDataForTerm(String fullTermPath, String key);
 
-	/**
-	 * Retrieve custom data from a taxonomy node.
-	 * 
-	 * @param fullTermPath
-	 * @param key
-	 * @return
-	 */
-	String getDataForTerm(String fullTermPath, String key);
+  /**
+   * Adds a new term into the taxonomy. Is intended to only be used for the Auto-Complete edit box.
+   * For full-blown term creation, see insertTerm on RemoteTermService.
+   *
+   * @param parentFullTermPath The full path of the parent term the new term will be added to, eg,
+   *     Mammalia/Felidae/Panthera.
+   * @param termValue The term to be added, eg, Tiger.
+   */
+  TermResult addTerm(String parentFullTermPath, String termValue, boolean createHierarchy);
 
-	/**
-	 * Adds a new term into the taxonomy. Is intended to only be used for the
-	 * Auto-Complete edit box. For full-blown term creation, see insertTerm on
-	 * RemoteTermService.
-	 * 
-	 * @param parentFullTermPath The full path of the parent term the new term
-	 *            will be added to, eg, Mammalia/Felidae/Panthera.
-	 * @param termValue The term to be added, eg, Tiger.
-	 */
-	TermResult addTerm(String parentFullTermPath, String termValue, boolean createHierarchy);
+  void validateTerm(String parentFullTermPath, String termValue, boolean requireParent)
+      throws InvalidDataException;
 
-	void validateTerm(String parentFullTermPath, String termValue, boolean requireParent) throws InvalidDataException;
+  boolean supportsTermAddition();
 
-	boolean supportsTermAddition();
+  boolean supportsTermBrowsing();
 
-	boolean supportsTermBrowsing();
+  boolean supportsTermSearching();
 
-	boolean supportsTermSearching();
+  /**
+   * Is the data source readonly
+   *
+   * @return boolean
+   */
+  boolean isReadonly();
 
-	/**
-	 * Is the data source readonly
-	 * 
-	 * @return boolean
-	 */
-	boolean isReadonly();
+  /**
+   * Get term by uuid
+   *
+   * @param termUuid
+   * @return
+   */
+  TermResult getTermByUuid(String termUuid);
 
-	/**
-	 * Get term by uuid
-	 * 
-	 * @param termUuid
-	 * @return
-	 */
-	TermResult getTermByUuid(String termUuid);
+  /**
+   * Get a data value for a key against a term
+   *
+   * @param taxonomy
+   * @param termUuid
+   * @param dataKey
+   * @return String
+   */
+  String getDataByTermUuid(String termUuid, String dataKey);
 
-	/**
-	 * Get a data value for a key against a term
-	 * 
-	 * @param taxonomy
-	 * @param termUuid
-	 * @param dataKey
-	 * @return String
-	 */
-	String getDataByTermUuid(String termUuid, String dataKey);
-
-	/**
-	 * Get all data
-	 * 
-	 * @param termUuid
-	 * @return
-	 */
-	Map<String, String> getAllDataByTermUuid(String termUuid);
+  /**
+   * Get all data
+   *
+   * @param termUuid
+   * @return
+   */
+  Map<String, String> getAllDataByTermUuid(String termUuid);
 }

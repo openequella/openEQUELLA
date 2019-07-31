@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,76 +31,75 @@ import javax.ws.rs.core.Response.Status
 
 import scala.collection.JavaConverters._
 
-
 case class AddRemoveRecent(add: Iterable[String], remove: Iterable[String])
 
-@Produces(value =Array("application/json"))
+@Produces(value = Array("application/json"))
 @Path("acl/")
 @Api(value = "ACLs")
 class AclResource {
 
-	val aclManager = LegacyGuice.aclManager
-	val userPrefs = LegacyGuice.userPreferenceService
+  val aclManager = LegacyGuice.aclManager
+  val userPrefs  = LegacyGuice.userPreferenceService
+  @GET
+  @ApiOperation(value = "Get allowed privileges for tree node")
+  @Path("/privileges") def getAllowedPrivileges(@QueryParam("node") node: Node) = {
+    PrivilegeTree.getAllPrivilegesForNode(node).keySet().asScala.toVector.sorted
+  }
 
+  @GET
+  @ApiOperation(value = "Determine if you have non-entity specific privilege(s)")
+  @Path("/privilegecheck") def checkPrivilege(
+      @QueryParam("privilege") privs: Array[String]): Iterable[String] = {
+    aclManager.filterNonGrantedPrivileges(privs: _*).asScala
+  }
 
-	@GET
-	@ApiOperation(value = "Get allowed privileges for tree node")
-	@Path("/privileges") def getAllowedPrivileges(@QueryParam("node") node: Node) = {
-		PrivilegeTree.getAllPrivilegesForNode(node).keySet().asScala.toVector.sorted
-	}
+  @GET
+  @ApiOperation(value = "Get all institution level acls")
+  @Path("/")
+  def getEntries: TargetListBean = {
+    checkPrivs("VIEW_SECURITY_TREE", "EDIT_SECURITY_TREE")
+    val targetListBean = new TargetListBean
+    val allAcls        = aclManager.getTargetList(Node.INSTITUTION, null)
+    val tBeanList = allAcls.getEntries.asScala.map { ae =>
+      val tBean = new TargetListEntryBean
+      tBean.setGranted(ae.isGranted)
+      tBean.setOverride(ae.isOverride)
+      tBean.setPrivilege(ae.getPrivilege)
+      tBean.setWho(ae.getWho)
+      tBean
+    }
+    targetListBean.setEntries(tBeanList.asJava)
+    targetListBean
+  }
 
-	@GET
-	@ApiOperation(value = "Determine if you have non-entity specific privilege(s)")
-	@Path("/privilegecheck") def checkPrivilege(@QueryParam("privilege") privs: Array[String]) : Iterable[String]  = {
-		aclManager.filterNonGrantedPrivileges(privs: _*).asScala
-	}
+  def checkPrivs(privs: String*): Unit = {
+    if (aclManager.filterNonGrantedPrivileges(privs: _*).isEmpty)
+      throw new PrivilegeRequiredException(privs: _*)
+  }
 
-	@GET
-	@ApiOperation(value = "Get all institution level acls")
-	@Path("/")
-	def getEntries: TargetListBean = {
-		checkPrivs("VIEW_SECURITY_TREE", "EDIT_SECURITY_TREE")
-		val targetListBean = new TargetListBean
-		val allAcls = aclManager.getTargetList(Node.INSTITUTION, null)
-		val tBeanList = allAcls.getEntries.asScala.map { ae =>
-			val tBean = new TargetListEntryBean
-			tBean.setGranted(ae.isGranted)
-			tBean.setOverride(ae.isOverride)
-			tBean.setPrivilege(ae.getPrivilege)
-			tBean.setWho(ae.getWho)
-			tBean
-		}
-		targetListBean.setEntries(tBeanList.asJava)
-		targetListBean
-	}
+  @PUT
+  @ApiOperation(value = "Set all institution level acls")
+  @Path("/")
+  def setEntries(@ApiParam bean: TargetListBean): Response = {
+    checkPrivs("EDIT_SECURITY_TREE")
+    val tle = bean.getEntries.asScala.map { eb =>
+      new TargetListEntry(eb.isGranted, eb.isOverride, eb.getPrivilege, eb.getWho)
+    }
+    aclManager.setTargetList(Node.INSTITUTION, null, new TargetList(tle.asJava))
+    Response.status(Status.OK).build
+  }
 
-	def checkPrivs(privs: String*): Unit = {
-		if (aclManager.filterNonGrantedPrivileges(privs: _*).isEmpty) throw new PrivilegeRequiredException(privs: _*)
-	}
+  @GET
+  @ApiOperation(value = "Get recently used expression targets")
+  @Path("/recent") def getRecent: Iterable[String] = {
+    AclPrefs.getRecentTargets
+  }
 
-	@PUT
-	@ApiOperation(value = "Set all institution level acls")
-	@Path("/")
-	def setEntries(@ApiParam bean: TargetListBean): Response = {
-		checkPrivs("EDIT_SECURITY_TREE")
-		val tle = bean.getEntries.asScala.map { eb =>
-			new TargetListEntry(eb.isGranted, eb.isOverride, eb.getPrivilege, eb.getWho)
-		}
-		aclManager.setTargetList(Node.INSTITUTION, null, new TargetList(tle.asJava))
-		Response.status(Status.OK).build
-	}
-
-	@GET
-	@ApiOperation(value = "Get recently used expression targets")
-	@Path("/recent") def getRecent : Iterable[String] = {
-		AclPrefs.getRecentTargets
-	}
-
-	@POST
-	@ApiOperation(value = "Add/Remove an expression target from the recently used list")
-	@Path("/recent")
-	def addRemoveRecent(addRemove: AddRemoveRecent) : Unit = {
-		AclPrefs.addAndRemoveRecent(addRemove.add, addRemove.remove)
-	}
+  @POST
+  @ApiOperation(value = "Add/Remove an expression target from the recently used list")
+  @Path("/recent")
+  def addRemoveRecent(addRemove: AddRemoveRecent): Unit = {
+    AclPrefs.addAndRemoveRecent(addRemove.add, addRemove.remove)
+  }
 
 }

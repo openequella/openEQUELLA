@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,55 +22,52 @@ import java.io.Serializable;
 
 /**
  * Represents an image or video etc to make up a QTIMaterial
- * 
+ *
  * @author will
  */
-public class QTIMaterialMedia implements QTIMaterialElement, Serializable
-{
-	private static final long serialVersionUID = 1L;
-	private String url;
-	private QTIMaterialMediaType type;
+public class QTIMaterialMedia implements QTIMaterialElement, Serializable {
+  private static final long serialVersionUID = 1L;
+  private String url;
+  private QTIMaterialMediaType type;
 
-	public QTIMaterialMedia(String url, QTIMaterialMediaType type)
-	{
-		this.url = url;
-		this.type = type;
-	}
+  public QTIMaterialMedia(String url, QTIMaterialMediaType type) {
+    this.url = url;
+    this.type = type;
+  }
 
-	public void setType(QTIMaterialMediaType type)
-	{
-		this.type = type;
-	}
+  public void setType(QTIMaterialMediaType type) {
+    this.type = type;
+  }
 
-	public QTIMaterialMediaType getType()
-	{
-		return type;
-	}
+  public QTIMaterialMediaType getType() {
+    return type;
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getHtml()
-	{
-		String html = "";
-		switch( type )
-		{
-			case IMAGE:
-				html = "<img src=\"" + url + "\">";
-				break;
-			case EMBED:
-				html = "<object><param name=\"src\" value=\"" + url + "\"><embed src=\"" + url + "\"></embed></object>";
-				break;
-		}
-		return html;
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getHtml() {
+    String html = "";
+    switch (type) {
+      case IMAGE:
+        html = "<img src=\"" + url + "\">";
+        break;
+      case EMBED:
+        html =
+            "<object><param name=\"src\" value=\""
+                + url
+                + "\"><embed src=\""
+                + url
+                + "\"></embed></object>";
+        break;
+    }
+    return html;
+  }
 }

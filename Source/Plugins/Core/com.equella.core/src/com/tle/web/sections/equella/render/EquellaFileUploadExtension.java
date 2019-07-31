@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.web.sections.equella.render;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.inject.Singleton;
-
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.web.resources.PluginResourceHelper;
@@ -31,7 +28,6 @@ import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.js.JSHandler;
-import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.js.generic.AppendedElementId;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
@@ -43,113 +39,107 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlFileUploadState;
-import com.tle.web.sections.standard.renderers.FileRenderer;
-import org.opensaml.xml.signature.P;
+import java.io.IOException;
+import java.util.Map;
+import javax.inject.Singleton;
 
-/**
- * plugin defines the stateClassName as HtmlFileUploadState
- */
+/** plugin defines the stateClassName as HtmlFileUploadState */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class EquellaFileUploadExtension implements RendererFactoryExtension
-{
-	private static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(EquellaFileUploadExtension.class);
+public class EquellaFileUploadExtension implements RendererFactoryExtension {
+  private static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(EquellaFileUploadExtension.class);
 
-	public static final CssInclude CSS = CssInclude.include(RESOURCES.url("css/render/jquery.fileinput.css")).hasRtl()
-		.make();
-	private static final IncludeFile JS = new IncludeFile(RESOURCES.url("scripts/render/jquery.fileinput.js"));
+  public static final CssInclude CSS =
+      CssInclude.include(RESOURCES.url("css/render/jquery.fileinput.css")).hasRtl().make();
+  private static final IncludeFile JS =
+      new IncludeFile(RESOURCES.url("scripts/render/jquery.fileinput.js"));
 
-	private static final ExternallyDefinedFunction INIT = new ExternallyDefinedFunction("setupUpload", JS);
+  private static final ExternallyDefinedFunction INIT =
+      new ExternallyDefinedFunction("setupUpload", JS);
 
-	private static final String BROWSE_KEY = RESOURCES.key("equellafileupload.browse");
-	private static final String CHANGE_KEY = RESOURCES.key("equellafileupload.change");
-	private static final String NONE_SELECTED_KEY = RESOURCES.key("equellafileupload.noneselected");
+  private static final String BROWSE_KEY = RESOURCES.key("equellafileupload.browse");
+  private static final String CHANGE_KEY = RESOURCES.key("equellafileupload.change");
+  private static final String NONE_SELECTED_KEY = RESOURCES.key("equellafileupload.noneselected");
 
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new FancyFileRenderer((HtmlFileUploadState) state); // NOSONAR
-	}
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new FancyFileRenderer((HtmlFileUploadState) state); // NOSONAR
+  }
 
-	public static class FancyFileRenderer extends TagRenderer
-	{
-		private final HtmlFileUploadState uploadState;
-		private boolean renderFile = true;
-		private boolean renderBar = true;
-		private int size;
+  public static class FancyFileRenderer extends TagRenderer {
+    private final HtmlFileUploadState uploadState;
+    private boolean renderFile = true;
+    private boolean renderBar = true;
+    private int size;
 
+    protected FancyFileRenderer(HtmlFileUploadState state) {
+      super("div", new TagState(new AppendedElementId(state, "div")));
+      addClass("customfile");
+      this.uploadState = state;
+    }
 
-		protected FancyFileRenderer(HtmlFileUploadState state)
-		{
-			super("div", new TagState(new AppendedElementId(state, "div")));
-			addClass("customfile");
-			this.uploadState = state;
-		}
+    public void setParts(boolean bar, boolean file) {
+      renderBar = bar;
+      renderFile = file;
+    }
 
+    public void setSize(int size) {
+      this.size = size;
+    }
 
-		public void setParts(boolean bar, boolean file)
-		{
-			renderBar = bar;
-			renderFile = file;
-		}
+    @Override
+    protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+        throws IOException {
+      super.prepareFirstAttributes(writer, attrs);
+    }
 
-		public void setSize(int size) {
-			this.size = size;
-		}
-		@Override
-		protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-		{
-			super.prepareFirstAttributes(writer, attrs);
-		}
+    @Override
+    protected void writeMiddle(SectionWriter writer) throws IOException {
+      super.writeMiddle(writer);
+      writer.writeTag(
+          "button", "class", "customfile-button focus " + EquellaButtonExtension.CLASS_BUTTON);
+      writer.writeText(CurrentLocale.get(BROWSE_KEY));
+      writer.endTag("button");
+      writer.writeTag("span", "class", "customfile-feedback");
+      writer.writeText(CurrentLocale.get(NONE_SELECTED_KEY));
+      writer.endTag("span");
+      TagState tagState = new TagState(uploadState);
+      tagState.addTagProcessor(
+          new ExtraAttributes(
+              "type", "file", "tabIndex", "-1", "name", uploadState.getElementId(writer)));
+      TagRenderer fileTag = new TagRenderer("input", tagState);
+      fileTag.addClass("customfile-input");
+      writer.render(fileTag);
+    }
 
-		@Override
-		protected void writeMiddle(SectionWriter writer) throws IOException {
-			super.writeMiddle(writer);
-			writer.writeTag("button", "class", "customfile-button focus "+EquellaButtonExtension.CLASS_BUTTON);
-			writer.writeText(CurrentLocale.get(BROWSE_KEY));
-			writer.endTag("button");
-			writer.writeTag("span", "class", "customfile-feedback");
-			writer.writeText(CurrentLocale.get(NONE_SELECTED_KEY));
-			writer.endTag("span");
-			TagState tagState = new TagState(uploadState);
-			tagState.addTagProcessor(new ExtraAttributes("type", "file", "tabIndex", "-1", "name", uploadState.getElementId(writer)));
-			TagRenderer fileTag = new TagRenderer("input", tagState);
-			fileTag.addClass("customfile-input");
-			writer.render(fileTag);
-		}
+    @Override
+    public void preRender(PreRenderContext info) {
+      super.preRender(info);
 
-		@Override
-		public void preRender(PreRenderContext info)
-		{
-			super.preRender(info);
-
-			if( renderFile )
-			{
-				info.preRender(CSS);
-				if (!uploadState.isDontInitialise())
-				{
-					ObjectExpression oe = new ObjectExpression();
-					JSHandler onChange = uploadState.getHandler(JSHandler.EVENT_CHANGE);
-					if (onChange != null)
-					{
-						oe.put("onchange", new AnonymousFunction(onChange));
-					}
-					Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
-					if (ajaxUploadUrl != null)
-					{
-						oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
-						oe.put("validateFile", uploadState.getValidateFile());
-					}
-					else
-					{
-						throw new SectionsRuntimeException("Must set an ajax upload url for fileupload");
-					}
-					info.addReadyStatements(Js.call_s(INIT, this, oe));
-				}
-			}
-		}
-	}
+      if (renderFile) {
+        info.preRender(CSS);
+        if (!uploadState.isDontInitialise()) {
+          ObjectExpression oe = new ObjectExpression();
+          JSHandler onChange = uploadState.getHandler(JSHandler.EVENT_CHANGE);
+          if (onChange != null) {
+            oe.put("onchange", new AnonymousFunction(onChange));
+          }
+          Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
+          if (ajaxUploadUrl != null) {
+            oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
+            oe.put("validateFile", uploadState.getValidateFile());
+          } else {
+            throw new SectionsRuntimeException("Must set an ajax upload url for fileupload");
+          }
+          info.addReadyStatements(Js.call_s(INIT, this, oe));
+        }
+      }
+    }
+  }
 }

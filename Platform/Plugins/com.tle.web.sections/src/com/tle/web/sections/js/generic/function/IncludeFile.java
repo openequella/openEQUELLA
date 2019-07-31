@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,66 +18,55 @@
 
 package com.tle.web.sections.js.generic.function;
 
+import static com.tle.web.sections.SectionInfo.KEY_MINIFIED;
+
+import com.tle.web.sections.events.PreRenderContext;
+import com.tle.web.sections.render.PreRenderable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.tle.web.sections.events.PreRenderContext;
-import com.tle.web.sections.render.PreRenderable;
+public class IncludeFile implements PreRenderable {
+  protected boolean hasMin = false;
+  protected List<String> includes = new ArrayList<String>();
+  protected List<PreRenderable> preRenderables = new ArrayList<PreRenderable>();
 
-import static com.tle.web.sections.SectionInfo.KEY_MINIFIED;
+  public IncludeFile() {
+    // nothing
+  }
 
-public class IncludeFile implements PreRenderable
-{
-	protected boolean hasMin = false;
-	protected List<String> includes = new ArrayList<String>();
-	protected List<PreRenderable> preRenderables = new ArrayList<PreRenderable>();
+  public IncludeFile(String include, PreRenderable... preRenderables) {
+    this.includes.add(include);
+    this.preRenderables.addAll(Arrays.asList(preRenderables));
+  }
 
-	public IncludeFile()
-	{
-		// nothing
-	}
+  public IncludeFile hasMin() {
+    this.hasMin = true;
+    return this;
+  }
 
-	public IncludeFile(String include, PreRenderable... preRenderables)
-	{
-		this.includes.add(include);
-		this.preRenderables.addAll(Arrays.asList(preRenderables));
-	}
+  public IncludeFile(String[] includes) {
+    this.includes.addAll(Arrays.asList(includes));
+  }
 
-	public IncludeFile hasMin()
-	{
-		this.hasMin = true;
-		return this;
-	}
+  public void addPreRenderers(Collection<PreRenderable> preRenderers) {
+    preRenderables.addAll(preRenderers);
+  }
 
-	public IncludeFile(String[] includes)
-	{
-		this.includes.addAll(Arrays.asList(includes));
-	}
+  public void addPreRenderer(PreRenderable preRenderer) {
+    preRenderables.add(preRenderer);
+  }
 
-	public void addPreRenderers(Collection<PreRenderable> preRenderers)
-	{
-		preRenderables.addAll(preRenderers);
-	}
-
-	public void addPreRenderer(PreRenderable preRenderer)
-	{
-		preRenderables.add(preRenderer);
-	}
-
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(preRenderables);
-		boolean replaceExt = hasMin && info.getBooleanAttribute(KEY_MINIFIED);
-		for( String include : includes )
-		{
-			if (replaceExt)
-			{
-				include = include.replace(".js", ".min.js");
-			}
-			info.addJs(include);
-		}
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(preRenderables);
+    boolean replaceExt = hasMin && info.getBooleanAttribute(KEY_MINIFIED);
+    for (String include : includes) {
+      if (replaceExt) {
+        include = include.replace(".js", ".min.js");
+      }
+      info.addJs(include);
+    }
+  }
 }

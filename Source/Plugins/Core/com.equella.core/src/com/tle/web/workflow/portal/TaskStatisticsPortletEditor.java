@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.workflow.portal;
-
-import java.util.Map;
 
 import com.tle.common.Check;
 import com.tle.common.portal.entity.Portlet;
@@ -35,96 +35,86 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Map;
 
 @SuppressWarnings("nls")
 @Bind
 public class TaskStatisticsPortletEditor
-	extends
-		AbstractPortletEditorSection<TaskStatisticsPortletEditor.TaskStatisticsPortletEditorModel>
-{
-	private static final String TYPE = "taskstatistics";
-	private static final String KEY_DEFAULT_TREND = "trend";
+    extends AbstractPortletEditorSection<
+        TaskStatisticsPortletEditor.TaskStatisticsPortletEditorModel> {
+  private static final String TYPE = "taskstatistics";
+  private static final String KEY_DEFAULT_TREND = "trend";
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@PlugKey("portal.taskstats.trend.")
-	private static String PREFIX;
+  @PlugKey("portal.taskstats.trend.")
+  private static String PREFIX;
 
-	@Component(name = "tr", stateful = false)
-	private SingleSelectionList<Trend> trend;
+  @Component(name = "tr", stateful = false)
+  private SingleSelectionList<Trend> trend;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		trend.setListModel(new EnumListModel<Trend>(PREFIX, Trend.values()));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    trend.setListModel(new EnumListModel<Trend>(PREFIX, Trend.values()));
+  }
 
-	@Override
-	protected Portlet createNewPortlet()
-	{
-		return new Portlet(TYPE);
-	}
+  @Override
+  protected Portlet createNewPortlet() {
+    return new Portlet(TYPE);
+  }
 
-	@Override
-	protected SectionRenderable customRender(RenderEventContext context, TaskStatisticsPortletEditorModel model,
-		PortletEditingBean portlet) throws Exception
-	{
-		return viewFactory.createResult("portal/edit/edittaskstatistics.ftl", context);
-	}
+  @Override
+  protected SectionRenderable customRender(
+      RenderEventContext context,
+      TaskStatisticsPortletEditorModel model,
+      PortletEditingBean portlet)
+      throws Exception {
+    return viewFactory.createResult("portal/edit/edittaskstatistics.ftl", context);
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors)
-	{
-		// Nothing
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors) {
+    // Nothing
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		String defaultTrend = portlet.getAttribute(KEY_DEFAULT_TREND);
-		if( !Check.isEmpty(defaultTrend) )
-		{
-			trend.setSelectedValue(info, Trend.valueOf(defaultTrend));
-		}
-		else
-		{
-			trend.setSelectedValue(info, Trend.WEEK);
-		}
-	}
+  @Override
+  protected void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    String defaultTrend = portlet.getAttribute(KEY_DEFAULT_TREND);
+    if (!Check.isEmpty(defaultTrend)) {
+      trend.setSelectedValue(info, Trend.valueOf(defaultTrend));
+    } else {
+      trend.setSelectedValue(info, Trend.WEEK);
+    }
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		portlet.setAttribute(KEY_DEFAULT_TREND, trend.getSelectedValueAsString(info));
-	}
+  @Override
+  protected void customSave(SectionInfo info, PortletEditingBean portlet) {
+    portlet.setAttribute(KEY_DEFAULT_TREND, trend.getSelectedValueAsString(info));
+  }
 
-	@Override
-	protected void customClear(SectionInfo info)
-	{
-		trend.setSelectedValue(info, Trend.WEEK);
-	}
+  @Override
+  protected void customClear(SectionInfo info) {
+    trend.setSelectedValue(info, Trend.WEEK);
+  }
 
-	@Override
-	public Class<TaskStatisticsPortletEditorModel> getModelClass()
-	{
-		return TaskStatisticsPortletEditorModel.class;
-	}
+  @Override
+  public Class<TaskStatisticsPortletEditorModel> getModelClass() {
+    return TaskStatisticsPortletEditorModel.class;
+  }
 
-	public static class TaskStatisticsPortletEditorModel extends AbstractPortletEditorSection.AbstractPortletEditorModel
-	{
-		// Here there be dragons...
-	}
+  public static class TaskStatisticsPortletEditorModel
+      extends AbstractPortletEditorSection.AbstractPortletEditorModel {
+    // Here there be dragons...
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	public SingleSelectionList<Trend> getTrend()
-	{
-		return trend;
-	}
+  public SingleSelectionList<Trend> getTrend() {
+    return trend;
+  }
 }

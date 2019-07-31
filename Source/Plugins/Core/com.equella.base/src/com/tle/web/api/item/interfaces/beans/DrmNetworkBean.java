@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,54 +20,42 @@ package com.tle.web.api.item.interfaces.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
-public class DrmNetworkBean
-{
-	private String name;
-	private String startAddress;
-	private String endAddress;
+public class DrmNetworkBean {
+  private String name;
+  private String startAddress;
+  private String endAddress;
 
-	public DrmNetworkBean()
-	{
-	}
+  public DrmNetworkBean() {}
 
-	public DrmNetworkBean(String name, String startAddress, String endAddress)
-	{
-		this.name = name;
-		this.startAddress = startAddress;
-		this.endAddress = endAddress;
-	}
+  public DrmNetworkBean(String name, String startAddress, String endAddress) {
+    this.name = name;
+    this.startAddress = startAddress;
+    this.endAddress = endAddress;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getStartAddress()
-	{
-		return startAddress;
-	}
+  public String getStartAddress() {
+    return startAddress;
+  }
 
-	public void setStartAddress(String startAddress)
-	{
-		this.startAddress = startAddress;
-	}
+  public void setStartAddress(String startAddress) {
+    this.startAddress = startAddress;
+  }
 
-	public String getEndAddress()
-	{
-		return endAddress;
-	}
+  public String getEndAddress() {
+    return endAddress;
+  }
 
-	public void setEndAddress(String endAddress)
-	{
-		this.endAddress = endAddress;
-	}
+  public void setEndAddress(String endAddress) {
+    this.endAddress = endAddress;
+  }
 }

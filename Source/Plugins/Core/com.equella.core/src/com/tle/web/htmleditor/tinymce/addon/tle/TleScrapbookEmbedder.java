@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.htmleditor.tinymce.addon.tle;
-
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.google.common.collect.Lists;
 import com.tle.core.guice.Bind;
@@ -41,97 +37,94 @@ import com.tle.web.selection.SelectableInterface;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.SelectionsMadeCallback;
 import com.tle.web.selection.filter.SelectionFilter;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TleScrapbookEmbedder extends AbstractSelectionAddon
-{
-	@PlugKey("scrapbook.button.name")
-	private static Label LABEL_BUTTON;
-	static
-	{
-		PluginResourceHandler.init(TleScrapbookEmbedder.class);
-	}
+public class TleScrapbookEmbedder extends AbstractSelectionAddon {
+  @PlugKey("scrapbook.button.name")
+  private static Label LABEL_BUTTON;
 
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(TleScrapbookEmbedder.class);
-	private static final List<HtmlEditorButtonDefinition> BUTTONS = Collections.unmodifiableList(Lists
-		.newArrayList(new HtmlEditorButtonDefinition("tle_scrapbookpicker",
-			TleTinyMceAddonConstants.SCRAPBOOK_PICKER_ID, new TinyMceAddonButtonRenderer(resources
-				.url("scripts/tle_scrapbookpicker/images/scrapbook.gif"), LABEL_BUTTON), LABEL_BUTTON, 2, true)));
+  static {
+    PluginResourceHandler.init(TleScrapbookEmbedder.class);
+  }
 
-	@Inject
-	private MyContentService myContentService;
-	@Inject
-	private MimeTemplateService mimeTemplateService;
-	@Inject
-	private MyContentSelectable scrapbookSelectable;
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(TleScrapbookEmbedder.class);
+  private static final List<HtmlEditorButtonDefinition> BUTTONS =
+      Collections.unmodifiableList(
+          Lists.newArrayList(
+              new HtmlEditorButtonDefinition(
+                  "tle_scrapbookpicker",
+                  TleTinyMceAddonConstants.SCRAPBOOK_PICKER_ID,
+                  new TinyMceAddonButtonRenderer(
+                      resources.url("scripts/tle_scrapbookpicker/images/scrapbook.gif"),
+                      LABEL_BUTTON),
+                  LABEL_BUTTON,
+                  2,
+                  true)));
 
-	@Override
-	public boolean applies(String action)
-	{
-		return action.equals("select_embed");
-	}
+  @Inject private MyContentService myContentService;
+  @Inject private MimeTemplateService mimeTemplateService;
+  @Inject private MyContentSelectable scrapbookSelectable;
 
-	@Override
-	protected boolean isAddToRecentSelections()
-	{
-		return false;
-	}
+  @Override
+  public boolean applies(String action) {
+    return action.equals("select_embed");
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return myContentService.isMyContentContributionAllowed();
-	}
+  @Override
+  protected boolean isAddToRecentSelections() {
+    return false;
+  }
 
-	@Override
-	protected Class<? extends SelectionsMadeCallback> getCallbackClass()
-	{
-		return ScrapbookEmbedderCallback.class;
-	}
+  @Override
+  public boolean isEnabled() {
+    return myContentService.isMyContentContributionAllowed();
+  }
 
-	@Override
-	protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session)
-	{
-		if( myContentService.isMyContentContributionAllowed() )
-		{
-			final MyContentSelectionSettings myContentSettings = new MyContentSelectionSettings();
-			myContentSettings.setRawFilesOnly(true);
-			session.setAttribute(MyContentSelectionSettings.class, myContentSettings);
+  @Override
+  protected Class<? extends SelectionsMadeCallback> getCallbackClass() {
+    return ScrapbookEmbedderCallback.class;
+  }
 
-			final SelectionFilter mimeFilter = new SelectionFilter();
-			mimeFilter.setAllowedMimeTypes(mimeTemplateService.getEmbeddableMimeTypes());
-			session.setAttribute(SelectionFilter.class, mimeFilter);
+  @Override
+  protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session) {
+    if (myContentService.isMyContentContributionAllowed()) {
+      final MyContentSelectionSettings myContentSettings = new MyContentSelectionSettings();
+      myContentSettings.setRawFilesOnly(true);
+      session.setAttribute(MyContentSelectionSettings.class, myContentSettings);
 
-			session.setSkipCheckoutPage(true);
-			session.setCancelDisabled(true);
-			session.setSelectScrapbook(true);
+      final SelectionFilter mimeFilter = new SelectionFilter();
+      mimeFilter.setAllowedMimeTypes(mimeTemplateService.getEmbeddableMimeTypes());
+      session.setAttribute(SelectionFilter.class, mimeFilter);
 
-			return scrapbookSelectable;
-		}
-		return null;
-	}
+      session.setSkipCheckoutPage(true);
+      session.setCancelDisabled(true);
+      session.setSelectScrapbook(true);
 
-	@Override
-	public String getId()
-	{
-		return TleTinyMceAddonConstants.SCRAPBOOK_PICKER_ID;
-	}
+      return scrapbookSelectable;
+    }
+    return null;
+  }
 
-	@Override
-	protected PluginResourceHelper getResourceHelper()
-	{
-		return resources;
-	}
+  @Override
+  public String getId() {
+    return TleTinyMceAddonConstants.SCRAPBOOK_PICKER_ID;
+  }
 
-	@Override
-	public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info)
-	{
-		return BUTTONS;
-	}
+  @Override
+  protected PluginResourceHelper getResourceHelper() {
+    return resources;
+  }
+
+  @Override
+  public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info) {
+    return BUTTONS;
+  }
 }

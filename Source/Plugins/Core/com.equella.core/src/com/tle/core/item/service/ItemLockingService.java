@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,23 +22,22 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemLock;
 
-public interface ItemLockingService
-{
-	ItemLock lock(ItemKey itemId);
+public interface ItemLockingService {
+  ItemLock lock(ItemKey itemId);
 
-	ItemLock lock(Item item);
+  ItemLock lock(Item item);
 
-	ItemLock get(ItemKey itemId);
+  ItemLock get(ItemKey itemId);
 
-	ItemLock get(Item item);
+  ItemLock get(Item item);
 
-	boolean isLocked(Item item);
+  boolean isLocked(Item item);
 
-	ItemLock useLock(Item item, String lockId);
+  ItemLock useLock(Item item, String lockId);
 
-	void unlock(ItemLock itemLock);
+  void unlock(ItemLock itemLock);
 
-	void unlock(ItemKey itemId);
+  void unlock(ItemKey itemId);
 
-	void unlock(Item item, boolean force);
+  void unlock(Item item, boolean force);
 }

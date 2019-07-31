@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,56 +18,44 @@
 
 package com.tle.core.item.service;
 
+import com.tle.beans.Institution;
 import java.io.Serializable;
 
-import com.tle.beans.Institution;
+/** @author jmaginnis */
+public class DownloadMessage implements Serializable {
+  private static final long serialVersionUID = 1L;
+  private String url;
+  private long itemdef;
+  private final String userid;
+  private final Institution institution;
 
-/**
- * @author jmaginnis
- */
-public class DownloadMessage implements Serializable
-{
-	private static final long serialVersionUID = 1L;
-	private String url;
-	private long itemdef;
-	private final String userid;
-	private final Institution institution;
+  public DownloadMessage(String userid, Institution institution) {
+    super();
+    this.userid = userid;
+    this.institution = institution;
+  }
 
-	public DownloadMessage(String userid, Institution institution)
-	{
-		super();
-		this.userid = userid;
-		this.institution = institution;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public long getItemdef() {
+    return itemdef;
+  }
 
-	public long getItemdef()
-	{
-		return itemdef;
-	}
+  public void setItemdef(long itemdef) {
+    this.itemdef = itemdef;
+  }
 
-	public void setItemdef(long itemdef)
-	{
-		this.itemdef = itemdef;
-	}
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
-
-	public String getUserid()
-	{
-		return userid;
-	}
-
+  public String getUserid() {
+    return userid;
+  }
 }

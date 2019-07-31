@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,126 +18,119 @@
 
 package com.tle.core.wizard.controls;
 
-import java.util.List;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.TargetNode;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.NameValue;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.wizard.LERepository;
 import com.tle.web.sections.render.Label;
+import java.util.List;
 
 @NonNullByDefault
-public interface HTMLControl
-{
-	boolean isVisible();
+public interface HTMLControl {
+  boolean isVisible();
 
-	void setVisible(boolean visible);
+  void setVisible(boolean visible);
 
-	boolean isViewable();
+  boolean isViewable();
 
-	boolean isEnabled();
+  boolean isEnabled();
 
-	void clearInvalid();
+  void clearInvalid();
 
-	void validate();
+  void validate();
 
-	void saveToDocument(PropBagEx itemxml) throws Exception;
+  void saveToDocument(PropBagEx itemxml);
 
-	void loadFromDocument(PropBagEx itemxml);
+  void loadFromDocument(PropBagEx itemxml);
 
-	void resetToDefaults();
+  void resetToDefaults();
 
-	boolean isInvalid();
+  boolean isInvalid();
 
-	boolean isEmpty();
+  boolean isEmpty();
 
-	boolean isMandatory();
+  boolean isMandatory();
 
-	String getFormName();
+  String getFormName();
 
-	void setInvalid(boolean yes, Label msg);
+  void setInvalid(boolean yes, Label msg);
 
-	@Nullable
-	BaseQuery getPowerSearchQuery();
+  @Nullable
+  BaseQuery getPowerSearchQuery();
 
-	int getSize1();
+  int getSize1();
 
-	int getSize2();
+  int getSize2();
 
-	void setSize1(int size1);
+  void setSize1(int size1);
 
-	void setSize2(int size2);
+  void setSize2(int size2);
 
-	NameValue getNameValue();
+  NameValue getNameValue();
 
-	void afterSaveValidate() throws Exception;
+  void afterSaveValidate();
 
-	boolean isHidden();
+  boolean isHidden();
 
-	void setHidden(boolean hidden);
+  void setHidden(boolean hidden);
 
-	void clearTargets(PropBagEx itemxml);
+  void clearTargets(PropBagEx itemxml);
 
-	void evaluate();
+  void evaluate();
 
-	boolean isIncluded();
+  boolean isIncluded();
 
-	void setDontShowEmpty(boolean dontshow);
+  void setDontShowEmpty(boolean dontshow);
 
-	void setValues(@Nullable String... values);
+  void setValues(@Nullable String... values);
 
-	String getTitle();
+  String getTitle();
 
-	WizardControl getControlBean();
+  WizardControl getControlBean();
 
-	@Nullable
-	Label getMessage();
+  @Nullable
+  Label getMessage();
 
-	String getDescription();
+  String getDescription();
 
-	@Nullable
-	LERepository getRepository();
+  @Nullable
+  LERepository getRepository();
 
-	WizardPage getWizardPage();
+  WizardPage getWizardPage();
 
-	List<TargetNode> getTargets();
+  List<TargetNode> getTargets();
 
-	TargetNode getFirstTarget();
+  TargetNode getFirstTarget();
 
-	boolean isExpertSearch();
+  boolean isExpertSearch();
 
-	int getControlNumber();
+  int getControlNumber();
 
-	int getNestingLevel();
+  int getNestingLevel();
 
-	void setTopLevel(HTMLControl topLevel);
+  void setTopLevel(HTMLControl topLevel);
 
-	/**
-	 * Used for advanced searches. If true: This control maps to a metadata
-	 * target that another control already maps to. There is some tricky code to
-	 * ensure the original metadata isn't clobbered.
-	 * AbstractHTMLControl.getDefaultPowerSearchQuery uses the appropriate
-	 * metadata and the final advanced search will AND these 2 (or more) values.
-	 * If false: It's just a normal control.
-	 * 
-	 * @return Whether this control is 'uniquified'
-	 */
-	boolean isUniquified();
+  /**
+   * Used for advanced searches. If true: This control maps to a metadata target that another
+   * control already maps to. There is some tricky code to ensure the original metadata isn't
+   * clobbered. AbstractHTMLControl.getDefaultPowerSearchQuery uses the appropriate metadata and the
+   * final advanced search will AND these 2 (or more) values. If false: It's just a normal control.
+   *
+   * @return Whether this control is 'uniquified'
+   */
+  boolean isUniquified();
 
-	void setUniquified(boolean uniquified);
+  void setUniquified(boolean uniquified);
 
-	/**
-	 * @return Gets the parent. Provided it's a repeater ;)
-	 */
-	@Nullable
-	HTMLControl getParent();
+  /** @return Gets the parent. Provided it's a repeater ;) */
+  @Nullable
+  HTMLControl getParent();
 
-	void setParent(HTMLControl parent);
+  void setParent(HTMLControl parent);
 
-	int getIndex(HTMLControl child);
+  int getIndex(HTMLControl child);
 }

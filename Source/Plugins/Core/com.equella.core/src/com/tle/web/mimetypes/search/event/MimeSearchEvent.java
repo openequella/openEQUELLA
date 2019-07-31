@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,26 +24,23 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchEvent;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 
-public class MimeSearchEvent extends AbstractSearchEvent<MimeSearchEvent>
-{
-	private final DefaultSearch search;
+public class MimeSearchEvent extends AbstractSearchEvent<MimeSearchEvent> {
+  private final DefaultSearch search;
 
-	public MimeSearchEvent()
-	{
-		// broadcast
-		super(null);
-		search = new DefaultSearch();
-	}
+  public MimeSearchEvent() {
+    // broadcast
+    super(null);
+    search = new DefaultSearch();
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, SearchEventListener<MimeSearchEvent> listener)
-		throws Exception
-	{
-		listener.prepareSearch(info, this);
-	}
+  @Override
+  public void fire(
+      SectionId sectionId, SectionInfo info, SearchEventListener<MimeSearchEvent> listener)
+      throws Exception {
+    listener.prepareSearch(info, this);
+  }
 
-	public DefaultSearch getSearch()
-	{
-		return search;
-	}
+  public DefaultSearch getSearch() {
+    return search;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,29 +23,26 @@ import com.tle.common.scripting.types.AttachmentScriptType;
 import com.tle.common.scripting.types.FileHandleScriptType;
 import com.tle.core.metadata.scripting.types.MetadataScriptType;
 
-/**
- * Referenced by the 'metadata' variable in a script
- */
+/** Referenced by the 'metadata' variable in a script */
 @SuppressWarnings("nls")
-public interface MetadataScriptObject extends ScriptObject
-{
-	String DEFAULT_VARIABLE = "metadata";
+public interface MetadataScriptObject extends ScriptObject {
+  String DEFAULT_VARIABLE = "metadata";
 
-	/**
-	 * Returns a {@link MetadataScriptType} object for the file provided. If the
-	 * file does not exist or cannot be read an empty object will be returned.
-	 * 
-	 * @param file
-	 * @return the metadata for the file
-	 */
-	MetadataScriptType getMetadata(FileHandleScriptType f);
+  /**
+   * Returns a {@link MetadataScriptType} object for the file provided. If the file does not exist
+   * or cannot be read an empty object will be returned.
+   *
+   * @param file
+   * @return the metadata for the file
+   */
+  MetadataScriptType getMetadata(FileHandleScriptType f);
 
-	/**
-	 * Returns a {@link MetadataScriptType} object for the attachment provided.
-	 * If the attachment type is unsupported an empty object will be returned
-	 * 
-	 * @param attachment
-	 * @return the metadata for the attachment
-	 */
-	MetadataScriptType getMetadata(AttachmentScriptType a);
+  /**
+   * Returns a {@link MetadataScriptType} object for the attachment provided. If the attachment type
+   * is unsupported an empty object will be returned
+   *
+   * @param attachment
+   * @return the metadata for the attachment
+   */
+  MetadataScriptType getMetadata(AttachmentScriptType a);
 }

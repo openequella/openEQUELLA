@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,23 +20,22 @@ package com.tle.upgrademanager.helpers;
 
 import java.util.List;
 
-public interface AjaxState
-{
-	public void addError(String id, String message);
+public interface AjaxState {
+  public void addError(String id, String message);
 
-	public void addErrorRaw(String id, String message);
+  public void addErrorRaw(String id, String message);
 
-	public void addBasic(String id, String message);
+  public void addBasic(String id, String message);
 
-	public void addHeading(String id, String message);
+  public void addHeading(String id, String message);
 
-	public void addConsole(String id, String message);
+  public void addConsole(String id, String message);
 
-	public void start(String id, String message);
+  public void start(String id, String message);
 
-	public void start(String id);
+  public void start(String id);
 
-	public void finish(String id, String message, String redirect);
+  public void finish(String id, String message, String redirect);
 
-	public List<AjaxMessage> getListOfAllMessages(String id);
+  public List<AjaxMessage> getListOfAllMessages(String id);
 }

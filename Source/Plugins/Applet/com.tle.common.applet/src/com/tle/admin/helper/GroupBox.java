@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,7 +21,6 @@ package com.tle.admin.helper;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -29,152 +30,130 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SpringLayout;
 
-public class GroupBox extends JPanel implements ItemListener
-{
-	private static final long serialVersionUID = 1L;
+public class GroupBox extends JPanel implements ItemListener {
+  private static final long serialVersionUID = 1L;
 
-	protected final JPanel inner;
-	protected final AbstractButton button;
+  protected final JPanel inner;
+  protected final AbstractButton button;
 
-	protected boolean allowSetEnable = true;
+  protected boolean allowSetEnable = true;
 
-	public static GroupBox withCheckBox(String title, boolean selected)
-	{
-		return new GroupBox(new JCheckBox(title, selected));
-	}
+  public static GroupBox withCheckBox(String title, boolean selected) {
+    return new GroupBox(new JCheckBox(title, selected));
+  }
 
-	public static GroupBox withRadioButton(String title, boolean selected)
-	{
-		return new GroupBox(new JRadioButton(title, selected));
-	}
+  public static GroupBox withRadioButton(String title, boolean selected) {
+    return new GroupBox(new JRadioButton(title, selected));
+  }
 
-	public GroupBox(final AbstractButton b)
-	{
-		button = b;
-		button.addItemListener(this);
-		button.setOpaque(true);
-		button.setBackground(this.getBackground());
+  public GroupBox(final AbstractButton b) {
+    button = b;
+    button.addItemListener(this);
+    button.setOpaque(true);
+    button.setBackground(this.getBackground());
 
-		final int buttonHeight = button.getPreferredSize().height;
+    final int buttonHeight = button.getPreferredSize().height;
 
-		inner = new JPanel();
-		inner.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-			BorderFactory.createEmptyBorder(buttonHeight / 2, 5, 5, 5)));
+    inner = new JPanel();
+    inner.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createEtchedBorder(),
+            BorderFactory.createEmptyBorder(buttonHeight / 2, 5, 5, 5)));
 
-		final SpringLayout layout = new SpringLayout();
+    final SpringLayout layout = new SpringLayout();
 
-		super.setLayout(layout);
-		super.add(button);
-		super.add(inner);
+    super.setLayout(layout);
+    super.add(button);
+    super.add(inner);
 
-		layout.putConstraint(SpringLayout.WEST, button, 10, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.WEST, button, 10, SpringLayout.WEST, this);
 
-		layout.putConstraint(SpringLayout.NORTH, inner, buttonHeight / 2, SpringLayout.NORTH, this);
-		layout.putConstraint(SpringLayout.WEST, inner, 0, SpringLayout.WEST, this);
-		layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, inner);
-		layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, inner);
-	}
+    layout.putConstraint(SpringLayout.NORTH, inner, buttonHeight / 2, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, inner, 0, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.SOUTH, this, 0, SpringLayout.SOUTH, inner);
+    layout.putConstraint(SpringLayout.EAST, this, 0, SpringLayout.EAST, inner);
+  }
 
-	public void setAllowSetEnable(boolean allowSetEnable)
-	{
-		this.allowSetEnable = allowSetEnable;
-	}
+  public void setAllowSetEnable(boolean allowSetEnable) {
+    this.allowSetEnable = allowSetEnable;
+  }
 
-	public void doClick()
-	{
-		button.doClick();
-	}
+  public void doClick() {
+    button.doClick();
+  }
 
-	public JPanel getInnerPanel()
-	{
-		return inner;
-	}
+  public JPanel getInnerPanel() {
+    return inner;
+  }
 
-	public ButtonModel getButtonModel()
-	{
-		return button.getModel();
-	}
+  public ButtonModel getButtonModel() {
+    return button.getModel();
+  }
 
-	public boolean isSelected()
-	{
-		return button.isSelected();
-	}
+  public boolean isSelected() {
+    return button.isSelected();
+  }
 
-	public void setSelected(boolean b)
-	{
-		button.setSelected(b);
-	}
+  public void setSelected(boolean b) {
+    button.setSelected(b);
+  }
 
-	@Override
-	public Component add(final Component c)
-	{
-		if( allowSetEnable )
-		{
-			c.setEnabled(button.isSelected());
-		}
+  @Override
+  public Component add(final Component c) {
+    if (allowSetEnable) {
+      c.setEnabled(button.isSelected());
+    }
 
-		inner.add(c);
-		return c;
-	}
+    inner.add(c);
+    return c;
+  }
 
-	@Override
-	public void add(final Component c, final Object constraints)
-	{
-		if( allowSetEnable )
-		{
-			c.setEnabled(button.isSelected());
-		}
+  @Override
+  public void add(final Component c, final Object constraints) {
+    if (allowSetEnable) {
+      c.setEnabled(button.isSelected());
+    }
 
-		inner.add(c, constraints);
-	}
+    inner.add(c, constraints);
+  }
 
-	public void addToGroup(final ButtonGroup group)
-	{
-		group.add(button);
-	}
+  public void addToGroup(final ButtonGroup group) {
+    group.add(button);
+  }
 
-	@Override
-	public void setEnabled(final boolean enabled)
-	{
-		super.setEnabled(enabled);
-		button.setEnabled(enabled);
+  @Override
+  public void setEnabled(final boolean enabled) {
+    super.setEnabled(enabled);
+    button.setEnabled(enabled);
 
-		if( allowSetEnable )
-		{
-			setAllEnabled(enabled);
-		}
-	}
+    if (allowSetEnable) {
+      setAllEnabled(enabled);
+    }
+  }
 
-	public void addItemListener(final ItemListener l)
-	{
-		listenerList.add(ItemListener.class, l);
-	}
+  public void addItemListener(final ItemListener l) {
+    listenerList.add(ItemListener.class, l);
+  }
 
-	public void removeItemListener(final ItemListener l)
-	{
-		listenerList.remove(ItemListener.class, l);
-	}
+  public void removeItemListener(final ItemListener l) {
+    listenerList.remove(ItemListener.class, l);
+  }
 
-	@Override
-	public void itemStateChanged(final ItemEvent e)
-	{
-		if( allowSetEnable )
-		{
-			setAllEnabled(e.getStateChange() == ItemEvent.SELECTED);
-		}
+  @Override
+  public void itemStateChanged(final ItemEvent e) {
+    if (allowSetEnable) {
+      setAllEnabled(e.getStateChange() == ItemEvent.SELECTED);
+    }
 
-		for( final ItemListener listener : listenerList.getListeners(ItemListener.class) )
-		{
-			listener.itemStateChanged(e);
-		}
-	}
+    for (final ItemListener listener : listenerList.getListeners(ItemListener.class)) {
+      listener.itemStateChanged(e);
+    }
+  }
 
-	public void setAllEnabled(final boolean b)
-	{
-		final Component[] all = inner.getComponents();
-		for( final Component element : all )
-		{
-			element.setEnabled(b);
-		}
-	}
+  public void setAllEnabled(final boolean b) {
+    final Component[] all = inner.getComponents();
+    for (final Component element : all) {
+      element.setEnabled(b);
+    }
+  }
 }

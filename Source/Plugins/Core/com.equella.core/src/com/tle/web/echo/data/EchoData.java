@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,199 +20,162 @@ package com.tle.web.echo.data;
 
 import java.util.Date;
 
+public class EchoData {
+  private String echoSystemID;
 
-public class EchoData
-{
-	private String echoSystemID;
+  private String echoId;
+  private String echoStatus;
+  private String echoTitle;
+  private String echoDesc;
+  private Date echoPublishedDate;
+  private Date echoCapturedDate;
+  private long echoDuration;
 
-	private String echoId;
-	private String echoStatus;
-	private String echoTitle;
-	private String echoDesc;
-	private Date echoPublishedDate;
-	private Date echoCapturedDate;
-	private long echoDuration;
+  private String echoLinkUrl;
+  private String echoCenterUrl;
+  private String podcastUrl;
+  private String vodcastUrl;
 
-	private String echoLinkUrl;
-	private String echoCenterUrl;
-	private String podcastUrl;
-	private String vodcastUrl;
+  private String sectionId;
+  private String sectionName;
 
-	private String sectionId;
-	private String sectionName;
+  private String courseId;
+  private String courseName;
+  private String courseIdentifier;
 
-	private String courseId;
-	private String courseName;
-	private String courseIdentifier;
+  public String getEchoSystemID() {
+    return echoSystemID;
+  }
 
-	public String getEchoSystemID()
-	{
-		return echoSystemID;
-	}
+  public void setEchoSystemID(String echoSystemID) {
+    this.echoSystemID = echoSystemID;
+  }
 
-	public void setEchoSystemID(String echoSystemID)
-	{
-		this.echoSystemID = echoSystemID;
-	}
+  public String getEchoId() {
+    return echoId;
+  }
 
-	public String getEchoId()
-	{
-		return echoId;
-	}
+  public void setEchoId(String echoId) {
+    this.echoId = echoId;
+  }
 
-	public void setEchoId(String echoId)
-	{
-		this.echoId = echoId;
-	}
+  public String getEchoStatus() {
+    return echoStatus;
+  }
 
-	public String getEchoStatus()
-	{
-		return echoStatus;
-	}
+  public void setEchoStatus(String echoStatus) {
+    this.echoStatus = echoStatus;
+  }
 
-	public void setEchoStatus(String echoStatus)
-	{
-		this.echoStatus = echoStatus;
-	}
+  public String getEchoTitle() {
+    return echoTitle;
+  }
 
-	public String getEchoTitle()
-	{
-		return echoTitle;
-	}
+  public void setEchoTitle(String echoTitle) {
+    this.echoTitle = echoTitle;
+  }
 
-	public void setEchoTitle(String echoTitle)
-	{
-		this.echoTitle = echoTitle;
-	}
+  public String getEchoDesc() {
+    return echoDesc;
+  }
 
-	public String getEchoDesc()
-	{
-		return echoDesc;
-	}
+  public void setEchoDesc(String echoDesc) {
+    this.echoDesc = echoDesc;
+  }
 
-	public void setEchoDesc(String echoDesc)
-	{
-		this.echoDesc = echoDesc;
-	}
+  public Date getEchoPublishedDate() {
+    return echoPublishedDate;
+  }
 
-	public Date getEchoPublishedDate()
-	{
-		return echoPublishedDate;
-	}
+  public void setEchoPublishedDate(Date echoPublishedDate) {
+    this.echoPublishedDate = echoPublishedDate;
+  }
 
-	public void setEchoPublishedDate(Date echoPublishedDate)
-	{
-		this.echoPublishedDate = echoPublishedDate;
-	}
+  public Date getEchoCapturedDate() {
+    return echoCapturedDate;
+  }
 
-	public Date getEchoCapturedDate()
-	{
-		return echoCapturedDate;
-	}
+  public void setEchoCapturedDate(Date echoCapturedDate) {
+    this.echoCapturedDate = echoCapturedDate;
+  }
 
-	public void setEchoCapturedDate(Date echoCapturedDate)
-	{
-		this.echoCapturedDate = echoCapturedDate;
-	}
+  public long getEchoDuration() {
+    return echoDuration;
+  }
 
-	public long getEchoDuration()
-	{
-		return echoDuration;
-	}
+  public void setEchoDuration(long echoDuration) {
+    this.echoDuration = echoDuration;
+  }
 
-	public void setEchoDuration(long echoDuration)
-	{
-		this.echoDuration = echoDuration;
-	}
+  public String getEchoLinkUrl() {
+    return echoLinkUrl;
+  }
 
-	public String getEchoLinkUrl()
-	{
-		return echoLinkUrl;
-	}
+  public void setEchoLinkUrl(String echoLinkUrl) {
+    this.echoLinkUrl = echoLinkUrl;
+  }
 
-	public void setEchoLinkUrl(String echoLinkUrl)
-	{
-		this.echoLinkUrl = echoLinkUrl;
-	}
+  public String getEchoCenterUrl() {
+    return echoCenterUrl;
+  }
 
-	public String getEchoCenterUrl()
-	{
-		return echoCenterUrl;
-	}
+  public void setEchoCenterUrl(String echoCenterUrl) {
+    this.echoCenterUrl = echoCenterUrl;
+  }
 
-	public void setEchoCenterUrl(String echoCenterUrl)
-	{
-		this.echoCenterUrl = echoCenterUrl;
-	}
+  public String getPodcastUrl() {
+    return podcastUrl;
+  }
 
-	public String getPodcastUrl()
-	{
-		return podcastUrl;
-	}
+  public void setPodcastUrl(String podcastUrl) {
+    this.podcastUrl = podcastUrl;
+  }
 
-	public void setPodcastUrl(String podcastUrl)
-	{
-		this.podcastUrl = podcastUrl;
-	}
+  public String getVodcastUrl() {
+    return vodcastUrl;
+  }
 
-	public String getVodcastUrl()
-	{
-		return vodcastUrl;
-	}
+  public void setVodcastUrl(String vodcastUrl) {
+    this.vodcastUrl = vodcastUrl;
+  }
 
-	public void setVodcastUrl(String vodcastUrl)
-	{
-		this.vodcastUrl = vodcastUrl;
-	}
+  public String getSectionId() {
+    return sectionId;
+  }
 
-	public String getSectionId()
-	{
-		return sectionId;
-	}
+  public void setSectionId(String sectionId) {
+    this.sectionId = sectionId;
+  }
 
-	public void setSectionId(String sectionId)
-	{
-		this.sectionId = sectionId;
-	}
+  public String getSectionName() {
+    return sectionName;
+  }
 
-	public String getSectionName()
-	{
-		return sectionName;
-	}
+  public void setSectionName(String sectionName) {
+    this.sectionName = sectionName;
+  }
 
-	public void setSectionName(String sectionName)
-	{
-		this.sectionName = sectionName;
-	}
+  public String getCourseId() {
+    return courseId;
+  }
 
-	public String getCourseId()
-	{
-		return courseId;
-	}
+  public void setCourseId(String courseId) {
+    this.courseId = courseId;
+  }
 
-	public void setCourseId(String courseId)
-	{
-		this.courseId = courseId;
-	}
+  public String getCourseName() {
+    return courseName;
+  }
 
-	public String getCourseName()
-	{
-		return courseName;
-	}
+  public void setCourseName(String courseName) {
+    this.courseName = courseName;
+  }
 
-	public void setCourseName(String courseName)
-	{
-		this.courseName = courseName;
-	}
+  public String getCourseIdentifier() {
+    return courseIdentifier;
+  }
 
-	public String getCourseIdentifier()
-	{
-		return courseIdentifier;
-	}
-
-	public void setCourseIdentifier(String courseIdentifier)
-	{
-		this.courseIdentifier = courseIdentifier;
-	}
-	
+  public void setCourseIdentifier(String courseIdentifier) {
+    this.courseIdentifier = courseIdentifier;
+  }
 }

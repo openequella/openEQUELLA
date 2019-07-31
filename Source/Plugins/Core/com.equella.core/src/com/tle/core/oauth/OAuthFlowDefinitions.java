@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,59 @@
 
 package com.tle.core.oauth;
 
+import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Singleton;
-
 @Singleton
 @SuppressWarnings("nls")
-public class OAuthFlowDefinitions
-{
-	public static final OAuthFlowDefinition AUTHORISATION_CODE_GRANT = new OAuthFlowDefinition(true, false, false,
-		"client.editor.flow.acg.name", "client.editor.flow.acg.desc", "default", "acg");
-	public static final OAuthFlowDefinition IMPLICIT_GRANT = new OAuthFlowDefinition(true, true, false,
-		"client.editor.flow.ig.name", "client.editor.flow.ig.desc", "default", "ig");
-	public static final OAuthFlowDefinition CLIENT_CREDENTIALS_GRANT = new OAuthFlowDefinition(false, true, true,
-		"client.editor.flow.ccg.name", "client.editor.flow.ccg.desc", "default", "ccg");
+public class OAuthFlowDefinitions {
+  public static final OAuthFlowDefinition AUTHORISATION_CODE_GRANT =
+      new OAuthFlowDefinition(
+          true,
+          false,
+          false,
+          "client.editor.flow.acg.name",
+          "client.editor.flow.acg.desc",
+          "default",
+          "acg");
+  public static final OAuthFlowDefinition IMPLICIT_GRANT =
+      new OAuthFlowDefinition(
+          true,
+          true,
+          false,
+          "client.editor.flow.ig.name",
+          "client.editor.flow.ig.desc",
+          "default",
+          "ig");
+  public static final OAuthFlowDefinition CLIENT_CREDENTIALS_GRANT =
+      new OAuthFlowDefinition(
+          false,
+          true,
+          true,
+          "client.editor.flow.ccg.name",
+          "client.editor.flow.ccg.desc",
+          "default",
+          "ccg");
 
-	public static List<OAuthFlowDefinition> getAll()
-	{
-		List<OAuthFlowDefinition> allTheThings = new ArrayList<OAuthFlowDefinition>();
-		allTheThings.add(AUTHORISATION_CODE_GRANT);
-		allTheThings.add(CLIENT_CREDENTIALS_GRANT);
-		allTheThings.add(IMPLICIT_GRANT);
-		return allTheThings;
-	}
+  public static List<OAuthFlowDefinition> getAll() {
+    List<OAuthFlowDefinition> allTheThings = new ArrayList<OAuthFlowDefinition>();
+    allTheThings.add(AUTHORISATION_CODE_GRANT);
+    allTheThings.add(CLIENT_CREDENTIALS_GRANT);
+    allTheThings.add(IMPLICIT_GRANT);
+    return allTheThings;
+  }
 
-	protected OAuthFlowDefinitions()
-	{
-		// constructor to silence Sonar
-	}
+  protected OAuthFlowDefinitions() {
+    // constructor to silence Sonar
+  }
 
-	public static OAuthFlowDefinition getForId(String id)
-	{
-		for( OAuthFlowDefinition flow : getAll() )
-		{
-			if( flow.getId().equals(id) )
-			{
-				return flow;
-			}
-		}
-		return null;
-	}
+  public static OAuthFlowDefinition getForId(String id) {
+    for (OAuthFlowDefinition flow : getAll()) {
+      if (flow.getId().equals(id)) {
+        return flow;
+      }
+    }
+    return null;
+  }
 }

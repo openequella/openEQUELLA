@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,29 +18,28 @@
 
 package com.tle.core.workflow.thumbnail;
 
+import com.tle.core.imagemagick.ThumbnailOptions;
 import java.awt.Dimension;
 import java.io.File;
 
-import com.tle.core.imagemagick.ThumbnailOptions;
+public interface ThumbnailGenerator {
+  void generateThumbnail(File src, File dest) throws Exception;
 
-public interface ThumbnailGenerator
-{
-	void generateThumbnail(File src, File dest) throws Exception;
+  void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options)
+      throws Exception;
 
-	void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) throws Exception;
+  Dimension getImageDimensions(File srcFile) throws Exception;
 
-	Dimension getImageDimensions(File srcFile) throws Exception;
+  /**
+   * @param type
+   * @return
+   */
+  boolean supportsThumbType(ThumbnailType type);
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	boolean supportsThumbType(ThumbnailType type);
-
-	/**
-	 * E.g. video thumbnailer may be disabled because of not being installed
-	 * @return
-	 */
-	boolean isEnabled();
+  /**
+   * E.g. video thumbnailer may be disabled because of not being installed
+   *
+   * @return
+   */
+  boolean isEnabled();
 }

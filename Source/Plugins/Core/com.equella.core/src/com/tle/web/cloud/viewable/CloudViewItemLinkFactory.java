@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,19 +27,17 @@ import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.web.sections.Bookmark;
 
 @NonNullByDefault
-public interface CloudViewItemLinkFactory
-{
-	Bookmark createCloudViewLink(ItemKey itemId);
+public interface CloudViewItemLinkFactory {
+  Bookmark createCloudViewLink(ItemKey itemId);
 
-	Bookmark createCloudViewAttachmentLink(ItemKey itemId, String attachmentUuid);
+  Bookmark createCloudViewAttachmentLink(ItemKey itemId, String attachmentUuid);
 
-	Bookmark createThumbnailLink(CloudItem item);
+  Bookmark createThumbnailLink(CloudItem item);
 
-	/**
-	 * @param attachment
-	 * @param mimeType If you don't know, we'll work it out for you. Aren't we
-	 *            nice?
-	 * @return
-	 */
-	Bookmark createThumbnailAttachmentLink(CloudAttachment attachment, @Nullable MimeEntry mimeType);
+  /**
+   * @param attachment
+   * @param mimeType If you don't know, we'll work it out for you. Aren't we nice?
+   * @return
+   */
+  Bookmark createThumbnailAttachmentLink(CloudAttachment attachment, @Nullable MimeEntry mimeType);
 }

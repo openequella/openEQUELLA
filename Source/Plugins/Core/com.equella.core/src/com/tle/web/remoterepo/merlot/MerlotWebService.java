@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,27 @@
 
 package com.tle.web.remoterepo.merlot;
 
-import java.util.Collection;
-
 import com.tle.beans.search.MerlotSettings;
 import com.tle.common.NameValue;
 import com.tle.web.sections.SectionInfo;
+import java.util.Collection;
 
-/**
- * @author Aaron
- */
-public interface MerlotWebService
-{
-	MerlotSettings getSettings(SectionInfo info);
+/** @author Aaron */
+public interface MerlotWebService {
+  MerlotSettings getSettings(SectionInfo info);
 
-	/**
-	 * @param categoryId blank or null for root categories.
-	 */
-	Collection<NameValue> getCategories(SectionInfo info, String categoryId);
+  /** @param categoryId blank or null for root categories. */
+  Collection<NameValue> getCategories(SectionInfo info, String categoryId);
 
-	Collection<NameValue> getCommunities(SectionInfo info);
+  Collection<NameValue> getCommunities(SectionInfo info);
 
-	Collection<NameValue> getLanguages(SectionInfo info);
+  Collection<NameValue> getLanguages(SectionInfo info);
 
-	Collection<NameValue> getMaterialTypes(SectionInfo info);
+  Collection<NameValue> getMaterialTypes(SectionInfo info);
 
-	Collection<NameValue> getTechnicalFormats(SectionInfo info);
+  Collection<NameValue> getTechnicalFormats(SectionInfo info);
 
-	Collection<NameValue> getAudiences(SectionInfo info);
+  Collection<NameValue> getAudiences(SectionInfo info);
 
-	String lookupLanguage(SectionInfo info, String langCode);
+  String lookupLanguage(SectionInfo info, String langCode);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,71 +18,59 @@
 
 package com.tle.web.freemarker;
 
+import com.google.common.io.Closeables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.google.common.io.Closeables;
+public class URLTemplateSource {
+  private final URL url;
+  private URLConnection conn;
+  private boolean calledLastModified;
+  private boolean calledGetInputStream;
 
-public class URLTemplateSource
-{
-	private final URL url;
-	private URLConnection conn;
-	private boolean calledLastModified;
-	private boolean calledGetInputStream;
+  URLTemplateSource(URL url) throws IOException {
+    this.url = url;
+    conn = url.openConnection();
+  }
 
-	URLTemplateSource(URL url) throws IOException
-	{
-		this.url = url;
-		conn = url.openConnection();
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if( this == o )
-		{
-			return true;
-		}
+    if (!(o instanceof URLTemplateSource)) {
+      return false;
+    }
 
-		if( !(o instanceof URLTemplateSource) )
-		{
-			return false;
-		}
+    return url.toString().equals(((URLTemplateSource) o).url.toString());
+  }
 
-		return url.toString().equals(((URLTemplateSource) o).url.toString());
-	}
+  @Override
+  public int hashCode() {
+    return url.toString().hashCode();
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return url.toString().hashCode();
-	}
+  @Override
+  public String toString() {
+    return url.toString();
+  }
 
-	@Override
-	public String toString()
-	{
-		return url.toString();
-	}
+  long lastModified() {
+    calledLastModified = true;
+    return conn.getLastModified();
+  }
 
-	long lastModified()
-	{
-		calledLastModified = true;
-		return conn.getLastModified();
-	}
+  InputStream getInputStream() throws IOException {
+    calledGetInputStream = true;
+    return conn.getInputStream();
+  }
 
-	InputStream getInputStream() throws IOException
-	{
-		calledGetInputStream = true;
-		return conn.getInputStream();
-	}
-
-	void close() throws IOException
-	{
-		if( !calledGetInputStream && calledLastModified )
-		{
-			Closeables.close(getInputStream(), true);
-		}
-	}
+  void close() throws IOException {
+    if (!calledGetInputStream && calledLastModified) {
+      Closeables.close(getInputStream(), true);
+    }
+  }
 }

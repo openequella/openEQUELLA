@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,22 @@
 
 package com.tle.web.remotecaching;
 
-import java.util.Set;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.utils.SelectUserDialog;
+import java.util.Set;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class RemoteCachingSelectUserDialog extends SelectUserDialog
-{
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		setMultipleUsers(true);
-		super.registered(id, tree);
-	}
+public class RemoteCachingSelectUserDialog extends SelectUserDialog {
+  @Override
+  public void registered(String id, SectionTree tree) {
+    setMultipleUsers(true);
+    super.registered(id, tree);
+  }
 
-	public void setUserExclusions(SectionInfo info, Set<String> userExclusions)
-	{
-		section.setUserExclusions(info, userExclusions);
-	}
+  public void setUserExclusions(SectionInfo info, Set<String> userExclusions) {
+    section.setUserExclusions(info, userExclusions);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,36 +21,28 @@ package com.tle.core.harvester.old.dsoap.sax;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author adame
- */
-public class IntArrayResultSoapHandler extends DefaultSoapHandler
-{
-	private List results;
+/** @author adame */
+public class IntArrayResultSoapHandler extends DefaultSoapHandler {
+  private List results;
 
-	@Override
-	protected void hookStartDocument()
-	{
-		results = new ArrayList();
-	}
+  @Override
+  protected void hookStartDocument() {
+    results = new ArrayList();
+  }
 
-	@Override
-	protected void hookEndElement(String namespaceURL, String localName, String qname)
-	{
-		if( (getDepth() == 4) )
-		{
-			results.add(getAcculumulator());
-		}
-	}
+  @Override
+  protected void hookEndElement(String namespaceURL, String localName, String qname) {
+    if ((getDepth() == 4)) {
+      results.add(getAcculumulator());
+    }
+  }
 
-	public int[] getIntArrayResult()
-	{
-		int size = results.size();
-		int[] rv = new int[size];
-		for( int i = 0; i < size; ++i )
-		{
-			rv[i] = Integer.parseInt((String) results.get(i));
-		}
-		return rv;
-	}
+  public int[] getIntArrayResult() {
+    int size = results.size();
+    int[] rv = new int[size];
+    for (int i = 0; i < size; ++i) {
+      rv[i] = Integer.parseInt((String) results.get(i));
+    }
+    return rv;
+  }
 }

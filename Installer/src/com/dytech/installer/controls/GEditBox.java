@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,34 @@
 
 package com.dytech.installer.controls;
 
-import java.awt.Dimension;
-
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.InstallerException;
 import com.dytech.installer.Item;
+import java.awt.Dimension;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
 
-public class GEditBox extends GuiControl
-{
-	protected JTextField field;
+public class GEditBox extends GuiControl {
+  protected JTextField field;
 
-	public GEditBox(PropBagEx controlBag) throws InstallerException
-	{
-		super(controlBag);
-	}
+  public GEditBox(PropBagEx controlBag) throws InstallerException {
+    super(controlBag);
+  }
 
-	@Override
-	public String getSelection()
-	{
-		return field.getText();
-	}
+  @Override
+  public String getSelection() {
+    return field.getText();
+  }
 
-	@Override
-	public JComponent generateControl()
-	{
-		field = new JTextField();
-		field.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
+  @Override
+  public JComponent generateControl() {
+    field = new JTextField();
+    field.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
 
-		if( items.size() >= 1 )
-		{
-			field.setText(((Item) items.get(0)).getValue());
-		}
+    if (items.size() >= 1) {
+      field.setText(((Item) items.get(0)).getValue());
+    }
 
-		return field;
-	}
+    return field;
+  }
 }

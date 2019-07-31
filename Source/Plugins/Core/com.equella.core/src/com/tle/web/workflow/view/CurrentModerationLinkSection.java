@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,40 +29,33 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class CurrentModerationLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("summary.sidebar.summary.currentmoderation.title")
-	private static Label LINK_LABEL;
+public class CurrentModerationLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("summary.sidebar.summary.currentmoderation.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private CurrentModerationContentSection currentModerationContentSection;
+  @TreeLookup private CurrentModerationContentSection currentModerationContentSection;
 
-	public CurrentModerationLinkSection()
-	{
-		setShowForPreview(true);
-	}
+  public CurrentModerationLinkSection() {
+    setShowForPreview(true);
+  }
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return status.isModerating();
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return status.isModerating();
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return currentModerationContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return currentModerationContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

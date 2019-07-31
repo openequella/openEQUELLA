@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,20 +21,17 @@ package com.tle.common.util;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public abstract class CachedClassData<T>
-{
-	private Map<Class<?>, T> map = new WeakHashMap<Class<?>, T>();
+public abstract class CachedClassData<T> {
+  private Map<Class<?>, T> map = new WeakHashMap<Class<?>, T>();
 
-	public synchronized T getForClass(Class<?> clazz)
-	{
-		T scanner = map.get(clazz);
-		if( scanner == null && !map.containsKey(clazz) )
-		{
-			scanner = newEntry(clazz);
-			map.put(clazz, scanner);
-		}
-		return scanner;
-	}
+  public synchronized T getForClass(Class<?> clazz) {
+    T scanner = map.get(clazz);
+    if (scanner == null && !map.containsKey(clazz)) {
+      scanner = newEntry(clazz);
+      map.put(clazz, scanner);
+    }
+    return scanner;
+  }
 
-	protected abstract T newEntry(Class<?> clazz);
+  protected abstract T newEntry(Class<?> clazz);
 }

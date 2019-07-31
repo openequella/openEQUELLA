@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,27 +28,26 @@ import com.tle.mypages.web.section.RootMyPagesSection;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class MyPagesModule extends SectionsModule
-{
-	private NodeProvider createEditorTree()
-	{
-		NodeProvider handlerNode = node(MyPagesContributeSection.class);
-		handlerNode.child(MyPagesTitleSection.class);
-		handlerNode.child(MyPagesPageActionsSection.class);
-		NodeProvider editorNode = node(MyPagesEditorSection.class);
-		handlerNode.child(editorNode);
-		return handlerNode;
-	}
+public class MyPagesModule extends SectionsModule {
+  private NodeProvider createEditorTree() {
+    NodeProvider handlerNode = node(MyPagesContributeSection.class);
+    handlerNode.child(MyPagesTitleSection.class);
+    handlerNode.child(MyPagesPageActionsSection.class);
+    NodeProvider editorNode = node(MyPagesEditorSection.class);
+    handlerNode.child(editorNode);
+    return handlerNode;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		NodeProvider node = node(RootMyPagesSection.class);
-		node.child(createEditorTree());
-		bindNamed("/access/mypagesedit", node);
-		bind(SectionTree.class).annotatedWith(Names.named("myPagesContentTree")).toProvider(tree(createEditorTree()));
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    NodeProvider node = node(RootMyPagesSection.class);
+    node.child(createEditorTree());
+    bindNamed("/access/mypagesedit", node);
+    bind(SectionTree.class)
+        .annotatedWith(Names.named("myPagesContentTree"))
+        .toProvider(tree(createEditorTree()));
 
-		requestStaticInjection(MyPagesState.class);
-	}
+    requestStaticInjection(MyPagesState.class);
+  }
 }

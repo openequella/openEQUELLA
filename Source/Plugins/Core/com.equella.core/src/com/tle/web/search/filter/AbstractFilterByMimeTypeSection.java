@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.search.filter;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -46,93 +42,83 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.MultiSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import javax.inject.Inject;
 
 public abstract class AbstractFilterByMimeTypeSection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractPrototypeSection<Object>
-	implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener
-{
-	@Inject
-	protected ConfigurationService configService;
+    extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener {
+  @Inject protected ConfigurationService configService;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(name = "mt", parameter = "mt", supported = true)
-	protected MultiSelectionList<NameValue> mimeTypes;
+  @Component(name = "mt", parameter = "mt", supported = true)
+  protected MultiSelectionList<NameValue> mimeTypes;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		mimeTypes.setEventHandler(JSHandler.EVENT_CHANGE,
-			new StatementHandler(searchResults.getRestartSearchHandler(tree)));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    mimeTypes.setEventHandler(
+        JSHandler.EVENT_CHANGE, new StatementHandler(searchResults.getRestartSearchHandler(tree)));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( mimeTypes.getListModel().getOptions(context).size() > 0 )
-		{
-			return viewFactory.createResult("filter/filterbymimetype.ftl", context); //$NON-NLS-1$
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (mimeTypes.getListModel().getOptions(context).size() > 0) {
+      return viewFactory.createResult("filter/filterbymimetype.ftl", context); // $NON-NLS-1$
+    }
+    return null;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-		mimeTypes.setListModel(new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				List<SearchFilter> filters = Lists.newArrayList(getSearchSettings().getFilters());
-				Collections.sort(filters, new Comparator<SearchFilter>()
-				{
-					@Override
-					public int compare(SearchFilter sf1, SearchFilter sf2)
-					{
-						return sf1.getName().compareTo(sf2.getName());
-					}
-				});
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+    mimeTypes.setListModel(
+        new DynamicHtmlListModel<NameValue>() {
+          @Override
+          protected Iterable<NameValue> populateModel(SectionInfo info) {
+            List<SearchFilter> filters = Lists.newArrayList(getSearchSettings().getFilters());
+            Collections.sort(
+                filters,
+                new Comparator<SearchFilter>() {
+                  @Override
+                  public int compare(SearchFilter sf1, SearchFilter sf2) {
+                    return sf1.getName().compareTo(sf2.getName());
+                  }
+                });
 
-				return Lists.transform(filters, new Function<SearchFilter, NameValue>()
-				{
-					@Override
-					public NameValue apply(SearchFilter filter)
-					{
-						return new NameValue(filter.getName(), filter.getId());
-					}
-				});
-			}
-		});
-	}
+            return Lists.transform(
+                filters,
+                new Function<SearchFilter, NameValue>() {
+                  @Override
+                  public NameValue apply(SearchFilter filter) {
+                    return new NameValue(filter.getName(), filter.getId());
+                  }
+                });
+          }
+        });
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "fbmt"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "fbmt"; //$NON-NLS-1$
+  }
 
-	public MultiSelectionList<NameValue> getMimeTypes()
-	{
-		return mimeTypes;
-	}
+  public MultiSelectionList<NameValue> getMimeTypes() {
+    return mimeTypes;
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		mimeTypes.setSelectedStringValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    mimeTypes.setSelectedStringValue(info, null);
+  }
 
-	protected SearchSettings getSearchSettings()
-	{
-		return configService.getProperties(new SearchSettings());
-	}
+  protected SearchSettings getSearchSettings() {
+    return configService.getProperties(new SearchSettings());
+  }
 }

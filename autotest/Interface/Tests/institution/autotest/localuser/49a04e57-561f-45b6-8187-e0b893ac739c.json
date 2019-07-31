@@ -1,0 +1,13 @@
+{
+  "id" : "49a04e57-561f-45b6-8187-e0b893ac739c",
+  "username" : "workflowhelper",
+  "firstName" : "Other",
+  "lastName" : "User",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:fbba76cc4db3a1d84f485da8366a29970a9ffd449038a193f3ce8088b89d6712"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/49a04e57-561f-45b6-8187-e0b893ac739c"
+  }
+}

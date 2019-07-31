@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    identifier="text_entry-calculus" title="FIB-Single - Calculus" adaptive="false"
+    timeDependent="false">
+    <responseDeclaration identifier="RESPONSE" cardinality="single" baseType="string">
+        <correctResponse>
+            <value>gradient</value>
+        </correctResponse>
+        <mapping defaultValue="0">
+            <mapEntry mapKey="slope" mappedValue="1.0"/>
+            <mapEntry mapKey="gradient" mappedValue="1.0"/>
+        </mapping>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="1.0"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="multiple" baseType="identifier"/>
+    <itemBody>
+        <p>What property of a graph is represented by the derivative?</p>
+        <div>
+            <textEntryInteraction responseIdentifier="RESPONSE" expectedLength="15"/>
+        </div>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Correct">That's
+                right, </feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Correct1"> you
+                could also have said slope.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Correct2"> you
+                could also have said gradient.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Incorrect">No,
+                the correct answer is either gradient or slope.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <mapResponse identifier="RESPONSE"/>
+                </setOutcomeValue>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <variable identifier="RESPONSE"/>
+                            <correct identifier="RESPONSE"/>
+                        </match>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <multiple>
+                                <baseValue baseType="identifier">Correct</baseValue>
+                                <baseValue baseType="identifier">Correct1</baseValue>
+                            </multiple>
+                        </setOutcomeValue>
+                    </responseIf>
+                    <responseElseIf>
+                        <match>
+                            <variable identifier="RESPONSE"/>
+                            <baseValue baseType="string">slope</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <multiple>
+                                <baseValue baseType="identifier">Correct</baseValue>
+                                <baseValue baseType="identifier">Correct2</baseValue>
+                            </multiple>
+                        </setOutcomeValue>
+                    </responseElseIf>
+                    <responseElse>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <multiple>
+                                <baseValue baseType="identifier">Incorrect</baseValue>
+                            </multiple>
+                        </setOutcomeValue>
+                    </responseElse>
+                </responseCondition>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

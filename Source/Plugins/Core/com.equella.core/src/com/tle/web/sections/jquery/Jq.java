@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,59 +23,46 @@ import com.tle.web.sections.js.ElementId;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 
-/**
- * @author Aaron
- */
-public final class Jq
-{
-	private Jq()
-	{
-		throw new Error();
-	}
+/** @author Aaron */
+public final class Jq {
+  private Jq() {
+    throw new Error();
+  }
 
-	public static JSExpression methodCall(ElementId obj, JSCallable method, Object... params)
-	{
-		return JQuerySelector.methodCallExpression(obj, method, params);
-	}
+  public static JSExpression methodCall(ElementId obj, JSCallable method, Object... params) {
+    return JQuerySelector.methodCallExpression(obj, method, params);
+  }
 
-	public static JQuerySelector selector(String id)
-	{
-		return selector(Type.RAW, id);
-	}
+  public static JQuerySelector selector(String id) {
+    return selector(Type.RAW, id);
+  }
 
-	public static JQuerySelector $(String id)
-	{
-		return selector(Type.RAW, id);
-	}
+  public static JQuerySelector $(String id) {
+    return selector(Type.RAW, id);
+  }
 
-	public static JQuerySelector $(JSExpression exp)
-	{
-		return new JQuerySelector(exp);
-	}
+  public static JQuerySelector $(JSExpression exp) {
+    return new JQuerySelector(exp);
+  }
 
-	public static JQuerySelector $(ElementId element)
-	{
-		element.registerUse();
-		return new JQuerySelector(element);
-	}
+  public static JQuerySelector $(ElementId element) {
+    element.registerUse();
+    return new JQuerySelector(element);
+  }
 
-	public static JQuerySelector selector(Type type, String idOrClass)
-	{
-		return new JQuerySelector(type, idOrClass);
-	}
+  public static JQuerySelector selector(Type type, String idOrClass) {
+    return new JQuerySelector(type, idOrClass);
+  }
 
-	public static JQuerySelector $(Type type, String idOrClass)
-	{
-		return new JQuerySelector(type, idOrClass);
-	}
+  public static JQuerySelector $(Type type, String idOrClass) {
+    return new JQuerySelector(type, idOrClass);
+  }
 
-	public static JSExpression $val(ElementId element)
-	{
-		return JQuerySelector.valueGetExpression(element);
-	}
+  public static JSExpression $val(ElementId element) {
+    return JQuerySelector.valueGetExpression(element);
+  }
 
-	public static JSExpression $val(ElementId element, JSExpression value)
-	{
-		return JQuerySelector.valueSetExpression(element, value);
-	}
+  public static JSExpression $val(ElementId element, JSExpression value) {
+    return JQuerySelector.valueSetExpression(element, value);
+  }
 }

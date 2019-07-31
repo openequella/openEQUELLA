@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,19 @@
 
 package com.tle.web.cloud.search.section;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
 import com.tle.web.search.actions.AbstractShareSearchQueryDialog;
 import com.tle.web.search.actions.AbstractShareSearchQuerySection;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
-public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog
-{
-	@Inject
-	private CloudShareSearchQuerySection contentSection;
+public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog {
+  @Inject private CloudShareSearchQuerySection contentSection;
 
-	@Override
-	protected AbstractShareSearchQuerySection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractShareSearchQuerySection getContentSection() {
+    return contentSection;
+  }
 }

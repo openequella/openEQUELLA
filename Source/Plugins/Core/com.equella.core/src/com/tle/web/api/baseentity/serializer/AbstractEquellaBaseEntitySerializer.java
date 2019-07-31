@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,18 +21,14 @@ package com.tle.web.api.baseentity.serializer;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 
-/**
- * @author Aaron
- */
-public abstract class AbstractEquellaBaseEntitySerializer<BE extends BaseEntity, BEB extends BaseEntityBean, ED extends BaseEntityEditor<BE, BEB>>
-	extends
-		AbstractBaseEntitySerializer<BE, BEB, ED>
-{
-	@Override
-	protected void copyBaseEntityFields(BaseEntity source, BaseEntityBean target, boolean heavy)
-	{
-		super.copyBaseEntityFields(source, target, heavy);
-		// Jolse says don't do it properly
-		// target.set("systemType", source.isSystemType());
-	}
+/** @author Aaron */
+public abstract class AbstractEquellaBaseEntitySerializer<
+        BE extends BaseEntity, BEB extends BaseEntityBean, ED extends BaseEntityEditor<BE, BEB>>
+    extends AbstractBaseEntitySerializer<BE, BEB, ED> {
+  @Override
+  protected void copyBaseEntityFields(BaseEntity source, BaseEntityBean target, boolean heavy) {
+    super.copyBaseEntityFields(source, target, heavy);
+    // Jolse says don't do it properly
+    // target.set("systemType", source.isSystemType());
+  }
 }

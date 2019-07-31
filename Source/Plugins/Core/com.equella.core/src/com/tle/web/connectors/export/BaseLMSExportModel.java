@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,48 +18,38 @@
 
 package com.tle.web.connectors.export;
 
-import java.util.List;
-
 import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.web.sections.render.Label;
+import java.util.List;
 
-/**
- * @author Aaron
- */
-public class BaseLMSExportModel
-{
-	private List<ConnectorCourse> coursesCache;
-	private Connector connector;
-	private Label error;
+/** @author Aaron */
+public class BaseLMSExportModel {
+  private List<ConnectorCourse> coursesCache;
+  private Connector connector;
+  private Label error;
 
-	public List<ConnectorCourse> getCoursesCache()
-	{
-		return coursesCache;
-	}
+  public List<ConnectorCourse> getCoursesCache() {
+    return coursesCache;
+  }
 
-	public void setCoursesCache(List<ConnectorCourse> coursesCache)
-	{
-		this.coursesCache = coursesCache;
-	}
+  public void setCoursesCache(List<ConnectorCourse> coursesCache) {
+    this.coursesCache = coursesCache;
+  }
 
-	public Connector getConnector()
-	{
-		return connector;
-	}
+  public Connector getConnector() {
+    return connector;
+  }
 
-	public void setConnector(Connector connector)
-	{
-		this.connector = connector;
-	}
+  public void setConnector(Connector connector) {
+    this.connector = connector;
+  }
 
-	public Label getError()
-	{
-		return error;
-	}
+  public Label getError() {
+    return error;
+  }
 
-	public void setError(Label error)
-	{
-		this.error = error;
-	}
+  public void setError(Label error) {
+    this.error = error;
+  }
 }

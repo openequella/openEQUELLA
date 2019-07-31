@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,7 +27,12 @@ import com.tle.common.NameValue
 import com.tle.common.filesystem.FileEntry
 import com.tle.web.controls.universal.handlers.fileupload.details.FileEditDetails._
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
-import com.tle.web.controls.universal.{AbstractDetailsAttachmentHandler, ControlContext, DialogRenderOptions, RenderHelper}
+import com.tle.web.controls.universal.{
+  AbstractDetailsAttachmentHandler,
+  ControlContext,
+  DialogRenderOptions,
+  RenderHelper
+}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
@@ -53,32 +60,40 @@ import scala.collection.JavaConverters._
 
 object FileEditDetails {
   private val CSS_CLASS_FOLDER = "folder"
-  private val CSS_CLASS_FILE = "file"
+  private val CSS_CLASS_FILE   = "file"
 
-  private val INCLUDE = new IncludeFile(WebFileUploads.r.url("scripts/file/zip.js"))
-  private val SELECT_ALL = new ExternallyDefinedFunction("zipSelectAll", INCLUDE)
+  private val INCLUDE         = new IncludeFile(WebFileUploads.r.url("scripts/file/zip.js"))
+  private val SELECT_ALL      = new ExternallyDefinedFunction("zipSelectAll", INCLUDE)
   private val SELECT_FUNCTION = new ExternallyDefinedFunction("zipSelect", INCLUDE)
 
   private val SELECTION_TREE = new ScriptVariable("zipTree")
 
-  private val INPLACE_APPLET_ID = "inplace_applet"
+  private val INPLACE_APPLET_ID     = "inplace_applet"
   private val INPLACE_APPLET_HEIGHT = "50px"
-  private val INPLACE_APPLET_WIDTH = "320px"
+  private val INPLACE_APPLET_WIDTH  = "320px"
 }
 
-class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, zipHandler: ZipHandler, editingHandler: EditingHandler,
-                      viewerHandler : ViewerHandler, showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment,
-                      inplaceEditorService: InPlaceEditorWebService
-                     ) extends AbstractScalaSection with RenderHelper with DetailsPage {
+class FileEditDetails(parentId: String,
+                      tree: SectionTree,
+                      ctx: ControlContext,
+                      zipHandler: ZipHandler,
+                      editingHandler: EditingHandler,
+                      viewerHandler: ViewerHandler,
+                      showRestrict: Boolean,
+                      val editingAttachment: SectionInfo => Attachment,
+                      inplaceEditorService: InPlaceEditorWebService)
+    extends AbstractScalaSection
+    with RenderHelper
+    with DetailsPage {
 
   type M = FileEditDetailsModel
   tree.registerSubInnerSection(this, parentId)
   val settings = ctx.controlSettings
 
-  @Component var displayName: TextField = _
+  @Component var displayName: TextField           = _
   @ViewFactory var viewFactory: FreemarkerFactory = _
-  @EventFactory var events: EventGenerator = _
-  @AjaxFactory var ajax: AjaxGenerator = _
+  @EventFactory var events: EventGenerator        = _
+  @AjaxFactory var ajax: AjaxGenerator            = _
 
   @Component(name = "e") var editFileDiv: Div = _
 
@@ -90,20 +105,20 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
   @PlugKey("handlers.file.details.unzipfile") var executeUnzip: Button = _
   @Component
   @PlugKey("handlers.file.details.removeunzipped") var removeUnzip: Button = _
-  @Component var selections: MappedBooleans = _
-  @Component var zipProgressDiv : Div = _
-  @Component var fileListDiv: Div = _
+  @Component var selections: MappedBooleans                                = _
+  @Component var zipProgressDiv: Div                                       = _
+  @Component var fileListDiv: Div                                          = _
   @Component
   @PlugKey("handlers.file.zipdetails.link.selectall") var selectAll: Link = _
   @Component
   @PlugKey("handlers.file.zipdetails.link.selectnone") var selectNone: Link = _
-  @Component var attachZip : Checkbox = _
-  @Component var viewers : SingleSelectionList[NameValue] = _
-  @Component var previewCheckBox: Checkbox = _
-  @Component var restrictCheckbox: Checkbox = _
-  @Component(name = "st") var suppressThumbnails : Checkbox = _
+  @Component var attachZip: Checkbox                                        = _
+  @Component var viewers: SingleSelectionList[NameValue]                    = _
+  @Component var previewCheckBox: Checkbox                                  = _
+  @Component var restrictCheckbox: Checkbox                                 = _
+  @Component(name = "st") var suppressThumbnails: Checkbox                  = _
 
-  var saveClickHandler : JSHandler = _
+  var saveClickHandler: JSHandler = _
 
   @EventHandlerMethod def unzipFile(info: SectionInfo): Unit = {
     if (!zipHandler.unzipped) {
@@ -128,47 +143,83 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     ctx.controlState.save(info)
   }
 
-  class ZipJson(@BeanProperty val total: Int, @BeanProperty val upto: Int, @BeanProperty val finished: Boolean)
+  class ZipJson(@BeanProperty val total: Int,
+                @BeanProperty val upto: Int,
+                @BeanProperty val finished: Boolean)
 
   @AjaxMethod def zipProgress(info: SectionInfo): ZipJson = {
-    zipHandler.zipProgress.map(zp => new ZipJson(zp.getTotalFiles, zp.getCurrentFile, zp.isFinished)).getOrElse(new ZipJson(0, 0, true))
+    zipHandler.zipProgress
+      .map(zp => new ZipJson(zp.getTotalFiles, zp.getCurrentFile, zp.isFinished))
+      .getOrElse(new ZipJson(0, 0, true))
   }
 
   override def getDefaultPropertyName = "fd"
 
-
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
 
-    val editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("editFile"), "editFileAjaxDiv")
+    val editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(tree,
+                                                             this,
+                                                             events.getEventHandler("editFile"),
+                                                             "editFileAjaxDiv")
 
-    editFileLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, false, Js.function(Js.call_s(editFileAjaxFunction, false.asInstanceOf[AnyRef]))))
-    editFileWithLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, true, Js.function(Js.call_s(editFileAjaxFunction, true.asInstanceOf[AnyRef]))))
+    editFileLink.setClickHandler(
+      inplaceEditorService.createOpenHandler(
+        INPLACE_APPLET_ID,
+        false,
+        Js.function(Js.call_s(editFileAjaxFunction, false.asInstanceOf[AnyRef]))))
+    editFileWithLink.setClickHandler(
+      inplaceEditorService.createOpenHandler(
+        INPLACE_APPLET_ID,
+        true,
+        Js.function(Js.call_s(editFileAjaxFunction, true.asInstanceOf[AnyRef]))))
 
-    editFileLink.addReadyStatements(inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"), Jq.$(editFileWithLink)))
+    editFileLink.addReadyStatements(
+      inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"),
+                                                     Jq.$(editFileWithLink)))
 
-    saveClickHandler = inplaceEditorService.createUploadHandler(INPLACE_APPLET_ID, events.getSubmitValuesFunction("inplaceSave"))
+    saveClickHandler = inplaceEditorService.createUploadHandler(
+      INPLACE_APPLET_ID,
+      events.getSubmitValuesFunction("inplaceSave"))
 
     executeUnzip.setClickHandler(events.getNamedHandler("unzipFile"))
     removeUnzip.setClickHandler(events.getNamedHandler("removeZip"))
     selectAll.setClickHandler(new OverrideHandler(Js.call_s(SELECT_ALL, true.asInstanceOf[Object])))
-    selectNone.setClickHandler(new OverrideHandler(Js.call_s(SELECT_ALL, false.asInstanceOf[Object])))
+    selectNone.setClickHandler(
+      new OverrideHandler(Js.call_s(SELECT_ALL, false.asInstanceOf[Object])))
     viewers.setListModel(viewerHandler.viewerListModel)
-    zipProgressDiv.addReadyStatements(WebFileUploads.ZIP_PROGRESS_FUNC, ajax.getAjaxFunction("zipProgress"), ajax.getAjaxUpdateDomFunction(tree, this, null,
-      ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "zipArea"))
+    zipProgressDiv.addReadyStatements(
+      WebFileUploads.ZIP_PROGRESS_FUNC,
+      ajax.getAjaxFunction("zipProgress"),
+      ajax.getAjaxUpdateDomFunction(
+        tree,
+        this,
+        null,
+        ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),
+        "zipArea")
+    )
   }
 
   private def createInplaceApplet(info: SectionInfo) = {
-    val model = getModel(info)
+    val model           = getModel(info)
     val wizardStagingId = new ItemId(ctx.stagingContext.stgFile.getUuid, 0)
-    inplaceEditorService.createAppletFunction(INPLACE_APPLET_ID, wizardStagingId, editingHandler.editingArea, model.inplaceFilepath,
-      model.appletMode == "openwith", "invoker/file.inplaceedit.service", Jq.$(editFileDiv), INPLACE_APPLET_WIDTH, INPLACE_APPLET_HEIGHT)
+    inplaceEditorService.createAppletFunction(
+      INPLACE_APPLET_ID,
+      wizardStagingId,
+      editingHandler.editingArea,
+      model.inplaceFilepath,
+      model.appletMode == "openwith",
+      "invoker/file.inplaceedit.service",
+      Jq.$(editFileDiv),
+      INPLACE_APPLET_WIDTH,
+      INPLACE_APPLET_HEIGHT
+    )
   }
 
   def newModel = FileEditDetailsModel.apply
 
   case class FileEditDetailsModel(info: SectionInfo) {
-    @Bookmarked(name="am")
+    @Bookmarked(name = "am")
     var appletMode: String = _
 
     lazy val a = editingAttachment(info)
@@ -221,8 +272,11 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     lazy val getFileListDiv = {
       val pa = _files.groupBy(_.parentPath)
       def mkNodeChildren(path: String): ObjectExpression =
-        new ObjectExpression("folder", false.asInstanceOf[Object],
-          "children", pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
+        new ObjectExpression(
+          "folder",
+          false.asInstanceOf[Object],
+          "children",
+          pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
 
       val map = new ObjectExpression("ROOT", mkNodeChildren(""))
       _files.filter(_.isFolder).foreach { e =>
@@ -249,16 +303,18 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     lazy val (_isUnzipping, _files) = {
       val _unzipping = zipHandler.zipProgress.exists(!_.isFinished)
       if (!_unzipping) {
-        val allEntries = zipHandler.unzippedEntries
+        val allEntries       = zipHandler.unzippedEntries
         val (files, folders) = convertFileList("", "", 1, allEntries)
         (false, (files ++ folders).zipWithIndex.map {
           case (efp, i) =>
             val id = "s" + i
-            val check = if (efp.file) selections.getBooleanState(info, efp.fullpath) else {
-              val s = new HtmlBooleanState
-              s.setClickHandler(Js.handler(Js.call_s(SELECT_FUNCTION, id)))
-              s
-            }
+            val check =
+              if (efp.file) selections.getBooleanState(info, efp.fullpath)
+              else {
+                val s = new HtmlBooleanState
+                s.setClickHandler(Js.handler(Js.call_s(SELECT_FUNCTION, id)))
+                s
+              }
             check.setId(id)
             new EntryDisplay(efp, check, id)
         })
@@ -289,7 +345,9 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     suppressThumbnails.setChecked(info, WebFileUploads.isSuppressThumbnail(et))
   }
 
-  def editAttachment(info: SectionInfo, _a: Attachment, ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
+  def editAttachment(info: SectionInfo,
+                     _a: Attachment,
+                     ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
 
     def copyExtra(src: Attachment, dest: Attachment): Unit = {
       dest.setUuid(src.getUuid)
@@ -310,20 +368,23 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
         fa.setFilename(WebFileUploads.removeZipPath(za.getUrl))
         copyExtra(za, fa)
 
-        (fa, Some(AttachmentDelete(ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)), _ => ())))
+        (fa,
+         Some(
+           AttachmentDelete(
+             ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)),
+             _ => ())))
       case _ => (_a, None)
     }
-    if (unzipped)
-    {
-      val old = zipHandler.selectedAttachments
-      val oldNames = old.keySet
+    if (unzipped) {
+      val old           = zipHandler.selectedAttachments
+      val oldNames      = old.keySet
       val selectedFiles = selections.getCheckedSet(info).asScala
-      val delete = oldNames -- selectedFiles
-      val add = selectedFiles -- oldNames
-      val cs = ctx.controlState
+      val delete        = oldNames -- selectedFiles
+      val add           = selectedFiles -- oldNames
+      val cs            = ctx.controlState
       add.foreach { fn =>
-        val fa = new FileAttachment
-        val fullpath = WebFileUploads.removeZipPath(a.getUrl)+"/"+fn
+        val fa       = new FileAttachment
+        val fullpath = WebFileUploads.removeZipPath(a.getUrl) + "/" + fn
         fa.setUuid(UUID.randomUUID().toString)
         fa.setData(ZipAttachment.KEY_ZIP_ATTACHMENT_UUID, a.getUuid)
         fa.setFilename(fullpath)
@@ -338,8 +399,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       }
       val za = a.asInstanceOf[ZipAttachment]
       za.setAttachZip(attachZip.isChecked(info))
-    }
-    else if (WebFileUploads.isWebPage(a.getUrl)) {
+    } else if (WebFileUploads.isWebPage(a.getUrl)) {
       ctx.repo.getState.getWizardMetadataMapper.addHtmlMappedFile(a.getUrl)
     }
     a.setViewer(viewers.getSelectedValueAsString(info))
@@ -347,45 +407,54 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     if (showRestrict) {
       a.setRestricted(restrictCheckbox.isChecked(info))
     }
-    if (ctx.controlSettings.isAllowPreviews)
-    {
+    if (ctx.controlSettings.isAllowPreviews) {
       a.setPreview(previewCheckBox.isChecked(info))
     }
     if (ctx.controlSettings.isShowThumbOption) {
       val wasSuppressed = WebFileUploads.isSuppressThumbnail(_a)
-      val suppressed = suppressThumbnails.isChecked(info)
-      if (suppressed != wasSuppressed)
-      {
-        a.setThumbnail(if (suppressed) WebFileUploads.SUPPRESS_THUMB_VALUE else ctx.stagingContext.thumbRequest(a.getUrl))
+      val suppressed    = suppressThumbnails.isChecked(info)
+      if (suppressed != wasSuppressed) {
+        a.setThumbnail(
+          if (suppressed) WebFileUploads.SUPPRESS_THUMB_VALUE
+          else ctx.stagingContext.thumbRequest(a.getUrl))
       }
     }
     editingHandler.syncEdits(a.getUrl)
     (a, delete)
   }
 
-  def prependParent(parent: String, filename: String, sep: String = "/") : String =
-    if (parent.isEmpty) filename else parent+sep+filename
+  def prependParent(parent: String, filename: String, sep: String = "/"): String =
+    if (parent.isEmpty) filename else parent + sep + filename
 
   case class EntryFullPath(parentPath: String, level: Int, entry: FileEntry, displayPath: String) {
-    def file = !entry.isFolder
-    def name = entry.getName
+    def file     = !entry.isFolder
+    def name     = entry.getName
     val fullpath = prependParent(parentPath, name)
   }
   class EntryDisplay(fp: EntryFullPath, check: HtmlBooleanState, val id: String) {
-    def parentPath = fp.parentPath
-    def isFolder = fp.entry.isFolder
-    def getLevel = fp.level
-    def getCheck = check
+    def parentPath     = fp.parentPath
+    def isFolder       = fp.entry.isFolder
+    def getLevel       = fp.level
+    def getCheck       = check
     def getDisplayPath = fp.displayPath
-    def getName = fp.name
-    def getPath = fp.fullpath
-    def getFileClass = if (isFolder) CSS_CLASS_FOLDER else CSS_CLASS_FILE
+    def getName        = fp.name
+    def getPath        = fp.fullpath
+    def getFileClass   = if (isFolder) CSS_CLASS_FOLDER else CSS_CLASS_FILE
   }
 
-  def convertFileList(parentPath: String, displayParent: String, level: Int, entries: Seq[FileEntry]): (Seq[EntryFullPath], Seq[EntryFullPath]) = {
-    val (files, _folders) = entries.map(e => EntryFullPath(parentPath, level, e, prependParent(displayParent, e.getName, " / "))).partition(_.file)
+  def convertFileList(parentPath: String,
+                      displayParent: String,
+                      level: Int,
+                      entries: Seq[FileEntry]): (Seq[EntryFullPath], Seq[EntryFullPath]) = {
+    val (files, _folders) = entries
+      .map(e => EntryFullPath(parentPath, level, e, prependParent(displayParent, e.getName, " / ")))
+      .partition(_.file)
     val folders = _folders.flatMap { fed =>
-      val (childFiles, childFolders) = convertFileList(prependParent(parentPath, fed.name), prependParent(displayParent, fed.name, " / "), level+1, fed.entry.getFiles.asScala)
+      val (childFiles, childFolders) =
+        convertFileList(prependParent(parentPath, fed.name),
+                        prependParent(displayParent, fed.name, " / "),
+                        level + 1,
+                        fed.entry.getFiles.asScala)
       if (childFiles.isEmpty) childFolders else fed +: (childFiles ++ childFolders)
     }
     (files, folders)

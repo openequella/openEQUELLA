@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,38 +20,36 @@ package com.tle.core.item.edit;
 
 import java.util.List;
 
-public interface NavigationNodeEditor
-{
-	String getUuid();
+public interface NavigationNodeEditor {
+  String getUuid();
 
-	void editName(String name);
+  void editName(String name);
 
-	void editIcon(String icon);
+  void editIcon(String icon);
 
-	void editImsId(String imsId);
+  void editImsId(String imsId);
 
-	/**
-	 * Edit a tab. Attachment must already exist before calling this.
-	 * 
-	 * @param index
-	 * @param name
-	 * @param attachmentUuid
-	 * @param viewer
-	 */
-	void editTab(int index, String name, String attachmentUuid, String viewer);
+  /**
+   * Edit a tab. Attachment must already exist before calling this.
+   *
+   * @param index
+   * @param name
+   * @param attachmentUuid
+   * @param viewer
+   */
+  void editTab(int index, String name, String attachmentUuid, String viewer);
 
-	/**
-	 * Change the number of tabs. At least the given number of tabs must already
-	 * exist.
-	 * 
-	 * @param numTabs
-	 */
-	void editTabCount(int numTabs);
+  /**
+   * Change the number of tabs. At least the given number of tabs must already exist.
+   *
+   * @param numTabs
+   */
+  void editTabCount(int numTabs);
 
-	/**
-	 * Edit the child list. All children must already exist.
-	 * 
-	 * @param childUuids
-	 */
-	void editChildrenList(List<String> childUuids);
+  /**
+   * Edit the child list. All children must already exist.
+   *
+   * @param childUuids
+   */
+  void editChildrenList(List<String> childUuids);
 }

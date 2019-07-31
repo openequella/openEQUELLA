@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.freetext;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
 import com.google.common.collect.Multimap;
 import com.tle.common.Pair;
 import com.tle.common.searching.Search;
@@ -29,53 +27,53 @@ import com.tle.core.freetext.index.ItemIndex;
 import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.remoting.MatrixResults;
 import com.tle.core.services.item.FreetextResult;
-
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public interface FreetextIndex
-{
-	void deleteIndexes();
+/** @author Nicholas Read */
+public interface FreetextIndex {
+  void deleteIndexes();
 
-	void indexBatch(List<IndexedItem> batch);
+  void indexBatch(List<IndexedItem> batch);
 
-	SearchSettings getSearchSettings();
+  SearchSettings getSearchSettings();
 
-	Collection<IndexingExtension> getIndexingExtensions();
+  Collection<IndexingExtension> getIndexingExtensions();
 
-	File getStopWordsFile();
+  File getStopWordsFile();
 
-	String getDefaultOperator();
+  String getAnalyzerLanguage();
 
-	File getRootIndexPath();
+  String getDefaultOperator();
 
-	/**
-	 * @param <T>
-	 * @param searchReq
-	 * @param start
-	 * @param count Use -1 for all
-	 * @return
-	 */
-	<T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count);
+  File getRootIndexPath();
 
-	LongSet searchBitSet(Search searchReq);
+  /**
+   * @param <T>
+   * @param searchReq
+   * @param start
+   * @param count Use -1 for all
+   * @return
+   */
+  <T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count);
 
-	int count(Search searchReq);
+  LongSet searchBitSet(Search searchReq);
 
-	/**
-	 * @return Collection of value/count pairs
-	 */
-	Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
+  int count(Search searchReq);
 
-	MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly);
+  /** @return Collection of value/count pairs */
+  Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
 
-	ItemIndex<? extends FreetextResult> getIndexer(String indexItem);
+  MatrixResults matrixSearch(
+      Search searchRequest, List<String> fields, boolean countOnly, boolean searchAttachments);
 
-	int getSynchroniseMinutes();
+  ItemIndex<? extends FreetextResult> getIndexer(String indexItem);
 
-	void prepareItemsForIndexing(Collection<IndexedItem> inditems);
+  int getSynchroniseMinutes();
 
-	String suggestTerm(Search request, String prefix);
+  void prepareItemsForIndexing(Collection<IndexedItem> inditems);
+
+  String suggestTerm(Search request, String prefix);
 }

@@ -1,0 +1,29 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>39296</id>
+  <institution>
+    <id>39169</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/scorm-package</type>
+  <description>SCORM Package</description>
+  <attributes>
+    <entry>
+      <string>fileViewerDisabled</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;icodeon&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/ims.png</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>icodeon</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,37 +24,36 @@ import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.web.sections.SectionInfo;
 
 /**
- * To leverage this service your Remote Repo search tree must have the
- * RootRemoteRepoSection as the root section.
- * 
+ * To leverage this service your Remote Repo search tree must have the RootRemoteRepoSection as the
+ * root section.
+ *
  * @author aholland
  */
-public interface RemoteRepoWebService
-{
-	void forwardToWizard(SectionInfo info, PropBagEx xml, FederatedSearch search);
+public interface RemoteRepoWebService {
+  void forwardToWizard(SectionInfo info, PropBagEx xml, FederatedSearch search);
 
-	void forwardToWizard(SectionInfo info, StagingFile staging, PropBagEx xml, FederatedSearch search);
+  void forwardToWizard(
+      SectionInfo info, StagingFile staging, PropBagEx xml, FederatedSearch search);
 
-	void forwardToSearch(SectionInfo info, FederatedSearch search, boolean clearContext);
+  void forwardToSearch(SectionInfo info, FederatedSearch search, boolean clearContext);
 
-	FederatedSearch getRemoteRepository(SectionInfo info);
+  FederatedSearch getRemoteRepository(SectionInfo info);
 
-	/**
-	 * Generally, you shouldn't need this...
-	 * 
-	 * @param info
-	 * @param repositoryUuid
-	 */
-	void setRemoteRepository(SectionInfo info, String searchUuid);
+  /**
+   * Generally, you shouldn't need this...
+   *
+   * @param info
+   * @param repositoryUuid
+   */
+  void setRemoteRepository(SectionInfo info, String searchUuid);
 
-	/**
-	 * Gets display text based on the display transform (if appropriate) of the
-	 * search
-	 * 
-	 * @param search
-	 * @param xml
-	 * @return Returns null if there is no associated display transform (or the
-	 *         search type doesn't support one)
-	 */
-	String getDisplayText(FederatedSearch search, PropBagEx xml);
+  /**
+   * Gets display text based on the display transform (if appropriate) of the search
+   *
+   * @param search
+   * @param xml
+   * @return Returns null if there is no associated display transform (or the search type doesn't
+   *     support one)
+   */
+  String getDisplayText(FederatedSearch search, PropBagEx xml);
 }

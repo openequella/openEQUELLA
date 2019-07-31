@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.core.item.dao;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.dytech.edge.common.valuebean.ItemIndexDate;
 import com.google.common.collect.ListMultimap;
@@ -41,100 +37,110 @@ import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.common.Pair;
 import com.tle.common.Triple;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * @author Nicholas Read
- */
-public interface ItemDao extends GenericInstitutionalDao<Item, Long>
-{
-	List<Integer> getCommentCounts(List<Item> items);
+/** @author Nicholas Read */
+public interface ItemDao extends GenericInstitutionalDao<Item, Long> {
+  List<Integer> getCommentCounts(List<Item> items);
 
-	List<Item> getItems(List<Long> keys, ItemSelect select, Institution institution);
+  List<Item> getItems(List<Long> keys, ItemSelect select, Institution institution);
 
-	List<Item> getAllVersionsOfItem(String uuid);
+  List<Item> getAllVersionsOfItem(String uuid);
 
-	List<Item> getItems(List<String> uuids, Institution institution);
+  List<Item> getItems(List<String> uuids, Institution institution);
 
-	Map<ItemId, Item> getItems(List<? extends ItemKey> itemIds);
+  Map<ItemId, Item> getItems(List<? extends ItemKey> itemIds);
 
-	List<ItemId> getItemsWithUrl(String url, ItemDefinition itemDefinition, String excludedUuid);
+  List<ItemId> getItemsWithUrl(String url, ItemDefinition itemDefinition, String excludedUuid);
 
-	List<ItemId> enumerateItemKeys(String whereClause, String[] names, Object[] values);
+  List<ItemId> enumerateItemKeys(String whereClause, String[] names, Object[] values);
 
-	/**
-	 * WARNING: Does not filter by institution - that's up to the caller to do.
-	 */
-	List<ItemIdKey> getItemKeyBatch(String joinClause, String whereClause, Map<String, Object> params, long startId,
-		int batchSize);
+  /** WARNING: Does not filter by institution - that's up to the caller to do. */
+  List<ItemIdKey> getItemKeyBatch(
+      String joinClause,
+      String whereClause,
+      Map<String, Object> params,
+      long startId,
+      int batchSize);
 
-	long getCount(String joinClause, String whereClause, Map<String, Object> params);
+  long getCount(String joinClause, String whereClause, Map<String, Object> params);
 
-	List<ItemIdKey> getItemIdKeys(List<Long> ids);
+  List<ItemIdKey> getItemIdKeys(List<Long> ids);
 
-	ItemIdKey getItemIdKey(Long id);
+  ItemIdKey getItemIdKey(Long id);
 
-	List<Triple<String, Integer, String>> enumerateItemNames(String whereClause, String[] names, Object[] values);
+  List<Triple<String, Integer, String>> enumerateItemNames(
+      String whereClause, String[] names, Object[] values);
 
-	List<Item> getNextLiveItems(List<ItemId> items);
+  List<Item> getNextLiveItems(List<ItemId> items);
 
-	Map<ItemId, LanguageBundle> getItemNames(Collection<? extends ItemKey> keys);
+  Map<ItemId, LanguageBundle> getItemNames(Collection<? extends ItemKey> keys);
 
-	Map<ItemId, Long> getItemNameIds(Collection<? extends ItemKey> keys);
+  Map<ItemId, Long> getItemNameIds(Collection<? extends ItemKey> keys);
 
-	String getNameForId(long id);
+  String getNameForId(long id);
 
-	List<ItemIdKey> listAll(Institution institution);
+  List<ItemIdKey> listAll(Institution institution);
 
-	List<Integer> getAllVersionNumbers(String uuid);
+  List<Integer> getAllVersionNumbers(String uuid);
 
-	int getLatestVersion(String uuid);
+  int getLatestVersion(String uuid);
 
-	int getLatestLiveVersion(String uuid);
+  int getLatestLiveVersion(String uuid);
 
-	ItemIdKey getLatestLiveVersionId(String uuid);
+  ItemIdKey getLatestLiveVersionId(String uuid);
 
-	int updateIndexTimes(String whereClause, String[] names, Object[] values);
+  int updateIndexTimes(String whereClause, String[] names, Object[] values);
 
-	Item get(ItemKey id);
+  Item get(ItemKey id);
 
-	Item get(ItemKey id, boolean readonly);
+  Item get(ItemKey id, boolean readonly);
 
-	Item findByItemId(ItemKey id);
+  Item findByItemId(ItemKey id);
 
-	Set<String> getReferencedUsers();
+  Set<String> getReferencedUsers();
 
-	void clearHistory(Item item);
+  void clearHistory(Item item);
 
-	<T extends IdCloneable> T mergeTwo(T oldObject, T newObject);
+  <T extends IdCloneable> T mergeTwo(T oldObject, T newObject);
 
-	long getCollectionIdForUuid(String uuid);
+  long getCollectionIdForUuid(String uuid);
 
-	Attachment getAttachmentByUuid(ItemKey itemId, String uuid);
+  Attachment getAttachmentByUuid(ItemKey itemId, String uuid);
 
-	Set<String> unionItemUuidsWithCollectionUuids(Collection<String> itemUuids, Set<String> collectionUuids);
+  Set<String> unionItemUuidsWithCollectionUuids(
+      Collection<String> itemUuids, Set<String> collectionUuids);
 
-	Map<String, Object> getItemInfo(String uuid, int version);
+  Map<String, Object> getItemInfo(String uuid, int version);
 
-	ListMultimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
+  ListMultimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
 
-	ListMultimap<Long, Attachment> getAttachmentsForItemIds(Collection<Long> items);
+  ListMultimap<Long, Attachment> getAttachmentsForItemIds(Collection<Long> items);
 
-	ListMultimap<Long, HistoryEvent> getHistoryForItemIds(Collection<Long> items);
+  ListMultimap<Long, HistoryEvent> getHistoryForItemIds(Collection<Long> items);
 
-	ListMultimap<Long, ItemNavigationNode> getNavigationNodesForItemIds(Collection<Long> items);
+  ListMultimap<Long, ItemNavigationNode> getNavigationNodesForItemIds(Collection<Long> items);
 
-	Multimap<Long, String> getCollaboratorsForItemIds(Collection<Long> itemIds);
+  Multimap<Long, String> getCollaboratorsForItemIds(Collection<Long> itemIds);
 
-	ListMultimap<Long, DrmAcceptance> getDrmAcceptancesForItemIds(Collection<Long> itemIds);
+  ListMultimap<Long, DrmAcceptance> getDrmAcceptancesForItemIds(Collection<Long> itemIds);
 
-	Item getExistingItem(ItemKey itemId);
+  Item getExistingItem(ItemKey itemId);
 
-	Pair<Long, Long> getIdRange(Collection<Institution> institutions, Date afterDate);
+  Pair<Long, Long> getIdRange(Collection<Institution> institutions, Date afterDate);
 
-	List<ItemIndexDate> getIndexTimesFromId(Collection<Institution> institutions, Date afterDate, long itemId,
-		long maxItemId, int maxResults);
+  List<ItemIndexDate> getIndexTimesFromId(
+      Collection<Institution> institutions,
+      Date afterDate,
+      long itemId,
+      long maxItemId,
+      int maxResults);
 
-	Attachment getAttachmentByFilepath(ItemKey itemId, String filepath);
+  Attachment getAttachmentByFilepath(ItemKey itemId, String filepath);
 
-	List<String> getNavReferencedAttachmentUuids(List<Item> items);
+  List<String> getNavReferencedAttachmentUuids(List<Item> items);
 }

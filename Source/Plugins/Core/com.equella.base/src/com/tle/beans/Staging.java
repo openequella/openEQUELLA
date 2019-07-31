@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,41 +21,35 @@ package com.tle.beans;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
 import org.hibernate.annotations.AccessType;
 
 @Entity
 @AccessType("field")
-public class Staging
-{
-	@Id
-	@Column(length = 40)
-	private String stagingID;
-	@Column(length = 40)
-	private String userSession;
+public class Staging {
+  @Id
+  @Column(length = 40)
+  private String stagingID;
 
-	public Staging()
-	{
-		super();
-	}
+  @Column(length = 40)
+  private String userSession;
 
-	public String getStagingID()
-	{
-		return stagingID;
-	}
+  public Staging() {
+    super();
+  }
 
-	public void setStagingID(String stagingID)
-	{
-		this.stagingID = stagingID;
-	}
+  public String getStagingID() {
+    return stagingID;
+  }
 
-	public String getUserSession()
-	{
-		return userSession;
-	}
+  public void setStagingID(String stagingID) {
+    this.stagingID = stagingID;
+  }
 
-	public void setUserSession(String userSession)
-	{
-		this.userSession = userSession;
-	}
+  public String getUserSession() {
+    return userSession;
+  }
+
+  public void setUserSession(String userSession) {
+    this.userSession = userSession;
+  }
 }

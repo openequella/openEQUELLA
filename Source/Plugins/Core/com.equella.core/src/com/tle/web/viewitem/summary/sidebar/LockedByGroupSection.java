@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,9 @@
 
 package com.tle.web.viewitem.summary.sidebar;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.core.item.service.ItemService;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -43,136 +41,123 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class LockedByGroupSection extends AbstractParentViewItemSection<LockedByGroupSection.LockedByGroupModel>
-{
-	@PlugKey("summary.sidebar.lockedbygroup.unlock.confirm")
-	private static Label UNLOCK_CONFIRM_LABEL;
+public class LockedByGroupSection
+    extends AbstractParentViewItemSection<LockedByGroupSection.LockedByGroupModel> {
+  @PlugKey("summary.sidebar.lockedbygroup.unlock.confirm")
+  private static Label UNLOCK_CONFIRM_LABEL;
 
-	@Inject
-	private ItemService itemService;
+  @Inject private ItemService itemService;
 
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Component
-	@PlugKey("summary.sidebar.lockedbygroup.unlock.button")
-	private Button unlock;
+  @Component
+  @PlugKey("summary.sidebar.lockedbygroup.unlock.button")
+  private Button unlock;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		userLinkSection = userLinkService.register(tree, id);
+    userLinkSection = userLinkService.register(tree, id);
 
-		JSHandler unlockHandler = events.getNamedHandler("unlockItem");
-		unlockHandler.addValidator(new Confirm(UNLOCK_CONFIRM_LABEL));
+    JSHandler unlockHandler = events.getNamedHandler("unlockItem");
+    unlockHandler.addValidator(new Confirm(UNLOCK_CONFIRM_LABEL));
 
-		unlock.setClickHandler(unlockHandler);
-	}
+    unlock.setClickHandler(unlockHandler);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return getItemInfo(info).getWorkflowStatus().isLocked();
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return getItemInfo(info).getWorkflowStatus().isLocked();
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ItemSectionInfo itemInfo = getItemInfo(context);
-		final WorkflowStatus status = itemInfo.getWorkflowStatus();
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ItemSectionInfo itemInfo = getItemInfo(context);
+    final WorkflowStatus status = itemInfo.getWorkflowStatus();
 
-		if( itemInfo.isEditing() || !status.isLocked() )
-		{
-			return null;
-		}
+    if (itemInfo.isEditing() || !status.isLocked()) {
+      return null;
+    }
 
-		final LockedByGroupModel model = getModel(context);
+    final LockedByGroupModel model = getModel(context);
 
-		model.setAllowUnlock(!status.getSecurityStatus().getLock().getUserSession().equals(CurrentUser.getSessionID())
-			&& (itemInfo.hasPrivilege("EDIT_ITEM") || itemInfo.hasPrivilege("REDRAFT_ITEM")));
+    model.setAllowUnlock(
+        !status.getSecurityStatus().getLock().getUserSession().equals(CurrentUser.getSessionID())
+            && (itemInfo.hasPrivilege("EDIT_ITEM") || itemInfo.hasPrivilege("REDRAFT_ITEM")));
 
-		model.setLockedByUser(userLinkSection.createLink(context, status.getSecurityStatus().getLockedBy()));
+    model.setLockedByUser(
+        userLinkSection.createLink(context, status.getSecurityStatus().getLockedBy()));
 
-		model.setNotPreview(itemInfo.getViewableItem().isItemForReal());
+    model.setNotPreview(itemInfo.getViewableItem().isItemForReal());
 
-		List<SectionRenderable> sections = renderChildren(context, new ResultListCollector()).getResultList();
-		model.setSections(sections);
+    List<SectionRenderable> sections =
+        renderChildren(context, new ResultListCollector()).getResultList();
+    model.setSections(sections);
 
-		return viewFactory.createResult("viewitem/summary/sidebar/lockedbygroup.ftl", context);
-	}
+    return viewFactory.createResult("viewitem/summary/sidebar/lockedbygroup.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void unlockItem(SectionInfo info)
-	{
-		ItemSectionInfo itemInfo = getItemInfo(info);
-		itemService.forceUnlock(itemInfo.getItem());
-		itemInfo.refreshItem(true);
-	}
+  @EventHandlerMethod
+  public void unlockItem(SectionInfo info) {
+    ItemSectionInfo itemInfo = getItemInfo(info);
+    itemService.forceUnlock(itemInfo.getItem());
+    itemInfo.refreshItem(true);
+    info.forceRedirect();
+  }
 
-	public Button getUnlock()
-	{
-		return unlock;
-	}
+  public Button getUnlock() {
+    return unlock;
+  }
 
-	@Override
-	public Class<LockedByGroupModel> getModelClass()
-	{
-		return LockedByGroupModel.class;
-	}
+  @Override
+  public Class<LockedByGroupModel> getModelClass() {
+    return LockedByGroupModel.class;
+  }
 
-	public static class LockedByGroupModel
-	{
-		private boolean allowUnlock;
-		private boolean notPreview;
-		private HtmlLinkState lockedByUser;
-		private List<SectionRenderable> sections;
+  public static class LockedByGroupModel {
+    private boolean allowUnlock;
+    private boolean notPreview;
+    private HtmlLinkState lockedByUser;
+    private List<SectionRenderable> sections;
 
-		public boolean isAllowUnlock()
-		{
-			return allowUnlock;
-		}
+    public boolean isAllowUnlock() {
+      return allowUnlock;
+    }
 
-		public void setAllowUnlock(boolean allowUnlock)
-		{
-			this.allowUnlock = allowUnlock;
-		}
+    public void setAllowUnlock(boolean allowUnlock) {
+      this.allowUnlock = allowUnlock;
+    }
 
-		public boolean isNotPreview()
-		{
-			return notPreview;
-		}
+    public boolean isNotPreview() {
+      return notPreview;
+    }
 
-		public void setNotPreview(boolean notPreview)
-		{
-			this.notPreview = notPreview;
-		}
+    public void setNotPreview(boolean notPreview) {
+      this.notPreview = notPreview;
+    }
 
-		public HtmlLinkState getLockedByUser()
-		{
-			return lockedByUser;
-		}
+    public HtmlLinkState getLockedByUser() {
+      return lockedByUser;
+    }
 
-		public void setLockedByUser(HtmlLinkState lockedByUser)
-		{
-			this.lockedByUser = lockedByUser;
-		}
+    public void setLockedByUser(HtmlLinkState lockedByUser) {
+      this.lockedByUser = lockedByUser;
+    }
 
-		public List<SectionRenderable> getSections()
-		{
-			return sections;
-		}
+    public List<SectionRenderable> getSections() {
+      return sections;
+    }
 
-		public void setSections(List<SectionRenderable> sections)
-		{
-			this.sections = sections;
-		}
-	}
+    public void setSections(List<SectionRenderable> sections) {
+      this.sections = sections;
+    }
+  }
 }

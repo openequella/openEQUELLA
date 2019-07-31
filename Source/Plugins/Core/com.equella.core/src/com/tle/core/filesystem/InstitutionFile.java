@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,39 +26,32 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.handle.AllInstitutionsFile;
 
 @NonNullByDefault
-public class InstitutionFile extends AllInstitutionsFile
-{
-	private static final long serialVersionUID = 1L;
+public class InstitutionFile extends AllInstitutionsFile {
+  private static final long serialVersionUID = 1L;
 
-	@Nullable
-	private Institution institution;
+  @Nullable private Institution institution;
 
-	public InstitutionFile()
-	{
-		super();
-	}
+  public InstitutionFile() {
+    super();
+  }
 
-	public InstitutionFile(Institution institution)
-	{
-		Check.checkNotNull(institution);
-		this.institution = institution;
-	}
+  public InstitutionFile(Institution institution) {
+    Check.checkNotNull(institution);
+    this.institution = institution;
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		Check.checkNotNull(institution);
-		this.institution = institution;
-	}
+  public void setInstitution(Institution institution) {
+    Check.checkNotNull(institution);
+    this.institution = institution;
+  }
 
-	@Nullable
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  @Nullable
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), institution.getFilestoreId());
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(super.createAbsolutePath(), institution.getFilestoreId());
+  }
 }

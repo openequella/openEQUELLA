@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,18 +18,16 @@
 
 package com.tle.core.mimetypes.dao;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import com.tle.core.mimetypes.MimeTypesSearchResults;
+import java.util.Collection;
+import java.util.List;
 
-public interface MimeEntryDao extends GenericInstitutionalDao<MimeEntry, Long>
-{
-	MimeTypesSearchResults searchByMimeType(String mimeType, int offset, int length);
+public interface MimeEntryDao extends GenericInstitutionalDao<MimeEntry, Long> {
+  MimeTypesSearchResults searchByMimeType(String mimeType, int offset, int length);
 
-	MimeTypesSearchResults searchAll(String query, int offset, int length);
+  MimeTypesSearchResults searchAll(String query, int offset, int length);
 
-	List<MimeEntry> getEntriesForExtensions(Collection<String> extensions);
+  List<MimeEntry> getEntriesForExtensions(Collection<String> extensions);
 }

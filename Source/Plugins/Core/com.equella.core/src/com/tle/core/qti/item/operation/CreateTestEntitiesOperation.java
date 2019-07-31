@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,25 @@
 
 package com.tle.core.qti.item.operation;
 
-import javax.inject.Inject;
-
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation
-{
-	@Inject
-	private QtiAttachmentListener attachmentListener;
+public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation {
+  @Inject private QtiAttachmentListener attachmentListener;
 
-	@Override
-	public boolean execute()
-	{
-		final Item item = getItem();
-		FileHandle handle = getStaging();
-		if( handle == null )
-		{
-			handle = itemFileService.getItemFile(item);
-		}
-		attachmentListener.attachmentsChanged(null, item, handle);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    final Item item = getItem();
+    FileHandle handle = getStaging();
+    if (handle == null) {
+      handle = itemFileService.getItemFile(item);
+    }
+    attachmentListener.attachmentsChanged(null, item, handle);
+    return false;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,32 @@
 
 package com.tle.upgrademanager;
 
+import com.dytech.common.text.NumberStringComparator;
+import com.tle.upgrademanager.handlers.PagesHandler.WebVersion;
 import java.util.Comparator;
 import java.util.regex.Pattern;
 
-import com.dytech.common.text.NumberStringComparator;
-import com.tle.upgrademanager.handlers.PagesHandler.WebVersion;
+public final class Utils {
+  public static final Pattern VERSION_EXTRACT =
+      Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r\\d+) \\((.+)\\)\\.zip$"); // $NON-NLS-1$
 
-public final class Utils
-{
-	public static final Pattern VERSION_EXTRACT = Pattern
-		.compile("^tle-upgrade-(\\d+\\.\\d+\\.r\\d+) \\((.+)\\)\\.zip$"); //$NON-NLS-1$
+  public static final Comparator<WebVersion> VERSION_COMPARATOR =
+      new InverseComparator<WebVersion>(
+          new NumberStringComparator<WebVersion>() {
+            private static final long serialVersionUID = 1L;
 
-	public static final Comparator<WebVersion> VERSION_COMPARATOR = new InverseComparator<WebVersion>(
-		new NumberStringComparator<WebVersion>()
-		{
-			private static final long serialVersionUID = 1L;
+            @Override
+            public String convertToString(WebVersion wv) {
+              return wv.getMmr();
+            }
+          });
 
-			@Override
-			public String convertToString(WebVersion wv)
-			{
-				return wv.getMmr();
-			}
-		});
+  public static final String UNKNOWN_VERSION = "Unknown"; // $NON-NLS-1$
+  public static final String EQUELLASERVER_DIR = "server"; // $NON-NLS-1$
 
-	public static final String UNKNOWN_VERSION = "Unknown"; //$NON-NLS-1$
-	public static final String EQUELLASERVER_DIR = "server"; //$NON-NLS-1$
+  public static final String DEBUG_FLAG = "DEBUG"; // $NON-NLS-1$
 
-	public static final String DEBUG_FLAG = "DEBUG"; //$NON-NLS-1$
-
-	private Utils()
-	{
-		throw new Error();
-	}
+  private Utils() {
+    throw new Error();
+  }
 }

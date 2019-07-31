@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,22 +22,19 @@ import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalConten
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
-public final class ExternalContentSortTypeKeys
-{
-	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(ExternalContentSortTypeKeys.class);
+public final class ExternalContentSortTypeKeys {
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(ExternalContentSortTypeKeys.class);
 
-	public static String get(String status)
-	{
-		return helper.key("sort." + status); //$NON-NLS-1$
-	}
+  public static String get(String status) {
+    return helper.key("sort." + status); // $NON-NLS-1$
+  }
 
-	public static String get(ExternalContentSortType sort)
-	{
-		return get(sort.name().toLowerCase());
-	}
+  public static String get(ExternalContentSortType sort) {
+    return get(sort.name().toLowerCase());
+  }
 
-	private ExternalContentSortTypeKeys()
-	{
-		throw new Error();
-	}
+  private ExternalContentSortTypeKeys() {
+    throw new Error();
+  }
 }

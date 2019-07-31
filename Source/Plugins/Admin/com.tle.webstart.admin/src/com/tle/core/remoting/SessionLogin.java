@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,8 @@
 
 package com.tle.core.remoting;
 
+import com.tle.common.URLUtils;
+import com.tle.exceptions.BadCredentialsException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -23,38 +27,29 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import com.tle.common.URLUtils;
-import com.tle.exceptions.BadCredentialsException;
+public class SessionLogin {
 
-public class SessionLogin
-{
+  public static void postLogin(URL endpointUrl, Map<String, String> params)
+      throws IOException, BadCredentialsException {
+    HttpURLConnection conn = (HttpURLConnection) new URL(endpointUrl, "session").openConnection();
+    String postData = URLUtils.getParameterString(params);
+    conn.setDoOutput(true);
+    conn.setInstanceFollowRedirects(false);
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+    conn.setRequestProperty("charset", "utf-8");
+    byte[] postBytes = postData.getBytes(StandardCharsets.UTF_8);
+    conn.setRequestProperty("Content-Length", Integer.toString(postBytes.length));
+    conn.setUseCaches(false);
+    try (OutputStream wr = conn.getOutputStream()) {
+      wr.write(postBytes);
+    }
 
-	public static void postLogin(URL endpointUrl, Map<String, String> params)
-		throws IOException, BadCredentialsException
-	{
-		HttpURLConnection conn = (HttpURLConnection) new URL(endpointUrl, "session").openConnection();
-		String postData = URLUtils.getParameterString(params);
-		conn.setDoOutput(true);
-		conn.setInstanceFollowRedirects(false);
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		conn.setRequestProperty("charset", "utf-8");
-		byte[] postBytes = postData.getBytes(StandardCharsets.UTF_8);
-		conn.setRequestProperty("Content-Length", Integer.toString(postBytes.length));
-		conn.setUseCaches(false);
-		try( OutputStream wr = conn.getOutputStream() )
-		{
-			wr.write(postBytes);
-		}
-
-		int code = conn.getResponseCode();
-		if( code == 403 || code == 401 )
-		{
-			throw new BadCredentialsException("Bad credentials");
-		}
-		else if (code != 200)
-		{
-			throw new RuntimeException("Error launching console: " + code);
-		}
-	}
+    int code = conn.getResponseCode();
+    if (code == 403 || code == 401) {
+      throw new BadCredentialsException("Bad credentials");
+    } else if (code != 200) {
+      throw new RuntimeException("Error launching console: " + code);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,63 +18,51 @@
 
 package com.tle.common.beans;
 
+import com.tle.common.beans.progress.PercentageProgressCallback;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.tle.common.beans.progress.PercentageProgressCallback;
+/** @author Nicholas Read */
+public class UploadCallbackInputStream extends FilterInputStream {
+  private final PercentageProgressCallback callback;
 
-/**
- * @author Nicholas Read
- */
-public class UploadCallbackInputStream extends FilterInputStream
-{
-	private final PercentageProgressCallback callback;
+  public UploadCallbackInputStream(InputStream in, PercentageProgressCallback callback) {
+    super(in);
 
-	public UploadCallbackInputStream(InputStream in, PercentageProgressCallback callback)
-	{
-		super(in);
+    this.callback = callback;
+  }
 
-		this.callback = callback;
-	}
+  @Override
+  public int read() throws IOException {
+    int abyte = super.read();
+    if (abyte == -1) {
+      callback.setFinished();
+      return -1;
+    }
+    callback.incrementBytesRead(1);
+    return abyte;
+  }
 
-	@Override
-	public int read() throws IOException
-	{
-		int abyte = super.read();
-		if( abyte == -1 )
-		{
-			callback.setFinished();
-			return -1;
-		}
-		callback.incrementBytesRead(1);
-		return abyte;
+  @Override
+  public int read(byte[] b) throws IOException {
+    int count = super.read(b);
+    if (count == -1) {
+      callback.setFinished();
+      return -1;
+    }
+    callback.incrementBytesRead(count);
+    return count;
+  }
 
-	}
-
-	@Override
-	public int read(byte[] b) throws IOException
-	{
-		int count = super.read(b);
-		if( count == -1 )
-		{
-			callback.setFinished();
-			return -1;
-		}
-		callback.incrementBytesRead(count);
-		return count;
-	}
-
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException
-	{
-		int count = super.read(b, off, len);
-		if( count == -1 )
-		{
-			callback.setFinished();
-			return -1;
-		}
-		callback.incrementBytesRead(count);
-		return count;
-	}
+  @Override
+  public int read(byte[] b, int off, int len) throws IOException {
+    int count = super.read(b, off, len);
+    if (count == -1) {
+      callback.setFinished();
+      return -1;
+    }
+    callback.incrementBytesRead(count);
+    return count;
+  }
 }

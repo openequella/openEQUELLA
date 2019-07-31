@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,26 +20,23 @@ package com.tle.web.filemanager.common;
 
 import java.util.List;
 
-public interface ServerBackend
-{
-	String getDownloadUrl(String wizardId, String filename);
+public interface ServerBackend {
+  String getDownloadUrl(String wizardId, String filename);
 
-	void delete(String wizardId, String filename);
+  void delete(String wizardId, String filename);
 
-	List<FileInfo> listFiles(String wizardId, String directory);
+  List<FileInfo> listFiles(String wizardId, String directory);
 
-	/**
-	 * @return true for a successful rename.
-	 */
-	boolean renameFile(String wizardId, String oldName, String newName);
+  /** @return true for a successful rename. */
+  boolean renameFile(String wizardId, String oldName, String newName);
 
-	void copy(String wizardId, String sourceFile, String destFile);
+  void copy(String wizardId, String sourceFile, String destFile);
 
-	void markAsResource(String wizardId, boolean mark, String fullPath);
+  void markAsResource(String wizardId, boolean mark, String fullPath);
 
-	void newFolder(String wizardId, String name);
+  void newFolder(String wizardId, String name);
 
-	void write(String wizardId, String filename, boolean append, byte[] upload);
+  void write(String wizardId, String filename, boolean append, byte[] upload);
 
-	void extractArchive(String wizardId, String filename, String destDir);
+  void extractArchive(String wizardId, String filename, String destDir);
 }

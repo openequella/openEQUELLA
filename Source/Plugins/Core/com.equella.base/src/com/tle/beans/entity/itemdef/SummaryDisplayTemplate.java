@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,41 +21,34 @@ package com.tle.beans.entity.itemdef;
 import java.io.Serializable;
 import java.util.List;
 
-public class SummaryDisplayTemplate implements Serializable
-{
-	private static final long serialVersionUID = 1;
+public class SummaryDisplayTemplate implements Serializable {
+  private static final long serialVersionUID = 1;
 
-	private List<SummarySectionsConfig> configList;
-	private boolean hideOwner = false;
-	private boolean hideCollaborators = false;
+  private List<SummarySectionsConfig> configList;
+  private boolean hideOwner = false;
+  private boolean hideCollaborators = false;
 
-	public void setConfigList(List<SummarySectionsConfig> nodes)
-	{
-		this.configList = nodes;
-	}
+  public void setConfigList(List<SummarySectionsConfig> nodes) {
+    this.configList = nodes;
+  }
 
-	public List<SummarySectionsConfig> getConfigList()
-	{
-		return configList;
-	}
+  public List<SummarySectionsConfig> getConfigList() {
+    return configList;
+  }
 
-	public boolean isHideOwner()
-	{
-		return hideOwner;
-	}
+  public boolean isHideOwner() {
+    return hideOwner;
+  }
 
-	public void setHideOwner(boolean hideOwner)
-	{
-		this.hideOwner = hideOwner;
-	}
+  public void setHideOwner(boolean hideOwner) {
+    this.hideOwner = hideOwner;
+  }
 
-	public boolean isHideCollaborators()
-	{
-		return hideCollaborators;
-	}
+  public boolean isHideCollaborators() {
+    return hideCollaborators;
+  }
 
-	public void setHideCollaborators(boolean hideCollaborators)
-	{
-		this.hideCollaborators = hideCollaborators;
-	}
+  public void setHideCollaborators(boolean hideCollaborators) {
+    this.hideCollaborators = hideCollaborators;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,71 +19,58 @@
 package com.tle.web.wizard;
 
 import com.tle.beans.item.attachments.Attachment;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PackageInfo
-{
-    boolean isValid;
-    protected String error;
+public class PackageInfo {
+  boolean isValid;
+  protected String error;
 
-    protected String title;
-    protected String scormVersion;
+  protected String title;
+  protected String scormVersion;
 
-    protected Collection<Attachment> createdAttachments;
+  protected Collection<Attachment> createdAttachments;
 
-    public boolean isValid()
-    {
-        return isValid;
+  public boolean isValid() {
+    return isValid;
+  }
+
+  public void setValid(boolean isValid) {
+    this.isValid = isValid;
+  }
+
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getScormVersion() {
+    return scormVersion;
+  }
+
+  public void setScormVersion(String scormVersion) {
+    this.scormVersion = scormVersion;
+  }
+
+  public Collection<Attachment> getCreatedAttachments() {
+    if (createdAttachments == null) {
+      createdAttachments = new ArrayList<Attachment>();
     }
+    return createdAttachments;
+  }
 
-    public void setValid(boolean isValid)
-    {
-        this.isValid = isValid;
-    }
-
-    public String getError()
-    {
-        return error;
-    }
-
-    public void setError(String error)
-    {
-        this.error = error;
-    }
-
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    public String getScormVersion()
-    {
-        return scormVersion;
-    }
-
-    public void setScormVersion(String scormVersion)
-    {
-        this.scormVersion = scormVersion;
-    }
-
-    public Collection<Attachment> getCreatedAttachments()
-    {
-        if( createdAttachments == null )
-        {
-            createdAttachments = new ArrayList<Attachment>();
-        }
-        return createdAttachments;
-    }
-
-    public void setCreatedAttachments(Collection<Attachment> createdAttachments)
-    {
-        this.createdAttachments = createdAttachments;
-    }
+  public void setCreatedAttachments(Collection<Attachment> createdAttachments) {
+    this.createdAttachments = createdAttachments;
+  }
 }

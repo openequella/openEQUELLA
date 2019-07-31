@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,116 +18,91 @@
 
 package com.tle.common.harvester;
 
+import com.tle.beans.entity.LanguageBundle;
 import java.util.Map;
 
-import com.tle.beans.entity.LanguageBundle;
+public abstract class HarvesterProfileSettings {
+  private LanguageBundle name;
+  private Map<String, String> attributes;
 
-public abstract class HarvesterProfileSettings
-{
-	private LanguageBundle name;
-	private Map<String, String> attributes;
+  public HarvesterProfileSettings() {
+    super();
+  }
 
-	public HarvesterProfileSettings()
-	{
-		super();
-	}
+  public HarvesterProfileSettings(HarvesterProfile gateway) {
+    this();
+    load(gateway);
+  }
 
-	public HarvesterProfileSettings(HarvesterProfile gateway)
-	{
-		this();
-		load(gateway);
-	}
+  public void load(HarvesterProfile gateway1) {
+    this.attributes = gateway1.getAttributes();
+    this.name = gateway1.getName();
+    _load();
+  }
 
-	public void load(HarvesterProfile gateway1)
-	{
-		this.attributes = gateway1.getAttributes();
-		this.name = gateway1.getName();
-		_load();
-	}
+  public void save(HarvesterProfile gateway1) {
+    gateway1.setType(getType());
+    this.attributes = gateway1.getAttributes();
+    gateway1.setName(name);
+    _save();
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      gateway1.setAttribute(entry.getKey(), entry.getValue());
+    }
+  }
 
-	public void save(HarvesterProfile gateway1)
-	{
-		gateway1.setType(getType());
-		this.attributes = gateway1.getAttributes();
-		gateway1.setName(name);
-		_save();
-		for( Map.Entry<String, String> entry : attributes.entrySet() )
-		{
-			gateway1.setAttribute(entry.getKey(), entry.getValue());
-		}
-	}
+  public String get(String key, String defaultValue) {
+    String value = attributes.get(key);
+    if (value == null) {
+      value = defaultValue;
+    }
+    return value;
+  }
 
-	public String get(String key, String defaultValue)
-	{
-		String value = attributes.get(key);
-		if( value == null )
-		{
-			value = defaultValue;
-		}
-		return value;
-	}
+  public boolean get(String key, boolean defaultValue) {
+    String value = attributes.get(key);
+    boolean v;
+    if (value == null) {
+      v = defaultValue;
+    } else {
+      v = Boolean.valueOf(value);
+    }
+    return v;
+  }
 
-	public boolean get(String key, boolean defaultValue)
-	{
-		String value = attributes.get(key);
-		boolean v;
-		if( value == null )
-		{
-			v = defaultValue;
-		}
-		else
-		{
-			v = Boolean.valueOf(value);
-		}
-		return v;
-	}
+  public int get(String key, int defaultValue) {
+    String value = attributes.get(key);
+    int v;
+    if (value != null) {
+      try {
+        v = Integer.parseInt(value);
+      } catch (Exception e) {
+        v = defaultValue;
+      }
+    } else {
+      v = defaultValue;
+    }
+    return v;
+  }
 
-	public int get(String key, int defaultValue)
-	{
-		String value = attributes.get(key);
-		int v;
-		if( value != null )
-		{
-			try
-			{
-				v = Integer.parseInt(value);
-			}
-			catch( Exception e )
-			{
-				v = defaultValue;
-			}
-		}
-		else
-		{
-			v = defaultValue;
-		}
-		return v;
-	}
+  public void put(String key, Object value) {
+    attributes.put(key, value.toString());
+  }
 
-	public void put(String key, Object value)
-	{
-		attributes.put(key, value.toString());
-	}
+  public void put(String key, String value) {
+    attributes.put(key, value);
+  }
 
-	public void put(String key, String value)
-	{
-		attributes.put(key, value);
-	}
+  protected abstract String getType();
 
-	protected abstract String getType();
+  protected abstract void _load();
 
-	protected abstract void _load();
+  protected abstract void _save();
 
-	protected abstract void _save();
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
-
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
-
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 }

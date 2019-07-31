@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,28 @@
 
 package com.tle.cla.web;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.cla.service.CLAService;
 import com.tle.cla.web.viewitem.summary.CLAAgreementDialog;
 import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightResourceViewerFilter;
 import com.tle.web.copyright.section.AbstractCopyrightAgreementDialog;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class CLAResourceViewerFilter extends AbstractCopyrightResourceViewerFilter
-{
-	@Inject
-	private CLAService claService;
+public class CLAResourceViewerFilter extends AbstractCopyrightResourceViewerFilter {
+  @Inject private CLAService claService;
 
-	@Override
-	protected Class<? extends AbstractCopyrightAgreementDialog> getDialogClass()
-	{
-		return CLAAgreementDialog.class;
-	}
+  @Override
+  protected Class<? extends AbstractCopyrightAgreementDialog> getDialogClass() {
+    return CLAAgreementDialog.class;
+  }
 
-	@Override
-	protected CopyrightService<?, ?, ?> getCopyrightService()
-	{
-		return claService;
-	}
+  @Override
+  protected CopyrightService<?, ?, ?> getCopyrightService() {
+    return claService;
+  }
 }

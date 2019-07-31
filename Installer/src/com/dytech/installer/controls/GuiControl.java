@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,139 +18,115 @@
 
 package com.dytech.installer.controls;
 
+import com.dytech.devlib.PropBagEx;
+import com.dytech.installer.Item;
+import com.tle.common.Check;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dytech.devlib.PropBagEx;
-import com.dytech.installer.Item;
-import com.tle.common.Check;
+public abstract class GuiControl {
+  protected List targets;
+  protected Vector items;
+  protected String title;
+  protected String description;
 
-public abstract class GuiControl
-{
-	protected List targets;
-	protected Vector items;
-	protected String title;
-	protected String description;
+  public GuiControl(PropBagEx controlBag) {
+    items = new Vector();
+    targets = new ArrayList();
 
-	public GuiControl(PropBagEx controlBag)
-	{
-		items = new Vector();
-		targets = new ArrayList();
+    createControl(controlBag);
+  }
 
-		createControl(controlBag);
-	}
+  public abstract JComponent generateControl();
 
-	public abstract JComponent generateControl();
+  public abstract String getSelection();
 
-	public abstract String getSelection();
+  public void generate(JPanel panel) {
+    StringBuilder sb = new StringBuilder();
 
-	public void generate(JPanel panel)
-	{
-		StringBuilder sb = new StringBuilder();
+    if (!Check.isEmpty(title)) {
+      sb.append("<html><b>");
+      sb.append(title);
+    }
 
-		if( !Check.isEmpty(title) )
-		{
-			sb.append("<html><b>");
-			sb.append(title);
-		}
+    if (!Check.isEmpty(description)) {
+      if (sb.length() > 0) {
+        sb.append("</b><br>");
+      } else {
+        sb.append("<html>");
+      }
+      sb.append(description);
+    }
 
-		if( !Check.isEmpty(description) )
-		{
-			if( sb.length() > 0 )
-			{
-				sb.append("</b><br>");
-			}
-			else
-			{
-				sb.append("<html>");
-			}
-			sb.append(description);
-		}
+    JPanel all = new JPanel(new BorderLayout());
+    all.add(new JLabel(sb.toString()), BorderLayout.NORTH);
 
-		JPanel all = new JPanel(new BorderLayout());
-		all.add(new JLabel(sb.toString()), BorderLayout.NORTH);
+    JComponent control = generateControl();
+    if (control != null) {
+      all.add(control, BorderLayout.CENTER);
+    }
 
-		JComponent control = generateControl();
-		if( control != null )
-		{
-			all.add(control, BorderLayout.CENTER);
-		}
+    panel.add(all);
+  }
 
-		panel.add(all);
-	}
+  public void saveToTargets(PropBagEx outputBag) {
+    String value = getSelection();
 
-	public void saveToTargets(PropBagEx outputBag)
-	{
-		String value = getSelection();
+    Iterator i = targets.iterator();
+    while (i.hasNext()) {
+      String target = (String) i.next();
+      outputBag.setNode(target, value);
+    }
+  }
 
-		Iterator i = targets.iterator();
-		while( i.hasNext() )
-		{
-			String target = (String) i.next();
-			outputBag.setNode(target, value);
-		}
+  public void loadControl(PropBagEx xml) {
+    if (xml != null) {
+      Iterator i = targets.iterator();
+      while (i.hasNext()) {
+        String target = (String) i.next();
+        String value = xml.getNode(target);
 
-	}
+        if (items.size() > 0 && value.length() > 0) {
+          Item item = (Item) items.get(0);
+          item.setValue(value);
+        }
+      }
+    }
+  }
 
-	public void loadControl(PropBagEx xml)
-	{
-		if( xml != null )
-		{
-			Iterator i = targets.iterator();
-			while( i.hasNext() )
-			{
-				String target = (String) i.next();
-				String value = xml.getNode(target);
+  protected void createControl(PropBagEx controlBag) {
+    title = controlBag.getNode("title");
+    description = controlBag.getNode("description");
 
-				if( items.size() > 0 && value.length() > 0 )
-				{
-					Item item = (Item) items.get(0);
-					item.setValue(value);
-				}
-			}
-		}
-	}
+    Iterator iter = controlBag.iterateValues("target");
+    while (iter.hasNext()) {
+      targets.add(iter.next());
+    }
 
-	protected void createControl(PropBagEx controlBag)
-	{
-		title = controlBag.getNode("title");
-		description = controlBag.getNode("description");
+    iter = controlBag.iterator("items/item");
+    while (iter.hasNext()) {
+      PropBagEx itemXml = (PropBagEx) iter.next();
 
-		Iterator iter = controlBag.iterateValues("target");
-		while( iter.hasNext() )
-		{
-			targets.add(iter.next());
-		}
+      String name = itemXml.getNode("@name");
+      String value = itemXml.getNode("@value");
+      String select = itemXml.getNode("@default");
 
-		iter = controlBag.iterator("items/item");
-		while( iter.hasNext() )
-		{
-			PropBagEx itemXml = (PropBagEx) iter.next();
+      if (name.length() == 0) {
+        name = value;
+      } else if (value.length() == 0) {
+        value = name;
+      }
 
-			String name = itemXml.getNode("@name");
-			String value = itemXml.getNode("@value");
-			String select = itemXml.getNode("@default");
+      boolean selected = select.equals("true");
 
-			if( name.length() == 0 )
-			{
-				name = value;
-			}
-			else if( value.length() == 0 )
-			{
-				value = name;
-			}
-
-			boolean selected = select.equals("true");
-
-			Item item = new Item(name, value, selected);
-			items.add(item);
-		}
-	}
+      Item item = new Item(name, value, selected);
+      items.add(item);
+    }
+  }
 }

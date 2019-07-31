@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,39 +22,31 @@ import com.dytech.edge.exceptions.WorkflowException;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
-public class CopyrightViolationException extends WorkflowException
-{
-	private static final long serialVersionUID = 1L;
-	private LanguageBundle i18NMessage;
-	private boolean calBookPercentageException;
+/** @author Nicholas Read */
+public class CopyrightViolationException extends WorkflowException {
+  private static final long serialVersionUID = 1L;
+  private LanguageBundle i18NMessage;
+  private boolean calBookPercentageException;
 
-	public CopyrightViolationException(LanguageBundle message)
-	{
-		super(CurrentLocale.get(message));
-		this.i18NMessage = message;
-	}
+  public CopyrightViolationException(LanguageBundle message) {
+    super(CurrentLocale.get(message));
+    this.i18NMessage = message;
+  }
 
-	public LanguageBundle getI18NMessage()
-	{
-		return i18NMessage;
-	}
+  public LanguageBundle getI18NMessage() {
+    return i18NMessage;
+  }
 
-	@Override
-	public String getLocalizedMessage()
-	{
-		return CurrentLocale.get(i18NMessage);
-	}
+  @Override
+  public String getLocalizedMessage() {
+    return CurrentLocale.get(i18NMessage);
+  }
 
-	public boolean isCALBookPercentageException()
-	{
-		return calBookPercentageException;
-	}
+  public boolean isCALBookPercentageException() {
+    return calBookPercentageException;
+  }
 
-	public void setCALBookPercentageException(boolean percentageException)
-	{
-		this.calBookPercentageException = percentageException;
-	}
+  public void setCALBookPercentageException(boolean percentageException) {
+    this.calBookPercentageException = percentageException;
+  }
 }

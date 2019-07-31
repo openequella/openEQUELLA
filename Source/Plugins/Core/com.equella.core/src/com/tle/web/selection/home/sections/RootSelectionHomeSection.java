@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.selection.home.sections;
 
-import javax.inject.Inject;
-
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
@@ -29,37 +29,33 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class RootSelectionHomeSection extends TwoColumnLayout<TwoColumnModel>
-{
-	private static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(RootSelectionHomeSection.class);
+public class RootSelectionHomeSection extends TwoColumnLayout<TwoColumnModel> {
+  private static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(RootSelectionHomeSection.class);
 
-	@Inject
-	private SelectionService selectionService;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		SelectionSession session = selectionService.getCurrentSession(context);
-		if( session == null )
-		{
-			throw new RuntimeException(RESOURCES.getString("error.requiresselectionsession"));
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    SelectionSession session = selectionService.getCurrentSession(context);
+    if (session == null) {
+      throw new RuntimeException(RESOURCES.getString("error.requiresselectionsession"));
+    }
 
-		return super.renderHtml(context);
-	}
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setContentBodyClass("selectiondashboard");
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setContentBodyClass("selectiondashboard");
+  }
 
-	@Override
-	public Class<TwoColumnModel> getModelClass()
-	{
-		return TwoColumnModel.class;
-	}
+  @Override
+  public Class<TwoColumnModel> getModelClass() {
+    return TwoColumnModel.class;
+  }
 }

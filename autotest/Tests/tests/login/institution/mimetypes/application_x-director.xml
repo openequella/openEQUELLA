@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016876</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>dcr</string>
+    <string>dir</string>
+    <string>dxr</string>
+  </extensions>
+  <type>application/x-director</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

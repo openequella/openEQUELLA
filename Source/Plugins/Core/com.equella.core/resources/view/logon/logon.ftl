@@ -37,3 +37,10 @@
 		<@render link />
 	</#list>
 </div>
+<#if m.loginNotice??>
+  <div class="area" style="overflow: hidden">
+    <div id="loginNotice" class="loginnotice">
+      ${m.loginNotice}
+    </div>
+  </div>
+</#if>

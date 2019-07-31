@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,38 @@
 
 package com.tle.core.connectors.canvas.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @XmlRootElement
-public class CanvasModuleItemBean
-{
-	private String id;
-	private String title;
-	@JsonProperty(value = "external_url")
-	private String equellaUrl;
+public class CanvasModuleItemBean {
+  private String id;
+  private String title;
 
-	public String getTitle()
-	{
-		return title;
-	}
+  @JsonProperty(value = "external_url")
+  private String equellaUrl;
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getEquellaUrl()
-	{
-		return equellaUrl;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setEquellaUrl(String equellaUrl)
-	{
-		this.equellaUrl = equellaUrl;
-	}
+  public String getEquellaUrl() {
+    return equellaUrl;
+  }
+
+  public void setEquellaUrl(String equellaUrl) {
+    this.equellaUrl = equellaUrl;
+  }
 }

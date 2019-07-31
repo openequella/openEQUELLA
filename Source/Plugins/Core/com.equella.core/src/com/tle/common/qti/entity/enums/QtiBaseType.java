@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,51 +21,49 @@ package com.tle.common.qti.entity.enums;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public enum QtiBaseType
-{
-	IDENTIFIER, BOOLEAN, INTEGER, FLOAT, STRING, POINT, PAIR, DIRECTED_PAIR
-	{
-		@Override
-		public String toString()
-		{
-			return "directedPair";
-		}
-	},
-	DURATION, FILE, URI, INT_OR_IDENTIFIER
-	{
-		@Override
-		public String toString()
-		{
-			return "intOrIdentifier";
-		}
-	};
+public enum QtiBaseType {
+  IDENTIFIER,
+  BOOLEAN,
+  INTEGER,
+  FLOAT,
+  STRING,
+  POINT,
+  PAIR,
+  DIRECTED_PAIR {
+    @Override
+    public String toString() {
+      return "directedPair";
+    }
+  },
+  DURATION,
+  FILE,
+  URI,
+  INT_OR_IDENTIFIER {
+    @Override
+    public String toString() {
+      return "intOrIdentifier";
+    }
+  };
 
-	@Override
-	public String toString()
-	{
-		return name().toLowerCase();
-	}
+  @Override
+  public String toString() {
+    return name().toLowerCase();
+  }
 
-	@Nullable
-	public static QtiBaseType fromString(@Nullable String name)
-	{
-		if( name == null )
-		{
-			return null;
-		}
-		if( name.equals("directedPair") )
-		{
-			return DIRECTED_PAIR;
-		}
-		if( name.equals("intOrIdentifier") )
-		{
-			return INT_OR_IDENTIFIER;
-		}
-		return QtiBaseType.valueOf(name.toUpperCase());
-	}
+  @Nullable
+  public static QtiBaseType fromString(@Nullable String name) {
+    if (name == null) {
+      return null;
+    }
+    if (name.equals("directedPair")) {
+      return DIRECTED_PAIR;
+    }
+    if (name.equals("intOrIdentifier")) {
+      return INT_OR_IDENTIFIER;
+    }
+    return QtiBaseType.valueOf(name.toUpperCase());
+  }
 }

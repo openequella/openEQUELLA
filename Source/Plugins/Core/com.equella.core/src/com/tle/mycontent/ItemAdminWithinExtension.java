@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.mycontent;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.item.ItemStatus;
@@ -40,60 +38,53 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @TreeIndexed
-public class ItemAdminWithinExtension extends AbstractPrototypeSection<Object> implements WithinExtension
-{
+public class ItemAdminWithinExtension extends AbstractPrototypeSection<Object>
+    implements WithinExtension {
 
-	@TreeLookup
-	private ItemAdminQuerySection querySection;
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+  @TreeLookup private ItemAdminQuerySection querySection;
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@Inject
-	private ItemDefinitionService itemDefService;
-	@Inject
-	private MyContentService myContentService;
+  @Inject private ItemDefinitionService itemDefService;
+  @Inject private MyContentService myContentService;
 
-	@PlugKey("itemadmin.label")
-	private static Label LABEL_MY_CONTENT;
+  @PlugKey("itemadmin.label")
+  private static Label LABEL_MY_CONTENT;
 
-	@Override
-	public void register(String parentId, SectionTree tree)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @Override
+  public void register(String parentId, SectionTree tree) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public void populateModel(SectionInfo info, List<WithinEntry> list)
-	{
-		String defUuid = myContentService.getMyContentItemDef().getUuid();
+  @Override
+  public void populateModel(SectionInfo info, List<WithinEntry> list) {
+    String defUuid = myContentService.getMyContentItemDef().getUuid();
 
-		for( BaseEntityLabel bel : itemDefService.listAllIncludingSystem() )
-		{
-			if( bel.getUuid().equals(defUuid) )
-			{
-				WithinEntry entry = new WithinEntry(bel, querySection.getCollectionsLabel(), null, false, 1);
-				entry.setOverrideLabel(LABEL_MY_CONTENT);
-				entry.setSimpleOpsOnly(true);
-				list.add(entry);
-				return;
-			}
-		}
-	}
+    for (BaseEntityLabel bel : itemDefService.listAllIncludingSystem()) {
+      if (bel.getUuid().equals(defUuid)) {
+        WithinEntry entry =
+            new WithinEntry(bel, querySection.getCollectionsLabel(), null, false, 1);
+        entry.setOverrideLabel(LABEL_MY_CONTENT);
+        entry.setSimpleOpsOnly(true);
+        list.add(entry);
+        return;
+      }
+    }
+  }
 
-	@Override
-	public PresetSearch createDefaultSearch(SectionInfo info, WithinEntry selected)
-	{
-		PresetSearch search = new PresetSearch(null, null, false);
-		search.setItemStatuses(ItemStatus.PERSONAL);
-		return search;
-	}
+  @Override
+  public PresetSearch createDefaultSearch(SectionInfo info, WithinEntry selected) {
+    PresetSearch search = new PresetSearch(null, null, false);
+    search.setItemStatuses(ItemStatus.PERSONAL);
+    return search;
+  }
 
-	@Override
-	public SectionRenderable render(RenderEventContext context)
-	{
-		return null;
-	}
+  @Override
+  public SectionRenderable render(RenderEventContext context) {
+    return null;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,14 @@
 
 package com.tle.common.scripting.types;
 
-/**
- * @author Aaron
- */
-public interface ExecutionResultScriptType
-{
-	/**
-	 * @return The return code as returned by the external program
-	 */
-	int getCode();
+/** @author Aaron */
+public interface ExecutionResultScriptType {
+  /** @return The return code as returned by the external program */
+  int getCode();
 
-	/**
-	 * @return The error text emitted by the external program
-	 */
-	String getErrorOutput();
+  /** @return The error text emitted by the external program */
+  String getErrorOutput();
 
-	/**
-	 * @return The standard text emitted by the external program
-	 */
-	String getStandardOutput();
+  /** @return The standard text emitted by the external program */
+  String getStandardOutput();
 }

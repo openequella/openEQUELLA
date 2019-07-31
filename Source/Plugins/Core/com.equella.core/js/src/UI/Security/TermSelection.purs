@@ -3,6 +3,7 @@ module OEQ.UI.Security.TermSelection where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction, commonString)
+import Common.Strings (languageStrings)
 import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Int (fromString)
@@ -18,22 +19,21 @@ import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import MaterialUI.Button (button)
-import MaterialUI.Checkbox (checkbox, checkbox')
+import MaterialUI.Checkbox (checkbox')
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Enums (primary, secondary)
-import MaterialUI.FormControlLabel (formControlLabel, formControlLabel')
+import MaterialUI.FormControlLabel (formControlLabel')
 import MaterialUI.FormGroup (formGroup)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextField (textField, textField')
+import MaterialUI.TextField (textField')
 import OEQ.API.User (listTokens)
 import OEQ.Data.Security (ExpressionTerm(..), IpRange(..), ResolvedTerm(..), _ip1, _ip2, _ip3, _ip4, _ipm, validMasks, validRange)
 import OEQ.Data.User (UserGroupRoles(..))
-import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (textChange)
 import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import React (ReactElement, component, unsafeCreateLeafElement)
@@ -76,7 +76,7 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
     _UGREnabled :: Lens' UGREnabled {users::Boolean, groups::Boolean, roles::Boolean}
     _UGREnabled = _Newtype
 
-    termStrings = prepLangStrings termRawStrings
+    termStrings = languageStrings.aclterms
     titles = termStrings.title
 
     eval = case _ of 
@@ -185,14 +185,4 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
       margin: theme.spacing.unit
     }
   }
-
-termRawStrings = {prefix: "aclterms", 
-  strings: {
-    title: {
-      ugr: "Select User / Group / Role",
-      ip: "Select IP range",
-      referrer: "HTTP referrer",
-      token: "Select shared secret"
-    }
-  }
-}
+  

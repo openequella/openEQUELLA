@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,29 +21,24 @@ package com.tle.web.sections.js.generic.function;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSCallable;
 
-public class ReloadFunction extends RuntimeFunction
-{
-	private final boolean validate;
+public class ReloadFunction extends RuntimeFunction {
+  private final boolean validate;
 
-	public ReloadFunction()
-	{
-		this(true);
-	}
+  public ReloadFunction() {
+    this(true);
+  }
 
-	public ReloadFunction(boolean validate)
-	{
-		this.validate = validate;
-	}
+  public ReloadFunction(boolean validate) {
+    this.validate = validate;
+  }
 
-	@Override
-	protected JSCallable createFunction(RenderContext info)
-	{
-		return info.getHelper().getSubmitFunction(validate, false, true);
-	}
+  @Override
+  protected JSCallable createFunction(RenderContext info) {
+    return info.getHelper().getSubmitFunction(validate, false, true);
+  }
 
-	@Override
-	public int getNumberOfParams(RenderContext context)
-	{
-		return 0;
-	}
+  @Override
+  public int getNumberOfParams(RenderContext context) {
+    return 0;
+  }
 }

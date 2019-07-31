@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,75 +18,70 @@
 
 package com.tle.web.wizard.render;
 
-import javax.inject.Inject;
-
 import com.google.inject.name.Named;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.web.sections.SectionId;
+import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.SectionRenderable;
+import javax.inject.Inject;
 
 @NonNullByDefault
-public class WizardFreemarkerFactory extends WizardExtendedFactory
-{
-	private String defaultTitleTemplate = "title/standardTitle.ftl"; //$NON-NLS-1$
-	private String defaultTailTemplate = "title/standardTail.ftl"; //$NON-NLS-1$
-	@Inject
-	@Named("TitleFactory")
-	private WizardExtendedFactory titleFactory;
+public class WizardFreemarkerFactory extends WizardExtendedFactory {
 
-	@Override
-	public SectionRenderable createResult(String template, SectionId sectionId)
-	{
-		return createWizardResult(template, defaultTitleTemplate, defaultTailTemplate, sectionId);
-	}
+  public static final CssInclude CSS_INCLUDE =
+      CssInclude.include(CoreStrings.lookup().url("css/controls.css")).make();
+  private String defaultTitleTemplate = "title/standardTitle.ftl"; // $NON-NLS-1$
+  private String defaultTailTemplate = "title/standardTail.ftl"; // $NON-NLS-1$
 
-	public DefaultWizardResult createWizardResult(String template, String title, String tail, SectionId sectionId)
-	{
-		final SectionRenderable normalResult = createNormalResult(template, sectionId);
-		return createWizardResult(normalResult, title, tail, sectionId);
-	}
+  @Inject
+  @Named("TitleFactory")
+  private WizardExtendedFactory titleFactory;
 
-	public DefaultWizardResult createWizardResult(SectionRenderable renderable, SectionId sectionId)
-	{
-		return createWizardResult(renderable, defaultTitleTemplate, defaultTailTemplate, sectionId);
-	}
+  @Override
+  public SectionRenderable createResult(String template, SectionId sectionId) {
+    return createWizardResult(template, defaultTitleTemplate, defaultTailTemplate, sectionId);
+  }
 
-	public SectionRenderable createNormalResult(String template, SectionId sectionId)
-	{
-		return super.createResult(template, sectionId);
-	}
+  public DefaultWizardResult createWizardResult(
+      String template, String title, String tail, SectionId sectionId) {
+    final SectionRenderable normalResult = createNormalResult(template, sectionId);
+    return createWizardResult(normalResult, title, tail, sectionId);
+  }
 
-	public DefaultWizardResult createWizardResult(SectionRenderable normalResult, String title, String tail,
-		SectionId sectionId)
-	{
-		final SectionRenderable titleResult = titleFactory.createResult(title, sectionId);
-		final SectionRenderable tailResult = titleFactory.createResult(tail, sectionId);
+  public DefaultWizardResult createWizardResult(SectionRenderable renderable, SectionId sectionId) {
+    return createWizardResult(renderable, defaultTitleTemplate, defaultTailTemplate, sectionId);
+  }
 
-		return new DefaultWizardResult(titleResult, normalResult, tailResult);
-	}
+  public SectionRenderable createNormalResult(String template, SectionId sectionId) {
+    return super.createResult(template, sectionId);
+  }
 
-	public String getDefaultTitleTemplate()
-	{
-		return defaultTitleTemplate;
-	}
+  public DefaultWizardResult createWizardResult(
+      SectionRenderable normalResult, String title, String tail, SectionId sectionId) {
+    final SectionRenderable titleResult = titleFactory.createResult(title, sectionId);
+    final SectionRenderable tailResult = titleFactory.createResult(tail, sectionId);
 
-	public void setDefaultTitleTemplate(String defaultTitleTemplate)
-	{
-		this.defaultTitleTemplate = defaultTitleTemplate;
-	}
+    return new DefaultWizardResult(titleResult, normalResult, tailResult);
+  }
 
-	public String getDefaultTailTemplate()
-	{
-		return defaultTailTemplate;
-	}
+  public String getDefaultTitleTemplate() {
+    return defaultTitleTemplate;
+  }
 
-	public void setDefaultTailTemplate(String defaultTailTemplate)
-	{
-		this.defaultTailTemplate = defaultTailTemplate;
-	}
+  public void setDefaultTitleTemplate(String defaultTitleTemplate) {
+    this.defaultTitleTemplate = defaultTitleTemplate;
+  }
 
-	public void setTitleFactory(WizardFreemarkerFactory titleFactory)
-	{
-		this.titleFactory = titleFactory;
-	}
+  public String getDefaultTailTemplate() {
+    return defaultTailTemplate;
+  }
+
+  public void setDefaultTailTemplate(String defaultTailTemplate) {
+    this.defaultTailTemplate = defaultTailTemplate;
+  }
+
+  public void setTitleFactory(WizardFreemarkerFactory titleFactory) {
+    this.titleFactory = titleFactory;
+  }
 }

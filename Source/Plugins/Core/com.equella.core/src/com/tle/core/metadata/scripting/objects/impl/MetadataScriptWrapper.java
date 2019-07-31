@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,35 +29,33 @@ import com.tle.core.services.FileSystemService;
 import com.tle.web.scripting.objects.AbstractScriptWrapper;
 import com.tle.web.scripting.objects.FileScriptingObjectImpl.FileHandleScriptTypeImpl;
 import com.tle.web.scripting.types.AttachmentScriptTypeImpl;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Bind(MetadataScriptObject.class)
 @Singleton
-public class MetadataScriptWrapper extends AbstractScriptWrapper implements MetadataScriptObject
-{
-	@Inject
-	private MetadataService metadataService;
-	@Inject
-	private FileSystemService fileSystemService;
+public class MetadataScriptWrapper extends AbstractScriptWrapper implements MetadataScriptObject {
+  @Inject private MetadataService metadataService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Override
-	public MetadataScriptType getMetadata(FileHandleScriptType f)
-	{
-		MetadataScriptType mdst = new MetadataScriptTypeImpl(metadataService.getMetadata(fileSystemService
-			.getExternalFile(((FileHandleScriptTypeImpl) f).getHandle(), f.getName())));
+  @Override
+  public MetadataScriptType getMetadata(FileHandleScriptType f) {
+    MetadataScriptType mdst =
+        new MetadataScriptTypeImpl(
+            metadataService.getMetadata(
+                fileSystemService.getExternalFile(
+                    ((FileHandleScriptTypeImpl) f).getHandle(), f.getName())));
 
-		return mdst;
-	}
+    return mdst;
+  }
 
-	@Override
-	public MetadataScriptType getMetadata(AttachmentScriptType a)
-	{
-		AttachmentScriptTypeImpl impl = (AttachmentScriptTypeImpl) a;
-		MetadataScriptType mdst = new MetadataScriptTypeImpl(metadataService.getMetadata(impl.getWrapped(),
-			impl.getStagingFile()));
+  @Override
+  public MetadataScriptType getMetadata(AttachmentScriptType a) {
+    AttachmentScriptTypeImpl impl = (AttachmentScriptTypeImpl) a;
+    MetadataScriptType mdst =
+        new MetadataScriptTypeImpl(
+            metadataService.getMetadata(impl.getWrapped(), impl.getStagingFile()));
 
-		return mdst;
-	}
+    return mdst;
+  }
 }

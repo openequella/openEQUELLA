@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,32 @@
 
 package com.tle.common.scripting.service;
 
-import java.util.Map;
-
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
+import com.tle.common.filesystem.handle.FileHandle;
+import java.util.Map;
 
 /**
- * Provided to ScriptObjectContributors to give them some context to create
- * script objects with
- * 
+ * Provided to ScriptObjectContributors to give them some context to create script objects with
+ *
  * @author aholland
  */
-public interface ScriptContextCreationParams
-{
-	ItemPack<Item> getItemPack();
+public interface ScriptContextCreationParams {
+  ItemPack<Item> getItemPack();
 
-	/**
-	 * A map of additional objects for context. These do not get injected into
-	 * script altough the ScriptObjectContributors may wrap them and then inject
-	 * them. Don't return null
-	 * 
-	 * @return
-	 */
-	Map<String, Object> getAttributes();
+  /**
+   * A map of additional objects for context. These do not get injected into script altough the
+   * ScriptObjectContributors may wrap them and then inject them. Don't return null
+   *
+   * @return
+   */
+  Map<String, Object> getAttributes();
 
-	boolean isAnOwner();
+  boolean isAnOwner();
 
-	boolean isModerationAllowed();
+  boolean isModerationAllowed();
 
-	FileHandle getFileHandle();
+  FileHandle getFileHandle();
 
-	boolean isAllowSystemCalls();
+  boolean isAllowSystemCalls();
 }

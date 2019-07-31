@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,27 +21,21 @@ package com.tle.core.remoterepo.sru.service.impl;
 import com.dytech.devlib.PropBagEx;
 import com.tle.core.fedsearch.RemoteRepoSearchResult;
 
-/**
- * @author larry
- */
-public class SruSearchResult extends RemoteRepoSearchResult
-{
-	private static final long serialVersionUID = 1L;
+/** @author larry */
+public class SruSearchResult extends RemoteRepoSearchResult {
+  private static final long serialVersionUID = 1L;
 
-	private PropBagEx importXml;
+  private PropBagEx importXml;
 
-	public SruSearchResult(int index)
-	{
-		super(index);
-	}
+  public SruSearchResult(int index) {
+    super(index);
+  }
 
-	public PropBagEx getImportXml()
-	{
-		return importXml;
-	}
+  public PropBagEx getImportXml() {
+    return importXml;
+  }
 
-	public void setImportXml(PropBagEx importXml)
-	{
-		this.importXml = importXml;
-	}
+  public void setImportXml(PropBagEx importXml) {
+    this.importXml = importXml;
+  }
 }

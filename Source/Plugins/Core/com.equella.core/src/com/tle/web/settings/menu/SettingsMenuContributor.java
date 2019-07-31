@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,72 +18,56 @@
 
 package com.tle.web.settings.menu;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
-import com.tle.core.plugins.PluginService;
-import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.ViewableChildInterface;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
-import com.tle.web.template.RenderNewTemplate;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class SettingsMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(
-		ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(SettingsMenuContributor.class)
-		.url("images/menu-icon-settings.png");
-	private static final String SESSION_KEY = "SETTINGS-MENU";
+public class SettingsMenuContributor extends AbstractUpdatableMenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(SettingsMenuContributor.class)
+          .url("images/menu-icon-settings.png");
+  private static final String SESSION_KEY = "SETTINGS-MENU";
 
-	@Inject
-	private UserSessionService userSessionService;
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    Boolean showSettings = userSessionService.getAttribute(SESSION_KEY);
+    if (showSettings == null) {
+      showSettings = canView(info);
+      userSessionService.setAttribute(SESSION_KEY, showSettings);
+    }
 
+    List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    if (showSettings) {
+      HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
+      hls.setLabel(LABEL_KEY);
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		Boolean showSettings = userSessionService.getAttribute(SESSION_KEY);
-		if( showSettings == null )
-		{
-			showSettings = canView(info);
-			userSessionService.setAttribute(SESSION_KEY, showSettings);
-		}
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "/page/settings");
+      mcs.add(mc);
+    }
 
-		List<MenuContribution> mcs = new ArrayList<MenuContribution>();
-		if( showSettings )
-		{
-			HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
-			hls.setLabel(LABEL_KEY);
+    return mcs;
+  }
 
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "page/settings");
-			mcs.add(mc);
-		}
+  private boolean canView(SectionInfo info) {
+    return SettingsList.anyEditable();
+  }
 
-		return mcs;
-	}
-
-	private boolean canView(SectionInfo info)
-	{
-		return SettingsList.anyEditable();
-	}
-
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public String getSessionKey() {
+    return SESSION_KEY;
+  }
 }

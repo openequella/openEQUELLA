@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,10 @@
 
 package com.tle.common.workflow.node;
 
+import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.Check;
+import com.tle.common.workflow.node.WorkflowItem.MoveLive;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -28,182 +32,161 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-
-import com.tle.beans.entity.LanguageBundle;
-import com.tle.common.Check;
-import com.tle.common.workflow.node.WorkflowItem.MoveLive;
 
 @Entity(name = "WorkflowScript")
 @AccessType("field")
 @DiscriminatorValue("x")
-public class ScriptNode extends WorkflowTreeNode
-{
-	private static final long serialVersionUID = 1;
+public class ScriptNode extends WorkflowTreeNode {
+  private static final long serialVersionUID = 1;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Index(name = "workflowNodeDesc")
-	private LanguageBundle description;
-	private boolean movelive;
-	private boolean moveliveAccept;
-	private boolean proceedNext;
-	@Lob
-	private String script;
-	
-	@ElementCollection
-	@Column(name = "`user`", length = 255)
-	@CollectionTable(name = "wf_script_notify_completion_u", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> usersNotifyOnCompletion;
-	@ElementCollection
-	@Column(name = "`group`", length = 255)
-	@CollectionTable(name = "wf_script_notify_completion_g", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> groupsNotifyOnCompletion;
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @Index(name = "workflowNodeDesc")
+  private LanguageBundle description;
 
-	@ElementCollection
-	@Column(name = "`user`", length = 255)
-	@CollectionTable(name = "wf_script_notify_error_u", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> usersNotifyOnError;
-	@ElementCollection
-	@Column(name = "`group`", length = 255)
-	@CollectionTable(name = "wf_script_notify_error_g", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> groupsNotifyOnError;
+  private boolean movelive;
+  private boolean moveliveAccept;
+  private boolean proceedNext;
+  @Lob private String script;
 
-	private boolean notifyOnCompletion;
-	@Column(name="notifyOnError")
-	private boolean _notifyOnError;
+  @ElementCollection
+  @Column(name = "`user`", length = 255)
+  @CollectionTable(
+      name = "wf_script_notify_completion_u",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> usersNotifyOnCompletion;
 
-	public ScriptNode(final LanguageBundle name)
-	{
-		super(name);
-	}
-	
-	public ScriptNode()
-	{
-		super();
-	}
-	
-	@Override
-	public char getType()
-	{
-		return 'x';
-	}
+  @ElementCollection
+  @Column(name = "`group`", length = 255)
+  @CollectionTable(
+      name = "wf_script_notify_completion_g",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> groupsNotifyOnCompletion;
 
-	@Override
-	public boolean canAddChildren()
-	{
-		return false;
-	}
+  @ElementCollection
+  @Column(name = "`user`", length = 255)
+  @CollectionTable(
+      name = "wf_script_notify_error_u",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> usersNotifyOnError;
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return false;
-	}
-	
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  @ElementCollection
+  @Column(name = "`group`", length = 255)
+  @CollectionTable(
+      name = "wf_script_notify_error_g",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> groupsNotifyOnError;
 
-	public void setDescription(final LanguageBundle description)
-	{
-		this.description = description;
-	}
-	
-	public MoveLive getMovelive()
-	{
-		if( !movelive )
-		{
-			return MoveLive.NO;
-		}
-		return moveliveAccept ? MoveLive.ACCEPTED : MoveLive.ARRIVAL;
-	}
+  private boolean notifyOnCompletion;
 
-	public void setMovelive(MoveLive movelive)
-	{
-		this.movelive = movelive != MoveLive.NO;
-		this.moveliveAccept = (movelive == MoveLive.ACCEPTED);
-	}
+  @Column(name = "notifyOnError")
+  private boolean _notifyOnError;
 
-	public String getScript()
-	{
-		return script;
-	}
+  public ScriptNode(final LanguageBundle name) {
+    super(name);
+  }
 
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  public ScriptNode() {
+    super();
+  }
 
-	public boolean isProceedNext()
-	{
-		return proceedNext;
-	}
+  @Override
+  public char getType() {
+    return 'x';
+  }
 
-	public void setProceedNext(final boolean proceedNext)
-	{
-		this.proceedNext = proceedNext;
-	}
+  @Override
+  public boolean canAddChildren() {
+    return false;
+  }
 
-	public boolean isNotifyOnCompletion()
-	{
-		return notifyOnCompletion;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return false;
+  }
 
-	public void setNotifyOnCompletion(boolean notifyOnCompletion)
-	{
-		this.notifyOnCompletion = notifyOnCompletion;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	public Set<String> getUsersNotifyOnCompletion()
-	{
-		return usersNotifyOnCompletion;
-	}
+  public void setDescription(final LanguageBundle description) {
+    this.description = description;
+  }
 
-	public void setUsersNotifyOnCompletion(Set<String> usersNotifyOnCompletion)
-	{
-		this.usersNotifyOnCompletion = usersNotifyOnCompletion;
-	}
+  public MoveLive getMovelive() {
+    if (!movelive) {
+      return MoveLive.NO;
+    }
+    return moveliveAccept ? MoveLive.ACCEPTED : MoveLive.ARRIVAL;
+  }
 
-	public Set<String> getGroupsNotifyOnCompletion()
-	{
-		return groupsNotifyOnCompletion;
-	}
+  public void setMovelive(MoveLive movelive) {
+    this.movelive = movelive != MoveLive.NO;
+    this.moveliveAccept = (movelive == MoveLive.ACCEPTED);
+  }
 
-	public void setGroupsNotifyOnCompletion(Set<String> groupsNotifyOnCompletion)
-	{
-		this.groupsNotifyOnCompletion = groupsNotifyOnCompletion;
-	}
+  public String getScript() {
+    return script;
+  }
 
-	public Set<String> getUsersNotifyOnError()
-	{
-		return usersNotifyOnError;
-	}
+  public void setScript(String script) {
+    this.script = script;
+  }
 
-	public void setUsersNotifyOnError(Set<String> usersNotifyOnError)
-	{
-		this.usersNotifyOnError = usersNotifyOnError;
-	}
+  public boolean isProceedNext() {
+    return proceedNext;
+  }
 
-	public Set<String> getGroupsNotifyOnError()
-	{
-		return groupsNotifyOnError;
-	}
+  public void setProceedNext(final boolean proceedNext) {
+    this.proceedNext = proceedNext;
+  }
 
-	public void setGroupsNotifyOnError(Set<String> groupsNotifyOnError)
-	{
-		this.groupsNotifyOnError = groupsNotifyOnError;
-	}
+  public boolean isNotifyOnCompletion() {
+    return notifyOnCompletion;
+  }
 
-	public boolean isNotifyOnCompletionSpecified()
-	{
-		return (!Check.isEmpty(usersNotifyOnCompletion) || !Check.isEmpty(groupsNotifyOnCompletion));
-	}
+  public void setNotifyOnCompletion(boolean notifyOnCompletion) {
+    this.notifyOnCompletion = notifyOnCompletion;
+  }
 
-	public boolean isNotifyNoErrorSpecified()
-	{
-		return (!Check.isEmpty(usersNotifyOnError) || !Check.isEmpty(groupsNotifyOnError));
-	}
+  public Set<String> getUsersNotifyOnCompletion() {
+    return usersNotifyOnCompletion;
+  }
+
+  public void setUsersNotifyOnCompletion(Set<String> usersNotifyOnCompletion) {
+    this.usersNotifyOnCompletion = usersNotifyOnCompletion;
+  }
+
+  public Set<String> getGroupsNotifyOnCompletion() {
+    return groupsNotifyOnCompletion;
+  }
+
+  public void setGroupsNotifyOnCompletion(Set<String> groupsNotifyOnCompletion) {
+    this.groupsNotifyOnCompletion = groupsNotifyOnCompletion;
+  }
+
+  public Set<String> getUsersNotifyOnError() {
+    return usersNotifyOnError;
+  }
+
+  public void setUsersNotifyOnError(Set<String> usersNotifyOnError) {
+    this.usersNotifyOnError = usersNotifyOnError;
+  }
+
+  public Set<String> getGroupsNotifyOnError() {
+    return groupsNotifyOnError;
+  }
+
+  public void setGroupsNotifyOnError(Set<String> groupsNotifyOnError) {
+    this.groupsNotifyOnError = groupsNotifyOnError;
+  }
+
+  public boolean isNotifyOnCompletionSpecified() {
+    return (!Check.isEmpty(usersNotifyOnCompletion) || !Check.isEmpty(groupsNotifyOnCompletion));
+  }
+
+  public boolean isNotifyNoErrorSpecified() {
+    return (!Check.isEmpty(usersNotifyOnError) || !Check.isEmpty(groupsNotifyOnError));
+  }
 }

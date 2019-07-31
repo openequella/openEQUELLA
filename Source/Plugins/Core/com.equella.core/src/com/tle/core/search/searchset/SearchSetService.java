@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,25 @@
 
 package com.tle.core.search.searchset;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.search.searchset.virtualisation.VirtualisationHelper;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-public interface SearchSetService
-{
-	<T> List<VirtualisableAndValue<T>> expandSearchSets(Collection<T> objs, Map<String, String> mappedValues,
-		Collection<String> collectionUuids, VirtualisationHelper<T> helper);
+public interface SearchSetService {
+  <T> List<VirtualisableAndValue<T>> expandSearchSets(
+      Collection<T> objs,
+      Map<String, String> mappedValues,
+      Collection<String> collectionUuids,
+      VirtualisationHelper<T> helper);
 
-	String getFreetextQuery(SearchSet topic);
+  String getFreetextQuery(SearchSet topic);
 
-	FreeTextBooleanQuery getSearchClauses(final SearchSet searchSet, Map<String, String> virtualisationValues);
+  FreeTextBooleanQuery getSearchClauses(
+      final SearchSet searchSet, Map<String, String> virtualisationValues);
 
-	FreeTextBooleanQuery getSearchClausesNoVirtualisation(final SearchSet searchSet);
+  FreeTextBooleanQuery getSearchClausesNoVirtualisation(final SearchSet searchSet);
 }

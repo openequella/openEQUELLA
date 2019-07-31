@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,36 +24,40 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.report.Report;
 import com.tle.core.reporting.ReportingService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
-
 import javax.inject.Inject;
 
-public class ReportEditorImpl  extends AbstractBaseEntityEditor<Report, ReportBean> implements ReportEditor {
+public class ReportEditorImpl extends AbstractBaseEntityEditor<Report, ReportBean>
+    implements ReportEditor {
 
-    @Inject
-    private ReportingService reportService;
+  @Inject private ReportingService reportService;
 
-    @AssistedInject
-    public ReportEditorImpl(@Assisted Report report, @Assisted("stagingUuid") @Nullable String stagingUuid,
-                            @Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
-                            @Assisted("importing") boolean importing) {
-        super(report, stagingUuid, lockId, editing, importing);
-    }
+  @AssistedInject
+  public ReportEditorImpl(
+      @Assisted Report report,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("lockId") @Nullable String lockId,
+      @Assisted("editing") boolean editing,
+      @Assisted("importing") boolean importing) {
+    super(report, stagingUuid, lockId, editing, importing);
+  }
 
-    @AssistedInject
-    public ReportEditorImpl(@Assisted Report report, @Assisted("stagingUuid") @Nullable String stagingUuid,
-                            @Assisted("importing") boolean importing) {
-        this(report, stagingUuid, null, false, importing);
-    }
+  @AssistedInject
+  public ReportEditorImpl(
+      @Assisted Report report,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("importing") boolean importing) {
+    this(report, stagingUuid, null, false, importing);
+  }
 
-    @Override
-    public void copyCustomFields(ReportBean bean) {
-        super.copyCustomFields(bean);
-        entity.setFilename(bean.getFilename());
-        entity.setHideReport(bean.isHideReport());
-    }
+  @Override
+  public void copyCustomFields(ReportBean bean) {
+    super.copyCustomFields(bean);
+    entity.setFilename(bean.getFilename());
+    entity.setHideReport(bean.isHideReport());
+  }
 
-    @Override
-    protected ReportingService getEntityService() {
-        return reportService;
-    }
+  @Override
+  protected ReportingService getEntityService() {
+    return reportService;
+  }
 }

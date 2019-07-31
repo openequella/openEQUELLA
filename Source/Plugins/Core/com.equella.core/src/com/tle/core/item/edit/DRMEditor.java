@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,53 +18,51 @@
 
 package com.tle.core.item.edit;
 
-import java.util.Date;
-import java.util.List;
-
 import com.tle.beans.item.DrmSettings.Party;
 import com.tle.beans.item.DrmSettings.Usage;
 import com.tle.common.Triple;
+import java.util.Date;
+import java.util.List;
 
-public interface DRMEditor
-{
-	void editDrmPageUuid(String drmPageUuid);
+public interface DRMEditor {
+  void editDrmPageUuid(String drmPageUuid);
 
-	void editHideLicencesFromOwner(boolean val);
+  void editHideLicencesFromOwner(boolean val);
 
-	void editShowLicenceCount(boolean val);
+  void editShowLicenceCount(boolean val);
 
-	void editAllowSummary(boolean val);
+  void editAllowSummary(boolean val);
 
-	void editOwnerMustAccept(boolean val);
+  void editOwnerMustAccept(boolean val);
 
-	void editStudentsMustAcceptIfInCompilation(boolean val);
+  void editStudentsMustAcceptIfInCompilation(boolean val);
 
-	void editPreviewAllowed(boolean val);
+  void editPreviewAllowed(boolean val);
 
-	void editAttributionOfOwnership(boolean val);
+  void editAttributionOfOwnership(boolean val);
 
-	void editEnforceAttribution(boolean val);
+  void editEnforceAttribution(boolean val);
 
-	void editContentOwners(List<Party> parties);
+  void editContentOwners(List<Party> parties);
 
-	void editUsages(List<Usage> usages);
+  void editUsages(List<Usage> usages);
 
-	void editTermsOfAgreement(String terms);
+  void editTermsOfAgreement(String terms);
 
-	void editRequireAcceptanceFrom(String expr);
+  void editRequireAcceptanceFrom(String expr);
 
-	void editNetworks(List<Triple<String, String, String>> networks);
+  void editNetworks(List<Triple<String, String, String>> networks);
 
-	void editDateRange(Date startDate, Date endDate);
+  void editDateRange(Date startDate, Date endDate);
 
-	void editUsersExpression(List<String> users);
+  void editUsersExpression(List<String> users);
 
-	void editEducationalSector(boolean val);
+  void editEducationalSector(boolean val);
 
-	void editMaximumUsage(int val);
+  void editMaximumUsage(int val);
 
-	void remove();
+  void remove();
 
-	// Not editable
-	// private List<DrmAcceptanceBean> acceptances;
+  // Not editable
+  // private List<DrmAcceptanceBean> acceptances;
 }

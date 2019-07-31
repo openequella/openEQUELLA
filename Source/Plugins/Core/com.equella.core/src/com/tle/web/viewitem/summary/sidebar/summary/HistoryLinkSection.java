@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,40 +28,33 @@ import com.tle.web.viewitem.summary.content.HistoryContentSection;
 import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-public class HistoryLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("summary.sidebar.summary.history.title")
-	private static Label LINK_LABEL;
+public class HistoryLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("summary.sidebar.summary.history.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private HistoryContentSection historyContentSection;
+  @TreeLookup private HistoryContentSection historyContentSection;
 
-	public HistoryLinkSection()
-	{
-		setShowForPreview(true);
-	}
+  public HistoryLinkSection() {
+    setShowForPreview(true);
+  }
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return getItemInfo(info).hasPrivilege(HistoryContentSection.VIEW_PRIVILEGE);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return getItemInfo(info).hasPrivilege(HistoryContentSection.VIEW_PRIVILEGE);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return historyContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return historyContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

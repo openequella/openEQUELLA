@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,50 +18,43 @@
 
 package com.tle.admin.gui.common;
 
-import javax.swing.filechooser.FileFilter;
-
 import com.dytech.gui.file.JFileSelector;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.i18n.CurrentLocale;
+import javax.swing.filechooser.FileFilter;
 
-/**
- * @author aholland
- */
-public class FileSelector extends JFileSelector
-{
-	/**
-	 * This is why things should NEVER be made private unless you have a very
-	 * good reason to. This pisses me off greatly.
-	 */
-	protected FileFilter protectedFileFilter;
-	protected final String dialogTitle;
+/** @author aholland */
+public class FileSelector extends JFileSelector {
+  /**
+   * This is why things should NEVER be made private unless you have a very good reason to. This
+   * pisses me off greatly.
+   */
+  protected FileFilter protectedFileFilter;
 
-	public FileSelector(String dialogTitle)
-	{
-		this(CurrentLocale.get("com.tle.admin.gui.common.browse"), dialogTitle); //$NON-NLS-1$
-	}
+  protected final String dialogTitle;
 
-	public FileSelector(String browseButtonText, String dialogTitle)
-	{
-		super();
-		this.dialogTitle = dialogTitle;
-		button.setText(browseButtonText);
-	}
+  public FileSelector(String dialogTitle) {
+    this(CurrentLocale.get("com.tle.admin.gui.common.browse"), dialogTitle); // $NON-NLS-1$
+  }
 
-	@Override
-	protected void buttonSelected()
-	{
-		DialogResult result = DialogUtils.openDialog(getParent(), dialogTitle, protectedFileFilter, null);
-		if( result.isOkayed() )
-		{
-			setSelectedFile(result.getFile());
-		}
-	}
+  public FileSelector(String browseButtonText, String dialogTitle) {
+    super();
+    this.dialogTitle = dialogTitle;
+    button.setText(browseButtonText);
+  }
 
-	@Override
-	public void setFileFilter(FileFilter filter)
-	{
-		protectedFileFilter = filter;
-	}
+  @Override
+  protected void buttonSelected() {
+    DialogResult result =
+        DialogUtils.openDialog(getParent(), dialogTitle, protectedFileFilter, null);
+    if (result.isOkayed()) {
+      setSelectedFile(result.getFile());
+    }
+  }
+
+  @Override
+  public void setFileFilter(FileFilter filter) {
+    protectedFileFilter = filter;
+  }
 }

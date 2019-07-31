@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,65 +20,51 @@ package com.tle.common.i18n.beans;
 
 import java.io.Serializable;
 
-/**
- * @author Aaron
- */
-public class LanguageStringBean implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+/** @author Aaron */
+public class LanguageStringBean implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private long id;
-	private String locale;
-	private int priority;
-	private String text;
+  private long id;
+  private String locale;
+  private int priority;
+  private String text;
 
-	public LanguageStringBean()
-	{
-	}
+  public LanguageStringBean() {}
 
-	public LanguageStringBean(String locale, String text)
-	{
-		this.locale = locale;
-		this.text = text;
-	}
+  public LanguageStringBean(String locale, String text) {
+    this.locale = locale;
+    this.text = text;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public String getLocale()
-	{
-		return locale;
-	}
+  public String getLocale() {
+    return locale;
+  }
 
-	public void setLocale(String locale)
-	{
-		this.locale = locale;
-	}
+  public void setLocale(String locale) {
+    this.locale = locale;
+  }
 
-	public int getPriority()
-	{
-		return priority;
-	}
+  public int getPriority() {
+    return priority;
+  }
 
-	public void setPriority(int priority)
-	{
-		this.priority = priority;
-	}
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-	public String getText()
-	{
-		return text;
-	}
+  public String getText() {
+    return text;
+  }
 
-	public void setText(String text)
-	{
-		this.text = text;
-	}
+  public void setText(String text) {
+    this.text = text;
+  }
 }

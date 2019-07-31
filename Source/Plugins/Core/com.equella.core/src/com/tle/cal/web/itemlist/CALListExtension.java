@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.cal.web.itemlist;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.cal.CALHolding;
 import com.tle.beans.cal.CALPortion;
 import com.tle.beans.cal.CALSection;
@@ -27,29 +26,27 @@ import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.web.copyright.itemlist.AbstractCitationGenerator;
 import com.tle.web.sections.SectionTree;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class CALListExtension extends AbstractCitationGenerator<CALHolding, CALPortion, CALSection>
-{
-	@Inject
-	private CALService calService;
+public class CALListExtension
+    extends AbstractCitationGenerator<CALHolding, CALPortion, CALSection> {
+  @Inject private CALService calService;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    // Nothing to do
+  }
 
-	@Override
-	public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService()
-	{
-		return calService;
-	}
+  @Override
+  public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService() {
+    return calService;
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

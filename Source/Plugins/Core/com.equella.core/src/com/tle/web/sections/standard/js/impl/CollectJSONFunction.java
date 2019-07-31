@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.sections.standard.js.impl;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -39,68 +38,64 @@ import com.tle.web.sections.js.generic.statement.ReturnStatement;
 import com.tle.web.sections.js.generic.statement.StatementBlock;
 import com.tle.web.sections.standard.js.JSONComponentMappings;
 import com.tle.web.sections.standard.js.modules.JSONModule;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @NonNullByDefault
-public class CollectJSONFunction extends AbstractCallable implements JSAssignable, FunctionDefinition
-{
-	private Map<JSPropertyExpression, JSExpression> mappings = new LinkedHashMap<JSPropertyExpression, JSExpression>();
-	private final String name;
+public class CollectJSONFunction extends AbstractCallable
+    implements JSAssignable, FunctionDefinition {
+  private Map<JSPropertyExpression, JSExpression> mappings =
+      new LinkedHashMap<JSPropertyExpression, JSExpression>();
+  private final String name;
 
-	public CollectJSONFunction(String name, JSONComponentMappings jsonMap)
-	{
-		this.name = name;
-		mappings = jsonMap.createGetMappings();
-	}
+  public CollectJSONFunction(String name, JSONComponentMappings jsonMap) {
+    this.name = name;
+    mappings = jsonMap.createGetMappings();
+  }
 
-	@Override
-	protected String getCallExpression(RenderContext info, JSExpression[] params)
-	{
-		return name + "()"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getCallExpression(RenderContext info, JSExpression[] params) {
+    return name + "()"; // $NON-NLS-1$
+  }
 
-	@Override
-	public int getNumberOfParams(@Nullable RenderContext context)
-	{
-		return 0;
-	}
+  @Override
+  public int getNumberOfParams(@Nullable RenderContext context) {
+    return 0;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.addStatements(new FunctionDefinitionStatement(this));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.addStatements(new FunctionDefinitionStatement(this));
+  }
 
-	@Override
-	public JSStatements createFunctionBody(@Nullable RenderContext context, JSExpression[] params)
-	{
-		StatementBlock statementBlock = new StatementBlock();
-		statementBlock.setSeperate(true);
-		ScriptVariable newObj = new ScriptVariable("obj"); //$NON-NLS-1$
-		statementBlock.addStatements(new DeclarationStatement(newObj, new ScriptExpression("{}"))); //$NON-NLS-1$
-		for( JSPropertyExpression key : mappings.keySet() )
-		{
-			statementBlock.addStatements(new AssignStatement(new CombinedExpression(newObj, key), mappings.get(key)));
-		}
-		statementBlock.addStatements(new ReturnStatement(JSONModule.getStringifyExpression(newObj)));
-		return statementBlock;
-	}
+  @Override
+  public JSStatements createFunctionBody(@Nullable RenderContext context, JSExpression[] params) {
+    StatementBlock statementBlock = new StatementBlock();
+    statementBlock.setSeperate(true);
+    ScriptVariable newObj = new ScriptVariable("obj"); // $NON-NLS-1$
+    statementBlock.addStatements(
+        new DeclarationStatement(newObj, new ScriptExpression("{}"))); // $NON-NLS-1$
+    for (JSPropertyExpression key : mappings.keySet()) {
+      statementBlock.addStatements(
+          new AssignStatement(new CombinedExpression(newObj, key), mappings.get(key)));
+    }
+    statementBlock.addStatements(new ReturnStatement(JSONModule.getStringifyExpression(newObj)));
+    return statementBlock;
+  }
 
-	@Nullable
-	@Override
-	public JSExpression[] getFunctionParams(@Nullable RenderContext context)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public JSExpression[] getFunctionParams(@Nullable RenderContext context) {
+    return null;
+  }
 
-	@Override
-	public String getFunctionName(@Nullable RenderContext context)
-	{
-		return name;
-	}
+  @Override
+  public String getFunctionName(@Nullable RenderContext context) {
+    return name;
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return name;
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return name;
+  }
 }

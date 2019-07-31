@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,17 +19,15 @@
 package com.tle.core.xml.service.impl;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
-
 import java.sql.Timestamp;
 
 public class OldSqlTimestampConverter extends AbstractSingleValueConverter {
 
-    public boolean canConvert(Class type) {
-        return type.equals(Timestamp.class);
-    }
+  public boolean canConvert(Class type) {
+    return type.equals(Timestamp.class);
+  }
 
-    public Object fromString(String str) {
-        return Timestamp.valueOf(str);
-    }
-
+  public Object fromString(String str) {
+    return Timestamp.valueOf(str);
+  }
 }

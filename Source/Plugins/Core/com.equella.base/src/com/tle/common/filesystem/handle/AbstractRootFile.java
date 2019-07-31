@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,55 +21,43 @@ package com.tle.common.filesystem.handle;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @NonNullByDefault
-public abstract class AbstractRootFile implements FileHandle
-{
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractRootFile implements FileHandle {
+  private static final long serialVersionUID = 1L;
 
-	private final String path;
-	@Nullable
-	private String filestoreId;
-	@Nullable
-	private String cachedAbsolutePath;
+  private final String path;
+  @Nullable private String filestoreId;
+  @Nullable private String cachedAbsolutePath;
 
-	protected AbstractRootFile(final String path)
-	{
-		this.path = path;
-	}
+  protected AbstractRootFile(final String path) {
+    this.path = path;
+  }
 
-	@Override
-	public final String getAbsolutePath()
-	{
-		if( cachedAbsolutePath == null )
-		{
-			cachedAbsolutePath = createAbsolutePath();
-		}
-		return cachedAbsolutePath;
-	}
+  @Override
+  public final String getAbsolutePath() {
+    if (cachedAbsolutePath == null) {
+      cachedAbsolutePath = createAbsolutePath();
+    }
+    return cachedAbsolutePath;
+  }
 
-	protected String createAbsolutePath()
-	{
-		return getMyPathComponent();
-	}
+  protected String createAbsolutePath() {
+    return getMyPathComponent();
+  }
 
-	@Override
-	public String getMyPathComponent()
-	{
-		return path;
-	}
+  @Override
+  public String getMyPathComponent() {
+    return path;
+  }
 
-	@Nullable
-	@Override
-	public String getFilestoreId()
-	{
-		return filestoreId;
-	}
+  @Nullable
+  @Override
+  public String getFilestoreId() {
+    return filestoreId;
+  }
 
-	public void setFilestoreId(@Nullable String filestoreId)
-	{
-		this.filestoreId = filestoreId;
-	}
+  public void setFilestoreId(@Nullable String filestoreId) {
+    this.filestoreId = filestoreId;
+  }
 }

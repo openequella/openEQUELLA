@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -36,79 +38,67 @@ import com.tle.web.workflow.manage.FilterByWorkflowSection;
 import com.tle.web.workflow.manage.FilterByWorkflowTaskSection;
 
 @SuppressWarnings("nls")
-public class ItemAdminModule extends AbstractSearchModule
-{
-	@Override
-	public NodeProvider getRootNode()
-	{
-		NodeProvider node = node(RootItemAdminSection.class);
-		node.innerChild(ItemAdminWhereSection.class);
-		return node;
-	}
+public class ItemAdminModule extends AbstractSearchModule {
+  @Override
+  public NodeProvider getRootNode() {
+    NodeProvider node = node(RootItemAdminSection.class);
+    node.innerChild(ItemAdminWhereSection.class);
+    return node;
+  }
 
-	@Override
-	public NodeProvider getQueryNode()
-	{
-		return node(ItemAdminQuerySection.class);
-	}
+  @Override
+  public NodeProvider getQueryNode() {
+    return node(ItemAdminQuerySection.class);
+  }
 
-	@Override
-	public NodeProvider getResultsNode()
-	{
-		return node(ItemAdminSearchResultsSection.class);
-	}
+  @Override
+  public NodeProvider getResultsNode() {
+    return node(ItemAdminSearchResultsSection.class);
+  }
 
-	@Override
-	protected void addQueryActions(NodeProvider node)
-	{
-		node.child(ItemAdminFavouriteSearchAction.class);
-	}
+  @Override
+  protected void addQueryActions(NodeProvider node) {
+    node.child(ItemAdminFavouriteSearchAction.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(SortOptionsSection.class);
-		node.child(new NodeProvider(FilterByOwnerSection.class)
-		{
-			@Override
-			protected void customize(Section section)
-			{
-				FilterByOwnerSection fbos = (FilterByOwnerSection) section;
-				fbos.setShowOrphaned(true);
-			}
-		});
-		node.child(FilterByDateRangeSection.class);
-		node.child(ItemAdminFilterByItemStatusSection.class);
-		node.child(FilterByMimeTypeSection.class);
-		node.child(StandardShareSearchQuerySection.class);
-		node.child(FilterByBadUrlSection.class);
-		node.child(FilterByWorkflowSection.class);
-		node.child(FilterByWorkflowTaskSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(SortOptionsSection.class);
+    node.child(
+        new NodeProvider(FilterByOwnerSection.class) {
+          @Override
+          protected void customize(Section section) {
+            FilterByOwnerSection fbos = (FilterByOwnerSection) section;
+            fbos.setShowOrphaned(true);
+          }
+        });
+    node.child(FilterByDateRangeSection.class);
+    node.child(ItemAdminFilterByItemStatusSection.class);
+    node.child(FilterByMimeTypeSection.class);
+    node.child(StandardShareSearchQuerySection.class);
+    node.child(FilterByBadUrlSection.class);
+    node.child(FilterByWorkflowSection.class);
+    node.child(FilterByWorkflowTaskSection.class);
+  }
 
-	@Override
-	protected void addActions(NodeProvider actions)
-	{
-		actions.child(ItemAdminSelectionSection.class);
-	}
+  @Override
+  protected void addActions(NodeProvider actions) {
+    actions.child(ItemAdminSelectionSection.class);
+  }
 
-	@Override
-	protected NodeProvider getPagingNode()
-	{
-		return new NodeProvider(PagingSection.class)
-		{
-			@Override
-			protected void customize(Section section)
-			{
-				PagingSection<?, ?> ps = (PagingSection<?, ?>) section;
-				ps.setSearchAttachments(true);
-			}
-		};
-	}
+  @Override
+  protected NodeProvider getPagingNode() {
+    return new NodeProvider(PagingSection.class) {
+      @Override
+      protected void customize(Section section) {
+        PagingSection<?, ?> ps = (PagingSection<?, ?>) section;
+        ps.setSearchAttachments(true);
+      }
+    };
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/itemadmin";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/itemadmin";
+  }
 }

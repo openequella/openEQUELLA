@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,35 +26,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class OrderedPathMapper<T> extends PathMapper<T>
-{
-	private Set<T> alwaysSet;
-	private Comparator<? super T> comparator;
+public class OrderedPathMapper<T> extends PathMapper<T> {
+  private Set<T> alwaysSet;
+  private Comparator<? super T> comparator;
 
-	public OrderedPathMapper(Comparator<? super T> comparator)
-	{
-		alwaysSet = new HashSet<T>();
-		this.comparator = comparator;
-	}
+  public OrderedPathMapper(Comparator<? super T> comparator) {
+    alwaysSet = new HashSet<T>();
+    this.comparator = comparator;
+  }
 
-	@Override
-	public void addMapping(Type type, String path, T object)
-	{
-		if( type == Type.ALWAYS )
-		{
-			alwaysSet.add(object);
-		}
-		else
-		{
-			throw new UnsupportedOperationException();
-		}
-	}
+  @Override
+  public void addMapping(Type type, String path, T object) {
+    if (type == Type.ALWAYS) {
+      alwaysSet.add(object);
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
 
-	public Collection<T> getMatchingFilters(String path, String mimeType)
-	{
-		List<T> results = new ArrayList<T>();
-		results.addAll(alwaysSet);
-		Collections.sort(results, comparator);
-		return results;
-	}
+  public Collection<T> getMatchingFilters(String path, String mimeType) {
+    List<T> results = new ArrayList<T>();
+    results.addAll(alwaysSet);
+    Collections.sort(results, comparator);
+    return results;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,34 +26,25 @@ import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.ParametersEventListener;
 
 @Bind
-public class ExternalErrorSection extends DefaultErrorSection implements ParametersEventListener
-{
-	@SuppressWarnings("nls")
-	@Override
-	public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception
-	{
-		Throwable ex = null;
-		String method = event.getParameter("method", false);
-		if( method != null )
-		{
-			if( "notFound".equals(method) )
-			{
-				ex = new NotFoundException("404", true);
-			}
-			else if( "accessDenied".equals(method) )
-			{
-				ex = new AccessDeniedException("403");
-			}
-			else if( "throwable".equals(method) )
-			{
-				ex = (Throwable) info.getRequest().getAttribute("javax.servlet.error.exception");
-			}
-			if( ex != null )
-			{
-				info.setAttribute(SectionInfo.KEY_ORIGINAL_EXCEPTION, ex);
-				info.setAttribute(SectionInfo.KEY_MATCHED_EXCEPTION, ex);
-				info.preventGET();
-			}
-		}
-	}
+public class ExternalErrorSection extends DefaultErrorSection implements ParametersEventListener {
+  @SuppressWarnings("nls")
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+    Throwable ex = null;
+    String method = event.getParameter("method", false);
+    if (method != null) {
+      if ("notFound".equals(method)) {
+        ex = new NotFoundException("404", true);
+      } else if ("accessDenied".equals(method)) {
+        ex = new AccessDeniedException("403");
+      } else if ("throwable".equals(method)) {
+        ex = (Throwable) info.getRequest().getAttribute("javax.servlet.error.exception");
+      }
+      if (ex != null) {
+        info.setAttribute(SectionInfo.KEY_ORIGINAL_EXCEPTION, ex);
+        info.setAttribute(SectionInfo.KEY_MATCHED_EXCEPTION, ex);
+        info.preventGET();
+      }
+    }
+  }
 }

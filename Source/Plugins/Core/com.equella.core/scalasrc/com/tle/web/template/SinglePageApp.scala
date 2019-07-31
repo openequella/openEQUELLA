@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,8 +31,7 @@ import javax.servlet.http.HttpServletRequest
 import scala.collection.JavaConverters._
 
 @Bind
-class SinglePageAppServlet extends SectionsServlet
-{
+class SinglePageAppServlet extends SectionsServlet {
   val tree = LegacyGuice.treeRegistry.getTreeForPath("/newpage.do")
 
   override def lookupTree(request: HttpServletRequest): SectionTree = tree
@@ -38,13 +39,18 @@ class SinglePageAppServlet extends SectionsServlet
   override def getServletPath(request: HttpServletRequest): String = {
     request.getServletPath match {
       case "/selection" => NewSelectionPage.setupSelection(request)
-      case o => ()
+      case o            => ()
     }
     request.getServletPath + request.getPathInfo
   }
 
   override val defaultAttributes = {
-    super.defaultAttributes().asScala.toMap.updated(RenderNewTemplate.NewLayoutKey, java.lang.Boolean.valueOf(true)).asJava
+    super
+      .defaultAttributes()
+      .asScala
+      .toMap
+      .updated(RenderNewTemplate.NewLayoutKey, java.lang.Boolean.valueOf(true))
+      .asJava
   }
 }
 

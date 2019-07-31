@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,38 +21,30 @@ package com.tle.core.healthcheck.listeners;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.events.listeners.ApplicationListener;
 
-public interface ServiceCheckRequestListener extends ApplicationListener
-{
-	void checkServiceRequest(CheckServiceRequestEvent request);
+public interface ServiceCheckRequestListener extends ApplicationListener {
+  void checkServiceRequest(CheckServiceRequestEvent request);
 
-	public static class CheckServiceRequestEvent extends ApplicationEvent<ServiceCheckRequestListener>
-	{
-		String requetserNodeId;
+  public static class CheckServiceRequestEvent
+      extends ApplicationEvent<ServiceCheckRequestListener> {
+    String requetserNodeId;
 
-		public CheckServiceRequestEvent(String requesterNodeId)
-		{
-			super(PostTo.POST_TO_ALL_CLUSTER_NODES);
-			this.requetserNodeId = requesterNodeId;
-		}
+    public CheckServiceRequestEvent(String requesterNodeId) {
+      super(PostTo.POST_TO_ALL_CLUSTER_NODES);
+      this.requetserNodeId = requesterNodeId;
+    }
 
-		@Override
-		public Class<ServiceCheckRequestListener> getListener()
-		{
-			return ServiceCheckRequestListener.class;
-		}
+    @Override
+    public Class<ServiceCheckRequestListener> getListener() {
+      return ServiceCheckRequestListener.class;
+    }
 
-		@Override
-		public void postEvent(ServiceCheckRequestListener listener)
-		{
-			listener.checkServiceRequest(this);
-		}
+    @Override
+    public void postEvent(ServiceCheckRequestListener listener) {
+      listener.checkServiceRequest(this);
+    }
 
-		public String getRequetserNodeId()
-		{
-			return requetserNodeId;
-		}
-
-
-
-	}
+    public String getRequetserNodeId() {
+      return requetserNodeId;
+    }
+  }
 }

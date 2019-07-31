@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,75 +18,64 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class BrightspaceWhoAmIUser
-{
-	@JsonProperty("Identifier")
-	private String identifier;
-	@JsonProperty("FirstName")
-	private String firstName;
-	@JsonProperty("LastName")
-	private String lastName;
-	@JsonProperty("UniqueName")
-	private String uniqueName;
-	@JsonProperty("ProfileIdentifier")
-	private String profileIdentifier;
+public class BrightspaceWhoAmIUser {
+  @JsonProperty("Identifier")
+  private String identifier;
 
-	public String getIdentifier()
-	{
-		return identifier;
-	}
+  @JsonProperty("FirstName")
+  private String firstName;
 
-	public void setIdentifier(String identifier)
-	{
-		this.identifier = identifier;
-	}
+  @JsonProperty("LastName")
+  private String lastName;
 
-	public String getFirstName()
-	{
-		return firstName;
-	}
+  @JsonProperty("UniqueName")
+  private String uniqueName;
 
-	public void setFirstName(String firstName)
-	{
-		this.firstName = firstName;
-	}
+  @JsonProperty("ProfileIdentifier")
+  private String profileIdentifier;
 
-	public String getLastName()
-	{
-		return lastName;
-	}
+  public String getIdentifier() {
+    return identifier;
+  }
 
-	public void setLastName(String lastName)
-	{
-		this.lastName = lastName;
-	}
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
 
-	public String getUniqueName()
-	{
-		return uniqueName;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public void setUniqueName(String uniqueName)
-	{
-		this.uniqueName = uniqueName;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public String getProfileIdentifier()
-	{
-		return profileIdentifier;
-	}
+  public String getLastName() {
+    return lastName;
+  }
 
-	public void setProfileIdentifier(String profileIdentifier)
-	{
-		this.profileIdentifier = profileIdentifier;
-	}
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getUniqueName() {
+    return uniqueName;
+  }
+
+  public void setUniqueName(String uniqueName) {
+    this.uniqueName = uniqueName;
+  }
+
+  public String getProfileIdentifier() {
+    return profileIdentifier;
+  }
+
+  public void setProfileIdentifier(String profileIdentifier) {
+    this.profileIdentifier = profileIdentifier;
+  }
 }

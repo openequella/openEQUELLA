@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,52 @@
 
 package com.dytech.edge.admin.wizard;
 
-import java.awt.Component;
-
-import javax.swing.JOptionPane;
-
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.admin.wizard.walkers.FindOtherPagesWithTarget;
 import com.tle.admin.schema.TargetListener;
 import com.tle.common.i18n.CurrentLocale;
+import java.awt.Component;
+import javax.swing.JOptionPane;
 
-public class CheckDuplicateTargetsHandler implements TargetListener
-{
-	private final Component parent;
-	private final Control control;
+public class CheckDuplicateTargetsHandler implements TargetListener {
+  private final Component parent;
+  private final Control control;
 
-	public CheckDuplicateTargetsHandler(Component parent, Control control)
-	{
-		this.parent = parent;
-		this.control = control;
-	}
+  public CheckDuplicateTargetsHandler(Component parent, Control control) {
+    this.parent = parent;
+    this.control = control;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.dytech.edge.admin.schema.TargetListener#targetAdded(java.lang.String)
-	 */
-	@Override
-	public void targetAdded(String target)
-	{
-		Control page = WizardHelper.getPage(control);
-		if( page != null )
-		{
-			Control root = WizardHelper.getRoot(page);
-			if( root != null )
-			{
-				FindOtherPagesWithTarget walker = new FindOtherPagesWithTarget(target, page);
-				walker.execute(root);
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.dytech.edge.admin.schema.TargetListener#targetAdded(java.lang.String)
+   */
+  @Override
+  public void targetAdded(String target) {
+    Control page = WizardHelper.getPage(control);
+    if (page != null) {
+      Control root = WizardHelper.getRoot(page);
+      if (root != null) {
+        FindOtherPagesWithTarget walker = new FindOtherPagesWithTarget(target, page);
+        walker.execute(root);
 
-				if( walker.targetFoundOnOtherPage() )
-				{
-					JOptionPane.showMessageDialog(parent, CurrentLocale.get("wizard.prompt.targetonmanypages"));
-				}
-			}
-		}
-	}
+        if (walker.targetFoundOnOtherPage()) {
+          JOptionPane.showMessageDialog(
+              parent, CurrentLocale.get("wizard.prompt.targetonmanypages"));
+        }
+      }
+    }
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.dytech.edge.admin.schema.TargetListener#targetRemoved(java.lang.String
-	 * )
-	 */
-	@Override
-	public void targetRemoved(String target)
-	{
-		// We don't care about this event.
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.dytech.edge.admin.schema.TargetListener#targetRemoved(java.lang.String
+   * )
+   */
+  @Override
+  public void targetRemoved(String target) {
+    // We don't care about this event.
+  }
 }

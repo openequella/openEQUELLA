@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,35 +31,31 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Link;
 
 @SuppressWarnings("nls")
-public abstract class AbstractFavouriteSearchAction extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("actions.favourite")
-	private static Label LABEL_BUTTON;
+public abstract class AbstractFavouriteSearchAction extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @PlugKey("actions.favourite")
+  private static Label LABEL_BUTTON;
 
-	protected abstract EquellaDialog<?> getDialog();
+  protected abstract EquellaDialog<?> getDialog();
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		final Link link = getDialog().getOpener();
-		link.setStyleClass("add-to-favourites");
-		link.setLabel(LABEL_BUTTON);
-	}
+    final Link link = getDialog().getOpener();
+    link.setStyleClass("add-to-favourites");
+    link.setLabel(LABEL_BUTTON);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( CurrentUser.wasAutoLoggedIn() || CurrentUser.isGuest() )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, getDialog().getOpener());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (CurrentUser.wasAutoLoggedIn() || CurrentUser.isGuest()) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, getDialog().getOpener());
+  }
 
-	protected Label getLabel()
-	{
-		return LABEL_BUTTON;
-	}
+  protected Label getLabel() {
+    return LABEL_BUTTON;
+  }
 }

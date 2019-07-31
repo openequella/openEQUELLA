@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,35 +20,28 @@ package com.tle.web.wizard.page;
 
 import com.tle.web.sections.render.TagRenderer;
 
-public class ControlResult
-{
-	private String sectionId;
-	private TagRenderer result;
+public class ControlResult {
+  private String sectionId;
+  private TagRenderer result;
 
-	public ControlResult(String sectionId, TagRenderer renderer)
-	{
-		this.sectionId = sectionId;
-		this.result = renderer;
-	}
+  public ControlResult(String sectionId, TagRenderer renderer) {
+    this.sectionId = sectionId;
+    this.result = renderer;
+  }
 
-	public String getSectionId()
-	{
-		return sectionId;
-	}
+  public String getSectionId() {
+    return sectionId;
+  }
 
-	public void setSectionId(String sectionId)
-	{
-		this.sectionId = sectionId;
-	}
+  public void setSectionId(String sectionId) {
+    this.sectionId = sectionId;
+  }
 
-	public TagRenderer getResult()
-	{
-		return result;
-	}
+  public TagRenderer getResult() {
+    return result;
+  }
 
-	public void setResult(TagRenderer result)
-	{
-		this.result = result;
-	}
-
+  public void setResult(TagRenderer result) {
+    this.result = result;
+  }
 }

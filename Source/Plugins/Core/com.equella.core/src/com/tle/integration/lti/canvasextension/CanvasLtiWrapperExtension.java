@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,56 +18,47 @@
 
 package com.tle.integration.lti.canvasextension;
 
+import com.tle.core.guice.Bind;
+import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tle.core.guice.Bind;
-import com.tle.web.lti.usermanagement.LtiWrapperExtension;
-
 /**
- * Checks for Canvas custom_canvas_user_login_id param to match an existing
- * user.
- * 
+ * Checks for Canvas custom_canvas_user_login_id param to match an existing user.
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CanvasLtiWrapperExtension implements LtiWrapperExtension
-{
-	@Override
-	public String getUserId(HttpServletRequest request)
-	{
-		return request.getParameter("custom_canvas_user_id");
-	}
+public class CanvasLtiWrapperExtension implements LtiWrapperExtension {
+  @Override
+  public String getUserId(HttpServletRequest request) {
+    return request.getParameter("custom_canvas_user_id");
+  }
 
-	@Override
-	public String getUsername(HttpServletRequest request)
-	{
-		return request.getParameter("custom_canvas_user_login_id");
-	}
+  @Override
+  public String getUsername(HttpServletRequest request) {
+    return request.getParameter("custom_canvas_user_login_id");
+  }
 
-	@Override
-	public String getFirstName(HttpServletRequest request)
-	{
-		return null;
-	}
+  @Override
+  public String getFirstName(HttpServletRequest request) {
+    return null;
+  }
 
-	@Override
-	public String getLastName(HttpServletRequest request)
-	{
-		return null;
-	}
+  @Override
+  public String getLastName(HttpServletRequest request) {
+    return null;
+  }
 
-	@Override
-	public String getEmail(HttpServletRequest request)
-	{
-		return null;
-	}
+  @Override
+  public String getEmail(HttpServletRequest request) {
+    return null;
+  }
 
-	@Override
-	public boolean isPrefixUserId()
-	{
-		return true;
-	}
+  @Override
+  public boolean isPrefixUserId() {
+    return true;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,26 +25,22 @@ import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.BookmarkEventListener;
 import com.tle.web.sections.events.DocumentParamsEvent;
 
-public class AnnotationBookmarkListener extends TargetedListener implements BookmarkEventListener
-{
-	private AnnotatedBookmarkScanner handler;
+public class AnnotationBookmarkListener extends TargetedListener implements BookmarkEventListener {
+  private AnnotatedBookmarkScanner handler;
 
-	public AnnotationBookmarkListener(String id, Section section, SectionTree tree, AnnotatedBookmarkScanner handler)
-	{
-		super(id, section, tree);
-		this.handler = handler;
-	}
+  public AnnotationBookmarkListener(
+      String id, Section section, SectionTree tree, AnnotatedBookmarkScanner handler) {
+    super(id, section, tree);
+    this.handler = handler;
+  }
 
-	@Override
-	public void bookmark(SectionInfo info, BookmarkEvent event)
-	{
-		handler.bookmark(info, id, event);
-	}
+  @Override
+  public void bookmark(SectionInfo info, BookmarkEvent event) {
+    handler.bookmark(info, id, event);
+  }
 
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		handler.document(info, id, event);
-	}
-
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    handler.document(info, id, event);
+  }
 }

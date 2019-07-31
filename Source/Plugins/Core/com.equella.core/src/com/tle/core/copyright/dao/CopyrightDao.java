@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,41 @@
 
 package com.tle.core.copyright.dao;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-public interface CopyrightDao<H extends Holding, P extends Portion, S extends Section>
-{
-	void deleteAllForItem(Item item);
+public interface CopyrightDao<H extends Holding, P extends Portion, S extends Section> {
+  void deleteAllForItem(Item item);
 
-	long save(Object entity);
+  long save(Object entity);
 
-	H getHoldingForItem(Item item);
+  H getHoldingForItem(Item item);
 
-	List<Item> getAllItemsForHolding(H holding);
+  List<Item> getAllItemsForHolding(H holding);
 
-	S getSectionForAttachment(Item item, String attachmentUuid);
+  S getSectionForAttachment(Item item, String attachmentUuid);
 
-	long saveHolding(Item item, H holding);
+  long saveHolding(Item item, H holding);
 
-	void savePortions(Item item, H holding, List<P> portions);
+  void savePortions(Item item, H holding, List<P> portions);
 
-	void updateHoldingReference(H holding, List<Item> portionItems);
+  void updateHoldingReference(H holding, List<Item> portionItems);
 
-	Map<Long, H> getHoldingsForItems(List<Item> items);
+  Map<Long, H> getHoldingsForItems(List<Item> items);
 
-	List<P> getPortionsForItems(List<Item> items);
+  List<P> getPortionsForItems(List<Item> items);
 
-	Map<Long, H> getHoldingsForItemIds(Collection<Long> items);
+  Map<Long, H> getHoldingsForItemIds(Collection<Long> items);
 
-	List<P> getPortionsForItemIds(Collection<Long> items);
+  List<P> getPortionsForItemIds(Collection<Long> items);
 
-	H getHoldingInItem(Item item);
+  H getHoldingInItem(Item item);
 
-	Attachment getSectionAttachmentForFilepath(Item item, String filepath);
+  Attachment getSectionAttachmentForFilepath(Item item, String filepath);
 }

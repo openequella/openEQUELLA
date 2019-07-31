@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.connectors.brightspace.editor;
-
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.google.common.base.Strings;
 import com.tle.common.connectors.entity.Connector;
@@ -50,349 +47,329 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 public class BrightspaceConnectorEditor
-	extends
-		AbstractConnectorEditorSection<BrightspaceConnectorEditor.BrightspaceConnectorEditorModel>
-{
-	private static final String POSTFIX_KEY = ".BrightspaceConnectorEditor";
+    extends AbstractConnectorEditorSection<
+        BrightspaceConnectorEditor.BrightspaceConnectorEditorModel> {
+  private static final String POSTFIX_KEY = ".BrightspaceConnectorEditor";
 
-	@PlugKey("editor.testapp.ok")
-	private static Label TEST_APP_OK;
-	@PlugKey("editor.testapp.fail")
-	private static Label TEST_APP_FAIL;
-	@PlugKey("editor.admin.ok")
-	private static Label ADMIN_OK;
-	@PlugKey("editor.admin.fail")
-	private static Label ADMIN_FAIL;
-	@PlugKey("editor.validation.appid")
-	private static Label BAD_APP_ID_ERROR;
-	@PlugKey("editor.validation.appkey")
-	private static Label BAD_APP_KEY_ERROR;
-	@PlugKey("editor.validation.testapp")
-	private static Label NOT_TESTED_ERROR;
-	@PlugKey("editor.admin.signedinas")
-	private static String KEY_SIGNED_IN_AS;
+  @PlugKey("editor.testapp.ok")
+  private static Label TEST_APP_OK;
 
-	@Component(stateful = false)
-	private TextField appId;
-	@Component(stateful = false)
-	private TextField appKey;
-	@Component
-	@PlugKey("editor.button.testapp")
-	private Button testAppButton;
-	@Inject
-	@Component
-	private LMSAuthDialog authDialog;
+  @PlugKey("editor.testapp.fail")
+  private static Label TEST_APP_FAIL;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("editor.admin.ok")
+  private static Label ADMIN_OK;
 
-	@Inject
-	private BrightspaceConnectorService brightspaceConnectorService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private UserSessionService userSessionService;
+  @PlugKey("editor.admin.fail")
+  private static Label ADMIN_FAIL;
 
-	@PostConstruct
-	public void init()
-	{
-		authDialog.setAuthUrlCallable(new LMSAuthUrlCallable()
-		{
-			@Override
-			public String getAuthorisationUrl(SectionInfo info, String forwardUrl)
-			{
-				final BrightspaceConnectorEditorModel model = getModel(info);
-				final ConnectorEditingSession session = getEntityService().loadSession(model.getSessionId());
-				final ConnectorEditingBean connector = session.getBean();
+  @PlugKey("editor.validation.appid")
+  private static Label BAD_APP_ID_ERROR;
 
-				return brightspaceConnectorService.getAuthorisationUrl(
-					connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID),
-					connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY), connector.getServerUrl(),
-					forwardUrl, POSTFIX_KEY);
-			}
-		});
-	}
+  @PlugKey("editor.validation.appkey")
+  private static Label BAD_APP_KEY_ERROR;
 
-	@Override
-	protected SectionRenderable renderFields(RenderEventContext context,
-		EntityEditingSession<ConnectorEditingBean, Connector> session)
-	{
-		final BrightspaceConnectorEditorModel model = getModel(context);
-		final ConnectorEditingBean connector = session.getBean();
+  @PlugKey("editor.validation.testapp")
+  private static Label NOT_TESTED_ERROR;
 
-		if( model.getTestedUrl() != null )
-		{
-			model.setTrustedUrl(institutionService.institutionalise(BrightspaceConnectorConstants.AUTH_URL));
+  @PlugKey("editor.admin.signedinas")
+  private static String KEY_SIGNED_IN_AS;
 
-			final String appOkStr = connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_OK);
-			if( appOkStr != null )
-			{
-				final boolean appOk = Boolean.parseBoolean(appOkStr);
-				if( appOk )
-				{
-					model.setLtiConsumersUrl(institutionService.institutionalise("access/lticonsumers.do"));
-				}
-				model.setTestAppStatusClass(appOk ? "ok" : "fail");
-				model.setTestAppStatus(appOk ? TEST_APP_OK.getText() : TEST_APP_FAIL.getText());
-				model.setAppOk(appOk);
-			}
+  @Component(stateful = false)
+  private TextField appId;
 
-			final String adminOkStr = connector.getAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_OK);
-			if( adminOkStr != null )
-			{
-				final boolean adminOk = Boolean.parseBoolean(adminOkStr);
-				model.setAdminStatusClass(adminOk ? "ok" : "fail");
-				final String adminStatusText;
-				if( adminOk )
-				{
-					final String adminUsername = connector
-						.getAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USERNAME);
-					adminStatusText = (adminUsername != null ? new KeyLabel(KEY_SIGNED_IN_AS, adminUsername).getText()
-						: ADMIN_OK.getText());
-				}
-				else
-				{
-					adminStatusText = ADMIN_FAIL.getText();
-				}
-				model.setAdminStatus(adminStatusText);
-				model.setAdminOk(adminOk);
-			}
-		}
-		return view.createResult("brightspaceconnector.ftl", context);
-	}
+  @Component(stateful = false)
+  private TextField appKey;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey("editor.button.testapp")
+  private Button testAppButton;
 
-		testAppButton.setClickHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("testApp"), getAjaxDivId()));
-		authDialog.setOkCallback(events.getSubmitValuesFunction("adminSignIn"));
-	}
+  @Inject @Component private LMSAuthDialog authDialog;
 
-	@EventHandlerMethod
-	public void testApp(SectionInfo info)
-	{
-		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-		final ConnectorEditingBean connector = session.getBean();
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-		final String testResponse = brightspaceConnectorService.testApplication(appId.getValue(info),
-			appKey.getValue(info), connector.getServerUrl());
-		final boolean appOk = "ok".equals(testResponse);
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_OK, appOk);
-		getEntityService().saveSession(session);
-	}
+  @Inject private BrightspaceConnectorService brightspaceConnectorService;
+  @Inject private InstitutionService institutionService;
+  @Inject private UserSessionService userSessionService;
 
-	@EventHandlerMethod
-	public void adminSignIn(SectionInfo info)
-	{
-		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-		final ConnectorEditingBean connector = session.getBean();
+  @PostConstruct
+  public void init() {
+    authDialog.setAuthUrlCallable(
+        new LMSAuthUrlCallable() {
+          @Override
+          public String getAuthorisationUrl(SectionInfo info, String forwardUrl) {
+            final BrightspaceConnectorEditorModel model = getModel(info);
+            final ConnectorEditingSession session =
+                getEntityService().loadSession(model.getSessionId());
+            final ConnectorEditingBean connector = session.getBean();
 
-		final String userId = userSessionService
-			.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_ID + POSTFIX_KEY);
-		final String userKey = userSessionService
-			.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + POSTFIX_KEY);
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USER_ID, userId);
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USER_KEY,
-			brightspaceConnectorService.encrypt(userKey));
-		userSessionService.removeAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_ID + POSTFIX_KEY);
-		userSessionService.removeAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + POSTFIX_KEY);
+            return brightspaceConnectorService.getAuthorisationUrl(
+                connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID),
+                connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY),
+                connector.getServerUrl(),
+                forwardUrl,
+                POSTFIX_KEY);
+          }
+        });
+  }
 
-		final String username = brightspaceConnectorService.whoAmI(
-			connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID),
-			connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY), connector.getServerUrl(), userId,
-			userKey);
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USERNAME, username);
+  @Override
+  protected SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<ConnectorEditingBean, Connector> session) {
+    final BrightspaceConnectorEditorModel model = getModel(context);
+    final ConnectorEditingBean connector = session.getBean();
 
-		// TODO: test the admin account for privs? 
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_OK,
-			userId != null && userKey != null && username != null);
+    if (model.getTestedUrl() != null) {
+      model.setTrustedUrl(
+          institutionService.institutionalise(BrightspaceConnectorConstants.AUTH_URL));
 
-		getEntityService().saveSession(session);
-	}
+      final String appOkStr = connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_OK);
+      if (appOkStr != null) {
+        final boolean appOk = Boolean.parseBoolean(appOkStr);
+        if (appOk) {
+          model.setLtiConsumersUrl(institutionService.institutionalise("access/lticonsumers.do"));
+        }
+        model.setTestAppStatusClass(appOk ? "ok" : "fail");
+        model.setTestAppStatus(appOk ? TEST_APP_OK.getText() : TEST_APP_FAIL.getText());
+        model.setAppOk(appOk);
+      }
 
-	@Override
-	protected void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors)
-	{
-		final BrightspaceConnectorEditorModel model = getModel(info);
-		if( Strings.isNullOrEmpty(appId.getValue(info)) )
-		{
-			errors.put("appid", BAD_APP_ID_ERROR.getText());
-			return;
-		}
+      final String adminOkStr =
+          connector.getAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_OK);
+      if (adminOkStr != null) {
+        final boolean adminOk = Boolean.parseBoolean(adminOkStr);
+        model.setAdminStatusClass(adminOk ? "ok" : "fail");
+        final String adminStatusText;
+        if (adminOk) {
+          final String adminUsername =
+              connector.getAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USERNAME);
+          adminStatusText =
+              (adminUsername != null
+                  ? new KeyLabel(KEY_SIGNED_IN_AS, adminUsername).getText()
+                  : ADMIN_OK.getText());
+        } else {
+          adminStatusText = ADMIN_FAIL.getText();
+        }
+        model.setAdminStatus(adminStatusText);
+        model.setAdminOk(adminOk);
+      }
+    }
+    return view.createResult("brightspaceconnector.ftl", context);
+  }
 
-		if( Strings.isNullOrEmpty(appKey.getValue(info)) )
-		{
-			errors.put("appkey", BAD_APP_KEY_ERROR.getText());
-			return;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		if( !connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_OK, false) )
-		{
-			errors.put("testapp", NOT_TESTED_ERROR.getText());
-		}
-		model.setErrors(errors);
-	}
+    testAppButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("testApp"), getAjaxDivId()));
+    authDialog.setOkCallback(events.getSubmitValuesFunction("adminSignIn"));
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, ConnectorEditingBean connector)
-	{
-		appId.setValue(info, connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID));
-		appKey.setValue(info, connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY));
-	}
+  @EventHandlerMethod
+  public void testApp(SectionInfo info) {
+    final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+    final ConnectorEditingBean connector = session.getBean();
 
-	@Override
-	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
-	{
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_ID, appId.getValue(info));
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY, appKey.getValue(info));
-	}
+    final String testResponse =
+        brightspaceConnectorService.testApplication(
+            appId.getValue(info), appKey.getValue(info), connector.getServerUrl());
+    final boolean appOk = "ok".equals(testResponse);
+    connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_OK, appOk);
+    getEntityService().saveSession(session);
+  }
 
-	@Override
-	protected Connector createNewConnector()
-	{
-		return new Connector(BrightspaceConnectorConstants.CONNECTOR_TYPE);
-	}
+  @EventHandlerMethod
+  public void adminSignIn(SectionInfo info) {
+    final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+    final ConnectorEditingBean connector = session.getBean();
 
-	@Override
-	protected String getAjaxDivId()
-	{
-		return "brightspacesetup";
-	}
+    final String userId =
+        userSessionService.getAttribute(
+            BrightspaceConnectorConstants.SESSION_KEY_USER_ID + POSTFIX_KEY);
+    final String userKey =
+        userSessionService.getAttribute(
+            BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + POSTFIX_KEY);
+    connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USER_ID, userId);
+    connector.setAttribute(
+        BrightspaceConnectorConstants.FIELD_ADMIN_USER_KEY,
+        brightspaceConnectorService.encrypt(userKey));
+    userSessionService.removeAttribute(
+        BrightspaceConnectorConstants.SESSION_KEY_USER_ID + POSTFIX_KEY);
+    userSessionService.removeAttribute(
+        BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + POSTFIX_KEY);
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new BrightspaceConnectorEditorModel();
-	}
+    final String username =
+        brightspaceConnectorService.whoAmI(
+            connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID),
+            connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY),
+            connector.getServerUrl(),
+            userId,
+            userKey);
+    connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USERNAME, username);
 
-	@Override
-	public Div getUsernameDiv()
-	{
-		return null;
-	}
+    // TODO: test the admin account for privs?
+    connector.setAttribute(
+        BrightspaceConnectorConstants.FIELD_ADMIN_OK,
+        userId != null && userKey != null && username != null);
 
-	public TextField getAppId()
-	{
-		return appId;
-	}
+    getEntityService().saveSession(session);
+  }
 
-	public TextField getAppKey()
-	{
-		return appKey;
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors) {
+    final BrightspaceConnectorEditorModel model = getModel(info);
+    if (Strings.isNullOrEmpty(appId.getValue(info))) {
+      errors.put("appid", BAD_APP_ID_ERROR.getText());
+      return;
+    }
 
-	public Button getTestAppButton()
-	{
-		return testAppButton;
-	}
+    if (Strings.isNullOrEmpty(appKey.getValue(info))) {
+      errors.put("appkey", BAD_APP_KEY_ERROR.getText());
+      return;
+    }
 
-	public LMSAuthDialog getAuthDialog()
-	{
-		return authDialog;
-	}
+    if (!connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_OK, false)) {
+      errors.put("testapp", NOT_TESTED_ERROR.getText());
+    }
+    model.setErrors(errors);
+  }
 
-	public class BrightspaceConnectorEditorModel
-		extends
-			AbstractConnectorEditorSection<BrightspaceConnectorEditorModel>.AbstractConnectorEditorModel
-	{
-		private boolean appOk;
-		private String testAppStatus;
-		private String testAppStatusClass;
+  @Override
+  protected void customLoad(SectionInfo info, ConnectorEditingBean connector) {
+    appId.setValue(info, connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_ID));
+    appKey.setValue(info, connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY));
+  }
 
-		private String trustedUrl;
-		private String ltiConsumersUrl;
+  @Override
+  protected void customSave(SectionInfo info, ConnectorEditingBean connector) {
+    connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_ID, appId.getValue(info));
+    connector.setAttribute(BrightspaceConnectorConstants.FIELD_APP_KEY, appKey.getValue(info));
+  }
 
-		private boolean adminOk;
-		private String adminStatus;
-		private String adminStatusClass;
+  @Override
+  protected Connector createNewConnector() {
+    return new Connector(BrightspaceConnectorConstants.CONNECTOR_TYPE);
+  }
 
-		public boolean isAppOk()
-		{
-			return appOk;
-		}
+  @Override
+  protected String getAjaxDivId() {
+    return "brightspacesetup";
+  }
 
-		public void setAppOk(boolean appOk)
-		{
-			this.appOk = appOk;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new BrightspaceConnectorEditorModel();
+  }
 
-		public String getTestAppStatus()
-		{
-			return testAppStatus;
-		}
+  @Override
+  public Div getUsernameDiv() {
+    return null;
+  }
 
-		public void setTestAppStatus(String testAppStatus)
-		{
-			this.testAppStatus = testAppStatus;
-		}
+  public TextField getAppId() {
+    return appId;
+  }
 
-		public String getTestAppStatusClass()
-		{
-			return testAppStatusClass;
-		}
+  public TextField getAppKey() {
+    return appKey;
+  }
 
-		public void setTestAppStatusClass(String testAppStatusClass)
-		{
-			this.testAppStatusClass = testAppStatusClass;
-		}
+  public Button getTestAppButton() {
+    return testAppButton;
+  }
 
-		public String getTrustedUrl()
-		{
-			return trustedUrl;
-		}
+  public LMSAuthDialog getAuthDialog() {
+    return authDialog;
+  }
 
-		public void setTrustedUrl(String trustedUrl)
-		{
-			this.trustedUrl = trustedUrl;
-		}
+  public class BrightspaceConnectorEditorModel
+      extends AbstractConnectorEditorSection<BrightspaceConnectorEditorModel>
+          .AbstractConnectorEditorModel {
+    private boolean appOk;
+    private String testAppStatus;
+    private String testAppStatusClass;
 
-		public String getLtiConsumersUrl()
-		{
-			return ltiConsumersUrl;
-		}
+    private String trustedUrl;
+    private String ltiConsumersUrl;
 
-		public void setLtiConsumersUrl(String ltiConsumersUrl)
-		{
-			this.ltiConsumersUrl = ltiConsumersUrl;
-		}
+    private boolean adminOk;
+    private String adminStatus;
+    private String adminStatusClass;
 
-		public boolean isAdminOk()
-		{
-			return adminOk;
-		}
+    public boolean isAppOk() {
+      return appOk;
+    }
 
-		public void setAdminOk(boolean adminOk)
-		{
-			this.adminOk = adminOk;
-		}
+    public void setAppOk(boolean appOk) {
+      this.appOk = appOk;
+    }
 
-		public String getAdminStatus()
-		{
-			return adminStatus;
-		}
+    public String getTestAppStatus() {
+      return testAppStatus;
+    }
 
-		public void setAdminStatus(String adminStatus)
-		{
-			this.adminStatus = adminStatus;
-		}
+    public void setTestAppStatus(String testAppStatus) {
+      this.testAppStatus = testAppStatus;
+    }
 
-		public String getAdminStatusClass()
-		{
-			return adminStatusClass;
-		}
+    public String getTestAppStatusClass() {
+      return testAppStatusClass;
+    }
 
-		public void setAdminStatusClass(String adminStatusClass)
-		{
-			this.adminStatusClass = adminStatusClass;
-		}
-	}
+    public void setTestAppStatusClass(String testAppStatusClass) {
+      this.testAppStatusClass = testAppStatusClass;
+    }
+
+    public String getTrustedUrl() {
+      return trustedUrl;
+    }
+
+    public void setTrustedUrl(String trustedUrl) {
+      this.trustedUrl = trustedUrl;
+    }
+
+    public String getLtiConsumersUrl() {
+      return ltiConsumersUrl;
+    }
+
+    public void setLtiConsumersUrl(String ltiConsumersUrl) {
+      this.ltiConsumersUrl = ltiConsumersUrl;
+    }
+
+    public boolean isAdminOk() {
+      return adminOk;
+    }
+
+    public void setAdminOk(boolean adminOk) {
+      this.adminOk = adminOk;
+    }
+
+    public String getAdminStatus() {
+      return adminStatus;
+    }
+
+    public void setAdminStatus(String adminStatus) {
+      this.adminStatus = adminStatus;
+    }
+
+    public String getAdminStatusClass() {
+      return adminStatusClass;
+    }
+
+    public void setAdminStatusClass(String adminStatusClass) {
+      this.adminStatusClass = adminStatusClass;
+    }
+  }
 }

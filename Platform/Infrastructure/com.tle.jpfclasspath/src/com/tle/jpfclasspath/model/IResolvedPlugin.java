@@ -2,16 +2,14 @@ package com.tle.jpfclasspath.model;
 
 import java.util.List;
 
-public interface IResolvedPlugin
-{
-	IPluginModel getPluginModel();
+public interface IResolvedPlugin {
+  IPluginModel getPluginModel();
 
-	List<ResolvedImport> getImports();
+  List<ResolvedImport> getImports();
 
-	List<IResolvedPlugin> getFragments();
+  List<IResolvedPlugin> getFragments();
 
-	IResolvedPlugin getHostPlugin();
+  IResolvedPlugin getHostPlugin();
 
-	String getRegistryName();
-
+  String getRegistryName();
 }

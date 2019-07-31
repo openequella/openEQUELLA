@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.cloud.search;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.tle.annotation.NonNullByDefault;
@@ -60,185 +57,165 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.section.CourseListSection;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 public class CloudResultsTab extends AbstractPrototypeSection<CloudResultsTab.CloudResultsTabModel>
-	implements
-		SearchTab,
-		OnSearchExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(CloudResultsTab.class);
+    implements SearchTab, OnSearchExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CloudResultsTab.class);
 
-	private static PluginResourceHelper resources = ResourcesService.getResourceHelper(CloudResultsTab.class);
+  private static PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(CloudResultsTab.class);
 
-	private static IncludeFile JS_INCLUDE = new IncludeFile(resources.url("scripts/cloud.js"));
-	private static final JSCallAndReference CLOUD_CLASS = new ExternallyDefinedFunction("Cloud", JS_INCLUDE);
-	private static final ExternallyDefinedFunction FUNC_ON_SEARCH = new ExternallyDefinedFunction(CLOUD_CLASS,
-		"onSearch", 1, JS_INCLUDE);
+  private static IncludeFile JS_INCLUDE = new IncludeFile(resources.url("scripts/cloud.js"));
+  private static final JSCallAndReference CLOUD_CLASS =
+      new ExternallyDefinedFunction("Cloud", JS_INCLUDE);
+  private static final ExternallyDefinedFunction FUNC_ON_SEARCH =
+      new ExternallyDefinedFunction(CLOUD_CLASS, "onSearch", 1, JS_INCLUDE);
 
-	@PlugKey("resultstab.inactive.resultcount.title")
-	private static String KEY_CLOUD_COUNT;
-	@PlugKey("resultstab.inactive.searching.title")
-	private static Label LABEL_SEARCHING_CLOUD;
-	@PlugKey("resultstab.inactive.blanksearch.title")
-	private static Label LABEL_SEARCH_THE_CLOUD;
+  @PlugKey("resultstab.inactive.resultcount.title")
+  private static String KEY_CLOUD_COUNT;
 
-	@Component(name = "cs")
-	private Div countSpan;
-	private JSCallAndReference updateCountFunction;
+  @PlugKey("resultstab.inactive.searching.title")
+  private static Label LABEL_SEARCHING_CLOUD;
 
-	@Inject
-	private CloudService cloudService;
+  @PlugKey("resultstab.inactive.blanksearch.title")
+  private static Label LABEL_SEARCH_THE_CLOUD;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @Component(name = "cs")
+  private Div countSpan;
 
-	@TreeLookup
-	private AbstractQuerySection<?, ?> sqs;
+  private JSCallAndReference updateCountFunction;
 
-	private boolean active;
+  @Inject private CloudService cloudService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !cloudService.isCloudy() )
-		{
-			return null;
-		}
+  @AjaxFactory private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-		countSpan.setRendererType(context, "span");
-		return view.createResult("cloudtab.ftl", context);
-	}
+  @TreeLookup private AbstractQuerySection<?, ?> sqs;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  private boolean active;
 
-		if( !isActive() )
-		{
-			updateCountFunction = CallAndReferenceFunction.get(Js.function(Js.call_s(FUNC_ON_SEARCH,
-				ajax.getAjaxFunction("onSearch"), Jq.$(countSpan), new RuntimeExpression()
-				{
-					@Override
-					protected JSExpression createExpression(RenderContext info)
-					{
-						return new StringExpression(LABEL_SEARCHING_CLOUD.getText());
-					}
-				})), countSpan);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!cloudService.isCloudy()) {
+      return null;
+    }
 
-			countSpan.addReadyStatements(updateCountFunction);
-		}
-	}
+    countSpan.setRendererType(context, "span");
+    return view.createResult("cloudtab.ftl", context);
+  }
 
-	@Override
-	public String getId()
-	{
-		return "cloud";
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public SectionInfo getForward(SectionInfo info)
-	{
-		// TODO: this is less hacky than before, but still sub-ottstimal.
-		final CourseListSection cls = info.lookupSection(CourseListSection.class);
-		if( cls != null && cls.isApplicable(info) )
-		{
-			return info.createForward("/access/course/cloudsearch.do");
-		}
-		return info.createForward(CloudWebConstants.URL_CLOUD_SEARCH);
-	}
+    if (!isActive()) {
+      updateCountFunction =
+          CallAndReferenceFunction.get(
+              Js.function(
+                  Js.call_s(
+                      FUNC_ON_SEARCH,
+                      ajax.getAjaxFunction("onSearch"),
+                      Jq.$(countSpan),
+                      new RuntimeExpression() {
+                        @Override
+                        protected JSExpression createExpression(RenderContext info) {
+                          return new StringExpression(LABEL_SEARCHING_CLOUD.getText());
+                        }
+                      })),
+              countSpan);
 
-	@AjaxMethod
-	public CloudAjaxResponse onSearch(SectionInfo info)
-	{
-		final String q = sqs.getParsedQuery(info);
-		final CloudAjaxResponse response = new CloudAjaxResponse();
-		try
-		{
-			response.setCount(cloudService.resultCount(q));
-		}
-		catch( Exception e )
-		{
-			LOGGER.warn("Error getting result count from cloud", e);
-			response.setCount(0);
-		}
-		if( Strings.isNullOrEmpty(q) )
-		{
-			response.setText(LABEL_SEARCH_THE_CLOUD.getText());
-		}
-		else
-		{
-			response.setText(new PluralKeyLabel(KEY_CLOUD_COUNT, response.getCount()).getText());
-		}
-		return response;
-	}
+      countSpan.addReadyStatements(updateCountFunction);
+    }
+  }
 
-	@Override
-	public JSCallAndReference getOnSearchCallable()
-	{
-		return updateCountFunction;
-	}
+  @Override
+  public String getId() {
+    return "cloud";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new CloudResultsTabModel();
-	}
+  @Override
+  public SectionInfo getForward(SectionInfo info) {
+    // TODO: this is less hacky than before, but still sub-ottstimal.
+    final CourseListSection cls = info.lookupSection(CourseListSection.class);
+    if (cls != null && cls.isApplicable(info)) {
+      return info.createForward("/access/course/cloudsearch.do");
+    }
+    return info.createForward(CloudWebConstants.URL_CLOUD_SEARCH);
+  }
 
-	public Div getCountSpan()
-	{
-		return countSpan;
-	}
+  @AjaxMethod
+  public CloudAjaxResponse onSearch(SectionInfo info) {
+    final String q = sqs.getParsedQuery(info);
+    final CloudAjaxResponse response = new CloudAjaxResponse();
+    try {
+      response.setCount(cloudService.resultCount(q));
+    } catch (Exception e) {
+      LOGGER.warn("Error getting result count from cloud", e);
+      response.setCount(0);
+    }
+    if (Strings.isNullOrEmpty(q)) {
+      response.setText(LABEL_SEARCH_THE_CLOUD.getText());
+    } else {
+      response.setText(new PluralKeyLabel(KEY_CLOUD_COUNT, response.getCount()).getText());
+    }
+    return response;
+  }
 
-	@Override
-	public void setActive()
-	{
-		active = true;
-	}
+  @Override
+  public JSCallAndReference getOnSearchCallable() {
+    return updateCountFunction;
+  }
 
-	@Override
-	public boolean isActive()
-	{
-		return active;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new CloudResultsTabModel();
+  }
 
-	@NonNullByDefault(false)
-	public static class CloudAjaxResponse
-	{
-		private int count;
-		private String text;
+  public Div getCountSpan() {
+    return countSpan;
+  }
 
-		public int getCount()
-		{
-			return count;
-		}
+  @Override
+  public void setActive() {
+    active = true;
+  }
 
-		public void setCount(int count)
-		{
-			this.count = count;
-		}
+  @Override
+  public boolean isActive() {
+    return active;
+  }
 
-		public String getText()
-		{
-			return text;
-		}
+  @NonNullByDefault(false)
+  public static class CloudAjaxResponse {
+    private int count;
+    private String text;
 
-		public void setText(String text)
-		{
-			this.text = text;
-		}
-	}
+    public int getCount() {
+      return count;
+    }
 
-	@NonNullByDefault(false)
-	public static class CloudResultsTabModel
-	{
-		// Nothing, yet
-	}
+    public void setCount(int count) {
+      this.count = count;
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    public void setText(String text) {
+      this.text = text;
+    }
+  }
+
+  @NonNullByDefault(false)
+  public static class CloudResultsTabModel {
+    // Nothing, yet
+  }
 }

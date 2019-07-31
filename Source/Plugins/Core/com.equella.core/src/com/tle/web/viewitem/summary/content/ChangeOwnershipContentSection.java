@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,14 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.content;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -66,310 +60,298 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class ChangeOwnershipContentSection
-	extends
-		AbstractContentSection<ChangeOwnershipContentSection.ChangeOwnershipModel>
-	implements
-		ViewableChildInterface,
-		CurrentUsersCallback
-{
-	public static final String REQUIRED_PRIVILEGE = "REASSIGN_OWNERSHIP_ITEM";
+    extends AbstractContentSection<ChangeOwnershipContentSection.ChangeOwnershipModel>
+    implements ViewableChildInterface, CurrentUsersCallback {
+  public static final String REQUIRED_PRIVILEGE = "REASSIGN_OWNERSHIP_ITEM";
 
-	@PlugKey("summary.content.changeownership.pagetitle")
-	private static Label TITLE_LABEL;
+  @PlugKey("summary.content.changeownership.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@PlugKey("summary.content.changeownership.owner.button.reassign")
-	private static Label OWNER_CHANGE;
-	@PlugKey("summary.content.changeownership.owner.dialog.ok")
-	private static Label OWNER_DIALOG_OK;
-	@PlugKey("summary.content.changeownership.owner.dialog.title")
-	private static Label OWNER_DIALOG_TITLE;
-	@PlugKey("summary.content.changeownership.owner.dialog.prompt")
-	private static Label OWNER_DIALOG_PROMPT;
+  @PlugKey("summary.content.changeownership.owner.button.reassign")
+  private static Label OWNER_CHANGE;
 
-	@PlugKey("summary.content.changeownership.share.nocollabs")
-	private static Label COLLAB_NONE;
-	@PlugKey("currentlyselectedstuff.remove")
-	private static Label COLLAB_REMOVE;
-	@PlugKey("share.confirmremove")
-	private static Confirm COLLAB_REMOVE_CONFIRM;
-	@PlugKey("summary.content.changeownership.share.dialog.ok")
-	private static Label COLLAB_DIALOG_OK;
-	@PlugKey("summary.content.changeownership.share.dialog.title")
-	private static Label COLLAB_DIALOG_TITLE;
-	@PlugKey("summary.content.changeownership.share.dialog.prompt")
-	private static Label COLLAB_DIALOG_PROMPT;
+  @PlugKey("summary.content.changeownership.owner.dialog.ok")
+  private static Label OWNER_DIALOG_OK;
 
-	@PlugKey("summary.sidebar.itemdetailsgroup.owner")
-	private static Label LABEL_OWNER;
-	@PlugKey("summary.sidebar.itemdetailsgroup.collaborators")
-	private static Label LABEL_COLLAB;
+  @PlugKey("summary.content.changeownership.owner.dialog.title")
+  private static Label OWNER_DIALOG_TITLE;
 
-	@PlugKey("summary.content.changeownership.owner.receipt")
-	private static Label OWNER_CHANGE_RECEIPT;
+  @PlugKey("summary.content.changeownership.owner.dialog.prompt")
+  private static Label OWNER_DIALOG_PROMPT;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("summary.content.changeownership.share.nocollabs")
+  private static Label COLLAB_NONE;
 
-	@Inject
-	private UserService userService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
-	@Inject
-	private SelectUserDialog ownerSelect;
-	@Inject
-	private SelectUserDialog collabSelect;
-	@Inject
-	private UserLinkService userLinkService;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("currentlyselectedstuff.remove")
+  private static Label COLLAB_REMOVE;
 
-	private JSCallable removeUserFunc;
-	private UserLinkSection userLinkSection;
+  @PlugKey("share.confirmremove")
+  private static Confirm COLLAB_REMOVE_CONFIRM;
 
-	@Component(name = "ot")
-	private SelectionsTable ownerTable;
-	@Component(name = "ct")
-	private SelectionsTable collabTable;
+  @PlugKey("summary.content.changeownership.share.dialog.ok")
+  private static Label COLLAB_DIALOG_OK;
 
-	@Component
-	@PlugKey("summary.content.changeownership.share.button.add")
-	private Link addCollab;
+  @PlugKey("summary.content.changeownership.share.dialog.title")
+  private static Label COLLAB_DIALOG_TITLE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("summary.content.changeownership.share.dialog.prompt")
+  private static Label COLLAB_DIALOG_PROMPT;
 
-		userLinkSection = userLinkService.register(tree, id);
+  @PlugKey("summary.sidebar.itemdetailsgroup.owner")
+  private static Label LABEL_OWNER;
 
-		// Owner
-		ownerSelect.setTitle(OWNER_DIALOG_TITLE);
-		ownerSelect.setPrompt(OWNER_DIALOG_PROMPT);
-		ownerSelect.setOkCallback(events.getSubmitValuesFunction("changeOwner"));
-		ownerSelect.setOkLabel(OWNER_DIALOG_OK);
+  @PlugKey("summary.sidebar.itemdetailsgroup.collaborators")
+  private static Label LABEL_COLLAB;
 
-		// Collaborators
-		collabSelect.setTitle(COLLAB_DIALOG_TITLE);
-		collabSelect.setPrompt(COLLAB_DIALOG_PROMPT);
-		collabSelect.setMultipleUsers(true);
-		collabSelect.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("addCollaborators"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "collaborators", "adjacentuls"));
-		collabSelect.setOkLabel(COLLAB_DIALOG_OK);
-		collabSelect.setUsersCallback(this);
+  @PlugKey("summary.content.changeownership.owner.receipt")
+  private static Label OWNER_CHANGE_RECEIPT;
 
-		removeUserFunc = events.getSubmitValuesFunction("removeCollaborator");
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		// Register selectors
-		tree.registerInnerSection(ownerSelect, id);
-		tree.registerInnerSection(collabSelect, id);
+  @Inject private UserService userService;
+  @Inject private ItemOperationFactory workflowFactory;
+  @Inject private SelectUserDialog ownerSelect;
+  @Inject private SelectUserDialog collabSelect;
+  @Inject private UserLinkService userLinkService;
+  @Inject private ReceiptService receiptService;
 
-		addCollab.setClickHandler(collabSelect.getOpenFunction());
+  private JSCallable removeUserFunc;
+  private UserLinkSection userLinkSection;
 
-		ownerTable.setColumnHeadings(LABEL_OWNER, null);
-		ownerTable.setColumnSorts(Sort.NONE, Sort.NONE);
-		ownerTable.setSelectionsModel(new OwnerTableModel());
+  @Component(name = "ot")
+  private SelectionsTable ownerTable;
 
-		collabTable.setColumnHeadings(LABEL_COLLAB, null);
-		collabTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
-		collabTable.setSelectionsModel(new CollabTableModel());
-		collabTable.setNothingSelectedText(COLLAB_NONE);
-		collabTable.setAddAction(addCollab);
-	}
+  @Component(name = "ct")
+  private SelectionsTable collabTable;
 
-	@Override
-	public SectionResult renderHtml(final RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			throw new AccessDeniedException("");
-		}
-		final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(context);
-		addDefaultBreadcrumbs(context, iinfo, TITLE_LABEL);
-		displayBackButton(context);
+  @Component
+  @PlugKey("summary.content.changeownership.share.button.add")
+  private Link addCollab;
 
-		return viewFactory.createResult("viewitem/summary/content/changeownership.ftl", context);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void changeOwner(final SectionInfo info, final String usersJson)
-	{
-		final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
-		final SelectedUser user = SelectUserDialog.userFromJsonString(usersJson);
+    userLinkSection = userLinkService.register(tree, id);
 
-		if( user != null )
-		{
-			iinfo.modify(workflowFactory.changeOwner(user.getUuid()));
-			receiptService.setReceipt(OWNER_CHANGE_RECEIPT);
-			checkAccess(info);
-		}
-	}
+    // Owner
+    ownerSelect.setTitle(OWNER_DIALOG_TITLE);
+    ownerSelect.setPrompt(OWNER_DIALOG_PROMPT);
+    ownerSelect.setOkCallback(events.getSubmitValuesFunction("changeOwner"));
+    ownerSelect.setOkLabel(OWNER_DIALOG_OK);
 
-	private void checkAccess(final SectionInfo info)
-	{
-		if( !canView(info) )
-		{
-			itemSummaryContentSection.setSummaryId(info, null);
-		}
-	}
+    // Collaborators
+    collabSelect.setTitle(COLLAB_DIALOG_TITLE);
+    collabSelect.setPrompt(COLLAB_DIALOG_PROMPT);
+    collabSelect.setMultipleUsers(true);
+    collabSelect.setOkCallback(
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            null,
+            events.getEventHandler("addCollaborators"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            "collaborators",
+            "adjacentuls"));
+    collabSelect.setOkLabel(COLLAB_DIALOG_OK);
+    collabSelect.setUsersCallback(this);
 
-	@EventHandlerMethod
-	public void addCollaborators(SectionInfo info, String usersJson)
-	{
-		saveCollaborators(info,
-			Collections2.transform(SelectUserDialog.usersFromJsonString(usersJson), new Function<SelectedUser, String>()
-			{
-				@Override
-				public String apply(SelectedUser user)
-				{
-					return user.getUuid();
-				}
-			}));
-	}
+    removeUserFunc = events.getSubmitValuesFunction("removeCollaborator");
 
-	@EventHandlerMethod
-	public void removeCollaborator(SectionInfo info, String userId)
-	{
-		final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
-		iinfo.modify(workflowFactory.modifyCollaborators(userId, true));
-		checkAccess(info);
-	}
+    // Register selectors
+    tree.registerInnerSection(ownerSelect, id);
+    tree.registerInnerSection(collabSelect, id);
 
-	private void saveCollaborators(final SectionInfo info, final Collection<String> userIds)
-	{
-		ParentViewItemSectionUtils.getItemInfo(info)
-			.modify(workflowFactory.addCollaborators(new HashSet<String>(userIds)));
-	}
+    addCollab.setClickHandler(collabSelect.getOpenFunction());
 
-	@Override
-	public List<SelectedUser> getCurrentSelectedUsers(SectionInfo info)
-	{
-		return Lists.newArrayList(
-			Collections2.transform(ParentViewItemSectionUtils.getItemInfo(info).getItem().getCollaborators(),
-				new Function<String, SelectedUser>()
-				{
-					@Override
-					public SelectedUser apply(final String uuidOrEmail)
-					{
-						final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
-						final String displayName;
-						if( userBean == null )
-						{
-							displayName = uuidOrEmail;
-						}
-						else
-						{
-							displayName = Format.format(userBean);
-						}
-						return new SelectedUser(uuidOrEmail, displayName);
-					}
-				}));
-	}
+    ownerTable.setColumnHeadings(LABEL_OWNER, null);
+    ownerTable.setColumnSorts(Sort.NONE, Sort.NONE);
+    ownerTable.setSelectionsModel(new OwnerTableModel());
 
-	private Set<String> getList(Item item)
-	{
-		return item.getCollaborators();
-	}
+    collabTable.setColumnHeadings(LABEL_COLLAB, null);
+    collabTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
+    collabTable.setSelectionsModel(new CollabTableModel());
+    collabTable.setNothingSelectedText(COLLAB_NONE);
+    collabTable.setAddAction(addCollab);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-		return !itemInfo.getWorkflowStatus().isLocked() && itemInfo.hasPrivilege(REQUIRED_PRIVILEGE);
-	}
+  @Override
+  public SectionResult renderHtml(final RenderEventContext context) {
+    if (!canView(context)) {
+      throw new AccessDeniedException("");
+    }
+    final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(context);
+    addDefaultBreadcrumbs(context, iinfo, TITLE_LABEL);
+    displayBackButton(context);
 
-	public SelectUserDialog getOwnerSelect()
-	{
-		return ownerSelect;
-	}
+    return viewFactory.createResult("viewitem/summary/content/changeownership.ftl", context);
+  }
 
-	public SelectUserDialog getCollabSelect()
-	{
-		return collabSelect;
-	}
+  @EventHandlerMethod
+  public void changeOwner(final SectionInfo info, final String usersJson) {
+    final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+    final SelectedUser user = SelectUserDialog.userFromJsonString(usersJson);
 
-	public SelectionsTable getOwnerTable()
-	{
-		return ownerTable;
-	}
+    if (user != null) {
+      iinfo.modify(workflowFactory.changeOwner(user.getUuid()));
+      receiptService.setReceipt(OWNER_CHANGE_RECEIPT);
+      checkAccess(info);
+    }
+  }
 
-	public SelectionsTable getCollabTable()
-	{
-		return collabTable;
-	}
+  private void checkAccess(final SectionInfo info) {
+    if (!canView(info)) {
+      itemSummaryContentSection.setSummaryId(info, null);
+    }
+  }
 
-	@Override
-	public Class<ChangeOwnershipModel> getModelClass()
-	{
-		return ChangeOwnershipModel.class;
-	}
+  @EventHandlerMethod
+  public void addCollaborators(SectionInfo info, String usersJson) {
+    saveCollaborators(
+        info,
+        Collections2.transform(
+            SelectUserDialog.usersFromJsonString(usersJson),
+            new Function<SelectedUser, String>() {
+              @Override
+              public String apply(SelectedUser user) {
+                return user.getUuid();
+              }
+            }));
+  }
 
-	private class OwnerTableModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
-			final Item item = iinfo.getItem();
-			return Collections.singletonList(item.getOwner());
-		}
+  @EventHandlerMethod
+  public void removeCollaborator(SectionInfo info, String userId) {
+    final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+    iinfo.modify(workflowFactory.modifyCollaborators(userId, true));
+    checkAccess(info);
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String userId,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
-			actions.add(makeAction(OWNER_CHANGE, new OverrideHandler(ownerSelect.getOpenFunction())));
-		}
-	}
+  private void saveCollaborators(final SectionInfo info, final Collection<String> userIds) {
+    ParentViewItemSectionUtils.getItemInfo(info)
+        .modify(workflowFactory.addCollaborators(new HashSet<String>(userIds)));
+  }
 
-	private class CollabTableModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
-			final Item item = iinfo.getItem();
-			return Lists.newArrayList(getList(item));
-		}
+  @Override
+  public List<SelectedUser> getCurrentSelectedUsers(SectionInfo info) {
+    return Lists.newArrayList(
+        Collections2.transform(
+            ParentViewItemSectionUtils.getItemInfo(info).getItem().getCollaborators(),
+            new Function<String, SelectedUser>() {
+              @Override
+              public SelectedUser apply(final String uuidOrEmail) {
+                final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
+                final String displayName;
+                if (userBean == null) {
+                  displayName = uuidOrEmail;
+                } else {
+                  displayName = Format.format(userBean);
+                }
+                return new SelectedUser(uuidOrEmail, displayName);
+              }
+            }));
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String userId,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
-			actions.add(makeRemoveAction(COLLAB_REMOVE,
-				new OverrideHandler(removeUserFunc, userId).addValidator(COLLAB_REMOVE_CONFIRM)));
-		}
-	}
+  private Set<String> getList(Item item) {
+    return item.getCollaborators();
+  }
 
-	public static class ChangeOwnershipModel
-	{
-		private SelectionsTableState owner;
-		private SelectionsTableState collaborators;
+  @Override
+  public boolean canView(SectionInfo info) {
+    ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+    return !itemInfo.getWorkflowStatus().isLocked() && itemInfo.hasPrivilege(REQUIRED_PRIVILEGE);
+  }
 
-		public SelectionsTableState getOwner()
-		{
-			return owner;
-		}
+  public SelectUserDialog getOwnerSelect() {
+    return ownerSelect;
+  }
 
-		public void setOwner(SelectionsTableState owner)
-		{
-			this.owner = owner;
-		}
+  public SelectUserDialog getCollabSelect() {
+    return collabSelect;
+  }
 
-		public SelectionsTableState getCollaborators()
-		{
-			return collaborators;
-		}
+  public SelectionsTable getOwnerTable() {
+    return ownerTable;
+  }
 
-		public void setCollaborators(SelectionsTableState collaborators)
-		{
-			this.collaborators = collaborators;
-		}
-	}
+  public SelectionsTable getCollabTable() {
+    return collabTable;
+  }
+
+  @Override
+  public Class<ChangeOwnershipModel> getModelClass() {
+    return ChangeOwnershipModel.class;
+  }
+
+  private class OwnerTableModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+      final Item item = iinfo.getItem();
+      return Collections.singletonList(item.getOwner());
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String userId,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
+      actions.add(makeAction(OWNER_CHANGE, new OverrideHandler(ownerSelect.getOpenFunction())));
+    }
+  }
+
+  private class CollabTableModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+      final Item item = iinfo.getItem();
+      return Lists.newArrayList(getList(item));
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String userId,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
+      actions.add(
+          makeRemoveAction(
+              COLLAB_REMOVE,
+              new OverrideHandler(removeUserFunc, userId).addValidator(COLLAB_REMOVE_CONFIRM)));
+    }
+  }
+
+  public static class ChangeOwnershipModel {
+    private SelectionsTableState owner;
+    private SelectionsTableState collaborators;
+
+    public SelectionsTableState getOwner() {
+      return owner;
+    }
+
+    public void setOwner(SelectionsTableState owner) {
+      this.owner = owner;
+    }
+
+    public SelectionsTableState getCollaborators() {
+      return collaborators;
+    }
+
+    public void setCollaborators(SelectionsTableState collaborators) {
+      this.collaborators = collaborators;
+    }
+  }
 }

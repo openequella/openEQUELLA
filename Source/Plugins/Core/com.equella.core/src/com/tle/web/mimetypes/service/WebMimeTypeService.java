@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,32 @@
 
 package com.tle.web.mimetypes.service;
 
-import java.net.URL;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.mime.MimeEntry;
+import java.net.URL;
 
 @NonNullByDefault
-public interface WebMimeTypeService
-{
-	@Nullable
-	MimeEntry getEntryForFilename(String filename);
+public interface WebMimeTypeService {
+  @Nullable
+  MimeEntry getEntryForFilename(String filename);
 
-	String getMimeTypeForFilename(String filename);
+  String getMimeTypeForFilename(String filename);
 
-	@Nullable
-	MimeEntry getEntryForMimeType(String mimeType);
+  @Nullable
+  MimeEntry getEntryForMimeType(String mimeType);
 
-	URL getIconForEntry(@Nullable MimeEntry entry);
+  URL getIconForEntry(@Nullable MimeEntry entry);
 
-	URL getIconForEntry(@Nullable MimeEntry entry, boolean allowCache);
+  URL getIconForEntry(@Nullable MimeEntry entry, boolean allowCache);
 
-	URL getDefaultIconForEntry(@Nullable MimeEntry entry);
+  URL getDefaultIconForEntry(@Nullable MimeEntry entry);
 
-	boolean hasCustomIcon(MimeEntry entry);
+  boolean hasCustomIcon(MimeEntry entry);
 
-	/**
-	 * @param entry
-	 * @param base64icon May be null, in which case the default icon will be
-	 *            restored
-	 */
-	void setIconBase64(MimeEntry entry, @Nullable String base64Icon);
+  /**
+   * @param entry
+   * @param base64icon May be null, in which case the default icon will be restored
+   */
+  void setIconBase64(MimeEntry entry, @Nullable String base64Icon);
 }

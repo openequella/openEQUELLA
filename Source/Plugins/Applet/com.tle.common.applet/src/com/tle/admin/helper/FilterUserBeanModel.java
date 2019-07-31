@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,35 @@
 
 package com.tle.admin.helper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.dytech.gui.filter.FilterModel;
 import com.tle.common.Format;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-/**
- * @author Nicholas Read
- */
-public class FilterUserBeanModel extends FilterModel<UserBean>
-{
-	private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
+/** @author Nicholas Read */
+public class FilterUserBeanModel extends FilterModel<UserBean> {
+  private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
 
-	private RemoteUserService userService;
+  private RemoteUserService userService;
 
-	public FilterUserBeanModel(RemoteUserService userService)
-	{
-		this.userService = userService;
-	}
+  public FilterUserBeanModel(RemoteUserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public List<UserBean> search(String pattern)
-	{
-		try
-		{
-			List<UserBean> users = removeExclusions(userService.searchUsers(pattern));
-			Collections.sort(users, Format.USER_BEAN_COMPARATOR);
-			return users;
-		}
-		catch( Exception ex )
-		{
-			LOGGER.warn("Error searching for users matching " + pattern, ex);
-			return new ArrayList<UserBean>(0);
-		}
-	}
+  @Override
+  public List<UserBean> search(String pattern) {
+    try {
+      List<UserBean> users = removeExclusions(userService.searchUsers(pattern));
+      Collections.sort(users, Format.USER_BEAN_COMPARATOR);
+      return users;
+    } catch (Exception ex) {
+      LOGGER.warn("Error searching for users matching " + pattern, ex);
+      return new ArrayList<UserBean>(0);
+    }
+  }
 }

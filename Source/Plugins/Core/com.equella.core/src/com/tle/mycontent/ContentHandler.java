@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.mycontent;
 
-import java.util.List;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
 import com.tle.web.itemlist.item.StandardItemListEntry;
@@ -29,31 +29,29 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.List;
 
-/**
- * @author aholland
- */
-public interface ContentHandler
-{
-	HtmlLinkState decorate(SectionInfo info, StandardItemListEntry itemEntry);
+/** @author aholland */
+public interface ContentHandler {
+  HtmlLinkState decorate(SectionInfo info, StandardItemListEntry itemEntry);
 
-	void contribute(SectionInfo info, ItemDefinition collection);
+  void contribute(SectionInfo info, ItemDefinition collection);
 
-	boolean canEdit(SectionInfo info, ItemId id);
+  boolean canEdit(SectionInfo info, ItemId id);
 
-	void edit(SectionInfo info, ItemId id);
+  void edit(SectionInfo info, ItemId id);
 
-	SectionRenderable render(RenderContext context);
+  SectionRenderable render(RenderContext context);
 
-	List<HtmlComponentState> getMajorActions(RenderContext context);
+  List<HtmlComponentState> getMajorActions(RenderContext context);
 
-	List<HtmlComponentState> getMinorActions(RenderContext context);
+  List<HtmlComponentState> getMinorActions(RenderContext context);
 
-	Label getTitle(SectionInfo info);
+  Label getTitle(SectionInfo info);
 
-	void addTrees(SectionInfo info, boolean parameters);
+  void addTrees(SectionInfo info, boolean parameters);
 
-	boolean isRawFiles();
+  boolean isRawFiles();
 
-	void addCrumbs(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
+  void addCrumbs(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
 }

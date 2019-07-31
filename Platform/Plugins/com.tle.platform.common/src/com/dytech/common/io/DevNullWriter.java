@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,55 +20,44 @@ package com.dytech.common.io;
 
 import java.io.Writer;
 
-/**
- * @author Nicholas Read
- */
-public class DevNullWriter extends Writer
-{
-	public DevNullWriter()
-	{
-		super();
-	}
+/** @author Nicholas Read */
+public class DevNullWriter extends Writer {
+  public DevNullWriter() {
+    super();
+  }
 
-	@Override
-	public void write(int c)
-	{
-		// We don't care if they are trying to write to us.
-	}
+  @Override
+  public void write(int c) {
+    // We don't care if they are trying to write to us.
+  }
 
-	@Override
-	public void write(char[] cbuf)
-	{
-		// We don't care if they are trying to write to us.
-	}
+  @Override
+  public void write(char[] cbuf) {
+    // We don't care if they are trying to write to us.
+  }
 
-	@Override
-	public void write(char[] cbuf, int off, int len)
-	{
-		// We don't care if they are trying to write to us.
-	}
+  @Override
+  public void write(char[] cbuf, int off, int len) {
+    // We don't care if they are trying to write to us.
+  }
 
-	@Override
-	public void write(String str)
-	{
-		// We don't care if they are trying to write to us.
-	}
+  @Override
+  public void write(String str) {
+    // We don't care if they are trying to write to us.
+  }
 
-	@Override
-	public void write(String str, int off, int len)
-	{
-		// We don't care if they are trying to write to us.
-	}
+  @Override
+  public void write(String str, int off, int len) {
+    // We don't care if they are trying to write to us.
+  }
 
-	@Override
-	public void flush()
-	{
-		// There is nothing to flush!
-	}
+  @Override
+  public void flush() {
+    // There is nothing to flush!
+  }
 
-	@Override
-	public void close()
-	{
-		// There is nothing to close!
-	}
+  @Override
+  public void close() {
+    // There is nothing to close!
+  }
 }

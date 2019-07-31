@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.core.security.convert.migration.v64;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
@@ -32,48 +29,59 @@ import com.tle.core.dao.AclDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.PostReadMigrator;
 import com.tle.core.security.convert.AclConverter.AclPostReadMigratorParams;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class NewPagesACLsPostMigration implements PostReadMigrator<AclPostReadMigratorParams>
-{
-	@Inject
-	private AccessExpressionDao accessExpressionDao;
-	@Inject
-	private AclDao aclDao;
+public class NewPagesACLsPostMigration implements PostReadMigrator<AclPostReadMigratorParams> {
+  @Inject private AccessExpressionDao accessExpressionDao;
+  @Inject private AclDao aclDao;
 
-	@Override
-	public void migrate(AclPostReadMigratorParams obj) throws IOException
-	{
-		final AccessExpression loggedInUser = accessExpressionDao
-			.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.ROLE, SecurityConstants.LOGGED_IN_USER_ROLE_ID));
+  @Override
+  public void migrate(AclPostReadMigratorParams obj) throws IOException {
+    final AccessExpression loggedInUser =
+        accessExpressionDao.retrieveOrCreate(
+            SecurityConstants.getRecipient(
+                Recipient.ROLE, SecurityConstants.LOGGED_IN_USER_ROLE_ID));
 
-		grantPrivilege("SEARCH_PAGE", loggedInUser, SecurityConstants.TARGET_EVERYTHING, CurrentInstitution.get());
-		grantPrivilege("DASHBOARD_PAGE", loggedInUser, SecurityConstants.TARGET_EVERYTHING, CurrentInstitution.get());
-		grantPrivilege("HIERARCHY_PAGE", loggedInUser, SecurityConstants.TARGET_EVERYTHING, CurrentInstitution.get());
+    grantPrivilege(
+        "SEARCH_PAGE", loggedInUser, SecurityConstants.TARGET_EVERYTHING, CurrentInstitution.get());
+    grantPrivilege(
+        "DASHBOARD_PAGE",
+        loggedInUser,
+        SecurityConstants.TARGET_EVERYTHING,
+        CurrentInstitution.get());
+    grantPrivilege(
+        "HIERARCHY_PAGE",
+        loggedInUser,
+        SecurityConstants.TARGET_EVERYTHING,
+        CurrentInstitution.get());
+  }
 
-	}
+  private void grantPrivilege(
+      String privilege, AccessExpression expression, String target, Institution institution) {
+    addEntry(privilege, SecurityConstants.GRANT, expression, target, institution);
+  }
 
-	private void grantPrivilege(String privilege, AccessExpression expression, String target, Institution institution)
-	{
-		addEntry(privilege, SecurityConstants.GRANT, expression, target, institution);
-	}
+  private void addEntry(
+      String privilege,
+      char grantRevoke,
+      AccessExpression expression,
+      String target,
+      Institution institution) {
+    AccessEntry newEntry = new AccessEntry();
+    newEntry.setGrantRevoke(grantRevoke);
+    newEntry.setPrivilege(privilege);
+    newEntry.setTargetObject(target);
+    newEntry.setAclPriority(-SecurityConstants.PRIORITY_INSTITUTION);
+    newEntry.setAclOrder(0);
+    newEntry.setExpression(expression);
+    newEntry.setInstitution(institution);
 
-	private void addEntry(String privilege, char grantRevoke, AccessExpression expression, String target,
-		Institution institution)
-	{
-		AccessEntry newEntry = new AccessEntry();
-		newEntry.setGrantRevoke(grantRevoke);
-		newEntry.setPrivilege(privilege);
-		newEntry.setTargetObject(target);
-		newEntry.setAclPriority(-SecurityConstants.PRIORITY_INSTITUTION);
-		newEntry.setAclOrder(0);
-		newEntry.setExpression(expression);
-		newEntry.setInstitution(institution);
-
-		aclDao.save(newEntry);
-		aclDao.flush();
-		aclDao.clear();
-	}
-
+    aclDao.save(newEntry);
+    aclDao.flush();
+    aclDao.clear();
+  }
 }

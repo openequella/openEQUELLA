@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.itemadmin.section;
-
-import javax.inject.Inject;
 
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -30,45 +30,43 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class RootItemAdminSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	public static final String ITEMADMINURL = "/access/itemadmin.do";
+    implements BlueBarEventListener {
+  public static final String ITEMADMINURL = "/access/itemadmin.do";
 
-	@Inject
-	private ItemAdminPrivilegeTreeProvider securityProvider;
+  @Inject private ItemAdminPrivilegeTreeProvider securityProvider;
 
-	@PlugKey("itemadmin.title")
-	private static Label title;
+  @PlugKey("itemadmin.title")
+  private static Label title;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return "itemadminContext";
-	}
+  @Override
+  protected String getSessionKey() {
+    return "itemadminContext";
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return title;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return title;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    securityProvider.checkAuthorised();
+    return super.renderHtml(context);
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(view.createResult("itemadmin-help.ftl", this));
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(view.createResult("itemadmin-help.ftl", this));
+  }
+
+  @Override
+  protected String getPageName() {
+    return ITEMADMINURL;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,139 +18,162 @@
 
 package com.tle.web.favourites;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.tle.web.favourites.searches.SearchFavouritesResultsSection;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.MutableSectionInfo;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.annotations.Bookmarked;
+import com.tle.web.sections.annotations.EventFactory;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.utils.VoidKeyOption;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.RenderContext;
-import com.tle.web.sections.js.generic.ReloadHandler;
+import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
-import com.tle.web.sections.standard.event.ValueSetListener;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
+import java.util.List;
 
 @SuppressWarnings("nls")
-public abstract class AbstractRootFavouritesSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		ValueSetListener<Set<String>>
-{
-	private static final String CONTEXT_KEY = "favouritesContext";
+public abstract class AbstractRootFavouritesSection
+    extends ContextableSearchSection<AbstractRootFavouritesSection.Model> {
+  private static final String CONTEXT_KEY = "favouritesContext";
 
-	private static final String SEARCHES_TYPE = "searches";
-	private static final String ITEMS_TYPE = "items";
+  private static final String SEARCHTYPE_PARAM = "favtype";
+  private static final String SEARCHES_TYPE = "searches";
+  private static final String ITEMS_TYPE = "items";
 
-	@PlugKey("favourites.title")
-	private static Label LABEL_TITLE;
-	@PlugKey(SEARCHES_TYPE)
-	private static String KEY_SEARCHES;
-	@PlugKey(ITEMS_TYPE)
-	private static String KEY_ITEMS;
+  @PlugKey("favourites.title")
+  private static Label LABEL_TITLE;
 
-	@Component
-	private SingleSelectionList<Void> favouriteType;
+  @PlugKey(SEARCHES_TYPE)
+  private static String KEY_SEARCHES;
 
-	protected abstract SectionTree getSearchTree();
+  @PlugKey(ITEMS_TYPE)
+  private static String KEY_ITEMS;
 
-	protected abstract SectionTree getItemTree();
+  @Component(stateful = false)
+  private SingleSelectionList<Void> favouriteType;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  protected abstract SectionTree getSearchTree();
 
-		favouriteType.setListModel(new SimpleHtmlListModel<Void>(new VoidKeyOption(KEY_ITEMS, ITEMS_TYPE),
-			new VoidKeyOption(KEY_SEARCHES, SEARCHES_TYPE)));
-		favouriteType.addChangeEventHandler(new ReloadHandler());
-		favouriteType.setAlwaysSelect(true);
-		favouriteType.setValueSetListener(this);
-	}
+  protected abstract SectionTree getItemTree();
 
-	@Override
-	protected String getSessionKey()
-	{
-		return CONTEXT_KEY;
-	}
+  @EventHandlerMethod
+  public void changeSearchType(SectionInfo info) {
+    getModel(info).setSearchType(favouriteType.getSelectedValueAsString(info));
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @EventFactory private EventGenerator events;
 
-	public Label getHeaderTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected boolean hasContextBeenSpecified(SectionInfo info)
-	{
-		return getModel(info).isUpdateContext();
-	}
+    favouriteType.setListModel(
+        new SimpleHtmlListModel<Void>(
+            new VoidKeyOption(KEY_ITEMS, ITEMS_TYPE),
+            new VoidKeyOption(KEY_SEARCHES, SEARCHES_TYPE)));
+    favouriteType.addChangeEventHandler(events.getNamedHandler("changeSearchType"));
+    favouriteType.setAlwaysSelect(true);
+  }
 
-	@Override
-	public void valueSet(SectionInfo info, Set<String> value)
-	{
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		SectionTree tree = getCurrentTree(info);
-		minfo.addTreeToBottom(tree, true);
-		Map<String, String[]> context = getModel(info).getContext();
-		if( context != null )
-		{
-			info.processEvent(new ParametersEvent(context, false), tree);
-			if( favouriteType.getSelectedValueAsString(info).equals(SEARCHES_TYPE) )
-			{
-				SearchFavouritesResultsSection searchFavouritesResultsSection = info
-					.lookupSection(SearchFavouritesResultsSection.class);
-				if( searchFavouritesResultsSection != null )
-				{
-					searchFavouritesResultsSection.startSearch(info);
-				}
-			}
-			else
-			{
-				FavouritesResultsSection favouritesResultsSection = info.lookupSection(FavouritesResultsSection.class);
-				if( favouritesResultsSection != null )
-				{
+  @Override
+  protected String getSessionKey() {
+    return CONTEXT_KEY;
+  }
 
-					favouritesResultsSection.startSearch(info);
-				}
-			}
-		}
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	protected List<SectionId> getChildIds(RenderContext info)
-	{
-		SectionTree tree = getCurrentTree(info);
-		return tree.getChildIds(tree.getRootId());
-	}
+  public Label getHeaderTitle() {
+    return LABEL_TITLE;
+  }
 
-	private SectionTree getCurrentTree(SectionInfo info)
-	{
-		String list = favouriteType.getSelectedValueAsString(info);
-		return list.equals(SEARCHES_TYPE) ? getSearchTree() : getItemTree();
-	}
+  @Override
+  protected boolean hasContextBeenSpecified(SectionInfo info) {
+    return getModel(info).isUpdateContext();
+  }
 
-	@Override
-	protected SectionRenderable getBodyHeader(RenderContext info)
-	{
-		return viewFactory.createResult("favourites.ftl", this);
-	}
+  @Override
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    if (event.hasParameter(SEARCHTYPE_PARAM)) {
+      if (!event.isInitial()) {
+        MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+        minfo.addParametersEvent(event);
+      }
+      getCurrentTree(info, true);
+    }
+    super.afterParameters(info, event);
+  }
 
-	public SingleSelectionList<Void> getFavouriteType()
-	{
-		return favouriteType;
-	}
+  @Override
+  protected List<SectionId> getChildIds(RenderContext info) {
+    SectionTree tree = getCurrentTree(info, false);
+    return tree.getChildIds(tree.getRootId());
+  }
+
+  private SectionTree getCurrentTree(SectionInfo info, boolean params) {
+    Model model = getModel(info);
+    String list = model.getSearchType();
+    SectionTree tree = list.equals(SEARCHES_TYPE) ? getSearchTree() : getItemTree();
+    SectionTree addedTree = model.getAddedTree();
+    if (addedTree != tree) {
+      MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+      if (addedTree != null) minfo.removeTree(addedTree);
+      minfo.addTreeToBottom(tree, params);
+      model.setAddedTree(tree);
+    }
+    return tree;
+  }
+
+  @Override
+  protected SectionRenderable getBodyHeader(RenderContext info) {
+    favouriteType.setSelectedStringValue(info, getModel(info).getSearchType());
+    return viewFactory.createResult("favourites.ftl", this);
+  }
+
+  public SingleSelectionList<Void> getFavouriteType() {
+    return favouriteType;
+  }
+
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
+
+  @Override
+  protected String getPageName() {
+    return "/access/favourites.do";
+  }
+
+  public static class Model extends ContextableSearchSection.Model {
+
+    @Bookmarked(parameter = SEARCHTYPE_PARAM)
+    private String searchType = ITEMS_TYPE;
+
+    private SectionTree addedTree;
+
+    public SectionTree getAddedTree() {
+      return addedTree;
+    }
+
+    public void setAddedTree(SectionTree addedTree) {
+      this.addedTree = addedTree;
+    }
+
+    public String getSearchType() {
+      return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+      this.searchType = searchType;
+    }
+  }
 }

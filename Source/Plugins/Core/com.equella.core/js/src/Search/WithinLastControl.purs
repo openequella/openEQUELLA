@@ -2,6 +2,7 @@ module OEQ.Search.WithinLastControl where
 
 import Prelude
 
+import Common.Strings (languageStrings)
 import Data.Argonaut (Json, _Number)
 import Data.Array as Array
 import Data.DateTime.Instant (instant, toDateTime, unInstant)
@@ -21,8 +22,7 @@ import MaterialUI.Icon (icon_)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (textField)
-import OEQ.Environment (prepLangStrings)
-import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import OEQ.Search.SearchControl (Chip(..), Placement, SearchControl)
 import OEQ.Search.SearchQuery (Query, QueryParam, ParamData, _data, _params, emptyQueryParam, singleParam)
 import OEQ.UI.Common (valueChange)
 import OEQ.UI.SearchFilters (filterSection)
@@ -51,7 +51,7 @@ ago :: forall a. Duration a => String -> a -> AgoEntry
 ago name d = {name, emmed:false, duration: fromDuration d}
 
 agoEntries :: Array AgoEntry
-agoEntries = let s = string.filterLast in [
+agoEntries = let s = languageStrings.searchpage.filterLast in [
   (ago s.none (Milliseconds 0.0)) {emmed=true},
   ago s.day (Days 1.0), 
   ago s.week (Days 7.0),
@@ -69,6 +69,7 @@ _modifiedLast = at "modifiedLast"
 withinLastControl :: Placement -> SearchControl
 withinLastControl placement =
   let 
+    string = languageStrings.searchpage
     agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem {value:ms} $ 
         (if emmed then pure <<< em' else identity) [text name]
     agoMs query = preview (_modifiedLast <<< _Just <<< _data <<< _Number) query.params
@@ -101,45 +102,3 @@ withinLastControl placement =
       width: "15em"
     }
   }
-
-rawStrings :: { prefix :: String
-, strings :: { filterLast :: { label :: String
-                             , chip :: String
-                             , name :: String
-                             , none :: String
-                             , month :: String
-                             , year :: String
-                             , fiveyear :: String
-                             , week :: String
-                             , day :: String
-                             }
-             }
-}
-rawStrings = {prefix: "searchpage", 
-  strings: {
-    filterLast: {
-      label: "Modified within last",
-      chip: "Modified within: ",
-      name: "Modification date",
-      none: "\xa0-\xa0",
-      month: "Month",
-      year: "Year",
-      fiveyear: "Five years",
-      week: "Week",
-      day: "Day"
-    }
-  }
-}
-
-string :: { filterLast :: { label :: String
-                , chip :: String
-                , name :: String
-                , none :: String
-                , month :: String
-                , year :: String
-                , fiveyear :: String
-                , week :: String
-                , day :: String
-                }
-}
-string = prepLangStrings rawStrings

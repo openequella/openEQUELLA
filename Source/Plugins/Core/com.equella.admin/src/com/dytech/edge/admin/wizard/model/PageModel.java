@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.dytech.edge.admin.wizard.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.dytech.edge.admin.wizard.Contexts;
 import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.wizard.beans.DefaultWizardPage;
@@ -27,91 +25,76 @@ import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.applet.client.ClientService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public class PageModel extends AbstractPageModel<DefaultWizardPage>
-{
-	private DefaultWizardPage defPage;
+/** @author Nicholas Read */
+public class PageModel extends AbstractPageModel<DefaultWizardPage> {
+  private DefaultWizardPage defPage;
 
-	/**
-	 * Constructs a new PageModel.
-	 */
-	public PageModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+  /** Constructs a new PageModel. */
+  public PageModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public void setWrappedObject(Object wrappedObject)
-	{
-		super.setWrappedObject(wrappedObject);
-		defPage = (DefaultWizardPage) wrappedObject;
-	}
+  @Override
+  public void setWrappedObject(Object wrappedObject) {
+    super.setWrappedObject(wrappedObject);
+    defPage = (DefaultWizardPage) wrappedObject;
+  }
 
-	@Override
-	public List<?> getChildObjects()
-	{
-		return defPage.getControls();
-	}
+  @Override
+  public List<?> getChildObjects() {
+    return defPage.getControls();
+  }
 
-	@Override
-	public String getTargetBase()
-	{
-		return ""; //$NON-NLS-1$
-	}
+  @Override
+  public String getTargetBase() {
+    return ""; //$NON-NLS-1$
+  }
 
-	@Override
-	public LanguageBundle getTitle()
-	{
-		return defPage.getTitle();
-	}
+  @Override
+  public LanguageBundle getTitle() {
+    return defPage.getTitle();
+  }
 
-	@Override
-	public boolean allowsChildren()
-	{
-		return true;
-	}
+  @Override
+  public boolean allowsChildren() {
+    return true;
+  }
 
-	@Override
-	public void setTitle(LanguageBundle title)
-	{
-		defPage.setTitle(title);
-	}
+  @Override
+  public void setTitle(LanguageBundle title) {
+    defPage.setTitle(title);
+  }
 
-	@Override
-	public Object save()
-	{
-		List<WizardControl> controls = new ArrayList<WizardControl>();
-		List<Control> children = getChildren();
-		for( Control control : children )
-		{
-			controls.add((WizardControl) control.save());
-		}
-		defPage.setControls(controls);
-		return defPage;
-	}
+  @Override
+  public Object save() {
+    List<WizardControl> controls = new ArrayList<WizardControl>();
+    List<Control> children = getChildren();
+    for (Control control : children) {
+      controls.add((WizardControl) control.save());
+    }
+    defPage.setControls(controls);
+    return defPage;
+  }
 
-	@Override
-	public List<String> getContexts()
-	{
-		return Arrays.asList(Contexts.CONTEXT_PAGE);
-	}
+  @Override
+  public List<String> getContexts() {
+    return Arrays.asList(Contexts.CONTEXT_PAGE);
+  }
 
-	@Override
-	public String doValidation(ClientService clientService)
-	{
-		return Validation.hasTitle(this);
-	}
+  @Override
+  public String doValidation(ClientService clientService) {
+    return Validation.hasTitle(this);
+  }
 
-	public String getAdditionalCssClass()
-	{
-		return page.getAdditionalCssClass();
-	}
+  public String getAdditionalCssClass() {
+    return page.getAdditionalCssClass();
+  }
 
-	public void setAdditionalCssClass(String additionalCssClass)
-	{
-		page.setAdditionalCssClass(additionalCssClass);
-	}
+  public void setAdditionalCssClass(String additionalCssClass) {
+    page.setAdditionalCssClass(additionalCssClass);
+  }
 }

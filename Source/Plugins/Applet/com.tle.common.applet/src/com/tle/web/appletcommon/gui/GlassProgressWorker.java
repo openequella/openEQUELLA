@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,77 +18,66 @@
 
 package com.tle.web.appletcommon.gui;
 
+import com.dytech.gui.workers.AbstractGlassSwingWorker;
 import javax.swing.SwingUtilities;
 
-import com.dytech.gui.workers.AbstractGlassSwingWorker;
+/** @author Nicholas Read */
+public abstract class GlassProgressWorker<RESULT>
+    extends AbstractGlassSwingWorker<RESULT, GlassProgressPane> {
+  private final int maxProgress;
+  private final String message;
+  private final boolean cancellable;
 
-/**
- * @author Nicholas Read
- */
-public abstract class GlassProgressWorker<RESULT> extends AbstractGlassSwingWorker<RESULT, GlassProgressPane>
-{
-	private final int maxProgress;
-	private final String message;
-	private final boolean cancellable;
+  public GlassProgressWorker(String message, int maxProgress, boolean cancellable) {
+    super(GlassProgressPane.class);
 
-	public GlassProgressWorker(String message, int maxProgress, boolean cancellable)
-	{
-		super(GlassProgressPane.class);
+    this.message = message;
+    this.maxProgress = maxProgress;
+    this.cancellable = cancellable;
+  }
 
-		this.message = message;
-		this.maxProgress = maxProgress;
-		this.cancellable = cancellable;
-	}
+  @Override
+  protected GlassProgressPane constructGlassPane() {
+    return new GlassProgressPane(
+        message, maxProgress, getComponent(), isDisallowClosing(), this, cancellable);
+  }
 
-	@Override
-	protected GlassProgressPane constructGlassPane()
-	{
-		return new GlassProgressPane(message, maxProgress, getComponent(), isDisallowClosing(), this, cancellable);
-	}
+  @Override
+  protected void processExistingGlassPane(GlassProgressPane gp) {
+    gp.setWorker(this);
+    gp.setCancellable(cancellable);
+    gp.setMessage(message);
+    gp.setTotal(maxProgress);
+    gp.resetProgress();
+  }
 
-	@Override
-	protected void processExistingGlassPane(GlassProgressPane gp)
-	{
-		gp.setWorker(this);
-		gp.setCancellable(cancellable);
-		gp.setMessage(message);
-		gp.setTotal(maxProgress);
-		gp.resetProgress();
-	}
+  public void addProgress(final int value) {
+    SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            getGlassPane().addProgress(value);
+          }
+        });
+  }
 
-	public void addProgress(final int value)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				getGlassPane().addProgress(value);
-			}
-		});
-	}
+  public void setTotal(final int total) {
+    SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            getGlassPane().setTotal(total);
+          }
+        });
+  }
 
-	public void setTotal(final int total)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				getGlassPane().setTotal(total);
-			}
-		});
-	}
-
-	public void setMessage(final String messageText)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				getGlassPane().setMessage(messageText);
-			}
-		});
-	}
+  public void setMessage(final String messageText) {
+    SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            getGlassPane().setMessage(messageText);
+          }
+        });
+  }
 }

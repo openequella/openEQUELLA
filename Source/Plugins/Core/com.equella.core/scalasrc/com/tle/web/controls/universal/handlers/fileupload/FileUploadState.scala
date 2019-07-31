@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,8 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 import scala.collection.JavaConverters._
 
-object FileUploadState
-{
+object FileUploadState {
   val UPLOADS_FOLDER = "_uploads"
 }
 
@@ -33,7 +34,12 @@ class FileUploadState {
   private val currentUploads = new ConcurrentHashMap[UUID, CurrentUpload]().asScala
 
   def initialiseUpload(id: UUID, filename: String, description: String): CurrentUpload = {
-    val newUpload = UploadingFile(id, Instant.now(), filename, s"$UPLOADS_FOLDER/$id/$filename", description, new AtomicReference[Boolean](false))
+    val newUpload = UploadingFile(id,
+                                  Instant.now(),
+                                  filename,
+                                  s"$UPLOADS_FOLDER/$id/$filename",
+                                  description,
+                                  new AtomicReference[Boolean](false))
     currentUploads.put(id, newUpload)
     newUpload
   }
@@ -44,11 +50,12 @@ class FileUploadState {
     }
   }
 
-  def allCurrentUploads : Iterable[CurrentUpload] = currentUploads.values.toBuffer.sortBy((_:CurrentUpload).started)
+  def allCurrentUploads: Iterable[CurrentUpload] =
+    currentUploads.values.toBuffer.sortBy((_: CurrentUpload).started)
 
-  def removeAll(uuids: Iterable[UUID]) : Unit = currentUploads --= uuids
+  def removeAll(uuids: Iterable[UUID]): Unit = currentUploads --= uuids
 
-  def remove(uuid: UUID) : Unit = currentUploads -= uuid
+  def remove(uuid: UUID): Unit = currentUploads -= uuid
 
   def uploadForId(id: UUID): Option[CurrentUpload] = currentUploads.get(id)
 

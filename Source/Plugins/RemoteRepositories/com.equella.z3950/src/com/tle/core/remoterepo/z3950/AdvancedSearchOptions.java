@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,66 +18,53 @@
 
 package com.tle.core.remoterepo.z3950;
 
+import com.tle.core.remoterepo.z3950.Z3950Constants.Operator;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.core.remoterepo.z3950.Z3950Constants.Operator;
+/** @author Aaron */
+public class AdvancedSearchOptions {
+  private final List<ExtraQuery> extra = new ArrayList<ExtraQuery>();
 
-/**
- * @author Aaron
- */
-public class AdvancedSearchOptions
-{
-	private final List<ExtraQuery> extra = new ArrayList<ExtraQuery>();
+  public void addExtra(String attributes, String term, Operator operator) {
+    ExtraQuery e = new ExtraQuery();
+    e.setAttributes(attributes);
+    e.setTerm(term);
+    e.setOperator(operator);
+    extra.add(e);
+  }
 
-	public void addExtra(String attributes, String term, Operator operator)
-	{
-		ExtraQuery e = new ExtraQuery();
-		e.setAttributes(attributes);
-		e.setTerm(term);
-		e.setOperator(operator);
-		extra.add(e);
-	}
+  public List<ExtraQuery> getExtra() {
+    return extra;
+  }
 
-	public List<ExtraQuery> getExtra()
-	{
-		return extra;
-	}
+  public static class ExtraQuery {
+    private String attributes;
+    private String term;
+    private Operator operator;
 
-	public static class ExtraQuery
-	{
-		private String attributes;
-		private String term;
-		private Operator operator;
+    public String getAttributes() {
+      return attributes;
+    }
 
-		public String getAttributes()
-		{
-			return attributes;
-		}
+    public void setAttributes(String attributes) {
+      this.attributes = attributes;
+    }
 
-		public void setAttributes(String attributes)
-		{
-			this.attributes = attributes;
-		}
+    public String getTerm() {
+      return term;
+    }
 
-		public String getTerm()
-		{
-			return term;
-		}
+    public void setTerm(String term) {
+      this.term = term;
+    }
 
-		public void setTerm(String term)
-		{
-			this.term = term;
-		}
+    public Operator getOperator() {
+      return operator != null ? operator : Operator.AND;
+    }
 
-		public Operator getOperator()
-		{
-			return operator != null ? operator : Operator.AND;
-		}
-
-		public void setOperator(Operator operator)
-		{
-			this.operator = operator;
-		}
-	}
+    public void setOperator(Operator operator) {
+      this.operator = operator;
+    }
+  }
 }

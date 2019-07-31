@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,35 +27,28 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.reporting.RemoteReportingService;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public class ReportingTool extends BaseEntityTool<Report>
-{
-	public ReportingTool() throws Exception
-	{
-		super(Report.class, RemoteReportingService.ENTITY_TYPE);
-	}
+public class ReportingTool extends BaseEntityTool<Report> {
+  public ReportingTool() throws Exception {
+    super(Report.class, RemoteReportingService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Report> getService(ClientService client)
-	{
-		return client.getService(RemoteReportingService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Report> getService(ClientService client) {
+    return client.getService(RemoteReportingService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "reporting";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "reporting";
+  }
 
-	@Override
-	protected BaseEntityEditor<Report> createEditor(boolean readonly)
-	{
-		return new ReportEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Report> createEditor(boolean readonly) {
+    return new ReportEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.reportingtool.title");
-	}
-
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.reportingtool.title");
+  }
 }

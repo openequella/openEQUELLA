@@ -90,6 +90,7 @@
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.legacy.LegacyGuice" />
     <parameter id="class" value="com.tle.core.collection.guice.CollectionTrackerModule" />
+    <parameter id="class" value="com.tle.core.connectors.blackboard.guice.BlackboardConnectorModule" />
     <parameter id="class" value="com.tle.core.connectors.brightspace.guice.BrightspaceConnectorModule" />
     <parameter id="class" value="com.tle.core.entity.guice.EntityTrackerModule" />
     <parameter id="class" value="com.tle.core.filesystem.guice.FilesystemModule" />
@@ -121,6 +122,7 @@
     <parameter id="class" value="com.tle.core.xslt.guice.XsltModule" />
     <parameter id="class" value="com.tle.integration.lti.brightspace.guice.BrightspaceIntegrationModule" />
     <parameter id="class" value="com.tle.integration.lti.canvasextension.guice.CanvasIntegrationModule" />
+    <parameter id="class" value="com.tle.integration.lti.blackboard.guice.BlackboardLtiIntegrationModule" />
     <parameter id="class" value="com.tle.integration.standard.guice.StandardIntegrationModule" />
     <parameter id="class" value="com.tle.mycontent.guice.MyContentModule" />
     <parameter id="class" value="com.tle.mypages.guice.MyPagesModule" />
@@ -235,7 +237,7 @@
   </extension>
   <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="cacheInvalidator">
     <parameter id="listenerClass" value="com.tle.core.cache.CacheInvalidation" />
-    <parameter id="listener" value="object:com.tle.core.cache.Cache" />
+    <parameter id="listener" value="object:com.tle.core.cache.DBCacheBuilder" />
   </extension>
   <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="groupselector">
     <parameter id="class" value="bean:com.tle.web.controls.groupselector.GroupSelectorWebControl" />
@@ -332,6 +334,10 @@
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="blackboardEditor">
     <parameter id="id" value="blackboard" />
     <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardConnectorEditor" />
+  </extension>
+  <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="blackboardRESTEditor">
+    <parameter id="id" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardRESTConnectorEditor" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="userScriptsObjects">
     <parameter id="class" value="com.tle.common.userscripts.entity.UserScript" />
@@ -670,6 +676,10 @@
     <parameter id="class" value="com.tle.core.remoting.RemoteBaseEntityService" />
     <parameter id="bean" value="bean:remoteBaseEntityService" />
   </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
+    <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
+    <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
+  </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemResolver" id="cloud">
     <parameter id="id" value="cloud" />
     <parameter id="bean" value="bean:com.tle.core.cloud.service.CloudService" />
@@ -756,16 +766,6 @@
     <parameter id="id" value="externalLinkViewer" />
     <parameter id="nameKey" value="com.equella.core.extlink.name" />
     <parameter id="class" value="bean:com.tle.web.viewitem.externallinkviewer.ExternalLinkViewer" />
-  </extension>
-  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="filestoreConverter">
-    <parameter id="id" value="FILES" />
-    <parameter id="id" value="CLEANUPFILES" />
-    <parameter id="class" value="bean:com.tle.core.filesystem.convert.FilestoreConverter" />
-    <parameter id="order" value="10000" />
-    <parameter id="selections">
-      <parameter id="id" value="FILES" />
-      <parameter id="nameKey" value="institutions.tasks.files" />
-    </parameter>
   </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="flickrResource">
     <parameter id="type" value="custom/flickr" />
@@ -1459,6 +1459,9 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.login.LoginSettingsPrivilegeTreeProvider" />
   </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginNoticeEditorPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.web.loginnotice.LoginNoticeEditorPrivilegeTreeProvider" />
+  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="userScriptsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.userscripts.privileges.UserScriptsPrivilegeTreeProvider" />
   </extension>
@@ -1721,6 +1724,9 @@
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
+  </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="cloudProviderSettingPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.web.cloudprovider.CloudProviderSettingPrivilegeTreeProvider" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="move">
     <parameter id="id" value="move" />
@@ -2167,6 +2173,10 @@
     <parameter id="id" value="canvas" />
     <parameter id="class" value="bean:com.tle.integration.lti.canvasextension.CanvasIntegration" />
   </extension>
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="blackboardltiintegration">
+    <parameter id="id" value="blackboardlti" />
+    <parameter id="class" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiIntegration" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
     <parameter id="root" value="bean:/canvassignon" />
@@ -2175,9 +2185,22 @@
     <parameter id="path" value="/canvascipreturn.do" />
     <parameter id="root" value="bean:/canvascipreturn" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_blackboardLti">
+    <parameter id="path" value="/blackboardltisignon.do" />
+    <parameter id="root" value="bean:/blackboardltisignon" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="contentItemPlacementsReturnBlackboardLti">
+    <parameter id="path" value="/blackboardlticipreturn.do" />
+    <parameter id="root" value="bean:/blackboardlticipreturn" />
+  </extension>
   <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="canvasLtiExt">
     <parameter id="id" value="canvas" />
     <parameter id="bean" value="bean:com.tle.integration.lti.canvasextension.CanvasLtiWrapperExtension" />
+    <parameter id="order" value="1000" />
+  </extension>
+  <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="blackboardLtiExt">
+    <parameter id="id" value="bblti" />
+    <parameter id="bean" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiWrapperExtension" />
     <parameter id="order" value="1000" />
   </extension>
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="moodleEditor">
@@ -4244,10 +4267,19 @@
     <parameter id="type" value="blackboard" />
     <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardConnectorService" />
   </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboardrest">
+    <parameter id="type" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService" />
+  </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
     <parameter id="id" value="blackboard" />
     <parameter id="nameKey" value="com.equella.core.connector.name" />
     <parameter id="descriptionKey" value="com.equella.core.connector.description" />
+  </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardRESTConnector">
+    <parameter id="id" value="blackboardrest" />
+    <parameter id="nameKey" value="com.equella.core.blackboardrest.connector.name" />
+    <parameter id="descriptionKey" value="com.equella.core.blackboardrest.connector.description" />
   </extension>
   <extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="bbConnectorTask">
     <parameter id="id" value="Blackboard Connector Synchronisation" />
@@ -5534,11 +5566,6 @@
     <parameter id="id" value="MIGRATION" />
     <parameter id="class" value="bean:com.tle.core.institution.convert.MigrationConverter" />
     <parameter id="order" value="100" />
-  </extension>
-  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="zippingConverter">
-    <parameter id="id" value="ZIPFILES" />
-    <parameter id="class" value="bean:com.tle.core.institution.convert.ZippingConverter" />
-    <parameter id="order" value="20000" />
   </extension>
   <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners_2_2_2">
     <parameter id="listenerClass" value="com.tle.core.hibernate.event.SchemaListener" />

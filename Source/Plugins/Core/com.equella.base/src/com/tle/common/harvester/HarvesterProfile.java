@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,69 +18,57 @@
 
 package com.tle.common.harvester;
 
+import com.tle.beans.entity.BaseEntity;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.entity.BaseEntity;
 
 @Entity
 @AccessType("field")
-public class HarvesterProfile extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class HarvesterProfile extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 64)
-	private String type;
-	private Date lastRun;
-	private Boolean enabled;
-	private Boolean newVersionOnHarvest;
+  @Column(length = 64)
+  private String type;
 
-	public HarvesterProfile()
-	{
-		super();
-	}
+  private Date lastRun;
+  private Boolean enabled;
+  private Boolean newVersionOnHarvest;
 
-	public String getType()
-	{
-		return type;
-	}
+  public HarvesterProfile() {
+    super();
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setLastRun(Date lastRun)
-	{
-		this.lastRun = lastRun;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public Date getLastRun()
-	{
-		return lastRun;
-	}
+  public void setLastRun(Date lastRun) {
+    this.lastRun = lastRun;
+  }
 
-	public void setEnabled(Boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public Date getLastRun() {
+    return lastRun;
+  }
 
-	public Boolean getEnabled()
-	{
-		return enabled;
-	}
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public void setNewVersionOnHarvest(Boolean newVersionOnHarvest)
-	{
-		this.newVersionOnHarvest = newVersionOnHarvest;
-	}
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-	public Boolean getNewVersionOnHarvest()
-	{
-		return newVersionOnHarvest;
-	}
+  public void setNewVersionOnHarvest(Boolean newVersionOnHarvest) {
+    this.newVersionOnHarvest = newVersionOnHarvest;
+  }
+
+  public Boolean getNewVersionOnHarvest() {
+    return newVersionOnHarvest;
+  }
 }

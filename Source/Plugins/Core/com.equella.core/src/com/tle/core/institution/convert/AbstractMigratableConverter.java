@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,16 +17,6 @@
  */
 
 package com.tle.core.institution.convert;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.java.plugin.registry.Extension;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -43,213 +35,203 @@ import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImp
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.FileSystemService;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
+import org.java.plugin.registry.Extension;
+import org.springframework.transaction.annotation.Transactional;
 
-public abstract class AbstractMigratableConverter<T> implements Converter
-{
-	@Inject
-	protected InitialiserService initialiserService;
-	@Inject
-	protected FileSystemService fileSystemService;
-	@Inject
-	protected RunAsInstitution runAs;
-	@Inject
-	protected XmlHelper xmlHelper;
-	@Inject
-	protected InstitutionImportService instService;
+public abstract class AbstractMigratableConverter<T> implements Converter {
+  @Inject protected InitialiserService initialiserService;
+  @Inject protected FileSystemService fileSystemService;
+  @Inject protected RunAsInstitution runAs;
+  @Inject protected XmlHelper xmlHelper;
+  @Inject protected InstitutionImportService instService;
 
-	private PluginTracker<PostReadMigrator<T>> postReadMigs;
+  private PluginTracker<PostReadMigrator<T>> postReadMigs;
 
-	@Override
-	public void clone(final TemporaryFileHandle staging, final Institution institution, final ConverterParams params,
-		final String cid) throws IOException
-	{
-		exportIt(staging, institution, params, cid);
-		runAs.executeAsSystem(institution, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					importIt(staging, institution, params, cid);
-				}
-				catch( IOException e )
-				{
-					throw new RuntimeException(e);
-				}
-			}
-		});
-	}
+  @Override
+  public void clone(
+      final TemporaryFileHandle staging,
+      final Institution institution,
+      final ConverterParams params,
+      final String cid)
+      throws IOException {
+    exportIt(staging, institution, params, cid);
+    runAs.executeAsSystem(
+        institution,
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              importIt(staging, institution, params, cid);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        });
+  }
 
-	@Override
-	public void exportIt(final TemporaryFileHandle staging, final Institution institution, final ConverterParams params,
-		String cid) throws IOException
-	{
-		doInTransaction(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					doExport(staging, institution, params);
-				}
-				catch( IOException e )
-				{
-					throw new RuntimeException(e);
-				}
-			}
-		});
-	}
+  @Override
+  public void exportIt(
+      final TemporaryFileHandle staging,
+      final Institution institution,
+      final ConverterParams params,
+      String cid)
+      throws IOException {
+    doInTransaction(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              doExport(staging, institution, params);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        });
+  }
 
-	@Override
-	@Transactional
-	public void doInTransaction(Runnable runnable)
-	{
-		runnable.run();
-	}
+  @Override
+  @Transactional
+  public void doInTransaction(Runnable runnable) {
+    runnable.run();
+  }
 
-	@Override
-	public void importIt(final TemporaryFileHandle staging, final Institution institution, final ConverterParams params,
-		String cid) throws IOException
-	{
-		doInTransaction(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					doImport(staging, institution, params);
-				}
-				catch( IOException e )
-				{
-					throw new RuntimeException(e);
-				}
-			}
-		});
-	}
+  @Override
+  public void importIt(
+      final TemporaryFileHandle staging,
+      final Institution institution,
+      final ConverterParams params,
+      String cid)
+      throws IOException {
+    doInTransaction(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              doImport(staging, institution, params);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        });
+  }
 
-	@Override
-	public void deleteIt(final TemporaryFileHandle staging, final Institution institution, final ConverterParams params,
-		String cid)
-	{
-		doInTransaction(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				doDelete(institution, params);
-			}
-		});
-	}
+  @Override
+  public void deleteIt(
+      final TemporaryFileHandle staging,
+      final Institution institution,
+      final ConverterParams params,
+      String cid) {
+    doInTransaction(
+        new Runnable() {
+          @Override
+          public void run() {
+            doDelete(institution, params);
+          }
+        });
+  }
 
-	public void doDelete(Institution institution, ConverterParams callback)
-	{
-		throw new Error("You must override doDelete() or deleteIt()"); //$NON-NLS-1$
-	}
+  public void doDelete(Institution institution, ConverterParams callback) {
+    throw new Error("You must override doDelete() or deleteIt()"); // $NON-NLS-1$
+  }
 
-	/**
-	 * @throws IOException
-	 */
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-		throws IOException
-	{
-		throw new Error("You must override doExport() or exportIt()"); //$NON-NLS-1$
-	}
+  /** @throws IOException */
+  public void doExport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    throw new Error("You must override doExport() or exportIt()"); // $NON-NLS-1$
+  }
 
-	/**
-	 * @throws IOException
-	 */
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-		throws IOException
-	{
-		throw new Error("You must override importIt() or doImport()"); //$NON-NLS-1$
-	}
+  /** @throws IOException */
+  public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
+    throw new Error("You must override importIt() or doImport()"); // $NON-NLS-1$
+  }
 
-	protected Collection<PostReadMigrator<T>> getMigrations(ConverterParams params)
-	{
-		Collection<PostReadMigrator<T>> migrations = Lists.newArrayList();
-		if( postReadMigs != null )
-		{
-			InstitutionInfo info = params.getInstituionInfo();
-			Map<String, Extension> postReadExtMap = postReadMigs.getExtensionMap();
+  protected Collection<PostReadMigrator<T>> getMigrations(ConverterParams params) {
+    Collection<PostReadMigrator<T>> migrations = Lists.newArrayList();
+    if (postReadMigs != null) {
+      InstitutionInfo info = params.getInstituionInfo();
+      Map<String, Extension> postReadExtMap = postReadMigs.getExtensionMap();
 
-			// Get imported postread migrations
-			final Set<Extension> importedPostReadMigs = Sets.newHashSet();
-			for( String impExt : info.getPostReadMigrations() )
-			{
-				importedPostReadMigs.add(postReadExtMap.get(impExt));
-			}
+      // Get imported postread migrations
+      final Set<Extension> importedPostReadMigs = Sets.newHashSet();
+      for (String impExt : info.getPostReadMigrations()) {
+        importedPostReadMigs.add(postReadExtMap.get(impExt));
+      }
 
-			// Get all available post read migrations in order
-			Set<Extension> allAvailablePostReadMigs = instService.orderExtsByDependencies(postReadMigs,
-				postReadExtMap.values());
+      // Get all available post read migrations in order
+      Set<Extension> allAvailablePostReadMigs =
+          instService.orderExtsByDependencies(postReadMigs, postReadExtMap.values());
 
-			// Compare and get required migrations
-			migrations = Collections2.transform(Sets.filter(allAvailablePostReadMigs, new Predicate<Extension>()
-			{
-				@Override
-				@SuppressWarnings("nls")
-				public boolean apply(Extension ext)
-				{
-					boolean isForConverter = ext.getParameter("forconverter").valueAsString()
-						.equals(getStringId().toLowerCase());
-					return isForConverter
-						&& (postReadMigs.isParamTrue(ext, "alwaysRun", false) || !importedPostReadMigs.contains(ext));
-				}
-			}), new Function<Extension, PostReadMigrator<T>>()
-			{
-				@Override
-				public PostReadMigrator<T> apply(Extension ext)
-				{
-					return postReadMigs.getBeanByExtension(ext);
-				}
-			});
-		}
-		return migrations;
-	}
+      // Compare and get required migrations
+      migrations =
+          Collections2.transform(
+              Sets.filter(
+                  allAvailablePostReadMigs,
+                  new Predicate<Extension>() {
+                    @Override
+                    @SuppressWarnings("nls")
+                    public boolean apply(Extension ext) {
+                      boolean isForConverter =
+                          ext.getParameter("forconverter")
+                              .valueAsString()
+                              .equals(getStringId().toLowerCase());
+                      return isForConverter
+                          && (postReadMigs.isParamTrue(ext, "alwaysRun", false)
+                              || !importedPostReadMigs.contains(ext));
+                    }
+                  }),
+              new Function<Extension, PostReadMigrator<T>>() {
+                @Override
+                public PostReadMigrator<T> apply(Extension ext) {
+                  return postReadMigs.getBeanByExtension(ext);
+                }
+              });
+    }
+    return migrations;
+  }
 
-	public void runMigrations(Collection<PostReadMigrator<T>> migrations, T o) throws IOException
-	{
-		for( PostReadMigrator<T> mg : migrations )
-		{
-			mg.migrate(o);
-		}
-	}
+  public void runMigrations(Collection<PostReadMigrator<T>> migrations, T o) throws IOException {
+    for (PostReadMigrator<T> mg : migrations) {
+      mg.migrate(o);
+    }
+  }
 
-	protected NameValue getStandardTask()
-	{
-		return getStandardTask(getStringId());
-	}
+  protected NameValue getStandardTask() {
+    return getStandardTask(getStringId());
+  }
 
-	protected NameValue getStandardTask(String converterId)
-	{
-		return new NameValue(CurrentLocale.get("institutions.tasks." + converterId.toLowerCase()), converterId); //$NON-NLS-1$
-	}
+  protected NameValue getStandardTask(String converterId) {
+    return new NameValue(
+        CurrentLocale.get("institutions.tasks." + converterId.toLowerCase()),
+        converterId); //$NON-NLS-1$
+  }
 
-	@Override
-	public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params)
-	{
-		tasks.add(getStandardTask());
-	}
+  @Override
+  public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
+    tasks.add(getStandardTask());
+  }
 
-	public abstract String getStringId();
+  public abstract String getStringId();
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		String converterId = getStringId();
-		if( converterId != null )
-		{
-			postReadMigs = new PluginTracker<PostReadMigrator<T>>(pluginService, "com.tle.core.institution.convert",
-				"postreadmigration", "id").setBeanKey("bean");
-		}
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    String converterId = getStringId();
+    if (converterId != null) {
+      postReadMigs =
+          new PluginTracker<PostReadMigrator<T>>(
+                  pluginService, "com.tle.core.institution.convert", "postreadmigration", "id")
+              .setBeanKey("bean");
+    }
+  }
 
-	public interface HibernateOperation<T>
-	{
-		void execute(T data);
-	}
+  public interface HibernateOperation<T> {
+    void execute(T data);
+  }
 }

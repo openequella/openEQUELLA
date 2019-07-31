@@ -1,6 +1,7 @@
 *.pyc
 *.pmd
 *.iml
+.cache/
 
 target/
 build.conf
@@ -14,3 +15,5 @@ generated.keystore
 # Remove this one day
 Source/Plugins/Kaltura
 server.xml
+node_modules/
+

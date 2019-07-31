@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,21 +25,20 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Component
-{
-	boolean stateful() default true;
+public @interface Component {
+  boolean stateful() default true;
 
-	String name() default "";
+  String name() default "";
 
-	boolean register() default true;
+  boolean register() default true;
 
-	String[] onlyForContext() default {};
+  String[] onlyForContext() default {};
 
-	String[] ignoreForContext() default {};
+  String[] ignoreForContext() default {};
 
-	String[] contexts() default {};
+  String[] contexts() default {};
 
-	String parameter() default "";
+  String parameter() default "";
 
-	boolean supported() default false;
+  boolean supported() default false;
 }

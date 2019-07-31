@@ -1,0 +1,15 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413736</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-itunesu</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/itunes.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

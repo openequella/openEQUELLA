@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +18,6 @@
 
 package com.tle.core.institution.impl;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -33,63 +29,52 @@ import com.tle.core.hibernate.DataSourceHolder;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.system.service.SchemaDataSourceService;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind(RunAsInstitution.class)
 @Singleton
-public class RunAsInstitutionImpl implements RunAsInstitution
-{
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private SchemaDataSourceService databaseSchemaService;
+public class RunAsInstitutionImpl implements RunAsInstitution {
+  @Inject private InstitutionService institutionService;
+  @Inject private SchemaDataSourceService databaseSchemaService;
 
-	@Override
-	public <V> V execute(UserState state, Callable<V> runnable)
-	{
-		final UserState originalUser = CurrentUser.getUserState();
-		final Institution originalInstitution = CurrentInstitution.get();
-		final DataSourceHolder originalDataSource = CurrentDataSource.get();
+  @Override
+  public <V> V execute(UserState state, Callable<V> runnable) {
+    final UserState originalUser = CurrentUser.getUserState();
+    final Institution originalInstitution = CurrentInstitution.get();
+    final DataSourceHolder originalDataSource = CurrentDataSource.get();
 
-		try
-		{
-			Institution institution = state.getInstitution();
-			CurrentInstitution.set(institution);
-			if( institution == null )
-			{
-				CurrentDataSource.set(null);
-			}
-			else
-			{
-				CurrentDataSource.set(databaseSchemaService
-					.getDataSourceForId(institutionService.getSchemaIdForInstitution(institution)));
-			}
-			CurrentUser.setUserState(state);
-			return runnable.call();
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
-		finally
-		{
-			CurrentUser.setUserState(originalUser);
-			CurrentDataSource.set(originalDataSource);
-			CurrentInstitution.set(originalInstitution);
-		}
-	}
+    try {
+      Institution institution = state.getInstitution();
+      CurrentInstitution.set(institution);
+      if (institution == null) {
+        CurrentDataSource.set(null);
+      } else {
+        CurrentDataSource.set(
+            databaseSchemaService.getDataSourceForId(
+                institutionService.getSchemaIdForInstitution(institution)));
+      }
+      CurrentUser.setUserState(state);
+      return runnable.call();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } finally {
+      CurrentUser.setUserState(originalUser);
+      CurrentDataSource.set(originalDataSource);
+      CurrentInstitution.set(originalInstitution);
+    }
+  }
 
-	@Override
-	public <V> V executeAsSystem(Institution institution, Callable<V> callable)
-	{
-		return execute(new SystemUserState(institution), callable);
-	}
+  @Override
+  public <V> V executeAsSystem(Institution institution, Callable<V> callable) {
+    return execute(new SystemUserState(institution), callable);
+  }
 
-	@Override
-	public void executeAsSystem(Institution institution, Runnable runnable)
-	{
-		execute(new SystemUserState(institution), Executors.callable(runnable));
-	}
+  @Override
+  public void executeAsSystem(Institution institution, Runnable runnable) {
+    execute(new SystemUserState(institution), Executors.callable(runnable));
+  }
 }

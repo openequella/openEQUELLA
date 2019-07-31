@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,34 +22,27 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.freetext.event.listener.ItemReindexListener;
 import com.tle.core.freetext.reindex.ReindexFilter;
 
-/**
- * @author Nicholas Read
- */
-public class ItemReindexEvent extends ApplicationEvent<ItemReindexListener>
-{
-	private static final long serialVersionUID = 1L;
-	private ReindexFilter filter;
+/** @author Nicholas Read */
+public class ItemReindexEvent extends ApplicationEvent<ItemReindexListener> {
+  private static final long serialVersionUID = 1L;
+  private ReindexFilter filter;
 
-	public ItemReindexEvent(ReindexFilter filter)
-	{
-		super(PostTo.POST_ONLY_TO_SELF);
-		this.filter = filter;
-	}
+  public ItemReindexEvent(ReindexFilter filter) {
+    super(PostTo.POST_ONLY_TO_SELF);
+    this.filter = filter;
+  }
 
-	public ReindexFilter getFilter()
-	{
-		return filter;
-	}
+  public ReindexFilter getFilter() {
+    return filter;
+  }
 
-	@Override
-	public Class<ItemReindexListener> getListener()
-	{
-		return ItemReindexListener.class;
-	}
+  @Override
+  public Class<ItemReindexListener> getListener() {
+    return ItemReindexListener.class;
+  }
 
-	@Override
-	public void postEvent(ItemReindexListener listener)
-	{
-		listener.itemReindexEvent(this);
-	}
+  @Override
+  public void postEvent(ItemReindexListener listener) {
+    listener.itemReindexEvent(this);
+  }
 }

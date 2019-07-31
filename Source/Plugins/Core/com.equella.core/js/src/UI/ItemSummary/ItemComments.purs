@@ -3,6 +3,7 @@ module OEQ.UI.ItemSummary.ItemComments where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction)
+import Common.Strings (languageStrings)
 import Control.Monad.Except (ExceptT(..), runExceptT, throwError)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
@@ -41,7 +42,6 @@ import OEQ.API.User (lookupUsers)
 import OEQ.Data.Error (ErrorResponse, mkUniqueError)
 import OEQ.Data.Item (ItemComment, decodeComment)
 import OEQ.Data.User (UserDetails(..), UserDetailsR, UserGroupRoles(..), userIds)
-import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (checkChange, valueChange)
 import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
@@ -88,13 +88,13 @@ itemComments :: ItemCommentProps -> ReactElement
 itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComments" $ \this -> do
   let 
     d = eval >>> affAction this
-    string = prepLangStrings coreStrings
+    string = languageStrings."com.equella.core.comments"
 
     renderComment canDelete {userText, comment:c} = let 
          textForUser = case userText, c.anonymous of 
            Just {username}, _ -> Just username
            _, true -> Just $ string.anonymous
-           _, _ -> Nothing
+           _, _ -> Nothing 
       in listItem {disableGutters: true} $ catMaybes [
         -- listItemIcon_ [ userIcon ],
         Just $ listItemText' {
@@ -128,7 +128,7 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
           onFocus: d $ ShowControls true,
           value: commentText,
           label: string.entermsg, 
-          placeholder: string.entermsg,  
+          placeholder: string.entermsg,
           rowsMax: 3, 
           multiline: true, 
           fullWidth: true} [], 
@@ -212,12 +212,3 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
       marginRight: t.spacing.unit
     }
   }
-
-coreStrings = {
-  prefix: "com.equella.core.comments", 
-  strings: {
-    anonymous: "Anonymous", 
-    commentmsg: "Comment",
-    entermsg: "Enter a comment"
-  }
-}

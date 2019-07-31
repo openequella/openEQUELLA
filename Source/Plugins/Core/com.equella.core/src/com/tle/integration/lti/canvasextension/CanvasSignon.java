@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.integration.lti.canvasextension;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
 import com.tle.web.integration.SingleSignonForm;
@@ -25,37 +25,34 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.AfterParametersListener;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import javax.inject.Inject;
 
 /**
- * Not sign-on as such, but an extension of signon.do which doesn't do sign-on
- * but sets up an integration selection session
- * 
+ * Not sign-on as such, but an extension of signon.do which doesn't do sign-on but sets up an
+ * integration selection session
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CanvasSignon extends AbstractPrototypeSection<SingleSignonForm> implements AfterParametersListener
-{
-	@Inject
-	private CanvasIntegration canvasIntegration;
+public class CanvasSignon extends AbstractPrototypeSection<SingleSignonForm>
+    implements AfterParametersListener {
+  @Inject private CanvasIntegration canvasIntegration;
 
-	@Override
-	public void afterParameters(SectionInfo info, ParametersEvent event)
-	{
-		final SingleSignonForm model = getModel(info);
-		canvasIntegration.setupSingleSignOn(info, model);
-	}
+  @Override
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    final SingleSignonForm model = getModel(info);
+    canvasIntegration.setupSingleSignOn(info, model);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	@Override
-	public SingleSignonForm instantiateModel(SectionInfo info)
-	{
-		return new SingleSignonForm();
-	}
+  @Override
+  public SingleSignonForm instantiateModel(SectionInfo info) {
+    return new SingleSignonForm();
+  }
 }

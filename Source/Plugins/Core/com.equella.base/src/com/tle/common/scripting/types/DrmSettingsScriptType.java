@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,185 +21,179 @@ package com.tle.common.scripting.types;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * @author aholland
- */
-public interface DrmSettingsScriptType extends Serializable
-{
-	boolean isAllowSummary();
+/** @author aholland */
+public interface DrmSettingsScriptType extends Serializable {
+  boolean isAllowSummary();
 
-	void setAllowSummary(boolean allowSummary);
+  void setAllowSummary(boolean allowSummary);
 
-	/**
-	 * true if owner required to accept rights statement, otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isOwnerMustAccept();
+  /**
+   * true if owner required to accept rights statement, otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isOwnerMustAccept();
 
-	/**
-	 * Specify that the owner is (also) required to accept rights statement,
-	 * otherwise false.
-	 * 
-	 * @param ownerMustAccept primitive boolean true or false
-	 */
-	void setOwnerMustAccept(boolean ownerMustAccept);
+  /**
+   * Specify that the owner is (also) required to accept rights statement, otherwise false.
+   *
+   * @param ownerMustAccept primitive boolean true or false
+   */
+  void setOwnerMustAccept(boolean ownerMustAccept);
 
-	/**
-	 * true if user may view a preview of the item without having explicitly
-	 * accepted rights statement, otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isPreviewAllowed();
+  /**
+   * true if user may view a preview of the item without having explicitly accepted rights
+   * statement, otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isPreviewAllowed();
 
-	/**
-	 * Specify that user may view a preview of the item without having
-	 * explicitly accepted rights statement.
-	 * 
-	 * @param previewAllowed primitive boolean true or false
-	 */
-	void setPreviewAllowed(boolean previewAllowed);
+  /**
+   * Specify that user may view a preview of the item without having explicitly accepted rights
+   * statement.
+   *
+   * @param previewAllowed primitive boolean true or false
+   */
+  void setPreviewAllowed(boolean previewAllowed);
 
-	/**
-	 * true if users still required to accept the licence statement if the item
-	 * is used in a composition.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isStudentsMustAcceptIfInCompilation();
+  /**
+   * true if users still required to accept the licence statement if the item is used in a
+   * composition.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isStudentsMustAcceptIfInCompilation();
 
-	/**
-	 * Specify that users still required to accept the licence statement if the
-	 * item is used in a composition.
-	 * 
-	 * @param studentsMustAcceptIfInCompilation primitive boolean true or false
-	 */
-	void setStudentsMustAcceptIfInCompilation(boolean studentsMustAcceptIfInCompilation);
+  /**
+   * Specify that users still required to accept the licence statement if the item is used in a
+   * composition.
+   *
+   * @param studentsMustAcceptIfInCompilation primitive boolean true or false
+   */
+  void setStudentsMustAcceptIfInCompilation(boolean studentsMustAcceptIfInCompilation);
 
-	/**
-	 * Owners of the rights over item content
-	 * 
-	 * @return List<DrmPartyScriptType> owners of the rights of item content
-	 * @see DrmPartyScriptType
-	 */
-	List<DrmPartyScriptType> getContentOwners();
+  /**
+   * Owners of the rights over item content
+   *
+   * @return List<DrmPartyScriptType> owners of the rights of item content
+   * @see DrmPartyScriptType
+   */
+  List<DrmPartyScriptType> getContentOwners();
 
-	void setContentOwners(List<DrmPartyScriptType> contentOwners);
+  void setContentOwners(List<DrmPartyScriptType> contentOwners);
 
-	/**
-	 * @param party A DrmPartyScriptType object obtained via
-	 *            {@link com.tle.common.scripting.objects.DrmScriptObject#createPartyFromUserId(String, boolean)}
-	 *            or
-	 *            {@link com.tle.common.scripting.objects.DrmScriptObject#createParty(String, String, boolean)}
-	 */
-	void addContentOwner(DrmPartyScriptType party);
+  /**
+   * @param party A DrmPartyScriptType object obtained via {@link
+   *     com.tle.common.scripting.objects.DrmScriptObject#createPartyFromUserId(String, boolean)} or
+   *     {@link com.tle.common.scripting.objects.DrmScriptObject#createParty(String, String,
+   *     boolean)}
+   */
+  void addContentOwner(DrmPartyScriptType party);
 
-	List<String> getUsages();
+  List<String> getUsages();
 
-	void setUsages(List<String> usages);
+  void setUsages(List<String> usages);
 
-	/**
-	 * @param usage One of: DISPLAY, PRINT, PLAY, EXECUTE, AGGREGATE, MODIFY,
-	 *            EXCERPT, ANNOTATE
-	 * @return true if the usage did not already exist and was added.
-	 */
-	boolean addUsage(String usage);
+  /**
+   * @param usage One of: DISPLAY, PRINT, PLAY, EXECUTE, AGGREGATE, MODIFY, EXCERPT, ANNOTATE
+   * @return true if the usage did not already exist and was added.
+   */
+  boolean addUsage(String usage);
 
-	/**
-	 * @param usage One of: DISPLAY, PRINT, PLAY, EXECUTE, AGGREGATE, MODIFY,
-	 *            EXCERPT, ANNOTATE
-	 * @return true if the given usage was found and removed.
-	 */
-	boolean removeUsage(String usage);
+  /**
+   * @param usage One of: DISPLAY, PRINT, PLAY, EXECUTE, AGGREGATE, MODIFY, EXCERPT, ANNOTATE
+   * @return true if the given usage was found and removed.
+   */
+  boolean removeUsage(String usage);
 
-	/**
-	 * true if , otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isAttributionOfOwnership();
+  /**
+   * true if , otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isAttributionOfOwnership();
 
-	/**
-	 * Specify that
-	 * 
-	 * @param attributionOfOwnership primitive boolean true or false
-	 */
-	void setAttributionOfOwnership(boolean attributionOfOwnership);
+  /**
+   * Specify that
+   *
+   * @param attributionOfOwnership primitive boolean true or false
+   */
+  void setAttributionOfOwnership(boolean attributionOfOwnership);
 
-	/**
-	 * true if , otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isEnforceAttribution();
+  /**
+   * true if , otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isEnforceAttribution();
 
-	/**
-	 * Specify that
-	 * 
-	 * @param enforceAttribution primitive boolean true or false
-	 */
-	void setEnforceAttribution(boolean enforceAttribution);
+  /**
+   * Specify that
+   *
+   * @param enforceAttribution primitive boolean true or false
+   */
+  void setEnforceAttribution(boolean enforceAttribution);
 
-	// Pair<Date, Date> getRestrictedToDateRange();
+  // Pair<Date, Date> getRestrictedToDateRange();
 
-	// List<Triple<String, String, String>> getRestrictedToIpRanges();
+  // List<Triple<String, String, String>> getRestrictedToIpRanges();
 
-	List<String> getRestrictedToRecipients();
+  List<String> getRestrictedToRecipients();
 
-	void setRestrictedToRecipients(List<String> restrictedToRecipients);
+  void setRestrictedToRecipients(List<String> restrictedToRecipients);
 
-	/**
-	 * true if , otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isRestrictToSector();
+  /**
+   * true if , otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isRestrictToSector();
 
-	/**
-	 * Specify that
-	 * 
-	 * @param restrictToSector primitive boolean true or false
-	 */
-	void setRestrictToSector(boolean restrictToSector);
+  /**
+   * Specify that
+   *
+   * @param restrictToSector primitive boolean true or false
+   */
+  void setRestrictToSector(boolean restrictToSector);
 
-	String getTermsOfAgreement();
+  String getTermsOfAgreement();
 
-	void setTermsOfAgreement(String termsOfAgreement);
+  void setTermsOfAgreement(String termsOfAgreement);
 
-	int getMaximumUsageCount();
+  int getMaximumUsageCount();
 
-	void setMaximumUsageCount(int maximumUsageCount);
+  void setMaximumUsageCount(int maximumUsageCount);
 
-	/**
-	 * true if , otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isHideLicencesFromOwner();
+  /**
+   * true if , otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isHideLicencesFromOwner();
 
-	/**
-	 * Specify that
-	 * 
-	 * @param hideLicencesFromOwner primitive boolean true or false
-	 */
-	void setHideLicencesFromOwner(boolean hideLicencesFromOwner);
+  /**
+   * Specify that
+   *
+   * @param hideLicencesFromOwner primitive boolean true or false
+   */
+  void setHideLicencesFromOwner(boolean hideLicencesFromOwner);
 
-	/**
-	 * true if , otherwise false.
-	 * 
-	 * @return primitive boolean true or false
-	 */
-	boolean isShowLicenceCount();
+  /**
+   * true if , otherwise false.
+   *
+   * @return primitive boolean true or false
+   */
+  boolean isShowLicenceCount();
 
-	/**
-	 * Specify that
-	 * 
-	 * @param showLicenceCount primitive boolean true or false
-	 */
-	void setShowLicenceCount(boolean showLicenceCount);
+  /**
+   * Specify that
+   *
+   * @param showLicenceCount primitive boolean true or false
+   */
+  void setShowLicenceCount(boolean showLicenceCount);
 
-	String getRequireAcceptanceFrom();
+  String getRequireAcceptanceFrom();
 
-	void setRequireAcceptanceFrom(String requireAcceptanceFrom);
+  void setRequireAcceptanceFrom(String requireAcceptanceFrom);
 }

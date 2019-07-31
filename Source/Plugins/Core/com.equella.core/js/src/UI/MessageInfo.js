@@ -1,1 +1,1 @@
-exports.messageInfoClass = require("components/MessageInfo").default;
+exports.messageInfoClass = require("~/../tsrc/components/MessageInfo").default;

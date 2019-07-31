@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,11 @@
 
 package com.tle.web.api.users.interfaces;
 
+import com.tle.web.api.interfaces.beans.SearchBean;
+import com.tle.web.api.users.interfaces.beans.RoleBean;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -30,49 +37,44 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import com.tle.web.api.interfaces.beans.SearchBean;
-import com.tle.web.api.users.interfaces.beans.RoleBean;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 // Note: EQUELLA overrides the root Path
 @Produces(MediaType.APPLICATION_JSON)
 @Path("usermanagement/local/role/")
 @Api(value = "Local roles", description = "usermanagement-local-role")
 @SuppressWarnings("nls")
-public interface RoleResource
-{
-	static final UriBuilder GETROLE = UriBuilder.fromResource(RoleResource.class).path(RoleResource.class, "getRole");
-	static final String ACTIVITY_OBJECT_ROLE = "role";
+public interface RoleResource {
+  static final UriBuilder GETROLE =
+      UriBuilder.fromResource(RoleResource.class).path(RoleResource.class, "getRole");
+  static final String ACTIVITY_OBJECT_ROLE = "role";
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Retrieve a role")
-	public RoleBean getRole(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Retrieve a role")
+  public RoleBean getRole(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a role")
-	public Response editRole(@PathParam("uuid") String uuid, @ApiParam RoleBean role);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a role")
+  public Response editRole(@PathParam("uuid") String uuid, @ApiParam RoleBean role);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a role")
-	public Response deleteRole(@PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a role")
+  public Response deleteRole(@PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/")
-	@ApiOperation("Add a role")
-	public Response addRole(@ApiParam RoleBean role);
+  @POST
+  @Path("/")
+  @ApiOperation("Add a role")
+  public Response addRole(@ApiParam RoleBean role);
 
-	@GET
-	@Path("/name/{name}")
-	@ApiOperation("Retrieve a role by name")
-	public RoleBean getRoleByName(@Context UriInfo uriInfo, @PathParam("name") String name);
+  @GET
+  @Path("/name/{name}")
+  @ApiOperation("Retrieve a role by name")
+  public RoleBean getRoleByName(@Context UriInfo uriInfo, @PathParam("name") String name);
 
-	@GET
-	@Path("/")
-	@ApiOperation("List internal roles")
-	public SearchBean<RoleBean> list(@Context UriInfo uriInfo, @ApiParam(required = false) @QueryParam("q") String query);
+  @GET
+  @Path("/")
+  @ApiOperation("List internal roles")
+  public SearchBean<RoleBean> list(
+      @Context UriInfo uriInfo, @ApiParam(required = false) @QueryParam("q") String query);
 }

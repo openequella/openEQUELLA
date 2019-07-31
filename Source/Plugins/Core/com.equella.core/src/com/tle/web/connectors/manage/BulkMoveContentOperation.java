@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,13 +19,6 @@
 package com.tle.web.connectors.manage;
 
 import static com.tle.web.sections.standard.RendererConstants.RADIO_CHECKBOX;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -89,414 +84,377 @@ import com.tle.web.sections.standard.model.HtmlBooleanState;
 import com.tle.web.sections.standard.model.HtmlTreeModel;
 import com.tle.web.sections.standard.model.HtmlTreeNode;
 import com.tle.web.sections.standard.model.Option;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind
 public class BulkMoveContentOperation
-	extends
-		AbstractPrototypeSection<BulkMoveContentOperation.BulkMoveContentOperationModel>
-	implements
-		BulkOperationExtension
-{
-	private static final Logger LOGGER = Logger.getLogger(BulkMoveContentOperation.class);
+    extends AbstractPrototypeSection<BulkMoveContentOperation.BulkMoveContentOperationModel>
+    implements BulkOperationExtension {
+  private static final Logger LOGGER = Logger.getLogger(BulkMoveContentOperation.class);
 
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(BulkMoveContentOperation.class);
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(BulkMoveContentOperation.class);
 
-	private static final IncludeFile INCLUDE = new IncludeFile(resources.url("scripts/lmsexporter.js"));
-	private static final ExternallyDefinedFunction FUNCTION_CLICKABLE_LINES = new ExternallyDefinedFunction(
-		"makeClickable", 2, INCLUDE);
+  private static final IncludeFile INCLUDE =
+      new IncludeFile(resources.url("scripts/lmsexporter.js"));
+  private static final ExternallyDefinedFunction FUNCTION_CLICKABLE_LINES =
+      new ExternallyDefinedFunction("makeClickable", 2, INCLUDE);
 
-	private static final ExternallyDefinedFunction FUNCTION_FILTER_COURSES = new ExternallyDefinedFunction(
-		"filterCourses", 2, INCLUDE);
-	private static final ExternallyDefinedFunction FUNCTION_DO_FILTER = new ExternallyDefinedFunction("doFilter", 3,
-		INCLUDE);
-	private static final ExternallyDefinedFunction FUNCTION_SWALLOW_ENTER = new ExternallyDefinedFunction(
-		"swallowEnter", 1, INCLUDE);
+  private static final ExternallyDefinedFunction FUNCTION_FILTER_COURSES =
+      new ExternallyDefinedFunction("filterCourses", 2, INCLUDE);
+  private static final ExternallyDefinedFunction FUNCTION_DO_FILTER =
+      new ExternallyDefinedFunction("doFilter", 3, INCLUDE);
+  private static final ExternallyDefinedFunction FUNCTION_SWALLOW_ENTER =
+      new ExternallyDefinedFunction("swallowEnter", 1, INCLUDE);
 
-	@PlugKey("operation.move")
-	private static String KEY_NAME;
-	@PlugKey("connector.opresults.status")
-	private static String KEY_STATUS;
-	@PlugKey("export.label.filter")
-	private static Label LABEL_FILTER_COURSES;
+  @PlugKey("operation.move")
+  private static String KEY_NAME;
 
-	private static final String BULK_VALUE = "move";
+  @PlugKey("connector.opresults.status")
+  private static String KEY_STATUS;
 
-	@Component
-	private Tree folderTree;
-	@Component(name = "fs"/* , stateful = false */)
-	private MappedBooleans folderSelections;
-	@Component(name = "sa")
-	private Checkbox showArchived;
-	@Component(name = "fb", stateful = false, ignoreForContext = BookmarkEvent.CONTEXT_BROWSERURL)
-	private TextField filterBox;
+  @PlugKey("export.label.filter")
+  private static Label LABEL_FILTER_COURSES;
 
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
-	@TreeLookup
-	private ConnectorBulkResultsDialog dialog;
+  private static final String BULK_VALUE = "move";
 
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+  @Component private Tree folderTree;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@AjaxFactory
-	protected AjaxGenerator ajax;
+  @Component(name = "fs" /* , stateful = false */)
+  private MappedBooleans folderSelections;
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		checkErrors(context);
+  @Component(name = "sa")
+  private Checkbox showArchived;
 
-		ConnectorTerminology terms = repositoryService.getConnectorTerminology(getConnector(context).getLmsType());
-		showArchived.setLabel(context, new KeyLabel(terms.getShowArchivedLocations()));
+  @Component(name = "fb", stateful = false, ignoreForContext = BookmarkEvent.CONTEXT_BROWSERURL)
+  private TextField filterBox;
 
-		filterBox.setValue(context, null);
+  @TreeLookup private ConnectorManagementQuerySection querySection;
+  @TreeLookup private ConnectorBulkResultsDialog dialog;
 
-		return viewFactory.createResult("edit/move-tree.ftl", this);
-	}
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		JSExpression boundKeyup = Js.methodCall(Jq.$(filterBox), Js.function("keyup"),
-			Js.function(Js.call_s(FUNCTION_FILTER_COURSES, Jq.$(folderTree), Jq.$(filterBox))));
-		ScriptVariable event = Js.var("event");
-		JSExpression boundKeydownAndKeyup = Js.methodCall(boundKeyup, Js.function("keydown"),
-			Js.function(Js.call_s(FUNCTION_SWALLOW_ENTER, event), event));
-		filterBox.addReadyStatements(Js.statement(boundKeydownAndKeyup));
-		filterBox.addTagProcessor(new JQueryTextFieldHint(LABEL_FILTER_COURSES, filterBox));
+  @ViewFactory protected FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @AjaxFactory protected AjaxGenerator ajax;
 
-		folderTree.setModel(new CourseTreeModel());
-		folderTree.setLazyLoad(true);
-		folderTree.setAllowMultipleOpenBranches(true);
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    checkErrors(context);
 
-		showArchived.addReadyStatements(CallAndReferenceFunction
-			.get(Js.function(Js.call_s(FUNCTION_DO_FILTER, Jq.$(folderTree), Jq.$(filterBox), true)), showArchived));
+    ConnectorTerminology terms =
+        repositoryService.getConnectorTerminology(getConnector(context).getLmsType());
+    showArchived.setLabel(context, new KeyLabel(terms.getShowArchivedLocations()));
 
-		showArchived.addClickStatements(new OverrideHandler(events.getSubmitValuesFunction(("loadTree")), false));
-	}
+    filterBox.setValue(context, null);
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		folderTree.addReadyStatements(
-			Js.call_s(FUNCTION_CLICKABLE_LINES, Jq.$(folderTree), ajax.getAjaxUpdateDomFunction(tree, null, null,
-				ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), dialog.getFooterId().getElementId(null))));
-		super.treeFinished(id, tree);
-	}
+    return viewFactory.createResult("edit/move-tree.ftl", this);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new BulkMoveContentOperationModel();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    JSExpression boundKeyup =
+        Js.methodCall(
+            Jq.$(filterBox),
+            Js.function("keyup"),
+            Js.function(Js.call_s(FUNCTION_FILTER_COURSES, Jq.$(folderTree), Jq.$(filterBox))));
+    ScriptVariable event = Js.var("event");
+    JSExpression boundKeydownAndKeyup =
+        Js.methodCall(
+            boundKeyup,
+            Js.function("keydown"),
+            Js.function(Js.call_s(FUNCTION_SWALLOW_ENTER, event), event));
+    filterBox.addReadyStatements(Js.statement(boundKeydownAndKeyup));
+    filterBox.addTagProcessor(new JQueryTextFieldHint(LABEL_FILTER_COURSES, filterBox));
 
-	@EventHandlerMethod
-	public void loadTree(SectionInfo info, boolean clearFolders)
-	{
-		folderSelections.clearChecked(info);
-	}
+    folderTree.setModel(new CourseTreeModel());
+    folderTree.setLazyLoad(true);
+    folderTree.setAllowMultipleOpenBranches(true);
 
-	// returns true if errors exists
-	private boolean checkErrors(SectionInfo info)
-	{
-		// ensure courses NOW. catch errors before render time
-		final BaseLMSExportModel model = getModel(info);
-		try
-		{
-			getCourses(info);
-		}
-		catch( LmsUserNotFoundException lms )
-		{
-			model.setError(new TextLabel(lms.getMessage()));
-		}
-		catch( Exception e )
-		{
-			LOGGER.error("Error loading course tree", e);
-			model.setError(new TextLabel(e.getMessage()));
-		}
+    showArchived.addReadyStatements(
+        CallAndReferenceFunction.get(
+            Js.function(Js.call_s(FUNCTION_DO_FILTER, Jq.$(folderTree), Jq.$(filterBox), true)),
+            showArchived));
 
-		return model.getError() != null;
-	}
+    showArchived.addClickStatements(
+        new OverrideHandler(events.getSubmitValuesFunction(("loadTree")), false));
+  }
 
-	protected List<ConnectorCourse> getCourses(SectionInfo info) throws LmsUserNotFoundException
-	{
-		final BaseLMSExportModel model = getModel(info);
-		List<ConnectorCourse> courses = model.getCoursesCache();
-		if( courses == null )
-		{
-			final Connector connector = getConnector(info);
-			if( connector != null )
-			{
-				courses = repositoryService.getModifiableCourses(connector, CurrentUser.getUsername(),
-					showArchived.isChecked(info), true);
-				model.setCoursesCache(courses);
-			}
-		}
-		return courses;
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    folderTree.addReadyStatements(
+        Js.call_s(
+            FUNCTION_CLICKABLE_LINES,
+            Jq.$(folderTree),
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                null,
+                null,
+                ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+                dialog.getFooterId().getElementId(null))));
+    super.treeFinished(id, tree);
+  }
 
-	@Nullable
-	protected Connector getConnector(SectionInfo info)
-	{
-		final BaseLMSExportModel model = getModel(info);
-		Connector connector = model.getConnector();
-		if( connector == null )
-		{
-			connector = querySection.getConnector(info);
-			model.setConnector(connector);
-		}
-		return connector;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new BulkMoveContentOperationModel();
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @EventHandlerMethod
+  public void loadTree(SectionInfo info, boolean clearFolders) {
+    folderSelections.clearChecked(info);
+  }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		options.add(new KeyOption<OperationInfo>(KEY_NAME, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
-	}
+  // returns true if errors exists
+  private boolean checkErrors(SectionInfo info) {
+    // ensure courses NOW. catch errors before render time
+    final BaseLMSExportModel model = getModel(info);
+    try {
+      getCourses(info);
+    } catch (LmsUserNotFoundException lms) {
+      model.setError(new TextLabel(lms.getMessage()));
+    } catch (Exception e) {
+      LOGGER.error("Error loading course tree", e);
+      model.setError(new TextLabel(e.getMessage()));
+    }
 
-	@Override
-	public BeanLocator<? extends BulkOperationExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		String folderAndCourseId = folderSelections.getFirstChecked(info);
-		final String[] components = folderAndCourseId.split("\\$");
-		final String courseId = components[0];
-		final String folderId = components[1];
+    return model.getError() != null;
+  }
 
-		return new FactoryMethodLocator<BulkOperationExecutor>(MoveContentOperationExecutorFactory.class, "create",
-			courseId, folderId);
-	}
+  protected List<ConnectorCourse> getCourses(SectionInfo info) throws LmsUserNotFoundException {
+    final BaseLMSExportModel model = getModel(info);
+    List<ConnectorCourse> courses = model.getCoursesCache();
+    if (courses == null) {
+      final Connector connector = getConnector(info);
+      if (connector != null) {
+        courses =
+            repositoryService.getModifiableCourses(
+                connector, CurrentUser.getUsername(), showArchived.isChecked(info), true);
+        model.setCoursesCache(courses);
+      }
+    }
+    return courses;
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-	}
+  @Nullable
+  protected Connector getConnector(SectionInfo info) {
+    final BaseLMSExportModel model = getModel(info);
+    Connector connector = model.getConnector();
+    if (connector == null) {
+      connector = querySection.getConnector(info);
+      model.setConnector(connector);
+    }
+    return connector;
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + ".title"));
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return !folderSelections.getCheckedSet(info).isEmpty();
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    options.add(
+        new KeyOption<OperationInfo>(KEY_NAME, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return validateOptions(info, operationId);
-	}
+  @Override
+  public BeanLocator<? extends BulkOperationExecutor> getExecutor(
+      SectionInfo info, String operationId) {
+    String folderAndCourseId = folderSelections.getFirstChecked(info);
+    final String[] components = folderAndCourseId.split("\\$");
+    final String courseId = components[0];
+    final String folderId = components[1];
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+    return new FactoryMethodLocator<BulkOperationExecutor>(
+        MoveContentOperationExecutorFactory.class, "create", courseId, folderId);
+  }
 
-	public Tree getFolderTree()
-	{
-		return folderTree;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {}
 
-	public MappedBooleans getFolderSelections()
-	{
-		return folderSelections;
-	}
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + ".title"));
+  }
 
-	public Checkbox getShowArchived()
-	{
-		return showArchived;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return !folderSelections.getCheckedSet(info).isEmpty();
+  }
 
-	public TextField getFilterBox()
-	{
-		return filterBox;
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return validateOptions(info, operationId);
+  }
 
-	@BindFactory
-	public interface MoveContentOperationExecutorFactory
-	{
-		MoveContentOperationExecutor create(@Assisted("courseId") String courseId,
-			@Assisted("locationId") String locationId);
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	public static class MoveContentOperationExecutor implements BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
+  public Tree getFolderTree() {
+    return folderTree;
+  }
 
-		private final String courseId;
-		private final String locationId;
+  public MappedBooleans getFolderSelections() {
+    return folderSelections;
+  }
 
-		@Inject
-		public MoveContentOperationExecutor(@Assisted("courseId") String courseId,
-			@Assisted("locationId") String locationId)
-		{
-			this.courseId = courseId;
-			this.locationId = locationId;
-		}
+  public Checkbox getShowArchived() {
+    return showArchived;
+  }
 
-		@Inject
-		private ConnectorOperationFactory operationFactory;
+  public TextField getFilterBox() {
+    return filterBox;
+  }
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{operationFactory.createMove(courseId, locationId)};
-		}
+  @BindFactory
+  public interface MoveContentOperationExecutorFactory {
+    MoveContentOperationExecutor create(
+        @Assisted("courseId") String courseId, @Assisted("locationId") String locationId);
+  }
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.connectors.bulk.movecontent.title";
-		}
-	}
+  public static class MoveContentOperationExecutor implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
 
-	public class CourseTreeModel implements HtmlTreeModel
-	{
-		@Override
-		public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id)
-		{
-			final Connector connector = getConnector(info);
-			if( Check.isEmpty(id) )
-			{
-				try
-				{
-					return Lists.transform(getCourses(info), new FolderToTreeNodeTransform(info));
-				}
-				catch( LmsUserNotFoundException e )
-				{
-					// can't happen, this is checked in render
-					return Lists.newArrayList();
-				}
-			}
-			else if( id.contains("$") )
-			{
-				final String[] ids = id.split("\\$");
-				final String courseId = ids[0];
-				final String folderId = ids[1];
-				return Lists.transform(repositoryService.getFoldersForFolder(connector, CurrentUser.getUsername(),
-					courseId, folderId, true), new FolderToTreeNodeTransform(info));
-			}
+    private final String courseId;
+    private final String locationId;
 
-			return Lists.transform(
-				repositoryService.getFoldersForCourse(connector, CurrentUser.getUsername(), id, true),
-				new FolderToTreeNodeTransform(info));
-		}
-	}
+    @Inject
+    public MoveContentOperationExecutor(
+        @Assisted("courseId") String courseId, @Assisted("locationId") String locationId) {
+      this.courseId = courseId;
+      this.locationId = locationId;
+    }
 
-	private class FolderToTreeNodeTransform implements Function<ConnectorFolder, HtmlTreeNode>
-	{
-		private final SectionInfo info;
+    @Inject private ConnectorOperationFactory operationFactory;
 
-		public FolderToTreeNodeTransform(SectionInfo info)
-		{
-			this.info = info;
-		}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {operationFactory.createMove(courseId, locationId)};
+    }
 
-		@NonNullByDefault(false)
-		@Override
-		public HtmlTreeNode apply(ConnectorFolder input)
-		{
-			return new LmsFolderTreeNode(info, input);
-		}
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.connectors.bulk.movecontent.title";
+    }
+  }
 
-	public class LmsFolderTreeNode implements HtmlTreeNode
-	{
-		private final SectionInfo info;
-		private final ConnectorFolder connectorFolder;
+  public class CourseTreeModel implements HtmlTreeModel {
+    @Override
+    public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id) {
+      final Connector connector = getConnector(info);
+      if (Check.isEmpty(id)) {
+        try {
+          return Lists.transform(getCourses(info), new FolderToTreeNodeTransform(info));
+        } catch (LmsUserNotFoundException e) {
+          // can't happen, this is checked in render
+          return Lists.newArrayList();
+        }
+      } else if (id.contains("$")) {
+        final String[] ids = id.split("\\$");
+        final String courseId = ids[0];
+        final String folderId = ids[1];
+        return Lists.transform(
+            repositoryService.getFoldersForFolder(
+                connector, CurrentUser.getUsername(), courseId, folderId, true),
+            new FolderToTreeNodeTransform(info));
+      }
 
-		protected LmsFolderTreeNode(SectionInfo info, ConnectorFolder connectorFolder)
-		{
-			this.info = info;
-			this.connectorFolder = connectorFolder;
-		}
+      return Lists.transform(
+          repositoryService.getFoldersForCourse(connector, CurrentUser.getUsername(), id, true),
+          new FolderToTreeNodeTransform(info));
+    }
+  }
 
-		@Override
-		public String getId()
-		{
-			return (connectorFolder instanceof ConnectorCourse ? connectorFolder.getId()
-				: connectorFolder.getCourse().getId() + "$" + connectorFolder.getId());
-		}
+  private class FolderToTreeNodeTransform implements Function<ConnectorFolder, HtmlTreeNode> {
+    private final SectionInfo info;
 
-		@Override
-		public SectionRenderable getRenderer()
-		{
-			if( connectorFolder instanceof ConnectorCourse )
-			{
-				return viewFactory.createResultWithModel("tree/courseline.ftl", this);
-			}
-			return viewFactory.createResultWithModel("tree/folderline.ftl", this);
-		}
+    public FolderToTreeNodeTransform(SectionInfo info) {
+      this.info = info;
+    }
 
-		@Override
-		public Label getLabel()
-		{
-			return new TextLabel(connectorFolder.getName());
-		}
+    @NonNullByDefault(false)
+    @Override
+    public HtmlTreeNode apply(ConnectorFolder input) {
+      return new LmsFolderTreeNode(info, input);
+    }
+  }
 
-		@Override
-		public boolean isLeaf()
-		{
-			return connectorFolder.isLeaf();
-		}
+  public class LmsFolderTreeNode implements HtmlTreeNode {
+    private final SectionInfo info;
+    private final ConnectorFolder connectorFolder;
 
-		public HtmlBooleanState getCheck()
-		{
-			HtmlBooleanState booleanState = folderSelections.getBooleanState(info, getId());
-			booleanState.setDefaultRenderer(RADIO_CHECKBOX);
-			return booleanState;
-		}
-	}
+    protected LmsFolderTreeNode(SectionInfo info, ConnectorFolder connectorFolder) {
+      this.info = info;
+      this.connectorFolder = connectorFolder;
+    }
 
-	public static class BulkMoveContentOperationModel extends BaseLMSExportModel
-	{
-		// Nothing to declare
-	}
+    @Override
+    public String getId() {
+      return (connectorFolder instanceof ConnectorCourse
+          ? connectorFolder.getId()
+          : connectorFolder.getCourse().getId() + "$" + connectorFolder.getId());
+    }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+    @Override
+    public SectionRenderable getRenderer() {
+      if (connectorFolder instanceof ConnectorCourse) {
+        return viewFactory.createResultWithModel("tree/courseline.ftl", this);
+      }
+      return viewFactory.createResultWithModel("tree/folderline.ftl", this);
+    }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+    @Override
+    public Label getLabel() {
+      return new TextLabel(connectorFolder.getName());
+    }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+    @Override
+    public boolean isLeaf() {
+      return connectorFolder.isLeaf();
+    }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+    public HtmlBooleanState getCheck() {
+      HtmlBooleanState booleanState = folderSelections.getBooleanState(info, getId());
+      booleanState.setDefaultRenderer(RADIO_CHECKBOX);
+      return booleanState;
+    }
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  public static class BulkMoveContentOperationModel extends BaseLMSExportModel {
+    // Nothing to declare
+  }
+
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
+
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
+
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

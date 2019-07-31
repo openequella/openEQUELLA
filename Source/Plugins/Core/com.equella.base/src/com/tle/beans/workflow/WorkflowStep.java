@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,134 +18,110 @@
 
 package com.tle.beans.workflow;
 
+import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.Check;
+import com.tle.common.workflow.WorkflowItemStatus;
+import com.tle.common.workflow.node.WorkflowItem;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import com.tle.beans.entity.LanguageBundle;
-import com.tle.common.Check;
-import com.tle.common.workflow.WorkflowItemStatus;
-import com.tle.common.workflow.node.WorkflowItem;
+/** @author jmaginnis */
+public class WorkflowStep implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-/**
- * @author jmaginnis
- */
-public class WorkflowStep implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private final String uuid;
+  private LanguageBundle name;
+  private LanguageBundle description;
+  private WorkflowItemStatus status;
+  private Collection<String> toModerate;
+  private final Collection<String> rolesToModerate = new HashSet<String>();
+  private List<WorkflowStep> rejectPoints;
+  private boolean approved;
+  private boolean unanimous;
 
-	private final String uuid;
-	private LanguageBundle name;
-	private LanguageBundle description;
-	private WorkflowItemStatus status;
-	private Collection<String> toModerate;
-	private final Collection<String> rolesToModerate = new HashSet<String>();
-	private List<WorkflowStep> rejectPoints;
-	private boolean approved;
-	private boolean unanimous;
+  public WorkflowStep(WorkflowItem task, WorkflowItemStatus status) {
+    uuid = task.getUuid();
+    name = task.getDisplayName();
+    description = task.getDescription();
+    if (!Check.isEmpty(task.getRoles())) {
+      rolesToModerate.addAll(task.getRoles());
+    }
+    this.status = status;
+    unanimous = task.isUnanimousacceptance();
+  }
 
-	public WorkflowStep(WorkflowItem task, WorkflowItemStatus status)
-	{
-		uuid = task.getUuid();
-		name = task.getDisplayName();
-		description = task.getDescription();
-		if( !Check.isEmpty(task.getRoles()) )
-		{
-			rolesToModerate.addAll(task.getRoles());
-		}
-		this.status = status;
-		unanimous = task.isUnanimousacceptance();
-	}
+  public WorkflowStep(String uuid, LanguageBundle name) {
+    this.uuid = uuid;
+    this.name = name;
+  }
 
-	public WorkflowStep(String uuid, LanguageBundle name)
-	{
-		this.uuid = uuid;
-		this.name = name;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public LanguageBundle getDisplayName() {
+    return name;
+  }
 
-	public LanguageBundle getDisplayName()
-	{
-		return name;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  public Collection<String> getToModerate() {
+    return toModerate;
+  }
 
-	public Collection<String> getToModerate()
-	{
-		return toModerate;
-	}
+  public void setToModerate(Collection<String> toModerate) {
+    this.toModerate = toModerate;
+  }
 
-	public void setToModerate(Collection<String> toModerate)
-	{
-		this.toModerate = toModerate;
-	}
+  public boolean isApproved() {
+    return approved;
+  }
 
-	public boolean isApproved()
-	{
-		return approved;
-	}
+  public void setApproved(boolean approved) {
+    this.approved = approved;
+  }
 
-	public void setApproved(boolean approved)
-	{
-		this.approved = approved;
-	}
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
+  public WorkflowItemStatus getStatus() {
+    return status;
+  }
 
-	public WorkflowItemStatus getStatus()
-	{
-		return status;
-	}
+  public void setStatus(WorkflowItemStatus status) {
+    this.status = status;
+  }
 
-	public void setStatus(WorkflowItemStatus status)
-	{
-		this.status = status;
-	}
+  public boolean isUnanimous() {
+    return unanimous;
+  }
 
-	public boolean isUnanimous()
-	{
-		return unanimous;
-	}
+  public void setUnanimous(boolean unanimous) {
+    this.unanimous = unanimous;
+  }
 
-	public void setUnanimous(boolean unanimous)
-	{
-		this.unanimous = unanimous;
-	}
+  public List<WorkflowStep> getRejectPoints() {
+    return rejectPoints;
+  }
 
-	public List<WorkflowStep> getRejectPoints()
-	{
-		return rejectPoints;
-	}
+  public void setRejectPoints(List<WorkflowStep> rejectPoints) {
+    this.rejectPoints = rejectPoints;
+  }
 
-	public void setRejectPoints(List<WorkflowStep> rejectPoints)
-	{
-		this.rejectPoints = rejectPoints;
-	}
+  public String getAssignedTo() {
+    return status.getAssignedTo();
+  }
 
-	public String getAssignedTo()
-	{
-		return status.getAssignedTo();
-	}
-
-	public Collection<String> getRolesToModerate()
-	{
-		return rolesToModerate;
-	}
+  public Collection<String> getRolesToModerate() {
+    return rolesToModerate;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.web.itemadmin.section;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.LanguageBundle;
@@ -56,137 +51,128 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @Bind
 @NonNullByDefault
-public class ItemAdminResultsDialog extends AbstractBulkResultsDialog<ItemIdKey>
-{
-	@PlugKey("itemadmin.opresults.count")
-	private static String OPRESULTS_COUNT_KEY;
-	@PlugKey("error.personal")
-	private static Label ERROR_SCRAPBOOK;
+public class ItemAdminResultsDialog extends AbstractBulkResultsDialog<ItemIdKey> {
+  @PlugKey("itemadmin.opresults.count")
+  private static String OPRESULTS_COUNT_KEY;
 
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private StandardOperations standardOps;
-	@Inject
-	private BulkChangeOwnerDialog changeOwnerOp;
-	@Inject
-	private BulkAddCollaboratorsDialog addCollabsOp;
-	@Inject
-	private BundleCache bundleCache;
+  @PlugKey("error.personal")
+  private static Label ERROR_SCRAPBOOK;
 
-	@TreeLookup
-	private AbstractBulkSelectionSection<ItemIdKey> selectionSection;
-	@TreeLookup
-	private ItemAdminQuerySection querySection;
+  @Inject private ItemService itemService;
+  @Inject private StandardOperations standardOps;
+  @Inject private BulkChangeOwnerDialog changeOwnerOp;
+  @Inject private BulkAddCollaboratorsDialog addCollabsOp;
+  @Inject private BundleCache bundleCache;
 
-	private PluginTracker<BulkOperationExtension> tracker;
+  @TreeLookup private AbstractBulkSelectionSection<ItemIdKey> selectionSection;
+  @TreeLookup private ItemAdminQuerySection querySection;
 
-	@EventHandlerMethod
-	public void removeSelection(SectionInfo info, long itemId, String uuid, int version)
-	{
-		selectionSection.removeSelection(info, new ItemIdKey(itemId, uuid, version));
-	}
+  private PluginTracker<BulkOperationExtension> tracker;
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		tracker = new PluginTracker<BulkOperationExtension>(pluginService, "com.tle.web.itemadmin", "bulkExtension", null)
-			.setBeanKey("bean");
-	}
+  @EventHandlerMethod
+  public void removeSelection(SectionInfo info, long itemId, String uuid, int version) {
+    selectionSection.removeSelection(info, new ItemIdKey(itemId, uuid, version));
+  }
 
-	public class BulkOperationList extends DynamicHtmlListModel<OperationInfo>
-	{
-		private final List<BulkOperationExtension> bulkOps = new ArrayList<BulkOperationExtension>();
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    tracker =
+        new PluginTracker<BulkOperationExtension>(
+                pluginService, "com.tle.web.itemadmin", "bulkExtension", null)
+            .setBeanKey("bean");
+  }
 
-		public BulkOperationList(SectionTree tree, String parentId)
-		{
-			bulkOps.add(standardOps);
-			bulkOps.add(changeOwnerOp);
-			bulkOps.add(addCollabsOp);
-			bulkOps.addAll(tracker.getNewBeanList());
-			for( BulkOperationExtension op : bulkOps )
-			{
-				op.register(tree, parentId);
-			}
-		}
+  public class BulkOperationList extends DynamicHtmlListModel<OperationInfo> {
+    private final List<BulkOperationExtension> bulkOps = new ArrayList<BulkOperationExtension>();
 
-		@Override
-		protected Iterable<Option<OperationInfo>> populateOptions(SectionInfo info)
-		{
-			List<Option<OperationInfo>> ops = new ArrayList<Option<OperationInfo>>();
-			for( BulkOperationExtension operation : bulkOps )
-			{
-				operation.addOptions(info, ops);
-			}
-			return ops;
-		}
+    public BulkOperationList(SectionTree tree, String parentId) {
+      bulkOps.add(standardOps);
+      bulkOps.add(changeOwnerOp);
+      bulkOps.add(addCollabsOp);
+      bulkOps.addAll(tracker.getNewBeanList());
+      for (BulkOperationExtension op : bulkOps) {
+        op.register(tree, parentId);
+      }
+    }
 
-		@Override
-		protected Iterable<OperationInfo> populateModel(SectionInfo info)
-		{
+    @Override
+    protected Iterable<Option<OperationInfo>> populateOptions(SectionInfo info) {
+      List<Option<OperationInfo>> ops = new ArrayList<Option<OperationInfo>>();
+      for (BulkOperationExtension operation : bulkOps) {
+        operation.addOptions(info, ops);
+      }
+      return ops;
+    }
 
-			return null;
-		}
-	}
+    @Override
+    protected Iterable<OperationInfo> populateModel(SectionInfo info) {
 
-	@Override
-	protected SectionRenderable renderOptions(RenderContext context, OperationInfo opInfo)
-	{
-		WithinEntry selected = querySection.getCollectionList().getSelectedValue(context);
+      return null;
+    }
+  }
 
-		if( selected != null && selected.isSimpleOpsOnly() )
-		{
-			getPrevButton().setDisplayed(context, true);
-			getModel(context).setErrored(true);
-			return new SpanRenderer(ERROR_SCRAPBOOK).addClass("simpleopsmessage");
-		}
+  @Override
+  protected SectionRenderable renderOptions(RenderContext context, OperationInfo opInfo) {
+    WithinEntry selected = querySection.getCollectionList().getSelectedValue(context);
 
-		return super.renderOptions(context, opInfo);
-	}
+    if (selected != null && selected.isSimpleOpsOnly()) {
+      getPrevButton().setDisplayed(context, true);
+      getModel(context).setErrored(true);
+      return new SpanRenderer(ERROR_SCRAPBOOK).addClass("simpleopsmessage");
+    }
 
-	@Override
-	protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(SectionTree tree, String parentId)
-	{
+    return super.renderOptions(context, opInfo);
+  }
 
-		return new BulkOperationList(tree, parentId);
-	}
+  @Override
+  protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(
+      SectionTree tree, String parentId) {
 
-	@Override
-	protected Label getOpResultCountLabel(int totalSelections)
-	{
+    return new BulkOperationList(tree, parentId);
+  }
 
-		return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
-	}
+  @Override
+  protected Label getOpResultCountLabel(int totalSelections) {
 
-	@Override
-	protected List<SelectionRow> getRows(List<ItemIdKey> pageOfIds)
-	{
-		List<SelectionRow> rows = new ArrayList<SelectionRow>();
-		Map<ItemId, LanguageBundle> itemNames = itemService.getItemNames(pageOfIds);
-		for( ItemIdKey itemId : pageOfIds )
-		{
-			rows.add(new SelectionRow(new BundleLabel(itemNames.get(ItemId.fromKey(itemId)), itemId.getUuid(),
-				bundleCache), new HtmlComponentState(RendererConstants.LINK, events.getNamedHandler(
-				"removeSelection", itemId.getKey(), itemId.getUuid(), itemId.getVersion())))); //$NON-NLS-1$
-		}
-		return rows;
-	}
+    return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
+  }
 
-	@Override
-	protected List<ItemIdKey> getItemIds(List<Long> longs)
-	{
-		if( longs.size() > 50 )
-		{
-			throw new RuntimeException("Too many items");
-		}
-		if( Check.isEmpty(longs) )
-		{
-			return Collections.emptyList();
-		}
-		return itemService.getItemIdKeys(longs);
-	}
+  @Override
+  protected List<SelectionRow> getRows(List<ItemIdKey> pageOfIds) {
+    List<SelectionRow> rows = new ArrayList<SelectionRow>();
+    Map<ItemId, LanguageBundle> itemNames = itemService.getItemNames(pageOfIds);
+    for (ItemIdKey itemId : pageOfIds) {
+      rows.add(
+          new SelectionRow(
+              new BundleLabel(itemNames.get(ItemId.fromKey(itemId)), itemId.getUuid(), bundleCache),
+              new HtmlComponentState(
+                  RendererConstants.LINK,
+                  events.getNamedHandler(
+                      "removeSelection",
+                      itemId.getKey(),
+                      itemId.getUuid(),
+                      itemId.getVersion())))); // $NON-NLS-1$
+    }
+    return rows;
+  }
+
+  @Override
+  protected List<ItemIdKey> getItemIds(List<Long> longs) {
+    if (longs.size() > 50) {
+      throw new RuntimeException("Too many items");
+    }
+    if (Check.isEmpty(longs)) {
+      return Collections.emptyList();
+    }
+    return itemService.getItemIdKeys(longs);
+  }
 }

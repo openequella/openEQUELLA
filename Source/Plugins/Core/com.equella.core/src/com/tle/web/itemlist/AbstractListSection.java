@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.itemlist;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderContext;
@@ -27,98 +26,86 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TagState;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class AbstractListSection<LE extends ListEntry, M extends AbstractListSection.Model<LE>>
-	extends
-		AbstractPrototypeSection<M> implements ListEntriesSection<LE>
-{
-	/**
-	 * This should initialise the entries enough for an RSS feed to work, and
-	 * should pre-load the bundle cache full of anything required for rendering.
-	 * 
-	 * @param context
-	 * @param entries
-	 */
-	protected abstract List<LE> initEntries(RenderContext context);
+public abstract class AbstractListSection<
+        LE extends ListEntry, M extends AbstractListSection.Model<LE>>
+    extends AbstractPrototypeSection<M> implements ListEntriesSection<LE> {
+  /**
+   * This should initialise the entries enough for an RSS feed to work, and should pre-load the
+   * bundle cache full of anything required for rendering.
+   *
+   * @param context
+   * @param entries
+   */
+  protected abstract List<LE> initEntries(RenderContext context);
 
-	protected abstract SectionRenderable getRenderable(RenderEventContext context);
+  protected abstract SectionRenderable getRenderable(RenderEventContext context);
 
-	protected void customiseListEntries(RenderContext context, List<LE> entries)
-	{
-		// nothing by default
-	}
+  protected void customiseListEntries(RenderContext context, List<LE> entries) {
+    // nothing by default
+  }
 
-	@Override
-	public void addListItem(SectionInfo info, LE item)
-	{
-		getModel(info).getItems().add(item);
-	}
+  @Override
+  public void addListItem(SectionInfo info, LE item) {
+    getModel(info).getItems().add(item);
+  }
 
-	public TagState getTag(SectionInfo info)
-	{
-		Model<LE> model = getModel(info);
-		TagState tagState = model.getTag();
-		if( tagState == null )
-		{
-			tagState = new TagState();
-			tagState.addClass("itemlist"); //$NON-NLS-1$
-			model.setTag(tagState);
-		}
-		return tagState;
-	}
+  public TagState getTag(SectionInfo info) {
+    Model<LE> model = getModel(info);
+    TagState tagState = model.getTag();
+    if (tagState == null) {
+      tagState = new TagState();
+      tagState.addClass("itemlist"); // $NON-NLS-1$
+      model.setTag(tagState);
+    }
+    return tagState;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		M model = getModel(context);
-		List<LE> entries = model.getItems();
-		initEntries(context);
-		customiseListEntries(context, entries);
-		TagRenderer tagRenderer = new TagRenderer("div", getTag(context)); //$NON-NLS-1$
-		tagRenderer.setNestedRenderable(getRenderable(context));
-		return tagRenderer;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    M model = getModel(context);
+    List<LE> entries = model.getItems();
+    initEntries(context);
+    customiseListEntries(context, entries);
+    TagRenderer tagRenderer = new TagRenderer("div", getTag(context)); // $NON-NLS-1$
+    tagRenderer.setNestedRenderable(getRenderable(context));
+    return tagRenderer;
+  }
 
-	public void setNullItemsRemovedOnModel(SectionInfo info, boolean nullItemsRemoved)
-	{
-		getModel(info).setNullItemsRemoved(nullItemsRemoved);
-	}
+  public void setNullItemsRemovedOnModel(SectionInfo info, boolean nullItemsRemoved) {
+    getModel(info).setNullItemsRemoved(nullItemsRemoved);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model<LE>();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model<LE>();
+  }
 
-	public static class Model<LE>
-	{
-		private TagState tag;
-		private List<LE> items = new ArrayList<>();
-		private boolean nullItemsRemoved;
+  public static class Model<LE> {
+    private TagState tag;
+    private List<LE> items = new ArrayList<>();
+    private boolean nullItemsRemoved;
 
-		public List<LE> getItems()
-		{
-			return items;
-		}
+    public List<LE> getItems() {
+      return items;
+    }
 
-		public TagState getTag()
-		{
-			return tag;
-		}
+    public TagState getTag() {
+      return tag;
+    }
 
-		public void setTag(TagState tag)
-		{
-			this.tag = tag;
-		}
+    public void setTag(TagState tag) {
+      this.tag = tag;
+    }
 
-		public boolean isNullItemsRemoved()
-		{
-			return nullItemsRemoved;
-		}
+    public boolean isNullItemsRemoved() {
+      return nullItemsRemoved;
+    }
 
-		public void setNullItemsRemoved(boolean nullItemsRemoved)
-		{
-			this.nullItemsRemoved = nullItemsRemoved;
-		}
-	}
+    public void setNullItemsRemoved(boolean nullItemsRemoved) {
+      this.nullItemsRemoved = nullItemsRemoved;
+    }
+  }
 }

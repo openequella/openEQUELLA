@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,62 +18,50 @@
 
 package com.tle.common.security;
 
+import com.tle.beans.entity.itemdef.ItemDefinition;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.tle.beans.entity.itemdef.ItemDefinition;
+/** @author Nicholas Read */
+public class ItemMetadataTarget implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-/**
- * @author Nicholas Read
- */
-public class ItemMetadataTarget implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private final String id;
+  private ItemDefinition itemDefinition;
 
-	private final String id;
-	private ItemDefinition itemDefinition;
+  public ItemMetadataTarget(String id, ItemDefinition itemDefinition) {
+    this.id = id;
+    this.itemDefinition = itemDefinition;
+  }
 
-	public ItemMetadataTarget(String id, ItemDefinition itemDefinition)
-	{
-		this.id = id;
-		this.itemDefinition = itemDefinition;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public ItemDefinition getItemDefinition() {
+    return itemDefinition;
+  }
 
-	public ItemDefinition getItemDefinition()
-	{
-		return itemDefinition;
-	}
+  public void setItemDefinition(ItemDefinition itemDefinition) {
+    this.itemDefinition = itemDefinition;
+  }
 
-	public void setItemDefinition(ItemDefinition itemDefinition)
-	{
-		this.itemDefinition = itemDefinition;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+    if (!(obj instanceof ItemMetadataTarget)) {
+      return false;
+    }
 
-		if( !(obj instanceof ItemMetadataTarget) )
-		{
-			return false;
-		}
+    ItemMetadataTarget rhs = (ItemMetadataTarget) obj;
+    return Objects.equals(id, rhs.id) && itemDefinition.equals(rhs.itemDefinition);
+  }
 
-		ItemMetadataTarget rhs = (ItemMetadataTarget) obj;
-		return Objects.equals(id, rhs.id) && itemDefinition.equals(rhs.itemDefinition);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return id.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
 }

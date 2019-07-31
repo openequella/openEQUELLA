@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>29394</id>
+  <uuid>36d6cdba-47f3-1aef-763b-0b5204931737</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-08-27 14:22:14.797</dateModified>
+  <dateCreated class="sql-timestamp">2009-08-27 14:22:14.797</dateCreated>
+  <name>
+    <id>29395</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29396</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Decision Node Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/name</itemNamePath>
+  <itemDescriptionPath>/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;radio_button1 type=&quot;text&quot;/&gt;&lt;radio_button2 type=&quot;text&quot;/&gt;&lt;autoassign field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

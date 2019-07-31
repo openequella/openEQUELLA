@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,32 +26,30 @@ import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.selection.home.sections.SelectionPortletRendererWrapper;
 
 @SuppressWarnings("nls")
-public class BrowsePortletModule extends SectionsModule
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(BrowsePortletModule.class)+".";
+public class BrowsePortletModule extends SectionsModule {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(BrowsePortletModule.class) + ".";
 
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("com.tle.web.hierarchy.portlet.browseSelectionPortal"))
-			.toProvider(browsePortletTree());
-	}
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("com.tle.web.hierarchy.portlet.browseSelectionPortal"))
+        .toProvider(browsePortletTree());
+  }
 
-	private NodeProvider browsePortletTree()
-	{
-		NodeProvider node = new NodeProvider(SelectionPortletRendererWrapper.class)
-		{
-			@Override
-			protected void customize(Section section)
-			{
-				SelectionPortletRendererWrapper sprw = (SelectionPortletRendererWrapper) section;
-				sprw.setPortletNameKey(KEY_PFX+"portlet.browse.name");
-				sprw.setPortletType("browse");
-			}
-		};
+  private NodeProvider browsePortletTree() {
+    NodeProvider node =
+        new NodeProvider(SelectionPortletRendererWrapper.class) {
+          @Override
+          protected void customize(Section section) {
+            SelectionPortletRendererWrapper sprw = (SelectionPortletRendererWrapper) section;
+            sprw.setPortletNameKey(KEY_PFX + "portlet.browse.name");
+            sprw.setPortletType("browse");
+          }
+        };
 
-		node.child(BrowsePortletRenderer.class);
+    node.child(BrowsePortletRenderer.class);
 
-		return node;
-	}
+    return node;
+  }
 }

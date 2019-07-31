@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.web.remoterepo.merlot.sort;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.web.remoterepo.merlot.MerlotRemoteRepoSearchEvent;
 import com.tle.web.remoterepo.merlot.MerlotWebService;
 import com.tle.web.search.sort.AbstractSortOptionsSection;
@@ -29,62 +27,61 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class MerlotSortOptionsSection extends AbstractSortOptionsSection<MerlotRemoteRepoSearchEvent>
-{
-	@PlugKey("sort.rating")
-	private static Label RATING_LABEL;
-	@PlugKey("sort.bytitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("sort.author")
-	private static Label AUTHOR_LABEL;
-	@PlugKey("sort.materialtype")
-	private static Label MATERIAL_LABEL;
-	@PlugKey("sort.datecreated")
-	private static Label DATE_LABEL;
+public class MerlotSortOptionsSection
+    extends AbstractSortOptionsSection<MerlotRemoteRepoSearchEvent> {
+  @PlugKey("sort.rating")
+  private static Label RATING_LABEL;
 
-	@Inject
-	private MerlotWebService merlotWebService;
+  @PlugKey("sort.bytitle")
+  private static Label TITLE_LABEL;
 
-	@Override
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		sorts.add(new SortOption(RATING_LABEL, "overallRating", null));
-		sorts.add(new SortOption(TITLE_LABEL, "title", null));
-		sorts.add(new SortOption(AUTHOR_LABEL, "author", null));
-		sorts.add(new SortOption(MATERIAL_LABEL, "materialtype", null));
-		sorts.add(new SortOption(DATE_LABEL, "dateCreated", null));
-	}
+  @PlugKey("sort.author")
+  private static Label AUTHOR_LABEL;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !merlotWebService.getSettings(context).isAdvancedApi() )
-		{
-			return null;
-		}
-		if( sortOptions.getSelectedValue(context) == null )
-		{
-			sortOptions.setSelectedStringValue(context, "overallRating");
-		}
+  @PlugKey("sort.materialtype")
+  private static Label MATERIAL_LABEL;
 
-		// No reverse for MERLOT
-		reverse.setDisplayed(context, false);
+  @PlugKey("sort.datecreated")
+  private static Label DATE_LABEL;
 
-		return super.renderHtml(context);
-	}
+  @Inject private MerlotWebService merlotWebService;
 
-	@Override
-	protected String getDefaultSearch(SectionInfo info)
-	{
-		return null;
-	}
+  @Override
+  protected void addSortOptions(List<SortOption> sorts) {
+    sorts.add(new SortOption(RATING_LABEL, "overallRating", null));
+    sorts.add(new SortOption(TITLE_LABEL, "title", null));
+    sorts.add(new SortOption(AUTHOR_LABEL, "author", null));
+    sorts.add(new SortOption(MATERIAL_LABEL, "materialtype", null));
+    sorts.add(new SortOption(DATE_LABEL, "dateCreated", null));
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event)
-	{
-		// Different sort
-		event.setSort(sortOptions.getSelectedValueAsString(info));
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!merlotWebService.getSettings(context).isAdvancedApi()) {
+      return null;
+    }
+    if (sortOptions.getSelectedValue(context) == null) {
+      sortOptions.setSelectedStringValue(context, "overallRating");
+    }
+
+    // No reverse for MERLOT
+    reverse.setDisplayed(context, false);
+
+    return super.renderHtml(context);
+  }
+
+  @Override
+  protected String getDefaultSearch(SectionInfo info) {
+    return null;
+  }
+
+  @Override
+  public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event) {
+    // Different sort
+    event.setSort(sortOptions.getSelectedValueAsString(info));
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,34 +25,30 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.common.filesystem.handle.StagingFile;
 
-public class SaveNoIndexingOperation extends SaveOperation
-{
-	private final String stagingID;
+public class SaveNoIndexingOperation extends SaveOperation {
+  private final String stagingID;
 
-	@AssistedInject
-	protected SaveNoIndexingOperation(@Assisted boolean noAutoArchive, @Assisted @Nullable String stagingID)
-	{
-		super(true);
-		setNoAutoArchive(noAutoArchive);
-		this.stagingID = stagingID;
-	}
+  @AssistedInject
+  protected SaveNoIndexingOperation(
+      @Assisted boolean noAutoArchive, @Assisted @Nullable String stagingID) {
+    super(true);
+    setNoAutoArchive(noAutoArchive);
+    this.stagingID = stagingID;
+  }
 
-	@Override
-	protected void addIndexingEvents(ItemIdKey newKey, Item item)
-	{
-		// none
-	}
+  @Override
+  protected void addIndexingEvents(ItemIdKey newKey, Item item) {
+    // none
+  }
 
-	@Override
-	public boolean execute()
-	{
-		getItemPack().setStagingID(stagingID);
-		return super.execute();
-	}
+  @Override
+  public boolean execute() {
+    getItemPack().setStagingID(stagingID);
+    return super.execute();
+  }
 
-	@Override
-	protected StagingFile getStagingForCommit()
-	{
-		return null;
-	}
+  @Override
+  protected StagingFile getStagingForCommit() {
+    return null;
+  }
 }

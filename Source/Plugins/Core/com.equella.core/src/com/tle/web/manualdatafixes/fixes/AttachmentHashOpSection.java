@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.manualdatafixes.fixes;
-
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
@@ -57,190 +54,161 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class AttachmentHashOpSection extends AbstractPrototypeSection<AttachmentHashOpSection.AttachmentHashOpModel>
-	implements
-		HtmlRenderer,
-		UpdateTaskStatus
-{
-	private static final String TASK_ID = "Attachment-MD5-Summing";
+public class AttachmentHashOpSection
+    extends AbstractPrototypeSection<AttachmentHashOpSection.AttachmentHashOpModel>
+    implements HtmlRenderer, UpdateTaskStatus {
+  private static final String TASK_ID = "Attachment-MD5-Summing";
 
-	@PlugKey("fix.attachmenthash.task.key")
-	private static String TASK_KEY;
+  @PlugKey("fix.attachmenthash.task.key")
+  private static String TASK_KEY;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private TaskService taskService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private Provider<AttachmentMD5HashFilter> filterProvider;
+  @Inject private TaskService taskService;
+  @Inject private ItemService itemService;
+  @Inject private InstitutionService institutionService;
+  @Inject private RunAsInstitution runAs;
+  @Inject private Provider<AttachmentMD5HashFilter> filterProvider;
 
-	@Component
-	@PlugKey("fix.attachmenthash.execute")
-	private Button execute;
+  @Component
+  @PlugKey("fix.attachmenthash.execute")
+  private Button execute;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		execute.setClickHandler(events.getNamedHandler("startMd5ing"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    execute.setClickHandler(events.getNamedHandler("startMd5ing"));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		AttachmentHashOpModel model = getModel(context);
-		TaskStatus status = model.getTaskStatus();
-		if( status != null && !status.isFinished() )
-		{
-			model.setTaskLabel(new KeyLabel(TASK_KEY, status.getDoneWork(), status.getMaxWork()));
-			model.setInProgress(true);
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    AttachmentHashOpModel model = getModel(context);
+    TaskStatus status = model.getTaskStatus();
+    if (status != null && !status.isFinished()) {
+      model.setTaskLabel(new KeyLabel(TASK_KEY, status.getDoneWork(), status.getMaxWork()));
+      model.setInProgress(true);
+    }
 
-		return viewFactory.createResult("attachmenthash.ftl", context);
-	}
+    return viewFactory.createResult("attachmenthash.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void startMd5ing(SectionInfo info)
-	{
-		long instId = CurrentInstitution.get().getUniqueId();
-		taskService.getGlobalTask(
-			new BeanClusteredTask(TASK_ID + instId, AttachmentHashOpSection.class, "createTask", instId),
-			TimeUnit.SECONDS.toMillis(20));
-	}
+  @EventHandlerMethod
+  public void startMd5ing(SectionInfo info) {
+    long instId = CurrentInstitution.get().getUniqueId();
+    taskService.getGlobalTask(
+        new BeanClusteredTask(
+            TASK_ID + instId, AttachmentHashOpSection.class, "createTask", instId),
+        TimeUnit.SECONDS.toMillis(20));
+  }
 
-	public Task createTask(final long currentInstitution)
-	{
-		return new SingleShotTask()
-		{
-			@Override
-			public void runTask() throws Exception
-			{
-				Institution inst = institutionService.getInstitution(currentInstitution);
-				runAs.executeAsSystem(inst, new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						itemService.operateAll(filterProvider.get(), new FilterResultListener()
-						{
-							@Override
-							public void succeeded(ItemKey itemId, ItemPack pack)
-							{
-								incrementWork();
-							}
+  public Task createTask(final long currentInstitution) {
+    return new SingleShotTask() {
+      @Override
+      public void runTask() throws Exception {
+        Institution inst = institutionService.getInstitution(currentInstitution);
+        runAs.executeAsSystem(
+            inst,
+            new Runnable() {
+              @Override
+              public void run() {
+                itemService.operateAll(
+                    filterProvider.get(),
+                    new FilterResultListener() {
+                      @Override
+                      public void succeeded(ItemKey itemId, ItemPack pack) {
+                        incrementWork();
+                      }
 
-							@Override
-							public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e)
-							{
-								incrementWork();
-							}
+                      @Override
+                      public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e) {
+                        incrementWork();
+                      }
 
-							@Override
-							public void total(int total)
-							{
-								setupStatus(TASK_KEY, total);
-							}
-						});
-					}
-				});
-			}
+                      @Override
+                      public void total(int total) {
+                        setupStatus(TASK_KEY, total);
+                      }
+                    });
+              }
+            });
+      }
 
-			@Override
-			protected String getTitleKey()
-			{
-				return "fix.attachmenthash.task";
-			}
-		};
-	}
+      @Override
+      protected String getTitleKey() {
+        return "fix.attachmenthash.task";
+      }
+    };
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new AttachmentHashOpModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new AttachmentHashOpModel();
+  }
 
-	@NonNullByDefault(false)
-	public class AttachmentHashOpModel extends ManualDataFixModel
-	{
-		@Override
-		public TaskStatus getTaskStatus()
-		{
-			if( checkedStatus )
-			{
-				return taskStatus;
-			}
+  @NonNullByDefault(false)
+  public class AttachmentHashOpModel extends ManualDataFixModel {
+    @Override
+    public TaskStatus getTaskStatus() {
+      if (checkedStatus) {
+        return taskStatus;
+      }
 
-			String taskId = taskService.getRunningGlobalTask(TASK_ID + CurrentInstitution.get().getUniqueId());
-			taskService.askTaskChanges(Collections.singleton(taskId));
+      String taskId =
+          taskService.getRunningGlobalTask(TASK_ID + CurrentInstitution.get().getUniqueId());
+      taskService.askTaskChanges(Collections.singleton(taskId));
 
-			if( taskId != null )
-			{
-				taskStatus = taskService.waitForTaskStatus(taskId, 2000);
-			}
-			else
-			{
-				taskStatus = null;
-			}
+      if (taskId != null) {
+        taskStatus = taskService.waitForTaskStatus(taskId, 2000);
+      } else {
+        taskStatus = null;
+      }
 
-			checkedStatus = true;
+      checkedStatus = true;
 
-			return taskStatus;
-		}
-	}
+      return taskStatus;
+    }
+  }
 
-	@Bind
-	public static class AttachmentMD5HashFilter extends BaseFilter
-	{
-		@Inject
-		private Provider<AttachmentHashOperation> attOpFactory;
+  @Bind
+  public static class AttachmentMD5HashFilter extends BaseFilter {
+    @Inject private Provider<AttachmentHashOperation> attOpFactory;
 
-		@Override
-		protected WorkflowOperation[] createOperations()
-		{
-			return new WorkflowOperation[]{attOpFactory.get()};
-		}
+    @Override
+    protected WorkflowOperation[] createOperations() {
+      return new WorkflowOperation[] {attOpFactory.get()};
+    }
 
-		@Override
-		public String getJoinClause()
-		{
-			return "JOIN i.attachments a";
-		}
+    @Override
+    public String getJoinClause() {
+      return "JOIN i.attachments a";
+    }
 
-		@Override
-		public String getWhereClause()
-		{
-			return "(a.md5sum IS NULL OR a.md5sum = '') AND (a.class = FileAttachment OR a.class = CustomAttachment )";
-		}
-	}
+    @Override
+    public String getWhereClause() {
+      return "(a.md5sum IS NULL OR a.md5sum = '') AND (a.class = FileAttachment OR a.class = CustomAttachment )";
+    }
+  }
 
-	public Button getExecute()
-	{
-		return execute;
-	}
+  public Button getExecute() {
+    return execute;
+  }
 
-	@Override
-	public String getAjaxId()
-	{
-		return "hash_status";
-	}
+  @Override
+  public String getAjaxId() {
+    return "hash_status";
+  }
 
-	@Override
-	public boolean isFinished(SectionInfo info)
-	{
-		TaskStatus taskStatus = getModel(info).getTaskStatus();
-		return taskStatus != null ? taskStatus.isFinished() : true;
-	}
+  @Override
+  public boolean isFinished(SectionInfo info) {
+    TaskStatus taskStatus = getModel(info).getTaskStatus();
+    return taskStatus != null ? taskStatus.isFinished() : true;
+  }
 }

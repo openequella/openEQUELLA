@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,42 +20,34 @@ package com.tle.core.events;
 
 import com.tle.core.events.listeners.GroupChangedListener;
 
-/**
- * @author Nicholas Read
- */
-public class GroupIdChangedEvent extends ApplicationEvent<GroupChangedListener>
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class GroupIdChangedEvent extends ApplicationEvent<GroupChangedListener> {
+  private static final long serialVersionUID = 1L;
 
-	private final String fromGroupId;
-	private final String toGroupId;
+  private final String fromGroupId;
+  private final String toGroupId;
 
-	public GroupIdChangedEvent(String fromGroupId, String toGroupId)
-	{
-		super(PostTo.POST_ONLY_TO_SELF);
-		this.fromGroupId = fromGroupId;
-		this.toGroupId = toGroupId;
-	}
+  public GroupIdChangedEvent(String fromGroupId, String toGroupId) {
+    super(PostTo.POST_ONLY_TO_SELF);
+    this.fromGroupId = fromGroupId;
+    this.toGroupId = toGroupId;
+  }
 
-	public String getFromGroupId()
-	{
-		return fromGroupId;
-	}
+  public String getFromGroupId() {
+    return fromGroupId;
+  }
 
-	public String getToGroupId()
-	{
-		return toGroupId;
-	}
+  public String getToGroupId() {
+    return toGroupId;
+  }
 
-	@Override
-	public Class<GroupChangedListener> getListener()
-	{
-		return GroupChangedListener.class;
-	}
+  @Override
+  public Class<GroupChangedListener> getListener() {
+    return GroupChangedListener.class;
+  }
 
-	@Override
-	public void postEvent(GroupChangedListener listener)
-	{
-		listener.groupIdChangedEvent(this);
-	}
+  @Override
+  public void postEvent(GroupChangedListener listener) {
+    listener.groupIdChangedEvent(this);
+  }
 }

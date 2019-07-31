@@ -1,24 +1,28 @@
 # openEQUELLA Docker
 
 ## Setup
-Install Docker.  For example, if you are on Ubuntu, follow the instructions [here|https://docs.docker.com/install/linux/docker-ce/ubuntu/].  
+
+Install Docker. For example, if you are on Ubuntu, follow the instructions [here|https://docs.docker.com/install/linux/docker-ce/ubuntu/].
 
 Consider enabling the ability to run docker commands without sudo:
+
 ```sh
 sudo usermod -aG docker $USER
 ```
 
 Check your version of Docker (The install and build images have been tested with Docker `18.06.1-ce`):
+
 ```sh
 docker --version
 ```
 
 ## Default Dockerfile
-Starting with an installer zip (output from `Dockerfile-build`), it installs openEQUELLA and is ready to run the application.  When the container starts, it keys off of configurable properties such as DB host/name/username/password, admin url, etc.
+
+Starting with an installer zip (output from `Dockerfile-build`), it installs openEQUELLA and is ready to run the application. When the container starts, it keys off of configurable properties such as DB host/name/username/password, admin url, etc.
 
 Meant for automated builds of openEQUELLA, but can be used as a quickstart to use openEQUELLA (not vetted for production use yet).
 
-Note - the zip and the root directory in the zip are not always the same, hence the different env variables.  
+Note - the zip and the root directory in the zip are not always the same, hence the different env variables.
 
 ```sh
 $ cd docker
@@ -32,16 +36,19 @@ To access the terminal of the container:
 docker exec -it oeq /bin/bash
 ```
 
-
 ## docker-build
-Pulls the latest Equella repo, and sets up the environment and helper scripts to build and save the openEQUELLA installer and upgrader.
+
+Pulls the latest Equella repo, sets up the environment, and copies over the helper scripts to build and save the openEQUELLA installer and upgrader. While there is an Oracle JDK version of the docker build file, you need to ensure you're within the bounds of the Oracle JDK licensing terms and conditions. All examples will use the openJDK technology so as to avoid the licensing issues.
+
 ```sh
 $ cd docker/docker-build
-$ docker build -t apereo/oeq-builder -f Dockerfile-oraclejdk . 
+$ docker build -t apereo/oeq-builder -f Dockerfile-openjdk-2018.2 .
 
 $ docker run -it --name oeqbuilder -v /home/user/temp/oeqbuilder-ws:/artifacts apereo/oeq-builder
 ```
+
 Build the upgrader and save it to the host directory
+
 ```sh
 cd /home/equella
 sh build-upgrader.sh
@@ -49,6 +56,7 @@ sh move-upgrader-to-host.sh
 ```
 
 Separately, you can also build the upgrader and save it to the host directory
+
 ```sh
 cd /home/equella
 sh build-installer.sh
@@ -56,6 +64,7 @@ sh move-installer-to-host.sh
 ```
 
 ### Reset the oeqbuilder Container
+
 ```sh
 cd ~/repo/Equella
 rm -r Source/Plugins/Kaltura
@@ -67,7 +76,9 @@ git checkout master
 ```
 
 ### GZip Error With SBT
-Not specifically a Docker issue, but when running SBT, if you hit the error below, in the Docker container, run `cd ~/repo/Equella ; find . -name target -exec rm -r "{}" \; ; cd ~` and retry the SBT command.  Solution found on https://github.com/sbt/sbt/issues/3050.
+
+Not specifically a Docker issue, but when running SBT, if you hit the error below, in the Docker container, run `cd ~/repo/Equella ; find . -name target -exec rm -r "{}" \; ; cd ~` and retry the SBT command. Solution found on https://github.com/sbt/sbt/issues/3050.
+
 ```
 Loading project definition from /home/equella/repo/Equella/project
 Error wrapping InputStream in GZIPInputStream: java.util.zip.ZipException: Not in GZIP format
@@ -76,7 +87,9 @@ Error wrapping InputStream in GZIPInputStream: java.util.zip.ZipException: Not i
 ```
 
 ### Using a Non-Default Java Signing Cert
-Using an `apereo/oeq-builder` image and a Java keystore (keystore.jks), invoke `docker run` with an additional host directory `-v /directory/location/of/java/keystore:/non-default-keystore`.  There are several options on how to create and populate the build.conf.  Without installing editors onto the docker image, you can add a `build.conf` with the following contents into your host directory containing the keystore, and then in the container, run `cp /non-default-keystore/build.conf /home/equella/repo/Equella/project`.
+
+Using an `apereo/oeq-builder` image and a Java keystore (keystore.jks), invoke `docker run` with an additional host directory `-v /directory/location/of/java/keystore:/non-default-keystore`. There are several options on how to create and populate the build.conf. Without installing editors onto the docker image, you can add a `build.conf` with the following contents into your host directory containing the keystore, and then in the container, run `cp /non-default-keystore/build.conf /home/equella/repo/Equella/project`.
+
 ```sbt
 signer {
   keystore = "/non-default-keystore/keystore.jks"
@@ -88,9 +101,6 @@ signer {
 
 See https://github.com/equella/Equella#keystore for more details.
 
-
 ## Future
-It would be helpful to have a flag for the default Dockerfile to place the filestore on a host directory.
 
-It would be helpful to have a pre-installed openEQUELLA image of each major version get pushed to DockerHub under Apereo, as well as aim for a Production ready Docker image. 
-
+For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/apereo/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.

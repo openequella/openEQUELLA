@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,51 +28,42 @@ import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.EventGeneratorListener;
 
 @SuppressWarnings("nls")
-public final class InnerBodyEvent extends UpdateDomEvent
-{
-	private static final String BODY_EVENT = "$UP$<BODY>";
-	private static InnerBodyEvent INSTANCE = new InnerBodyEvent();
+public final class InnerBodyEvent extends UpdateDomEvent {
+  private static final String BODY_EVENT = "$UP$<BODY>";
+  private static InnerBodyEvent INSTANCE = new InnerBodyEvent();
 
-	private InnerBodyEvent()
-	{
-		super(BODY_EVENT, new UpdateDomKey(null, ImmutableSet.of(AjaxGenerator.AJAXID_BODY), null));
-	}
+  private InnerBodyEvent() {
+    super(BODY_EVENT, new UpdateDomKey(null, ImmutableSet.of(AjaxGenerator.AJAXID_BODY), null));
+  }
 
-	@Override
-	public SectionEvent<?> createEvent(SectionInfo info, String[] params)
-	{
-		super.createEvent(info, params);
-		ParametersEvent event = null;
-		if( params.length > 0 )
-		{
-			MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-			event = new ParametersEvent(EventGeneratorListener.convertToParamMap(params), false);
-			minfo.addParametersEvent(event);
-		}
-		return event;
-	}
+  @Override
+  public SectionEvent<?> createEvent(SectionInfo info, String[] params) {
+    super.createEvent(info, params);
+    ParametersEvent event = null;
+    if (params.length > 0) {
+      MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+      event = new ParametersEvent(EventGeneratorListener.convertToParamMap(params), false);
+      minfo.addParametersEvent(event);
+    }
+    return event;
+  }
 
-	@Override
-	public int getParameterCount()
-	{
-		return -1;
-	}
+  @Override
+  public int getParameterCount() {
+    return -1;
+  }
 
-	public static void ensureRegistered(SectionTree tree)
-	{
-		EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
-		synchronized( listener )
-		{
-			if( listener.getRegisteredHandler(BODY_EVENT) == null )
-			{
-				listener.registerHandler(INSTANCE);
-			}
-		}
-	}
+  public static void ensureRegistered(SectionTree tree) {
+    EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
+    synchronized (listener) {
+      if (listener.getRegisteredHandler(BODY_EVENT) == null) {
+        listener.registerHandler(INSTANCE);
+      }
+    }
+  }
 
-	public static void ensureRegistered(SectionInfo info)
-	{
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		ensureRegistered(minfo.getRootTree());
-	}
+  public static void ensureRegistered(SectionInfo info) {
+    MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+    ensureRegistered(minfo.getRootTree());
+  }
 }

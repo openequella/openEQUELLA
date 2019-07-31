@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,34 @@
 
 package com.tle.core.usermanagement.standard.convert;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.TreeNodeConverter;
 import com.tle.core.usermanagement.standard.dao.TLEGroupDao;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class GroupConverter extends TreeNodeConverter<TLEGroup>
-{
-	@Inject
-	private TLEGroupDao tleGroupDao;
+public class GroupConverter extends TreeNodeConverter<TLEGroup> {
+  @Inject private TLEGroupDao tleGroupDao;
 
-	public GroupConverter()
-	{
-		super("groups", "groups.xml"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  public GroupConverter() {
+    super("groups", "groups.xml"); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	@Override
-	public TLEGroupDao getDao()
-	{
-		return tleGroupDao;
-	}
+  @Override
+  public TLEGroupDao getDao() {
+    return tleGroupDao;
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "GROUPS";
-	}
+  @Override
+  public String getStringId() {
+    return "GROUPS";
+  }
 
-	@Override
-	public Class<TLEGroup> getNodeClass()
-	{
-		return TLEGroup.class;
-	}
+  @Override
+  public Class<TLEGroup> getNodeClass() {
+    return TLEGroup.class;
+  }
 }

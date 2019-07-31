@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,51 +22,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * @author jmaginnis
- */
-public class HostMatcher
-{
-	private List<List<String>> matches;
+/** @author jmaginnis */
+public class HostMatcher {
+  private List<List<String>> matches;
 
-	public HostMatcher(List<String> expressions)
-	{
-		matches = new ArrayList<List<String>>(expressions.size());
+  public HostMatcher(List<String> expressions) {
+    matches = new ArrayList<List<String>>(expressions.size());
 
-		for( String expr : expressions )
-		{
-			StringTokenizer stok = new StringTokenizer(expr, "."); //$NON-NLS-1$
-			List<String> ips = new ArrayList<String>(4);
-			while( stok.hasMoreTokens() )
-			{
-				ips.add(stok.nextToken());
-			}
-			matches.add(ips);
-		}
-	}
+    for (String expr : expressions) {
+      StringTokenizer stok = new StringTokenizer(expr, "."); // $NON-NLS-1$
+      List<String> ips = new ArrayList<String>(4);
+      while (stok.hasMoreTokens()) {
+        ips.add(stok.nextToken());
+      }
+      matches.add(ips);
+    }
+  }
 
-	public boolean matches(String host)
-	{
-		nextmatch : for( List<String> match : matches )
-		{
-			StringTokenizer stok = new StringTokenizer(host, "."); //$NON-NLS-1$
-			int j = 0;
-			while( stok.hasMoreTokens() )
-			{
-				String ip = stok.nextToken();
-				String tomatch = match.get(j++);
-				if( tomatch.equals("*") ) //$NON-NLS-1$
-				{
-					continue;
-				}
+  public boolean matches(String host) {
+    nextmatch:
+    for (List<String> match : matches) {
+      StringTokenizer stok = new StringTokenizer(host, "."); // $NON-NLS-1$
+      int j = 0;
+      while (stok.hasMoreTokens()) {
+        String ip = stok.nextToken();
+        String tomatch = match.get(j++);
+        if (tomatch.equals("*")) // $NON-NLS-1$
+        {
+          continue;
+        }
 
-				if( !tomatch.equals(ip) )
-				{
-					continue nextmatch;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
+        if (!tomatch.equals(ip)) {
+          continue nextmatch;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }

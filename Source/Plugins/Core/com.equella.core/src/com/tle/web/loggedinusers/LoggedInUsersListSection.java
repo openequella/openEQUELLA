@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.loggedinusers;
-
-import java.util.Date;
-
-import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserSessionService;
@@ -45,101 +43,99 @@ import com.tle.web.sections.standard.model.TableState.TableRow;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.Date;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class LoggedInUsersListSection extends AbstractPrototypeSection<LoggedInUsersListSection.LoggedInUsersListModel>
-	implements
-		HtmlRenderer
-{
-	@PlugKey("liu.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("sessions.count")
-	private static String KEY_SESSIONS;
-	@PlugKey("webusers")
-	private static Label LABEL_USERSNAME;
-	@PlugKey("address")
-	private static Label LABEL_IP;
-	@PlugKey("loggedin")
-	private static Label LABEL_LOGGED_IN_TIME;
-	@PlugKey("lastaccess")
-	private static Label LABEL_LAST_ACCESS_TIME;
+public class LoggedInUsersListSection
+    extends AbstractPrototypeSection<LoggedInUsersListSection.LoggedInUsersListModel>
+    implements HtmlRenderer {
+  @PlugKey("liu.title")
+  private static Label LABEL_TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory freemarkerFactory;
+  @PlugKey("sessions.count")
+  private static String KEY_SESSIONS;
 
-	@Inject
-	private UserSessionService userSessionService;
-	@Inject
-	private LoggedInUsersPrivilegeTreeProvider securityProvider;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("webusers")
+  private static Label LABEL_USERSNAME;
 
-	@Component(name = "s")
-	private Table sessionsTable;
+  @PlugKey("address")
+  private static Label LABEL_IP;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setTitle(LABEL_TITLE);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
+  @PlugKey("loggedin")
+  private static Label LABEL_LOGGED_IN_TIME;
 
-		final TableState sessionsTableState = sessionsTable.getState(context);
-		int users = 0;
-		for( UserSessionTimestamp session : userSessionService.getInstitutionSessions() )
-		{
-			final String username = session.getUsername();
-			final Date created = session.getCreated();
-			final Date accessed = session.getAccessed();
-			final TableRow row = sessionsTableState.addRow(username, session.getHostAddress(),
-				dateRendererFactory.createDateRenderer(created), dateRendererFactory.createDateRenderer(accessed));
-			row.setSortData(username, null, created, accessed);
-			users++;
-		}
+  @PlugKey("lastaccess")
+  private static Label LABEL_LAST_ACCESS_TIME;
 
-		final LoggedInUsersListModel model = getModel(context);
-		model.setSessionsLabel(new PluralKeyLabel(KEY_SESSIONS, users));
+  @ViewFactory private FreemarkerFactory freemarkerFactory;
 
-		return freemarkerFactory.createResult("loggedinuserlist.ftl", context);
-	}
+  @Inject private UserSessionService userSessionService;
+  @Inject private LoggedInUsersPrivilegeTreeProvider securityProvider;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		sessionsTable.setColumnHeadings(LABEL_USERSNAME, LABEL_IP, LABEL_LOGGED_IN_TIME, LABEL_LAST_ACCESS_TIME);
-		sessionsTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.NONE, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
-	}
+  @Component(name = "s")
+  private Table sessionsTable;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void checkAuthorised(SectionInfo info)
-	{
-		securityProvider.checkAuthorised();
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setTitle(LABEL_TITLE);
+    Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
-	@Override
-	public Class<LoggedInUsersListModel> getModelClass()
-	{
-		return LoggedInUsersListModel.class;
-	}
+    final TableState sessionsTableState = sessionsTable.getState(context);
+    int users = 0;
+    for (UserSessionTimestamp session : userSessionService.getInstitutionSessions()) {
+      final String username = session.getUsername();
+      final Date created = session.getCreated();
+      final Date accessed = session.getAccessed();
+      final TableRow row =
+          sessionsTableState.addRow(
+              username,
+              session.getHostAddress(),
+              dateRendererFactory.createDateRenderer(created),
+              dateRendererFactory.createDateRenderer(accessed));
+      row.setSortData(username, null, created, accessed);
+      users++;
+    }
 
-	public Table getSessionsTable()
-	{
-		return sessionsTable;
-	}
+    final LoggedInUsersListModel model = getModel(context);
+    model.setSessionsLabel(new PluralKeyLabel(KEY_SESSIONS, users));
 
-	public static class LoggedInUsersListModel
-	{
-		private Label sessionsLabel;
+    return freemarkerFactory.createResult("loggedinuserlist.ftl", context);
+  }
 
-		public Label getSessionsLabel()
-		{
-			return sessionsLabel;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    sessionsTable.setColumnHeadings(
+        LABEL_USERSNAME, LABEL_IP, LABEL_LOGGED_IN_TIME, LABEL_LAST_ACCESS_TIME);
+    sessionsTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.NONE, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
+  }
 
-		public void setSessionsLabel(Label sessionsLabel)
-		{
-			this.sessionsLabel = sessionsLabel;
-		}
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void checkAuthorised(SectionInfo info) {
+    securityProvider.checkAuthorised();
+  }
+
+  @Override
+  public Class<LoggedInUsersListModel> getModelClass() {
+    return LoggedInUsersListModel.class;
+  }
+
+  public Table getSessionsTable() {
+    return sessionsTable;
+  }
+
+  public static class LoggedInUsersListModel {
+    private Label sessionsLabel;
+
+    public Label getSessionsLabel() {
+      return sessionsLabel;
+    }
+
+    public void setSessionsLabel(Label sessionsLabel) {
+      this.sessionsLabel = sessionsLabel;
+    }
+  }
 }

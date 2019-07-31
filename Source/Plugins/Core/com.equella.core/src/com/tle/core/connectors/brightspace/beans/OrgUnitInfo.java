@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,92 +18,78 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class OrgUnitInfo
-{
-	@JsonProperty("Id")
-	private long id;
-	@JsonProperty("Code")
-	private String code;
-	@JsonProperty("Name")
-	private String name;
+public class OrgUnitInfo {
+  @JsonProperty("Id")
+  private long id;
 
-	public long getId()
-	{
-		return id;
-	}
+  @JsonProperty("Code")
+  private String code;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @JsonProperty("Name")
+  private String name;
 
-	public String getCode()
-	{
-		return code;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	@XmlRootElement
-	public static class OrgUnitTypeInfo
-	{
-		@JsonProperty("Id")
-		private long id;
-		@JsonProperty("Code")
-		private String code;
-		@JsonProperty("Name")
-		private String name;
+  public String getName() {
+    return name;
+  }
 
-		public long getId()
-		{
-			return id;
-		}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+  @XmlRootElement
+  public static class OrgUnitTypeInfo {
+    @JsonProperty("Id")
+    private long id;
 
-		public String getCode()
-		{
-			return code;
-		}
+    @JsonProperty("Code")
+    private String code;
 
-		public void setCode(String code)
-		{
-			this.code = code;
-		}
+    @JsonProperty("Name")
+    private String name;
 
-		public String getName()
-		{
-			return name;
-		}
+    public long getId() {
+      return id;
+    }
 
-		public void setName(String name)
-		{
-			this.name = name;
-		}
-	}
+    public void setId(long id) {
+      this.id = id;
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    public void setCode(String code) {
+      this.code = code;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
 }

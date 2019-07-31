@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,21 +25,21 @@ import com.tle.web.sections.render.StyleableRenderer;
 import com.tle.web.sections.standard.js.JSDisableable;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-public interface LinkTagRenderer extends JSDisableable, NestedRenderable, ElementId, StyleableRenderer
-{
-	void setTarget(String target);
+public interface LinkTagRenderer
+    extends JSDisableable, NestedRenderable, ElementId, StyleableRenderer {
+  void setTarget(String target);
 
-	void setRel(String rel);
+  void setRel(String rel);
 
-	void setTitle(Label title);
+  void setTitle(Label title);
 
-	void setLabel(Label label);
+  void setLabel(Label label);
 
-	void setDisabled(boolean disabled);
+  void setDisabled(boolean disabled);
 
-	void setElementId(ElementId elemId);
+  void setElementId(ElementId elemId);
 
-	void ensureClickable();
+  void ensureClickable();
 
-	HtmlLinkState getLinkState();
+  HtmlLinkState getLinkState();
 }

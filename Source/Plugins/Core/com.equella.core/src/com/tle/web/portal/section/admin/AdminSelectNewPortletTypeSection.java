@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.portal.section.admin;
 
-import javax.inject.Inject;
-
 import com.tle.web.portal.section.common.SelectNewPortletTypeSection;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.sections.SectionInfo;
@@ -25,30 +25,26 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
+import javax.inject.Inject;
 
-public class AdminSelectNewPortletTypeSection extends SelectNewPortletTypeSection
-{
-	@Inject
-	private PortletWebService portletWebService;
+public class AdminSelectNewPortletTypeSection extends SelectNewPortletTypeSection {
+  @Inject private PortletWebService portletWebService;
 
-	@Override
-	@EventHandlerMethod
-	public void typeSelected(SectionInfo info, String type)
-	{
-		portletWebService.newPortlet(info, type, true);
-	}
+  @Override
+  @EventHandlerMethod
+  public void typeSelected(SectionInfo info, String type) {
+    portletWebService.newPortlet(info, type, true);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		getModel(context).setNoCreatePrivs(!portletWebService.canCreate());
-		HelpAndScreenOptionsSection.addScreenOptions(context, renderOptions(context));
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    getModel(context).setNoCreatePrivs(!portletWebService.canCreate());
+    HelpAndScreenOptionsSection.addScreenOptions(context, renderOptions(context));
+    return null;
+  }
 
-	@Override
-	protected boolean isAdmin()
-	{
-		return true;
-	}
+  @Override
+  protected boolean isAdmin() {
+    return true;
+  }
 }

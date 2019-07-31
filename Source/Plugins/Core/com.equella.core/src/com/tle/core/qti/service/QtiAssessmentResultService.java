@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,37 +18,44 @@
 
 package com.tle.core.qti.service;
 
-import uk.ac.ed.ph.jqtiplus.node.result.AssessmentResult;
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
-import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.qti.entity.QtiAssessmentResult;
 import com.tle.common.qti.entity.QtiAssessmentTest;
+import uk.ac.ed.ph.jqtiplus.node.result.AssessmentResult;
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
+import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface QtiAssessmentResultService
-{
-	@Nullable
-	QtiAssessmentResult getAssessmentResult(QtiAssessmentTest test, String resourceLinkId, String userId,
-		String toolConsumerInstanceGuid);
+public interface QtiAssessmentResultService {
+  @Nullable
+  QtiAssessmentResult getAssessmentResult(
+      QtiAssessmentTest test,
+      String resourceLinkId,
+      String userId,
+      String toolConsumerInstanceGuid);
 
-	QtiAssessmentResult ensureAssessmentResult(QtiAssessmentTest test, String resourceLinkId, String userId,
-		String toolConsumerInstanceGuid);
+  QtiAssessmentResult ensureAssessmentResult(
+      QtiAssessmentTest test,
+      String resourceLinkId,
+      String userId,
+      String toolConsumerInstanceGuid);
 
-	AssessmentResult persistTestSessionState(QtiAssessmentTest test, TestSessionController testSessionController,
-		QtiAssessmentResult qtiAssessmentResult);
+  AssessmentResult persistTestSessionState(
+      QtiAssessmentTest test,
+      TestSessionController testSessionController,
+      QtiAssessmentResult qtiAssessmentResult);
 
-	TestSessionController loadTestSessionState(ResolvedAssessmentTest resolvedAssessmentTest,
-		@Nullable QtiAssessmentResult qtiAssessmentResult);
+  TestSessionController loadTestSessionState(
+      ResolvedAssessmentTest resolvedAssessmentTest,
+      @Nullable QtiAssessmentResult qtiAssessmentResult);
 
-	AssessmentResult computeAssessmentResult(TestSessionController testSessionController);
+  AssessmentResult computeAssessmentResult(TestSessionController testSessionController);
 
-	int countAttemptsByResourceLink(QtiAssessmentTest test, String resourceLinkId, String userId,
-		String toolConsumerInstanceGuid);
-
+  int countAttemptsByResourceLink(
+      QtiAssessmentTest test,
+      String resourceLinkId,
+      String userId,
+      String toolConsumerInstanceGuid);
 }

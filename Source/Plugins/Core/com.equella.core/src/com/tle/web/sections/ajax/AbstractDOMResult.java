@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,63 +21,52 @@ package com.tle.web.sections.ajax;
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class AbstractDOMResult
-{
-	private String script;
-	private Collection<String> css;
-	private Collection<String> js;
-	private Map<String, Object> formParams;
+public abstract class AbstractDOMResult {
+  private String script;
+  private Collection<String> css;
+  private Collection<String> js;
+  private Map<String, Object> formParams;
 
-	public AbstractDOMResult()
-	{
-		// nothing
-	}
+  public AbstractDOMResult() {
+    // nothing
+  }
 
-	public AbstractDOMResult(AbstractDOMResult result)
-	{
-		setCss(result.getCss());
-		setJs(result.getJs());
-		setScript(result.getScript());
-		setFormParams(result.getFormParams());
-	}
+  public AbstractDOMResult(AbstractDOMResult result) {
+    setCss(result.getCss());
+    setJs(result.getJs());
+    setScript(result.getScript());
+    setFormParams(result.getFormParams());
+  }
 
-	public String getScript()
-	{
-		return script;
-	}
+  public String getScript() {
+    return script;
+  }
 
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  public void setScript(String script) {
+    this.script = script;
+  }
 
-	public Collection<String> getCss()
-	{
-		return css;
-	}
+  public Collection<String> getCss() {
+    return css;
+  }
 
-	public void setCss(Collection<String> css)
-	{
-		this.css = css;
-	}
+  public void setCss(Collection<String> css) {
+    this.css = css;
+  }
 
-	public Collection<String> getJs()
-	{
-		return js;
-	}
+  public Collection<String> getJs() {
+    return js;
+  }
 
-	public void setJs(Collection<String> js)
-	{
-		this.js = js;
-	}
+  public void setJs(Collection<String> js) {
+    this.js = js;
+  }
 
-	public Map<String, Object> getFormParams()
-	{
-		return formParams;
-	}
+  public Map<String, Object> getFormParams() {
+    return formParams;
+  }
 
-	public void setFormParams(Map<String, Object> formParams)
-	{
-		this.formParams = formParams;
-	}
+  public void setFormParams(Map<String, Object> formParams) {
+    this.formParams = formParams;
+  }
 }

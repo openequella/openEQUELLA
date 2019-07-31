@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,49 +21,40 @@ package com.tle.admin.workflow;
 import com.tle.common.NameValue;
 import com.tle.common.workflow.node.WorkflowItem;
 
-public class WorkflowTaskItem
-{
-	private WorkflowItem item;
-	private NameValue user;
-	private NameValue group;
+public class WorkflowTaskItem {
+  private WorkflowItem item;
+  private NameValue user;
+  private NameValue group;
 
-	public WorkflowTaskItem()
-	{
-		super();
-	}
+  public WorkflowTaskItem() {
+    super();
+  }
 
-	public WorkflowTaskItem(WorkflowItem item2)
-	{
-		this.item = item2;
-	}
+  public WorkflowTaskItem(WorkflowItem item2) {
+    this.item = item2;
+  }
 
-	public NameValue getGroup()
-	{
-		return group;
-	}
+  public NameValue getGroup() {
+    return group;
+  }
 
-	public void setGroup(NameValue group)
-	{
-		this.group = group;
-	}
+  public void setGroup(NameValue group) {
+    this.group = group;
+  }
 
-	public WorkflowItem getItem()
-	{
-		return item;
-	}
+  public WorkflowItem getItem() {
+    return item;
+  }
 
-	public void setItem(WorkflowItem item)
-	{
-		this.item = item;
-	}
+  public void setItem(WorkflowItem item) {
+    this.item = item;
+  }
 
-	public NameValue getUser()
-	{
-		return user;
-	}
+  public NameValue getUser() {
+    return user;
+  }
 
-	public void setUser(NameValue user)
-	{
-		this.user = user;
-	}
+  public void setUser(NameValue user) {
+    this.user = user;
+  }
 }

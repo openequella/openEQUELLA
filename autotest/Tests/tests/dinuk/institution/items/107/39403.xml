@@ -1,0 +1,68 @@
+<com.tle.beans.item.Item>
+  <id>39403</id>
+  <uuid>ff2d2c04-cad7-4b64-852f-18050e29ffa5</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-11-03 15:51:46.392</dateModified>
+  <dateCreated class="sql-timestamp">2011-11-03 15:51:46.412</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-04-27 11:26:17.792</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6064cc6c-4bd3-4b6d-a5f9-b7f1c1dca376"/>
+  <collaborators/>
+  <badUrls/>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>39409</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-11-03 15:51:46.392</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>39407</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>39408</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>GREAT WALL</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>39404</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>39405</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>GREAT WALL</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

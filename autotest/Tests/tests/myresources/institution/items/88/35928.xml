@@ -1,0 +1,79 @@
+<com.tle.beans.item.Item>
+  <id>35928</id>
+  <uuid>79987c28-53b5-95e8-7b16-20e8e82637c3</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2005-10-03 16:29:25.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-05 15:56:53.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.9</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>35953</id>
+      <uuid>e286fde2-8516-463b-bb75-8e0d64933898</uuid>
+      <url>perpendi.gif</url>
+      <description>perpendi.gif</description>
+      <value1>83</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="01d4757e-b10e-788d-a713-176427d4f90c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>35941</id>
+    <start class="sql-timestamp">2011-08-30 12:05:09.599</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>35945</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35948</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>perpendi</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>35931</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35934</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>perpendi</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>744</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

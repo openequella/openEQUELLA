@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,27 +18,23 @@
 
 package com.tle.core.system.impl;
 
+import com.tle.core.hibernate.dao.GenericDaoImpl;
 import java.io.Serializable;
 
-import com.tle.core.hibernate.dao.GenericDaoImpl;
-
 @SuppressWarnings("nls")
-public abstract class AbstractSystemDaoImpl<T, ID extends Serializable> extends GenericDaoImpl<T, ID>
-{
-	public AbstractSystemDaoImpl(Class<T> persistentClass)
-	{
-		super(persistentClass);
-	}
+public abstract class AbstractSystemDaoImpl<T, ID extends Serializable>
+    extends GenericDaoImpl<T, ID> {
+  public AbstractSystemDaoImpl(Class<T> persistentClass) {
+    super(persistentClass);
+  }
 
-	@Override
-	protected final String getFactoryName()
-	{
-		return "system";
-	}
+  @Override
+  protected final String getFactoryName() {
+    return "system";
+  }
 
-	@Override
-	protected final boolean isSystemDataSource()
-	{
-		return true;
-	}
+  @Override
+  protected final boolean isSystemDataSource() {
+    return true;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,30 @@
 
 package com.tle.web.api.item.equella.interfaces.beans;
 
-public class ZipAttachmentBean extends EquellaAttachmentBean
-{
-	private static final String TYPE = "zip";
+public class ZipAttachmentBean extends EquellaAttachmentBean {
+  private static final String TYPE = "zip";
 
-	private boolean mapped;
-	private String folder;
+  private boolean mapped;
+  private String folder;
 
-	public boolean isMapped()
-	{
-		return mapped;
-	}
+  public boolean isMapped() {
+    return mapped;
+  }
 
-	public void setMapped(boolean mapped)
-	{
-		this.mapped = mapped;
-	}
+  public void setMapped(boolean mapped) {
+    this.mapped = mapped;
+  }
 
-	public String getFolder()
-	{
-		return folder;
-	}
+  public String getFolder() {
+    return folder;
+  }
 
-	public void setFolder(String folder)
-	{
-		this.folder = folder;
-	}
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
 
-	@Override
-	public String getRawAttachmentType()
-	{
-		return TYPE;
-	}
+  @Override
+  public String getRawAttachmentType() {
+    return TYPE;
+  }
 }

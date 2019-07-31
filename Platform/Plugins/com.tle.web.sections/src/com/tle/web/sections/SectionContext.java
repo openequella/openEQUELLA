@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,23 +20,19 @@ package com.tle.web.sections;
 
 /**
  * The context of a {@link Section} within a {@link SectionInfo}.
- * <p>
- * Because <code>Section</code>s can be singleton instances, this class
- * represents the mapping of an id to a <code>Section</code>. It also provides
- * easy access to the Model class for the <code>Section</code>.
- * 
+ *
+ * <p>Because <code>Section</code>s can be singleton instances, this class represents the mapping of
+ * an id to a <code>Section</code>. It also provides easy access to the Model class for the <code>
+ * Section</code>.
+ *
  * @author jmaginnis
  */
-public interface SectionContext extends SectionId, SectionInfo
-{
+public interface SectionContext extends SectionId, SectionInfo {
 
-	/**
-	 * @return The <code>SectionInfo</code> that this <code>Section</code> is
-	 *         associated with.
-	 */
-	@Deprecated
-	SectionInfo getInfo();
+  /** @return The <code>SectionInfo</code> that this <code>Section</code> is associated with. */
+  @Deprecated
+  SectionInfo getInfo();
 
-	@Deprecated
-	SectionId getSection();
+  @Deprecated
+  SectionId getSection();
 }

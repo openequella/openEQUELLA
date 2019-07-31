@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,49 +28,41 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 
 @NonNullByDefault
-public abstract class GenericMinorActionSection extends GenericActionSection<Link>
-{
-	@Component
-	private Link link;
+public abstract class GenericMinorActionSection extends GenericActionSection<Link> {
+  @Component private Link link;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		// So much better!
-		// link.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    // So much better!
+    // link.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+  }
 
-	protected abstract Label getLinkLabel();
+  protected abstract Label getLinkLabel();
 
-	// for alphabetical sorting in MinorActionsGroupSection
-	public abstract String getLinkText();
+  // for alphabetical sorting in MinorActionsGroupSection
+  public abstract String getLinkText();
 
-	@Nullable
-	protected Label getConfirmation()
-	{
-		return null;
-	}
+  @Nullable
+  protected Label getConfirmation() {
+    return null;
+  }
 
-	@Override
-	public final Link getComponent()
-	{
-		return link;
-	}
+  @Override
+  public final Link getComponent() {
+    return link;
+  }
 
-	@Override
-	protected void setupComponent(Link link)
-	{
-		link.setLabel(getLinkLabel());
-	}
+  @Override
+  protected void setupComponent(Link link) {
+    link.setLabel(getLinkLabel());
+  }
 
-	@Override
-	protected void setupHandler(JSHandler handler)
-	{
-		Label clickConfirmation = getConfirmation();
-		if( clickConfirmation != null )
-		{
-			handler.addValidator(new Confirm(clickConfirmation));
-		}
-	}
+  @Override
+  protected void setupHandler(JSHandler handler) {
+    Label clickConfirmation = getConfirmation();
+    if (clickConfirmation != null) {
+      handler.addValidator(new Confirm(clickConfirmation));
+    }
+  }
 }

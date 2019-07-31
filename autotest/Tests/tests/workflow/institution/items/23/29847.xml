@@ -1,0 +1,88 @@
+<com.tle.beans.item.Item>
+  <id>29847</id>
+  <uuid>d137e0e5-39e1-09a0-603c-32dac6d2f4df</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:00:57.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:19:56.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.5</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>1221</id>
+      <url>http://boorah/dev/workflow/item/image/3fd913c2-a404-e4fa-d936-83dd5ef95920/1/notsubse.gif</url>
+      <urlHash>102028858981aa4451211da5cf88247c</urlHash>
+      <success>false</success>
+      <status>503</status>
+      <message>&lt;!DOCTYPE HTML PUBLIC &quot;-//IETF//DTD HTML 2.0//EN&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;503 Service Unavailable&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Service Unavailable&lt;/h1&gt;
+&lt;p&gt;The server is temporarily unable to service your
+request due to maintenance downtime or capacity
+prob</message>
+      <tries>1</tries>
+      <lastChecked class="sql-timestamp">2014-08-14 13:08:59.837</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>29857</id>
+    <start class="sql-timestamp">2011-09-20 10:58:39.03</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>29858</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29859</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Not Subset Of</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>29848</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29851</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>The symbol for excluding from a subset.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

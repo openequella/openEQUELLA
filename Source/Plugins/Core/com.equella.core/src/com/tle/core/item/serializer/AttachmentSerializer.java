@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,25 @@
 
 package com.tle.core.item.serializer;
 
-import java.util.Map;
-
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
+import java.util.Map;
 
-public interface AttachmentSerializer
-{
-	EquellaAttachmentBean serialize(Attachment attachment);
+public interface AttachmentSerializer {
+  EquellaAttachmentBean serialize(Attachment attachment);
 
-	String deserialize(EquellaAttachmentBean bean, ItemEditor itemEditor);
+  String deserialize(EquellaAttachmentBean bean, ItemEditor itemEditor);
 
-	Map<String, Class<? extends EquellaAttachmentBean>> getAttachmentBeanTypes();
+  Map<String, Class<? extends EquellaAttachmentBean>> getAttachmentBeanTypes();
 
-	/**
-	 * Attachment can be imported into another system. E.g Equella resource
-	 * attachments wouldn't work,so are not exportable. Only the relevant
-	 * serializer (based on AttachmentBean.getRawAttachmentType()) will be asked
-	 * if the attachment is exportable
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	boolean exportable(EquellaAttachmentBean bean);
+  /**
+   * Attachment can be imported into another system. E.g Equella resource attachments wouldn't
+   * work,so are not exportable. Only the relevant serializer (based on
+   * AttachmentBean.getRawAttachmentType()) will be asked if the attachment is exportable
+   *
+   * @param bean
+   * @return
+   */
+  boolean exportable(EquellaAttachmentBean bean);
 }

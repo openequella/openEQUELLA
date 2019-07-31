@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -28,38 +30,30 @@ import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
-/**
- * @author aholland
- */
-public abstract class AbstractMyPagesSection<M> extends AbstractPrototypeSection<M>
-{
-	protected static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(AbstractMyPagesSection.class);
+/** @author aholland */
+public abstract class AbstractMyPagesSection<M> extends AbstractPrototypeSection<M> {
+  protected static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(AbstractMyPagesSection.class);
 
-	@EventFactory
-	protected EventGenerator events;
+  @EventFactory protected EventGenerator events;
 
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		if( this instanceof SavePageEventListener )
-		{
-			tree.addListener(null, SavePageEventListener.class, id);
-		}
+    if (this instanceof SavePageEventListener) {
+      tree.addListener(null, SavePageEventListener.class, id);
+    }
 
-		if( this instanceof LoadItemEventListener )
-		{
-			tree.addListener(null, LoadItemEventListener.class, id);
-		}
+    if (this instanceof LoadItemEventListener) {
+      tree.addListener(null, LoadItemEventListener.class, id);
+    }
 
-		if( this instanceof SaveItemEventListener )
-		{
-			tree.addListener(null, SaveItemEventListener.class, id);
-		}
-	}
+    if (this instanceof SaveItemEventListener) {
+      tree.addListener(null, SaveItemEventListener.class, id);
+    }
+  }
 }

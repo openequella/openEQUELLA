@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,44 +25,35 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class CloudItemSectionInfo
-{
-	private final CloudViewableItem viewableItem;
+public class CloudItemSectionInfo {
+  private final CloudViewableItem viewableItem;
 
-	public CloudItemSectionInfo(CloudViewableItem viewableItem)
-	{
-		this.viewableItem = viewableItem;
-	}
+  public CloudItemSectionInfo(CloudViewableItem viewableItem) {
+    this.viewableItem = viewableItem;
+  }
 
-	public CloudViewableItem getViewableItem()
-	{
-		return viewableItem;
-	}
+  public CloudViewableItem getViewableItem() {
+    return viewableItem;
+  }
 
-	public ItemKey getItemId()
-	{
-		return viewableItem.getItemId();
-	}
+  public ItemKey getItemId() {
+    return viewableItem.getItemId();
+  }
 
-	public static CloudItemSectionInfo getItemInfo(SectionInfo info)
-	{
-		CloudItemSectionInfo iinfo = info.getAttribute(CloudItemSectionInfo.class);
-		if( iinfo == null )
-		{
-			CloudItemSectionInfoFactory factory = info.lookupSection(CloudItemSectionInfoFactory.class);
-			iinfo = factory.createCloudItemSectionInfo(info);
-			info.setAttribute(CloudItemSectionInfo.class, iinfo);
-		}
-		return iinfo;
-	}
+  public static CloudItemSectionInfo getItemInfo(SectionInfo info) {
+    CloudItemSectionInfo iinfo = info.getAttribute(CloudItemSectionInfo.class);
+    if (iinfo == null) {
+      CloudItemSectionInfoFactory factory = info.lookupSection(CloudItemSectionInfoFactory.class);
+      iinfo = factory.createCloudItemSectionInfo(info);
+      info.setAttribute(CloudItemSectionInfo.class, iinfo);
+    }
+    return iinfo;
+  }
 
-	@TreeIndexed
-	public interface CloudItemSectionInfoFactory extends SectionId
-	{
-		CloudItemSectionInfo createCloudItemSectionInfo(SectionInfo info);
-	}
+  @TreeIndexed
+  public interface CloudItemSectionInfoFactory extends SectionId {
+    CloudItemSectionInfo createCloudItemSectionInfo(SectionInfo info);
+  }
 }

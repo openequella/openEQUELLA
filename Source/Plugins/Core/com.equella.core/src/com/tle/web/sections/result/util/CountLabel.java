@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,27 +20,22 @@ package com.tle.web.sections.result.util;
 
 import com.tle.web.sections.render.Label;
 
-public class CountLabel implements Label
-{
-	private long count;
+public class CountLabel implements Label {
+  private long count;
 
-	public CountLabel(long count)
-	{
-		this.count = count;
-	}
+  public CountLabel(long count) {
+    this.count = count;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getText()
-	{
-		String extraClass = count == 0 ? " class=\"zero\"" : "";
-		return "<span" + extraClass + ">" + count + "</span>";
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getText() {
+    String extraClass = count == 0 ? " class=\"zero\"" : "";
+    return "<span" + extraClass + ">" + count + "</span>";
+  }
 
-	@Override
-	public boolean isHtml()
-	{
-		return true;
-	}
-
+  @Override
+  public boolean isHtml() {
+    return true;
+  }
 }

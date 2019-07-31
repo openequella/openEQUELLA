@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,27 @@
 
 package com.tle.common.harvester;
 
-/**
- * @author larry
- *
- */
+/** @author larry */
 @SuppressWarnings("nls")
-public class SHEXHarvesterSettings extends AbstractTLFHarvesterSettings
-{
-	public static final String SHEX_HARVESTER_TYPE = "SHEXHarvesterSettings";
-	public static final String SHEX_SERVER_URL = "http://sharing.thelearningfederation.edu.au";
+public class SHEXHarvesterSettings extends AbstractTLFHarvesterSettings {
+  public static final String SHEX_HARVESTER_TYPE = "SHEXHarvesterSettings";
+  public static final String SHEX_SERVER_URL = "http://sharing.thelearningfederation.edu.au";
 
-	public SHEXHarvesterSettings()
-	{
-		super();
-	}
+  public SHEXHarvesterSettings() {
+    super();
+  }
 
-	public SHEXHarvesterSettings(HarvesterProfile gateway)
-	{
-		super(gateway);
-	}
+  public SHEXHarvesterSettings(HarvesterProfile gateway) {
+    super(gateway);
+  }
 
-	@Override
-	protected String getType()
-	{
-		return SHEX_HARVESTER_TYPE;
-	}
+  @Override
+  protected String getType() {
+    return SHEX_HARVESTER_TYPE;
+  }
 
-	@Override
-	public String getServer()
-	{
-		return SHEX_SERVER_URL;
-	}
+  @Override
+  public String getServer() {
+    return SHEX_SERVER_URL;
+  }
 }

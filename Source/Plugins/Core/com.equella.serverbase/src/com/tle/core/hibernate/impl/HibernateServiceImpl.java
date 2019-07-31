@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,14 +18,6 @@
 
 package com.tle.core.hibernate.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Environment;
-import org.springframework.orm.hibernate3.SpringSessionContext;
-import org.springframework.orm.hibernate3.SpringTransactionFactory;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -33,107 +27,96 @@ import com.tle.core.hibernate.DataSourceService;
 import com.tle.core.hibernate.HibernateFactory;
 import com.tle.core.hibernate.HibernateFactoryService;
 import com.tle.core.hibernate.HibernateService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Environment;
+import org.springframework.orm.hibernate3.SpringSessionContext;
+import org.springframework.orm.hibernate3.SpringTransactionFactory;
 
 @Bind(HibernateService.class)
 @Singleton
-public class HibernateServiceImpl implements HibernateService
-{
-	@Inject
-	private HibernateFactoryService hibernateService;
-	@Inject
-	private DataSourceService datasourceService;
-	@Inject
-	private DynamicDataSource institutionAwareDataSource;
+public class HibernateServiceImpl implements HibernateService {
+  @Inject private HibernateFactoryService hibernateService;
+  @Inject private DataSourceService datasourceService;
+  @Inject private DynamicDataSource institutionAwareDataSource;
 
-	private static HibernateServiceImpl instance;
+  private static HibernateServiceImpl instance;
 
-	public HibernateServiceImpl()
-	{
-		instance = this;
-	}
+  public HibernateServiceImpl() {
+    instance = this;
+  }
 
-	public static HibernateServiceImpl getInstance()
-	{
-		return instance;
-	}
+  public static HibernateServiceImpl getInstance() {
+    return instance;
+  }
 
-	private LoadingCache<SessionFactoryKey, SessionFactory> factories = CacheBuilder.newBuilder().build(
-		new CacheLoader<SessionFactoryKey, SessionFactory>()
-		{
-			@Override
-			public SessionFactory load(SessionFactoryKey key)
-			{
-				return getHibernateFactory(key.getName(), key.isSystemOnly()).getSessionFactory();
-			}
-		});
+  private LoadingCache<SessionFactoryKey, SessionFactory> factories =
+      CacheBuilder.newBuilder()
+          .build(
+              new CacheLoader<SessionFactoryKey, SessionFactory>() {
+                @Override
+                public SessionFactory load(SessionFactoryKey key) {
+                  return getHibernateFactory(key.getName(), key.isSystemOnly()).getSessionFactory();
+                }
+              });
 
-	protected HibernateFactory getHibernateFactory(String name, boolean system)
-	{
-		Class<?>[] clazzes = hibernateService.getDomainClasses(name);
-		DataSourceHolder dataSource;
-		if( system )
-		{
-			dataSource = datasourceService.getSystemDataSource();
-		}
-		else
-		{
-			dataSource = new DataSourceHolder(institutionAwareDataSource, datasourceService.getDialect());
-		}
-		HibernateFactory factory = hibernateService.createConfiguration(dataSource, clazzes);
-		factory.setClassLoader(getClass().getClassLoader());
-		factory.setProperty(Environment.TRANSACTION_STRATEGY, SpringTransactionFactory.class.getName());
-		factory.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.class.getName());
-		return factory;
-	}
+  protected HibernateFactory getHibernateFactory(String name, boolean system) {
+    Class<?>[] clazzes = hibernateService.getDomainClasses(name);
+    DataSourceHolder dataSource;
+    if (system) {
+      dataSource = datasourceService.getSystemDataSource();
+    } else {
+      dataSource = new DataSourceHolder(institutionAwareDataSource, datasourceService.getDialect());
+    }
+    HibernateFactory factory = hibernateService.createConfiguration(dataSource, clazzes);
+    factory.setClassLoader(getClass().getClassLoader());
+    factory.setProperty(Environment.TRANSACTION_STRATEGY, SpringTransactionFactory.class.getName());
+    factory.setProperty(
+        Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.class.getName());
+    return factory;
+  }
 
-	@Override
-	public synchronized SessionFactory getTransactionAwareSessionFactory(String name, boolean system)
-	{
-		return factories.getUnchecked(new SessionFactoryKey(name, system));
-	}
+  @Override
+  public synchronized SessionFactory getTransactionAwareSessionFactory(
+      String name, boolean system) {
+    return factories.getUnchecked(new SessionFactoryKey(name, system));
+  }
 
-	public static class SessionFactoryKey
-	{
-		private final String name;
-		private final boolean systemOnly;
+  public static class SessionFactoryKey {
+    private final String name;
+    private final boolean systemOnly;
 
-		public SessionFactoryKey(String name, boolean systemOnly)
-		{
-			this.name = name;
-			this.systemOnly = systemOnly;
-		}
+    public SessionFactoryKey(String name, boolean systemOnly) {
+      this.name = name;
+      this.systemOnly = systemOnly;
+    }
 
-		public String getName()
-		{
-			return name;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public boolean isSystemOnly()
-		{
-			return systemOnly;
-		}
+    public boolean isSystemOnly() {
+      return systemOnly;
+    }
 
-		@Override
-		public int hashCode()
-		{
-			return name.hashCode() + (systemOnly ? 1 : 0);
-		}
+    @Override
+    public int hashCode() {
+      return name.hashCode() + (systemOnly ? 1 : 0);
+    }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( this == obj )
-			{
-				return true;
-			}
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
 
-			if( !(obj instanceof SessionFactoryKey) )
-			{
-				return false;
-			}
+      if (!(obj instanceof SessionFactoryKey)) {
+        return false;
+      }
 
-			SessionFactoryKey other = (SessionFactoryKey) obj;
-			return name.equals(other.name) && systemOnly == other.systemOnly;
-		}
-	}
+      SessionFactoryKey other = (SessionFactoryKey) obj;
+      return name.equals(other.name) && systemOnly == other.systemOnly;
+    }
+  }
 }

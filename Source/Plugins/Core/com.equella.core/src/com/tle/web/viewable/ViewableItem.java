@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,76 +18,70 @@
 
 package com.tle.web.viewable;
 
-import java.net.URI;
-import java.util.Set;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.annotation.Nullable;
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.workflow.WorkflowStatus;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.web.sections.Bookmark;
+import java.net.URI;
+import java.util.Set;
 
-public interface ViewableItem<I extends IItem<?>>
-{
-	IAttachment getAttachmentByUuid(String uuid);
+public interface ViewableItem<I extends IItem<?>> {
+  IAttachment getAttachmentByUuid(String uuid);
 
-	IAttachment getAttachmentByFilepath(String filepath);
+  IAttachment getAttachmentByFilepath(String filepath);
 
-	I getItem();
+  I getItem();
 
-	PropBagEx getItemxml();
+  PropBagEx getItemxml();
 
-	FileHandle getFileHandle();
+  FileHandle getFileHandle();
 
-	@Nullable
-	WorkflowStatus getWorkflowStatus();
+  @Nullable
+  WorkflowStatus getWorkflowStatus();
 
-	String getItemdir();
+  String getItemdir();
 
-	URI getServletPath();
+  URI getServletPath();
 
-	ItemKey getItemId();
+  ItemKey getItemId();
 
-	/**
-	 * Indicates whether the item is "real", ie, if it has been saved to the
-	 * database, etc... For real? Aiiiiii.
-	 */
-	boolean isItemForReal();
+  /**
+   * Indicates whether the item is "real", ie, if it has been saved to the database, etc... For
+   * real? Aiiiiii.
+   */
+  boolean isItemForReal();
 
-	/**
-	 * Update this viewable item with a modified item (ie the details of the
-	 * viewable item may have changed)
-	 * 
-	 * @param pack
-	 * @param status
-	 */
-	void update(ItemPack<I> pack, WorkflowStatus status);
+  /**
+   * Update this viewable item with a modified item (ie the details of the viewable item may have
+   * changed)
+   *
+   * @param pack
+   * @param status
+   */
+  void update(ItemPack<I> pack, WorkflowStatus status);
 
-	/**
-	 * Seems to be much like update, but forces an internal invalidation of the
-	 * known item status.
-	 */
-	void refresh();
+  /** Seems to be much like update, but forces an internal invalidation of the known item status. */
+  void refresh();
 
-	Set<String> getPrivileges();
+  Set<String> getPrivileges();
 
-	boolean isDRMApplicable();
+  boolean isDRMApplicable();
 
-	Bookmark createStableResourceUrl(String path);
+  Bookmark createStableResourceUrl(String path);
 
-	/**
-	 * Sets the flag to say that this viewable item was the one requested in the
-	 * url.
-	 * 
-	 * @param requested
-	 */
-	void setFromRequest(boolean requested);
+  /**
+   * Sets the flag to say that this viewable item was the one requested in the url.
+   *
+   * @param requested
+   */
+  void setFromRequest(boolean requested);
 
-	boolean isFromRequest();
+  boolean isFromRequest();
 
-	String getItemExtensionType();
+  String getItemExtensionType();
 }

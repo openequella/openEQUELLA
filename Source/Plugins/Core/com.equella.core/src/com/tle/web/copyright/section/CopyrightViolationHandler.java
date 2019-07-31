@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -35,67 +37,58 @@ import com.tle.web.wizard.WizardExceptionHandler;
 
 @SuppressWarnings("nls")
 @Bind
-public class CopyrightViolationHandler extends AbstractPrototypeSection<CopyrightViolationHandler.CalViolationModel>
-	implements
-		WizardExceptionHandler
-{
-	@PlugKey("violation.title")
-	private static Label TITLE_LABEL;
+public class CopyrightViolationHandler
+    extends AbstractPrototypeSection<CopyrightViolationHandler.CalViolationModel>
+    implements WizardExceptionHandler {
+  @PlugKey("violation.title")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component
-	@PlugKey("violation.button.cancel")
-	private Button cancelButton;
+  @Component
+  @PlugKey("violation.button.cancel")
+  private Button cancelButton;
 
-	@Override
-	public SectionResult handleException(SectionInfo info, Throwable e)
-	{
-		CopyrightViolationHandler violationHandler = info.lookupSection(CopyrightViolationHandler.class);
-		return violationHandler.renderException(info, (CopyrightViolationException) e); // NOSONAR
-	}
+  @Override
+  public SectionResult handleException(SectionInfo info, Throwable e) {
+    CopyrightViolationHandler violationHandler =
+        info.lookupSection(CopyrightViolationHandler.class);
+    return violationHandler.renderException(info, (CopyrightViolationException) e); // NOSONAR
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		cancelButton.setClickHandler(new StatementHandler(new ScriptStatement("history.back();")));
-	}
+    cancelButton.setClickHandler(new StatementHandler(new ScriptStatement("history.back();")));
+  }
 
-	public SectionResult renderException(SectionInfo info, CopyrightViolationException we)
-	{
-		Decorations.getDecorations(info).setTitle(TITLE_LABEL);
+  public SectionResult renderException(SectionInfo info, CopyrightViolationException we) {
+    Decorations.getDecorations(info).setTitle(TITLE_LABEL);
 
-		CalViolationModel model = getModel(info);
-		model.setException(we);
-		return viewFactory.createResult("violation.ftl", this);
-	}
+    CalViolationModel model = getModel(info);
+    model.setException(we);
+    return viewFactory.createResult("violation.ftl", this);
+  }
 
-	public static class CalViolationModel
-	{
-		private CopyrightViolationException exception;
+  public static class CalViolationModel {
+    private CopyrightViolationException exception;
 
-		public CopyrightViolationException getException()
-		{
-			return exception;
-		}
+    public CopyrightViolationException getException() {
+      return exception;
+    }
 
-		public void setException(CopyrightViolationException exception)
-		{
-			this.exception = exception;
-		}
-	}
+    public void setException(CopyrightViolationException exception) {
+      this.exception = exception;
+    }
+  }
 
-	@Override
-	public Class<CalViolationModel> getModelClass()
-	{
-		return CalViolationModel.class;
-	}
+  @Override
+  public Class<CalViolationModel> getModelClass() {
+    return CalViolationModel.class;
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 }

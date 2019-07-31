@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,80 +18,65 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import java.util.Date;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import com.tle.web.api.interfaces.beans.UserBean;
+import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CommentBean extends AbstractExtendableBean
-{
-	private String uuid;
-	private int rating;
-	private boolean anonymous;
-	private String comment;
-	private UserBean postedBy;
-	private Date postedDate;
+public class CommentBean extends AbstractExtendableBean {
+  private String uuid;
+  private int rating;
+  private boolean anonymous;
+  private String comment;
+  private UserBean postedBy;
+  private Date postedDate;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public int getRating()
-	{
-		return rating;
-	}
+  public int getRating() {
+    return rating;
+  }
 
-	public void setRating(int rating)
-	{
-		this.rating = rating;
-	}
+  public void setRating(int rating) {
+    this.rating = rating;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public String getComment() {
+    return comment;
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	public Date getPostedDate()
-	{
-		return postedDate;
-	}
+  public Date getPostedDate() {
+    return postedDate;
+  }
 
-	public void setPostedDate(Date postedDate)
-	{
-		this.postedDate = postedDate;
-	}
+  public void setPostedDate(Date postedDate) {
+    this.postedDate = postedDate;
+  }
 
-	public boolean isAnonymous()
-	{
-		return anonymous;
-	}
+  public boolean isAnonymous() {
+    return anonymous;
+  }
 
-	public void setAnonymous(boolean anonymous)
-	{
-		this.anonymous = anonymous;
-	}
+  public void setAnonymous(boolean anonymous) {
+    this.anonymous = anonymous;
+  }
 
-	public UserBean getPostedBy()
-	{
-		return postedBy;
-	}
+  public UserBean getPostedBy() {
+    return postedBy;
+  }
 
-	public void setPostedBy(UserBean postedBy)
-	{
-		this.postedBy = postedBy;
-	}
+  public void setPostedBy(UserBean postedBy) {
+    this.postedBy = postedBy;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,13 +21,12 @@ package com.tle.core.system.dao;
 import com.tle.core.hibernate.dao.GenericDao;
 import com.tle.core.migration.beans.SystemConfig;
 
-public interface SystemConfigDao extends GenericDao<SystemConfig, String>
-{
-	String getConfig(String key);
+public interface SystemConfigDao extends GenericDao<SystemConfig, String> {
+  String getConfig(String key);
 
-	void updateConfig(String key, String value);
+  void updateConfig(String key, String value);
 
-	long getAndIncrement(String key);
+  long getAndIncrement(String key);
 
-	void increaseToAtLeast(String key, long value);
+  void increaseToAtLeast(String key, long value);
 }

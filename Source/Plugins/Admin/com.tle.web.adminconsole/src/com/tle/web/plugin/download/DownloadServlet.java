@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,11 @@
 
 package com.tle.web.plugin.download;
 
+import com.tle.core.guice.Bind;
+import com.tle.web.stream.ContentStreamWriter;
+import com.tle.web.stream.FileContentStream;
 import java.io.File;
 import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -26,35 +30,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.core.guice.Bind;
-import com.tle.web.stream.ContentStreamWriter;
-import com.tle.web.stream.FileContentStream;
-
 @Bind
 @Singleton
-public class DownloadServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public class DownloadServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PluginDownloadService pluginDownloadService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  @Inject private PluginDownloadService pluginDownloadService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		String pathInfo = request.getPathInfo().substring(1);
-		File file = pluginDownloadService.getFileForJar(pathInfo);
-		if( file != null )
-		{
-			FileContentStream stream = new FileContentStream(file, file.getName(), "application/java-archive"); //$NON-NLS-1$
-			contentStreamWriter.outputStream(request, response, stream);
-		}
-		else
-		{
-			response.sendError(404);
-		}
-	}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String pathInfo = request.getPathInfo().substring(1);
+    File file = pluginDownloadService.getFileForJar(pathInfo);
+    if (file != null) {
+      FileContentStream stream =
+          new FileContentStream(file, file.getName(), "application/java-archive"); // $NON-NLS-1$
+      contentStreamWriter.outputStream(request, response, stream);
+    } else {
+      response.sendError(404);
+    }
+  }
 }

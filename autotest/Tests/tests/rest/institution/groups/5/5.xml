@@ -1,0 +1,14 @@
+<com.tle.beans.user.TLEGroup>
+  <id>116524</id>
+  <uuid>f975419d-4d58-4848-b3a5-fd85d1d08c41</uuid>
+  <name>SelectSubGroup1</name>
+  <parent>
+    <id>116520</id>
+    <uuid>dff74147-98b4-34d3-e193-d3eeada6d836</uuid>
+    <allParents/>
+  </parent>
+  <users>
+    <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+    <string>7e296f6f-8880-43a7-b00b-e42c6b816a1d</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

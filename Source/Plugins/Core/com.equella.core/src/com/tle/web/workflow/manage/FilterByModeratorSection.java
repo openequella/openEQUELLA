@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,44 +26,38 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
-public class FilterByModeratorSection extends AbstractFilterByUserSection<FreetextSearchEvent>
-{
-	@PlugKey("filter.mod.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.mod.dialog")
-	private static Label LABEL_DIALOG_TITLE;
+public class FilterByModeratorSection extends AbstractFilterByUserSection<FreetextSearchEvent> {
+  @PlugKey("filter.mod.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		String userId = getSelectedUserId(info);
-		if( !Check.isEmpty(userId) )
-		{
-			event.filterByTerm(false, TasksIndexer.FIELD_MODUSER, userId);
-		}
-	}
+  @PlugKey("filter.mod.dialog")
+  private static Label LABEL_DIALOG_TITLE;
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "mod";
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    String userId = getSelectedUserId(info);
+    if (!Check.isEmpty(userId)) {
+      event.filterByTerm(false, TasksIndexer.FIELD_MODUSER, userId);
+    }
+  }
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getPublicParam() {
+    return "mod";
+  }
 
-	@Override
-	public Label getDialogTitle()
-	{
-		return LABEL_DIALOG_TITLE;
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public String getAjaxDiv()
-	{
-		return "moderator";
-	}
+  @Override
+  public Label getDialogTitle() {
+    return LABEL_DIALOG_TITLE;
+  }
+
+  @Override
+  public String getAjaxDiv() {
+    return "moderator";
+  }
 }

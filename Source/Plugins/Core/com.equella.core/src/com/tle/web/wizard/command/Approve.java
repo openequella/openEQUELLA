@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,58 +26,49 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.WizardSectionInfo;
-import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
 import com.tle.web.workflow.tasks.TaskListState;
+import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 
-public class Approve extends WizardCommand
-{
-	static
-	{
-		PluginResourceHandler.init(Approve.class);
-	}
+public class Approve extends WizardCommand {
+  static {
+    PluginResourceHandler.init(Approve.class);
+  }
 
-	@PlugKey("command.approve.name")
-	private static String KEY_NAME;
+  @PlugKey("command.approve.name")
+  private static String KEY_NAME;
 
-	public Approve()
-	{
-		super(KEY_NAME, "approve"); //$NON-NLS-1$
-	}
+  public Approve() {
+    super(KEY_NAME, "approve"); // $NON-NLS-1$
+  }
 
-	@Override
-	public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc)
-	{
-		ApproveDialog approveDialog = info.lookupSection(ApproveDialog.class);
-		return new OverrideHandler(approveDialog.getOpenFunction());
-	}
+  @Override
+  public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc) {
+    ApproveDialog approveDialog = info.lookupSection(ApproveDialog.class);
+    return new OverrideHandler(approveDialog.getOpenFunction());
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
-		TaskListState tls = (currentTaskSection == null ? null : currentTaskSection.getCurrentState(info));
-		if (tls != null)
-		{
-			return !tls.isEditing();
-		}
-		return false;
-	}
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
+    TaskListState tls =
+        (currentTaskSection == null ? null : currentTaskSection.getCurrentState(info));
+    if (tls != null) {
+      return !tls.isEditing();
+    }
+    return false;
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {}
 
-	@Override
-	public boolean isMajorAction()
-	{
-		return true;
-	}
+  @Override
+  public boolean isMajorAction() {
+    return true;
+  }
 
-	@Override
-	public String getStyleClass()
-	{
-		return "moderate-approve";
-	}
+  @Override
+  public String getStyleClass() {
+    return "moderate-approve";
+  }
 }

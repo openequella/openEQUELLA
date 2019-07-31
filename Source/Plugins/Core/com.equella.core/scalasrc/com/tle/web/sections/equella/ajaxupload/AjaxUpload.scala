@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,7 +29,12 @@ import com.tle.web.sections.jquery.libraries.JQueryProgression
 import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression
-import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction, IncludeFile, PartiallyApply}
+import com.tle.web.sections.js.generic.function.{
+  AnonymousFunction,
+  ExternallyDefinedFunction,
+  IncludeFile,
+  PartiallyApply
+}
 import com.tle.web.sections.js.generic.statement.ReloadStatement
 import com.tle.web.sections.render.CssInclude
 import com.tle.web.upload.StreamKilledException
@@ -38,50 +45,67 @@ import io.circe.{Decoder, Encoder}
 import scala.beans.BeanProperty
 import scala.util.Try
 
-case class AjaxFileEntry(id: String, name: String, link: String, editable: Boolean, preview: Boolean, children: Iterable[AjaxFileEntry])
+case class AjaxFileEntry(id: String,
+                         name: String,
+                         link: String,
+                         editable: Boolean,
+                         preview: Boolean,
+                         children: Iterable[AjaxFileEntry])
 
 object AjaxFileEntry {
-  implicit val config = Configuration.default
-  implicit val feEncoder : Encoder[AjaxFileEntry] = deriveEncoder
+  implicit val config                            = Configuration.default
+  implicit val feEncoder: Encoder[AjaxFileEntry] = deriveEncoder
 }
 
 sealed trait AjaxUploadCommand
 case class NewUpload(filename: String, size: Long) extends AjaxUploadCommand
-case class Delete(id: String) extends AjaxUploadCommand
+case class Delete(id: String)                      extends AjaxUploadCommand
 
 sealed trait AjaxUploadResponse
 case class NewUploadResponse(uploadUrl: String, id: String, name: String) extends AjaxUploadResponse
-case class UploadFailed(reason: String) extends AjaxUploadResponse
-case class AddEntries(entries: Iterable[AjaxFileEntry]) extends AjaxUploadResponse
-case class UpdateEntry(entry: AjaxFileEntry) extends AjaxUploadResponse
-case class RemoveEntries(ids: Iterable[String]) extends AjaxUploadResponse
+case class UploadFailed(reason: String)                                   extends AjaxUploadResponse
+case class AddEntries(entries: Iterable[AjaxFileEntry])                   extends AjaxUploadResponse
+case class UpdateEntry(entry: AjaxFileEntry)                              extends AjaxUploadResponse
+case class RemoveEntries(ids: Iterable[String])                           extends AjaxUploadResponse
 
-object AjaxUploadCommand
-{
-  implicit val config = Configuration.default.withDiscriminator("command")
+object AjaxUploadCommand {
+  implicit val config = Configuration.default
+    .withDiscriminator("command")
     .copy(transformConstructorNames = _.toLowerCase)
-  implicit val aucDecoder : Decoder[AjaxUploadCommand] = deriveDecoder
+  implicit val aucDecoder: Decoder[AjaxUploadCommand] = deriveDecoder
 }
 
-object AjaxUploadResponse
-{
-  implicit val config = Configuration.default.withDiscriminator("response")
+object AjaxUploadResponse {
+  implicit val config = Configuration.default
+    .withDiscriminator("response")
     .copy(transformConstructorNames = _.toLowerCase)
-  implicit val aucrEncoder : Encoder[AjaxUploadResponse] = deriveEncoder
+  implicit val aucrEncoder: Encoder[AjaxUploadResponse] = deriveEncoder
 }
 
 object AjaxUpload {
-  val r = ResourcesService.getResourceHelper(getClass)
+  val r           = ResourcesService.getResourceHelper(getClass)
   val CSS_INCLUDE = new CssInclude(r.url("css/render/ajaxupload.css"))
-  private val INCLUDE = new IncludeFile(r.url("scripts/render/ajaxupload.js"), CSS_INCLUDE, JQueryProgression.PRERENDER)
+  private val INCLUDE =
+    new IncludeFile(r.url("scripts/render/ajaxupload.js"), CSS_INCLUDE, JQueryProgression.PRERENDER)
   private val FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction("AjaxUploads", INCLUDE)
-  private val VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
-  private val ADD_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 4)
-  private val PROGESSONLY_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "simpleUploadEntry", 4)
+  private val VALIDATE_FUNC =
+    new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
+  private val ADD_UPLOAD_FUNC =
+    new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 4)
+  private val PROGESSONLY_UPLOAD_FUNC =
+    new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "simpleUploadEntry", 4)
 
-  def createValidate(maxSize: Long, mimeTypes: java.util.List[String], errorCallback: JSExpression,
-                     startedUpload: JSExpression, doneCallback: JSExpression) = Js.call(AjaxUpload.VALIDATE_FUNC,
-    maxSize.asInstanceOf[Object], mimeTypes, errorCallback, startedUpload, doneCallback)
+  def createValidate(maxSize: Long,
+                     mimeTypes: java.util.List[String],
+                     errorCallback: JSExpression,
+                     startedUpload: JSExpression,
+                     doneCallback: JSExpression) =
+    Js.call(AjaxUpload.VALIDATE_FUNC,
+            maxSize.asInstanceOf[Object],
+            mimeTypes,
+            errorCallback,
+            startedUpload,
+            doneCallback)
 
   def createProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
     PartiallyApply.partial(ADD_UPLOAD_FUNC, 3, jquery, cancelCallback)
@@ -89,7 +113,9 @@ object AjaxUpload {
   def createSimpleProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
     PartiallyApply.partial(PROGESSONLY_UPLOAD_FUNC, 3, jquery, cancelCallback)
 
-  def writeCancellableStream(writeFile: InputStream => FileInfo, stream: InputStream, cancelled: AtomicReference[Boolean]): Try[FileInfo] = {
+  def writeCancellableStream(writeFile: InputStream => FileInfo,
+                             stream: InputStream,
+                             cancelled: AtomicReference[Boolean]): Try[FileInfo] = {
     val str = new FilterInputStream(stream) {
       def checkCancelled(): Unit = {
         if (cancelled.get) throw new StreamKilledException
@@ -109,10 +135,12 @@ object AjaxUpload {
   }
 
   def simpleUploadValidator(id: String, completed: JSExpression): JSAssignable = {
-    val startedUpload = createSimpleProgressFunc(new JQuerySelector(JQuerySelector.Type.ID, id), null)
+    val startedUpload =
+      createSimpleProgressFunc(new JQuerySelector(JQuerySelector.Type.ID, id), null)
 
-    Js.functionValue(AjaxUpload.createValidate(0, Collections.emptyList[String], completed,
-      startedUpload, completed))
+    Js.functionValue(
+      AjaxUpload
+        .createValidate(0, Collections.emptyList[String], completed, startedUpload, completed))
   }
 
 }

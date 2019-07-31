@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,63 +22,54 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.io.Serializable;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
-public class FlatterScrollBarUI extends BasicScrollBarUI implements Serializable
-{
-	protected Color mArrow = null;
-	protected Color mTrack = null;
-	protected Color mThumb = null;
+public class FlatterScrollBarUI extends BasicScrollBarUI implements Serializable {
+  protected Color mArrow = null;
+  protected Color mTrack = null;
+  protected Color mThumb = null;
 
-	public FlatterScrollBarUI()
-	{
-		// Nothing to do here
-	}
+  public FlatterScrollBarUI() {
+    // Nothing to do here
+  }
 
-	public static ComponentUI createUI(JComponent c)
-	{
-		return new FlatterScrollBarUI();
-	}
+  public static ComponentUI createUI(JComponent c) {
+    return new FlatterScrollBarUI();
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void installUI(JComponent c)
-	{
-		super.installUI(c);
+  @SuppressWarnings("nls")
+  @Override
+  public void installUI(JComponent c) {
+    super.installUI(c);
 
-		mTrack = UIManager.getColor("ScrollBar.track");
-		mThumb = UIManager.getColor("ScrollBar.thumb");
-		mArrow = UIManager.getColor("ScrollBar.arrow");
-	}
+    mTrack = UIManager.getColor("ScrollBar.track");
+    mThumb = UIManager.getColor("ScrollBar.thumb");
+    mArrow = UIManager.getColor("ScrollBar.arrow");
+  }
 
-	@Override
-	protected void paintThumb(Graphics g, JComponent c, Rectangle bounds)
-	{
-		g.setColor(mThumb);
-		g.fillRect(bounds.x + 2, bounds.y + 2, bounds.width - 4, bounds.height - 4);
-	}
+  @Override
+  protected void paintThumb(Graphics g, JComponent c, Rectangle bounds) {
+    g.setColor(mThumb);
+    g.fillRect(bounds.x + 2, bounds.y + 2, bounds.width - 4, bounds.height - 4);
+  }
 
-	@Override
-	protected void paintTrack(Graphics g, JComponent c, Rectangle bounds)
-	{
-		g.setColor(mTrack);
-		g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-	}
+  @Override
+  protected void paintTrack(Graphics g, JComponent c, Rectangle bounds) {
+    g.setColor(mTrack);
+    g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+  }
 
-	@Override
-	protected JButton createIncreaseButton(int orientation)
-	{
-		return new FlatterIcons.ArrowButton(orientation);
-	}
+  @Override
+  protected JButton createIncreaseButton(int orientation) {
+    return new FlatterIcons.ArrowButton(orientation);
+  }
 
-	@Override
-	protected JButton createDecreaseButton(int orientation)
-	{
-		return new FlatterIcons.ArrowButton(orientation);
-	}
+  @Override
+  protected JButton createDecreaseButton(int orientation) {
+    return new FlatterIcons.ArrowButton(orientation);
+  }
 }

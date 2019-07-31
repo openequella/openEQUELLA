@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.workflow.manage;
-
-import java.util.Collection;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.queries.FreeTextQuery;
@@ -55,165 +53,140 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.LabelOption;
 import com.tle.web.sections.standard.model.Option;
+import java.util.Collection;
+import javax.inject.Inject;
 
 @Bind
 public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		SearchEventListener<FreetextSearchEvent>,
-		ResetFiltersListener,
-		SortOptionsListener
-{
-	@PlugKey("sort.workflow.inmod")
-	private static Label LABEL_TIMEINMOD;
+    implements HtmlRenderer,
+        SearchEventListener<FreetextSearchEvent>,
+        ResetFiltersListener,
+        SortOptionsListener {
+  @PlugKey("sort.workflow.inmod")
+  private static Label LABEL_TIMEINMOD;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private BundleCache bundleCache;
+  @Inject private BundleCache bundleCache;
 
-	@Inject
-	private WorkflowService workflowService;
+  @Inject private WorkflowService workflowService;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@TreeLookup
-	private FilterByWorkflowSection filterByWorkflowSection;
+  @TreeLookup private FilterByWorkflowSection filterByWorkflowSection;
 
-	@TreeLookup
-	private ItemAdminFilterByItemStatusSection itemStatus;
-	@TreeLookup
-	private ItemAdminQuerySection itemAdminQuery;
+  @TreeLookup private ItemAdminFilterByItemStatusSection itemStatus;
+  @TreeLookup private ItemAdminQuerySection itemAdminQuery;
 
-	@Component(parameter = "workflowTask", supported = true)
-	private SingleSelectionList<WorkflowNode> taskList;
+  @Component(parameter = "workflowTask", supported = true)
+  private SingleSelectionList<WorkflowNode> taskList;
 
-	@PlugKey("filter.byworkflowtask.all")
-	private static Label LABEL_ALL;
+  @PlugKey("filter.byworkflowtask.all")
+  private static Label LABEL_ALL;
 
-	@SuppressWarnings("nls")
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		getTaskList().setListModel(new TaskListModel());
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    getTaskList().setListModel(new TaskListModel());
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	private Workflow getWorkflow(SectionInfo info)
-	{
-		BaseEntityLabel selectedValue = filterByWorkflowSection.getWorkflowList().getSelectedValue(info);
-		if( selectedValue != null )
-		{
-			Workflow workflow = workflowService.getByUuid(selectedValue.getUuid());
-			return workflow;
-		}
-		return null;
-	}
+  private Workflow getWorkflow(SectionInfo info) {
+    BaseEntityLabel selectedValue =
+        filterByWorkflowSection.getWorkflowList().getSelectedValue(info);
+    if (selectedValue != null) {
+      Workflow workflow = workflowService.getByUuid(selectedValue.getUuid());
+      return workflow;
+    }
+    return null;
+  }
 
-	private boolean hasWorkflowTasks(SectionInfo info)
-	{
-		Workflow workflow = getWorkflow(info);
+  private boolean hasWorkflowTasks(SectionInfo info) {
+    Workflow workflow = getWorkflow(info);
 
-		if( workflow != null )
-		{
-			return !workflow.getAllWorkflowTasks().values().isEmpty();
-		}
-		return false;
-	}
+    if (workflow != null) {
+      return !workflow.getAllWorkflowTasks().values().isEmpty();
+    }
+    return false;
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-		getTaskList().addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
-	}
+    getTaskList().addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !isShowing(context) )
-		{
-			return null;
-		}
-		return viewFactory.createResult("tasklist.ftl", context); //$NON-NLS-1$
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!isShowing(context)) {
+      return null;
+    }
+    return viewFactory.createResult("tasklist.ftl", context); // $NON-NLS-1$
+  }
 
-	private boolean isShowing(SectionInfo info)
-	{
-		boolean workFlowSelected = (filterByWorkflowSection.getWorkflowList().getSelectedValue(info) != null);
-		return filterByWorkflowSection.isShowing(info) && workFlowSelected && hasWorkflowTasks(info);
-	}
+  private boolean isShowing(SectionInfo info) {
+    boolean workFlowSelected =
+        (filterByWorkflowSection.getWorkflowList().getSelectedValue(info) != null);
+    return filterByWorkflowSection.isShowing(info) && workFlowSelected && hasWorkflowTasks(info);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		if( isShowing(info) )
-		{
-			WorkflowNode selectedValue = taskList.getSelectedValue(info);
-			if( selectedValue != null )
-			{
-				event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_TASKID, selectedValue.getUuid());
-			}
-		}
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    if (isShowing(info)) {
+      WorkflowNode selectedValue = taskList.getSelectedValue(info);
+      if (selectedValue != null) {
+        event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_TASKID, selectedValue.getUuid());
+      }
+    }
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		taskList.setSelectedStringValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    taskList.setSelectedStringValue(info, null);
+  }
 
-	@Override
-	public Iterable<SortOption> addSortOptions(SectionInfo info, AbstractSortOptionsSection<?> section)
-	{
-		return null;
-	}
+  @Override
+  public Iterable<SortOption> addSortOptions(
+      SectionInfo info, AbstractSortOptionsSection<?> section) {
+    return null;
+  }
 
-	public SingleSelectionList<WorkflowNode> getTaskList()
-	{
-		return taskList;
-	}
+  public SingleSelectionList<WorkflowNode> getTaskList() {
+    return taskList;
+  }
 
-	public class TaskListModel extends DynamicHtmlListModel<WorkflowNode>
-	{
+  public class TaskListModel extends DynamicHtmlListModel<WorkflowNode> {
 
-		public TaskListModel()
-		{
-			setSort(true);
-		}
+    public TaskListModel() {
+      setSort(true);
+    }
 
-		@Override
-		protected Iterable<WorkflowNode> populateModel(SectionInfo info)
-		{
-			String uuid = filterByWorkflowSection.getWorkflowUuid(info);
+    @Override
+    protected Iterable<WorkflowNode> populateModel(SectionInfo info) {
+      String uuid = filterByWorkflowSection.getWorkflowUuid(info);
 
-			if( uuid != null )
-			{
-				Workflow workflow = workflowService.getByUuid(uuid);
-				if( workflow != null )
-				{
-					Collection<WorkflowNode> values = workflow.getAllWorkflowTasks().values();
-					return values;
-				}
-				return null;
-			}
-			return null;
-		}
+      if (uuid != null) {
+        Workflow workflow = workflowService.getByUuid(uuid);
+        if (workflow != null) {
+          Collection<WorkflowNode> values = workflow.getAllWorkflowTasks().values();
+          return values;
+        }
+        return null;
+      }
+      return null;
+    }
 
-		@Override
-		protected Option<WorkflowNode> convertToOption(SectionInfo info, WorkflowNode obj)
-		{
-			return new LabelOption<WorkflowNode>(new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
-		}
+    @Override
+    protected Option<WorkflowNode> convertToOption(SectionInfo info, WorkflowNode obj) {
+      return new LabelOption<WorkflowNode>(
+          new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
+    }
 
-		@Override
-		protected Option<WorkflowNode> getTopOption()
-		{
-			return new LabelOption<WorkflowNode>(LABEL_ALL, Constants.BLANK, null);
-		}
-	}
+    @Override
+    protected Option<WorkflowNode> getTopOption() {
+      return new LabelOption<WorkflowNode>(LABEL_ALL, Constants.BLANK, null);
+    }
+  }
 }

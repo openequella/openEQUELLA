@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.externaltools.section;
-
-import javax.inject.Inject;
 
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.externaltools.entity.ExternalTool;
@@ -35,90 +35,80 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
+import javax.inject.Inject;
 
 @TreeIndexed
-public class ShowExternalToolsSection extends AbstractShowEntitiesSection<ExternalTool, ShowExternalToolsModel>
-{
-	@PlugKey("tools.settings.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("tools.add")
-	private static Label ADD_LABEL;
-	@PlugKey("tools.table.empty")
-	private static Label EMPTY_LABEL;
-	@PlugKey("tools.columns.entity")
-	private static Label ENTITY_LABEL;
-	@PlugKey("tools.confirm.delete")
-	private static String KEY_DELETE_CONFIRM;
+public class ShowExternalToolsSection
+    extends AbstractShowEntitiesSection<ExternalTool, ShowExternalToolsModel> {
+  @PlugKey("tools.settings.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private ExternalToolsService toolService;
-	@ViewFactory
-	private FreemarkerFactory view;
+  @PlugKey("tools.add")
+  private static Label ADD_LABEL;
 
-	@Override
-	protected AbstractEntityService<?, ExternalTool> getEntityService()
-	{
-		return toolService;
-	}
+  @PlugKey("tools.table.empty")
+  private static Label EMPTY_LABEL;
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @PlugKey("tools.columns.entity")
+  private static Label ENTITY_LABEL;
 
-	@Override
-	protected Label getAddLabel()
-	{
-		return ADD_LABEL;
-	}
+  @PlugKey("tools.confirm.delete")
+  private static String KEY_DELETE_CONFIRM;
 
-	@Override
-	protected Label getEntityColumnLabel()
-	{
-		return ENTITY_LABEL;
-	}
+  @Inject private TLEAclManager aclManager;
+  @Inject private ExternalToolsService toolService;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	protected Label getEmptyListLabel()
-	{
-		return EMPTY_LABEL;
-	}
+  @Override
+  protected AbstractEntityService<?, ExternalTool> getEntityService() {
+    return toolService;
+  }
 
-	@Override
-	protected Label getDeleteConfirmLabel(SectionInfo info, ExternalTool tool)
-	{
-		return new KeyLabel(KEY_DELETE_CONFIRM, LangUtils.getString(tool.getName()));
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	protected boolean canAdd(SectionInfo info)
-	{
-		return !aclManager.filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL).isEmpty();
+  @Override
+  protected Label getAddLabel() {
+    return ADD_LABEL;
+  }
 
-	}
+  @Override
+  protected Label getEntityColumnLabel() {
+    return ENTITY_LABEL;
+  }
 
-	@Override
-	protected SectionRenderable renderTop(RenderEventContext context)
-	{
-		return view.createResult("toolstop.ftl", context);
-	}
+  @Override
+  protected Label getEmptyListLabel() {
+    return EMPTY_LABEL;
+  }
 
-	@Override
-	protected boolean isInUse(SectionInfo info, ExternalTool entity)
-	{
-		return false;
-	}
+  @Override
+  protected Label getDeleteConfirmLabel(SectionInfo info, ExternalTool tool) {
+    return new KeyLabel(KEY_DELETE_CONFIRM, LangUtils.getString(tool.getName()));
+  }
 
-	@Override
-	protected boolean canClone(SectionInfo info, ExternalTool ent)
-	{
-		return false;
-	}
+  @Override
+  protected boolean canAdd(SectionInfo info) {
+    return !aclManager.filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL).isEmpty();
+  }
 
-	public class ShowExternalToolsModel extends AbstractShowEntitiesSection.AbstractShowEntitiesModel
-	{
-	}
+  @Override
+  protected SectionRenderable renderTop(RenderEventContext context) {
+    return view.createResult("toolstop.ftl", context);
+  }
+
+  @Override
+  protected boolean isInUse(SectionInfo info, ExternalTool entity) {
+    return false;
+  }
+
+  @Override
+  protected boolean canClone(SectionInfo info, ExternalTool ent) {
+    return false;
+  }
+
+  public class ShowExternalToolsModel
+      extends AbstractShowEntitiesSection.AbstractShowEntitiesModel {}
 }

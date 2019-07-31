@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,95 +18,84 @@
 
 package com.tle.web.cloneormove.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.common.NameValue;
 import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author aholland
- */
-public class CloneOptionsModel extends DynamicHtmlListModel<NameValue>
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(SchemaTransformsModel.class)+".";
-	public enum CloneOption
-	{
-		CLONE()
-		{
-			@Override
-			public String toString()
-			{
-				return Integer.toString(ordinal());
-			}
-		},
-		CLONE_NO_ATTACHMENTS()
-		{
-			@Override
-			public String toString()
-			{
-				return Integer.toString(ordinal());
-			}
-		},
-		MOVE()
-		{
-			@Override
-			public String toString()
-			{
-				return Integer.toString(ordinal());
-			}
-		}
-	}
+/** @author aholland */
+public class CloneOptionsModel extends DynamicHtmlListModel<NameValue> {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(SchemaTransformsModel.class) + ".";
 
-	private final boolean canMove;
-	private final boolean canClone;
-	private final boolean canCloneNoAttachments;
+  public enum CloneOption {
+    CLONE() {
+      @Override
+      public String toString() {
+        return Integer.toString(ordinal());
+      }
+    },
+    CLONE_NO_ATTACHMENTS() {
+      @Override
+      public String toString() {
+        return Integer.toString(ordinal());
+      }
+    },
+    MOVE() {
+      @Override
+      public String toString() {
+        return Integer.toString(ordinal());
+      }
+    }
+  }
 
-	public CloneOptionsModel(final boolean canMove, final boolean canClone, final boolean canCloneNoAttachments)
-	{
-		this.canMove = canMove;
-		this.canClone = canClone;
-		this.canCloneNoAttachments = canCloneNoAttachments;
-	}
+  private final boolean canMove;
+  private final boolean canClone;
+  private final boolean canCloneNoAttachments;
 
-	@Override
-	protected Iterable<NameValue> populateModel(SectionInfo info)
-	{
-		final List<NameValue> values = new ArrayList<NameValue>();
-		if( isCanClone(info) )
-		{
-			values.add(new BundleNameValue(
-					KEY_PFX+"selectcollection.option.clone.clone", CloneOption.CLONE.toString())); //$NON-NLS-1$
-		}
-		if( isCanCloneNoAttachments(info) )
-		{
-			values
-				.add(new BundleNameValue(
-						KEY_PFX+"selectcollection.option.clone.clonenoattachments", CloneOption.CLONE_NO_ATTACHMENTS.toString())); //$NON-NLS-1$
-		}
-		if( isCanMove(info) )
-		{
-			values.add(new BundleNameValue(
-					KEY_PFX+"selectcollection.option.clone.move", CloneOption.MOVE.toString())); //$NON-NLS-1$
-		}
-		return values;
-	}
+  public CloneOptionsModel(
+      final boolean canMove, final boolean canClone, final boolean canCloneNoAttachments) {
+    this.canMove = canMove;
+    this.canClone = canClone;
+    this.canCloneNoAttachments = canCloneNoAttachments;
+  }
 
-	protected boolean isCanMove(final SectionInfo info)
-	{
-		return canMove;
-	}
+  @Override
+  protected Iterable<NameValue> populateModel(SectionInfo info) {
+    final List<NameValue> values = new ArrayList<NameValue>();
+    if (isCanClone(info)) {
+      values.add(
+          new BundleNameValue(
+              KEY_PFX + "selectcollection.option.clone.clone",
+              CloneOption.CLONE.toString())); // $NON-NLS-1$
+    }
+    if (isCanCloneNoAttachments(info)) {
+      values.add(
+          new BundleNameValue(
+              KEY_PFX + "selectcollection.option.clone.clonenoattachments",
+              CloneOption.CLONE_NO_ATTACHMENTS.toString())); // $NON-NLS-1$
+    }
+    if (isCanMove(info)) {
+      values.add(
+          new BundleNameValue(
+              KEY_PFX + "selectcollection.option.clone.move",
+              CloneOption.MOVE.toString())); // $NON-NLS-1$
+    }
+    return values;
+  }
 
-	protected boolean isCanClone(final SectionInfo info)
-	{
-		return canClone;
-	}
+  protected boolean isCanMove(final SectionInfo info) {
+    return canMove;
+  }
 
-	protected boolean isCanCloneNoAttachments(final SectionInfo info)
-	{
-		return canCloneNoAttachments;
-	}
+  protected boolean isCanClone(final SectionInfo info) {
+    return canClone;
+  }
+
+  protected boolean isCanCloneNoAttachments(final SectionInfo info) {
+    return canCloneNoAttachments;
+  }
 }

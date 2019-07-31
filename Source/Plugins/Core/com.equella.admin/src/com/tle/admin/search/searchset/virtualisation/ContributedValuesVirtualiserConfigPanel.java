@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,52 +18,42 @@
 
 package com.tle.admin.search.searchset.virtualisation;
 
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-
 import com.tle.admin.gui.common.DynamicChoicePanel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.core.plugins.AbstractPluginService;
+import java.awt.GridLayout;
+import javax.swing.JLabel;
 
 @SuppressWarnings("nls")
-public class ContributedValuesVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet>
-{
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+public class ContributedValuesVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet> {
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public ContributedValuesVirtualiserConfigPanel()
-	{
-		super(new GridLayout(1, 1));
-		add(new JLabel("<html>"
-			+ getString("searchset.virtualisation.contributedvalues.text")));
-	}
+  public ContributedValuesVirtualiserConfigPanel() {
+    super(new GridLayout(1, 1));
+    add(new JLabel("<html>" + getString("searchset.virtualisation.contributedvalues.text")));
+  }
 
-	@Override
-	public void load(SearchSet searchSet)
-	{
-		// Nothing to load
-	}
+  @Override
+  public void load(SearchSet searchSet) {
+    // Nothing to load
+  }
 
-	@Override
-	public void save(SearchSet searchSet)
-	{
-		// Nothing to save
-	}
+  @Override
+  public void save(SearchSet searchSet) {
+    // Nothing to save
+  }
 
-	@Override
-	public void removeSavedState(SearchSet searchSet)
-	{
-		// Nothing to remove
-	}
+  @Override
+  public void removeSavedState(SearchSet searchSet) {
+    // Nothing to remove
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,96 +20,79 @@ package com.tle.core.portal.service;
 
 import com.tle.core.entity.EntityEditingBean;
 
-public class PortletEditingBean extends EntityEditingBean
-{
-	private static final long serialVersionUID = 1L;
+public class PortletEditingBean extends EntityEditingBean {
+  private static final long serialVersionUID = 1L;
 
-	private String type;
-	private boolean closeable;
-	private boolean minimisable;
-	private boolean institutional;
-	private String config;
-	private Object extraData;
-	private String targetExpression;
-	private boolean admin;
+  private String type;
+  private boolean closeable;
+  private boolean minimisable;
+  private boolean institutional;
+  private String config;
+  private Object extraData;
+  private String targetExpression;
+  private boolean admin;
 
-	public String getType()
-	{
-		return type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public boolean isCloseable()
-	{
-		return closeable;
-	}
+  public boolean isCloseable() {
+    return closeable;
+  }
 
-	public void setCloseable(boolean closeable)
-	{
-		this.closeable = closeable;
-	}
+  public void setCloseable(boolean closeable) {
+    this.closeable = closeable;
+  }
 
-	public boolean isMinimisable()
-	{
-		return minimisable;
-	}
+  public boolean isMinimisable() {
+    return minimisable;
+  }
 
-	public void setMinimisable(boolean minimisable)
-	{
-		this.minimisable = minimisable;
-	}
+  public void setMinimisable(boolean minimisable) {
+    this.minimisable = minimisable;
+  }
 
-	public boolean isInstitutional()
-	{
-		return institutional;
-	}
+  public boolean isInstitutional() {
+    return institutional;
+  }
 
-	public void setInstitutional(boolean institutional)
-	{
-		this.institutional = institutional;
-	}
+  public void setInstitutional(boolean institutional) {
+    this.institutional = institutional;
+  }
 
-	public String getConfig()
-	{
-		return config;
-	}
+  public String getConfig() {
+    return config;
+  }
 
-	public void setConfig(String config)
-	{
-		this.config = config;
-	}
+  public void setConfig(String config) {
+    this.config = config;
+  }
 
-	public Object getExtraData()
-	{
-		return extraData;
-	}
+  public Object getExtraData() {
+    return extraData;
+  }
 
-	public void setExtraData(Object extraData)
-	{
-		this.extraData = extraData;
-	}
+  public void setExtraData(Object extraData) {
+    this.extraData = extraData;
+  }
 
-	public String getTargetExpression()
-	{
-		return targetExpression;
-	}
+  public String getTargetExpression() {
+    return targetExpression;
+  }
 
-	public void setTargetExpression(String targetExpression)
-	{
-		this.targetExpression = targetExpression;
-	}
+  public void setTargetExpression(String targetExpression) {
+    this.targetExpression = targetExpression;
+  }
 
-	public boolean isAdmin()
-	{
-		return admin;
-	}
+  public boolean isAdmin() {
+    return admin;
+  }
 
-	public void setAdmin(boolean admin)
-	{
-		this.admin = admin;
-	}
+  public void setAdmin(boolean admin) {
+    this.admin = admin;
+  }
 }

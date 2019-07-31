@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,38 @@
 
 package com.tle.web.api.collection.interfaces.beans;
 
-import java.util.List;
-import java.util.Map;
-
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.DynamicRuleBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
+import java.util.List;
+import java.util.Map;
 
-public class CollectionSecurityBean extends BaseEntitySecurityBean
-{
-	private Map<String, ItemMetadataSecurityBean> metadata;
-	private Map<String, List<TargetListEntryBean>> statuses;
-	private List<DynamicRuleBean> dynamicRules;
+public class CollectionSecurityBean extends BaseEntitySecurityBean {
+  private Map<String, ItemMetadataSecurityBean> metadata;
+  private Map<String, List<TargetListEntryBean>> statuses;
+  private List<DynamicRuleBean> dynamicRules;
 
-	public Map<String, ItemMetadataSecurityBean> getMetadata()
-	{
-		return metadata;
-	}
+  public Map<String, ItemMetadataSecurityBean> getMetadata() {
+    return metadata;
+  }
 
-	public void setMetadata(Map<String, ItemMetadataSecurityBean> metadata)
-	{
-		this.metadata = metadata;
-	}
+  public void setMetadata(Map<String, ItemMetadataSecurityBean> metadata) {
+    this.metadata = metadata;
+  }
 
-	public Map<String, List<TargetListEntryBean>> getStatuses()
-	{
-		return statuses;
-	}
+  public Map<String, List<TargetListEntryBean>> getStatuses() {
+    return statuses;
+  }
 
-	public void setStatuses(Map<String, List<TargetListEntryBean>> statuses)
-	{
-		this.statuses = statuses;
-	}
+  public void setStatuses(Map<String, List<TargetListEntryBean>> statuses) {
+    this.statuses = statuses;
+  }
 
-	public List<DynamicRuleBean> getDynamicRules()
-	{
-		return dynamicRules;
-	}
+  public List<DynamicRuleBean> getDynamicRules() {
+    return dynamicRules;
+  }
 
-	public void setDynamicRules(List<DynamicRuleBean> dynamicRules)
-	{
-		this.dynamicRules = dynamicRules;
-	}
+  public void setDynamicRules(List<DynamicRuleBean> dynamicRules) {
+    this.dynamicRules = dynamicRules;
+  }
 }

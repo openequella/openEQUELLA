@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.viewitem.summary.sidebar.actions;
 
-import javax.inject.Inject;
-
 import com.dytech.edge.web.WebConstants;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.workflow.WorkflowStatus;
@@ -29,63 +29,53 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.viewurl.ItemSectionInfo;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class PurgeSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.purge.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.purge.confirm")
-	private static Label CONFIRM_LABEL;
-	@PlugKey("summary.sidebar.actions.purge.receipt")
-	private static Label RECEIPT_LABEL;
+public class PurgeSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.purge.title")
+  private static Label LINK_LABEL;
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+  @PlugKey("summary.sidebar.actions.purge.confirm")
+  private static Label CONFIRM_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @PlugKey("summary.sidebar.actions.purge.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	protected Label getConfirmation()
-	{
-		return CONFIRM_LABEL;
-	}
+  @Inject private SelectionService selectionService;
+  @Inject private InstitutionService institutionService;
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege("PURGE_ITEM") && status.getStatusName().equals(ItemStatus.DELETED);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.purge(true));
-		setReceipt(RECEIPT_LABEL);
+  @Override
+  protected Label getConfirmation() {
+    return CONFIRM_LABEL;
+  }
 
-		if( selectionService.getCurrentSession(info) == null )
-		{
-			info.forwardToUrl(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
-		}
-		else
-		{
-			selectionService.forwardToSelectable(info, null);
-		}
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege("PURGE_ITEM") && status.getStatusName().equals(ItemStatus.DELETED);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  protected void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.purge(true));
+    setReceipt(RECEIPT_LABEL);
 
+    if (selectionService.getCurrentSession(info) == null) {
+      info.forwardToUrl(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
+    } else {
+      selectionService.forwardToSelectable(info, null);
+    }
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

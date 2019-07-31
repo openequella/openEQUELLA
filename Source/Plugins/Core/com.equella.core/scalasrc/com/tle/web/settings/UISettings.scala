@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,7 +20,7 @@ package com.tle.web.settings
 
 import cats.effect.IO
 import cats.syntax.apply._
-import com.tle.core.cache.{Cache, InstCacheable}
+import com.tle.core.cache.{Cache, DBCacheBuilder, InstCacheable}
 import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.settings.SettingsDB
 import io.circe.generic.extras.Configuration
@@ -39,12 +41,14 @@ object UISettings {
 
   val getUISettings: DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
 
-  implicit val cacheable = InstCacheable[Option[UISettings]]("uiSettings", getUISettings)
+  val uiSettingsCache =
+    DBCacheBuilder.buildCache(InstCacheable[Option[UISettings]]("uiSettings", _ => getUISettings))
 
-  def setUISettings(in: UISettings): DB[IO[Unit]] = SettingsDB.setJsonProperty(UIPropName, in) *>
-    Cache.invalidate[Option[UISettings]]
+  def setUISettings(in: UISettings): DB[IO[Unit]] =
+    SettingsDB.setJsonProperty(UIPropName, in) *>
+      uiSettingsCache.invalidate.apply()
 
-  def cachedUISettings: DB[Option[UISettings]] = Cache.get[Option[UISettings]]
+  def cachedUISettings: DB[Option[UISettings]] = uiSettingsCache.get.apply()
 }
 
 object UISettingsJava {

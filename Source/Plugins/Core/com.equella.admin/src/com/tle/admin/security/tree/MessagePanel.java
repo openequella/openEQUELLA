@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,44 +19,37 @@
 package com.tle.admin.security.tree;
 
 import java.awt.GridLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-/**
- * @author Nicholas Read
- */
-public class MessagePanel extends JPanel implements SecurityTreeTab
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class MessagePanel extends JPanel implements SecurityTreeTab {
+  private static final long serialVersionUID = 1L;
 
-	public MessagePanel(String message)
-	{
-		JLabel label = new JLabel(message);
-		label.setHorizontalAlignment(SwingConstants.CENTER);
+  public MessagePanel(String message) {
+    JLabel label = new JLabel(message);
+    label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		setLayout(new GridLayout(1, 1));
-		add(label);
-	}
+    setLayout(new GridLayout(1, 1));
+    add(label);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.tle.admin.security.tree.SecurityTreeTab#hasChanges()
-	 */
-	@Override
-	public boolean hasChanges()
-	{
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.tle.admin.security.tree.SecurityTreeTab#hasChanges()
+   */
+  @Override
+  public boolean hasChanges() {
+    return false;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.tle.admin.security.tree.SecurityTreeTab#saveChanges()
-	 */
-	@Override
-	public void saveChanges()
-	{
-		// Nothing to save
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.tle.admin.security.tree.SecurityTreeTab#saveChanges()
+   */
+  @Override
+  public void saveChanges() {
+    // Nothing to save
+  }
 }

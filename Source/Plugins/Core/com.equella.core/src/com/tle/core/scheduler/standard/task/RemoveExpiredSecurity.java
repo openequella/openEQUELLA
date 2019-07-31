@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,26 @@
 
 package com.tle.core.scheduler.standard.task;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.ScheduledTask;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.usermanagement.standard.service.SharePassService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind
 @Singleton
-public class RemoveExpiredSecurity implements ScheduledTask
-{
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private SharePassService sharePassService;
-	@Inject
-	private AccessExpressionDao accessExpressionDao;
+public class RemoveExpiredSecurity implements ScheduledTask {
+  @Inject private TLEAclManager aclManager;
+  @Inject private SharePassService sharePassService;
+  @Inject private AccessExpressionDao accessExpressionDao;
 
-	@Override
-	public void execute()
-	{
-		sharePassService.removeExpiredPasses();
-		aclManager.deleteExpiredAccessEntries();
-		accessExpressionDao.deleteOrphanedExpressions();
-	}
+  @Override
+  public void execute() {
+    sharePassService.removeExpiredPasses();
+    aclManager.deleteExpiredAccessEntries();
+    accessExpressionDao.deleteOrphanedExpressions();
+  }
 }

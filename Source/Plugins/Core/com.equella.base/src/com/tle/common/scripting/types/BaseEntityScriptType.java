@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,28 +22,19 @@ import java.io.Serializable;
 
 /**
  * A super-interface for entity types. E.g. collection, schema, taxonomy...
- * 
+ *
  * @author Aaron
  */
-public interface BaseEntityScriptType extends Serializable
-{
-	/**
-	 * @return The UUID of the entity
-	 */
-	String getUniqueID();
+public interface BaseEntityScriptType extends Serializable {
+  /** @return The UUID of the entity */
+  String getUniqueID();
 
-	/**
-	 * @return This function is an alias for getUniqueID()
-	 */
-	String getUuid();
+  /** @return This function is an alias for getUniqueID() */
+  String getUuid();
 
-	/**
-	 * @return The name of the entity in the current user's language
-	 */
-	String getName();
+  /** @return The name of the entity in the current user's language */
+  String getName();
 
-	/**
-	 * @return The name of the entity in the current user's language
-	 */
-	String getDescription();
+  /** @return The name of the entity in the current user's language */
+  String getDescription();
 }

@@ -1,0 +1,95 @@
+<com.tle.beans.item.Item>
+  <id>216423</id>
+  <uuid>4653997f-47f4-ad05-9365-2fe3dc80dc0f</uuid>
+  <version>1</version>
+  <owner>fc9629b0-8bb7-5099-edd3-cf7a42c350fa</owner>
+  <dateModified class="sql-timestamp">2011-03-24 16:09:04.346</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-24 16:09:04.489</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.189</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>216427</id>
+    <liveApprovalDate class="sql-timestamp">2011-03-24 16:09:04.346</liveApprovalDate>
+    <start class="sql-timestamp">2011-08-30 10:15:08.417</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216438</id>
+      <user>fc9629b0-8bb7-5099-edd3-cf7a42c350fa</user>
+      <date class="sql-timestamp">2011-03-24 16:09:04.346</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216439</id>
+      <user>fc9629b0-8bb7-5099-edd3-cf7a42c350fa</user>
+      <date class="sql-timestamp">2011-03-24 16:09:04.346</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216440</id>
+      <user>fc9629b0-8bb7-5099-edd3-cf7a42c350fa</user>
+      <date class="sql-timestamp">2011-03-24 16:09:04.346</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>216428</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216430</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>SearchFilters - Basic Item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>216424</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216425</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>This is a basic item owned by DoNotUse</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

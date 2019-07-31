@@ -1,0 +1,87 @@
+<com.tle.beans.item.Item>
+  <id>35430</id>
+  <uuid>11b10a72-1345-9c6c-c7e8-132e489edb99</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:01:09.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:53:35.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.768</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>16857</id>
+      <url>http://boorah/dev/vanilla/item/image/cf209478-f161-909d-4762-55d9c4ffa551/1/subset.gif</url>
+      <urlHash>04ef7b0f21a7759fd6136eef774a7597</urlHash>
+      <success>false</success>
+      <status>404</status>
+      <message>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en-AU&quot;  &gt;
+	&lt;head&gt;
+	&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=UTF-8&quot;&gt;
+	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; &gt;
+	&lt;base href=&quot;http://boorah/&quot;&gt;
+	 
+	&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;p/r/1.0.643</message>
+      <tries>2</tries>
+      <lastChecked class="sql-timestamp">2014-03-27 23:14:57.821</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>35445</id>
+    <start class="sql-timestamp">2011-08-30 12:05:07.273</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>35449</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35453</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Subset</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>35433</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35437</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Subset symbol.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

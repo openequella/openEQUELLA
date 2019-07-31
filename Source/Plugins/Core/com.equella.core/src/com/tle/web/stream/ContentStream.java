@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,46 +22,53 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nullable;
 
-public interface ContentStream
-{
-	InputStream getInputStream() throws IOException;
+public interface ContentStream {
+  InputStream getInputStream() throws IOException;
 
-	File getDirectFile();
+  File getDirectFile();
 
-	long getLastModified();
+  /**
+   * There may be some cost associated with calling this method. Avoid calling it unless you know
+   * you need it.
+   *
+   * @return
+   */
+  @Nullable
+  String calculateETag();
 
-	/**
-	 * This can return -1 if unknown, and can also change after
-	 * {@link #getInputStream()} has been called.
-	 * 
-	 * @return
-	 */
-	long getContentLength();
+  long getLastModified();
 
-	/**
-	 * If {@link #getContentLength()} returns -1 the you may be able to use this
-	 * to get a rough estimate. E.g. a viewer may return the raw file length
-	 * without the viewer's decorations.
-	 * 
-	 * @return -1 if no estimate available
-	 */
-	long getEstimatedContentLength();
+  /**
+   * This can return -1 if unknown, and can also change after {@link #getInputStream()} has been
+   * called.
+   *
+   * @return
+   */
+  long getContentLength();
 
-	String getMimeType();
+  /**
+   * If {@link #getContentLength()} returns -1 the you may be able to use this to get a rough
+   * estimate. E.g. a viewer may return the raw file length without the viewer's decorations.
+   *
+   * @return -1 if no estimate available
+   */
+  long getEstimatedContentLength();
 
-	String getContentDisposition();
+  String getMimeType();
 
-	boolean exists();
+  String getContentDisposition();
 
-	String getFilenameWithoutPath();
+  boolean exists();
 
-	String getCacheControl();
+  String getFilenameWithoutPath();
 
-	void setCacheControl(String cacheControl);
+  String getCacheControl();
 
-	boolean mustWrite();
+  void setCacheControl(String cacheControl);
 
-	void write(OutputStream out) throws IOException;
+  boolean mustWrite();
 
+  void write(OutputStream out) throws IOException;
 }

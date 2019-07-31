@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,87 +18,72 @@
 
 package com.tle.web.freemarker.annotations;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.core.plugins.PluginService;
 import com.tle.web.freemarker.CustomTemplateLoader;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsRuntimeException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AnnotatedViewFactoryScanner
-{
-	public static class ViewFactoryData
-	{
-		ViewFactory annotation;
-		Field field;
-	}
+public class AnnotatedViewFactoryScanner {
+  public static class ViewFactoryData {
+    ViewFactory annotation;
+    Field field;
+  }
 
-	private transient List<ViewFactoryData> viewFactoryFields = new ArrayList<ViewFactoryData>();
+  private transient List<ViewFactoryData> viewFactoryFields = new ArrayList<ViewFactoryData>();
 
-	public AnnotatedViewFactoryScanner(final Class<?> clazz, final FreemarkerFactoryHandler handler)
-	{
-		Field[] fields = clazz.getDeclaredFields();
-		for( Field field : fields )
-		{
-			ViewFactory annotation = field.getAnnotation(ViewFactory.class);
-			if( annotation != null )
-			{
-				field.setAccessible(true);
+  public AnnotatedViewFactoryScanner(final Class<?> clazz, final FreemarkerFactoryHandler handler) {
+    Field[] fields = clazz.getDeclaredFields();
+    for (Field field : fields) {
+      ViewFactory annotation = field.getAnnotation(ViewFactory.class);
+      if (annotation != null) {
+        field.setAccessible(true);
 
-				ViewFactoryData data = new ViewFactoryData();
-				data.field = field;
-				data.annotation = annotation;
+        ViewFactoryData data = new ViewFactoryData();
+        data.field = field;
+        data.annotation = annotation;
 
-				viewFactoryFields.add(data);
-			}
-		}
+        viewFactoryFields.add(data);
+      }
+    }
 
-		Class<?> superClazz = clazz.getSuperclass();
-		if( superClazz != null )
-		{
-			AnnotatedViewFactoryScanner scanner = handler.getForClass(superClazz);
-			viewFactoryFields.addAll(scanner.viewFactoryFields);
-		}
-	}
+    Class<?> superClazz = clazz.getSuperclass();
+    if (superClazz != null) {
+      AnnotatedViewFactoryScanner scanner = handler.getForClass(superClazz);
+      viewFactoryFields.addAll(scanner.viewFactoryFields);
+    }
+  }
 
-	public void setupFactories(Section section, CustomTemplateLoader templateLoader, PluginService pluginService)
-	{
-		for( ViewFactoryData data : viewFactoryFields )
-		{
-			final ViewFactory annotation = data.annotation;
-			final Field field = data.field;
+  public void setupFactories(
+      Section section, CustomTemplateLoader templateLoader, PluginService pluginService) {
+    for (ViewFactoryData data : viewFactoryFields) {
+      final ViewFactory annotation = data.annotation;
+      final Field field = data.field;
 
-			String factoryId = annotation.name();
-			if( annotation.fixed() )
-			{
-				factoryId = pluginService.getPluginIdForObject(field.getDeclaringClass()) + '@' + factoryId;
-			}
-			else if( factoryId.indexOf('@') == -1 )
-			{
-				factoryId = pluginService.getPluginIdForObject(section) + '@' + factoryId;
-			}
+      String factoryId = annotation.name();
+      if (annotation.fixed()) {
+        factoryId = pluginService.getPluginIdForObject(field.getDeclaringClass()) + '@' + factoryId;
+      } else if (factoryId.indexOf('@') == -1) {
+        factoryId = pluginService.getPluginIdForObject(section) + '@' + factoryId;
+      }
 
-			FreemarkerFactory factory = templateLoader.getFactoryForName(factoryId);
-			if( factory == null )
-			{
-				if( !annotation.optional() )
-				{
-					throw new SectionsRuntimeException("No factory for id:'" + factoryId + "':" + field); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-			}
+      FreemarkerFactory factory = templateLoader.getFactoryForName(factoryId);
+      if (factory == null) {
+        if (!annotation.optional()) {
+          throw new SectionsRuntimeException(
+              "No factory for id:'" + factoryId + "':" + field); // $NON-NLS-1$ //$NON-NLS-2$
+        }
+      }
 
-			try
-			{
-				field.set(section, factory);
-			}
-			catch( Exception e )
-			{
-				SectionUtils.throwRuntime(e);
-			}
-		}
-	}
+      try {
+        field.set(section, factory);
+      } catch (Exception e) {
+        SectionUtils.throwRuntime(e);
+      }
+    }
+  }
 }

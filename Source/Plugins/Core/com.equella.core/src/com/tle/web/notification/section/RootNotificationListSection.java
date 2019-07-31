@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,41 @@
 
 package com.tle.web.notification.section;
 
-import javax.inject.Inject;
-
 import com.tle.web.navigation.TopbarLinkService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
+import javax.inject.Inject;
 
-public class RootNotificationListSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	@PlugKey("notification.title")
-	private static Label LABEL_TITLE;
+public class RootNotificationListSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  @PlugKey("notification.title")
+  private static Label LABEL_TITLE;
 
-	@SuppressWarnings("nls")
-	public static final String URL = "/access/notifications.do";
+  @SuppressWarnings("nls")
+  public static final String URL = "/access/notifications.do";
 
-	@Inject
-	private TopbarLinkService topbarLinkService;
+  @Inject private TopbarLinkService topbarLinkService;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return URL;
-	}
+  @Override
+  protected String getSessionKey() {
+    return URL;
+  }
 
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @DirectEvent
+  public void updateTopbar(SectionInfo info) {
+    topbarLinkService.clearCachedData();
+  }
 
-	@DirectEvent
-	public void updateTopbar(SectionInfo info)
-	{
-		topbarLinkService.clearCachedData();
-	}
-
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }

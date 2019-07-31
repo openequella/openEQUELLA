@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,29 @@
 
 package com.tle.web.sections.standard.renderers;
 
-import java.io.IOException;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.io.IOException;
 
-public class ComponentRenderer implements SectionRenderable
-{
-	private SectionRenderable renderable;
-	private HtmlComponentState state;
+public class ComponentRenderer implements SectionRenderable {
+  private SectionRenderable renderable;
+  private HtmlComponentState state;
 
-	public ComponentRenderer(SectionRenderable renderable, HtmlComponentState state)
-	{
-		this.renderable = renderable;
-		this.state = state;
-	}
+  public ComponentRenderer(SectionRenderable renderable, HtmlComponentState state) {
+    this.renderable = renderable;
+    this.state = state;
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		state.setBeenRendered(true);
-		renderable.realRender(writer);
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    state.setBeenRendered(true);
+    renderable.realRender(writer);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(renderable);
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(renderable);
+  }
 }

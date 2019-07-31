@@ -1,0 +1,44 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>216147</id>
+  <uuid>092ec2a5-164c-4a8f-bb06-f7c513fe0a5f</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-08-15 10:35:29.219</dateModified>
+  <dateCreated class="sql-timestamp">2011-08-15 10:35:29.219</dateCreated>
+  <description>
+    <id>216148</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216149</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Must have same code as course &quot;TC102: Always latest items course&quot; in lms-autotest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>216150</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216151</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Always Latest Version Blackboard Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>0</students>
+  <courseType>i</courseType>
+  <code>TC102</code>
+  <versionSelection>FORCE_LATEST</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

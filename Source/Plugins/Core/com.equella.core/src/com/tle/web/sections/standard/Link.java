@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,40 +22,32 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-/**
- * @author jmaginnis
- */
-public class Link extends AbstractEventOnlyComponent<HtmlLinkState>
-{
-	private boolean disablable;
+/** @author jmaginnis */
+public class Link extends AbstractEventOnlyComponent<HtmlLinkState> {
+  private boolean disablable;
 
-	public Link()
-	{
-		super(RendererConstants.LINK);
-	}
+  public Link() {
+    super(RendererConstants.LINK);
+  }
 
-	@Override
-	public Class<HtmlLinkState> getModelClass()
-	{
-		return HtmlLinkState.class;
-	}
+  @Override
+  public Class<HtmlLinkState> getModelClass() {
+    return HtmlLinkState.class;
+  }
 
-	public void setBookmark(SectionInfo info, Bookmark bookmark)
-	{
-		HtmlLinkState state = getState(info);
-		state.setBookmark(bookmark);
-	}
+  public void setBookmark(SectionInfo info, Bookmark bookmark) {
+    HtmlLinkState state = getState(info);
+    state.setBookmark(bookmark);
+  }
 
-	public void setDisablable(boolean isDisablable)
-	{
-		this.disablable = isDisablable;
-	}
+  public void setDisablable(boolean isDisablable) {
+    this.disablable = isDisablable;
+  }
 
-	@Override
-	protected HtmlLinkState setupState(SectionInfo info, HtmlLinkState state)
-	{
-		super.setupState(info, state);
-		state.setDisablable(disablable);
-		return state;
-	}
+  @Override
+  protected HtmlLinkState setupState(SectionInfo info, HtmlLinkState state) {
+    super.setupState(info, state);
+    state.setDisablable(disablable);
+    return state;
+  }
 }

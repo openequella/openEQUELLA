@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,41 @@
 
 package com.tle.web.bulk.operation;
 
-import java.io.Serializable;
-
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.FactoryMethodLocator;
+import java.io.Serializable;
 
-public class SimpleOperationExecutor extends FactoryMethodLocator<WorkflowOperation> implements BulkOperationExecutor
-{
-	private static final long serialVersionUID = 1L;
+public class SimpleOperationExecutor extends FactoryMethodLocator<WorkflowOperation>
+    implements BulkOperationExecutor {
+  private static final long serialVersionUID = 1L;
 
-	private final Class<? extends WorkflowOperation> operationClass;
-	private final boolean save;
+  private final Class<? extends WorkflowOperation> operationClass;
+  private final boolean save;
 
-	public SimpleOperationExecutor(Class<? extends WorkflowOperation> operationClass, String methodName, boolean save,
-		Serializable... args)
-	{
-		super(ItemOperationFactory.class, methodName, args);
-		this.operationClass = operationClass;
-		this.save = save;
-	}
+  public SimpleOperationExecutor(
+      Class<? extends WorkflowOperation> operationClass,
+      String methodName,
+      boolean save,
+      Serializable... args) {
+    super(ItemOperationFactory.class, methodName, args);
+    this.operationClass = operationClass;
+    this.save = save;
+  }
 
-	@Override
-	public WorkflowOperation[] getOperations()
-	{
-		ItemOperationFactory factory = getFactory();
-		WorkflowOperation op = invokeFactoryMethod(factory);
-		operationClass.cast(op);
-		if( !save )
-		{
-			return new WorkflowOperation[]{op};
-		}
-		return new WorkflowOperation[]{op, factory.saveBackground()};
-	}
+  @Override
+  public WorkflowOperation[] getOperations() {
+    ItemOperationFactory factory = getFactory();
+    WorkflowOperation op = invokeFactoryMethod(factory);
+    operationClass.cast(op);
+    if (!save) {
+      return new WorkflowOperation[] {op};
+    }
+    return new WorkflowOperation[] {op, factory.saveBackground()};
+  }
 
-	@Override
-	public String getTitleKey()
-	{
-		return operationClass.getName();
-	}
+  @Override
+  public String getTitleKey() {
+    return operationClass.getName();
+  }
 }

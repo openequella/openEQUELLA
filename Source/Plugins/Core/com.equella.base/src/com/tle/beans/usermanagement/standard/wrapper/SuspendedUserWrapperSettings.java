@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,36 @@
 
 package com.tle.beans.usermanagement.standard.wrapper;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class SuspendedUserWrapperSettings extends UserManagementSettings
-{
-	private static final long serialVersionUID = 1L;
+public class SuspendedUserWrapperSettings extends UserManagementSettings {
+  private static final long serialVersionUID = 1L;
 
-	@Property(key = "wrapper.suspended.enabled")
-	private boolean enabled;
+  @Property(key = "wrapper.suspended.enabled")
+  private boolean enabled;
 
-	@PropertyList(key = "wrapper.suspended.suspensions")
-	private Set<String> suspendedUsers = new HashSet<String>();
+  @PropertyList(key = "wrapper.suspended.suspensions")
+  private Set<String> suspendedUsers = new HashSet<String>();
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public Set<String> getSuspendedUsers()
-	{
-		return suspendedUsers;
-	}
+  public Set<String> getSuspendedUsers() {
+    return suspendedUsers;
+  }
 
-	public void setSuspendedUsers(Set<String> suspendedUsers)
-	{
-		this.suspendedUsers = suspendedUsers;
-	}
+  public void setSuspendedUsers(Set<String> suspendedUsers) {
+    this.suspendedUsers = suspendedUsers;
+  }
 }

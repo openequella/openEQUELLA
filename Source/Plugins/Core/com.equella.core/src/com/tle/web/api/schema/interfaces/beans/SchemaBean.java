@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,37 @@
 
 package com.tle.web.api.schema.interfaces.beans;
 
+import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tle.web.api.interfaces.beans.BaseEntityBean;
-
 @XmlRootElement
-public class SchemaBean extends BaseEntityBean
-{
-	private String namePath;
-	private String descriptionPath;
-	private Map<String, SchemaNodeBean> definition;
+public class SchemaBean extends BaseEntityBean {
+  private String namePath;
+  private String descriptionPath;
+  private Map<String, SchemaNodeBean> definition;
 
-	public String getNamePath()
-	{
-		return namePath;
-	}
+  public String getNamePath() {
+    return namePath;
+  }
 
-	public void setNamePath(String namePath)
-	{
-		this.namePath = namePath;
-	}
+  public void setNamePath(String namePath) {
+    this.namePath = namePath;
+  }
 
-	public String getDescriptionPath()
-	{
-		return descriptionPath;
-	}
+  public String getDescriptionPath() {
+    return descriptionPath;
+  }
 
-	public void setDescriptionPath(String descriptionPath)
-	{
-		this.descriptionPath = descriptionPath;
-	}
+  public void setDescriptionPath(String descriptionPath) {
+    this.descriptionPath = descriptionPath;
+  }
 
-	public Map<String, SchemaNodeBean> getDefinition()
-	{
-		return definition;
-	}
+  public Map<String, SchemaNodeBean> getDefinition() {
+    return definition;
+  }
 
-	public void setDefinition(Map<String, SchemaNodeBean> definition)
-	{
-		this.definition = definition;
-	}
-
+  public void setDefinition(Map<String, SchemaNodeBean> definition) {
+    this.definition = definition;
+  }
 }

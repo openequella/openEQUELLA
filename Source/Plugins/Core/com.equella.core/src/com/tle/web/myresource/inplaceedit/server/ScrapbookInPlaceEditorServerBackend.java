@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +18,6 @@
 
 package com.tle.web.myresource.inplaceedit.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.item.ItemId;
 import com.tle.common.URLUtils;
 import com.tle.common.filesystem.handle.FileHandle;
@@ -33,53 +29,52 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ScrapbookInPlaceEditorServerBackend implements InPlaceEditorServerBackend
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ItemFileService itemFileService;
+public class ScrapbookInPlaceEditorServerBackend implements InPlaceEditorServerBackend {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private InstitutionService institutionService;
+  @Inject private ItemFileService itemFileService;
 
-	/**
-	 * @param itemUuid
-	 * @param itemVersion Should always be 1 for scrapbook items
-	 * @param stagingId
-	 * @param filename
-	 * @return
-	 */
-	@Override
-	public String getDownloadUrl(String itemUuid, int itemVersion, String stagingId, String filename)
-	{
-		// if the file doesn't exist in staging then copy it across
-		final FileHandle stagingFile = new StagingFile(stagingId);
+  /**
+   * @param itemUuid
+   * @param itemVersion Should always be 1 for scrapbook items
+   * @param stagingId
+   * @param filename
+   * @return
+   */
+  @Override
+  public String getDownloadUrl(
+      String itemUuid, int itemVersion, String stagingId, String filename) {
+    // if the file doesn't exist in staging then copy it across
+    final FileHandle stagingFile = new StagingFile(stagingId);
 
-		if( !fileSystemService.fileExists(stagingFile, filename) )
-		{
-			final ItemId itemId = new ItemId(itemUuid, itemVersion);
-			final ItemFile itemFile = itemFileService.getItemFile(itemId, null);
-			fileSystemService.copy(itemFile, filename, stagingFile, filename);
-		}
-		return institutionService.institutionalise("file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
-	}
+    if (!fileSystemService.fileExists(stagingFile, filename)) {
+      final ItemId itemId = new ItemId(itemUuid, itemVersion);
+      final ItemFile itemFile = itemFileService.getItemFile(itemId, null);
+      fileSystemService.copy(itemFile, filename, stagingFile, filename);
+    }
+    return institutionService.institutionalise(
+        "file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
+  }
 
-	@Override
-	public void write(String stagingId, String filename, boolean append, byte[] upload)
-	{
-		try
-		{
-			FileHandle stagingFile = new StagingFile(stagingId);
-			fileSystemService.write(stagingFile, filename, new ByteArrayInputStream(upload), append);
-		}
-		catch( IOException ex )
-		{
-			throw new RuntimeException(CurrentLocale
-				.get("com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write", filename), ex);
-		}
-	}
+  @Override
+  public void write(String stagingId, String filename, boolean append, byte[] upload) {
+    try {
+      FileHandle stagingFile = new StagingFile(stagingId);
+      fileSystemService.write(stagingFile, filename, new ByteArrayInputStream(upload), append);
+    } catch (IOException ex) {
+      throw new RuntimeException(
+          CurrentLocale.get(
+              "com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write",
+              filename),
+          ex);
+    }
+  }
 }

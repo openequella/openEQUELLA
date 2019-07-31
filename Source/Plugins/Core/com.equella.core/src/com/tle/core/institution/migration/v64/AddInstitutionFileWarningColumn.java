@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,76 +18,64 @@
 
 package com.tle.core.institution.migration.v64;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import org.hibernate.Query;
-import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
-
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import org.hibernate.Query;
+import org.hibernate.annotations.AccessType;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddInstitutionFileWarningColumn extends AbstractHibernateSchemaMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		//Legacy string key
-		return new MigrationInfo("com.tle.core.entity.services.migration.v64.AddInstitutionFileWarningColumn.title");
-	}
+public class AddInstitutionFileWarningColumn extends AbstractHibernateSchemaMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    // Legacy string key
+    return new MigrationInfo(
+        "com.tle.core.entity.services.migration.v64.AddInstitutionFileWarningColumn.title");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		Query q = session.createQuery("UPDATE Institution SET quota = :value");
-		q.setParameter("value", 0.0);
-		q.executeUpdate();
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    Query q = session.createQuery("UPDATE Institution SET quota = :value");
+    q.setParameter("value", 0.0);
+    q.executeUpdate();
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 1;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 1;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddNotNullSQL("institution", "quota");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getAddNotNullSQL("institution", "quota");
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("institution", "quota");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("institution", "quota");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeInstitution.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeInstitution.class};
+  }
 
-	@Entity(name = "Institution")
-	@AccessType("field")
-	public static class FakeInstitution
-	{
-		@Id
-		long id;
+  @Entity(name = "Institution")
+  @AccessType("field")
+  public static class FakeInstitution {
+    @Id long id;
 
-		@Column
-		double quota;
-	}
+    @Column double quota;
+  }
 }

@@ -1,7 +1,5 @@
-exports.store = require("store").default;
-exports.searchCourses = require("course/SearchCourse").default;
-exports.editCourse = require("course/EditCourse").default;
-exports.appBarQueryClass = require("components/AppBarQuery").default;
-exports.courseSelectClass = require("components/CourseSelect").default;
-exports.themePageClass = require("theme/ThemePage").default;
-exports.loginNoticeConfigPageClass = require("loginnotice/LoginNoticeConfigPage").default;
+exports.appBarQueryClass = require("~/../tsrc/components/AppBarQuery").default;
+exports.courseSelectClass = require("~/../tsrc/components/CourseSelect").default;
+exports.startHeartbeat = require("~/../tsrc/util/heartbeat").startHeartbeat;
+exports.jqueryDivClass = require("~/../tsrc/legacycontent/JQueryDiv").default;
+exports.adminDownloadDialogClass = require("~/../tsrc/settings/AdminDownloadDialog").default;

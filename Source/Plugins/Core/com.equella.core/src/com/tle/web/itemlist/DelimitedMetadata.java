@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,32 @@
 
 package com.tle.web.itemlist;
 
-import java.util.Collection;
-
 import com.tle.web.sections.render.DelimitedRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
+import java.util.Collection;
 
-public class DelimitedMetadata implements MetadataEntry
-{
-	private Label label;
-	private SectionRenderable renderable;
+public class DelimitedMetadata implements MetadataEntry {
+  private Label label;
+  private SectionRenderable renderable;
 
-	@SuppressWarnings("nls")
-	public DelimitedMetadata(Label label, Collection<SectionRenderable> vals)
-	{
-		this.label = label;
-		renderable = new SpanRenderer("itemresult-meta-delim", new DelimitedRenderer(
-			new SpanRenderer("separator", "|"), vals));
-	}
+  @SuppressWarnings("nls")
+  public DelimitedMetadata(Label label, Collection<SectionRenderable> vals) {
+    this.label = label;
+    renderable =
+        new SpanRenderer(
+            "itemresult-meta-delim",
+            new DelimitedRenderer(new SpanRenderer("separator", "|"), vals));
+  }
 
-	@Override
-	public Label getLabel()
-	{
-		return label;
-	}
+  @Override
+  public Label getLabel() {
+    return label;
+  }
 
-	@Override
-	public SectionRenderable getValue()
-	{
-		return renderable;
-	}
+  @Override
+  public SectionRenderable getValue() {
+    return renderable;
+  }
 }

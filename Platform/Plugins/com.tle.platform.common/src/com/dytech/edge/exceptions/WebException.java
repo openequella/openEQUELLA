@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,38 +18,30 @@
 
 package com.dytech.edge.exceptions;
 
-/**
- * @author Aaron
- */
-public class WebException extends RuntimeException
-{
-	private static final long serialVersionUID = 1L;
+/** @author Aaron */
+public class WebException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
-	private final int code;
-	private final String error;
+  private final int code;
+  private final String error;
 
-	/**
-	 * @param code
-	 * @param error A short string uniquely identifying the error
-	 * @param message
-	 */
-	public WebException(int code, String error, String message)
-	{
-		super(message);
-		this.error = error;
-		this.code = code;
-	}
+  /**
+   * @param code
+   * @param error A short string uniquely identifying the error
+   * @param message
+   */
+  public WebException(int code, String error, String message) {
+    super(message);
+    this.error = error;
+    this.code = code;
+  }
 
-	public int getCode()
-	{
-		return code;
-	}
+  public int getCode() {
+    return code;
+  }
 
-	/**
-	 * @return A short string uniquely identifying the error
-	 */
-	public String getError()
-	{
-		return error;
-	}
+  /** @return A short string uniquely identifying the error */
+  public String getError() {
+    return error;
+  }
 }

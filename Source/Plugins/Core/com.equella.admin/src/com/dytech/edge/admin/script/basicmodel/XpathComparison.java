@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,58 +22,48 @@ import com.dytech.edge.admin.script.ifmodel.Comparison;
 import com.dytech.edge.admin.script.ifmodel.Equality;
 import com.dytech.edge.admin.script.ifmodel.IfModel;
 
-public class XpathComparison implements Comparison
-{
-	protected String lhs;
-	protected String rhs;
-	protected Equality operator;
+public class XpathComparison implements Comparison {
+  protected String lhs;
+  protected String rhs;
+  protected Equality operator;
 
-	public XpathComparison(Equality operator, String lhs, String rhs)
-	{
-		setLHS(lhs);
-		setRHS(rhs);
-		setOperator(operator);
-	}
+  public XpathComparison(Equality operator, String lhs, String rhs) {
+    setLHS(lhs);
+    setRHS(rhs);
+    setOperator(operator);
+  }
 
-	public String getLHS()
-	{
-		return lhs;
-	}
+  public String getLHS() {
+    return lhs;
+  }
 
-	public void setLHS(String lhs)
-	{
-		this.lhs = lhs;
-	}
+  public void setLHS(String lhs) {
+    this.lhs = lhs;
+  }
 
-	public String getRHS()
-	{
-		return rhs;
-	}
+  public String getRHS() {
+    return rhs;
+  }
 
-	public void setRHS(String rhs)
-	{
-		this.rhs = rhs;
-	}
+  public void setRHS(String rhs) {
+    this.rhs = rhs;
+  }
 
-	public Equality getOperator()
-	{
-		return operator;
-	}
+  public Equality getOperator() {
+    return operator;
+  }
 
-	public void setOperator(Equality operator)
-	{
-		this.operator = operator;
-	}
+  public void setOperator(Equality operator) {
+    this.operator = operator;
+  }
 
-	@Override
-	public String toScript()
-	{
-		return "xml.get('" + lhs + "') " + operator.toScript() + " '" + IfModel.encode(rhs) + "'";
-	}
+  @Override
+  public String toScript() {
+    return "xml.get('" + lhs + "') " + operator.toScript() + " '" + IfModel.encode(rhs) + "'";
+  }
 
-	@Override
-	public String toEasyRead()
-	{
-		return lhs + " " + operator.toEasyRead() + " '" + rhs + "'";
-	}
+  @Override
+  public String toEasyRead() {
+    return lhs + " " + operator.toEasyRead() + " '" + rhs + "'";
+  }
 }

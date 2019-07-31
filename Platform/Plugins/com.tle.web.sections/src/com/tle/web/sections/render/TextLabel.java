@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,35 +20,30 @@ package com.tle.web.sections.render;
 
 import java.io.Serializable;
 
-public class TextLabel implements Label, Serializable
-{
-	private static final long serialVersionUID = 1L;
+public class TextLabel implements Label, Serializable {
+  private static final long serialVersionUID = 1L;
 
-	public static final TextLabel SPACE = new TextLabel(" ", true); //$NON-NLS-1$
+  public static final TextLabel SPACE = new TextLabel(" ", true); // $NON-NLS-1$
 
-	private final String text;
-	private final boolean html;
+  private final String text;
+  private final boolean html;
 
-	public TextLabel(String text)
-	{
-		this(text, false);
-	}
+  public TextLabel(String text) {
+    this(text, false);
+  }
 
-	public TextLabel(String text, boolean html)
-	{
-		this.text = text;
-		this.html = html;
-	}
+  public TextLabel(String text, boolean html) {
+    this.text = text;
+    this.html = html;
+  }
 
-	@Override
-	public String getText()
-	{
-		return text;
-	}
+  @Override
+  public String getText() {
+    return text;
+  }
 
-	@Override
-	public boolean isHtml()
-	{
-		return html;
-	}
+  @Override
+  public boolean isHtml() {
+    return html;
+  }
 }

@@ -40,10 +40,6 @@
 		</@a.div>
 		<@setting label=b.key('login.enableanonacl') section=s.enableAnonACL />
 
-		<@setting label=b.key('loginnotice.title') labelFor=s.loginNoticeField >
-			<@textarea section=s.loginNoticeField class="notice" rows=14 />
-		</@setting>
-
 	</@settingContainer>
 
 	<div class="button-strip">

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,38 +21,30 @@ package com.tle.admin.controls.standard.universal;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class LinksSettingsPanel extends UniversalControlSettingPanel
-{
-	public LinksSettingsPanel()
-	{
-		super();
-	}
+public class LinksSettingsPanel extends UniversalControlSettingPanel {
+  public LinksSettingsPanel() {
+    super();
+  }
 
-	@Override
-	protected String getTitleKey()
-	{
-		return getKey("links.settings.title");
-	}
+  @Override
+  protected String getTitleKey() {
+    return getKey("links.settings.title");
+  }
 
-	@Override
-	public void load(UniversalSettings state)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void load(UniversalSettings state) {
+    // Nothing to do
+  }
 
-	@Override
-	public void removeSavedState(UniversalSettings state)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void removeSavedState(UniversalSettings state) {
+    // Nothing to do
+  }
 
-	@Override
-	public void save(UniversalSettings state)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void save(UniversalSettings state) {
+    // Nothing to do
+  }
 }

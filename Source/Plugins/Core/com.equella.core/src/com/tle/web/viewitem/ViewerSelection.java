@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,33 +20,27 @@ package com.tle.web.viewitem;
 
 import com.tle.web.viewurl.ViewItemViewer;
 
-public class ViewerSelection
-{
-	private ViewItemViewer viewer;
-	private String viewerId;
+public class ViewerSelection {
+  private ViewItemViewer viewer;
+  private String viewerId;
 
-	public ViewItemViewer getViewer()
-	{
-		return viewer;
-	}
+  public ViewItemViewer getViewer() {
+    return viewer;
+  }
 
-	public void setViewer(ViewItemViewer viewer)
-	{
-		this.viewer = viewer;
-	}
+  public void setViewer(ViewItemViewer viewer) {
+    this.viewer = viewer;
+  }
 
-	public String getViewerId()
-	{
-		return viewerId;
-	}
+  public String getViewerId() {
+    return viewerId;
+  }
 
-	public void setViewerId(String viewerId)
-	{
-		this.viewerId = viewerId;
-	}
+  public void setViewerId(String viewerId) {
+    this.viewerId = viewerId;
+  }
 
-	public boolean isViewerSet()
-	{
-		return viewerId != null || viewer != null;
-	}
+  public boolean isViewerSet() {
+    return viewerId != null || viewer != null;
+  }
 }

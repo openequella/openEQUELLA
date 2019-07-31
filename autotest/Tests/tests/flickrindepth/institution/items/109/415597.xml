@@ -1,0 +1,292 @@
+<com.tle.beans.item.Item>
+  <id>415597</id>
+  <uuid>bd4b18e1-dc31-4641-8c40-dd8ef19e0612</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-10-04 10:44:00.561</dateModified>
+  <dateCreated class="sql-timestamp">2011-10-04 10:44:00.569</dateCreated>
+  <dateForIndex class="sql-timestamp">2011-10-04 10:44:28.641</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>415604</id>
+      <uuid>d191d2bc-b662-41f1-b1fb-0fea7092441b</uuid>
+      <url></url>
+      <description>North Korean Mass Games - Manual Jumbotron</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/95343000@N00/1273262347</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>1273262347</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm2.static.flickr.com/1018/1273262347_2b55967337.jpg</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>Ryuugakusei</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm2.static.flickr.com/1018/1273262347_2b55967337_t.jpg</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2007-08-30 17:01:10.0 EST</date>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2007-08-20 20:32:20.0 EST</date>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+      </data>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>415605</id>
+      <uuid>aed7bcd1-efe7-4334-8ce4-34ab5bc8b415</uuid>
+      <url></url>
+      <description>Arirang Mass Games-204</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/11683866@N06/2955336892</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>2955336892</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm4.static.flickr.com/3296/2955336892_893406d0af.jpg</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>Grete Howard</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm4.static.flickr.com/3296/2955336892_893406d0af_t.jpg</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2008-10-20 04:03:34.0 EST</date>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2008-09-28 12:18:56.0 EST</date>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+      </data>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>415606</id>
+      <uuid>636f4ad8-bae7-4cfd-9af5-6557d0bbdeee</uuid>
+      <url></url>
+      <description>Arirang Mass Games</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/11683866@N06/2961110078</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>2961110078</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm4.static.flickr.com/3194/2961110078_1bf6040693.jpg</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>Grete Howard</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm4.static.flickr.com/3194/2961110078_1bf6040693_t.jpg</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2008-10-21 18:02:07.0 EST</date>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2008-09-28 12:17:12.0 EST</date>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+      </data>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>415607</id>
+      <uuid>acdc00b2-a725-485f-8fe9-ebd6b111c3b2</uuid>
+      <url></url>
+      <description>Arirang Mass Games-190</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/11683866@N06/2955318446</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>2955318446</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm4.static.flickr.com/3011/2955318446_9103f76752.jpg</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>Grete Howard</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm4.static.flickr.com/3011/2955318446_9103f76752_t.jpg</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2008-10-20 03:57:44.0 EST</date>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2008-09-28 12:15:00.0 EST</date>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+      </data>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="ef19a911-0b3c-85ed-efd9-a56e56edcf37"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>415601</id>
+    <liveApprovalDate class="sql-timestamp">2011-10-04 10:44:00.561</liveApprovalDate>
+    <start>2011-10-04 17:23:07.723 EST</start>
+    <lastAction class="sql-timestamp">2011-10-04 10:44:00.561</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415608</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:44:00.561</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415609</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:44:00.561</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415610</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:44:00.561</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>415602</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>415603</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Airirang, Arirang, Aririang</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>415598</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>415599</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>can&apos;t get enough of that Arirang</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

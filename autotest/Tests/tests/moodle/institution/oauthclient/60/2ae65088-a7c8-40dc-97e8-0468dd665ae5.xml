@@ -1,0 +1,36 @@
+<com.tle.core.oauth.beans.OAuthClient>
+  <id>18274</id>
+  <uuid>2ae65088-a7c8-40dc-97e8-0468dd665ae5</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-10-02 09:22:11.872</dateModified>
+  <dateCreated class="sql-timestamp">2014-10-02 09:22:11.872</dateCreated>
+  <name>
+    <id>18275</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18276</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>LTI Moodle 27</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>oauth.flow</key>
+      <value>ccg</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <clientId>LTI_27</clientId>
+  <clientSecret>c9edb02e-4ab8-4ce0-9d34-350c86aaa57b</clientSecret>
+  <redirectUrl>default</redirectUrl>
+  <permissions/>
+  <userId>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userId>
+  <requiresApproval>false</requiresApproval>
+</com.tle.core.oauth.beans.OAuthClient>

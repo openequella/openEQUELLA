@@ -1,44 +1,35 @@
 package com.tle.jpfclasspath.parser;
 
+public final class ModelPluginFragment extends ModelPluginManifest {
+  private String pluginId;
+  private Version pluginVersion;
+  private MatchingRule matchingRule = MatchingRule.COMPATIBLE;
 
-final public class ModelPluginFragment extends ModelPluginManifest
-{
-	private String pluginId;
-	private Version pluginVersion;
-	private MatchingRule matchingRule = MatchingRule.COMPATIBLE;
+  ModelPluginFragment() {
+    // no-op
+  }
 
-	ModelPluginFragment()
-	{
-		// no-op
-	}
+  public MatchingRule getMatchingRule() {
+    return matchingRule;
+  }
 
-	public MatchingRule getMatchingRule()
-	{
-		return matchingRule;
-	}
+  void setMatchingRule(final MatchingRule value) {
+    matchingRule = value;
+  }
 
-	void setMatchingRule(final MatchingRule value)
-	{
-		matchingRule = value;
-	}
+  public String getPluginId() {
+    return pluginId;
+  }
 
-	public String getPluginId()
-	{
-		return pluginId;
-	}
+  void setPluginId(final String value) {
+    pluginId = value;
+  }
 
-	void setPluginId(final String value)
-	{
-		pluginId = value;
-	}
+  public Version getPluginVersion() {
+    return pluginVersion;
+  }
 
-	public Version getPluginVersion()
-	{
-		return pluginVersion;
-	}
-
-	void setPluginVersion(final String value)
-	{
-		pluginVersion = Version.parse(value);
-	}
+  void setPluginVersion(final String value) {
+    pluginVersion = Version.parse(value);
+  }
 }

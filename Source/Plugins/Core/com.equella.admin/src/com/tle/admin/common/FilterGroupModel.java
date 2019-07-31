@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,41 @@
 
 package com.tle.admin.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.dytech.gui.filter.FilterModel;
 import com.tle.common.NameValue;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-public class FilterGroupModel extends FilterModel<NameValue>
-{
-	private static final Log LOGGER = LogFactory.getLog(FilterGroupModel.class);
+public class FilterGroupModel extends FilterModel<NameValue> {
+  private static final Log LOGGER = LogFactory.getLog(FilterGroupModel.class);
 
-	private final RemoteUserService userService;
+  private final RemoteUserService userService;
 
-	public FilterGroupModel(RemoteUserService userService)
-	{
-		this.userService = userService;
-	}
+  public FilterGroupModel(RemoteUserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public List<NameValue> search(String pattern)
-	{
-		try
-		{
-			return removeExclusions(pairUp(userService.searchGroups(pattern)));
-		}
-		catch( Exception ex )
-		{
-			LOGGER.warn("Error searching groups matching " + pattern, ex);
-			return new ArrayList<NameValue>(0);
-		}
-	}
+  @Override
+  public List<NameValue> search(String pattern) {
+    try {
+      return removeExclusions(pairUp(userService.searchGroups(pattern)));
+    } catch (Exception ex) {
+      LOGGER.warn("Error searching groups matching " + pattern, ex);
+      return new ArrayList<NameValue>(0);
+    }
+  }
 
-	protected List<NameValue> pairUp(List<GroupBean> groups)
-	{
-		List<NameValue> results = new ArrayList<NameValue>(groups.size());
+  protected List<NameValue> pairUp(List<GroupBean> groups) {
+    List<NameValue> results = new ArrayList<NameValue>(groups.size());
 
-		for( GroupBean group : groups )
-		{
-			results.add(UserBeanUtils.formatGroup(group));
-		}
-		return results;
-	}
+    for (GroupBean group : groups) {
+      results.add(UserBeanUtils.formatGroup(group));
+    }
+    return results;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,15 +17,6 @@
  */
 
 package com.tle.web.hierarchy.addkey;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -67,204 +60,198 @@ import com.tle.web.sections.standard.model.HtmlTreeNode;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.summary.content.AbstractContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class HierarchyTreeSection extends AbstractContentSection<Object>
-{
-	private static final ExternallyDefinedFunction FUNCTION_CLICKABLE_LINES = new ExternallyDefinedFunction(
-		"makeClickable", 1, new IncludeFile(ResourcesService.getResourceHelper(HierarchyTreeSection.class).url(
-			"scripts/htree.js"), JQueryTreeView.PRERENDER));
+public class HierarchyTreeSection extends AbstractContentSection<Object> {
+  private static final ExternallyDefinedFunction FUNCTION_CLICKABLE_LINES =
+      new ExternallyDefinedFunction(
+          "makeClickable",
+          1,
+          new IncludeFile(
+              ResourcesService.getResourceHelper(HierarchyTreeSection.class)
+                  .url("scripts/htree.js"),
+              JQueryTreeView.PRERENDER));
 
-	@PlugKey("aftercontribution.receipt")
-	private static String RECEIPT_SINGLE_KEY;
-	@PlugKey("aftercontribution.title")
-	private static Label LABEL_TITLE;
+  @PlugKey("aftercontribution.receipt")
+  private static String RECEIPT_SINGLE_KEY;
 
-	@Inject
-	private HierarchyService hierarchyService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private TLEAclManager aclManager;
+  @PlugKey("aftercontribution.title")
+  private static Label LABEL_TITLE;
 
-	@Component(name = "krs", stateful = false, onlyForContext = BookmarkEvent.CONTEXT_BROWSERURL)
-	private MappedBooleans topicSelections;
+  @Inject private HierarchyService hierarchyService;
+  @Inject private ReceiptService receiptService;
+  @Inject private TLEAclManager aclManager;
 
-	@Component
-	@PlugKey("button.add")
-	private Button addButton;
+  @Component(name = "krs", stateful = false, onlyForContext = BookmarkEvent.CONTEXT_BROWSERURL)
+  private MappedBooleans topicSelections;
 
-	@Component
-	private Tree topicTree;
+  @Component
+  @PlugKey("button.add")
+  private Button addButton;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @Component private Tree topicTree;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(context);
-		addDefaultBreadcrumbs(context, iinfo, LABEL_TITLE);
-		return view.createResult("hierarchytree.ftl", context);
-	}
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(context);
+    addDefaultBreadcrumbs(context, iinfo, LABEL_TITLE);
+    return view.createResult("hierarchytree.ftl", context);
+  }
 
-		topicTree.setModel(new TopicTreeModel());
-		topicTree.setLazyLoad(true);
-		topicTree.setAllowMultipleOpenBranches(true);
-		topicTree.addReadyStatements(Js.call_s(FUNCTION_CLICKABLE_LINES, Jq.$(topicTree)));
-		addButton.addClickStatements(events.getNamedHandler("addToHierarchy"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void addToHierarchy(SectionInfo info)
-	{
-		final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+    topicTree.setModel(new TopicTreeModel());
+    topicTree.setLazyLoad(true);
+    topicTree.setAllowMultipleOpenBranches(true);
+    topicTree.addReadyStatements(Js.call_s(FUNCTION_CLICKABLE_LINES, Jq.$(topicTree)));
+    addButton.addClickStatements(events.getNamedHandler("addToHierarchy"));
+  }
 
-		Set<String> selectedTopics = topicSelections.getCheckedSet(info);
+  @EventHandlerMethod
+  public void addToHierarchy(SectionInfo info) {
+    final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
 
-		// delete all the key resources then save all the checked hierarchy
-		// topics
-		hierarchyService.deleteKeyResources(iinfo.getItem());
+    Set<String> selectedTopics = topicSelections.getCheckedSet(info);
 
-		for( String topicId : selectedTopics )
-		{
-			hierarchyService.addKeyResource(topicId, iinfo.getItemId());
-		}
+    // delete all the key resources then save all the checked hierarchy
+    // topics
+    hierarchyService.deleteKeyResources(iinfo.getItem());
 
-		receiptService.setReceipt(new KeyLabel(RECEIPT_SINGLE_KEY));
-	}
+    for (String topicId : selectedTopics) {
+      hierarchyService.addKeyResource(topicId, iinfo.getItemId());
+    }
 
-	public Tree getTopicTree()
-	{
-		return topicTree;
-	}
+    receiptService.setReceipt(new KeyLabel(RECEIPT_SINGLE_KEY));
+  }
 
-	public Button getAddButton()
-	{
-		return addButton;
-	}
+  public Tree getTopicTree() {
+    return topicTree;
+  }
 
-	public class TopicTreeModel implements HtmlTreeModel
-	{
-		@Override
-		public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id)
-		{
-			HierarchyTopic t = null;
+  public Button getAddButton() {
+    return addButton;
+  }
 
-			Map<String, String> values = Maps.newHashMap();
-			// Id will be null if it is the mother of it all...
-			if( id != null )
-			{
-				for( String uuidValue : Splitter.on(',').omitEmptyStrings().split(id) )
-				{
-					final String[] uv = uuidValue.split(":", 2);
+  public class TopicTreeModel implements HtmlTreeModel {
+    @Override
+    public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id) {
+      HierarchyTopic t = null;
 
-					if( t == null )
-					{
-						t = hierarchyService.getHierarchyTopicByUuid(uv[0]);
-						if( t == null )
-						{
-							throw new IllegalArgumentException("Could not find topic " + uv[0]);
-						}
-					}
+      Map<String, String> values = Maps.newHashMap();
+      // Id will be null if it is the mother of it all...
+      if (id != null) {
+        for (String uuidValue : Splitter.on(',').omitEmptyStrings().split(id)) {
+          final String[] uv = uuidValue.split(":", 2);
 
-					if( uv.length > 1 )
-					{
-						values.put(uv[0], URLUtils.basicUrlDecode(uv[1]));
-					}
-				}
-			}
+          if (t == null) {
+            t = hierarchyService.getHierarchyTopicByUuid(uv[0]);
+            if (t == null) {
+              throw new IllegalArgumentException("Could not find topic " + uv[0]);
+            }
+          }
 
-			List<HierarchyTopic> allTopics = new ArrayList<HierarchyTopic>(hierarchyService.getChildTopics(t));
-			Collection<HierarchyTopic> allowedTopics = aclManager.filterNonGrantedObjects(
-				Collections.singleton("MODIFY_KEY_RESOURCE"), allTopics);
+          if (uv.length > 1) {
+            values.put(uv[0], URLUtils.basicUrlDecode(uv[1]));
+          }
+        }
+      }
 
-			final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService.expandVirtualisedTopics(
-				(List<HierarchyTopic>) allowedTopics, null, null);
+      List<HierarchyTopic> allTopics =
+          new ArrayList<HierarchyTopic>(hierarchyService.getChildTopics(t));
+      Collection<HierarchyTopic> allowedTopics =
+          aclManager.filterNonGrantedObjects(
+              Collections.singleton("MODIFY_KEY_RESOURCE"), allTopics);
 
-			Set<String> topicWithKeyResource = Sets.newHashSet(hierarchyService
-				.getTopicIdsWithKeyResource(ParentViewItemSectionUtils.getItemInfo(info).getItem()));
+      final List<VirtualisableAndValue<HierarchyTopic>> topicValues =
+          hierarchyService.expandVirtualisedTopics(
+              (List<HierarchyTopic>) allowedTopics, null, null);
 
-			List<HtmlTreeNode> childNodes = Lists.newArrayList();
-			for( VirtualisableAndValue<HierarchyTopic> p : topicValues )
-			{
-				HierarchyTopic topic = p.getVt();
-				Label topicName = new BundleLabel(topic.getName(), bundleCache);
-				String dynamicValue = p.getVirtualisedValue();
-				if( dynamicValue != null )
-				{
-					topicName = TopicUtils.labelForValue(topicName, dynamicValue);
-				}
+      Set<String> topicWithKeyResource =
+          Sets.newHashSet(
+              hierarchyService.getTopicIdsWithKeyResource(
+                  ParentViewItemSectionUtils.getItemInfo(info).getItem()));
 
-				boolean leaf = hierarchyService.getChildTopics(topic).isEmpty();
+      List<HtmlTreeNode> childNodes = Lists.newArrayList();
+      for (VirtualisableAndValue<HierarchyTopic> p : topicValues) {
+        HierarchyTopic topic = p.getVt();
+        Label topicName = new BundleLabel(topic.getName(), bundleCache);
+        String dynamicValue = p.getVirtualisedValue();
+        if (dynamicValue != null) {
+          topicName = TopicUtils.labelForValue(topicName, dynamicValue);
+        }
 
-				String topicId = VirtualTopicUtils.buildTopicId(topic, dynamicValue, values);
-				childNodes.add(new TopicTreeNode(info, topicName, topicId, allowedTopics.contains(topic), leaf));
+        boolean leaf = hierarchyService.getChildTopics(topic).isEmpty();
 
-				topicSelections.setValue(info, topicId, topicWithKeyResource.contains(topicId));
-			}
+        String topicId = VirtualTopicUtils.buildTopicId(topic, dynamicValue, values);
+        childNodes.add(
+            new TopicTreeNode(info, topicName, topicId, allowedTopics.contains(topic), leaf));
 
-			return childNodes;
-		}
-	}
+        topicSelections.setValue(info, topicId, topicWithKeyResource.contains(topicId));
+      }
 
-	public class TopicTreeNode implements HtmlTreeNode
-	{
-		private final SectionInfo info;
-		private final Label topicName;
-		private final String id;
-		private final boolean canAddKeyResources;
-		private boolean leaf;
+      return childNodes;
+    }
+  }
 
-		protected TopicTreeNode(SectionInfo info, Label topicName, String dynamicId, boolean canAddKeyResources,
-			boolean leaf)
-		{
-			this.info = info;
-			this.topicName = topicName;
-			this.id = dynamicId;
-			this.canAddKeyResources = canAddKeyResources;
-			this.leaf = leaf;
-		}
+  public class TopicTreeNode implements HtmlTreeNode {
+    private final SectionInfo info;
+    private final Label topicName;
+    private final String id;
+    private final boolean canAddKeyResources;
+    private boolean leaf;
 
-		@Override
-		public String getId()
-		{
-			return id;
-		}
+    protected TopicTreeNode(
+        SectionInfo info,
+        Label topicName,
+        String dynamicId,
+        boolean canAddKeyResources,
+        boolean leaf) {
+      this.info = info;
+      this.topicName = topicName;
+      this.id = dynamicId;
+      this.canAddKeyResources = canAddKeyResources;
+      this.leaf = leaf;
+    }
 
-		@Override
-		public SectionRenderable getRenderer()
-		{
-			return view.createResultWithModel("tree/topicline.ftl", this);
-		}
+    @Override
+    public String getId() {
+      return id;
+    }
 
-		@Override
-		public Label getLabel()
-		{
-			return topicName;
-		}
+    @Override
+    public SectionRenderable getRenderer() {
+      return view.createResultWithModel("tree/topicline.ftl", this);
+    }
 
-		@Override
-		public boolean isLeaf()
-		{
-			return leaf;
-		}
+    @Override
+    public Label getLabel() {
+      return topicName;
+    }
 
-		public HtmlBooleanState getCheck()
-		{
-			HtmlBooleanState hbs = topicSelections.getBooleanState(info, getId());
-			if( !canAddKeyResources )
-			{
-				hbs.setDisabled(false);
-				hbs.setDisplayed(false);
-			}
-			return hbs;
-		}
-	}
+    @Override
+    public boolean isLeaf() {
+      return leaf;
+    }
+
+    public HtmlBooleanState getCheck() {
+      HtmlBooleanState hbs = topicSelections.getBooleanState(info, getId());
+      if (!canAddKeyResources) {
+        hbs.setDisabled(false);
+        hbs.setDisplayed(false);
+      }
+      return hbs;
+    }
+  }
 }

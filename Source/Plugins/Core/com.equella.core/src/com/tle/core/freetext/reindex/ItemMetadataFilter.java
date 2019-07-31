@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,48 +19,40 @@
 package com.tle.core.freetext.reindex;
 
 import java.util.Arrays;
-
 import org.apache.log4j.Logger;
 
-/**
- * @author Nicholas Read
- */
-public class ItemMetadataFilter extends ReindexFilter
-{
-	private static final Logger LOGGER = Logger.getLogger(ItemMetadataFilter.class);
+/** @author Nicholas Read */
+public class ItemMetadataFilter extends ReindexFilter {
+  private static final Logger LOGGER = Logger.getLogger(ItemMetadataFilter.class);
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private static final String[] NAMES = {"targetId"};
+  private static final String[] NAMES = {"targetId"};
 
-	private Object[] values;
+  private Object[] values;
 
-	public ItemMetadataFilter(String targetId)
-	{
-		values = new Object[]{targetId};
-	}
+  public ItemMetadataFilter(String targetId) {
+    values = new Object[] {targetId};
+  }
 
-	@Override
-	protected String getWhereClause()
-	{
-		return "where metadataSecurityTargets like :targetId";
-	}
+  @Override
+  protected String getWhereClause() {
+    return "where metadataSecurityTargets like :targetId";
+  }
 
-	@Override
-	protected String[] getNames()
-	{
-		return NAMES;
-	}
+  @Override
+  protected String[] getNames() {
+    return NAMES;
+  }
 
-	@Override
-	protected Object[] getValues()
-	{
-		// Bookend the target ID(s) with wildcards for the 'like' where clause.
-		Object[] ret = Arrays.stream(values).map(s -> "%" + s + "%").toArray();
-		if(LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Original values: " + Arrays.toString(values));
-			LOGGER.trace("Wildcard values: " + Arrays.toString(ret));
-		}
-		return ret;
-	}
+  @Override
+  protected Object[] getValues() {
+    // Bookend the target ID(s) with wildcards for the 'like' where clause.
+    Object[] ret = Arrays.stream(values).map(s -> "%" + s + "%").toArray();
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("Original values: " + Arrays.toString(values));
+      LOGGER.trace("Wildcard values: " + Arrays.toString(ret));
+    }
+    return ret;
+  }
 }

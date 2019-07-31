@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,53 +31,47 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.LabelOption;
 import com.tle.web.sections.standard.model.Option;
 
-public class WorkflowListModel extends DynamicHtmlListModel<BaseEntityLabel>
-{
-	static
-	{
-		PluginResourceHandler.init(WorkflowListModel.class);
-	}
+public class WorkflowListModel extends DynamicHtmlListModel<BaseEntityLabel> {
+  static {
+    PluginResourceHandler.init(WorkflowListModel.class);
+  }
 
-	@PlugKey("query.all")
-	private static Label LABEL_ALL;
-	private static final String ALL_KEY = ""; //$NON-NLS-1$
+  @PlugKey("query.all")
+  private static Label LABEL_ALL;
 
-	private final BundleCache bundleCache;
-	private final WorkflowService workflowService;
+  private static final String ALL_KEY = ""; // $NON-NLS-1$
 
-	public WorkflowListModel(WorkflowService workflowService, BundleCache bundleCache)
-	{
-		this.workflowService = workflowService;
-		this.bundleCache = bundleCache;
-		setSort(true);
-	}
+  private final BundleCache bundleCache;
+  private final WorkflowService workflowService;
 
-	@Override
-	protected Iterable<BaseEntityLabel> populateModel(SectionInfo info)
-	{
-		return workflowService.listManagable();
-	}
+  public WorkflowListModel(WorkflowService workflowService, BundleCache bundleCache) {
+    this.workflowService = workflowService;
+    this.bundleCache = bundleCache;
+    setSort(true);
+  }
 
-	@Override
-	protected Option<BaseEntityLabel> convertToOption(SectionInfo info, BaseEntityLabel obj)
-	{
-		return new LabelOption<BaseEntityLabel>(new BundleLabel(obj.getBundleId(), bundleCache), obj.getUuid(), obj);
-	}
+  @Override
+  protected Iterable<BaseEntityLabel> populateModel(SectionInfo info) {
+    return workflowService.listManagable();
+  }
 
-	@Override
-	protected Option<BaseEntityLabel> getTopOption()
-	{
-		return new LabelOption<BaseEntityLabel>(LABEL_ALL, ALL_KEY, null);
-	}
+  @Override
+  protected Option<BaseEntityLabel> convertToOption(SectionInfo info, BaseEntityLabel obj) {
+    return new LabelOption<BaseEntityLabel>(
+        new BundleLabel(obj.getBundleId(), bundleCache), obj.getUuid(), obj);
+  }
 
-	@Nullable
-	@Override
-	public BaseEntityLabel getValue(SectionInfo info, @Nullable String value)
-	{
-		if( value == null || ALL_KEY.equals(value) )
-		{
-			return null;
-		}
-		return super.getValue(info, value);
-	}
+  @Override
+  protected Option<BaseEntityLabel> getTopOption() {
+    return new LabelOption<BaseEntityLabel>(LABEL_ALL, ALL_KEY, null);
+  }
+
+  @Nullable
+  @Override
+  public BaseEntityLabel getValue(SectionInfo info, @Nullable String value) {
+    if (value == null || ALL_KEY.equals(value)) {
+      return null;
+    }
+    return super.getValue(info, value);
+  }
 }

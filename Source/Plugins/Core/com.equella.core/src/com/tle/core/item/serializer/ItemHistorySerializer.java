@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,31 @@
 
 package com.tle.core.item.serializer;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.item.HistoryEvent;
 import com.tle.core.guice.Bind;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class ItemHistorySerializer
-{
-	public HistoryEventBean serialize(HistoryEvent event)
-	{
-		final HistoryEventBean bean = new HistoryEventBean();
-		UserBean user = new UserBean();
-		user.setId(event.getUser());
-		bean.setUser(user);
-		bean.setDate(event.getDate());
-		// bean.setApplies(event.isApplies());
-		bean.setComment(event.getComment());
-		bean.setState(event.getState().toString());
-		bean.setStep(event.getStep());
-		bean.setStepName(event.getStepName());
-		bean.setToStep(event.getToStep());
-		bean.setToStepName(event.getToStepName());
-		bean.setType(event.getType().toString());
-		return bean;
-	}
+public class ItemHistorySerializer {
+  public HistoryEventBean serialize(HistoryEvent event) {
+    final HistoryEventBean bean = new HistoryEventBean();
+    UserBean user = new UserBean();
+    user.setId(event.getUser());
+    bean.setUser(user);
+    bean.setImpersonatedBy(event.getImpersonatedBy());
+    bean.setDate(event.getDate());
+    // bean.setApplies(event.isApplies());
+    bean.setComment(event.getComment());
+    bean.setState(event.getState().toString());
+    bean.setStep(event.getStep());
+    bean.setStepName(event.getStepName());
+    bean.setToStep(event.getToStep());
+    bean.setToStepName(event.getToStepName());
+    bean.setType(event.getType().toString());
+    return bean;
+  }
 }

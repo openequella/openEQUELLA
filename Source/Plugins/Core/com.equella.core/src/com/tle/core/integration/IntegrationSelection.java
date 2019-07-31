@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,72 +20,59 @@ package com.tle.core.integration;
 
 import com.tle.beans.item.ItemId;
 
-public class IntegrationSelection
-{
-	private final ItemId itemId;
-	private char type;
-	private String selection;
-	private String resource;
-	private String contentType;
-	private boolean latest;
+public class IntegrationSelection {
+  private final ItemId itemId;
+  private char type;
+  private String selection;
+  private String resource;
+  private String contentType;
+  private boolean latest;
 
-	public IntegrationSelection(ItemId itemId)
-	{
-		this.itemId = itemId;
-	}
+  public IntegrationSelection(ItemId itemId) {
+    this.itemId = itemId;
+  }
 
-	public ItemId getItemId()
-	{
-		return itemId;
-	}
+  public ItemId getItemId() {
+    return itemId;
+  }
 
-	public char getType()
-	{
-		return type;
-	}
+  public char getType() {
+    return type;
+  }
 
-	public void setType(char type)
-	{
-		this.type = type;
-	}
+  public void setType(char type) {
+    this.type = type;
+  }
 
-	public String getSelection()
-	{
-		return selection;
-	}
+  public String getSelection() {
+    return selection;
+  }
 
-	public void setSelection(String selection)
-	{
-		this.selection = selection;
-	}
+  public void setSelection(String selection) {
+    this.selection = selection;
+  }
 
-	public String getResource()
-	{
-		return resource;
-	}
+  public String getResource() {
+    return resource;
+  }
 
-	public void setResource(String resource)
-	{
-		this.resource = resource;
-	}
+  public void setResource(String resource) {
+    this.resource = resource;
+  }
 
-	public String getContentType()
-	{
-		return contentType;
-	}
+  public String getContentType() {
+    return contentType;
+  }
 
-	public void setContentType(String contentType)
-	{
-		this.contentType = contentType;
-	}
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
-	public boolean isLatest()
-	{
-		return latest;
-	}
+  public boolean isLatest() {
+    return latest;
+  }
 
-	public void setLatest(boolean latest)
-	{
-		this.latest = latest;
-	}
+  public void setLatest(boolean latest) {
+    this.latest = latest;
+  }
 }

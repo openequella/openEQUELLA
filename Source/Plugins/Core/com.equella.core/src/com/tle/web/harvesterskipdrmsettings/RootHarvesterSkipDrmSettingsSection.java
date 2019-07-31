@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.harvesterskipdrmsettings;
-
-import javax.inject.Inject;
 
 import com.tle.common.settings.standard.HarvesterSkipDrmSettings;
 import com.tle.core.settings.service.ConfigurationService;
@@ -38,91 +38,78 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
+/** @author larry */
 public class RootHarvesterSkipDrmSettingsSection
-	extends
-		OneColumnLayout<RootHarvesterSkipDrmSettingsSection.HarvesterSkipDrmSettingsModel>
-{
-	@PlugKey("harvesterskipdrmsettings.title")
-	private static Label TITLE_LABEL;
+    extends OneColumnLayout<RootHarvesterSkipDrmSettingsSection.HarvesterSkipDrmSettingsModel> {
+  @PlugKey("harvesterskipdrmsettings.title")
+  private static Label TITLE_LABEL;
 
-	@Component(name = "sd", parameter = "sdk", supported = true)
-	protected Checkbox allowSkip;
+  @Component(name = "sd", parameter = "sdk", supported = true)
+  protected Checkbox allowSkip;
 
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-	@PlugKey("harvesterskipdrmsettings.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
+  @PlugKey("harvesterskipdrmsettings.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private HarvesterSkipDrmSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ReceiptService receiptService;
-	@EventFactory
-	private EventGenerator events;
+  @Inject private ConfigurationService configService;
+  @Inject private HarvesterSkipDrmSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private ReceiptService receiptService;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
-		allowSkip.setChecked(info, configService.getProperties(new HarvesterSkipDrmSettings()).isHarvestingSkipDrm());
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "harvesterskipdrmsettings.ftl", this));
-	}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
+    allowSkip.setChecked(
+        info, configService.getProperties(new HarvesterSkipDrmSettings()).isHarvestingSkipDrm());
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "harvesterskipdrmsettings.ftl", this));
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		HarvesterSkipDrmSettings settings = configService.getProperties(new HarvesterSkipDrmSettings());
-		boolean oldAllowSkip = settings.isHarvestingSkipDrm();
-		boolean newAllowSkip = allowSkip.isChecked(info);
-		if( oldAllowSkip != newAllowSkip )
-		{
-			settings.setHarvestingSkipDrm(newAllowSkip);
-			configService.setProperties(settings);
-			receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-		}
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    HarvesterSkipDrmSettings settings = configService.getProperties(new HarvesterSkipDrmSettings());
+    boolean oldAllowSkip = settings.isHarvestingSkipDrm();
+    boolean newAllowSkip = allowSkip.isChecked(info);
+    if (oldAllowSkip != newAllowSkip) {
+      settings.setHarvestingSkipDrm(newAllowSkip);
+      configService.setProperties(settings);
+      receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+    }
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-	public Checkbox getAllowSkip()
-	{
-		return allowSkip;
-	}
+  public Checkbox getAllowSkip() {
+    return allowSkip;
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-	@Override
-	public Class<HarvesterSkipDrmSettingsModel> getModelClass()
-	{
-		return HarvesterSkipDrmSettingsModel.class;
-	}
+  @Override
+  public Class<HarvesterSkipDrmSettingsModel> getModelClass() {
+    return HarvesterSkipDrmSettingsModel.class;
+  }
 
-	public static class HarvesterSkipDrmSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		// Empty class, if we haven't thought of anything we need to carry from
-		// section to template.
-	}
+  public static class HarvesterSkipDrmSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    // Empty class, if we haven't thought of anything we need to carry from
+    // section to template.
+  }
 }

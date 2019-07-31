@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,32 +22,27 @@ import com.tle.web.sections.registry.TreeRegistry;
 
 /**
  * Interface for extending the registration process.
- * <p>
- * During the {@link SectionTree} registration process, the
- * {@link RegistrationController} is responsible for calling
- * {@link #registered(String, SectionTree, Section)} on all the
- * {@code RegistrationHandler} objects before the {@code SectionTree} eventually
- * calls {@link Section#registered(String, SectionTree)} on the {@link Section}
- * itself.
- * <p>
- * After the tree has finished registering completely,
- * {@link #treeFinished(SectionTree)} is called by the
- * {@code RegistrationController} for each {@code RegistrationHandler}.
- * <p>
- * {@code RegistrationHandler}'s generally use introspection to look for
- * annotations in either the <code>Model</code> ({@link Section#getModelClass()}
- * ) or the {@code Section} itself.
- * <p>
- * The default implementor of the {@code RegistrationController},
- * {@link TreeRegistry} has a number of default {@code RegistrationHandler}'s
- * which deal with topics such as Bookmarking, Rendering and Tree Lookup.
- * 
+ *
+ * <p>During the {@link SectionTree} registration process, the {@link RegistrationController} is
+ * responsible for calling {@link #registered(String, SectionTree, Section)} on all the {@code
+ * RegistrationHandler} objects before the {@code SectionTree} eventually calls {@link
+ * Section#registered(String, SectionTree)} on the {@link Section} itself.
+ *
+ * <p>After the tree has finished registering completely, {@link #treeFinished(SectionTree)} is
+ * called by the {@code RegistrationController} for each {@code RegistrationHandler}.
+ *
+ * <p>{@code RegistrationHandler}'s generally use introspection to look for annotations in either
+ * the <code>Model</code> ({@link Section#getModelClass()} ) or the {@code Section} itself.
+ *
+ * <p>The default implementor of the {@code RegistrationController}, {@link TreeRegistry} has a
+ * number of default {@code RegistrationHandler}'s which deal with topics such as Bookmarking,
+ * Rendering and Tree Lookup.
+ *
  * @see TreeRegistry
  * @author jmaginnis
  */
-public interface RegistrationHandler
-{
-	void registered(String id, SectionTree tree, Section section);
+public interface RegistrationHandler {
+  void registered(String id, SectionTree tree, Section section);
 
-	void treeFinished(SectionTree tree);
+  void treeFinished(SectionTree tree);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,61 +31,54 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CommentDialog extends AbstractTaskActionDialog
-{
-	@PlugKey("command.taskaction.comment")
-	private static Label LABEL_COMMENT_BUTTON;
-	@PlugKey("command.comment.title")
-	private static Label LABEL_COMMENTING_TITLE;
-	@PlugKey("comments.entermsg")
-	private static Label LABEL_ENTERMSG;
+public class CommentDialog extends AbstractTaskActionDialog {
+  @PlugKey("command.taskaction.comment")
+  private static Label LABEL_COMMENT_BUTTON;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "commentDialog";
-	}
+  @PlugKey("command.comment.title")
+  private static Label LABEL_COMMENTING_TITLE;
 
-	@Override
-	public ButtonRenderer.ButtonType getButtonType()
-	{
-		return ButtonRenderer.ButtonType.SAVE;
-	}
+  @PlugKey("comments.entermsg")
+  private static Label LABEL_ENTERMSG;
 
-	@Override
-	public Label getButtonLabel()
-	{
-		return LABEL_COMMENT_BUTTON;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "commentDialog";
+  }
 
-	@Override
-	public CurrentTaskSection.CommentType getActionType()
-	{
-		return CurrentTaskSection.CommentType.COMMENT;
-	}
+  @Override
+  public ButtonRenderer.ButtonType getButtonType() {
+    return ButtonRenderer.ButtonType.SAVE;
+  }
 
-	@Nullable
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_COMMENTING_TITLE;
-	}
+  @Override
+  public Label getButtonLabel() {
+    return LABEL_COMMENT_BUTTON;
+  }
 
-	@Override
-	public Label getPostCommentHeading()
-	{
-		return LABEL_ENTERMSG;
-	}
+  @Override
+  public CurrentTaskSection.CommentType getActionType() {
+    return CurrentTaskSection.CommentType.COMMENT;
+  }
 
-	@Override
-	public Label validate(SectionInfo info)
-	{
-		return validateHasMessage(info);
-	}
+  @Nullable
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_COMMENTING_TITLE;
+  }
 
-	@Override
-	public boolean isMandatoryMessage()
-	{
-		return true;
-	}
+  @Override
+  public Label getPostCommentHeading() {
+    return LABEL_ENTERMSG;
+  }
+
+  @Override
+  public Label validate(SectionInfo info) {
+    return validateHasMessage(info);
+  }
+
+  @Override
+  public boolean isMandatoryMessage() {
+    return true;
+  }
 }

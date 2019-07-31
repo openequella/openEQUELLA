@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,28 @@
 
 package com.tle.core.mimetypes.remote;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.NameValue;
 import com.tle.common.mimetypes.RemoteMimetypeService;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
-public class RemoteMimetype implements RemoteMimetypeService
-{
-	@Inject
-	private MimeTypeService mime;
+public class RemoteMimetype implements RemoteMimetypeService {
+  @Inject private MimeTypeService mime;
 
-	@Override
-	public List<NameValue> listAll()
-	{
-		List<MimeEntry> mimeEntries = mime.searchByMimeType("", 0, -1).getResults();
+  @Override
+  public List<NameValue> listAll() {
+    List<MimeEntry> mimeEntries = mime.searchByMimeType("", 0, -1).getResults();
 
-		List<NameValue> mimeTypes = new ArrayList<NameValue>();
+    List<NameValue> mimeTypes = new ArrayList<NameValue>();
 
-		for( MimeEntry entry : mimeEntries )
-		{
-			mimeTypes.add(new NameValue(entry.getType(), entry.getType()));
-		}
-		return mimeTypes;
-	}
-
+    for (MimeEntry entry : mimeEntries) {
+      mimeTypes.add(new NameValue(entry.getType(), entry.getType()));
+    }
+    return mimeTypes;
+  }
 }

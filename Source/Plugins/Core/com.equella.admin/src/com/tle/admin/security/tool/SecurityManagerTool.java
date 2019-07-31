@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,26 @@
 
 package com.tle.admin.security.tool;
 
-import java.util.Set;
-
 import com.tle.admin.AdminTool;
 import com.tle.admin.security.tree.SecurityTree;
+import java.util.Set;
 
-public class SecurityManagerTool extends AdminTool
-{
-	private boolean allowEditing;
-	private final String editPrivilege;
+public class SecurityManagerTool extends AdminTool {
+  private boolean allowEditing;
+  private final String editPrivilege;
 
-	public SecurityManagerTool()
-	{
-		editPrivilege = "EDIT_SECURITY_TREE"; //$NON-NLS-1$
-	}
+  public SecurityManagerTool() {
+    editPrivilege = "EDIT_SECURITY_TREE"; // $NON-NLS-1$
+  }
 
-	@Override
-	public void setup(Set<String> grantedPrivilges, String name)
-	{
-		allowEditing = grantedPrivilges.contains(editPrivilege);
-	}
+  @Override
+  public void setup(Set<String> grantedPrivilges, String name) {
+    allowEditing = grantedPrivilges.contains(editPrivilege);
+  }
 
-	@Override
-	public void toolSelected()
-	{
-		SecurityTree tree = new SecurityTree(clientService, driver.getPluginService(), allowEditing);
-		tree.showDialog(parentFrame);
-	}
+  @Override
+  public void toolSelected() {
+    SecurityTree tree = new SecurityTree(clientService, driver.getPluginService(), allowEditing);
+    tree.showDialog(parentFrame);
+  }
 }

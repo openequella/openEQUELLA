@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,14 @@
 
 package com.tle.web.sections.registry;
 
+import com.tle.core.guice.Bind;
+import com.tle.web.sections.MutableSectionInfo;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.SectionsController;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -27,76 +33,64 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.core.guice.Bind;
-import com.tle.web.sections.MutableSectionInfo;
-import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionTree;
-import com.tle.web.sections.SectionsController;
-
 @Bind
-public class SectionsServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public class SectionsServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private TreeRegistry treeRegistry;
-	@Inject
-	private SectionsController sectionsController;
+  @Inject private TreeRegistry treeRegistry;
+  @Inject private SectionsController sectionsController;
 
-	private String treepath;
+  private String treepath;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException
-	{
-		super.init(config);
-		treepath = config.getInitParameter("treepath"); //$NON-NLS-1$
-	}
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    treepath = config.getInitParameter("treepath"); // $NON-NLS-1$
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		MutableSectionInfo sectionInfo = null;
-		String servletPath = getServletPath(request);
-		SectionTree tree = lookupTree(request);
-		if( tree == null )
-		{
-			response.sendError(404);
-		}
-		else
-		{
-			sectionInfo = sectionsController.createInfo(tree, servletPath, request, response, null,
-				request.getParameterMap(), defaultAttributes());
-			if( !sectionInfo.isRendered() )
-			{
-				sectionsController.execute(sectionInfo);
-			}
-		}
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    MutableSectionInfo sectionInfo = null;
+    String servletPath = getServletPath(request);
+    SectionTree tree = lookupTree(request);
+    if (tree == null) {
+      response.sendError(404);
+    } else {
+      sectionInfo =
+          sectionsController.createInfo(
+              tree,
+              servletPath,
+              request,
+              response,
+              null,
+              request.getParameterMap(),
+              defaultAttributes());
+      if (!sectionInfo.isRendered()) {
+        sectionsController.execute(sectionInfo);
+      }
+    }
+  }
 
-	protected String getServletPath(HttpServletRequest request)
-	{
-		return request.getServletPath();
-	}
+  protected String getServletPath(HttpServletRequest request) {
+    return request.getServletPath();
+  }
 
-	protected SectionTree lookupTree(HttpServletRequest request)
-	{
-		String path = treepath;
-		String servletPath = request.getServletPath();
-		if( request.getParameter("$RESET$") != null ) //$NON-NLS-1$
-		{
-			treeRegistry.clearAll();
-		}
-		if( path == null )
-		{
-			path = servletPath;
-		}
-		return treeRegistry.getTreeForPath(path, true);
-	}
+  protected SectionTree lookupTree(HttpServletRequest request) {
+    String path = treepath;
+    String servletPath = request.getServletPath();
+    if (request.getParameter("$RESET$") != null) // $NON-NLS-1$
+    {
+      treeRegistry.clearAll();
+    }
+    if (path == null) {
+      path = servletPath;
+    }
+    return treeRegistry.getTreeForPath(path, true);
+  }
 
-	protected Map<Object, Object> defaultAttributes()
-	{
-		return Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true);
-	}
+  protected Map<Object, Object> defaultAttributes() {
+    return Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true);
+  }
 }

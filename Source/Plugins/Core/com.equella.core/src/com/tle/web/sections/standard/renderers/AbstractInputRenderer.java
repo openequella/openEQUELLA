@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,38 @@
 
 package com.tle.web.sections.standard.renderers;
 
+import com.tle.web.sections.SectionWriter;
+import com.tle.web.sections.standard.model.HtmlComponentState;
 import java.io.IOException;
 import java.util.Map;
 
-import com.tle.web.sections.SectionWriter;
-import com.tle.web.sections.standard.model.HtmlComponentState;
-
 @SuppressWarnings("nls")
-public abstract class AbstractInputRenderer extends AbstractElementRenderer
-{
-	private final String type;
+public abstract class AbstractInputRenderer extends AbstractElementRenderer {
+  private final String type;
 
-	public AbstractInputRenderer(HtmlComponentState state, String type)
-	{
-		super(state);
-		this.type = type;
-	}
+  public AbstractInputRenderer(HtmlComponentState state, String type) {
+    super(state);
+    this.type = type;
+  }
 
-	protected String getType()
-	{
-		return type;
-	}
+  protected String getType() {
+    return type;
+  }
 
-	@Override
-	protected final String getTag()
-	{
-		return "input";
-	}
+  @Override
+  protected final String getTag() {
+    return "input";
+  }
 
-	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-	{
-		attrs.put("type", getType());
-		super.prepareFirstAttributes(writer, attrs);
-	}
+  @Override
+  protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+      throws IOException {
+    attrs.put("type", getType());
+    super.prepareFirstAttributes(writer, attrs);
+  }
 
-	@Override
-	protected void writeEnd(SectionWriter writer) throws IOException
-	{
-		// just dont
-	}
-
+  @Override
+  protected void writeEnd(SectionWriter writer) throws IOException {
+    // just dont
+  }
 }

@@ -1,0 +1,81 @@
+<com.tle.beans.item.Item>
+  <id>119280</id>
+  <uuid>d137e0e5-39e1-09a0-603c-32dac6d2f4df</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:00:57.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:19:56.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.913</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>6976</id>
+      <url>http://boorah/dev/vanilla/item/image/3fd913c2-a404-e4fa-d936-83dd5ef95920/1/notsubse.gif</url>
+      <urlHash>aa355f6eefb704ac885422b0f8cfafca</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.net.ConnectException: http://boorah/dev/vanilla/item/image/3fd913c2-a404-e4fa-d936-83dd5ef95920/1/notsubse.gif</message>
+      <tries>9</tries>
+      <lastChecked class="sql-timestamp">2016-05-30 23:10:52.053</lastChecked>
+      <lastIndexed class="sql-timestamp">2016-05-30 23:10:52.053</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>119119</id>
+    <start class="sql-timestamp">2011-08-30 12:05:07.55</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>213592</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213390</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Not Subset Of</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>213586</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213384</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>The symbol for excluding from a subset.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

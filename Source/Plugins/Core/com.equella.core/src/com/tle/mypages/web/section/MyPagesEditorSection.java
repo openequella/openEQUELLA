@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.mypages.web.section;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.common.ScriptContext;
 import com.google.common.collect.Lists;
@@ -49,133 +45,117 @@ import com.tle.web.sections.render.SingleResultCollector;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.WizardStateInterface;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public class MyPagesEditorSection extends AbstractMyPagesSection<MyPagesEditorModel>
-	implements
-		HtmlRenderer,
-		SavePageEventListener
-{
-	@TreeLookup
-	private MyPagesContributeSection contribSection;
-	private HtmlEditorInterface htmlEditor;
+    implements HtmlRenderer, SavePageEventListener {
+  @TreeLookup private MyPagesContributeSection contribSection;
+  private HtmlEditorInterface htmlEditor;
 
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@Inject
-	private MyPagesService myPagesService;
+  @Inject private HtmlEditorService htmlEditorService;
+  @Inject private MyPagesService myPagesService;
 
-	@Component
-	private TextField pageNameField;
+  @Component private TextField pageNameField;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		MyPagesContributeModel model = contribSection.getModel(context);
-		String pageUuid = model.getPageUuid();
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    MyPagesContributeModel model = contribSection.getModel(context);
+    String pageUuid = model.getPageUuid();
 
-		MyPagesEditorModel edModel = getModel(context);
-		if( !Check.isEmpty(pageUuid) )
-		{
-			HtmlAttachment page = myPagesService.getPageAttachment(context, model.getSession(), model.getItemId(),
-				model.getPageUuid());
-			String description;
-			if( page != null )
-			{
-				description = page.getDescription();
-			}
-			else
-			{
-				description = CurrentLocale.get(RESOURCES.key("pagetitle.untitled"));
-			}
-			pageNameField.setValue(context, description);
+    MyPagesEditorModel edModel = getModel(context);
+    if (!Check.isEmpty(pageUuid)) {
+      HtmlAttachment page =
+          myPagesService.getPageAttachment(
+              context, model.getSession(), model.getItemId(), model.getPageUuid());
+      String description;
+      if (page != null) {
+        description = page.getDescription();
+      } else {
+        description = CurrentLocale.get(RESOURCES.key("pagetitle.untitled"));
+      }
+      pageNameField.setValue(context, description);
 
-			Map<String, String> properties = new HashMap<String, String>();
+      Map<String, String> properties = new HashMap<String, String>();
 
-			if( model.isModal() )
-			{
-				// hack for being in a thickbox...
-				properties.put("thickbox", "true");
-			}
-			String sessionId = model.getSession();
-			WizardStateInterface state = myPagesService.getState(context, sessionId);
-			properties.put("sessionId", sessionId);
-			properties.put("pageId", model.getPageUuid());
-			properties.put("html",
-				page == null ? "" : myPagesService.getDraftHtml(state, context, page, state.getItemId()));
-			properties.put("rows", "10");
-			properties.put("width", "100%");
-			properties.put("height", "300px");
-			htmlEditor.setData(context, properties, new MyPagesScriptContextFactory(state));
+      if (model.isModal()) {
+        // hack for being in a thickbox...
+        properties.put("thickbox", "true");
+      }
+      String sessionId = model.getSession();
+      WizardStateInterface state = myPagesService.getState(context, sessionId);
+      properties.put("sessionId", sessionId);
+      properties.put("pageId", model.getPageUuid());
+      properties.put(
+          "html",
+          page == null ? "" : myPagesService.getDraftHtml(state, context, page, state.getItemId()));
+      properties.put("rows", "10");
+      properties.put("width", "100%");
+      properties.put("height", "300px");
+      htmlEditor.setData(context, properties, new MyPagesScriptContextFactory(state));
 
-			edModel.setEditorRenderable(renderSection(context, htmlEditor));
-			edModel.setShowEditor(true);
+      edModel.setEditorRenderable(renderSection(context, htmlEditor));
+      edModel.setShowEditor(true);
 
-			List<SectionId> childIds = Lists.newArrayList(context.getChildIds(this));
-			childIds.remove(htmlEditor);
-			edModel.setExtraRenderable((SectionRenderable) SectionUtils.renderSectionIds(context, childIds,
-				new SingleResultCollector()).getResult());
-		}
+      List<SectionId> childIds = Lists.newArrayList(context.getChildIds(this));
+      childIds.remove(htmlEditor);
+      edModel.setExtraRenderable(
+          (SectionRenderable)
+              SectionUtils.renderSectionIds(context, childIds, new SingleResultCollector())
+                  .getResult());
+    }
 
-		return viewFactory.createResult("mypageseditor.ftl", context);
-	}
+    return viewFactory.createResult("mypageseditor.ftl", context);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		htmlEditor = htmlEditorService.getEditor();
-		tree.registerSections(htmlEditor, id);
-	}
+    htmlEditor = htmlEditorService.getEditor();
+    tree.registerSections(htmlEditor, id);
+  }
 
-	@Override
-	public void doSavePageEvent(SectionInfo info, SavePageEvent event)
-	{
-		String pageTitle = pageNameField.getValue(info);
-		if( Check.isEmpty(pageTitle) )
-		{
-			pageTitle = CurrentLocale.get(RESOURCES.key("description.untitled"));
-		}
-		event.getPage().setDescription(pageTitle);
-		String sessionId = event.getSessionId();
-		String stagingHtml = htmlEditor.getHtml(info);
-		myPagesService.setHtml(info, sessionId, event.getPage(), stagingHtml);
-	}
+  @Override
+  public void doSavePageEvent(SectionInfo info, SavePageEvent event) {
+    String pageTitle = pageNameField.getValue(info);
+    if (Check.isEmpty(pageTitle)) {
+      pageTitle = CurrentLocale.get(RESOURCES.key("description.untitled"));
+    }
+    event.getPage().setDescription(pageTitle);
+    String sessionId = event.getSessionId();
+    String stagingHtml = htmlEditor.getHtml(info);
+    myPagesService.setHtml(info, sessionId, event.getPage(), stagingHtml);
+  }
 
-	@Override
-	public Class<MyPagesEditorModel> getModelClass()
-	{
-		return MyPagesEditorModel.class;
-	}
+  @Override
+  public Class<MyPagesEditorModel> getModelClass() {
+    return MyPagesEditorModel.class;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return MyPagesConstants.SECTION_EDITOR;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return MyPagesConstants.SECTION_EDITOR;
+  }
 
-	public TextField getPageNameField()
-	{
-		return pageNameField;
-	}
+  public TextField getPageNameField() {
+    return pageNameField;
+  }
 
-	public class MyPagesScriptContextFactory implements ScriptContextFactory
-	{
-		private final WizardStateInterface state;
+  public class MyPagesScriptContextFactory implements ScriptContextFactory {
+    private final WizardStateInterface state;
 
-		protected MyPagesScriptContextFactory(WizardStateInterface state)
-		{
-			this.state = state;
-		}
+    protected MyPagesScriptContextFactory(WizardStateInterface state) {
+      this.state = state;
+    }
 
-		@Override
-		public ScriptContext createScriptContext()
-		{
-			return myPagesService.createScriptContext(state);
-		}
-	}
+    @Override
+    public ScriptContext createScriptContext() {
+      return myPagesService.createScriptContext(state);
+    }
+  }
 }

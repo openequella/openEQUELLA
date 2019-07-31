@@ -1,0 +1,38 @@
+<map>
+  <entry>
+    <string>security.applet.shared.secrets.0.secret</string>
+    <string>b9192f0f-e2bb-4012-a07a-1b29a237dd46</string>
+  </entry>
+  <entry>
+    <string>wrapper.user.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>scheduler.jobs.Daily Tasks</string>
+    <string>0 0 1 * * ?</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.enabled</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.id</string>
+    <string>APPLET</string>
+  </entry>
+  <entry>
+    <string>cache.enabled</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>cache.schedule.gap</string>
+    <string>0</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.expression</string>
+    <string>*</string>
+  </entry>
+  <entry>
+    <string>wrapper.group.enabled</string>
+    <string>true</string>
+  </entry>
+</map>

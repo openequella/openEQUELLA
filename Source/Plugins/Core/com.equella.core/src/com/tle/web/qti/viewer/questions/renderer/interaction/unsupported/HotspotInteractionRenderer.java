@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,20 +18,16 @@
 
 package com.tle.web.qti.viewer.questions.renderer.interaction.unsupported;
 
-import uk.ac.ed.ph.jqtiplus.node.item.interaction.HotspotInteraction;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.web.qti.viewer.QtiViewerContext;
+import uk.ac.ed.ph.jqtiplus.node.item.interaction.HotspotInteraction;
 
-/**
- * NOT SUPPORTED
- */
-public class HotspotInteractionRenderer extends GraphicInteractionRenderer
-{
-	@AssistedInject
-	public HotspotInteractionRenderer(@Assisted HotspotInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+/** NOT SUPPORTED */
+public class HotspotInteractionRenderer extends GraphicInteractionRenderer {
+  @AssistedInject
+  public HotspotInteractionRenderer(
+      @Assisted HotspotInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 }

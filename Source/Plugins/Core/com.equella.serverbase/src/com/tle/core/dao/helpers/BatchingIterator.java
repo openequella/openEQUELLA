@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,64 +18,53 @@
 
 package com.tle.core.dao.helpers;
 
+import com.google.common.base.Optional;
 import java.util.Iterator;
 
-import com.google.common.base.Optional;
-
 /**
- * Implements iterator and iterable over a possibly large set of results that
- * can be retrieved/generated in batches.
+ * Implements iterator and iterable over a possibly large set of results that can be
+ * retrieved/generated in batches.
  */
-public abstract class BatchingIterator<T> implements Iterator<T>, Iterable<T>
-{
-	private Iterator<T> batch;
-	private boolean finished = false;
-	private Optional<T> lastObj = Optional.absent();
+public abstract class BatchingIterator<T> implements Iterator<T>, Iterable<T> {
+  private Iterator<T> batch;
+  private boolean finished = false;
+  private Optional<T> lastObj = Optional.absent();
 
-	@Override
-	public Iterator<T> iterator()
-	{
-		return this;
-	}
+  @Override
+  public Iterator<T> iterator() {
+    return this;
+  }
 
-	@Override
-	public boolean hasNext()
-	{
-		if( finished )
-		{
-			return false;
-		}
+  @Override
+  public boolean hasNext() {
+    if (finished) {
+      return false;
+    }
 
-		if( batch != null && batch.hasNext() )
-		{
-			return batch.hasNext();
-		}
+    if (batch != null && batch.hasNext()) {
+      return batch.hasNext();
+    }
 
-		// Update state with a fresh batch and recurse
-		batch = getMore(lastObj);
-		finished = batch == null || !batch.hasNext();
-		return hasNext();
-	}
+    // Update state with a fresh batch and recurse
+    batch = getMore(lastObj);
+    finished = batch == null || !batch.hasNext();
+    return hasNext();
+  }
 
-	@Override
-	public T next()
-	{
-		T value = batch.next();
-		if( !batch.hasNext() )
-		{
-			lastObj = Optional.of(value);
-		}
-		return value;
-	}
+  @Override
+  public T next() {
+    T value = batch.next();
+    if (!batch.hasNext()) {
+      lastObj = Optional.of(value);
+    }
+    return value;
+  }
 
-	@Override
-	public void remove()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 
-	/**
-	 * @param obj this will be null for the first round.
-	 */
-	protected abstract Iterator<T> getMore(Optional<T> lastObjGivenToUser);
+  /** @param obj this will be null for the first round. */
+  protected abstract Iterator<T> getMore(Optional<T> lastObjGivenToUser);
 }

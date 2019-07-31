@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,50 +29,39 @@ import com.tle.web.sections.render.HtmlRenderer;
 
 @Bind
 public class BulkRemoveWorkflowSection
-	extends
-		AbstractPrototypeSection<BulkRemoveWorkflowSection.BulkRemoveWorkflowModel>
-	implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    extends AbstractPrototypeSection<BulkRemoveWorkflowSection.BulkRemoveWorkflowModel>
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		getModel(context).setShowExecuteButton(true);
-		return viewFactory.createResult("bulkremoveworkflow.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    getModel(context).setShowExecuteButton(true);
+    return viewFactory.createResult("bulkremoveworkflow.ftl", context);
+  }
 
-	@Override
-	public Class<BulkRemoveWorkflowModel> getModelClass()
-	{
-		return BulkRemoveWorkflowModel.class;
-	}
+  @Override
+  public Class<BulkRemoveWorkflowModel> getModelClass() {
+    return BulkRemoveWorkflowModel.class;
+  }
 
-	public static class BulkRemoveWorkflowModel
-	{
-		private String title;
-		@Bookmarked
-		private boolean showExecuteButton;
+  public static class BulkRemoveWorkflowModel {
+    private String title;
+    @Bookmarked private boolean showExecuteButton;
 
-		public boolean isShowExecuteButton()
-		{
-			return showExecuteButton;
-		}
+    public boolean isShowExecuteButton() {
+      return showExecuteButton;
+    }
 
-		public void setShowExecuteButton(boolean showExecuteButton)
-		{
-			this.showExecuteButton = showExecuteButton;
-		}
+    public void setShowExecuteButton(boolean showExecuteButton) {
+      this.showExecuteButton = showExecuteButton;
+    }
 
-		public String getTitle()
-		{
-			return title;
-		}
+    public String getTitle() {
+      return title;
+    }
 
-		public void setTitle(String title)
-		{
-			this.title = title;
-		}
-	}
+    public void setTitle(String title) {
+      this.title = title;
+    }
+  }
 }

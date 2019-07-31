@@ -1,0 +1,16 @@
+/signon.do
+
+/canvassignon.do
+/canvascipreturn.do
+/brightspace/navbar.do
+/brightspace/quicklink.do
+/brightspace/coursebuilder.do
+/brightspace/insertstuff.do
+
+/access/selection/checkout.do
+/access/selection/home.do
+/access/course/cloudsearch.do
+/access/course/searching.do
+/access/skinny/favourites.do
+/access/skinny/hierarchy.do
+/access/skinny/searching.do

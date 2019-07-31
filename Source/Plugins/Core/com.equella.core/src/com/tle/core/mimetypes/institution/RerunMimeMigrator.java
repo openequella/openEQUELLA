@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.core.mimetypes.institution;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
@@ -28,33 +25,32 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.xml.service.XmlService;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * See http://dev.equella.com/issues/5963
- * 
+ *
  * @author Aaron
  */
 @Bind
 @Singleton
-public class RerunMimeMigrator extends MimeMigrator
-{
-	@Inject
-	private XmlService xmlService;
+public class RerunMimeMigrator extends MimeMigrator {
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		List<MimeEntry> defaultTypes = getDefaultMimeEntries();
-		SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    List<MimeEntry> defaultTypes = getDefaultMimeEntries();
+    SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
 
-		for( MimeEntry mimeEntry : defaultTypes )
-		{
-			// Don't overwrite any existing one
-			String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
-			if( !fileExists(mimeFolder, filename) )
-			{
-				xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
-			}
-		}
-	}
+    for (MimeEntry mimeEntry : defaultTypes) {
+      // Don't overwrite any existing one
+      String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
+      if (!fileExists(mimeFolder, filename)) {
+        xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
+      }
+    }
+  }
 }

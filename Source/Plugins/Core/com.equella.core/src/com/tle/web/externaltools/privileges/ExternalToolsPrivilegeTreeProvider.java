@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.externaltools.privileges;
 
-import javax.inject.Inject;
-
 import com.tle.common.externaltools.entity.ExternalTool;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
@@ -25,24 +25,27 @@ import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.guice.Bind;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
+import javax.inject.Inject;
 
 @Bind
-public class ExternalToolsPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<ExternalTool>
-{
-	private static PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(ExternalToolsPrivilegeTreeProvider.class);
+public class ExternalToolsPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<ExternalTool> {
+  private static PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(ExternalToolsPrivilegeTreeProvider.class);
 
-	@SuppressWarnings("nls")
-	@Inject
-	protected ExternalToolsPrivilegeTreeProvider(ExternalToolsService service)
-	{
-		super(service, Node.ALL_EXTERNAL_TOOLS, resources.key("securitytree.alltools"), Node.EXTERNAL_TOOL,
-			resources.key("securitytree.targetalltools"));
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  protected ExternalToolsPrivilegeTreeProvider(ExternalToolsService service) {
+    super(
+        service,
+        Node.ALL_EXTERNAL_TOOLS,
+        resources.key("securitytree.alltools"),
+        Node.EXTERNAL_TOOL,
+        resources.key("securitytree.targetalltools"));
+  }
 
-	@Override
-	protected ExternalTool createEntity()
-	{
-		return new ExternalTool();
-	}
+  @Override
+  protected ExternalTool createEntity() {
+    return new ExternalTool();
+  }
 }

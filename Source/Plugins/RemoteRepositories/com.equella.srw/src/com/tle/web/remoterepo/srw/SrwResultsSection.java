@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.web.remoterepo.srw;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.core.remoterepo.srw.service.SrwService;
 import com.tle.core.remoterepo.srw.service.impl.SrwSearchResult;
@@ -30,47 +28,43 @@ import com.tle.web.remoterepo.section.RemoteRepoResultsSection;
 import com.tle.web.remoterepo.section.RemoteRepoResultsSection.RemoteRepoResultsModel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 public class SrwResultsSection
-	extends
-		RemoteRepoResultsSection<SrwSearchEvent, SrwSearchResult, RemoteRepoResultsModel>
-{
-	@Inject
-	private SrwService srwService;
-	@Inject
-	private SrwListEntryFactory srwFac;
+    extends RemoteRepoResultsSection<SrwSearchEvent, SrwSearchResult, RemoteRepoResultsModel> {
+  @Inject private SrwService srwService;
+  @Inject private SrwListEntryFactory srwFac;
 
-	/**
-	 * @see com.tle.web.search.base.AbstractSearchResultsSection#getErrorMessage(com.tle.web.sections.SectionInfo,
-	 *      com.tle.web.sections.equella.search.event.AbstractSearchEvent,
-	 *      com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent)
-	 */
-	@Override
-	protected List<Label> getErrorMessageLabels(SectionInfo info, SrwSearchEvent searchEvent,
-		RemoteRepoSearchResultEvent<SrwSearchResult> resultsEvent)
-	{
-		// TODO Auto-generated method stub
-		return super.getErrorMessageLabels(info, searchEvent, resultsEvent);
-	}
+  /**
+   * @see
+   *     com.tle.web.search.base.AbstractSearchResultsSection#getErrorMessage(com.tle.web.sections.SectionInfo,
+   *     com.tle.web.sections.equella.search.event.AbstractSearchEvent,
+   *     com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent)
+   */
+  @Override
+  protected List<Label> getErrorMessageLabels(
+      SectionInfo info,
+      SrwSearchEvent searchEvent,
+      RemoteRepoSearchResultEvent<SrwSearchResult> resultsEvent) {
+    // TODO Auto-generated method stub
+    return super.getErrorMessageLabels(info, searchEvent, resultsEvent);
+  }
 
-	@Override
-	protected SrwSearchResults doSearch(SectionInfo info, SrwSearchEvent search)
-	{
-		return srwService.search(search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
-	}
+  @Override
+  protected SrwSearchResults doSearch(SectionInfo info, SrwSearchEvent search) {
+    return srwService.search(
+        search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
+  }
 
-	@Override
-	protected RemoteRepoListEntryFactory<SrwSearchResult> getEntryFactory()
-	{
-		return srwFac;
-	}
+  @Override
+  protected RemoteRepoListEntryFactory<SrwSearchResult> getEntryFactory() {
+    return srwFac;
+  }
 
-	@Override
-	protected SrwSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch)
-	{
-		return new SrwSearchEvent(getRootRemoteRepoSection(), fedSearch);
-	}
+  @Override
+  protected SrwSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch) {
+    return new SrwSearchEvent(getRootRemoteRepoSection(), fedSearch);
+  }
 }

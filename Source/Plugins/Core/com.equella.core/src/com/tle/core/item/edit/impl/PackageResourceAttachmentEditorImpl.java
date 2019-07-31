@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,38 +27,30 @@ import com.tle.core.item.edit.attachment.PackageResourceAttachmentEditor;
 
 @Bind
 public class PackageResourceAttachmentEditorImpl extends AbstractAttachmentEditor
-	implements
-		PackageResourceAttachmentEditor
-{
+    implements PackageResourceAttachmentEditor {
 
-	private IMSResourceAttachment resAttachment;
+  private IMSResourceAttachment resAttachment;
 
-	@Override
-	public void editFilename(String filename)
-	{
-		if( hasBeenEdited(resAttachment.getUrl(), filename) )
-		{
-			resAttachment.setUrl(filename);
-		}
-	}
+  @Override
+  public void editFilename(String filename) {
+    if (hasBeenEdited(resAttachment.getUrl(), filename)) {
+      resAttachment.setUrl(filename);
+    }
+  }
 
-	@Override
-	public void setAttachment(Attachment attachment)
-	{
-		super.setAttachment(attachment);
-		this.resAttachment = (IMSResourceAttachment) attachment;
-	}
+  @Override
+  public void setAttachment(Attachment attachment) {
+    super.setAttachment(attachment);
+    this.resAttachment = (IMSResourceAttachment) attachment;
+  }
 
-	@Override
-	public boolean canEdit(Attachment attachment)
-	{
-		return attachment.getAttachmentType() == AttachmentType.IMSRES;
-	}
+  @Override
+  public boolean canEdit(Attachment attachment) {
+    return attachment.getAttachmentType() == AttachmentType.IMSRES;
+  }
 
-	@Override
-	public Attachment newAttachment()
-	{
-		return new IMSResourceAttachment();
-	}
-
+  @Override
+  public Attachment newAttachment() {
+    return new IMSResourceAttachment();
+  }
 }

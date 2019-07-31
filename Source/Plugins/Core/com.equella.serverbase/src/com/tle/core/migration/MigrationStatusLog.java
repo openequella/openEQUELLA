@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,71 +20,61 @@ package com.tle.core.migration;
 
 import java.io.Serializable;
 
-public class MigrationStatusLog implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+public class MigrationStatusLog implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	public enum LogType
-	{
-		MESSAGE, SQL, WARNING
-	}
+  public enum LogType {
+    MESSAGE,
+    SQL,
+    WARNING
+  }
 
-	private final LogType type;
-	private boolean failed;
-	private String key;
-	private Object[] values;
+  private final LogType type;
+  private boolean failed;
+  private String key;
+  private Object[] values;
 
-	public MigrationStatusLog(String sql, boolean failed)
-	{
-		this.type = LogType.SQL;
-		this.failed = failed;
-		this.values = new String[]{sql};
-	}
+  public MigrationStatusLog(String sql, boolean failed) {
+    this.type = LogType.SQL;
+    this.failed = failed;
+    this.values = new String[] {sql};
+  }
 
-	public MigrationStatusLog(String key, Object... values)
-	{
-		this(LogType.MESSAGE, key, values);
-	}
+  public MigrationStatusLog(String key, Object... values) {
+    this(LogType.MESSAGE, key, values);
+  }
 
-	public MigrationStatusLog(LogType type, String key, Object... values)
-	{
-		this.key = key;
-		this.values = values;
-		this.type = type;
-	}
+  public MigrationStatusLog(LogType type, String key, Object... values) {
+    this.key = key;
+    this.values = values;
+    this.type = type;
+  }
 
-	public LogType getType()
-	{
-		return type;
-	}
+  public LogType getType() {
+    return type;
+  }
 
-	public String getKey()
-	{
-		return key;
-	}
+  public String getKey() {
+    return key;
+  }
 
-	public void setKey(String key)
-	{
-		this.key = key;
-	}
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-	public Object[] getValues()
-	{
-		return values;
-	}
+  public Object[] getValues() {
+    return values;
+  }
 
-	public void setValues(Object[] values)
-	{
-		this.values = values;
-	}
+  public void setValues(Object[] values) {
+    this.values = values;
+  }
 
-	public boolean isFailed()
-	{
-		return failed;
-	}
+  public boolean isFailed() {
+    return failed;
+  }
 
-	public void setFailed(boolean failed)
-	{
-		this.failed = failed;
-	}
+  public void setFailed(boolean failed) {
+    this.failed = failed;
+  }
 }

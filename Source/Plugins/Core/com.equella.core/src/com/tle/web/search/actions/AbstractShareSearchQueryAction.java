@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,58 +32,48 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Link;
 
 @SuppressWarnings("nls")
-public abstract class AbstractShareSearchQueryAction extends AbstractPrototypeSection<ShareSearchQueryModel>
-	implements
-		HtmlRenderer
-{
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+public abstract class AbstractShareSearchQueryAction
+    extends AbstractPrototypeSection<ShareSearchQueryModel> implements HtmlRenderer {
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		Link button = getDialog().getOpener();
-		button.setLabel(getLabel());
-		button.setStyleClass("share-search");
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-	}
+    Link button = getDialog().getOpener();
+    button.setLabel(getLabel());
+    button.setStyleClass("share-search");
+    button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( getModel(context).isDisabled() )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, getDialog().getOpener());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (getModel(context).isDisabled()) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, getDialog().getOpener());
+  }
 
-	public void disable(SectionInfo info)
-	{
-		getModel(info).setDisabled(true);
-	}
+  public void disable(SectionInfo info) {
+    getModel(info).setDisabled(true);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new ShareSearchQueryModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new ShareSearchQueryModel();
+  }
 
-	public static class ShareSearchQueryModel
-	{
-		private boolean disabled;
+  public static class ShareSearchQueryModel {
+    private boolean disabled;
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
-	}
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
+  }
 
-	public abstract Label getLabel();
+  public abstract Label getLabel();
 
-	public abstract EquellaDialog<?> getDialog();
+  public abstract EquellaDialog<?> getDialog();
 }

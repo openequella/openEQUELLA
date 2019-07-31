@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,51 +27,49 @@ import com.tle.beans.item.attachments.IAttachment;
 
 /**
  * Based on an item ID and an extension type, load the relevant item.
- * <p>
- * E.g.
- * 
+ *
+ * <p>E.g.
+ *
  * <pre>
  * <code>
  * CloudItem cloudItem = itemResolver.getItem(itemId, "cloud");
  * Item standardItem = itemResolver.getItem(itemId, null);
  * </code>
  * </pre>
- * 
+ *
  * @author Aaron
  */
 @NonNullByDefault
-public interface ItemResolver
-{
-	@Nullable
-	<I extends IItem<?>> I getItem(ItemKey itemKey, @Nullable String extensionType);
+public interface ItemResolver {
+  @Nullable
+  <I extends IItem<?>> I getItem(ItemKey itemKey, @Nullable String extensionType);
 
-	PropBagEx getXml(IItem<?> item, @Nullable String extensionType);
+  PropBagEx getXml(IItem<?> item, @Nullable String extensionType);
 
-	IAttachment getAttachmentForUuid(ItemKey itemKey, String attachmentUuid, @Nullable String extensionType);
+  IAttachment getAttachmentForUuid(
+      ItemKey itemKey, String attachmentUuid, @Nullable String extensionType);
 
-	int getLiveItemVersion(String uuid, @Nullable String extensionType);
+  int getLiveItemVersion(String uuid, @Nullable String extensionType);
 
-	/**
-	 * 
-	 * @param item
-	 * @param attachment
-	 * @return true if the attachment is restricted AND the user doesn't have permissions to view it.
-	 */
-	boolean checkRestrictedAttachment(IItem<?> item, IAttachment attachment, @Nullable String extensionType);
+  /**
+   * @param item
+   * @param attachment
+   * @return true if the attachment is restricted AND the user doesn't have permissions to view it.
+   */
+  boolean checkRestrictedAttachment(
+      IItem<?> item, IAttachment attachment, @Nullable String extensionType);
 
-	/**
-	 * 
-	 * @param item
-	 * @param extensionType
-	 * @return true if the user can view any restricted attachment on this item
-	 */
-	boolean canViewRestrictedAttachments(IItem<?> item, @Nullable String extensionType);
+  /**
+   * @param item
+   * @param extensionType
+   * @return true if the user can view any restricted attachment on this item
+   */
+  boolean canViewRestrictedAttachments(IItem<?> item, @Nullable String extensionType);
 
-	/**
-	 * 
-	 * @param item
-	 * @param attachment
-	 * @return true if the user can mark any attachment as restricted on the item. 
-	 */
-	boolean canRestrictAttachments(IItem<?> item, @Nullable String extensionType);
+  /**
+   * @param item
+   * @param attachment
+   * @return true if the user can mark any attachment as restricted on the item.
+   */
+  boolean canRestrictAttachments(IItem<?> item, @Nullable String extensionType);
 }

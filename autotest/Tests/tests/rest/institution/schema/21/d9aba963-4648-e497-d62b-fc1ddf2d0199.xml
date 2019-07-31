@@ -1,0 +1,57 @@
+<com.tle.beans.entity.Schema>
+  <id>116583</id>
+  <uuid>d9aba963-4648-e497-d62b-fc1ddf2d0199</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-09-18 14:30:17.953</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 15:50:08.67</dateCreated>
+  <name>
+    <id>116584</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116585</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Basic Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>identity.xslt</filename>
+      <type>OAI_DC</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </expTransforms>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>z3950modsdemo.xslt</filename>
+      <type>Z3950_MODS</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>ednademo.xslt</filename>
+      <type>EDNA</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>lorndemo.xslt</filename>
+      <type>LORN</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>merlotdemo.xslt</filename>
+      <type>MERLOT</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>srwdcdemo.xslt</filename>
+      <type>SRW_DC</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;files type=&quot;text&quot;/&gt;&lt;rights&gt;&lt;offer&gt;&lt;party&gt;&lt;context&gt;&lt;name field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/context&gt;&lt;/party&gt;&lt;/offer&gt;&lt;/rights&gt;&lt;mod_date type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

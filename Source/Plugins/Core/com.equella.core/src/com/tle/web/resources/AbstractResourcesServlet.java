@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,61 +18,58 @@
 
 package com.tle.web.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.java.plugin.util.IoUtil;
-
 import com.tle.common.PathUtils;
 import com.tle.core.plugins.PluginService;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
 import com.tle.web.stream.URLContentStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.java.plugin.util.IoUtil;
 
 @SuppressWarnings("nls")
-public abstract class AbstractResourcesServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractResourcesServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PluginService pluginService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  protected boolean isCalculateETag = false;
 
-	protected void service(HttpServletRequest request, HttpServletResponse response, String resourcePath,
-		String mimeType) throws IOException
-	{
-		final String filename = PathUtils.getFilenameFromFilepath(resourcePath);
+  @Inject private PluginService pluginService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-		if( resourcePath.startsWith("/") )
-		{
-			resourcePath = resourcePath.substring(1);
-		}
+  protected void service(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      String resourcePath,
+      String mimeType)
+      throws IOException {
+    final String filename = PathUtils.getFilenameFromFilepath(resourcePath);
 
-		final URL res = new URL(pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()),
-			resourcePath);
-		final File file = IoUtil.url2file(res);
+    if (resourcePath.startsWith("/")) {
+      resourcePath = resourcePath.substring(1);
+    }
 
-		ContentStream stream;
-		if( file != null )
-		{
-			stream = new FileContentStream(file, filename, mimeType);
-		}
-		else
-		{
-			stream = new URLContentStream(res, filename, mimeType);
-		}
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+    final URL res =
+        new URL(
+            pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()),
+            resourcePath);
+    final File file = IoUtil.url2file(res);
 
-	public abstract String getRootPath();
+    ContentStream stream;
+    if (file != null) {
+      stream = new FileContentStream(file, filename, mimeType);
+    } else {
+      stream = new URLContentStream(res, filename, mimeType);
+    }
+    contentStreamWriter.outputStream(request, response, stream, isCalculateETag);
+  }
 
-	public abstract String getPluginId(HttpServletRequest request);
+  public abstract String getRootPath();
+
+  public abstract String getPluginId(HttpServletRequest request);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -35,58 +37,51 @@ import com.tle.web.template.section.MenuSection;
 import com.tle.web.template.section.ServerMessageSection;
 import com.tle.web.template.section.TopBarSection;
 
-/**
- * This is specific to this plugin, don't use elsewhere
- */
+/** This is specific to this plugin, don't use elsewhere */
 @SuppressWarnings("nls")
-public class SectionsEquellaModule extends SectionsModule
-{
+public class SectionsEquellaModule extends SectionsModule {
 
-	private NodeProvider templateTree()
-	{
-		NodeProvider node = node(RenderTemplate.class).placeHolder("ROOT_TEMPLATE_ID");
-		node.child(ServerMessageSection.class);
-		node.child(TopBarSection.class);
-		node.child(HelpAndScreenOptionsSection.class);
-		node.child(MenuSection.class);
-		node.child(FooterSection.class);
-		return node;
-	}
+  private NodeProvider templateTree() {
+    NodeProvider node = node(RenderTemplate.class).placeHolder("ROOT_TEMPLATE_ID");
+    node.child(ServerMessageSection.class);
+    node.child(TopBarSection.class);
+    node.child(HelpAndScreenOptionsSection.class);
+    node.child(MenuSection.class);
+    node.child(FooterSection.class);
+    return node;
+  }
 
-	@Override
-	protected void configure()
-	{
-		bind(PluginResourceHandler.class).toInstance(new PluginResourceHandler());
-		bind(Object.class).annotatedWith(Names.named("$TEMPLATE$")).toProvider(templateTree());
-		bind(SectionTree.class).annotatedWith(Names.named("modalTree")).toProvider(
-			tree(node(RootModalSessionSection.class).innerChild(ModalErrorSection.class)));
-		bind(Object.class).annotatedWith(Names.named("com.tle.web.sections.equella.FormRenderer"))
-			.to(FormRenderer.class).in(Scopes.SINGLETON);
-		bind(FreemarkerFactory.class).to(ExtendedFreemarkerFactory.class).asEagerSingleton();
-		install(new PluginModule());
-	}
+  @Override
+  protected void configure() {
+    bind(PluginResourceHandler.class).toInstance(new PluginResourceHandler());
+    bind(Object.class).annotatedWith(Names.named("$TEMPLATE$")).toProvider(templateTree());
+    bind(SectionTree.class)
+        .annotatedWith(Names.named("modalTree"))
+        .toProvider(tree(node(RootModalSessionSection.class).innerChild(ModalErrorSection.class)));
+    bind(Object.class)
+        .annotatedWith(Names.named("com.tle.web.sections.equella.FormRenderer"))
+        .to(FormRenderer.class)
+        .in(Scopes.SINGLETON);
+    bind(FreemarkerFactory.class).to(ExtendedFreemarkerFactory.class).asEagerSingleton();
+    install(new PluginModule());
+  }
 
-	public static class FormRenderer extends FreemarkerComponentRendererFactory
-	{
-		public FormRenderer()
-		{
-			setTemplate("renderer/simpleform.ftl");
-		}
-	}
+  public static class FormRenderer extends FreemarkerComponentRendererFactory {
+    public FormRenderer() {
+      setTemplate("renderer/simpleform.ftl");
+    }
+  }
 
-	private static class PluginModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.web.sections.equella";
-		}
+  private static class PluginModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.web.sections.equella";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(LoginLink.class, "loginLink", "bean").orderByParameter("order");
-			bindTracker(HtmlStyleClass.class, "htmlStyleClass", "class");
-		}
-	}
+    @Override
+    protected void configure() {
+      bindTracker(LoginLink.class, "loginLink", "bean").orderByParameter("order");
+      bindTracker(HtmlStyleClass.class, "htmlStyleClass", "class");
+    }
+  }
 }

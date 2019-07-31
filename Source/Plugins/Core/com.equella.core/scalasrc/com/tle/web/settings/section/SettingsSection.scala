@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -33,7 +35,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
 
   override def newModel = _ => ()
 
-  val jsUrl = CoreUrls.url("reactjs/index.js")
+  lazy val (preRender, body) = RenderNewTemplate.parseEntryHtml("oldsettings.html")
 
   // "title", "settings.filter.all", "settings.categories"
 
@@ -41,12 +43,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
     val decs = Decorations.getDecorations(context)
     decs.setExcludeForm(true)
     decs.setTitle(new TextLabel(CoreStrings.text("title")))
-    val scriptTag = new TagState()
-    scriptTag.addTagProcessor(new ExtraAttributes("src", jsUrl))
-    scriptTag.addPreRenderable(RenderNewTemplate.bundleJs)
-    CombinedRenderer.combineResults(
-      new DivRenderer(new TagState("settingsPage")),
-      new TagRenderer("script", scriptTag)
-    )
+    context.getBody.addPreRenderable(preRender);
+    return new SimpleSectionResult(body.body().children());
   }
 }

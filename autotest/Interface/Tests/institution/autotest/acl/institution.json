@@ -1,0 +1,304 @@
+{
+  "entries": [
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "ADMINISTER_OAUTH_TOKENS",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "ARCHIVE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CLONE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "COMMENT_CREATE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "COMMENT_DELETE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "COMMENT_VIEW_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "COPYRIGHT_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CREATE_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CREATE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CREATE_OAUTH_CLIENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CREATE_SCHEMA",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "CREATE_WORKFLOW",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DELETE_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DELETE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DELETE_OAUTH_CLIENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DELETE_SCHEMA",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DELETE_WORKFLOW",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DISCOVER_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "DOWNLOAD_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_OAUTH_CLIENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_SCHEMA",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_SECURITY_TREE",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_SYSTEM_SETTINGS",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_USER_MANAGEMENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EDIT_WORKFLOW",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "EXPORT_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "MOVE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "PURGE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "NEWVERSION_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "RAW_VIEW_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "REASSIGN_OWNERSHIP_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "REDRAFT_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "REVIEW_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "SEARCH_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "SHARE_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "SUSPEND_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_ACTIVATION_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_HISTORY_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_ITEM",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_SECURITY_TREE",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "LIST_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "LIST_SCHEMA",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "LIST_OAUTH_CLIENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "LIST_WORKFLOW",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_SCHEMA",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_COLLECTION",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_OAUTH_CLIENT",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    },
+    {
+      "granted": true,
+      "override": false,
+      "privilege": "VIEW_WORKFLOW",
+      "who": "R:TLE_LOGGED_IN_USER_ROLE"
+    }
+  ]
+}

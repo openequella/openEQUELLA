@@ -1,0 +1,167 @@
+<com.tle.beans.item.Item>
+  <id>216520</id>
+  <uuid>cf1b781c-54ef-4edb-8519-9b317c18f4e9</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-05-06 11:10:16.466</dateModified>
+  <dateCreated class="sql-timestamp">2011-05-06 11:10:16.468</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.923</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.HtmlAttachment>
+      <id>216543</id>
+      <uuid>788a7388-3b90-4aa9-8182-c726cc80e81c</uuid>
+      <url></url>
+      <description>Link page</description>
+      <value1>127</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.HtmlAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216546</id>
+      <uuid>1ddaef6a-5672-4f1d-8591-122477c3c3e9</uuid>
+      <url></url>
+      <description>DRM Require Composition Acceptance - Package</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>p</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>d3a4eeae-d208-40cb-82d7-2c041128e9cc</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="02cb0388-9c32-4e50-9001-aa49216ddb84"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>216525</id>
+    <item reference="../.."/>
+    <drmPageUuid>ef81f1ed-1c38-4cc3-b340-332f479133a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>true</allowSummary>
+    <ownerMustAccept>true</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>false</studentsMustAcceptIfInCompilation>
+    <previewAllowed>true</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>false</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+        <name>Auto Test [AutoTest]</name>
+        <email>auto@test.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages/>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>216534</id>
+    <liveApprovalDate class="sql-timestamp">2011-05-06 11:10:16.466</liveApprovalDate>
+    <start class="sql-timestamp">2011-08-30 10:15:08.969</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216550</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-06 11:10:16.466</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216552</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-06 11:10:16.466</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216554</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-06 11:10:16.466</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216560</id>
+      <uuid>093f3a04-b399-427c-a1c2-ad6bae9c99cd</uuid>
+      <name>Link page</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216562</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.HtmlAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.HtmlAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216556</id>
+      <uuid>d1096487-f804-4ef2-bf65-95cf30cb4a1c</uuid>
+      <name>DRM Require Composition Acceptance - Package</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216558</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>1</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>216537</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216539</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Link to Summary of DRM Require Composition Acceptance - Package</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

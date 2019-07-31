@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,21 +23,17 @@ import com.tle.web.remoterepo.RemoteRepoSearch;
 import com.tle.web.remoterepo.RemoteRepoSection;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
-public abstract class AbstractRemoteRepoSearch implements RemoteRepoSearch
-{
-	@Override
-	public void forward(SectionInfo info, FederatedSearch search)
-	{
-		SectionInfo forward = info.createForward(getTreePath());
+/** @author aholland */
+public abstract class AbstractRemoteRepoSearch implements RemoteRepoSearch {
+  @Override
+  public void forward(SectionInfo info, FederatedSearch search) {
+    SectionInfo forward = info.createForward(getTreePath());
 
-		RemoteRepoSection results = forward.lookupSection(RemoteRepoSection.class);
-		results.setSearchUuid(forward, search.getUuid());
+    RemoteRepoSection results = forward.lookupSection(RemoteRepoSection.class);
+    results.setSearchUuid(forward, search.getUuid());
 
-		info.forwardAsBookmark(forward);
-	}
+    info.forwardAsBookmark(forward);
+  }
 
-	protected abstract String getTreePath();
+  protected abstract String getTreePath();
 }

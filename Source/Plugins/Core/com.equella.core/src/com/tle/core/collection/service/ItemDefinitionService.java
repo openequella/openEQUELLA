@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,49 +18,43 @@
 
 package com.tle.core.collection.service;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
+import java.util.Collection;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 public interface ItemDefinitionService
-	extends
-		AbstractEntityService<EntityEditingBean, ItemDefinition>,
-		RemoteItemDefinitionService
-{
-	List<ItemDefinition> enumerateForType(String type);
+    extends AbstractEntityService<EntityEditingBean, ItemDefinition>, RemoteItemDefinitionService {
+  List<ItemDefinition> enumerateForType(String type);
 
-	List<ItemDefinition> enumerateForWorkflow(long workflowID);
+  List<ItemDefinition> enumerateForWorkflow(long workflowID);
 
-	List<ItemDefinition> enumerateWithWorkflow();
+  List<ItemDefinition> enumerateWithWorkflow();
 
-	List<ItemDefinition> enumerateCreateable();
+  List<ItemDefinition> enumerateCreateable();
 
-	List<ItemDefinition> enumerateSearchable();
+  List<ItemDefinition> enumerateSearchable();
 
-	List<BaseEntityLabel> listAllForSchema(long schemaID);
+  List<BaseEntityLabel> listAllForSchema(long schemaID);
 
-	List<BaseEntityLabel> listSearchable();
+  List<BaseEntityLabel> listSearchable();
 
-	List<BaseEntityLabel> listCreateable();
+  List<BaseEntityLabel> listCreateable();
 
-	Collection<ItemDefinition> filterSearchable(Collection<ItemDefinition> collections);
+  Collection<ItemDefinition> filterSearchable(Collection<ItemDefinition> collections);
 
-	List<ItemDefinition> getMatchingSearchable(Collection<Long> itemdefs);
+  List<ItemDefinition> getMatchingSearchable(Collection<Long> itemdefs);
 
-	List<ItemDefinition> getMatchingSearchableUuid(Collection<String> itemdefUuids);
+  List<ItemDefinition> getMatchingSearchableUuid(Collection<String> itemdefUuids);
 
-	List<ItemDefinition> getMatchingCreatableUuid(Collection<String> itemdefs);
+  List<ItemDefinition> getMatchingCreatableUuid(Collection<String> itemdefs);
 
-	ItemDefinition getForItemCreate(String uuid);
+  ItemDefinition getForItemCreate(String uuid);
 
-	ItemDefinition getByItemIdUnsecure(ItemKey itemId);
+  ItemDefinition getByItemIdUnsecure(ItemKey itemId);
 }

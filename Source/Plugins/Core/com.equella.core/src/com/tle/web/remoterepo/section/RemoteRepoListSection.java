@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.remoterepo.section;
 
-import java.util.List;
-
 import com.tle.core.fedsearch.RemoteRepoSearchResult;
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -27,27 +27,22 @@ import com.tle.web.remoterepo.RemoteRepoListEntry;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
+import java.util.List;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 public class RemoteRepoListSection<R extends RemoteRepoSearchResult>
-	extends
-		AbstractListSection<RemoteRepoListEntry<R>, AbstractListSection.Model<RemoteRepoListEntry<R>>>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    extends AbstractListSection<
+        RemoteRepoListEntry<R>, AbstractListSection.Model<RemoteRepoListEntry<R>>> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		return viewFactory.createResult("fedsearch-list.ftl", this); //$NON-NLS-1$
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    return viewFactory.createResult("fedsearch-list.ftl", this); // $NON-NLS-1$
+  }
 
-	@Override
-	protected List<RemoteRepoListEntry<R>> initEntries(RenderContext context)
-	{
-		return getModel(context).getItems();
-	}
+  @Override
+  protected List<RemoteRepoListEntry<R>> initEntries(RenderContext context) {
+    return getModel(context).getItems();
+  }
 }

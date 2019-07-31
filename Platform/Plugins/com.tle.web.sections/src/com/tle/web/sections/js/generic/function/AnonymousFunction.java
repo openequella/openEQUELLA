@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,41 +29,34 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class AnonymousFunction extends AbstractFunctionDefinition implements JSAssignable
-{
-	public AnonymousFunction(JSStatements body, JSExpression... params)
-	{
-		this.body = body;
-		this.params = params;
-	}
+public class AnonymousFunction extends AbstractFunctionDefinition implements JSAssignable {
+  public AnonymousFunction(JSStatements body, JSExpression... params) {
+    this.body = body;
+    this.params = params;
+  }
 
-	public AnonymousFunction(JSCallable call, Object... params)
-	{
-		this(new FunctionCallStatement(call, params), new JSExpression[]{});
-	}
+  public AnonymousFunction(JSCallable call, Object... params) {
+    this(new FunctionCallStatement(call, params), new JSExpression[] {});
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return getDefinition(info);
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return getDefinition(info);
+  }
 
-	@Override
-	public int getNumberOfParams(@Nullable RenderContext context)
-	{
-		return params.length;
-	}
+  @Override
+  public int getNumberOfParams(@Nullable RenderContext context) {
+    return params.length;
+  }
 
-	@Nullable
-	@Override
-	protected String getFunctionName(@Nullable RenderContext context)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  protected String getFunctionName(@Nullable RenderContext context) {
+    return null;
+  }
 
-	@Override
-	public String toString()
-	{
-		return "function(){" + body + "}";
-	}
+  @Override
+  public String toString() {
+    return "function(){" + body + "}";
+  }
 }

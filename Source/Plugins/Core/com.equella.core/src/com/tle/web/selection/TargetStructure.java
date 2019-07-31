@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,36 @@
 
 package com.tle.web.selection;
 
-import java.util.Collections;
-import java.util.Map;
-
 import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class TargetStructure extends TargetFolder
-{
-	private Map<String, String> attributes = Maps.newHashMap();
-	private boolean noTargets;
+public class TargetStructure extends TargetFolder {
+  private Map<String, String> attributes = Maps.newHashMap();
+  private boolean noTargets;
 
-	public Map<String, String> getAttributes()
-	{
-		return Collections.unmodifiableMap(attributes);
-	}
+  public Map<String, String> getAttributes() {
+    return Collections.unmodifiableMap(attributes);
+  }
 
-	public void putAttribute(String key, String value)
-	{
-		attributes.put(key, value);
-	}
+  public void putAttribute(String key, String value) {
+    attributes.put(key, value);
+  }
 
-	@Nullable
-	public String getAttribute(String key)
-	{
-		return attributes.get(key);
-	}
+  @Nullable
+  public String getAttribute(String key) {
+    return attributes.get(key);
+  }
 
-	public boolean isNoTargets()
-	{
-		return noTargets;
-	}
+  public boolean isNoTargets() {
+    return noTargets;
+  }
 
-	public void setNoTargets(boolean noTargets)
-	{
-		this.noTargets = noTargets;
-	}
+  public void setNoTargets(boolean noTargets) {
+    this.noTargets = noTargets;
+  }
 }

@@ -12,7 +12,7 @@ import OEQ.Utils.UUID (newUUID)
 type ErrorResponse = {
   code :: Int, 
   error:: String, 
-  description :: Nullable String, 
+  error_description :: Nullable String, 
   id :: String
 }
 
@@ -21,8 +21,8 @@ decodeError v = do
   o <- decodeJson v 
   code <- o .? "code"
   error <- o .? "error"
-  description <- o .?? "error_description"
-  pure $ mkUniqueError code error description
+  error_description <- o .?? "error_description"
+  pure $ mkUniqueError code error error_description
 
 mkUniqueError :: Int -> String -> Maybe String-> ErrorResponse
-mkUniqueError code error desc = {code, error, description: toNullable desc, id: unsafePerformEffect newUUID}
+mkUniqueError code error desc = {code, error, error_description: toNullable desc, id: unsafePerformEffect newUUID}

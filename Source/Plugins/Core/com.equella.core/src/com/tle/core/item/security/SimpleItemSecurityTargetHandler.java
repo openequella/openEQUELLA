@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,59 +18,49 @@
 
 package com.tle.core.item.security;
 
-import java.util.Collection;
-import java.util.Set;
-
-import javax.inject.Singleton;
-
 import com.tle.common.Check;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.SecurityTargetHandler;
+import java.util.Collection;
+import java.util.Set;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class SimpleItemSecurityTargetHandler implements SecurityTargetHandler
-{
+public class SimpleItemSecurityTargetHandler implements SecurityTargetHandler {
 
-	@Override
-	public void gatherAllLabels(Set<String> labels, Object target)
-	{
-		SimpleItemSecurity itemSecurity = (SimpleItemSecurity) target;
-		long collectionId = itemSecurity.getCollectionId();
-		String status = itemSecurity.getStatus();
+  @Override
+  public void gatherAllLabels(Set<String> labels, Object target) {
+    SimpleItemSecurity itemSecurity = (SimpleItemSecurity) target;
+    long collectionId = itemSecurity.getCollectionId();
+    String status = itemSecurity.getStatus();
 
-		labels.add(SecurityConstants.TARGET_ITEM + ':' + itemSecurity.getItemId());
-		labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + status);
-		labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + collectionId + ':' + status);
-		labels.add(SecurityConstants.TARGET_BASEENTITY + ':' + collectionId);
+    labels.add(SecurityConstants.TARGET_ITEM + ':' + itemSecurity.getItemId());
+    labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + status);
+    labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + collectionId + ':' + status);
+    labels.add(SecurityConstants.TARGET_BASEENTITY + ':' + collectionId);
 
-		Collection<String> metadataTargets = itemSecurity.getMetadataTargets();
-		if( !Check.isEmpty(metadataTargets) )
-		{
-			for( String metaTarget : metadataTargets )
-			{
-				labels.add(SecurityConstants.TARGET_ITEM_METADATA + ':' + collectionId + ':' + metaTarget);
-			}
-		}
-	}
+    Collection<String> metadataTargets = itemSecurity.getMetadataTargets();
+    if (!Check.isEmpty(metadataTargets)) {
+      for (String metaTarget : metadataTargets) {
+        labels.add(SecurityConstants.TARGET_ITEM_METADATA + ':' + collectionId + ':' + metaTarget);
+      }
+    }
+  }
 
-	@Override
-	public String getPrimaryLabel(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public String getPrimaryLabel(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public Object transform(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public Object transform(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public boolean isOwner(Object target, String userId)
-	{
-		return ((SimpleItemSecurity) target).isOwner();
-	}
-
+  @Override
+  public boolean isOwner(Object target, String userId) {
+    return ((SimpleItemSecurity) target).isOwner();
+  }
 }

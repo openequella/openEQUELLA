@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,41 +29,34 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 
-public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition>
-{
-	public ItemDefinitionTool() throws Exception
-	{
-		super(ItemDefinition.class, RemoteItemDefinitionService.ENTITY_TYPE);
-	}
+public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition> {
+  public ItemDefinitionTool() throws Exception {
+    super(ItemDefinition.class, RemoteItemDefinitionService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client)
-	{
-		return client.getService(RemoteItemDefinitionService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client) {
+    return client.getService(RemoteItemDefinitionService.class);
+  }
 
-	@Override
-	protected BaseEntityEditor<ItemDefinition> createEditor(boolean readonly)
-	{
-		return new ItemEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<ItemDefinition> createEditor(boolean readonly) {
+    return new ItemEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.itemdefinitiontool.collection"); //$NON-NLS-1$
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.itemdefinitiontool.collection"); // $NON-NLS-1$
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "itemEditor"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getErrorPath() {
+    return "itemEditor"; //$NON-NLS-1$
+  }
 
-	@Override
-	public BaseEntityLabel add(EntityPack<ItemDefinition> entity, boolean lockAfterwards)
-	{
-		entity.getEntity().getSlow().setId(0);
-		return super.add(entity, lockAfterwards);
-	}
+  @Override
+  public BaseEntityLabel add(EntityPack<ItemDefinition> entity, boolean lockAfterwards) {
+    entity.getEntity().getSlow().setId(0);
+    return super.add(entity, lockAfterwards);
+  }
 }

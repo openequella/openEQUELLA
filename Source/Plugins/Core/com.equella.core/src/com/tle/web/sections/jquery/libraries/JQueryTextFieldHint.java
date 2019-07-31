@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.sections.jquery.libraries;
-
-import java.util.Map;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
@@ -33,70 +33,61 @@ import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.TagProcessor;
+import java.util.Map;
 
 @SuppressWarnings("nls")
-public class JQueryTextFieldHint implements TagProcessor, JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryTextFieldHint implements TagProcessor, JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable INCLUDE = new IncludeFile(
-		ResourcesService.getResourceHelper(JQueryTextFieldHint.class)
-			.url("jquerylib/jquery.hint.js")).hasMin();
+  public static final PreRenderable INCLUDE =
+      new IncludeFile(
+              ResourcesService.getResourceHelper(JQueryTextFieldHint.class)
+                  .url("jquerylib/jquery.hint.js"))
+          .hasMin();
 
-	public static final JSCallable HINT_FUNC = new ExternallyDefinedFunction("hint", INCLUDE);
+  public static final JSCallable HINT_FUNC = new ExternallyDefinedFunction("hint", INCLUDE);
 
-	private final Label hint;
-	private ElementId element;
+  private final Label hint;
+  private ElementId element;
 
-	/**
-	 * Do not use this constructor
-	 */
-	public JQueryTextFieldHint()
-	{
-		hint = null;
-		element = null;
-	}
+  /** Do not use this constructor */
+  public JQueryTextFieldHint() {
+    hint = null;
+    element = null;
+  }
 
-	public JQueryTextFieldHint(Label hint, ElementId element)
-	{
-		this.element = element;
-		this.hint = hint;
-	}
+  public JQueryTextFieldHint(Label hint, ElementId element) {
+    this.element = element;
+    this.hint = hint;
+  }
 
-	@Override
-	public void processAttributes(SectionWriter writer, Map<String, String> attrs)
-	{
-		attrs.put("title", hint.getText());
-	}
+  @Override
+  public void processAttributes(SectionWriter writer, Map<String, String> attrs) {
+    attrs.put("title", hint.getText());
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		if( element == null )
-		{
-			element = info.getBody();
-		}
-		if( !DebugSettings.isAutoTestMode() )
-		{
-			info.addReadyStatements(new JQueryStatement(element, new FunctionCallExpression(HINT_FUNC)));
-		}
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    if (element == null) {
+      element = info.getBody();
+    }
+    if (!DebugSettings.isAutoTestMode()) {
+      info.addReadyStatements(new JQueryStatement(element, new FunctionCallExpression(HINT_FUNC)));
+    }
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.textfieldhint.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.textfieldhint.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "textfieldhint";
-	}
+  @Override
+  public String getId() {
+    return "textfieldhint";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return this;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return this;
+  }
 }

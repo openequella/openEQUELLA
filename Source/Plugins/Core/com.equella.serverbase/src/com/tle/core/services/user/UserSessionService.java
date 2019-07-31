@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,53 +18,47 @@
 
 package com.tle.core.services.user;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @NonNullByDefault
-public interface UserSessionService
-{
-	@Nullable
-	<T> T getAttribute(String key);
+public interface UserSessionService {
+  @Nullable
+  <T> T getAttribute(String key);
 
-	/**
-	 * @param attribute WARNING: This object should be immutable!
-	 */
-	void setAttribute(String key, Object attribute);
+  /** @param attribute WARNING: This object should be immutable! */
+  void setAttribute(String key, Object attribute);
 
-	void removeAttribute(String key);
+  void removeAttribute(String key);
 
-	String createUniqueKey();
+  String createUniqueKey();
 
-	boolean isSessionPrevented();
+  boolean isSessionPrevented();
 
-	void preventSessionUse();
+  void preventSessionUse();
 
-	void reenableSessionUse();
+  void reenableSessionUse();
 
-	void bindRequest(HttpServletRequest request);
+  void bindRequest(HttpServletRequest request);
 
-	void unbind();
+  void unbind();
 
-	void nudgeSession();
+  void nudgeSession();
 
-	void forceSession();
+  void forceSession();
 
-	Iterable<UserSessionTimestamp> getInstitutionSessions();
+  Iterable<UserSessionTimestamp> getInstitutionSessions();
 
-	@Nullable
-	<T> T getAttributeFromSession(HttpSession session, Institution institution, String attribute);
+  @Nullable
+  <T> T getAttributeFromSession(HttpSession session, Institution institution, String attribute);
 
-	HttpServletRequest getAssociatedRequest();
+  HttpServletRequest getAssociatedRequest();
 
-	boolean isSessionAvailable();
+  boolean isSessionAvailable();
 
-	Object getSessionLock();
+  Object getSessionLock();
 }

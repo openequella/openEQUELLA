@@ -1,0 +1,35 @@
+<com.tle.common.customlinks.entity.CustomLink>
+  <id>35228</id>
+  <uuid>06d53d52-6fab-4548-a1c6-861d6c83b650</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2010-09-20 11:40:43.226</dateModified>
+  <dateCreated class="sql-timestamp">2010-09-20 11:40:43.226</dateCreated>
+  <name>
+    <id>35229</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35230</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Test Role Link</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>newWindow</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>fileName</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <url>http://www.google.com</url>
+  <order>0</order>
+</com.tle.common.customlinks.entity.CustomLink>

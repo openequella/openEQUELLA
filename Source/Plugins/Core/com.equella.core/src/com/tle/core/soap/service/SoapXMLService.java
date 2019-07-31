@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,24 +25,21 @@ import com.tle.beans.item.ItemPack;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 
-/**
- * @author aholland
- */
-public interface SoapXMLService
-{
-	PropBagEx convertCollectionToXML(final ItemDefinition collection);
+/** @author aholland */
+public interface SoapXMLService {
+  PropBagEx convertCollectionToXML(final ItemDefinition collection);
 
-	PropBagEx convertSchemaToXML(final Schema schema);
+  PropBagEx convertSchemaToXML(final Schema schema);
 
-	/**
-	 * @param pack
-	 * @param everything Include badUrls, history and moderation
-	 * @return
-	 * @throws Exception
-	 */
-	PropBagEx convertItemPackToXML(final ItemPack pack, boolean everything);
+  /**
+   * @param pack
+   * @param everything Include badUrls, history and moderation
+   * @return
+   * @throws Exception
+   */
+  PropBagEx convertItemPackToXML(final ItemPack pack, boolean everything);
 
-	PropBagEx convertUserToXML(final UserBean user);
+  PropBagEx convertUserToXML(final UserBean user);
 
-	PropBagEx convertGroupToXML(final TLEGroup group);
+  PropBagEx convertGroupToXML(final TLEGroup group);
 }

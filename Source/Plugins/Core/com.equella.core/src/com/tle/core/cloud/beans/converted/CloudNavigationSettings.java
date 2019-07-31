@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,33 +20,26 @@ package com.tle.core.cloud.beans.converted;
 
 import com.tle.beans.item.attachments.INavigationSettings;
 
-/**
- * @author Aaron
- */
-public class CloudNavigationSettings implements INavigationSettings
-{
-	private boolean showSplitOption;
-	private boolean manualNavigation;
+/** @author Aaron */
+public class CloudNavigationSettings implements INavigationSettings {
+  private boolean showSplitOption;
+  private boolean manualNavigation;
 
-	@Override
-	public boolean isShowSplitOption()
-	{
-		return showSplitOption;
-	}
+  @Override
+  public boolean isShowSplitOption() {
+    return showSplitOption;
+  }
 
-	public void setShowSplitOption(boolean showSplitOption)
-	{
-		this.showSplitOption = showSplitOption;
-	}
+  public void setShowSplitOption(boolean showSplitOption) {
+    this.showSplitOption = showSplitOption;
+  }
 
-	@Override
-	public boolean isManualNavigation()
-	{
-		return manualNavigation;
-	}
+  @Override
+  public boolean isManualNavigation() {
+    return manualNavigation;
+  }
 
-	public void setManualNavigation(boolean manualNavigation)
-	{
-		this.manualNavigation = manualNavigation;
-	}
+  public void setManualNavigation(boolean manualNavigation) {
+    this.manualNavigation = manualNavigation;
+  }
 }

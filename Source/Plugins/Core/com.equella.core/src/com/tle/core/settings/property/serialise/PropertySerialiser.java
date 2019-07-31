@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,97 +27,75 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class PropertySerialiser
-{
-	protected static final Map<Class<? extends Object>, List<Field>> FIELD_CACHE = new HashMap<Class<? extends Object>, List<Field>>();
+public abstract class PropertySerialiser {
+  protected static final Map<Class<? extends Object>, List<Field>> FIELD_CACHE =
+      new HashMap<Class<? extends Object>, List<Field>>();
 
-	public void save(Object object, Map<String, String> properties)
-	{
-		for( Field field : extractAllFields(object) )
-		{
-			field.setAccessible(true);
+  public void save(Object object, Map<String, String> properties) {
+    for (Field field : extractAllFields(object)) {
+      field.setAccessible(true);
 
-			try
-			{
-				save(object, field, properties);
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
-	}
+      try {
+        save(object, field, properties);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 
-	public void load(Object object, Map<String, String> properties)
-	{
-		for( Field field : extractAllFields(object) )
-		{
-			field.setAccessible(true);
+  public void load(Object object, Map<String, String> properties) {
+    for (Field field : extractAllFields(object)) {
+      field.setAccessible(true);
 
-			try
-			{
-				load(object, field, properties);
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
-	}
+      try {
+        load(object, field, properties);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 
-	public void query(Object object, Set<String> list)
-	{
-		for( Field field : extractAllFields(object) )
-		{
-			field.setAccessible(true);
+  public void query(Object object, Set<String> list) {
+    for (Field field : extractAllFields(object)) {
+      field.setAccessible(true);
 
-			try
-			{
-				query(object, field, list);
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
-	}
+      try {
+        query(object, field, list);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 
-	/**
-	 * Recursively gets all the fields from superclasses.
-	 */
-	protected List<Field> extractAllFields(Object object)
-	{
-		List<Field> fields = new ArrayList<Field>();
-		return extractAllFields(object.getClass(), fields);
-	}
+  /** Recursively gets all the fields from superclasses. */
+  protected List<Field> extractAllFields(Object object) {
+    List<Field> fields = new ArrayList<Field>();
+    return extractAllFields(object.getClass(), fields);
+  }
 
-	/**
-	 * Recursively gets all the fields from superclasses.
-	 */
-	protected List<Field> extractAllFields(Class<? extends Object> clazz, List<Field> fields)
-	{
-		if( FIELD_CACHE.containsKey(clazz) )
-		{
-			fields.addAll(FIELD_CACHE.get(clazz));
-		}
-		else
-		{
-			Field[] classFields = clazz.getDeclaredFields();
-			fields.addAll(Arrays.asList(classFields));
-			FIELD_CACHE.put(clazz, Arrays.asList(classFields));
-		}
+  /** Recursively gets all the fields from superclasses. */
+  protected List<Field> extractAllFields(Class<? extends Object> clazz, List<Field> fields) {
+    if (FIELD_CACHE.containsKey(clazz)) {
+      fields.addAll(FIELD_CACHE.get(clazz));
+    } else {
+      Field[] classFields = clazz.getDeclaredFields();
+      fields.addAll(Arrays.asList(classFields));
+      FIELD_CACHE.put(clazz, Arrays.asList(classFields));
+    }
 
-		Class<? extends Object> superClass = clazz.getSuperclass();
-		if( superClass != null )
-		{
-			extractAllFields(superClass, fields);
-		}
-		return fields;
-	}
+    Class<? extends Object> superClass = clazz.getSuperclass();
+    if (superClass != null) {
+      extractAllFields(superClass, fields);
+    }
+    return fields;
+  }
 
-	public abstract void load(Object object, Field field, Map<String, String> properties) throws Exception;
+  public abstract void load(Object object, Field field, Map<String, String> properties)
+      throws Exception;
 
-	public abstract void save(Object object, Field field, Map<String, String> properties) throws Exception;
+  public abstract void save(Object object, Field field, Map<String, String> properties)
+      throws Exception;
 
-	public abstract void query(Object object, Field field, Collection<String> queries) throws Exception;
+  public abstract void query(Object object, Field field, Collection<String> queries)
+      throws Exception;
 }

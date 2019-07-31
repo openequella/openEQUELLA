@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,58 +18,54 @@
 
 package com.tle.admin.collection.summarydisplay;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import com.tle.core.plugins.AbstractPluginService;
-import org.java.plugin.registry.Extension;
-
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
+import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import org.java.plugin.registry.Extension;
 
 @SuppressWarnings("nls")
-public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig>
-{
-	private final Map<String, String> defaultNames = new HashMap<String, String>();
+public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig> {
+  private final Map<String, String> defaultNames = new HashMap<String, String>();
 
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(NewDisplaySummarySectionDialog.class) + ".";
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(NewDisplaySummarySectionDialog.class) + ".";
 
-	protected static String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected static String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected static String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected static String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public NewDisplaySummarySectionDialog(final PluginService pluginService)
-	{
-		super(getString("summarysections.adddialog.instructions"), getString("summarysections.adddialog.title"));
+  public NewDisplaySummarySectionDialog(final PluginService pluginService) {
+    super(
+        getString("summarysections.adddialog.instructions"),
+        getString("summarysections.adddialog.title"));
 
-		for( Extension ext : pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay") )
-		{
-			final String id = ext.getParameter("id").valueAsString();
-			addChoice(id, CurrentLocale.get(ext.getParameter("nameKey").valueAsString()));
-			defaultNames.put(id, ext.getParameter("defaultNameKey").valueAsString());
-		}
-	}
+    for (Extension ext :
+        pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay")) {
+      final String id = ext.getParameter("id").valueAsString();
+      addChoice(id, CurrentLocale.get(ext.getParameter("nameKey").valueAsString()));
+      defaultNames.put(id, ext.getParameter("defaultNameKey").valueAsString());
+    }
+  }
 
-	@Override
-	protected void addClicked(String key)
-	{
-		selection = new SummarySectionsConfig(key);
-		String title = CurrentLocale.get(defaultNames.get(key));
-		selection.setTitle(title);
-		LanguageBundle bundleTitle = new LanguageBundle();
-		LangUtils.setString(bundleTitle, CurrentLocale.getLocale(), title);
-		selection.setBundleTitle(bundleTitle);
-		selection.setUuid(UUID.randomUUID().toString());
-		dialog.dispose();
-	}
+  @Override
+  protected void addClicked(String key) {
+    selection = new SummarySectionsConfig(key);
+    String title = CurrentLocale.get(defaultNames.get(key));
+    selection.setTitle(title);
+    LanguageBundle bundleTitle = new LanguageBundle();
+    LangUtils.setString(bundleTitle, CurrentLocale.getLocale(), title);
+    selection.setBundleTitle(bundleTitle);
+    selection.setUuid(UUID.randomUUID().toString());
+    dialog.dispose();
+  }
 }

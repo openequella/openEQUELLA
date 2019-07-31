@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,24 @@
 
 package com.tle.core.remoterepo.parser.mods.impl;
 
+import com.tle.core.xml.XmlDocument;
 import org.w3c.dom.Node;
 
-import com.tle.core.xml.XmlDocument;
+/** @author aholland */
+public class ModsTitleInfo extends ModsPart {
+  ModsTitleInfo(XmlDocument xml, Node context) {
+    super(xml, xml.node("titleInfo", context));
+  }
 
-/**
- * @author aholland
- */
-public class ModsTitleInfo extends ModsPart
-{
-	ModsTitleInfo(XmlDocument xml, Node context)
-	{
-		super(xml, xml.node("titleInfo", context));
-	}
+  String getTitle() {
+    // TODO: could be multiple titles with different "type" attributes. If
+    // only we were using PropBagEX like the rest of the code in EQUELLA,
+    // then we could use the LangUtils method to capture a LanguageBundle
+    // rather than rewriting it again.
+    return xml.nodeValue("title", context);
+  }
 
-	String getTitle()
-	{
-		// TODO: could be multiple titles with different "type" attributes. If
-		// only we were using PropBagEX like the rest of the code in EQUELLA,
-		// then we could use the LangUtils method to capture a LanguageBundle
-		// rather than rewriting it again.
-		return xml.nodeValue("title", context);
-	}
-
-	String getSubTitle()
-	{
-		return xml.nodeValue("subTitle", context);
-	}
+  String getSubTitle() {
+    return xml.nodeValue("subTitle", context);
+  }
 }

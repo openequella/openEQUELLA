@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,24 @@
 
 package com.tle.web.sections.equella.utils;
 
-import java.util.Map;
-
 import com.dytech.edge.common.Constants;
-import com.tle.core.services.user.UserService;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.services.user.UserService;
 import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionInfo;
+import java.util.Map;
 
-public class TokenModifier implements BookmarkModifier
-{
-	private UserService userService;
+public class TokenModifier implements BookmarkModifier {
+  private UserService userService;
 
-	public TokenModifier(UserService userService)
-	{
-		this.userService = userService;
-	}
+  public TokenModifier(UserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
-	{
-		String token = userService.getGeneratedToken(Constants.APPLET_SECRET_ID, CurrentUser.getUsername());
-		bookmarkState.put("token", new String[]{token}); //$NON-NLS-1$
-	}
-
+  @Override
+  public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState) {
+    String token =
+        userService.getGeneratedToken(Constants.APPLET_SECRET_ID, CurrentUser.getUsername());
+    bookmarkState.put("token", new String[] {token}); // $NON-NLS-1$
+  }
 }

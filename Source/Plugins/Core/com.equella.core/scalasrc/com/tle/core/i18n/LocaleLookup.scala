@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,14 +24,16 @@ import com.tle.legacy.LegacyGuice
 
 object LocaleLookup {
 
-  def selectLocale : LocaleData = {
-    val ss = LegacyGuice.userSessionService
+  def selectLocale: LocaleData = {
+    val ss               = LegacyGuice.userSessionService
     val sessionAvailable = ss.isSessionAvailable
-    val sessionLocale = if (sessionAvailable) Option(ss.getAttribute[LocaleData](WebConstants.KEY_LOCALE)) else None
+    val sessionLocale =
+      if (sessionAvailable) Option(ss.getAttribute[LocaleData](WebConstants.KEY_LOCALE)) else None
     sessionLocale.getOrElse {
-      val request = ss.getAssociatedRequest
+      val request         = ss.getAssociatedRequest
       val preferredLocale = LegacyGuice.userPreferenceService.getPreferredLocale(request)
-      val locale = new LocaleData(preferredLocale, LegacyGuice.languageService.isRightToLeft(preferredLocale))
+      val locale =
+        new LocaleData(preferredLocale, LegacyGuice.languageService.isRightToLeft(preferredLocale))
       if (sessionAvailable) ss.setAttribute(WebConstants.KEY_LOCALE, locale)
       locale
     }

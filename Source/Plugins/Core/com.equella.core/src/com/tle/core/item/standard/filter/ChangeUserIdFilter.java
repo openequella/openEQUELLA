@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,38 +22,36 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.core.item.operations.WorkflowOperation;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SuppressWarnings("nls")
 public final class ChangeUserIdFilter extends AbstractUserFilter // NOSONAR
 {
-	private String toUserId;
+  private String toUserId;
 
-	@AssistedInject
-	private ChangeUserIdFilter(@Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId)
-	{
-		super(fromUserId);
-		this.toUserId = toUserId;
-	}
+  @AssistedInject
+  private ChangeUserIdFilter(
+      @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId) {
+    super(fromUserId);
+    this.toUserId = toUserId;
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return super.getWhereClause() + " OR :userId IN ELEMENTS(i.notifications) OR m.rejectedBy = :userId";
-	}
+  @Override
+  public String getWhereClause() {
+    return super.getWhereClause()
+        + " OR :userId IN ELEMENTS(i.notifications) OR m.rejectedBy = :userId";
+  }
 
-	@Override
-	public String getJoinClause()
-	{
-		return " LEFT JOIN i.moderation m";
-	}
+  @Override
+  public String getJoinClause() {
+    return " LEFT JOIN i.moderation m";
+  }
 
-	@Override
-	public WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{operationFactory.changeUserId(getUserID(), toUserId), operationFactory.save()};
-	}
+  @Override
+  public WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {
+      operationFactory.changeUserId(getUserID(), toUserId), operationFactory.save()
+    };
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,24 +29,29 @@ import javax.inject.{Inject, Singleton}
 import scala.collection.JavaConverters._
 @Bind
 @Singleton
-class RejectNotification extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class RejectNotification
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
 
   @Inject
   var userService: UserService = _
 
   type N = RejectedNote
-  case class RejectedNote(lul: LazyUserLookup)(val note: Notification, val item: Item) extends ItemNotification
-  {
-    def group = StdNotificationGroup("notification-rejected.ftl", note.getReason)
+  case class RejectedNote(lul: LazyUserLookup)(val note: Notification, val item: Item)
+      extends ItemNotification {
+    def group     = StdNotificationGroup("notification-rejected.ftl", note.getReason)
     val modStatus = item.getModeration
 
     val getRejectedMessage = new TextLabel(modStatus.getRejectedMessage)
-    val getRejectedBy = new UserLabel(modStatus.getRejectedBy, lul)
+    val getRejectedBy      = new UserLabel(modStatus.getRejectedBy, lul)
     val getRejectedTask =
       Option(item.getItemDefinition.getWorkflow)
         .flatMap(_.getNodes.asScala.find(_.getUuid == modStatus.getRejectedStep))
-        .map(n => new BundleLabel(n.getName, bundleCache)).getOrElse(NotificationLangStrings.unknownTask(modStatus.getRejectedStep))
+        .map(n => new BundleLabel(n.getName, bundleCache))
+        .getOrElse(NotificationLangStrings.unknownTask(modStatus.getRejectedStep))
   }
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, RejectedNote(new LazyUserLookup(userService)))
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createDataIgnore(notes, RejectedNote(new LazyUserLookup(userService)))
 }

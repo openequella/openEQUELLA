@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,43 +18,35 @@
 
 package com.tle.web.sections.render;
 
-import java.util.Map;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
+import java.util.Map;
 
-public class LabelTagProcessor implements TagProcessor
-{
-	private final String attribute;
-	private final Label label;
+public class LabelTagProcessor implements TagProcessor {
+  private final String attribute;
+  private final Label label;
 
-	public LabelTagProcessor(String attribute, Label label)
-	{
-		this.attribute = attribute;
-		this.label = label;
-	}
+  public LabelTagProcessor(String attribute, Label label) {
+    this.attribute = attribute;
+    this.label = label;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 
-	@Override
-	public void processAttributes(SectionWriter writer, Map<String, String> attrs)
-	{
-		Label l = getLabel();
-		attrs.put(getAttribute(), l.getText());
-	}
+  @Override
+  public void processAttributes(SectionWriter writer, Map<String, String> attrs) {
+    Label l = getLabel();
+    attrs.put(getAttribute(), l.getText());
+  }
 
-	public String getAttribute()
-	{
-		return attribute;
-	}
+  public String getAttribute() {
+    return attribute;
+  }
 
-	public Label getLabel()
-	{
-		return label;
-	}
-
+  public Label getLabel() {
+    return label;
+  }
 }

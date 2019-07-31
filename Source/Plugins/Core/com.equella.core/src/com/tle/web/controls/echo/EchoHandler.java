@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.controls.echo;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 import com.tle.beans.item.attachments.Attachment;
@@ -48,176 +46,162 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class EchoHandler extends BasicAbstractAttachmentHandler<EchoHandler.EchoHandlerModel>
-{
-	@PlugKey("echo.name")
-	private static Label NAME_LABEL;
-	@PlugKey("echo.description")
-	private static Label DESCRIPTION_LABEL;
+public class EchoHandler extends BasicAbstractAttachmentHandler<EchoHandler.EchoHandlerModel> {
+  @PlugKey("echo.name")
+  private static Label NAME_LABEL;
 
-	@PlugKey("echo.edit.title")
-	private static Label EDIT_TITLE_LABEL;
+  @PlugKey("echo.description")
+  private static Label DESCRIPTION_LABEL;
 
-	@PlugKey("details.error.noserver")
-	private static String NO_SERVER_ERROR;
+  @PlugKey("echo.edit.title")
+  private static Label EDIT_TITLE_LABEL;
 
-	@Inject
-	private EchoService echoService;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("details.error.noserver")
+  private static String NO_SERVER_ERROR;
 
-	@Component
-	@PlugKey("details.echocenter.link")
-	private Link echoCenter;
+  @Inject private EchoService echoService;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Component
-	@PlugKey("details.echoplayer.link")
-	private Link echoPlayer;
+  @Component
+  @PlugKey("details.echocenter.link")
+  private Link echoCenter;
 
-	@Component
-	@PlugKey("details.echovodcast.link")
-	private Link echoVodcast;
+  @Component
+  @PlugKey("details.echoplayer.link")
+  private Link echoPlayer;
 
-	@Component
-	@PlugKey("details.echopodcast.link")
-	private Link echoPodcast;
+  @Component
+  @PlugKey("details.echovodcast.link")
+  private Link echoVodcast;
 
-	@Override
-	protected List<Attachment> createAttachments(SectionInfo info)
-	{
-		return null;
-	}
+  @Component
+  @PlugKey("details.echopodcast.link")
+  private Link echoPodcast;
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		return null;
-	}
+  @Override
+  protected List<Attachment> createAttachments(SectionInfo info) {
+    return null;
+  }
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
-	}
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    return null;
+  }
 
-	@Override
-	public String getHandlerId()
-	{
-		return "echoHandler";
-	}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
+  }
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			CustomAttachment ca = (CustomAttachment) attachment;
-			return EchoUtils.ATTACHMENT_TYPE.equals(ca.getType());
-		}
-		return false;
-	}
+  @Override
+  public String getHandlerId() {
+    return "echoHandler";
+  }
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return EDIT_TITLE_LABEL;
-	}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      CustomAttachment ca = (CustomAttachment) attachment;
+      return EchoUtils.ATTACHMENT_TYPE.equals(ca.getType());
+    }
+    return false;
+  }
 
-	@Override
-	public Class<EchoHandlerModel> getModelClass()
-	{
-		return EchoHandlerModel.class;
-	}
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return EDIT_TITLE_LABEL;
+  }
 
-	public static class EchoHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel
-	{
-		private final List<Link> links = Lists.newArrayList();
+  @Override
+  public Class<EchoHandlerModel> getModelClass() {
+    return EchoHandlerModel.class;
+  }
 
-		public List<Link> getLinks()
-		{
-			return links;
-		}
+  public static class EchoHandlerModel
+      extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+    private final List<Link> links = Lists.newArrayList();
 
-		public void addLink(Link link)
-		{
-			this.links.add(link);
-		}
-	}
+    public List<Link> getLinks() {
+      return links;
+    }
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		Attachment attachment = getDetailsAttachment(context);
-		ViewableResource resource = attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(),
-			attachment);
-		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
+    public void addLink(Link link) {
+      this.links.add(link);
+    }
+  }
 
-		EchoAttachmentData ead = getEchoAttachmentData(attachment);
-		EchoData ed = ead.getEchoData();
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    Attachment attachment = getDetailsAttachment(context);
+    ViewableResource resource =
+        attachmentResourceService.getViewableResource(
+            context, itemInfo.getViewableItem(), attachment);
+    addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
-		makeLink(context, ed, echoCenter, ed.getEchoCenterUrl());
-		makeLink(context, ed, echoPlayer, ed.getEchoLinkUrl());
-		makeLink(context, ed, echoVodcast, ed.getVodcastUrl());
-		makeLink(context, ed, echoPodcast, ed.getPodcastUrl());
+    EchoAttachmentData ead = getEchoAttachmentData(attachment);
+    EchoData ed = ead.getEchoData();
 
-		return viewFactory.createResult("edit-echo.ftl", this);
-	}
+    makeLink(context, ed, echoCenter, ed.getEchoCenterUrl());
+    makeLink(context, ed, echoPlayer, ed.getEchoLinkUrl());
+    makeLink(context, ed, echoVodcast, ed.getVodcastUrl());
+    makeLink(context, ed, echoPodcast, ed.getPodcastUrl());
 
-	private void makeLink(SectionInfo info, EchoData ed, Link link, String url)
-	{
-		EchoHandlerModel model = getModel(info);
+    return viewFactory.createResult("edit-echo.ftl", this);
+  }
 
-		if( !Check.isEmpty(url) )
-		{
-			HtmlLinkState state = link.getState(info);
-			link.setBookmark(info,
-				new BookmarkAndModify(info, events.getNamedModifier("openLink", url, ed.getEchoSystemID())));
-			state.setTarget(HtmlLinkState.TARGET_BLANK);
-			model.addLink(link);
-		}
-	}
+  private void makeLink(SectionInfo info, EchoData ed, Link link, String url) {
+    EchoHandlerModel model = getModel(info);
 
-	@EventHandlerMethod
-	public void openLink(SectionInfo info, String url, String sysId)
-	{
-		String authenticatedUrl = echoService.getAuthenticatedUrl(sysId, url);
-		if( authenticatedUrl != null )
-		{
-			info.forwardToUrl(authenticatedUrl);
-		}
-		throw new RuntimeException(CurrentLocale.get(NO_SERVER_ERROR));
-	}
+    if (!Check.isEmpty(url)) {
+      HtmlLinkState state = link.getState(info);
+      link.setBookmark(
+          info,
+          new BookmarkAndModify(
+              info, events.getNamedModifier("openLink", url, ed.getEchoSystemID())));
+      state.setTarget(HtmlLinkState.TARGET_BLANK);
+      model.addLink(link);
+    }
+  }
 
-	private EchoAttachmentData getEchoAttachmentData(Attachment a)
-	{
-		EchoAttachmentData ed = null;
-		try
-		{
-			ed = echoService.getMapper().readValue((String) a.getData(EchoUtils.PROPERTY_ECHO_DATA),
-				EchoAttachmentData.class);
+  @EventHandlerMethod
+  public void openLink(SectionInfo info, String url, String sysId) {
+    String authenticatedUrl = echoService.getAuthenticatedUrl(sysId, url);
+    if (authenticatedUrl != null) {
+      info.forwardToUrl(authenticatedUrl);
+    }
+    throw new RuntimeException(CurrentLocale.get(NO_SERVER_ERROR));
+  }
 
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
+  private EchoAttachmentData getEchoAttachmentData(Attachment a) {
+    EchoAttachmentData ed = null;
+    try {
+      ed =
+          echoService
+              .getMapper()
+              .readValue(
+                  (String) a.getData(EchoUtils.PROPERTY_ECHO_DATA), EchoAttachmentData.class);
 
-		return ed;
-	}
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
 
-	@Override
-	public boolean show()
-	{
-		return false;
-	}
+    return ed;
+  }
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return EchoUtils.MIME_TYPE;
-	}
+  @Override
+  public boolean show() {
+    return false;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return EchoUtils.MIME_TYPE;
+  }
 }

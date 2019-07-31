@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,36 +20,30 @@ package com.tle.admin.controls.filemanager;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 
-public class FileManagerControl extends CustomControl
-{
-	private static final long serialVersionUID = -1129109182853406172L;
-	private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource"; //$NON-NLS-1$
-	private static final String ALLOW_WEBDAV = "allowWebDav"; //$NON-NLS-1$
+public class FileManagerControl extends CustomControl {
+  private static final long serialVersionUID = -1129109182853406172L;
+  private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource"; // $NON-NLS-1$
+  private static final String ALLOW_WEBDAV = "allowWebDav"; // $NON-NLS-1$
 
-	public FileManagerControl()
-	{
-		setClassType("filemanager"); //$NON-NLS-1$
-	}
+  public FileManagerControl() {
+    setClassType("filemanager"); // $NON-NLS-1$
+  }
 
-	public boolean isAutoMarkAsResource()
-	{
-		Boolean b = (Boolean) getAttributes().get(AUTO_MARK_AS_RESOURCE);
-		return b == null || b.booleanValue();
-	}
+  public boolean isAutoMarkAsResource() {
+    Boolean b = (Boolean) getAttributes().get(AUTO_MARK_AS_RESOURCE);
+    return b == null || b.booleanValue();
+  }
 
-	public void setAutoMarkAsResource(boolean b)
-	{
-		getAttributes().put(AUTO_MARK_AS_RESOURCE, b);
-	}
+  public void setAutoMarkAsResource(boolean b) {
+    getAttributes().put(AUTO_MARK_AS_RESOURCE, b);
+  }
 
-	public boolean isAllowWebDav()
-	{
-		Boolean b = (Boolean) getAttributes().get(ALLOW_WEBDAV);
-		return b == null || b.booleanValue();
-	}
+  public boolean isAllowWebDav() {
+    Boolean b = (Boolean) getAttributes().get(ALLOW_WEBDAV);
+    return b == null || b.booleanValue();
+  }
 
-	public void setAllowWebDav(boolean b)
-	{
-		getAttributes().put(ALLOW_WEBDAV, b);
-	}
+  public void setAllowWebDav(boolean b) {
+    getAttributes().put(ALLOW_WEBDAV, b);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,31 +20,25 @@ package com.tle.web.sections.js.generic.expression;
 
 import com.tle.web.sections.js.ServerSideValue;
 
-public class PrimitiveValueExpression extends ScriptExpression implements ServerSideValue
-{
-	public PrimitiveValueExpression(int expr)
-	{
-		super(Integer.toString(expr));
-	}
+public class PrimitiveValueExpression extends ScriptExpression implements ServerSideValue {
+  public PrimitiveValueExpression(int expr) {
+    super(Integer.toString(expr));
+  }
 
-	public PrimitiveValueExpression(long expr)
-	{
-		super(Long.toString(expr));
-	}
+  public PrimitiveValueExpression(long expr) {
+    super(Long.toString(expr));
+  }
 
-	public PrimitiveValueExpression(double expr)
-	{
-		super(Double.toString(expr));
-	}
+  public PrimitiveValueExpression(double expr) {
+    super(Double.toString(expr));
+  }
 
-	public PrimitiveValueExpression(boolean expr)
-	{
-		super(Boolean.toString(expr));
-	}
+  public PrimitiveValueExpression(boolean expr) {
+    super(Boolean.toString(expr));
+  }
 
-	@Override
-	public String getJavaString()
-	{
-		return expr;
-	}
+  @Override
+  public String getJavaString() {
+    return expr;
+  }
 }

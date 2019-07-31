@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,26 @@
 
 package com.tle.web.mimetypes.search.result;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.google.inject.Provider;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.js.JSHandler;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class MimeListEntryFactory
-{
-	@Inject
-	private Provider<MimeListEntry> entryProvider;
+public class MimeListEntryFactory {
+  @Inject private Provider<MimeListEntry> entryProvider;
 
-	public MimeListEntry createMimeListEntry(SectionInfo info, MimeEntry mime, JSHandler editHandler,
-		JSHandler deleteHandler)
-	{
-		MimeListEntry listItem = entryProvider.get();
-		listItem.setEditHandler(editHandler);
-		listItem.setDeleteHandler(deleteHandler);
-		listItem.setMime(mime);
-		return listItem;
-	}
+  public MimeListEntry createMimeListEntry(
+      SectionInfo info, MimeEntry mime, JSHandler editHandler, JSHandler deleteHandler) {
+    MimeListEntry listItem = entryProvider.get();
+    listItem.setEditHandler(editHandler);
+    listItem.setDeleteHandler(deleteHandler);
+    listItem.setMime(mime);
+    return listItem;
+  }
 }

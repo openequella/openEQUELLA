@@ -1,0 +1,26 @@
+{
+  "uuid": "bfad7ea0-983f-dd58-6b7d-ed5f346e24ab",
+  "name": "CAL Guide Portion Collection",
+  "nameStrings": {
+    "en": "CAL Guide Portion Collection"
+  },
+  "modifiedDate": "2014-05-12T15:43:41.924+10:00",
+  "createdDate": "2014-05-12T15:43:41.922+10:00",
+  "owner": {
+    "id": "system"
+  },
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
+  },
+  "schema": {
+    "uuid": "f028746b-0346-fe7e-a223-a2db1240140c"
+  },
+  "_export": {
+    "exportVersion": "1.0"
+  },
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/bfad7ea0-983f-dd58-6b7d-ed5f346e24ab"
+  }
+}

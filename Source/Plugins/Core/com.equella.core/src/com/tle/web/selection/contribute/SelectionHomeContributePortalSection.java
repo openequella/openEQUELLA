@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.selection.contribute;
-
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -47,158 +45,132 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.wizard.WebWizardService;
 import com.tle.web.wizard.WizardConstants;
+import java.util.Set;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class SelectionHomeContributePortalSection extends AbstractPrototypeSection<QuickUploadContributeModel>
-	implements
-		HtmlRenderer,
-		ViewableChildInterface
-{
-	@PlugKey("selcontribute.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("contributebutton")
-	private static Label LABEL_CONTRIBUTEBUTTON;
+public class SelectionHomeContributePortalSection
+    extends AbstractPrototypeSection<QuickUploadContributeModel>
+    implements HtmlRenderer, ViewableChildInterface {
+  @PlugKey("selcontribute.title")
+  private static Label LABEL_TITLE;
 
-	@Component
-	private Box box;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@Component
-	private Button contributeButton;
+  @PlugKey("contributebutton")
+  private static Label LABEL_CONTRIBUTEBUTTON;
 
-	@Inject
-	private QuickUploadService quickUploadService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private WebWizardService webWizardService;
-	@Inject
-	private QuickUploadSection qus;
+  @Component private Box box;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @Component private Button contributeButton;
 
-	@Nullable
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( canView(context) )
-		{
-			return viewFactory.createResult("quickuploadandcontribute.ftl", context);
-		}
+  @Inject private QuickUploadService quickUploadService;
+  @Inject private SelectionService selectionService;
+  @Inject private WebWizardService webWizardService;
+  @Inject private QuickUploadSection qus;
 
-		return null;
-	}
+  @Nullable
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (canView(context)) {
+      return viewFactory.createResult("quickuploadandcontribute.ftl", context);
+    }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		ItemDefinition itemdef = quickUploadService.getOneClickItemDef();
-		SelectionSession css = selectionService.getCurrentSession(info);
-		if( css == null )
-		{
-			return false;
-		}
+    return null;
+  }
 
-		boolean quick = false;
-		boolean cont = false;
-		if( itemdef != null
-			&& (css.isAllContributionCollections() || css.getContributionCollectionIds().contains(itemdef.getUuid())) )
-		{
-			quick = true;
-		}
-		if( css.isAllContributionCollections() || !css.getContributionCollectionIds().isEmpty() )
-		{
-			cont = true;
-		}
+  @Override
+  public boolean canView(SectionInfo info) {
+    ItemDefinition itemdef = quickUploadService.getOneClickItemDef();
+    SelectionSession css = selectionService.getCurrentSession(info);
+    if (css == null) {
+      return false;
+    }
 
-		QuickUploadContributeModel model = getModel(info);
-		model.setQuickUpload(quick);
-		model.setContribute(cont);
+    boolean quick = false;
+    boolean cont = false;
+    if (itemdef != null
+        && (css.isAllContributionCollections()
+            || css.getContributionCollectionIds().contains(itemdef.getUuid()))) {
+      quick = true;
+    }
+    if (css.isAllContributionCollections() || !css.getContributionCollectionIds().isEmpty()) {
+      cont = true;
+    }
 
-		return quick || cont;
-	}
+    QuickUploadContributeModel model = getModel(info);
+    model.setQuickUpload(quick);
+    model.setContribute(cont);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(qus, id);
+    return quick || cont;
+  }
 
-		box.setNoMinMaxOnHeader(true);
-		box.setLabel(LABEL_TITLE);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(qus, id);
 
-		contributeButton.setClickHandler(events.getNamedHandler("contribute"));
-		contributeButton.setLabel(LABEL_CONTRIBUTEBUTTON);
-	}
+    box.setNoMinMaxOnHeader(true);
+    box.setLabel(LABEL_TITLE);
 
-	@EventHandlerMethod
-	public void contribute(SectionContext context) throws Exception
-	{
-		SelectionSession session = selectionService.getCurrentSession(context);
-		final Set<String> collections = session.getContributionCollectionIds();
-		if( collections.size() == 1 )
-		{
-			webWizardService.forwardToNewItemWizard(context, collections.iterator().next(), null, null, false);
-		}
-		else
-		{
-			context.forward(context.createForward(WizardConstants.CONTRIBUTE_URL));
-		}
-	}
+    contributeButton.setClickHandler(events.getNamedHandler("contribute"));
+    contributeButton.setLabel(LABEL_CONTRIBUTEBUTTON);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "quc";
-	}
+  @EventHandlerMethod
+  public void contribute(SectionContext context) throws Exception {
+    SelectionSession session = selectionService.getCurrentSession(context);
+    final Set<String> collections = session.getContributionCollectionIds();
+    if (collections.size() == 1) {
+      webWizardService.forwardToNewItemWizard(
+          context, collections.iterator().next(), null, null, false);
+    } else {
+      context.forward(context.createForward(WizardConstants.CONTRIBUTE_URL));
+    }
+  }
 
-	@Override
-	public Class<QuickUploadContributeModel> getModelClass()
-	{
-		return QuickUploadContributeModel.class;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "quc";
+  }
 
-	public Box getBox()
-	{
-		return box;
-	}
+  @Override
+  public Class<QuickUploadContributeModel> getModelClass() {
+    return QuickUploadContributeModel.class;
+  }
 
-	public Button getContributeButton()
-	{
-		return contributeButton;
-	}
+  public Box getBox() {
+    return box;
+  }
 
-	@NonNullByDefault(false)
-	public static class ContentFields
-	{
-		private String title;
-		private String description;
+  public Button getContributeButton() {
+    return contributeButton;
+  }
 
-		public String getTitle()
-		{
-			return title;
-		}
+  @NonNullByDefault(false)
+  public static class ContentFields {
+    private String title;
+    private String description;
 
-		public void setTitle(String title)
-		{
-			this.title = title;
-		}
+    public String getTitle() {
+      return title;
+    }
 
-		public String getDescription()
-		{
-			return description;
-		}
+    public void setTitle(String title) {
+      this.title = title;
+    }
 
-		public void setDescription(String description)
-		{
-			this.description = description;
-		}
-	}
+    public String getDescription() {
+      return description;
+    }
 
-	public QuickUploadSection getQus()
-	{
-		return qus;
-	}
+    public void setDescription(String description) {
+      this.description = description;
+    }
+  }
+
+  public QuickUploadSection getQus() {
+    return qus;
+  }
 }

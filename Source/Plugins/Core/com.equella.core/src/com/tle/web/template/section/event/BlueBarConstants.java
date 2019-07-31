@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,50 +23,41 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public final class BlueBarConstants
-{
-	static
-	{
-		PluginResourceHandler.init(BlueBarConstants.class);
-	}
+public final class BlueBarConstants {
+  static {
+    PluginResourceHandler.init(BlueBarConstants.class);
+  }
 
-	public static final String BLUEBAR_PREFIX = "bluebar_";
+  public static final String BLUEBAR_PREFIX = "bluebar_";
 
-	@PlugKey("buttonbar.helpbutton")
-	private static Label LABEL_HELPBUTTON;
-	@PlugKey("buttonbar.screenoptionsbutton")
-	private static Label LABEL_SCREENOPTIONS;
+  @PlugKey("buttonbar.helpbutton")
+  private static Label LABEL_HELPBUTTON;
 
-	public enum Type
-	{
-		SCREENOPTIONS(LABEL_SCREENOPTIONS, 200), HELP(LABEL_HELPBUTTON, 100);
+  @PlugKey("buttonbar.screenoptionsbutton")
+  private static Label LABEL_SCREENOPTIONS;
 
-		private final Label label;
-		private final int priority;
+  public enum Type {
+    SCREENOPTIONS(LABEL_SCREENOPTIONS, 200),
+    HELP(LABEL_HELPBUTTON, 100);
 
-		Type(Label label, int priority)
-		{
-			this.label = label;
-			this.priority = priority;
-		}
+    private final Label label;
+    private final int priority;
 
-		private String getKey()
-		{
-			return name().toLowerCase();
-		}
+    Type(Label label, int priority) {
+      this.label = label;
+      this.priority = priority;
+    }
 
-		public BlueBarRenderable content(SectionRenderable renderable)
-		{
-			return new BlueBarRenderable(getKey(), label, renderable, priority);
-		}
+    private String getKey() {
+      return name().toLowerCase();
+    }
 
-	}
+    public BlueBarRenderable content(SectionRenderable renderable) {
+      return new BlueBarRenderable(getKey(), label, renderable, priority);
+    }
+  }
 
-	private BlueBarConstants()
-	{
-	}
+  private BlueBarConstants() {}
 }

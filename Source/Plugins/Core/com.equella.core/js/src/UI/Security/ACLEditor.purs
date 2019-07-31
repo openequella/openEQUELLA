@@ -4,6 +4,7 @@ module OEQ.UI.Security.ACLEditor where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction, commonString)
+import Common.Strings (languageStrings)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (State, execState, get, gets, modify, runState)
@@ -39,7 +40,7 @@ import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.Divider (divider')
-import MaterialUI.Enums (body1, caption, headline, raised, secondary, subheading, textSecondary, title)
+import MaterialUI.Enums (body1, caption, contained, h6, headline, secondary, subtitle1, textSecondary)
 import MaterialUI.Enums as SEnum
 import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (formControlLabel')
@@ -63,7 +64,7 @@ import Network.HTTP.Affjax.Response (json) as Resp
 import OEQ.API.User (lookupUsers)
 import OEQ.Data.Security (AccessEntry(..), Expression(..), ExpressionTerm(..), IpRange(..), OpType(..), ParsedTerm(..), ResolvedExpression(..), ResolvedTerm(..), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, findExprInsert, findExprModify, parseTerm, parseWho, resolvedToTerm, termToWho, textForExpression, textForTerm, traverseExpr)
 import OEQ.Data.User (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles))
-import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.Environment (baseUrl)
 import OEQ.UI.Common (textChange)
 import OEQ.UI.Icons (groupIconName, roleIconName, userIconName)
 import OEQ.UI.SearchUser (UGREnabled(..))
@@ -149,7 +150,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       {acls:oldAcls} <- R.getProps this 
       oldState <- R.getState this 
       pure $ acls /= oldAcls || (not $ unsafeRefEq nextState oldState)
-    aclString = prepLangStrings aclRawStrings
+    aclString = languageStrings.acleditor
     _resolvedExpr :: Prism' ExprType ResolvedExpression
     _resolvedExpr = prism' Resolved $ case _ of 
       Resolved r -> Just r
@@ -214,12 +215,12 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
         div [P.className classes.overallPanel] [
           div [P.className classes.editorPanels] [
             paper {className: classes.entryList} [
-              typography {variant: title, className: classes.flexCentered} [ text aclString.privileges],
+              typography {variant: h6, className: classes.flexCentered} [ text aclString.privileges],
               createNewPriv,
               div [ P.className classes.scrollable ] [aclEntries]
             ],
             paper {className: classes.currentEntryPanel } $ [ 
-              typography {variant: title, className: classes.flexCentered } [ text aclString.expression]
+              typography {variant: h6, className: classes.flexCentered } [ text aclString.expression]
             ] <> maybe placeholderExpr expressionContents expressionM,
             paper {className: classes.commonPanel} commonPanel 
           ]
@@ -263,7 +264,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
             action "http" aclString.new.referrer $ ReferrerDialog "http://*",
             action "apps" aclString.new.token $ SecretDialog ""
           ],
-          typography {variant: title, className: classes.flexCentered} [ text aclString.targets],
+          typography {variant: h6, className: classes.flexCentered} [ text aclString.targets],
           div [P.className classes.scrollable ] [
             droppable {droppableId:"common"} \p _ -> 
               div [unsafeMkProps "ref" p.innerRef, p.droppableProps, P.style {width: "100%"}] $
@@ -273,7 +274,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           ]
         ]
         where 
-        action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: d $ OpenDialog dt }
+        action i tooltipTitle dt = speedDialActionU {icon: icon_ [text i], tooltipTitle, onClick: d $ OpenDialog dt }
         targetActions i = div [P.className classes.termActions] $ [
               tooltip { title: commonAction.clear } $ iconButton { onClick: d $ ClearTarget i } [ icon_ [ text "clear" ] ]
             ]
@@ -281,8 +282,8 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
 
       placeholderExpr = [ typography {variant: caption, className: classes.flexCentered } [ text aclString.privplaceholder] ]
       createNewPriv = div' [ 
-        button {variant: raised, className: classes.privSelect, onClick: d NewPriv } [text aclString.addpriv], 
-        button {variant: raised, disabled: cantUndo, onClick: d Undo } [ text commonString.action.undo ]
+        button {variant: contained, className: classes.privSelect, onClick: d NewPriv } [text aclString.addpriv], 
+        button {variant: contained, disabled: cantUndo, onClick: d Undo } [ text commonString.action.undo ]
       ]
       droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
       cantUndo = null undoList
@@ -387,7 +388,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
                 stopPropagation (unsafeCoerce e)
                 d $ EditEntry i (over l not)
 
-      firstLine t = typography {variant: subheading, className: classes.ellipsed} [text t]
+      firstLine t = typography {variant: subtitle1, className: classes.ellipsed} [text t]
       stdExprLine t = typography {variant: body1, className: classes.ellipsed, color: textSecondary } [ text t ] 
 
       textForExprType (Unresolved std) = stdExprLine $ textForExpression std 
@@ -853,68 +854,6 @@ backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) =
 isInvalid :: ResolvedEntry -> Boolean 
 isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
 isInvalid _ = false
-
-aclRawStrings :: { prefix :: String
-, strings :: { privilege :: String
-             , privileges :: String
-             , selectpriv :: String
-             , expression :: String
-             , privplaceholder :: String
-             , dropplaceholder :: String
-             , addpriv :: String
-             , addexpression :: String
-             , targets :: String
-             , new :: { ugr :: String
-                      , ip :: String
-                      , referrer :: String
-                      , token :: String
-                      }
-             , notted :: String
-             , not :: String
-             , override :: String
-             , revoked :: String
-             , revoke :: String
-             , required :: String
-             , match :: { and :: String
-                        , or :: String
-                        , notand :: String
-                        , notor :: String
-                        }
-             , convertGroup :: String
-             }
-}
-aclRawStrings = {prefix:"acleditor",
-  strings: {
-    privilege: "Privilege",
-    privileges: "Privileges", 
-    selectpriv: "Select privilege",
-    expression: "Expression", 
-    privplaceholder: "Please select or add a privilege", 
-    dropplaceholder: "Drop targets here",
-    addpriv: "Add Privilege",
-    addexpression: "Add expression", 
-    targets: "Targets",
-    new: {
-      ugr: "User, Group or Role", 
-      ip: "IP Range",
-      referrer: "HTTP Referrer",
-      token: "Shared secret"
-    }, 
-    notted: "NOT - ",
-    not: "Not", 
-    override: "Override", 
-    revoked: "Revoked",
-    revoke: "Revoke", 
-    required: "* Required",
-    match: {
-      and: "All match",
-      or: "At least one match",
-      notand: "Not all match",
-      notor: "None match"
-    },
-    convertGroup: "Convert to group"
-  }
-}
 
 instance encAddRemove :: EncodeJson AddRemoveRecent where 
   encodeJson (AddRemove {add,remove}) = "add" := add ~> 

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -28,7 +30,6 @@ import com.tle.web.sections.ajax.JSONResponseCallback;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.events.RenderContext;
-import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
@@ -38,183 +39,149 @@ import com.tle.web.sections.standard.model.HtmlTreeState;
 import com.tle.web.sections.standard.renderers.TreeRenderer;
 
 @NonNullByDefault
-public class Tree extends AbstractDisablerComponent<Tree.TreeModel> implements HtmlTreeServer
-{
-	private HtmlTreeModel model;
-	@Nullable
-	private TreeRenderer treeRenderer;
-	private final SectionId displayTree = this;
-	private boolean lazyLoad;
-	private boolean allowMultipleOpenBranches;
+public class Tree extends AbstractDisablerComponent<Tree.TreeModel> implements HtmlTreeServer {
+  private HtmlTreeModel model;
+  @Nullable private TreeRenderer treeRenderer;
+  private final SectionId displayTree = this;
+  private boolean lazyLoad;
+  private boolean allowMultipleOpenBranches;
 
-	@AjaxFactory
-	private AjaxGenerator ajaxMethods;
-	private JSCallable ajaxFunction;
+  @AjaxFactory private AjaxGenerator ajaxMethods;
+  private JSCallable ajaxFunction;
 
-	public Tree()
-	{
-		super(RendererConstants.TREE);
-	}
+  public Tree() {
+    super(RendererConstants.TREE);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		if( lazyLoad )
-		{
-			ajaxFunction = ajaxMethods.getAjaxFunction("getTreeNodes"); //$NON-NLS-1$			
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    if (lazyLoad) {
+      ajaxFunction = ajaxMethods.getAjaxFunction("getTreeNodes"); // $NON-NLS-1$
+    }
+  }
 
-	@Override
-	public JSCallable getAjaxFunctionForNode(SectionInfo info, String nodeId)
-	{
-		return ajaxFunction;
-	}
+  @Override
+  public JSCallable getAjaxFunctionForNode(SectionInfo info, String nodeId) {
+    return ajaxFunction;
+  }
 
-	@Override
-	public Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId)
-	{
-		return ajaxMethods.getAjaxUrl(info, "getTreeNodes", nodeId); //$NON-NLS-1$
-	}
+  @Override
+  public Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId) {
+    return ajaxMethods.getAjaxUrl(info, "getTreeNodes", nodeId); // $NON-NLS-1$
+  }
 
-	@AjaxMethod
-	public JSONResponseCallback getTreeNodes(AjaxRenderContext context, String nodeId)
-	{
-		context.setModalId(displayTree.getSectionId());
-		return getTreeRenderer(context).getJSONResponse();
-	}
+  @AjaxMethod
+  public JSONResponseCallback getTreeNodes(AjaxRenderContext context, String nodeId) {
+    context.setModalId(displayTree.getSectionId());
+    return getTreeRenderer(context).getJSONResponse();
+  }
 
-	@Override
-	protected void prepareModel(RenderContext info)
-	{
-		super.prepareModel(info);
-		HtmlTreeState state = getState(info);
-		if( lazyLoad )
-		{
-			state.setTreeServer(this);
-			state.setLazyLoad(true);
-		}
-		state.setModel(model);
-		state.setAllowMultipleOpenBranches(allowMultipleOpenBranches);
-	}
+  @Override
+  protected void prepareModel(RenderContext info) {
+    super.prepareModel(info);
+    HtmlTreeState state = getState(info);
+    if (lazyLoad) {
+      state.setTreeServer(this);
+      state.setLazyLoad(true);
+    }
+    state.setModel(model);
+    state.setAllowMultipleOpenBranches(allowMultipleOpenBranches);
+  }
 
-	@Override
-	public void rendererSelected(RenderContext info, SectionRenderable renderer)
-	{
-		TreeRenderer treeRend = (TreeRenderer) renderer;
-		if( treeRenderer == null )
-		{
-			treeRenderer = treeRend;
-		}
-		getModel(info).setTreeRenderer(treeRend);
-	}
+  @Override
+  public void rendererSelected(RenderContext info, SectionRenderable renderer) {
+    TreeRenderer treeRend = (TreeRenderer) renderer;
+    if (treeRenderer == null) {
+      treeRenderer = treeRend;
+    }
+    getModel(info).setTreeRenderer(treeRend);
+  }
 
-	@Override
-	protected SectionRenderable chooseRenderer(RenderContext info, TreeModel state)
-	{
-		TreeRenderer renderer;
-		TreeModel treeModel = getModel(info);
-		if( treeRenderer != null )
-		{
-			renderer = treeRenderer.createNewRenderer(state);
-			state.fireRendererCallback(info, renderer);
-		}
-		else if( treeModel.isSelectingRenderer() )
-		{
-			renderer = (TreeRenderer) super.chooseRenderer(info, state);
-			treeRenderer = renderer;
-		}
-		else
-		{
-			treeModel.setSelectingRenderer(true);
-			renderSection(info, displayTree);
-			return treeModel.getTreeRenderer();
-		}
-		treeModel.setTreeRenderer(renderer);
-		return renderer;
-	}
+  @Override
+  protected SectionRenderable chooseRenderer(RenderContext info, TreeModel state) {
+    TreeRenderer renderer;
+    TreeModel treeModel = getModel(info);
+    if (treeRenderer != null) {
+      renderer = treeRenderer.createNewRenderer(state);
+      state.fireRendererCallback(info, renderer);
+    } else if (treeModel.isSelectingRenderer()) {
+      renderer = (TreeRenderer) super.chooseRenderer(info, state);
+      treeRenderer = renderer;
+    } else {
+      treeModel.setSelectingRenderer(true);
+      renderSection(info, displayTree);
+      return treeModel.getTreeRenderer();
+    }
+    treeModel.setTreeRenderer(renderer);
+    return renderer;
+  }
 
-	public TreeRenderer getTreeRenderer(RenderContext info)
-	{
-		TreeModel treeModel = getModel(info);
-		TreeRenderer renderer = treeModel.getTreeRenderer();
-		if( renderer != null )
-		{
-			return renderer;
-		}
-		treeModel.setSelectingRenderer(true);
-		renderSection(info, displayTree);
-		return treeModel.getTreeRenderer();
-	}
+  public TreeRenderer getTreeRenderer(RenderContext info) {
+    TreeModel treeModel = getModel(info);
+    TreeRenderer renderer = treeModel.getTreeRenderer();
+    if (renderer != null) {
+      return renderer;
+    }
+    treeModel.setSelectingRenderer(true);
+    renderSection(info, displayTree);
+    return treeModel.getTreeRenderer();
+  }
 
-	@Override
-	public Class<TreeModel> getModelClass()
-	{
-		return TreeModel.class;
-	}
+  @Override
+  public Class<TreeModel> getModelClass() {
+    return TreeModel.class;
+  }
 
-	public HtmlTreeModel getModel()
-	{
-		return model;
-	}
+  public HtmlTreeModel getModel() {
+    return model;
+  }
 
-	public void setModel(HtmlTreeModel model)
-	{
-		this.model = model;
-	}
+  public void setModel(HtmlTreeModel model) {
+    this.model = model;
+  }
 
-	public boolean isLazyLoad()
-	{
-		return lazyLoad;
-	}
+  public boolean isLazyLoad() {
+    return lazyLoad;
+  }
 
-	public void setLazyLoad(boolean lazyLoad)
-	{
-		this.lazyLoad = lazyLoad;
-	}
+  public void setLazyLoad(boolean lazyLoad) {
+    this.lazyLoad = lazyLoad;
+  }
 
-	public boolean isAllowMultipleOpenBranches()
-	{
-		return allowMultipleOpenBranches;
-	}
+  public boolean isAllowMultipleOpenBranches() {
+    return allowMultipleOpenBranches;
+  }
 
-	public void setAllowMultipleOpenBranches(boolean allowMultipleOpenBranches)
-	{
-		this.allowMultipleOpenBranches = allowMultipleOpenBranches;
-	}
+  public void setAllowMultipleOpenBranches(boolean allowMultipleOpenBranches) {
+    this.allowMultipleOpenBranches = allowMultipleOpenBranches;
+  }
 
-	@NonNullByDefault(false)
-	public static class TreeModel extends HtmlTreeState
-	{
-		private TreeRenderer treeRenderer;
-		private boolean selectingRenderer;
+  @NonNullByDefault(false)
+  public static class TreeModel extends HtmlTreeState {
+    private TreeRenderer treeRenderer;
+    private boolean selectingRenderer;
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T extends HtmlComponentState> Class<T> getClassForRendering()
-		{
-			return (Class<T>) HtmlTreeState.class;
-		}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends HtmlComponentState> Class<T> getClassForRendering() {
+      return (Class<T>) HtmlTreeState.class;
+    }
 
-		public TreeRenderer getTreeRenderer()
-		{
-			return treeRenderer;
-		}
+    public TreeRenderer getTreeRenderer() {
+      return treeRenderer;
+    }
 
-		public void setTreeRenderer(TreeRenderer treeRenderer)
-		{
-			this.treeRenderer = treeRenderer;
-		}
+    public void setTreeRenderer(TreeRenderer treeRenderer) {
+      this.treeRenderer = treeRenderer;
+    }
 
-		public boolean isSelectingRenderer()
-		{
-			return selectingRenderer;
-		}
+    public boolean isSelectingRenderer() {
+      return selectingRenderer;
+    }
 
-		public void setSelectingRenderer(boolean selectingRenderer)
-		{
-			this.selectingRenderer = selectingRenderer;
-		}
-	}
+    public void setSelectingRenderer(boolean selectingRenderer) {
+      this.selectingRenderer = selectingRenderer;
+    }
+  }
 }

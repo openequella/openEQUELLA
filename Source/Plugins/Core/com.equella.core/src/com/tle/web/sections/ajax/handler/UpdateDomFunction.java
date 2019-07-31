@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,47 +29,45 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.AnonymousFunction;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 
-public class UpdateDomFunction implements JSCallable
-{
-	private final AjaxFunction ajaxFunction;
-	private final JSCallable effectFunction;
-	private final JQuerySelector divQuery;
-	private final JSCallable onSuccess;
-	private final FunctionCallExpression afterPost;
-	private final UpdateDomEvent domEvent;
+public class UpdateDomFunction implements JSCallable {
+  private final AjaxFunction ajaxFunction;
+  private final JSCallable effectFunction;
+  private final JQuerySelector divQuery;
+  private final JSCallable onSuccess;
+  private final FunctionCallExpression afterPost;
+  private final UpdateDomEvent domEvent;
 
-	public UpdateDomFunction(UpdateDomEvent domEvent, String ajaxId, JSCallable effectFunction, JSCallable onSuccess)
-	{
-		this.domEvent = domEvent;
-		this.onSuccess = onSuccess;
-		this.effectFunction = effectFunction;
-		divQuery = new JQuerySelector(Type.ID, ajaxId);
-		afterPost = new FunctionCallExpression(effectFunction, divQuery, null, onSuccess);
-		ajaxFunction = new AjaxFunction(domEvent.getEventId(), domEvent.getParameterCount());
-	}
+  public UpdateDomFunction(
+      UpdateDomEvent domEvent, String ajaxId, JSCallable effectFunction, JSCallable onSuccess) {
+    this.domEvent = domEvent;
+    this.onSuccess = onSuccess;
+    this.effectFunction = effectFunction;
+    divQuery = new JQuerySelector(Type.ID, ajaxId);
+    afterPost = new FunctionCallExpression(effectFunction, divQuery, null, onSuccess);
+    ajaxFunction = new AjaxFunction(domEvent.getEventId(), domEvent.getParameterCount());
+  }
 
-	@Override
-	public int getNumberOfParams(RenderContext context)
-	{
-		return domEvent.getParameterCount();
-	}
+  @Override
+  public int getNumberOfParams(RenderContext context) {
+    return domEvent.getParameterCount();
+  }
 
-	@Override
-	public String getExpressionForCall(RenderContext info, JSExpression... params)
-	{
-		JSExpression[] newParams = new JSExpression[params.length + 1];
-		System.arraycopy(params, 0, newParams, 1, params.length);
-		FunctionCallStatement domUpdateCall = new FunctionCallStatement(effectFunction, divQuery,
-			AjaxGenerator.RESULTS_VAR, onSuccess);
+  @Override
+  public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    JSExpression[] newParams = new JSExpression[params.length + 1];
+    System.arraycopy(params, 0, newParams, 1, params.length);
+    FunctionCallStatement domUpdateCall =
+        new FunctionCallStatement(effectFunction, divQuery, AjaxGenerator.RESULTS_VAR, onSuccess);
 
-		newParams[0] = new AnonymousFunction(domUpdateCall, AjaxGenerator.RESULTS_VAR, AjaxGenerator.STATUS_VAR);
-		return ajaxFunction.getExpressionForCall(info, newParams) + ", " //$NON-NLS-1$
-			+ afterPost.getExpression(info);
-	}
+    newParams[0] =
+        new AnonymousFunction(domUpdateCall, AjaxGenerator.RESULTS_VAR, AjaxGenerator.STATUS_VAR);
+    return ajaxFunction.getExpressionForCall(info, newParams)
+        + ", " //$NON-NLS-1$
+        + afterPost.getExpression(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(ajaxFunction, afterPost);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(ajaxFunction, afterPost);
+  }
 }

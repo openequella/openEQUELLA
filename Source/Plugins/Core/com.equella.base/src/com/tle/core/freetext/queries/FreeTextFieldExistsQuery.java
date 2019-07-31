@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,50 +18,37 @@
 
 package com.tle.core.freetext.queries;
 
+import com.dytech.edge.queries.FreeTextQuery;
 import java.util.Objects;
 
-import com.dytech.edge.queries.FreeTextQuery;
+/** @author jmaginnis */
+public class FreeTextFieldExistsQuery extends FreeTextQuery {
+  private static final long serialVersionUID = 1L;
 
-/**
- * @author jmaginnis
- */
-public class FreeTextFieldExistsQuery extends FreeTextQuery
-{
-	private static final long serialVersionUID = 1L;
+  private String field;
 
-	private String field;
+  public FreeTextFieldExistsQuery(String field) {
+    this.field = getRealField(field);
+  }
 
-	public FreeTextFieldExistsQuery(String field)
-	{
-		this.field = getRealField(field);
-	}
+  public String getField() {
+    return field;
+  }
 
-	public String getField()
-	{
-		return field;
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(field);
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(field);
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( obj == null || !(obj instanceof FreeTextFieldExistsQuery) )
-		{
-			return false;
-		}
-		else if( this == obj )
-		{
-			return true;
-		}
-		else
-		{
-			FreeTextFieldExistsQuery rhs = (FreeTextFieldExistsQuery) obj;
-			return Objects.equals(field, rhs.field);
-		}
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof FreeTextFieldExistsQuery)) {
+      return false;
+    } else if (this == obj) {
+      return true;
+    } else {
+      FreeTextFieldExistsQuery rhs = (FreeTextFieldExistsQuery) obj;
+      return Objects.equals(field, rhs.field);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.sections.equella.render;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 
 import com.tle.common.Check;
 import com.tle.web.sections.SectionUtils;
@@ -38,335 +36,296 @@ import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.js.JSDisableable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.AbstractElementRenderer;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("nls")
-public class ButtonRenderer extends AbstractElementRenderer implements JSDisableable
-{
-	// @formatter:off
-	public enum ButtonType
-	{
-		ADD(null, Icon.ADD), 
-		DELETE(ButtonTrait.WARNING, Icon.DELETE), 
-		EDIT(null, Icon.EDIT), 
-		SELECT(ButtonTrait.PRIMARY, Icon.ADD),
-		CANCEL(null, null),
-		UNSELECT(null, Icon.UNSELECT), 
-		SEARCH(null, Icon.SEARCH), 
-		GOTO(null, Icon.NEXT), 
-		NEXT(null, Icon.NEXT), 
-		PREV(null, Icon.PREV), 
-		SELECT_USER(null, Icon.USER), 
-		SAVE(ButtonTrait.SUCCESS, Icon.SAVE), 
-		EMAIL(null, Icon.EMAIL), 
-		ACCEPT(ButtonTrait.SUCCESS, Icon.THUMBS_UP),
-		REJECT(ButtonTrait.WARNING, Icon.THUMBS_DOWN), 
-		VERIFY(ButtonTrait.INFO, Icon.WRENCH), 
-		DANGEROUS(ButtonTrait.DANGER, Icon.WARNING), 
-		DOWNLOAD(ButtonTrait.SUCCESS, Icon.DOWNLOAD),
-		UPLOAD(null, Icon.UPLOAD),
-		BLUE(ButtonTrait.PRIMARY, null),
-		NAV(ButtonTrait.INVERSE, null),
-		PLUS(ButtonTrait.PRIMARY,Icon.ADD),
-		MINUS(null, Icon.MINUS);
-		
-		// @formatter:on
+public class ButtonRenderer extends AbstractElementRenderer implements JSDisableable {
+  // @formatter:off
+  public enum ButtonType {
+    ADD(null, Icon.ADD),
+    DELETE(ButtonTrait.WARNING, Icon.DELETE),
+    EDIT(null, Icon.EDIT),
+    SELECT(ButtonTrait.PRIMARY, Icon.ADD),
+    CANCEL(null, null),
+    UNSELECT(null, Icon.UNSELECT),
+    SEARCH(null, Icon.SEARCH),
+    GOTO(null, Icon.NEXT),
+    NEXT(null, Icon.NEXT),
+    PREV(null, Icon.PREV),
+    SELECT_USER(null, Icon.USER),
+    SAVE(ButtonTrait.SUCCESS, Icon.SAVE),
+    EMAIL(null, Icon.EMAIL),
+    ACCEPT(ButtonTrait.SUCCESS, Icon.THUMBS_UP),
+    REJECT(ButtonTrait.WARNING, Icon.THUMBS_DOWN),
+    VERIFY(ButtonTrait.INFO, Icon.WRENCH),
+    DANGEROUS(ButtonTrait.DANGER, Icon.WARNING),
+    DOWNLOAD(ButtonTrait.SUCCESS, Icon.DOWNLOAD),
+    UPLOAD(null, Icon.UPLOAD),
+    BLUE(ButtonTrait.PRIMARY, null),
+    NAV(ButtonTrait.INVERSE, null),
+    PLUS(ButtonTrait.PRIMARY, Icon.ADD),
+    MINUS(null, Icon.MINUS);
 
-		private final ButtonTrait trait;
-		private final Icon icon;
+    // @formatter:on
 
-		private ButtonType(ButtonTrait trait, Icon icon)
-		{
-			this.trait = trait;
-			this.icon = icon;
-		}
+    private final ButtonTrait trait;
+    private final Icon icon;
 
-		public ButtonRenderer apply(ButtonRenderer r)
-		{
-			return r.setTrait(trait).setIcon(icon);
-		}
-	}
+    private ButtonType(ButtonTrait trait, Icon icon) {
+      this.trait = trait;
+      this.icon = icon;
+    }
 
-	public enum ButtonTrait
-	{
-		DEFAULT("btn-equella"), PRIMARY("btn-primary"), INFO("btn-info"), SUCCESS("btn-success"),
-		WARNING("btn-warning"), DANGER("btn-danger"), INVERSE("btn-inverse");
+    public ButtonRenderer apply(ButtonRenderer r) {
+      return r.setTrait(trait).setIcon(icon);
+    }
+  }
 
-		private final String cssClass;
+  public enum ButtonTrait {
+    DEFAULT("btn-equella"),
+    PRIMARY("btn-primary"),
+    INFO("btn-info"),
+    SUCCESS("btn-success"),
+    WARNING("btn-warning"),
+    DANGER("btn-danger"),
+    INVERSE("btn-inverse");
 
-		private ButtonTrait(String cssClass)
-		{
-			this.cssClass = cssClass;
-		}
+    private final String cssClass;
 
-		public String getCssClass()
-		{
-			return cssClass;
-		}
-	}
+    private ButtonTrait(String cssClass) {
+      this.cssClass = cssClass;
+    }
 
-	public enum ButtonSize
-	{
-		SMALL("btn-mini"), MEDIUM(null), LARGE("btn-large");
+    public String getCssClass() {
+      return cssClass;
+    }
+  }
 
-		private final String cssClass;
+  public enum ButtonSize {
+    SMALL("btn-mini"),
+    MEDIUM(null),
+    LARGE("btn-large");
 
-		private ButtonSize(String cssClass)
-		{
-			this.cssClass = cssClass;
-		}
+    private final String cssClass;
 
-		public String getCssClass()
-		{
-			return cssClass;
-		}
-	}
+    private ButtonSize(String cssClass) {
+      this.cssClass = cssClass;
+    }
 
-	private Icon icon;
-	private ButtonSize size;
-	private ButtonTrait trait;
-	private boolean iconOnly;
-	private String ariaLabelValue;
+    public String getCssClass() {
+      return cssClass;
+    }
+  }
 
-	public ButtonRenderer(HtmlComponentState state)
-	{
-		super(state);
-		addClass("btn");
-	}
+  private Icon icon;
+  private ButtonSize size;
+  private ButtonTrait trait;
+  private boolean iconOnly;
+  private String ariaLabelValue;
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(Bootstrap.PRERENDER);
-		super.preRender(info);
-	}
+  public ButtonRenderer(HtmlComponentState state) {
+    super(state);
+    addClass("btn");
+  }
 
-	@Override
-	protected Map<String, String> prepareAttributes(SectionWriter writer) throws IOException
-	{
-		Map<String, String> as = super.prepareAttributes(writer);
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(Bootstrap.PRERENDER);
+    super.preRender(info);
+  }
 
-		if( iconOnly )
-		{
-			as.put("title", getLabelText());
-		}
+  @Override
+  protected Map<String, String> prepareAttributes(SectionWriter writer) throws IOException {
+    Map<String, String> as = super.prepareAttributes(writer);
 
-		as.put("type", "button");
-		if( ariaLabelValue != null )
-		{
-			// Making accessible icon button
-			// http://www.nczonline.net/blog/2013/04/01/making-accessible-icon-buttons/
-			as.put("aria-label", ariaLabelValue);
-		}
-		return as;
-	}
+    if (iconOnly) {
+      as.put("title", getLabelText());
+    }
 
-	@Override
-	protected Set<String> getStyleClasses()
-	{
-		Set<String> rv = super.getStyleClasses();
+    as.put("type", "button");
+    if (ariaLabelValue != null) {
+      // Making accessible icon button
+      // http://www.nczonline.net/blog/2013/04/01/making-accessible-icon-buttons/
+      as.put("aria-label", ariaLabelValue);
+    }
+    return as;
+  }
 
-		// Add trait classes
-		if( trait == null )
-		{
-			trait = state.getAttribute(ButtonTrait.class);
-			if( trait == null )
-			{
-				trait = ButtonTrait.DEFAULT;
-			}
-		}
-		rv.add(trait.getCssClass());
+  @Override
+  protected Set<String> getStyleClasses() {
+    Set<String> rv = super.getStyleClasses();
 
-		// Add size classes
-		if( size == null )
-		{
-			size = state.getAttribute(ButtonSize.class);
-			if( size == null )
-			{
-				size = ButtonSize.SMALL;
-			}
-		}
-		if( size.getCssClass() != null )
-		{
-			rv.add(size.getCssClass());
-		}
+    // Add trait classes
+    if (trait == null) {
+      trait = state.getAttribute(ButtonTrait.class);
+      if (trait == null) {
+        trait = ButtonTrait.DEFAULT;
+      }
+    }
+    rv.add(trait.getCssClass());
 
-		return rv;
-	}
+    // Add size classes
+    if (size == null) {
+      size = state.getAttribute(ButtonSize.class);
+      if (size == null) {
+        size = ButtonSize.SMALL;
+      }
+    }
+    if (size.getCssClass() != null) {
+      rv.add(size.getCssClass());
+    }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		if( icon == null )
-		{
-			icon = state.getAttribute(Icon.class);
-		}
+    return rv;
+  }
 
-		if( iconOnly )
-		{
-			writer.render(new LabelRenderer(new IconLabel(icon, null)));
-			return;
-		}
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    if (icon == null) {
+      icon = state.getAttribute(Icon.class);
+    }
 
-		SectionRenderable nr = getNestedRenderable();
-		if( icon == null )
-		{
-			writer.render(nr);
-			return;
-		}
+    if (iconOnly) {
+      writer.render(new LabelRenderer(new IconLabel(icon, null)));
+      return;
+    }
 
-		writer.render(new LabelRenderer(new IconLabel(icon,
-			new TextLabel(SectionUtils.renderToString(writer, nr), true))));
-	}
+    SectionRenderable nr = getNestedRenderable();
+    if (icon == null) {
+      writer.render(nr);
+      return;
+    }
 
-	@Override
-	protected void processHandler(SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler)
-	{
-		if( !isStillAddClickHandler() && isDisabled() && JSHandler.EVENT_CLICK.equals(event) )
-		{
-			return;
-		}
+    writer.render(
+        new LabelRenderer(
+            new IconLabel(icon, new TextLabel(SectionUtils.renderToString(writer, nr), true))));
+  }
 
-		if( getHtmlState().isCancel() )
-		{
-			handler = Js.handler(
-				Js.statement(JQuerySelector.methodCallExpression(Type.ID, getResetId(), Js.function("click"))),
-				handler.getStatements());
-		}
+  @Override
+  protected void processHandler(
+      SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler) {
+    if (!isStillAddClickHandler() && isDisabled() && JSHandler.EVENT_CLICK.equals(event)) {
+      return;
+    }
 
-		super.processHandler(writer, attrs, event, handler);
-	}
+    if (getHtmlState().isCancel()) {
+      handler =
+          Js.handler(
+              Js.statement(
+                  JQuerySelector.methodCallExpression(Type.ID, getResetId(), Js.function("click"))),
+              handler.getStatements());
+    }
 
-	private String getResetId()
-	{
-		return getId() + "_reset";
-	}
+    super.processHandler(writer, attrs, event, handler);
+  }
 
-	@Override
-	protected boolean isStillAddClickHandler()
-	{
-		return true;
-	}
+  private String getResetId() {
+    return getId() + "_reset";
+  }
 
-	public ButtonRenderer setSize(ButtonSize size)
-	{
-		this.size = size;
-		return this;
-	}
+  @Override
+  protected boolean isStillAddClickHandler() {
+    return true;
+  }
 
-	public ButtonRenderer setTrait(ButtonTrait type)
-	{
-		this.trait = type;
-		return this;
-	}
+  public ButtonRenderer setSize(ButtonSize size) {
+    this.size = size;
+    return this;
+  }
 
-	public ButtonRenderer setIcon(Icon icon)
-	{
-		this.icon = icon;
-		return this;
-	}
+  public ButtonRenderer setTrait(ButtonTrait type) {
+    this.trait = type;
+    return this;
+  }
 
-	public ButtonRenderer showAs(ButtonType type)
-	{
-		return type.apply(this);
-	}
+  public ButtonRenderer setIcon(Icon icon) {
+    this.icon = icon;
+    return this;
+  }
 
-	public void setIconOnly(boolean iconOnly)
-	{
-		this.iconOnly = iconOnly;
-	}
+  public ButtonRenderer showAs(ButtonType type) {
+    return type.apply(this);
+  }
 
-	public void freemarkerShowAs(String type)
-	{
-		if( !Check.isEmpty(type) )
-		{
-			showAs(ButtonType.valueOf(type.toUpperCase()));
-		}
-	}
+  public void setIconOnly(boolean iconOnly) {
+    this.iconOnly = iconOnly;
+  }
 
-	public void freemarkerTrait(String trait)
-	{
-		if( !Check.isEmpty(trait) )
-		{
-			this.trait = ButtonTrait.valueOf(trait.toUpperCase());
-		}
-	}
+  public void freemarkerShowAs(String type) {
+    if (!Check.isEmpty(type)) {
+      showAs(ButtonType.valueOf(type.toUpperCase()));
+    }
+  }
 
-	public void freemarkerIcon(String icon)
-	{
-		if( !Check.isEmpty(icon) )
-		{
-			setIcon(Icon.valueOf(icon.toUpperCase()));
-		}
-	}
+  public void freemarkerTrait(String trait) {
+    if (!Check.isEmpty(trait)) {
+      this.trait = ButtonTrait.valueOf(trait.toUpperCase());
+    }
+  }
 
-	public void freemarkerSize(String size)
-	{
-		if( !Check.isEmpty(size) )
-		{
-			setSize(ButtonSize.valueOf(size.toUpperCase()));
-		}
-	}
+  public void freemarkerIcon(String icon) {
+    if (!Check.isEmpty(icon)) {
+      setIcon(Icon.valueOf(icon.toUpperCase()));
+    }
+  }
 
-	/*
-	 * Covariant return to make fluent API work
-	 */
-	@Override
-	public ButtonRenderer addClass(String extraClass)
-	{
-		super.addClass(extraClass);
-		return this;
-	}
+  public void freemarkerSize(String size) {
+    if (!Check.isEmpty(size)) {
+      setSize(ButtonSize.valueOf(size.toUpperCase()));
+    }
+  }
 
-	@Override
-	protected String getTag()
-	{
-		return "button";
-	}
+  /*
+   * Covariant return to make fluent API work
+   */
+  @Override
+  public ButtonRenderer addClass(String extraClass) {
+    super.addClass(extraClass);
+    return this;
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return new DefaultDisableFunction(this);
-	}
+  @Override
+  protected String getTag() {
+    return "button";
+  }
 
-	// //////////////////////////////////////
-	//
-	// Predefined buttons. These methods get called by name from Freemarker too
-	//
-	// //////////////////////////////////////
+  @Override
+  public JSCallable createDisableFunction() {
+    return new DefaultDisableFunction(this);
+  }
 
-	public ButtonRenderer add(ButtonSize size)
-	{
-		return setSize(size).setIcon(Icon.ADD);
-	}
+  // //////////////////////////////////////
+  //
+  // Predefined buttons. These methods get called by name from Freemarker too
+  //
+  // //////////////////////////////////////
 
-	public ButtonRenderer delete(ButtonSize size, HtmlComponentState state)
-	{
-		return setTrait(ButtonTrait.WARNING).setSize(size).setIcon(Icon.DELETE);
-	}
+  public ButtonRenderer add(ButtonSize size) {
+    return setSize(size).setIcon(Icon.ADD);
+  }
 
-	public ButtonRenderer edit(ButtonSize size, HtmlComponentState state)
-	{
-		return setSize(size).setIcon(Icon.EDIT);
-	}
+  public ButtonRenderer delete(ButtonSize size, HtmlComponentState state) {
+    return setTrait(ButtonTrait.WARNING).setSize(size).setIcon(Icon.DELETE);
+  }
 
-	public ButtonRenderer select(ButtonSize size, HtmlComponentState state)
-	{
-		return setTrait(ButtonTrait.SUCCESS).setSize(size).setIcon(Icon.SELECT);
-	}
+  public ButtonRenderer edit(ButtonSize size, HtmlComponentState state) {
+    return setSize(size).setIcon(Icon.EDIT);
+  }
 
-	public ButtonRenderer unselect(ButtonSize size, HtmlComponentState state)
-	{
-		return setSize(size).setIcon(Icon.UNSELECT);
-	}
+  public ButtonRenderer select(ButtonSize size, HtmlComponentState state) {
+    return setTrait(ButtonTrait.SUCCESS).setSize(size).setIcon(Icon.SELECT);
+  }
 
-	public String getAriaLabelValue()
-	{
-		return ariaLabelValue;
-	}
+  public ButtonRenderer unselect(ButtonSize size, HtmlComponentState state) {
+    return setSize(size).setIcon(Icon.UNSELECT);
+  }
 
-	public void setAriaLabelValue(String ariaLabelValue)
-	{
-		this.ariaLabelValue = ariaLabelValue;
-	}
+  public String getAriaLabelValue() {
+    return ariaLabelValue;
+  }
+
+  public void setAriaLabelValue(String ariaLabelValue) {
+    this.ariaLabelValue = ariaLabelValue;
+  }
 }

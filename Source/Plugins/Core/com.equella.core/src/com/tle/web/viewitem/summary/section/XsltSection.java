@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.viewitem.summary.section;
 
-import javax.inject.Inject;
-
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
@@ -28,53 +28,47 @@ import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewitem.service.ItemXsltService;
 import com.tle.web.viewurl.ItemSectionInfo;
+import javax.inject.Inject;
 
 @Bind
-public class XsltSection extends AbstractParentViewItemSection<Object> implements DisplaySectionConfiguration
-{
-	// @Inject
-	// private HtmlEditorService htmlEditorService;
-	@Inject
-	private ItemXsltService itemXslService;
-	private String config;
+public class XsltSection extends AbstractParentViewItemSection<Object>
+    implements DisplaySectionConfiguration {
+  // @Inject
+  // private HtmlEditorService htmlEditorService;
+  @Inject private ItemXsltService itemXslService;
+  private String config;
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( Check.isEmpty(config) )
-		{
-			return null;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (Check.isEmpty(config)) {
+      return null;
+    }
 
-		ItemSectionInfo iinfo = getItemInfo(context);
-		// TODO: XSLT should *really* allow for HTML output, but it doesn't
-		// return new DivRenderer(HtmlEditorService.DISPLAY_CLASS,
-		// htmlEditorService.getHtmlRenderable(context,
-		// itemXslService.renderSimpleXsltResult(context, iinfo, config)));
-		return new SimpleSectionResult(itemXslService.renderSimpleXsltResult(context, iinfo, config));
-	}
+    ItemSectionInfo iinfo = getItemInfo(context);
+    // TODO: XSLT should *really* allow for HTML output, but it doesn't
+    // return new DivRenderer(HtmlEditorService.DISPLAY_CLASS,
+    // htmlEditorService.getHtmlRenderable(context,
+    // itemXslService.renderSimpleXsltResult(context, iinfo, config)));
+    return new SimpleSectionResult(itemXslService.renderSimpleXsltResult(context, iinfo, config));
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "xslt"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "xslt"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	@Override
-	public void associateConfiguration(SummarySectionsConfig config)
-	{
-		this.config = config.getConfiguration();
-	}
+  @Override
+  public void associateConfiguration(SummarySectionsConfig config) {
+    this.config = config.getConfiguration();
+  }
 }

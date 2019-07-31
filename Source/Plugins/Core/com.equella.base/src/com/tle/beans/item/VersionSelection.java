@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,15 @@
 
 package com.tle.beans.item;
 
-public enum VersionSelection
-{
-	FORCE_LATEST, FORCE_CURRENT, DEFAULT_TO_LATEST, DEFAULT_TO_CURRENT,
+public enum VersionSelection {
+  FORCE_LATEST,
+  FORCE_CURRENT,
+  DEFAULT_TO_LATEST,
+  DEFAULT_TO_CURRENT,
 
-	// The following value is deprecated as it's not really valid. For courses
-	// that currently store this in the database, they should really be using
-	// "null" instead to indicate that the course doesn't have a preference.
-	@Deprecated
-	INSTITUTION_DEFAULT;
+  // The following value is deprecated as it's not really valid. For courses
+  // that currently store this in the database, they should really be using
+  // "null" instead to indicate that the course doesn't have a preference.
+  @Deprecated
+  INSTITUTION_DEFAULT;
 }

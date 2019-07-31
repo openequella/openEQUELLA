@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.viewitem.treeviewer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.common.Check;
 import com.tle.common.FileSizeUtils;
@@ -29,63 +28,63 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.AbstractWrappedResource;
+import java.util.ArrayList;
+import java.util.List;
 
-public class IMSResource extends AbstractWrappedResource
-{
-	static
-	{
-		PluginResourceHandler.init(IMSResource.class);
-	}
+public class IMSResource extends AbstractWrappedResource {
+  static {
+    PluginResourceHandler.init(IMSResource.class);
+  }
 
-	@PlugKey("details.type")
-	private static Label TYPE;
-	@PlugKey("details.mimetype")
-	private static Label MIMETYPE;
-	@PlugKey("details.name")
-	private static Label NAME;
-	@PlugKey("details.scormversion")
-	private static Label VERSION;
-	@PlugKey("details.size")
-	private static Label SIZE;
+  @PlugKey("details.type")
+  private static Label TYPE;
 
-	public IMSResource(ViewableResource inner)
-	{
-		super(inner);
-	}
+  @PlugKey("details.mimetype")
+  private static Label MIMETYPE;
 
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
-		ImsAttachment attachment = (ImsAttachment) getAttachment();
+  @PlugKey("details.name")
+  private static Label NAME;
 
-		// Type
-		commonDetails.add(makeDetail(TYPE, getMimeTypeLabel()));
+  @PlugKey("details.scormversion")
+  private static Label VERSION;
 
-		// Name
-		commonDetails.add(makeDetail(NAME, new TextLabel(attachment.getDescription())));
+  @PlugKey("details.size")
+  private static Label SIZE;
 
-		// Size
-		commonDetails.add(makeDetail(SIZE, new TextLabel(FileSizeUtils.humanReadableFileSize(attachment.getSize()))));
+  public IMSResource(ViewableResource inner) {
+    super(inner);
+  }
 
-		// SCORM version
-		String version = (String) getAttachment().getData("SCORM_VERSION");
-		if( !Check.isEmpty(version) )
-		{
-			commonDetails.add(makeDetail(VERSION, new TextLabel(version)));
-		}
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+    ImsAttachment attachment = (ImsAttachment) getAttachment();
 
-		return commonDetails;
-	}
+    // Type
+    commonDetails.add(makeDetail(TYPE, getMimeTypeLabel()));
 
-	@Override
-	public String getFilepath()
-	{
-		return TreeNavigationSection.VIEWIMS_JSP;
-	}
+    // Name
+    commonDetails.add(makeDetail(NAME, new TextLabel(attachment.getDescription())));
 
-	protected Label getMimeTypeLabel()
-	{
-		return MIMETYPE;
-	}
+    // Size
+    commonDetails.add(
+        makeDetail(SIZE, new TextLabel(FileSizeUtils.humanReadableFileSize(attachment.getSize()))));
+
+    // SCORM version
+    String version = (String) getAttachment().getData("SCORM_VERSION");
+    if (!Check.isEmpty(version)) {
+      commonDetails.add(makeDetail(VERSION, new TextLabel(version)));
+    }
+
+    return commonDetails;
+  }
+
+  @Override
+  public String getFilepath() {
+    return TreeNavigationSection.VIEWIMS_JSP;
+  }
+
+  protected Label getMimeTypeLabel() {
+    return MIMETYPE;
+  }
 }

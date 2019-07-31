@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,57 +20,47 @@ package com.tle.admin.search.searchset.scripting;
 
 import com.dytech.edge.admin.script.model.Term;
 
-public class Comparison implements Term
-{
-	protected String lhs;
-	protected String rhs;
-	protected Equality operator;
+public class Comparison implements Term {
+  protected String lhs;
+  protected String rhs;
+  protected Equality operator;
 
-	public Comparison(Equality operator, String lhs, String rhs)
-	{
-		setLHS(lhs);
-		setRHS(rhs);
-		setOperator(operator);
-	}
+  public Comparison(Equality operator, String lhs, String rhs) {
+    setLHS(lhs);
+    setRHS(rhs);
+    setOperator(operator);
+  }
 
-	public String getLHS()
-	{
-		return lhs;
-	}
+  public String getLHS() {
+    return lhs;
+  }
 
-	public void setLHS(String lhs)
-	{
-		this.lhs = lhs;
-	}
+  public void setLHS(String lhs) {
+    this.lhs = lhs;
+  }
 
-	public String getRHS()
-	{
-		return rhs;
-	}
+  public String getRHS() {
+    return rhs;
+  }
 
-	public void setRHS(String rhs)
-	{
-		this.rhs = rhs;
-	}
+  public void setRHS(String rhs) {
+    this.rhs = rhs;
+  }
 
-	public Equality getOperator()
-	{
-		return operator;
-	}
+  public Equality getOperator() {
+    return operator;
+  }
 
-	public void setOperator(Equality operator)
-	{
-		this.operator = operator;
-	}
+  public void setOperator(Equality operator) {
+    this.operator = operator;
+  }
 
-	@Override
-	public String toScript()
-	{
-		return "/xml" + lhs + " " + operator.toScript() + " '" + WhereModel.encode(rhs) + "'";
-	}
+  @Override
+  public String toScript() {
+    return "/xml" + lhs + " " + operator.toScript() + " '" + WhereModel.encode(rhs) + "'";
+  }
 
-	public String toEasyRead()
-	{
-		return lhs + " " + operator.toEasyRead() + " '" + rhs + "'";
-	}
+  public String toEasyRead() {
+    return lhs + " " + operator.toEasyRead() + " '" + rhs + "'";
+  }
 }

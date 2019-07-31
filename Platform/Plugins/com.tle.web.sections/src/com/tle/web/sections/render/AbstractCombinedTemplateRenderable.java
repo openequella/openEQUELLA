@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,50 +18,40 @@
 
 package com.tle.web.sections.render;
 
+import com.tle.web.sections.events.RenderContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.web.sections.events.RenderContext;
+public abstract class AbstractCombinedTemplateRenderable implements TemplateRenderable {
+  private List<TemplateRenderable> templateRenderers;
+  private Boolean exists;
 
-public abstract class AbstractCombinedTemplateRenderable implements TemplateRenderable
-{
-	private List<TemplateRenderable> templateRenderers;
-	private Boolean exists;
+  protected List<TemplateRenderable> getRenderers(RenderContext context) {
+    if (templateRenderers == null) {
+      templateRenderers = new ArrayList<TemplateRenderable>();
+      setupTemplateRenderables(context);
+    }
+    return templateRenderers;
+  }
 
-	protected List<TemplateRenderable> getRenderers(RenderContext context)
-	{
-		if( templateRenderers == null )
-		{
-			templateRenderers = new ArrayList<TemplateRenderable>();
-			setupTemplateRenderables(context);
-		}
-		return templateRenderers;
-	}
+  protected void addTemplateRenderable(TemplateRenderable renderable) {
+    templateRenderers.add(renderable);
+  }
 
-	protected void addTemplateRenderable(TemplateRenderable renderable)
-	{
-		templateRenderers.add(renderable);
-	}
+  protected abstract void setupTemplateRenderables(RenderContext context);
 
-	protected abstract void setupTemplateRenderables(RenderContext context);
-
-	@Override
-	public boolean exists(RenderContext context)
-	{
-		if( exists == null )
-		{
-			List<TemplateRenderable> renderers = getRenderers(context);
-			for( TemplateRenderable templateRenderable : renderers )
-			{
-				if( templateRenderable != null && templateRenderable.exists(context) )
-				{
-					exists = true;
-					return true;
-				}
-			}
-			exists = false;
-		}
-		return exists;
-	}
-
+  @Override
+  public boolean exists(RenderContext context) {
+    if (exists == null) {
+      List<TemplateRenderable> renderers = getRenderers(context);
+      for (TemplateRenderable templateRenderable : renderers) {
+        if (templateRenderable != null && templateRenderable.exists(context)) {
+          exists = true;
+          return true;
+        }
+      }
+      exists = false;
+    }
+    return exists;
+  }
 }

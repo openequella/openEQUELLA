@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,67 +36,56 @@ import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 
 @NonNullByDefault
 @TreeIndexed
-public abstract class AbstractQuerySection<M, SE extends AbstractSearchEvent<SE>> extends AbstractPrototypeSection<M>
-	implements
-		SearchEventListener<SE>,
-		HtmlRenderer
-{
-	/* UI */
-	@Component(name = "qf", parameter = "q", supported = true)
-	protected TextField queryField;
-	@Component(name = "s")
-	protected Button searchButton;
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
+public abstract class AbstractQuerySection<M, SE extends AbstractSearchEvent<SE>>
+    extends AbstractPrototypeSection<M> implements SearchEventListener<SE>, HtmlRenderer {
+  /* UI */
+  @Component(name = "qf", parameter = "q", supported = true)
+  protected TextField queryField;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		getQueryField().setDontBookmarkBlank(false);
-	}
+  @Component(name = "s")
+  protected Button searchButton;
 
-	public TextField getQueryField()
-	{
-		return queryField;
-	}
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	public Button getSearchButton()
-	{
-		return searchButton;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    getQueryField().setDontBookmarkBlank(false);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, SE event) throws Exception
-	{
-		if( !event.isExcludeKeywords() )
-		{
-			event.filterByTextQuery(getParsedQuery(info), isIncludeUnfiltered());
-		}
-	}
+  public TextField getQueryField() {
+    return queryField;
+  }
 
-	protected boolean isIncludeUnfiltered()
-	{
-		return true;
-	}
+  public Button getSearchButton() {
+    return searchButton;
+  }
 
-	public String getParsedQuery(SectionInfo info)
-	{
-		return parseQuery(getQueryField().getValue(info));
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, SE event) throws Exception {
+    if (!event.isExcludeKeywords()) {
+      event.filterByTextQuery(getParsedQuery(info), isIncludeUnfiltered());
+    }
+  }
 
-	protected String parseQuery(String query)
-	{
-		return Strings.nullToEmpty(query);
-	}
+  protected boolean isIncludeUnfiltered() {
+    return true;
+  }
 
-	public void setQuery(SectionInfo info, String query)
-	{
-		getQueryField().setValue(info, query);
-	}
+  public String getParsedQuery(SectionInfo info) {
+    return parseQuery(getQueryField().getValue(info));
+  }
 
-	public LabelTagRenderer getLabelTag()
-	{
-		return new LabelTagRenderer(queryField, null, null);
-	}
+  protected String parseQuery(String query) {
+    return Strings.nullToEmpty(query);
+  }
+
+  public void setQuery(SectionInfo info, String query) {
+    getQueryField().setValue(info, query);
+  }
+
+  public LabelTagRenderer getLabelTag() {
+    return new LabelTagRenderer(queryField, null, null);
+  }
 }

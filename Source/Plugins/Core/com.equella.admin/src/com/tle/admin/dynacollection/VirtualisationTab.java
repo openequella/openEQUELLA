@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,53 @@
 
 package com.tle.admin.dynacollection;
 
-import java.awt.Component;
-import java.awt.GridLayout;
-
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.search.searchset.virtualisation.VirtualisationEditor;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.common.dynacollection.SearchSetAdapter;
-import com.tle.common.i18n.CurrentLocale;
+import java.awt.Component;
+import java.awt.GridLayout;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class VirtualisationTab extends BaseEntityTab<DynaCollection>
-{
-	private VirtualisationEditor editor;
+public class VirtualisationTab extends BaseEntityTab<DynaCollection> {
+  private VirtualisationEditor editor;
 
-	@Override
-	public void init(Component parent)
-	{
-		editor = new VirtualisationEditor(pluginService, clientService, getKey("entityname"),
-			getKey("virtualisationtab.renamingHelp"));
+  @Override
+  public void init(Component parent) {
+    editor =
+        new VirtualisationEditor(
+            pluginService,
+            clientService,
+            getKey("entityname"),
+            getKey("virtualisationtab.renamingHelp"));
 
-		setLayout(new GridLayout(1, 1));
-		add(editor);
+    setLayout(new GridLayout(1, 1));
+    add(editor);
 
-		if( state.isReadonly() )
-		{
-			editor.setEnabled(false);
-		}
-	}
+    if (state.isReadonly()) {
+      editor.setEnabled(false);
+    }
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return getString("virtualisationtab.title");
-	}
+  @Override
+  public String getTitle() {
+    return getString("virtualisationtab.title");
+  }
 
-	@Override
-	public void load()
-	{
-		editor.load(new SearchSetAdapter(state.getEntity()));
-	}
+  @Override
+  public void load() {
+    editor.load(new SearchSetAdapter(state.getEntity()));
+  }
 
-	@Override
-	public void save()
-	{
-		editor.save(new SearchSetAdapter(state.getEntity()));
-	}
+  @Override
+  public void save() {
+    editor.save(new SearchSetAdapter(state.getEntity()));
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		editor.validation();
-	}
+  @Override
+  public void validation() throws EditorException {
+    editor.validation();
+  }
 }

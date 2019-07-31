@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,63 +21,50 @@ package com.tle.core.harvester.oai.data;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * 
- */
-public class Header
-{
-	private String identifier;
-	private String datestamp;
-	private Collection specs;
-	private String status;
+/** */
+public class Header {
+  private String identifier;
+  private String datestamp;
+  private Collection specs;
+  private String status;
 
-	public Header()
-	{
-		//
-	}
+  public Header() {
+    //
+  }
 
-	public String getDatestamp()
-	{
-		return datestamp;
-	}
+  public String getDatestamp() {
+    return datestamp;
+  }
 
-	public void setDatestamp(String datestamp)
-	{
-		this.datestamp = datestamp;
-	}
+  public void setDatestamp(String datestamp) {
+    this.datestamp = datestamp;
+  }
 
-	public String getIdentifier()
-	{
-		return identifier;
-	}
+  public String getIdentifier() {
+    return identifier;
+  }
 
-	public void setIdentifier(String identifier)
-	{
-		this.identifier = identifier;
-	}
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
 
-	public void addSpec(String spec)
-	{
-		Collection specss = getSpecs();
-		specss.add(spec);
-	}
+  public void addSpec(String spec) {
+    Collection specss = getSpecs();
+    specss.add(spec);
+  }
 
-	public Collection getSpecs()
-	{
-		if( specs == null )
-		{
-			specs = new ArrayList();
-		}
-		return specs;
-	}
+  public Collection getSpecs() {
+    if (specs == null) {
+      specs = new ArrayList();
+    }
+    return specs;
+  }
 
-	public String getStatus()
-	{
-		return status;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }

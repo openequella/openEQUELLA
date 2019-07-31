@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,18 +20,14 @@ package com.tle.web.connectors.manage;
 
 import static com.tle.web.sections.js.generic.statement.FunctionCallStatement.jscall;
 
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.connectors.service.ConnectorItemKey;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.guice.Bind;
-import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.connectors.manage.EditConnectorContentDialog.EditConnectorModel;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -53,178 +51,162 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind
-public class EditConnectorContentDialog extends AbstractOkayableDialog<EditConnectorModel>
-{
-	private static final Logger LOGGER = Logger.getLogger(EditConnectorContentDialog.class);
+public class EditConnectorContentDialog extends AbstractOkayableDialog<EditConnectorModel> {
+  private static final Logger LOGGER = Logger.getLogger(EditConnectorContentDialog.class);
 
-	@PlugKey("manage.edit.dialog.title")
-	private static Label TITLE;
-	@PlugKey("manage.edit.dialog.validation.entername")
-	private static Label LABEL_ENTER_NAME;
-	@PlugKey("manage.edit.dialog.genericerror")
-	private static Label LABEL_GENERIC_EDIT_ERROR;
-	@PlugKey("manage.edit.dialog.error")
-	private static String KEY_EDIT_ERROR;
+  @PlugKey("manage.edit.dialog.title")
+  private static Label TITLE;
 
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+  @PlugKey("manage.edit.dialog.validation.entername")
+  private static Label LABEL_ENTER_NAME;
 
-	@Component
-	private TextField nameField;
-	@Component
-	private TextField descriptionField;
+  @PlugKey("manage.edit.dialog.genericerror")
+  private static Label LABEL_GENERIC_EDIT_ERROR;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("manage.edit.dialog.error")
+  private static String KEY_EDIT_ERROR;
 
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	public EditConnectorContentDialog()
-	{
-		setAjax(true);
-	}
+  @Component private TextField nameField;
+  @Component private TextField descriptionField;
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("edit/edit-dialog.ftl", this);
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE;
-	}
+  @TreeLookup private ConnectorManagementQuerySection querySection;
 
-	@Override
-	public EditConnectorModel instantiateDialogModel(SectionInfo info)
-	{
-		return new EditConnectorModel();
-	}
+  public EditConnectorContentDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("editContent");
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("edit/edit-dialog.ftl", this);
+  }
 
-	@EventHandlerMethod
-	public void editContent(SectionInfo info, ConnectorItemKey key, String title, String description)
-	{
-		final EditConnectorModel model = getModel(info);
-		model.setConnectorItemKey(key);
-		nameField.setValue(info, title);
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE;
+  }
 
-		Connector connector = querySection.getConnector(info);
-		boolean editDescription = repositoryService.supportsEditDescription(connector.getLmsType());
-		model.setEditDescription(editDescription);
-		if( editDescription )
-		{
-			descriptionField.setValue(info, description);
-		}
+  @Override
+  public EditConnectorModel instantiateDialogModel(SectionInfo info) {
+    return new EditConnectorModel();
+  }
 
-		showDialog(info);
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("editContent");
+  }
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		final JSHandler handler = events.getNamedHandler("saveContent");
-		handler.addValidator(Js.validator(Js.notEquals(nameField.createGetExpression(), Js.str("")))
-			.setFailureStatements(Js.alert_s(LABEL_ENTER_NAME)));
-		return handler;
-	}
+  @EventHandlerMethod
+  public void editContent(
+      SectionInfo info, ConnectorItemKey key, String title, String description) {
+    final EditConnectorModel model = getModel(info);
+    model.setConnectorItemKey(key);
+    nameField.setValue(info, title);
 
-	@EventHandlerMethod
-	public void saveContent(SectionInfo info)
-	{
-		EditConnectorModel model = getModel(info);
-		String title = nameField.getValue(info);
+    Connector connector = querySection.getConnector(info);
+    boolean editDescription = repositoryService.supportsEditDescription(connector.getLmsType());
+    model.setEditDescription(editDescription);
+    if (editDescription) {
+      descriptionField.setValue(info, description);
+    }
 
-		if( Check.isEmpty(title) )
-		{
-			model.setError(LABEL_ENTER_NAME);
-			return;
-		}
+    showDialog(info);
+  }
 
-		Connector connector = querySection.getConnector(info);
-		String description = (repositoryService.supportsEditDescription(connector.getLmsType())
-			? descriptionField.getValue(info) : "");
-		try
-		{
-			repositoryService.editContent(connector, CurrentUser.getUsername(),
-				model.getConnectorItemKey().getContentId(), title, description);
-			info.getRootRenderContext().setRenderedBody(new CloseWindowResult(jscall(getCloseFunction()),
-				jscall(getOkCallback(), getModel(info).getConnectorItemKey())));
-		}
-		catch( LmsUserNotFoundException lms )
-		{
-			model.setError(new TextLabel(lms.getMessage()));
-		}
-		catch( Exception e )
-		{
-			LOGGER.error(LABEL_GENERIC_EDIT_ERROR.getText(), e);
-			if( e.getMessage() != null )
-			{
-				model.setError(new KeyLabel(KEY_EDIT_ERROR, e.getMessage()));
-			}
-			else
-			{
-				model.setError(LABEL_GENERIC_EDIT_ERROR);
-			}
-		}
-	}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    final JSHandler handler = events.getNamedHandler("saveContent");
+    handler.addValidator(
+        Js.validator(Js.notEquals(nameField.createGetExpression(), Js.str("")))
+            .setFailureStatements(Js.alert_s(LABEL_ENTER_NAME)));
+    return handler;
+  }
 
-	public TextField getNameField()
-	{
-		return nameField;
-	}
+  @EventHandlerMethod
+  public void saveContent(SectionInfo info) {
+    EditConnectorModel model = getModel(info);
+    String title = nameField.getValue(info);
 
-	public TextField getDescriptionField()
-	{
-		return descriptionField;
-	}
+    if (Check.isEmpty(title)) {
+      model.setError(LABEL_ENTER_NAME);
+      return;
+    }
 
-	public static class EditConnectorModel extends DialogModel
-	{
-		@Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
-		private ConnectorItemKey connectorItemKey;
-		private boolean editDescription;
-		private Label error;
+    Connector connector = querySection.getConnector(info);
+    String description =
+        (repositoryService.supportsEditDescription(connector.getLmsType())
+            ? descriptionField.getValue(info)
+            : "");
+    try {
+      repositoryService.editContent(
+          connector,
+          CurrentUser.getUsername(),
+          model.getConnectorItemKey().getContentId(),
+          title,
+          description);
+      info.getRootRenderContext()
+          .setRenderedBody(
+              new CloseWindowResult(
+                  jscall(getCloseFunction()),
+                  jscall(getOkCallback(), getModel(info).getConnectorItemKey())));
+    } catch (LmsUserNotFoundException lms) {
+      model.setError(new TextLabel(lms.getMessage()));
+    } catch (Exception e) {
+      LOGGER.error(LABEL_GENERIC_EDIT_ERROR.getText(), e);
+      if (e.getMessage() != null) {
+        model.setError(new KeyLabel(KEY_EDIT_ERROR, e.getMessage()));
+      } else {
+        model.setError(LABEL_GENERIC_EDIT_ERROR);
+      }
+    }
+  }
 
-		public boolean isEditDescription()
-		{
-			return editDescription;
-		}
+  public TextField getNameField() {
+    return nameField;
+  }
 
-		public void setEditDescription(boolean editDescription)
-		{
-			this.editDescription = editDescription;
-		}
+  public TextField getDescriptionField() {
+    return descriptionField;
+  }
 
-		public ConnectorItemKey getConnectorItemKey()
-		{
-			return connectorItemKey;
-		}
+  public static class EditConnectorModel extends DialogModel {
+    @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
+    private ConnectorItemKey connectorItemKey;
 
-		public void setConnectorItemKey(ConnectorItemKey connectorItemKey)
-		{
-			this.connectorItemKey = connectorItemKey;
-		}
+    private boolean editDescription;
+    private Label error;
 
-		public Label getError()
-		{
-			return error;
-		}
+    public boolean isEditDescription() {
+      return editDescription;
+    }
 
-		public void setError(Label error)
-		{
-			this.error = error;
-		}
-	}
+    public void setEditDescription(boolean editDescription) {
+      this.editDescription = editDescription;
+    }
+
+    public ConnectorItemKey getConnectorItemKey() {
+      return connectorItemKey;
+    }
+
+    public void setConnectorItemKey(ConnectorItemKey connectorItemKey) {
+      this.connectorItemKey = connectorItemKey;
+    }
+
+    public Label getError() {
+      return error;
+    }
+
+    public void setError(Label error) {
+      this.error = error;
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -64,42 +66,40 @@ import com.tle.core.remoterepo.sru.service.impl.SruSearchResults;
  * <td>dc, lom etc</td>
  * <td>as supplied at repository config time. Assume dc as default?</td>
  * </tr>
- * 
+ *
  * @author larry
  */
-public interface SruService
-{
-	/**
-	 * For SRU http request, version, operation and query are mandatory URL GET
-	 * parameters
-	 */
-	String SRU_VERSION = "version";
-	String SRU_VERSION_1_1 = "1.1";
-	String SRU_OPERATION = "operation";
-	String SRU_SEARCH_RETRIEVE = "searchRetrieve";
-	String SRU_QUERY = "query";
+public interface SruService {
+  /** For SRU http request, version, operation and query are mandatory URL GET parameters */
+  String SRU_VERSION = "version";
 
-	/**
-	 * For SRU http request, optional URL GET parameters
-	 */
-	String SRU_START_RECORD = "startRecord";
-	String SRU_MAXIMUM_RECORDS = "maximumRecords";
-	String SRU_RECORD_SCHEMA = "recordSchema";
+  String SRU_VERSION_1_1 = "1.1";
+  String SRU_OPERATION = "operation";
+  String SRU_SEARCH_RETRIEVE = "searchRetrieve";
+  String SRU_QUERY = "query";
 
-	Pair<String, String> MARCXML = new Pair<String, String>("info:srw/schema/1/marcxml-v1.1", "marcxml");
-	Pair<String, String> DC = new Pair<String, String>("info:srw/schema/1/dc-v1.1", "dc");
-	Pair<String, String> LOM = new Pair<String, String>("http://ltsc.ieee.org/xsd/LOMv1p0", "lom");
-	Pair<String, String> TLE = new Pair<String, String>("http://www.thelearningedge.com.au/xsd/item", "tle");
-	Pair<String, String> MODS = new Pair<String, String>("info:srw/schema/1/mods-v3", "mods");
+  /** For SRU http request, optional URL GET parameters */
+  String SRU_START_RECORD = "startRecord";
 
-	/**
-	 * @param sruSearch
-	 * @param query
-	 * @param offset
-	 * @param perpage
-	 * @return
-	 */
-	SruSearchResults search(FederatedSearch sruSearch, String query, int offset, int perpage);
+  String SRU_MAXIMUM_RECORDS = "maximumRecords";
+  String SRU_RECORD_SCHEMA = "recordSchema";
 
-	GenericRecord getRecord(FederatedSearch sruSearch, String qs, int index);
+  Pair<String, String> MARCXML =
+      new Pair<String, String>("info:srw/schema/1/marcxml-v1.1", "marcxml");
+  Pair<String, String> DC = new Pair<String, String>("info:srw/schema/1/dc-v1.1", "dc");
+  Pair<String, String> LOM = new Pair<String, String>("http://ltsc.ieee.org/xsd/LOMv1p0", "lom");
+  Pair<String, String> TLE =
+      new Pair<String, String>("http://www.thelearningedge.com.au/xsd/item", "tle");
+  Pair<String, String> MODS = new Pair<String, String>("info:srw/schema/1/mods-v3", "mods");
+
+  /**
+   * @param sruSearch
+   * @param query
+   * @param offset
+   * @param perpage
+   * @return
+   */
+  SruSearchResults search(FederatedSearch sruSearch, String query, int offset, int perpage);
+
+  GenericRecord getRecord(FederatedSearch sruSearch, String qs, int index);
 }

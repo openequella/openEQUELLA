@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,37 +20,31 @@ package com.tle.core.institution;
 
 import java.util.List;
 
-public class InstitutionValidationException extends RuntimeException
-{
-	private static final long serialVersionUID = 1L;
+public class InstitutionValidationException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
-	private final List<InstitutionValidationError> errors;
+  private final List<InstitutionValidationError> errors;
 
-	public InstitutionValidationException(List<InstitutionValidationError> errors)
-	{
-		this.errors = errors;
-	}
+  public InstitutionValidationException(List<InstitutionValidationError> errors) {
+    this.errors = errors;
+  }
 
-	public List<InstitutionValidationError> getErrors()
-	{
-		return errors;
-	}
+  public List<InstitutionValidationError> getErrors() {
+    return errors;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getMessage()
-	{
-		StringBuilder sbuf = new StringBuilder();
-		boolean first = true;
-		for( InstitutionValidationError error : errors )
-		{
-			if( !first )
-			{
-				sbuf.append(", ");
-			}
-			first = false;
-			sbuf.append(error.getMessage().toString());
-		}
-		return "Validation errors: " + sbuf;
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getMessage() {
+    StringBuilder sbuf = new StringBuilder();
+    boolean first = true;
+    for (InstitutionValidationError error : errors) {
+      if (!first) {
+        sbuf.append(", ");
+      }
+      first = false;
+      sbuf.append(error.getMessage().toString());
+    }
+    return "Validation errors: " + sbuf;
+  }
 }

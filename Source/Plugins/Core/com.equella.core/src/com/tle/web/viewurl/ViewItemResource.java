@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,55 +18,52 @@
 
 package com.tle.web.viewurl;
 
-import java.util.Set;
-
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.viewable.ViewableItem;
+import java.util.Set;
 
-public interface ViewItemResource
-{
-	String KEY_MUST_SHOW = "$MUST$SHOW"; //$NON-NLS-1$
-	String KEY_PREFER_STREAM = "$PREFER$STREAM$"; //$NON-NLS-1$
+public interface ViewItemResource {
+  String KEY_MUST_SHOW = "$MUST$SHOW"; // $NON-NLS-1$
+  String KEY_PREFER_STREAM = "$PREFER$STREAM$"; // $NON-NLS-1$
 
-	ViewableItem getViewableItem();
+  ViewableItem getViewableItem();
 
-	boolean getBooleanAttribute(Object key);
+  boolean getBooleanAttribute(Object key);
 
-	<T> T getAttribute(Object key);
+  <T> T getAttribute(Object key);
 
-	void setAttribute(Object key, Object value);
+  void setAttribute(Object key, Object value);
 
-	Set<String> getPrivileges();
+  Set<String> getPrivileges();
 
-	String getFilepath();
+  String getFilepath();
 
-	String getFileDirectoryPath();
+  String getFileDirectoryPath();
 
-	String getFilenameWithoutPath();
+  String getFilenameWithoutPath();
 
-	Bookmark createCanonicalURL();
+  Bookmark createCanonicalURL();
 
-	int getForwardCode();
+  int getForwardCode();
 
-	ContentStream getContentStream();
+  ContentStream getContentStream();
 
-	@Nullable
-	ViewItemViewer getViewer();
+  @Nullable
+  ViewItemViewer getViewer();
 
-	@Nullable
-	String getDefaultViewerId();
+  @Nullable
+  String getDefaultViewerId();
 
-	String getMimeType();
+  String getMimeType();
 
-	@Nullable
-	ViewAuditEntry getViewAuditEntry();
+  @Nullable
+  ViewAuditEntry getViewAuditEntry();
 
-	void wrappedBy(ViewItemResource resource);
+  void wrappedBy(ViewItemResource resource);
 
-	boolean isPathMapped();
+  boolean isPathMapped();
 
-	boolean isRestrictedResource();
-
+  boolean isRestrictedResource();
 }

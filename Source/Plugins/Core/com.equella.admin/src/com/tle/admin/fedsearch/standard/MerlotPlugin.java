@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,63 +18,53 @@
 
 package com.tle.admin.fedsearch.standard;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
 import com.tle.admin.fedsearch.SearchPlugin;
 import com.tle.admin.gui.EditorException;
 import com.tle.beans.search.MerlotSettings;
 import com.tle.common.Check;
-import com.tle.common.i18n.CurrentLocale;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 @SuppressWarnings("nls")
-public class MerlotPlugin extends SearchPlugin<MerlotSettings>
-{
-	private JCheckBox advanced;
-	private JTextField licenceKey;
+public class MerlotPlugin extends SearchPlugin<MerlotSettings> {
+  private JCheckBox advanced;
+  private JTextField licenceKey;
 
-	public MerlotPlugin()
-	{
-		super(MerlotSettings.class);
-	}
+  public MerlotPlugin() {
+    super(MerlotSettings.class);
+  }
 
-	@Override
-	public void initGUI()
-	{
-		licenceKey = new JTextField();
-		panel.add(new JLabel(s("label.licencekey")));
-		panel.add(licenceKey);
+  @Override
+  public void initGUI() {
+    licenceKey = new JTextField();
+    panel.add(new JLabel(s("label.licencekey")));
+    panel.add(licenceKey);
 
-		advanced = new JCheckBox(s("label.advanced"));
-		panel.add("span 3", advanced);
-	}
+    advanced = new JCheckBox(s("label.advanced"));
+    panel.add("span 3", advanced);
+  }
 
-	@Override
-	public void load(MerlotSettings settings)
-	{
-		advanced.setSelected(settings.isAdvancedApi());
-		licenceKey.setText(settings.getLicenceKey());
-	}
+  @Override
+  public void load(MerlotSettings settings) {
+    advanced.setSelected(settings.isAdvancedApi());
+    licenceKey.setText(settings.getLicenceKey());
+  }
 
-	@Override
-	public void save(MerlotSettings settings)
-	{
-		settings.setAdvancedApi(advanced.isSelected());
-		settings.setLicenceKey(licenceKey.getText().trim());
-	}
+  @Override
+  public void save(MerlotSettings settings) {
+    settings.setAdvancedApi(advanced.isSelected());
+    settings.setLicenceKey(licenceKey.getText().trim());
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		if( Check.isEmpty(licenceKey.getText()) )
-		{
-			throw new EditorException(s("validation.licencekey"));
-		}
-	}
+  @Override
+  public void validation() throws EditorException {
+    if (Check.isEmpty(licenceKey.getText())) {
+      throw new EditorException(s("validation.licencekey"));
+    }
+  }
 
-	private String s(String keyPart)
-	{
-		return getString("merlot." + keyPart);
-	}
+  private String s(String keyPart) {
+    return getString("merlot." + keyPart);
+  }
 }

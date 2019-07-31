@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,44 +20,35 @@ package com.tle.common.security;
 
 import java.io.Serializable;
 
-/**
- * @author Nicholas Read
- */
-public class SettingsTarget implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class SettingsTarget implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private final String id;
+  private final String id;
 
-	public SettingsTarget(String id)
-	{
-		this.id = id;
-	}
+  public SettingsTarget(String id) {
+    this.id = id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-		if( !(obj instanceof SettingsTarget) )
-		{
-			return false;
-		}
+    if (!(obj instanceof SettingsTarget)) {
+      return false;
+    }
 
-		return id == ((SettingsTarget) obj).id;
-	}
+    return id == ((SettingsTarget) obj).id;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return id.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.core.item.standard.operations;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.ScriptContext;
 import com.google.inject.assistedinject.Assisted;
@@ -29,60 +28,53 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.core.item.scripting.WorkflowScriptConstants;
 import com.tle.core.security.impl.SecureOnCall;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureOnCall(priv = "NEWVERSION_ITEM")
-public class NewVersionOperation extends AbstractCloneOperation
-{
-	private static final String NEW_VERSION_SCRIPT_NAME = "newVersion"; //$NON-NLS-1$
+public class NewVersionOperation extends AbstractCloneOperation {
+  private static final String NEW_VERSION_SCRIPT_NAME = "newVersion"; // $NON-NLS-1$
 
-	@AssistedInject
-	protected NewVersionOperation()
-	{
-		this(true);
-	}
+  @AssistedInject
+  protected NewVersionOperation() {
+    this(true);
+  }
 
-	@AssistedInject
-	protected NewVersionOperation(@Assisted boolean copyAttachments)
-	{
-		super(copyAttachments);
-	}
+  @AssistedInject
+  protected NewVersionOperation(@Assisted boolean copyAttachments) {
+    super(copyAttachments);
+  }
 
-	@Override
-	protected Item initItemUuidAndVersion(Item newItem, Item oldItem)
-	{
-		int latestVersion = itemService.getLatestVersion(getUuid());
-		newItem.setUuid(oldItem.getUuid());
-		newItem.setVersion(latestVersion + 1);
-		return newItem;
-	}
+  @Override
+  protected Item initItemUuidAndVersion(Item newItem, Item oldItem) {
+    int latestVersion = itemService.getLatestVersion(getUuid());
+    newItem.setUuid(oldItem.getUuid());
+    newItem.setVersion(latestVersion + 1);
+    return newItem;
+  }
 
-	@Override
-	protected void finalProcessing(Item origItem, Item item)
-	{
-		super.finalProcessing(origItem, item);
+  @Override
+  protected void finalProcessing(Item origItem, Item item) {
+    super.finalProcessing(origItem, item);
 
-		setState(ItemStatus.DRAFT);
-		// new version script
-		PropBagEx newxml = (PropBagEx) getItemPack().getXml().clone();
+    setState(ItemStatus.DRAFT);
+    // new version script
+    PropBagEx newxml = (PropBagEx) getItemPack().getXml().clone();
 
-		final String script = getCollection().getWizard().getRedraftScript();
-		if( !Check.isEmpty(script) )
-		{
-			Map<String, Object> attributes = new HashMap<String, Object>();
-			attributes.put(WorkflowScriptConstants.NEW_XML, newxml);
-			ScriptContext context = createScriptContext(attributes);
+    final String script = getCollection().getWizard().getRedraftScript();
+    if (!Check.isEmpty(script)) {
+      Map<String, Object> attributes = new HashMap<String, Object>();
+      attributes.put(WorkflowScriptConstants.NEW_XML, newxml);
+      ScriptContext context = createScriptContext(attributes);
 
-			itemService.executeScript(script, NEW_VERSION_SCRIPT_NAME, context, true);
-		}
-		getItemPack().setXml(newxml);
-	}
+      itemService.executeScript(script, NEW_VERSION_SCRIPT_NAME, context, true);
+    }
+    getItemPack().setXml(newxml);
+  }
 
-	@Override
-	protected void doHistory()
-	{
-		createHistory(HistoryEvent.Type.newversion);
-	}
+  @Override
+  protected void doHistory() {
+    createHistory(HistoryEvent.Type.newversion);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,28 @@
 
 package com.tle.core.item.scripting;
 
-import java.util.Map;
-
 import com.tle.beans.item.ItemPack;
 import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.scripting.service.StandardScriptContextParams;
-import com.tle.common.usermanagement.user.CurrentUser;
+import java.util.Map;
 
-/**
- * @author aholland
- */
-public class WorkflowScriptContextParams extends StandardScriptContextParams
-{
-	private final ItemService service;
+/** @author aholland */
+public class WorkflowScriptContextParams extends StandardScriptContextParams {
+  private final ItemService service;
 
-	public WorkflowScriptContextParams(ItemService service, ItemPack itemPack, FileHandle fileHandle,
-		Map<String, Object> attributes)
-	{
-		super(itemPack, fileHandle, true, attributes);
-		this.service = service;
-	}
+  public WorkflowScriptContextParams(
+      ItemService service,
+      ItemPack itemPack,
+      FileHandle fileHandle,
+      Map<String, Object> attributes) {
+    super(itemPack, fileHandle, true, attributes);
+    this.service = service;
+  }
 
-	@Override
-	public boolean isAnOwner()
-	{
-		return service.isAnOwner(getItemPack().getItem(), CurrentUser.getDetails().getUniqueID());
-	}
+  @Override
+  public boolean isAnOwner() {
+    return service.isAnOwner(getItemPack().getItem(), CurrentUser.getDetails().getUniqueID());
+  }
 }

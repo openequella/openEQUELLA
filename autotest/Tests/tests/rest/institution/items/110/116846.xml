@@ -1,0 +1,92 @@
+<com.tle.beans.item.Item>
+  <id>116846</id>
+  <uuid>1c1e0d39-2dae-4090-8ba1-4b9abe065f25</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-04 10:42:24.3</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-04 10:42:24.3</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.769</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>116872</id>
+      <uuid>4077ef80-e12d-43dc-ba91-4ef21218ce39</uuid>
+      <url>avatar.png</url>
+      <description>avatar.png</description>
+      <value1>12627</value1>
+      <value2>false</value2>
+      <md5sum>5a4e69eeae86aa557c4a27d52257b757</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>116860</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-04 10:42:24.3</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:52.797</start>
+    <lastAction class="sql-timestamp">2014-03-04 10:42:24.3</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116877</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-04 10:42:24.3</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>116865</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116867</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>avatar.png</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>116849</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116853</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>avatar.png</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>12627</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

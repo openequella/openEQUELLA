@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,66 +18,53 @@
 
 package com.tle.admin.hierarchy.tool;
 
-import java.util.Set;
-
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.AdminTool;
 import com.tle.admin.hierarchy.HierarchyDialog;
+import java.util.Set;
 
-/**
- * @author Nicholas Read
- */
-public class HierarchyTool extends AdminTool
-{
-	public HierarchyTool()
-	{
-		// There is nothing for us to do here.
-	}
+/** @author Nicholas Read */
+public class HierarchyTool extends AdminTool {
+  public HierarchyTool() {
+    // There is nothing for us to do here.
+  }
 
-	@Override
-	public void toolSelected()
-	{
-		final GlassSwingWorker<HierarchyDialog> worker = new GlassSwingWorker<HierarchyDialog>()
-		{
-			@Override
-			public HierarchyDialog construct()
-			{
-				// Make sure that the management panel has
-				// enough time to change the look and feel
-				// before we go creating things.
-				try
-				{
-					Thread.sleep(500);
-				}
-				catch( InterruptedException ex )
-				{
-					// We don't care
-				}
-				return new HierarchyDialog(parentFrame, driver.getClientService());
-			}
+  @Override
+  public void toolSelected() {
+    final GlassSwingWorker<HierarchyDialog> worker =
+        new GlassSwingWorker<HierarchyDialog>() {
+          @Override
+          public HierarchyDialog construct() {
+            // Make sure that the management panel has
+            // enough time to change the look and feel
+            // before we go creating things.
+            try {
+              Thread.sleep(500);
+            } catch (InterruptedException ex) {
+              // We don't care
+            }
+            return new HierarchyDialog(parentFrame, driver.getClientService());
+          }
 
-			@Override
-			public void finished()
-			{
-				HierarchyDialog dialog = get();
-				dialog.setModal(true);
-				dialog.setVisible(true);
-			}
+          @Override
+          public void finished() {
+            HierarchyDialog dialog = get();
+            dialog.setModal(true);
+            dialog.setVisible(true);
+          }
 
-			@Override
-			public void exception()
-			{
-				getException().printStackTrace();
-			}
-		};
+          @Override
+          public void exception() {
+            getException().printStackTrace();
+          }
+        };
 
-		worker.setComponent(parentFrame);
-		worker.start();
-	}
+    worker.setComponent(parentFrame);
+    worker.start();
+  }
 
-	@Override
-	public void setup(Set<String> grantedPrivilges, String name)
-	{
-		// nothing to do
-	}
+  @Override
+  public void setup(Set<String> grantedPrivilges, String name) {
+    // nothing to do
+  }
 }

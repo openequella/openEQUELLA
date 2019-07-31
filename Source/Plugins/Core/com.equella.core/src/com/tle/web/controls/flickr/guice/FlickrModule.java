@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,51 +31,43 @@ import com.tle.web.search.guice.AbstractSearchModule;
 import com.tle.web.sections.SectionNode;
 
 @SuppressWarnings("nls")
-public class FlickrModule extends AbstractSearchModule
-{
-	@Override
-	protected void doBinding(NodeProvider node)
-	{
-		bind(SectionNode.class).toProvider(node);
-	}
+public class FlickrModule extends AbstractSearchModule {
+  @Override
+  protected void doBinding(NodeProvider node) {
+    bind(SectionNode.class).toProvider(node);
+  }
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(FlickrLayoutSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(FlickrLayoutSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(FlickrQuerySection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(FlickrQuerySection.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(FlickrSearchResultsSection.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(FlickrSearchResultsSection.class);
+  }
 
-	@Override
-	protected NodeProvider getPagingNode()
-	{
-		return node(FlickrPagingSection.class);
-	}
+  @Override
+  protected NodeProvider getPagingNode() {
+    return node(FlickrPagingSection.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(FlickrSortOptionsSection.class);
-		node.child(FlickrFilterByDateRangeSection.class);
-		node.child(FilterByCreativeCommonsLicencesSection.class);
-		node.child(FilterByFlickrInstitutionSection.class);
-		node.child(FilterByFlickrUserSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(FlickrSortOptionsSection.class);
+    node.child(FlickrFilterByDateRangeSection.class);
+    node.child(FilterByCreativeCommonsLicencesSection.class);
+    node.child(FilterByFlickrInstitutionSection.class);
+    node.child(FilterByFlickrUserSection.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "flickrTree";
-	}
+  @Override
+  protected String getTreeName() {
+    return "flickrTree";
+  }
 }

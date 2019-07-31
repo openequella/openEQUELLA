@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,79 +18,64 @@
 
 package com.tle.core.fedsearch.impl;
 
-import java.util.Collection;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.core.fedsearch.GenericRecord;
+import java.util.Collection;
 
-/**
- * @author aholland
- */
-public class NullRecord implements GenericRecord
-{
-	@Override
-	public Collection<String> getAuthors()
-	{
-		return null;
-	}
+/** @author aholland */
+public class NullRecord implements GenericRecord {
+  @Override
+  public Collection<String> getAuthors() {
+    return null;
+  }
 
-	@Override
-	public String getDescription()
-	{
-		return null;
-	}
+  @Override
+  public String getDescription() {
+    return null;
+  }
 
-	@Override
-	public String getIsbn()
-	{
-		return null;
-	}
+  @Override
+  public String getIsbn() {
+    return null;
+  }
 
-	@Override
-	public String getIssn()
-	{
-		return null;
-	}
+  @Override
+  public String getIssn() {
+    return null;
+  }
 
-	@Override
-	public String getLccn()
-	{
-		return null;
-	}
+  @Override
+  public String getLccn() {
+    return null;
+  }
 
-	@Override
-	public String getPhysicalDescription()
-	{
-		return null;
-	}
+  @Override
+  public String getPhysicalDescription() {
+    return null;
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return null;
-	}
+  @Override
+  public String getTitle() {
+    return null;
+  }
 
-	@Override
-	public String getType()
-	{
-		return null;
-	}
+  @Override
+  public String getType() {
+    return null;
+  }
 
-	@Override
-	public String getUri()
-	{
-		return null;
-	}
+  @Override
+  public String getUri() {
+    return null;
+  }
 
-	@Override
-	public String getUrl()
-	{
-		return null;
-	}
+  @Override
+  public String getUrl() {
+    return null;
+  }
 
-	@Override
-	public PropBagEx getXml()
-	{
-		return new PropBagEx();
-	}
+  @Override
+  public PropBagEx getXml() {
+    return new PropBagEx();
+  }
 }

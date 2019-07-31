@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,39 +25,32 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSPropertyExpression;
 
 @NonNullByDefault
-public class PropertyExpression extends AbstractExpression implements JSPropertyExpression
-{
-	private final JSExpression property;
+public class PropertyExpression extends AbstractExpression implements JSPropertyExpression {
+  private final JSExpression property;
 
-	public PropertyExpression(String property)
-	{
-		this.property = new ScriptExpression(property);
-	}
+  public PropertyExpression(String property) {
+    this.property = new ScriptExpression(property);
+  }
 
-	public PropertyExpression(JSExpression property)
-	{
-		this.property = property;
-	}
+  public PropertyExpression(JSExpression property) {
+    this.property = property;
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		return '.' + property.getExpression(info);
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    return '.' + property.getExpression(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(property);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(property);
+  }
 
-	public static CombinedExpression create(JSExpression expr, String prop)
-	{
-		return new CombinedExpression(expr, new PropertyExpression(prop));
-	}
+  public static CombinedExpression create(JSExpression expr, String prop) {
+    return new CombinedExpression(expr, new PropertyExpression(prop));
+  }
 
-	public static CombinedExpression create(JSExpression expr, JSExpression prop)
-	{
-		return new CombinedExpression(expr, new PropertyExpression(prop));
-	}
+  public static CombinedExpression create(JSExpression expr, JSExpression prop) {
+    return new CombinedExpression(expr, new PropertyExpression(prop));
+  }
 }

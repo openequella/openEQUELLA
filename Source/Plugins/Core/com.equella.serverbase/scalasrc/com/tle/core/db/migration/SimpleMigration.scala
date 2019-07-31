@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,7 +27,12 @@ import com.tle.core.hibernate.CurrentDataSource
 import com.tle.core.migration.{Migration, MigrationExt, MigrationInfo, MigrationResult}
 import io.doolse.simpledba.jdbc.JDBCIO
 
-abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, strings: StringLookup) extends MigrationExt {
+abstract class SimpleMigration(val id: String,
+                               year: Int,
+                               month: Int,
+                               day: Int,
+                               strings: StringLookup)
+    extends MigrationExt {
 
   def migration(progress: MigrationResult, schema: DBSchemaMigration): JDBCIO[Unit]
 
@@ -36,7 +43,7 @@ abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, 
 
     override def migrate(status: MigrationResult): Unit = {
       val mig = migration(status, DBSchema.schemaMigration)
-      RunWithDB.executeTransaction(CurrentDataSource.get().getDataSource.getConnection, mig)
+      RunWithDB.executeTransaction(CurrentDataSource.get().getDataSource, mig)
     }
 
     override def createMigrationInfo(): MigrationInfo =

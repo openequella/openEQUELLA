@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,8 @@
 
 package com.tle.web.cloud.search.section;
 
-import javax.inject.Inject;
-
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.guice.Bind;
@@ -37,72 +36,70 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
-import com.tle.web.viewitem.ItemFilestoreServlet;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class RootCloudSearchSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	public static final String SEARCH_SESSIONKEY = "cloudSearchContext";
+public class RootCloudSearchSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  public static final String SEARCH_SESSIONKEY = "cloudSearchContext";
 
-	@PlugKey("search.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("search.error.clouddisabled")
-	private static Label LABEL_ERROR_CLOUD_DISABLED;
+  @PlugKey("search.title")
+  private static Label LABEL_TITLE;
 
-	@Inject
-	private CloudService cloudService;
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private InstitutionService institutionService;
+  @PlugKey("search.error.clouddisabled")
+  private static Label LABEL_ERROR_CLOUD_DISABLED;
 
-	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootCloudSearchSection.class);
+  @Inject private CloudService cloudService;
+  @Inject private TLEAclManager aclManager;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !cloudService.isCloudy() )
-		{
-			throw new AccessDeniedException(LABEL_ERROR_CLOUD_DISABLED.getText());
-		}
+  private static PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(RootCloudSearchSection.class);
 
-		// Anonymous search privilege if it exists extends to cloud search
-		if( aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty() )
-		{
-			if( CurrentUser.isGuest() )
-			{
-				LogonSection.forwardToLogon(context,
-					institutionService.removeInstitution(context.getPublicBookmark().getHref()),
-					LogonSection.STANDARD_LOGON_PATH);
-				return null;
-			}
-			throw new AccessDeniedException(urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!cloudService.isCloudy()) {
+      throw new AccessDeniedException(LABEL_ERROR_CLOUD_DISABLED.getText());
+    }
 
-		return super.renderHtml(context);
-	}
+    // Anonymous search privilege if it exists extends to cloud search
+    if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
+      if (CurrentUser.isGuest()) {
+        LogonSection.forwardToLogon(
+            context,
+            institutionService.removeInstitution(context.getPublicBookmark().getHref()),
+            LogonSection.STANDARD_LOGON_PATH);
+        return null;
+      }
+      throw new AccessDeniedException(
+          urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+    }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return SEARCH_SESSIONKEY;
-	}
+    return super.renderHtml(context);
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getSessionKey() {
+    return SEARCH_SESSIONKEY;
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null ? super.getDefaultLayout(info)
-			: ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
+
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null
+        ? super.getDefaultLayout(info)
+        : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

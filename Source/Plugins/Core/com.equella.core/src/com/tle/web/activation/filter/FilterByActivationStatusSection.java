@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.activation.filter;
-
-import javax.inject.Inject;
 
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.common.NameValue;
@@ -41,85 +41,78 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class FilterByActivationStatusSection extends AbstractPrototypeSection<FilterByActivationStatusSection.Model>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<FreetextSearchEvent>
-{
-	@PlugKey("filter.bystatus.all")
-	private static String ALL_STATUSES;
-	private static final String ALL_VALUE = "all";
-	
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	@Inject
-	private ActivationService activationService;
+public class FilterByActivationStatusSection
+    extends AbstractPrototypeSection<FilterByActivationStatusSection.Model>
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FreetextSearchEvent> {
+  @PlugKey("filter.bystatus.all")
+  private static String ALL_STATUSES;
 
-	@Component(name = "as")
-	private SingleSelectionList<NameValue> activationStatus;
-	
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  private static final String ALL_VALUE = "all";
 
-		SimpleHtmlListModel<NameValue> activationStatusOptions = new SimpleHtmlListModel<NameValue>();
-		activationStatusOptions.add(new BundleNameValue(ALL_STATUSES, ALL_VALUE));
-		activationStatusOptions.add(new BundleNameValue(activationService.getStatusKey(ActivateRequest.TYPE_ACTIVE),
-			String.valueOf(ActivateRequest.TYPE_ACTIVE)));
-		activationStatusOptions.add(new BundleNameValue(activationService.getStatusKey(ActivateRequest.TYPE_INACTIVE),
-			String.valueOf(ActivateRequest.TYPE_INACTIVE)));
-		activationStatusOptions.add(new BundleNameValue(activationService.getStatusKey(ActivateRequest.TYPE_PENDING),
-			String.valueOf(ActivateRequest.TYPE_PENDING)));
-		activationStatus.setListModel(activationStatusOptions);
-		activationStatus.setAlwaysSelect(true);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @ViewFactory protected FreemarkerFactory viewFactory;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @Inject private ActivationService activationService;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		JSHandler changeHandler = searchResults.getRestartSearchHandler(tree);
-		activationStatus.addChangeEventHandler(changeHandler);
-	}
+  @Component(name = "as")
+  private SingleSelectionList<NameValue> activationStatus;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("filter/connector-filterbystatus.ftl", context);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
+    SimpleHtmlListModel<NameValue> activationStatusOptions = new SimpleHtmlListModel<NameValue>();
+    activationStatusOptions.add(new BundleNameValue(ALL_STATUSES, ALL_VALUE));
+    activationStatusOptions.add(
+        new BundleNameValue(
+            activationService.getStatusKey(ActivateRequest.TYPE_ACTIVE),
+            String.valueOf(ActivateRequest.TYPE_ACTIVE)));
+    activationStatusOptions.add(
+        new BundleNameValue(
+            activationService.getStatusKey(ActivateRequest.TYPE_INACTIVE),
+            String.valueOf(ActivateRequest.TYPE_INACTIVE)));
+    activationStatusOptions.add(
+        new BundleNameValue(
+            activationService.getStatusKey(ActivateRequest.TYPE_PENDING),
+            String.valueOf(ActivateRequest.TYPE_PENDING)));
+    activationStatus.setListModel(activationStatusOptions);
+    activationStatus.setAlwaysSelect(true);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		String status = activationStatus.getSelectedValueAsString(info);
-		if( !status.equals(ALL_VALUE) )
-		{
-			event.getRawSearch().setActivationStatus(status);
-			event.setUserFiltered(true);
-		}
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    JSHandler changeHandler = searchResults.getRestartSearchHandler(tree);
+    activationStatus.addChangeEventHandler(changeHandler);
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		activationStatus.setSelectedStringValue(info, ALL_VALUE);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("filter/connector-filterbystatus.ftl", context);
+  }
 
-	public class Model
-	{
-		// big lot of nothing
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    String status = activationStatus.getSelectedValueAsString(info);
+    if (!status.equals(ALL_VALUE)) {
+      event.getRawSearch().setActivationStatus(status);
+      event.setUserFiltered(true);
+    }
+  }
 
-	public SingleSelectionList<NameValue> getActivationStatus()
-	{
-		return activationStatus;
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    activationStatus.setSelectedStringValue(info, ALL_VALUE);
+  }
+
+  public class Model {
+    // big lot of nothing
+  }
+
+  public SingleSelectionList<NameValue> getActivationStatus() {
+    return activationStatus;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.manualdatafixes;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 import com.tle.core.guice.Bind;
@@ -57,121 +55,119 @@ import com.tle.web.sections.standard.renderers.HeadingRenderer;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class RootManualDataFixesSettingsSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugURL("js/taskupdate.js")
-	private static String update_url;
-	@PlugURL("css/manualdatafix.css")
-	private static String css_url;
-	@PlugKey("fix.title")
-	private static Label TITLE_LABEL;
+public class RootManualDataFixesSettingsSection extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @PlugURL("js/taskupdate.js")
+  private static String update_url;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugURL("css/manualdatafix.css")
+  private static String css_url;
 
-	@Inject
-	private ManualDataFixesPrivilegeTreeProvider securityProvider;
+  @PlugKey("fix.title")
+  private static Label TITLE_LABEL;
 
-	private CollectInterfaceHandler<UpdateTaskStatus> children;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void checkAuthorised(SectionInfo info)
-	{
-		securityProvider.checkAuthorised();
-	}
+  @Inject private ManualDataFixesPrivilegeTreeProvider securityProvider;
 
-	private final JSCallAndReference setupUpdate = new ExternallyDefinedFunction("setupUpdate", new IncludeFile(
-		update_url, JQueryProgression.PRERENDER, JQueryTimer.PRERENDER, AjaxGenerator.AJAX_LIBRARY));
+  private CollectInterfaceHandler<UpdateTaskStatus> children;
 
-	private JSCallable updateCallback;
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void checkAuthorised(SectionInfo info) {
+    securityProvider.checkAuthorised();
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		children = new CollectInterfaceHandler<UpdateTaskStatus>(UpdateTaskStatus.class);
-		updateCallback = ajax.getAjaxFunction("updateStatus");
-		tree.addRegistrationHandler(children);
-	}
+  private final JSCallAndReference setupUpdate =
+      new ExternallyDefinedFunction(
+          "setupUpdate",
+          new IncludeFile(
+              update_url,
+              JQueryProgression.PRERENDER,
+              JQueryTimer.PRERENDER,
+              AjaxGenerator.AJAX_LIBRARY));
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setTitle(TITLE_LABEL);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
+  private JSCallable updateCallback;
 
-		List<SectionRenderable> srs = renderChildren(context, new ResultListCollector()).getResultList();
-		srs.add(0, HeadingRenderer.topLevel(new LabelRenderer(TITLE_LABEL)));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    children = new CollectInterfaceHandler<UpdateTaskStatus>(UpdateTaskStatus.class);
+    updateCallback = ajax.getAjaxFunction("updateStatus");
+    tree.addRegistrationHandler(children);
+  }
 
-		if( checkForUnfinished(context) )
-		{
-			context.getBody()
-				.addReadyStatements(new FunctionCallStatement(setupUpdate, updateCallback, getSectionId()));
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setTitle(TITLE_LABEL);
+    Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
-		return new CombinedRenderer(new DivRenderer("area manualdatafixes", new CombinedRenderer(srs)), CssInclude
-			.include(css_url).hasRtl().make());
-	}
+    List<SectionRenderable> srs =
+        renderChildren(context, new ResultListCollector()).getResultList();
+    srs.add(0, HeadingRenderer.topLevel(new LabelRenderer(TITLE_LABEL)));
 
-	private boolean checkForUnfinished(SectionInfo info)
-	{
-		List<UpdateTaskStatus> allImplementors = children.getAllImplementors(info);
-		boolean hasUnfinished = false;
-		for( UpdateTaskStatus child : allImplementors )
-		{
-			if( !child.isFinished(info) )
-			{
-				hasUnfinished = true;
-				break;
-			}
-		}
-		return hasUnfinished;
-	}
+    if (checkForUnfinished(context)) {
+      context
+          .getBody()
+          .addReadyStatements(
+              new FunctionCallStatement(setupUpdate, updateCallback, getSectionId()));
+    }
 
-	@AjaxMethod
-	public JSONResponseCallback updateStatus(final AjaxRenderContext info)
-	{
-		if( info.isRendered() )
-		{
-			return null;
-		}
+    return new CombinedRenderer(
+        new DivRenderer("area manualdatafixes", new CombinedRenderer(srs)),
+        CssInclude.include(css_url).hasRtl().make());
+  }
 
-		// Get update divs from sections
-		List<String> ids = Lists.newArrayList();
+  private boolean checkForUnfinished(SectionInfo info) {
+    List<UpdateTaskStatus> allImplementors = children.getAllImplementors(info);
+    boolean hasUnfinished = false;
+    for (UpdateTaskStatus child : allImplementors) {
+      if (!child.isFinished(info)) {
+        hasUnfinished = true;
+        break;
+      }
+    }
+    return hasUnfinished;
+  }
 
-		for( UpdateTaskStatus fix : children.getAllImplementors(info) )
-		{
-			ids.add(fix.getAjaxId());
-		}
-		final boolean hasUnfinished = checkForUnfinished(info);
-		info.addAjaxDivs(ids);
+  @AjaxMethod
+  public JSONResponseCallback updateStatus(final AjaxRenderContext info) {
+    if (info.isRendered()) {
+      return null;
+    }
 
-		return new JSONResponseCallback()
-		{
-			@Override
-			public Object getResponseObject(AjaxRenderContext context)
-			{
-				FullDOMResult ajaxResult = context.getFullDOMResult();
-				ManualDataFixStatusUpdate update = new ManualDataFixStatusUpdate(ajaxResult);
-				update.setFinished(!hasUnfinished);
-				update.setUpdates(ajaxResult.getHtml());
-				return update;
-			}
-		};
-	}
+    // Get update divs from sections
+    List<String> ids = Lists.newArrayList();
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+    for (UpdateTaskStatus fix : children.getAllImplementors(info)) {
+      ids.add(fix.getAjaxId());
+    }
+    final boolean hasUnfinished = checkForUnfinished(info);
+    info.addAjaxDivs(ids);
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "rmdfs";
-	}
+    return new JSONResponseCallback() {
+      @Override
+      public Object getResponseObject(AjaxRenderContext context) {
+        FullDOMResult ajaxResult = context.getFullDOMResult();
+        ManualDataFixStatusUpdate update = new ManualDataFixStatusUpdate(ajaxResult);
+        update.setFinished(!hasUnfinished);
+        update.setUpdates(ajaxResult.getHtml());
+        return update;
+      }
+    };
+  }
+
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "rmdfs";
+  }
 }

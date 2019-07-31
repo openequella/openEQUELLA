@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.viewitem.treeviewer;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.core.guice.Bind;
@@ -28,36 +27,38 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 public class IMSAttachmentResources
-	implements
-		AttachmentResourceExtension<Attachment>,
-		RegisterMimeTypeExtension<Attachment>
-{
+    implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment> {
 
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
-	{
-		String viewUrl = TreeNavigationSection.VIEWIMS_JSP;
-		ViewableResource res = attachmentResourceService.createPathResource(info, resource.getViewableItem(), viewUrl,
-			attachment.getDescription(), MimeTypeConstants.MIME_IMS, attachment);
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, Attachment attachment) {
+    String viewUrl = TreeNavigationSection.VIEWIMS_JSP;
+    ViewableResource res =
+        attachmentResourceService.createPathResource(
+            info,
+            resource.getViewableItem(),
+            viewUrl,
+            attachment.getDescription(),
+            MimeTypeConstants.MIME_IMS,
+            attachment);
 
-		ImsAttachment imsAttachment = (ImsAttachment) attachment;
-		if( imsAttachment.isExpand() )
-		{
-			res.setAttribute(ViewableResource.KEY_HIDDEN, true);
-		}
-		return new IMSResource(res);
-	}
+    ImsAttachment imsAttachment = (ImsAttachment) attachment;
+    if (imsAttachment.isExpand()) {
+      res.setAttribute(ViewableResource.KEY_HIDDEN, true);
+    }
+    return new IMSResource(res);
+  }
 
-	@Override
-	public String getMimeType(Attachment attachment)
-	{
-		return MimeTypeConstants.MIME_IMS;
-	}
+  @Override
+  public String getMimeType(Attachment attachment) {
+    return MimeTypeConstants.MIME_IMS;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.section.attachment;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -73,432 +70,415 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.AttachmentViewFilter;
 import com.tle.web.viewitem.summary.attachment.service.ViewAttachmentWebService;
 import com.tle.web.viewitem.summary.attachment.service.ViewAttachmentWebService.AttachmentRowDisplay;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends AbstractAttachmentsSection.AttachmentsModel>
-	extends
-		AbstractPrototypeSection<AbstractAttachmentsSection.AttachmentsModel>
-	implements
-		HtmlRenderer,
-		AttachmentSelectorEventListener,
-		AllAttachmentsSelectorEventListener,
-		PackageSelectorEventListener
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(AbstractAttachmentsSection.class);
-	private static final IncludeFile INCLUDE = new IncludeFile(resources.url("scripts/attachments/attachments.js"),
-		JQuerySortable.PRERENDER);
-	//TODO: move reorder code into new JS file, then make this private
-	protected static final JSCallAndReference ATTACHMENTS_CLASS = new ExternallyDefinedFunction("Attachments", INCLUDE);
-	private static final JSCallable SELECT_PACKAGE_FUNCTION = new ExternallyDefinedFunction(ATTACHMENTS_CLASS,
-		"selectPackage", 3);
-	private static final JSCallable SELECT_ALL_ATTACHMENTS_FUN = new ExternallyDefinedFunction(ATTACHMENTS_CLASS,
-		"setupSelectAllButton", 5);
+public abstract class AbstractAttachmentsSection<
+        I extends IItem<?>, M extends AbstractAttachmentsSection.AttachmentsModel>
+    extends AbstractPrototypeSection<AbstractAttachmentsSection.AttachmentsModel>
+    implements HtmlRenderer,
+        AttachmentSelectorEventListener,
+        AllAttachmentsSelectorEventListener,
+        PackageSelectorEventListener {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(AbstractAttachmentsSection.class);
+  private static final IncludeFile INCLUDE =
+      new IncludeFile(
+          resources.url("scripts/attachments/attachments.js"), JQuerySortable.PRERENDER);
+  // TODO: move reorder code into new JS file, then make this private
+  protected static final JSCallAndReference ATTACHMENTS_CLASS =
+      new ExternallyDefinedFunction("Attachments", INCLUDE);
+  private static final JSCallable SELECT_PACKAGE_FUNCTION =
+      new ExternallyDefinedFunction(ATTACHMENTS_CLASS, "selectPackage", 3);
+  private static final JSCallable SELECT_ALL_ATTACHMENTS_FUN =
+      new ExternallyDefinedFunction(ATTACHMENTS_CLASS, "setupSelectAllButton", 5);
 
-	protected boolean showFull = true;
-	protected boolean showFullNewWindow = false;
-	protected boolean showStructuredView = true;
+  protected boolean showFull = true;
+  protected boolean showFullNewWindow = false;
+  protected boolean showStructuredView = true;
 
-	@Inject
-	private ViewAttachmentWebService viewAttachmentWebService;
-	@Inject
-	protected SelectionService selectionService;
+  @Inject private ViewAttachmentWebService viewAttachmentWebService;
+  @Inject protected SelectionService selectionService;
 
-	@PlugKey("summary.content.attachments.modal.warning")
-	public static Label MODAL_CLOSE_WARNING_LABEL;
-	@PlugKey("summary.content.attachments.modal.button.save")
-	public static Label MODAL_SAVE_LABEL;
-	@PlugKey("summary.content.attachments.modal.button.cancel")
-	public static Label MODAL_CANCEL_LABEL;
+  @PlugKey("summary.content.attachments.modal.warning")
+  public static Label MODAL_CLOSE_WARNING_LABEL;
 
-	@Component
-	protected Div div;
-	@PlugKey("summary.content.attachments.attachment.button.selectattachment.all")
-	@Component
-	private Button selectAllAttachmentButton;
-	@PlugKey("summary.content.attachments.attachment.button.selectpackage")
-	@Component
-	private Button selectPackageButton;
-	@PlugKey("summary.content.attachments.link.fullscreen")
-	@Component
-	private Link fullScreenLink;
-	@PlugKey("summary.content.attachments.link.fullscreen.newwindow")
-	@Component
-	private Link fullScreenLinkNewWindow;
+  @PlugKey("summary.content.attachments.modal.button.save")
+  public static Label MODAL_SAVE_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+  @PlugKey("summary.content.attachments.modal.button.cancel")
+  public static Label MODAL_CANCEL_LABEL;
 
-	protected abstract boolean showFullscreen(SectionInfo info, I item, List<AttachmentRowDisplay> rows);
+  @Component protected Div div;
 
-	@Nullable
-	protected abstract Bookmark getFullscreenBookmark(SectionInfo info, ViewableItem<I> vitem);
+  @PlugKey("summary.content.attachments.attachment.button.selectattachment.all")
+  @Component
+  private Button selectAllAttachmentButton;
 
-	protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
+  @PlugKey("summary.content.attachments.attachment.button.selectpackage")
+  @Component
+  private Button selectPackageButton;
 
-	protected abstract Label getTitle(SectionInfo info, ViewableItem<I> vitem);
+  @PlugKey("summary.content.attachments.link.fullscreen")
+  @Component
+  private Link fullScreenLink;
 
-	@Nullable
-	protected abstract AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<I> vitem, boolean filtered);
+  @PlugKey("summary.content.attachments.link.fullscreen.newwindow")
+  @Component
+  private Link fullScreenLinkNewWindow;
 
-	@Nullable
-	protected abstract String getItemExtensionType();
+  @EventFactory private EventGenerator events;
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	protected abstract String getAttchmentControlId();
+  protected abstract boolean showFullscreen(
+      SectionInfo info, I item, List<AttachmentRowDisplay> rows);
 
-	protected void customRender(RenderEventContext context, AttachmentsModel model, ViewableItem<I> viewableItem,
-		List<AttachmentRowDisplay> attachmentDisplays)
-	{
-		//No-op by default
-	}
+  @Nullable
+  protected abstract Bookmark getFullscreenBookmark(SectionInfo info, ViewableItem<I> vitem);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
 
-		tree.addListener(null, AttachmentSelectorEventListener.class, this);
-		tree.addListener(null, AllAttachmentsSelectorEventListener.class, this);
-		tree.addListener(null, PackageSelectorEventListener.class, this);
-		selectPackageButton.setStyleClass("package-select button-expandable");
-		selectAllAttachmentButton.setStyleClass("package-select button-expandable");
-	}
+  protected abstract Label getTitle(SectionInfo info, ViewableItem<I> vitem);
 
-	protected abstract boolean isFiltered(ViewableItem<I> viewableItem);
+  @Nullable
+  protected abstract AttachmentViewFilter getCustomFilter(
+      SectionInfo info, ViewableItem<I> vitem, boolean filtered);
 
-	@Nullable
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final AttachmentsModel model = getModel(context);
-		final ViewableItem<I> viewableItem = getViewableItem(context);
-		final I item = viewableItem.getItem();
-		final ItemKey itemId = item.getItemId();
+  @Nullable
+  protected abstract String getItemExtensionType();
 
-		boolean renderSelect = selectionService.getCurrentSession(context) != null
-			&& !selectionService.getCurrentSession(context).getStructure().isNoTargets();
+  protected abstract String getAttchmentControlId();
 
-		boolean filtered = isFiltered(viewableItem);
-		final List<AttachmentRowDisplay> attachmentDisplays = viewAttachmentWebService.createViewsForItem(context,
-			viewableItem, div, renderSelect, true, !showStructuredView, filtered);
-		viewAttachmentWebService.filterAttachmentDisplays(context, attachmentDisplays,
-			getCustomFilter(context, viewableItem, filtered));
-		removeEmptyFolder(attachmentDisplays);
+  protected void customRender(
+      RenderEventContext context,
+      AttachmentsModel model,
+      ViewableItem<I> viewableItem,
+      List<AttachmentRowDisplay> attachmentDisplays) {
+    // No-op by default
+  }
 
-		if( attachmentDisplays.isEmpty() )
-		{
-			return null;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		div.addReadyStatements(context,
-			viewAttachmentWebService.createShowDetailsFunction(itemId, ".attachments-browse"));
+    tree.addListener(null, AttachmentSelectorEventListener.class, this);
+    tree.addListener(null, AllAttachmentsSelectorEventListener.class, this);
+    tree.addListener(null, PackageSelectorEventListener.class, this);
+    selectPackageButton.setStyleClass("package-select button-expandable");
+    selectAllAttachmentButton.setStyleClass("package-select button-expandable");
+  }
 
-		final String itemExtensionType = getItemExtensionType();
-		final JSCallable selectFunction = selectionService.getSelectAttachmentFunction(context, viewableItem);
-		if( selectFunction != null )
-		{
-			div.getState(context).addClass("selectable");
-			div.addReadyStatements(context, viewAttachmentWebService.setupSelectButtonsFunction(selectFunction,
-				new ItemId(itemId.getUuid(), itemId.getVersion()), itemExtensionType, ".attachments-browse"));
-		}
+  protected abstract boolean isFiltered(ViewableItem<I> viewableItem);
 
-		final JSCallable selectPackageFunction = getSelectPackageFunction(context, viewableItem);
-		if( selectPackageFunction != null && renderSelect )
-		{
-			selectPackageButton.setClickHandler(context, new OverrideHandler(SELECT_PACKAGE_FUNCTION,
-				Jq.$(selectPackageButton), selectPackageFunction, itemId, getAttchmentControlId()));
-		}
-		else
-		{
-			selectPackageButton.setDisplayed(context, false);
-		}
+  @Nullable
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final AttachmentsModel model = getModel(context);
+    final ViewableItem<I> viewableItem = getViewableItem(context);
+    final I item = viewableItem.getItem();
+    final ItemKey itemId = item.getItemId();
 
-		final JSCallable selectAllAttachmentsFunction = getSelectAllAttachmentsFunction(context, viewableItem);
-		if( showSelectAllButton(context, attachmentDisplays) && selectAllAttachmentsFunction != null )
-		{
-			model.setShowSelectAllButton(true);
-			List<String> allAttachmentUuids = getAllAttachmentUuids(attachmentDisplays);
-			selectAllAttachmentButton.setClickHandler(context,
-				new OverrideHandler(SELECT_ALL_ATTACHMENTS_FUN, selectAllAttachmentsFunction, allAttachmentUuids,
-					itemId, itemExtensionType, div.getElementId(context)));
-		}
-		else
-		{
-			selectAllAttachmentButton.setDisplayed(context, false);
-		}
+    boolean renderSelect =
+        selectionService.getCurrentSession(context) != null
+            && !selectionService.getCurrentSession(context).getStructure().isNoTargets();
 
-		model.setAttachmentRows(attachmentDisplays);
+    boolean filtered = isFiltered(viewableItem);
+    final List<AttachmentRowDisplay> attachmentDisplays =
+        viewAttachmentWebService.createViewsForItem(
+            context, viewableItem, div, renderSelect, true, !showStructuredView, filtered);
+    viewAttachmentWebService.filterAttachmentDisplays(
+        context, attachmentDisplays, getCustomFilter(context, viewableItem, filtered));
+    removeEmptyFolder(attachmentDisplays);
 
-		// only render the fullscreen link if enabled attachments > 0
-		final boolean showFullscreen = showFullscreen(context, item, attachmentDisplays);
-		fullScreenLink.setDisplayed(context, showFull && showFullscreen);
-		fullScreenLinkNewWindow.setDisplayed(context, showFullNewWindow && showFullscreen);
-		if( showFullscreen && (showFull || showFullNewWindow) )
-		{
-			final Bookmark fullscreenBookmark = getFullscreenBookmark(context, viewableItem);
-			fullScreenLink.setBookmark(context, fullscreenBookmark);
-			fullScreenLink.setLabel(context, new IconLabel(Icon.FULLSCREEN, fullScreenLink.getLabel(context), false));
-			fullScreenLinkNewWindow.setLabel(context,
-				new IconLabel(Icon.FULLSCREEN, fullScreenLinkNewWindow.getLabel(context), false));
-			fullScreenLinkNewWindow.setBookmark(context, fullscreenBookmark);
-			fullScreenLinkNewWindow.getState(context).setTarget("_blank");
-		}
+    if (attachmentDisplays.isEmpty()) {
+      return null;
+    }
 
-		customRender(context, model, viewableItem, attachmentDisplays);
+    div.addReadyStatements(
+        context, viewAttachmentWebService.createShowDetailsFunction(itemId, ".attachments-browse"));
 
-		model.setSectionTitle(getTitle(context, viewableItem));
-		return viewFactory.createResult("viewitem/attachments/attachments.ftl", context);
-	}
+    final String itemExtensionType = getItemExtensionType();
+    final JSCallable selectFunction =
+        selectionService.getSelectAttachmentFunction(context, viewableItem);
+    if (selectFunction != null) {
+      div.getState(context).addClass("selectable");
+      div.addReadyStatements(
+          context,
+          viewAttachmentWebService.setupSelectButtonsFunction(
+              selectFunction,
+              new ItemId(itemId.getUuid(), itemId.getVersion()),
+              itemExtensionType,
+              ".attachments-browse"));
+    }
 
-	private void removeEmptyFolder(List<AttachmentRowDisplay> attachmentDisplays)
-	{
-		if( attachmentDisplays.size() > 0 )
-		{
-			AttachmentRowDisplay firstRow = attachmentDisplays.get(0);
-			String rowType = firstRow.getRow().getData("rowType");
+    final JSCallable selectPackageFunction = getSelectPackageFunction(context, viewableItem);
+    if (selectPackageFunction != null && renderSelect) {
+      selectPackageButton.setClickHandler(
+          context,
+          new OverrideHandler(
+              SELECT_PACKAGE_FUNCTION,
+              Jq.$(selectPackageButton),
+              selectPackageFunction,
+              itemId,
+              getAttchmentControlId()));
+    } else {
+      selectPackageButton.setDisplayed(context, false);
+    }
 
-			if( rowType != null && rowType.equals("folder") )
-			{
-				if( attachmentDisplays.size() == 1 )
-				{
-					attachmentDisplays.remove(0);
-				}
-				else
-				{
-					AttachmentRowDisplay secondRow = attachmentDisplays.get(1);
-					if( firstRow.getLevel() == secondRow.getLevel() )
-					{
-						attachmentDisplays.remove(0);
-					}
-				}
-			}
-		}
-	}
+    final JSCallable selectAllAttachmentsFunction =
+        getSelectAllAttachmentsFunction(context, viewableItem);
+    if (showSelectAllButton(context, attachmentDisplays) && selectAllAttachmentsFunction != null) {
+      model.setShowSelectAllButton(true);
+      List<String> allAttachmentUuids = getAllAttachmentUuids(attachmentDisplays);
+      selectAllAttachmentButton.setClickHandler(
+          context,
+          new OverrideHandler(
+              SELECT_ALL_ATTACHMENTS_FUN,
+              selectAllAttachmentsFunction,
+              allAttachmentUuids,
+              itemId,
+              itemExtensionType,
+              div.getElementId(context)));
+    } else {
+      selectAllAttachmentButton.setDisplayed(context, false);
+    }
 
-	private List<String> getAllAttachmentUuids(List<AttachmentRowDisplay> rows)
-	{
-		List<String> uuids = new ArrayList<>();
+    model.setAttachmentRows(attachmentDisplays);
 
-		for( AttachmentRowDisplay attachmentRow : rows )
-		{
-			if( attachmentRow.getAttachmentView() != null )
-			{
-				uuids.add(attachmentRow.getAttachmentView().getAttachment().getUuid());
-			}
-		}
-		return uuids;
-	}
+    // only render the fullscreen link if enabled attachments > 0
+    final boolean showFullscreen = showFullscreen(context, item, attachmentDisplays);
+    fullScreenLink.setDisplayed(context, showFull && showFullscreen);
+    fullScreenLinkNewWindow.setDisplayed(context, showFullNewWindow && showFullscreen);
+    if (showFullscreen && (showFull || showFullNewWindow)) {
+      final Bookmark fullscreenBookmark = getFullscreenBookmark(context, viewableItem);
+      fullScreenLink.setBookmark(context, fullscreenBookmark);
+      fullScreenLink.setLabel(
+          context, new IconLabel(Icon.FULLSCREEN, fullScreenLink.getLabel(context), false));
+      fullScreenLinkNewWindow.setLabel(
+          context,
+          new IconLabel(Icon.FULLSCREEN, fullScreenLinkNewWindow.getLabel(context), false));
+      fullScreenLinkNewWindow.setBookmark(context, fullscreenBookmark);
+      fullScreenLinkNewWindow.getState(context).setTarget("_blank");
+    }
 
-	@EventHandlerMethod
-	public void selectAttachment(SectionInfo info, String uuid, ItemId itemId, String extensionType)
-	{
-		final ViewableItem<I> vitem = getViewableItem(info);
-		final SelectedResourceKey key = new SelectedResourceKey(vitem.getItemId(), uuid, extensionType);
+    customRender(context, model, viewableItem, attachmentDisplays);
 
-		if( selectionService.getCurrentSession(info).containsResource(key, false) )
-		{
-			selectionService.removeSelectedResource(info, key);
-		}
-		else
-		{
-			final IAttachment attachment = vitem.getAttachmentByUuid(uuid);
-			final SelectAttachmentHandler selectAttachmentHandler = selectionService.getSelectAttachmentHandler(info,
-				vitem, null);
-			if( selectAttachmentHandler != null )
-			{
-				selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType, true);
-			}
-		}
-	}
+    model.setSectionTitle(getTitle(context, viewableItem));
+    return viewFactory.createResult("viewitem/attachments/attachments.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void selectAllAttachments(SectionInfo info, List<String> uuids, ItemId itemId, String extensionType)
-	{
-		for( String uuid : uuids )
-		{
-			final ViewableItem<I> vitem = getViewableItem(info);
-			final SelectedResourceKey key = new SelectedResourceKey(vitem.getItemId(), uuid, extensionType);
-			if( !selectionService.getCurrentSession(info).containsResource(key, false) )
-			{
-				final IAttachment attachment = vitem.getAttachmentByUuid(uuid);
-				final SelectAttachmentHandler selectAttachmentHandler = selectionService
-					.getSelectAttachmentHandler(info, vitem, null);
-				if( selectAttachmentHandler != null )
-				{
-					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType, true);
-				}
-			}
-		}
-	}
+  private void removeEmptyFolder(List<AttachmentRowDisplay> attachmentDisplays) {
+    if (attachmentDisplays.size() > 0) {
+      AttachmentRowDisplay firstRow = attachmentDisplays.get(0);
+      String rowType = firstRow.getRow().getData("rowType");
 
-	// TODO: Doesn't really apply for cloud items...
-	@EventHandlerMethod
-	public void selectPackage(SectionInfo info, ItemId itemId, String extensionType, String attachmentControlId)
-	{
-		final ViewableItem<I> vitem = getViewableItem(info);
-		final I item = vitem.getItem();
+      if (rowType != null && rowType.equals("folder")) {
+        if (attachmentDisplays.size() == 1) {
+          attachmentDisplays.remove(0);
+        } else {
+          AttachmentRowDisplay secondRow = attachmentDisplays.get(1);
+          if (firstRow.getLevel() == secondRow.getLevel()) {
+            attachmentDisplays.remove(0);
+          }
+        }
+      }
+    }
+  }
 
-		final ImsAttachment attachment = new UnmodifiableAttachments(item).getIms();
-		if( attachment == null )
-		{
-			if( !Check.isEmpty(item.getTreeNodes()) )
-			{
-				selectionService.addSelectedPath(info, item, "treenav.jsp", null, extensionType);
-			}
-			else
-			{
-				String resourcePath = "viewcontent/" + attachmentControlId;
-				selectionService.addSelectedPath(info, item, resourcePath, null, extensionType);
-			}
-		}
-		else
-		{
-			selectionService.addSelectedResource(info,
-				selectionService.createAttachmentSelection(info, item.getItemId(), attachment, null, extensionType),
-				true);
-		}
-	}
+  private List<String> getAllAttachmentUuids(List<AttachmentRowDisplay> rows) {
+    List<String> uuids = new ArrayList<>();
 
-	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
-	{
-		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), canForward);
-	}
+    for (AttachmentRowDisplay attachmentRow : rows) {
+      if (attachmentRow.getAttachmentView() != null) {
+        uuids.add(attachmentRow.getAttachmentView().getAttachment().getUuid());
+      }
+    }
+    return uuids;
+  }
 
-	@Override
-	public void supplyFunction(SectionInfo info, PackageSelectorEvent event)
-	{
-		event.setFunction(events.getSubmitValuesFunction("selectPackage"));
-	}
+  @EventHandlerMethod
+  public void selectAttachment(SectionInfo info, String uuid, ItemId itemId, String extensionType) {
+    final ViewableItem<I> vitem = getViewableItem(info);
+    final SelectedResourceKey key = new SelectedResourceKey(vitem.getItemId(), uuid, extensionType);
 
-	@Override
-	public void supplyFunction(SectionInfo info, AttachmentSelectorEvent event)
-	{
-		event.setFunction(events.getSubmitValuesFunction("selectAttachment"));
-	}
+    if (selectionService.getCurrentSession(info).containsResource(key, false)) {
+      selectionService.removeSelectedResource(info, key);
+    } else {
+      final IAttachment attachment = vitem.getAttachmentByUuid(uuid);
+      final SelectAttachmentHandler selectAttachmentHandler =
+          selectionService.getSelectAttachmentHandler(info, vitem, null);
+      if (selectAttachmentHandler != null) {
+        selectAttachmentHandler.handleAttachmentSelection(
+            info, itemId, attachment, extensionType, true);
+      }
+    }
+  }
 
-	@Override
-	public void supplyFunction(SectionInfo info, AllAttachmentsSelectorEvent event)
-	{
-		event.setFunction(events.getSubmitValuesFunction("selectAllAttachments"));
-	}
+  @EventHandlerMethod
+  public void selectAllAttachments(
+      SectionInfo info, List<String> uuids, ItemId itemId, String extensionType) {
+    for (String uuid : uuids) {
+      final ViewableItem<I> vitem = getViewableItem(info);
+      final SelectedResourceKey key =
+          new SelectedResourceKey(vitem.getItemId(), uuid, extensionType);
+      if (!selectionService.getCurrentSession(info).containsResource(key, false)) {
+        final IAttachment attachment = vitem.getAttachmentByUuid(uuid);
+        final SelectAttachmentHandler selectAttachmentHandler =
+            selectionService.getSelectAttachmentHandler(info, vitem, null);
+        if (selectAttachmentHandler != null) {
+          selectAttachmentHandler.handleAttachmentSelection(
+              info, itemId, attachment, extensionType, true);
+        }
+      }
+    }
+  }
 
-	private boolean showSelectAllButton(SectionInfo info, List<AttachmentRowDisplay> rows)
-	{
-		SelectionSession currentSession = selectionService.getCurrentSession(info);
-		if( currentSession == null || !currentSession.isSelectMultiple()
-			|| currentSession.getStructure().isNoTargets() )
-		{
-			return false;
-		}
+  // TODO: Doesn't really apply for cloud items...
+  @EventHandlerMethod
+  public void selectPackage(
+      SectionInfo info, ItemId itemId, String extensionType, String attachmentControlId) {
+    final ViewableItem<I> vitem = getViewableItem(info);
+    final I item = vitem.getItem();
 
-		int i = 0;
-		for( AttachmentRowDisplay attachmentRowDisplay : rows )
-		{
-			if( attachmentRowDisplay.getAttachmentView() != null )
-			{
-				i++;
-				if( i > 1 )
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    final ImsAttachment attachment = new UnmodifiableAttachments(item).getIms();
+    if (attachment == null) {
+      if (!Check.isEmpty(item.getTreeNodes())) {
+        selectionService.addSelectedPath(info, item, "treenav.jsp", null, extensionType);
+      } else {
+        String resourcePath = "viewcontent/" + attachmentControlId;
+        selectionService.addSelectedPath(info, item, resourcePath, null, extensionType);
+      }
+    } else {
+      selectionService.addSelectedResource(
+          info,
+          selectionService.createAttachmentSelection(
+              info, item.getItemId(), attachment, null, extensionType),
+          true);
+    }
+  }
 
-	@Nullable
-	protected JSCallable getSelectAllAttachmentsFunction(SectionInfo info, ViewableItem<I> vitem)
-	{
-		return selectionService.getSelectAllAttachmentsFunction(info, vitem);
-	}
+  @Override
+  public void handleAttachmentSelection(
+      SectionInfo info,
+      ItemId itemId,
+      IAttachment attachment,
+      String extensionType,
+      boolean canForward) {
+    selectionService.addSelectedResource(
+        info,
+        selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType),
+        canForward);
+  }
 
-	@Nullable
-	protected JSCallable getSelectPackageFunction(SectionInfo info, ViewableItem<I> vitem)
-	{
-		return selectionService.getSelectPackageFunction(info, vitem);
-	}
+  @Override
+  public void supplyFunction(SectionInfo info, PackageSelectorEvent event) {
+    event.setFunction(events.getSubmitValuesFunction("selectPackage"));
+  }
 
-	public Button getSelectPackageButton()
-	{
-		return selectPackageButton;
-	}
+  @Override
+  public void supplyFunction(SectionInfo info, AttachmentSelectorEvent event) {
+    event.setFunction(events.getSubmitValuesFunction("selectAttachment"));
+  }
 
-	public Button getSelectAllAttachmentButton()
-	{
-		return selectAllAttachmentButton;
-	}
+  @Override
+  public void supplyFunction(SectionInfo info, AllAttachmentsSelectorEvent event) {
+    event.setFunction(events.getSubmitValuesFunction("selectAllAttachments"));
+  }
 
-	public Link getFullScreenLink()
-	{
-		return fullScreenLink;
-	}
+  private boolean showSelectAllButton(SectionInfo info, List<AttachmentRowDisplay> rows) {
+    SelectionSession currentSession = selectionService.getCurrentSession(info);
+    if (currentSession == null
+        || !currentSession.isSelectMultiple()
+        || currentSession.getStructure().isNoTargets()) {
+      return false;
+    }
 
-	public Link getFullScreenLinkNewWindow()
-	{
-		return fullScreenLinkNewWindow;
-	}
+    int i = 0;
+    for (AttachmentRowDisplay attachmentRowDisplay : rows) {
+      if (attachmentRowDisplay.getAttachmentView() != null) {
+        i++;
+        if (i > 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
-	public Div getDiv()
-	{
-		return div;
-	}
+  @Nullable
+  protected JSCallable getSelectAllAttachmentsFunction(SectionInfo info, ViewableItem<I> vitem) {
+    return selectionService.getSelectAllAttachmentsFunction(info, vitem);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "attachments";
-	}
+  @Nullable
+  protected JSCallable getSelectPackageFunction(SectionInfo info, ViewableItem<I> vitem) {
+    return selectionService.getSelectPackageFunction(info, vitem);
+  }
 
-	@Override
-	public Class<AttachmentsModel> getModelClass()
-	{
-		return AttachmentsModel.class;
-	}
+  public Button getSelectPackageButton() {
+    return selectPackageButton;
+  }
 
-	public boolean isShowStructuredView()
-	{
-		return showStructuredView;
-	}
+  public Button getSelectAllAttachmentButton() {
+    return selectAllAttachmentButton;
+  }
 
-	public static class AttachmentsModel
-	{
-		private List<AttachmentRowDisplay> attachmentRows;
-		private boolean showSelectAllButton;
-		private Label sectionTitle;
+  public Link getFullScreenLink() {
+    return fullScreenLink;
+  }
 
-		public List<AttachmentRowDisplay> getAttachmentRows()
-		{
-			return attachmentRows;
-		}
+  public Link getFullScreenLinkNewWindow() {
+    return fullScreenLinkNewWindow;
+  }
 
-		public void setAttachmentRows(List<AttachmentRowDisplay> attachmentRows)
-		{
-			this.attachmentRows = attachmentRows;
-		}
+  public Div getDiv() {
+    return div;
+  }
 
-		public boolean isShowSelectAllButton()
-		{
-			return showSelectAllButton;
-		}
+  @Override
+  public String getDefaultPropertyName() {
+    return "attachments";
+  }
 
-		public void setShowSelectAllButton(boolean showSelectAllButton)
-		{
-			this.showSelectAllButton = showSelectAllButton;
-		}
+  @Override
+  public Class<AttachmentsModel> getModelClass() {
+    return AttachmentsModel.class;
+  }
 
-		public Label getSectionTitle()
-		{
-			return sectionTitle;
-		}
+  public boolean isShowStructuredView() {
+    return showStructuredView;
+  }
 
-		public void setSectionTitle(Label sectionTitle)
-		{
-			this.sectionTitle = sectionTitle;
-		}
-	}
+  public static class AttachmentsModel {
+    private List<AttachmentRowDisplay> attachmentRows;
+    private boolean showSelectAllButton;
+    private Label sectionTitle;
+
+    public List<AttachmentRowDisplay> getAttachmentRows() {
+      return attachmentRows;
+    }
+
+    public void setAttachmentRows(List<AttachmentRowDisplay> attachmentRows) {
+      this.attachmentRows = attachmentRows;
+    }
+
+    public boolean isShowSelectAllButton() {
+      return showSelectAllButton;
+    }
+
+    public void setShowSelectAllButton(boolean showSelectAllButton) {
+      this.showSelectAllButton = showSelectAllButton;
+    }
+
+    public Label getSectionTitle() {
+      return sectionTitle;
+    }
+
+    public void setSectionTitle(Label sectionTitle) {
+      this.sectionTitle = sectionTitle;
+    }
+  }
 }

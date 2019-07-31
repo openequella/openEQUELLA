@@ -1,0 +1,27 @@
+<com.tle.beans.entity.report.Report>
+  <id>18280</id>
+  <uuid>144cdedf-b66a-4786-bd0b-a1d2bee8dcf3</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-01-09 13:41:58.233</dateModified>
+  <dateCreated class="sql-timestamp">2012-01-09 13:41:58.233</dateCreated>
+  <name>
+    <id>18281</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18282</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Library</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>reportFiles/equella.rptlibrary</filename>
+  <hideReport>true</hideReport>
+</com.tle.beans.entity.report.Report>

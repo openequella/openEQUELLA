@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,217 +18,221 @@
 
 package com.tle.beans.item;
 
+import com.tle.beans.IdCloneable;
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.IdCloneable;
 
 @Entity
 @AccessType("field")
-public class HistoryEvent implements Serializable, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class HistoryEvent implements Serializable, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	public enum Type
-	{
-		statechange, resetworkflow, approved, rejected, edit, promoted, comment, assign, clone, changeCollection,
-		newversion, contributed, workflowremoved, scriptComplete, scriptError, taskMove
-	}
+  public enum Type {
+    statechange,
+    resetworkflow,
+    approved,
+    rejected,
+    edit,
+    promoted,
+    comment,
+    assign,
+    clone,
+    changeCollection,
+    newversion,
+    contributed,
+    workflowremoved,
+    scriptComplete,
+    scriptError,
+    taskMove
+  }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	private String user;
-	private Date date;
+  private String user;
+  private Date date;
 
-	@Column(length = 40)
-	private String step;
-	@Column(length = 40)
-	private String toStep;
-	@Column(length = 100)
-	private String stepName;
-	@Column(length = 100)
-	private String toStepName;
+  @Column(length = 40)
+  private String step;
 
-	@Lob
-	private String comment;
-	private boolean applies;
+  @Column(length = 40)
+  private String toStep;
 
-	@Column(length = 25)
-	private String type;
-	private transient Type typeEnum;
+  @Column(length = 100)
+  private String stepName;
 
-	@Column(length = 25)
-	private String state;
-	private transient ItemStatus stateEnum;
+  @Column(length = 100)
+  private String toStepName;
 
-	public HistoryEvent()
-	{
-		super();
-	}
+  @Lob private String comment;
+  private boolean applies;
 
-	public HistoryEvent(Item item)
-	{
-		setState(item.getStatus());
-	}
+  @Column(length = 25)
+  private String type;
 
-	public HistoryEvent(Type type, Item item)
-	{
-		this(item);
-		setType(type);
-	}
+  private transient Type typeEnum;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 25)
+  private String state;
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  private transient ItemStatus stateEnum;
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public HistoryEvent() {
+    super();
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  public HistoryEvent(Item item) {
+    setState(item.getStatus());
+  }
 
-	public ItemStatus getState()
-	{
-		if( stateEnum == null && state != null )
-		{
-			stateEnum = ItemStatus.valueOf(state);
-		}
-		return stateEnum;
-	}
+  public HistoryEvent(Type type, Item item) {
+    this(item);
+    setType(type);
+  }
 
-	public void setState(ItemStatus state)
-	{
-		this.state = state.name();
-		this.stateEnum = state;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public String getToStep()
-	{
-		return toStep;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setToStep(String tostep)
-	{
-		this.toStep = tostep;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public Type getType()
-	{
-		if( typeEnum == null && type != null )
-		{
-			typeEnum = Type.valueOf(type);
-		}
-		return typeEnum;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public void setType(Type type)
-	{
-		this.typeEnum = type;
-		this.type = type.name();
-	}
+  public ItemStatus getState() {
+    if (stateEnum == null && state != null) {
+      stateEnum = ItemStatus.valueOf(state);
+    }
+    return stateEnum;
+  }
 
-	public String getUser()
-	{
-		return user;
-	}
+  public void setState(ItemStatus state) {
+    this.state = state.name();
+    this.stateEnum = state;
+  }
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
+  public String getToStep() {
+    return toStep;
+  }
 
-	public String getStep()
-	{
-		return step;
-	}
+  public void setToStep(String tostep) {
+    this.toStep = tostep;
+  }
 
-	public void setStep(String step)
-	{
-		this.step = step;
-	}
+  public Type getType() {
+    if (typeEnum == null && type != null) {
+      typeEnum = Type.valueOf(type);
+    }
+    return typeEnum;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public void setType(Type type) {
+    this.typeEnum = type;
+    this.type = type.name();
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public String getUser() {
+    if (user == null) {
+      return null;
+    }
+    int ind = user.indexOf(':');
+    if (ind == -1) {
+      return user;
+    }
+    return user.substring(0, ind);
+  }
 
-	public boolean isApplies()
-	{
-		return applies;
-	}
+  public String getImpersonatedBy() {
+    if (user == null) {
+      return null;
+    }
+    int ind = user.indexOf(':');
+    if (ind == -1) {
+      return null;
+    }
+    return user.substring(ind + 1);
+  }
 
-	public void setApplies(boolean applies)
-	{
-		this.applies = applies;
-	}
+  public void setUser(String user, String impersonatedBy) {
+    if (impersonatedBy != null) {
+      this.user = user + ":" + impersonatedBy;
+    } else {
+      this.user = user;
+    }
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+  public String getStep() {
+    return step;
+  }
 
-		if( !(obj instanceof HistoryEvent) )
-		{
-			return false;
-		}
+  public void setStep(String step) {
+    this.step = step;
+  }
 
-		return id == ((HistoryEvent) obj).id;
-	}
+  public String getComment() {
+    return comment;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return (int) id;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	public String getStepName()
-	{
-		return stepName;
-	}
+  public boolean isApplies() {
+    return applies;
+  }
 
-	public void setStepName(String stepName)
-	{
-		this.stepName = stepName;
-	}
+  public void setApplies(boolean applies) {
+    this.applies = applies;
+  }
 
-	public String getToStepName()
-	{
-		return toStepName;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-	public void setToStepName(String toStepName)
-	{
-		this.toStepName = toStepName;
-	}
+    if (!(obj instanceof HistoryEvent)) {
+      return false;
+    }
+
+    return id == ((HistoryEvent) obj).id;
+  }
+
+  @Override
+  public int hashCode() {
+    return (int) id;
+  }
+
+  public String getStepName() {
+    return stepName;
+  }
+
+  public void setStepName(String stepName) {
+    this.stepName = stepName;
+  }
+
+  public String getToStepName() {
+    return toStepName;
+  }
+
+  public void setToStepName(String toStepName) {
+    this.toStepName = toStepName;
+  }
 }

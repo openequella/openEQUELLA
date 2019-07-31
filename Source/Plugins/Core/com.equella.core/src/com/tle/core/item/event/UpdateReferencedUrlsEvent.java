@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,34 +23,27 @@ import com.tle.beans.item.ItemKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.UpdateReferencedUrlsListener;
 
-/**
- * @author Nicholas Read
- */
-public class UpdateReferencedUrlsEvent extends ApplicationEvent<UpdateReferencedUrlsListener>
-{
-	private static final long serialVersionUID = 1L;
-	private ItemId itemKey;
+/** @author Nicholas Read */
+public class UpdateReferencedUrlsEvent extends ApplicationEvent<UpdateReferencedUrlsListener> {
+  private static final long serialVersionUID = 1L;
+  private ItemId itemKey;
 
-	public UpdateReferencedUrlsEvent(ItemKey itemKey)
-	{
-		super(PostTo.POST_ONLY_TO_SELF);
-		this.itemKey = ItemId.fromKey(itemKey);
-	}
+  public UpdateReferencedUrlsEvent(ItemKey itemKey) {
+    super(PostTo.POST_ONLY_TO_SELF);
+    this.itemKey = ItemId.fromKey(itemKey);
+  }
 
-	public ItemId getItemKey()
-	{
-		return itemKey;
-	}
+  public ItemId getItemKey() {
+    return itemKey;
+  }
 
-	@Override
-	public Class<UpdateReferencedUrlsListener> getListener()
-	{
-		return UpdateReferencedUrlsListener.class;
-	}
+  @Override
+  public Class<UpdateReferencedUrlsListener> getListener() {
+    return UpdateReferencedUrlsListener.class;
+  }
 
-	@Override
-	public void postEvent(UpdateReferencedUrlsListener listener)
-	{
-		listener.updateReferencedUrlsEvent(this);
-	}
+  @Override
+  public void postEvent(UpdateReferencedUrlsListener listener) {
+    listener.updateReferencedUrlsEvent(this);
+  }
 }

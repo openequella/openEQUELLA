@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,11 @@
 
 package com.tle.web.core.servlet;
 
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.settings.standard.ShortcutUrls;
+import com.tle.core.guice.Bind;
+import com.tle.core.settings.service.ConfigurationService;
 import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -25,33 +30,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.common.beans.exception.NotFoundException;
-import com.tle.common.settings.standard.ShortcutUrls;
-import com.tle.core.guice.Bind;
-import com.tle.core.settings.service.ConfigurationService;
-
 @Bind
 @Singleton
-public class ShortcutServlet extends HttpServlet
-{
-	@Inject
-	private ConfigurationService configService;
+public class ShortcutServlet extends HttpServlet {
+  @Inject private ConfigurationService configService;
 
-	public ShortcutServlet()
-	{
-		super();
-	}
+  public ShortcutServlet() {
+    super();
+  }
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException
-	{
-		String shortcut = request.getPathInfo().substring(1);
-		String url = configService.getProperties(new ShortcutUrls()).getShortcuts().get(shortcut);
-		if( url == null )
-		{
-			throw new NotFoundException("Shortcut '" + shortcut + "' does not exist", true);
-		}
-		response.sendRedirect(url);
-	}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String shortcut = request.getPathInfo().substring(1);
+    String url = configService.getProperties(new ShortcutUrls()).getShortcuts().get(shortcut);
+    if (url == null) {
+      throw new NotFoundException("Shortcut '" + shortcut + "' does not exist", true);
+    }
+    response.sendRedirect(url);
+  }
 }

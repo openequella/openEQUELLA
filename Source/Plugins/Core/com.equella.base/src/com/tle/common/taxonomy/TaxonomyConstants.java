@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,23 +19,21 @@
 package com.tle.common.taxonomy;
 
 @SuppressWarnings("nls")
-public final class TaxonomyConstants
-{
-	public static final String TERM_SEPARATOR = "\\";
-	public static final String TERM_SEPARATOR_REGEX = "\\\\";
+public final class TaxonomyConstants {
+  public static final String TERM_SEPARATOR = "\\";
+  public static final String TERM_SEPARATOR_REGEX = "\\\\";
 
-	public static final String TERM_ALLOW_ADDITION = "TERM_ALLOW_ADDITION";
+  public static final String TERM_ALLOW_ADDITION = "TERM_ALLOW_ADDITION";
 
-	public static final String INTERNAL_DATASOURCE = "internalTaxonomyDataSource";
+  public static final String INTERNAL_DATASOURCE = "internalTaxonomyDataSource";
 
-	public static final String PRE41_TAXONOMY_EXPORT_FOLDER = "taxonomy";
-	public static final String TAXONOMY_EXPORT_FOLDER = "taxonomy2";
-	public static final String SINGLE_TAXONOMIES_FILE = "taxonomies.xml";
+  public static final String PRE41_TAXONOMY_EXPORT_FOLDER = "taxonomy";
+  public static final String TAXONOMY_EXPORT_FOLDER = "taxonomy2";
+  public static final String SINGLE_TAXONOMIES_FILE = "taxonomies.xml";
 
-	public static final String TERMS_EXPORT_FOLDER = "terms";
+  public static final String TERMS_EXPORT_FOLDER = "terms";
 
-	private TaxonomyConstants()
-	{
-		throw new Error();
-	}
+  private TaxonomyConstants() {
+    throw new Error();
+  }
 }

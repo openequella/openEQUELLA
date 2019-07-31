@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,99 +22,82 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * An input stream that stops when it's had enough. (ie. throws a
- * ByteLimitExceededException)
- * 
+ * An input stream that stops when it's had enough. (ie. throws a ByteLimitExceededException)
+ *
  * @author aholland
  */
-public class ByteLimitedInputStream extends InputStream
-{
-	private final InputStream inner;
-	private final long limit;
-	private long counter;
+public class ByteLimitedInputStream extends InputStream {
+  private final InputStream inner;
+  private final long limit;
+  private long counter;
 
-	public ByteLimitedInputStream(InputStream inner, long limit)
-	{
-		this.inner = inner;
-		this.limit = limit;
-	}
+  public ByteLimitedInputStream(InputStream inner, long limit) {
+    this.inner = inner;
+    this.limit = limit;
+  }
 
-	@Override
-	public int read() throws IOException
-	{
-		incCounter();
-		if( counter > limit )
-		{
-			throw new ByteLimitExceededException(counter, limit);
-		}
-		return inner.read();
-	}
+  @Override
+  public int read() throws IOException {
+    incCounter();
+    if (counter > limit) {
+      throw new ByteLimitExceededException(counter, limit);
+    }
+    return inner.read();
+  }
 
-	protected void incCounter()
-	{
-		counter++;
-	}
+  protected void incCounter() {
+    counter++;
+  }
 
-	protected long getCounter()
-	{
-		return counter;
-	}
+  protected long getCounter() {
+    return counter;
+  }
 
-	@Override
-	public long skip(long l) throws IOException
-	{
-		return inner.skip(l);
-	}
+  @Override
+  public long skip(long l) throws IOException {
+    return inner.skip(l);
+  }
 
-	@Override
-	public int available() throws IOException
-	{
-		return inner.available();
-	}
+  @Override
+  public int available() throws IOException {
+    return inner.available();
+  }
 
-	@Override
-	public void close() throws IOException
-	{
-		inner.close();
-	}
+  @Override
+  public void close() throws IOException {
+    inner.close();
+  }
 
-	@Override
-	public synchronized void mark(int i)
-	{
-		inner.mark(i);
-	}
+  @Override
+  public synchronized void mark(int i) {
+    inner.mark(i);
+  }
 
-	@Override
-	public synchronized void reset() throws IOException
-	{
-		inner.reset();
-	}
+  @Override
+  public synchronized void reset() throws IOException {
+    inner.reset();
+  }
 
-	@Override
-	public boolean markSupported()
-	{
-		return inner.markSupported();
-	}
+  @Override
+  public boolean markSupported() {
+    return inner.markSupported();
+  }
 
-	public static class ByteLimitExceededException extends IOException
-	{
-		private final long limit;
-		private final long counter;
+  public static class ByteLimitExceededException extends IOException {
+    private final long limit;
+    private final long counter;
 
-		public ByteLimitExceededException(long counter, long limit)
-		{
-			this.counter = counter;
-			this.limit = limit;
-		}
+    public ByteLimitExceededException(long counter, long limit) {
+      this.counter = counter;
+      this.limit = limit;
+    }
 
-		public long getLimit()
-		{
-			return limit;
-		}
+    public long getLimit() {
+      return limit;
+    }
 
-		public long getCounter()
-		{
-			return counter;
-		}
-	}
+    public long getCounter() {
+      return counter;
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -32,44 +34,42 @@ import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 
 /**
- * Important to note that the ResourceViewer and the Section are different
- * objects. The viewer looks up the section and executes it.
- * 
+ * Important to note that the ResourceViewer and the Section are different objects. The viewer looks
+ * up the section and executes it.
+ *
  * @author jmaginnis
  */
-public abstract class AbstractViewerSection<M> extends AbstractPrototypeSection<M> implements ViewItemViewer
-{
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
+public abstract class AbstractViewerSection<M> extends AbstractPrototypeSection<M>
+    implements ViewItemViewer {
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	@Override
-	public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource)
-	{
-		return resource.getViewAuditEntry();
-	}
+  @Override
+  public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource) {
+    return resource.getViewAuditEntry();
+  }
 
-	@Nullable
-	@Override
-	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
-	{
-		final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
-		if( viewableResource != null )
-		{
-			return viewableResource.getAttachment();
-		}
-		return null;
-	}
+  @Nullable
+  @Override
+  public IAttachment getAttachment(SectionInfo info, ViewItemResource resource) {
+    final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
+    if (viewableResource != null) {
+      return viewableResource.getAttachment();
+    }
+    return null;
+  }
 
-	protected ResourceViewerConfig getResourceViewerConfig(MimeTypeService mimeTypeService, ViewItemResource resource,
-		String viewerId)
-	{
-		MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
-		ResourceViewerConfig config = null;
-		if( entry != null )
-		{
-			config = mimeTypeService.getBeanFromAttribute(entry, MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewerId,
-				ResourceViewerConfig.class);
-		}
-		return config;
-	}
+  protected ResourceViewerConfig getResourceViewerConfig(
+      MimeTypeService mimeTypeService, ViewItemResource resource, String viewerId) {
+    MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
+    ResourceViewerConfig config = null;
+    if (entry != null) {
+      config =
+          mimeTypeService.getBeanFromAttribute(
+              entry,
+              MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewerId,
+              ResourceViewerConfig.class);
+    }
+    return config;
+  }
 }

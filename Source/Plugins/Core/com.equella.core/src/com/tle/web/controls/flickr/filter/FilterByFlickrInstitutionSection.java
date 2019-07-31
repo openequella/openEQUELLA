@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.controls.flickr.filter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.web.controls.flickr.FlickrSearchEvent;
@@ -46,183 +45,159 @@ import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 public class FilterByFlickrInstitutionSection extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<FlickrSearchEvent>
-{
-	private static final String NO_SELECTION_PLACEHOLDER = "add.search.includeallinstis";
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FlickrSearchEvent> {
+  private static final String NO_SELECTION_PLACEHOLDER = "add.search.includeallinstis";
 
-	@PlugKey(NO_SELECTION_PLACEHOLDER)
-	private static String INCLUDE_ALL_INSTIS;
+  @PlugKey(NO_SELECTION_PLACEHOLDER)
+  private static String INCLUDE_ALL_INSTIS;
 
-	@ResourceHelper
-	private PluginResourceHelper RESOURCES;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ResourceHelper private PluginResourceHelper RESOURCES;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	private FilterByFlickrUserSection filterByFlickrUserSection;
+  @TreeLookup private FilterByFlickrUserSection filterByFlickrUserSection;
 
-	@TreeLookup
-	private FlickrSearchResultsSection searchResults;
+  @TreeLookup private FlickrSearchResultsSection searchResults;
 
-	@Component(name = "fins")
-	private SingleSelectionList<String> flickrInstitutionSelector;
+  @Component(name = "fins")
+  private SingleSelectionList<String> flickrInstitutionSelector;
 
-	private List<String[]> allCommonsInstitutions;
+  private List<String[]> allCommonsInstitutions;
 
-	private String anyInsti;
+  private String anyInsti;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		// Retrieve the default list of institution names from file. First List
-		// is the flickIds, second is the name (as will be presented to user)
-		allCommonsInstitutions = FlickrUtils.getKeyStringsAsPair(FlickrUtils.INSTITUTION_KEY + ".txt", 2);
+    // Retrieve the default list of institution names from file. First List
+    // is the flickIds, second is the name (as will be presented to user)
+    allCommonsInstitutions =
+        FlickrUtils.getKeyStringsAsPair(FlickrUtils.INSTITUTION_KEY + ".txt", 2);
 
-		// Set at the head of the list of institutions a catch-all string such
-		// as "[Any]" (ie, no selection). Preserve in a member variable for
-		// later reference.
-		anyInsti = CurrentLocale.get(INCLUDE_ALL_INSTIS);
-		if( anyInsti != null )
-		{
-			anyInsti = anyInsti.trim();
-			if( anyInsti.length() > 0 )
-			{
-				// add a placeholder to keep indexes in parallel
-				String[] anyInstPair = new String[2];
-				anyInstPair[0] = INCLUDE_ALL_INSTIS;
-				anyInstPair[1] = anyInsti;
-				allCommonsInstitutions.add(0, anyInstPair);
-			}
-		}
-		List<String> displayStrings = new ArrayList<String>();
-		for( String[] line : allCommonsInstitutions )
-		{
-			displayStrings.add(line[1]);
-		}
-		flickrInstitutionSelector.setListModel(new SimpleHtmlListModel<String>(displayStrings));
+    // Set at the head of the list of institutions a catch-all string such
+    // as "[Any]" (ie, no selection). Preserve in a member variable for
+    // later reference.
+    anyInsti = CurrentLocale.get(INCLUDE_ALL_INSTIS);
+    if (anyInsti != null) {
+      anyInsti = anyInsti.trim();
+      if (anyInsti.length() > 0) {
+        // add a placeholder to keep indexes in parallel
+        String[] anyInstPair = new String[2];
+        anyInstPair[0] = INCLUDE_ALL_INSTIS;
+        anyInstPair[1] = anyInsti;
+        allCommonsInstitutions.add(0, anyInstPair);
+      }
+    }
+    List<String> displayStrings = new ArrayList<String>();
+    for (String[] line : allCommonsInstitutions) {
+      displayStrings.add(line[1]);
+    }
+    flickrInstitutionSelector.setListModel(new SimpleHtmlListModel<String>(displayStrings));
 
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	/**
-	 * Provide for the disabling of the Flickr-user field if a Flickr
-	 * institution has been selected. Institutions are simply glorified Flickr
-	 * users, so it makes no sense to attempt to filter on any (presumably,
-	 * other) Flickr user as well. Note that field is not actually emptied: the
-	 * Flick User section will ignore any content in the field if there is a
-	 * valid institution currently selected. Also note that the disabler has to
-	 * be set here in TreeFinished because the TreeLookup returns null during
-	 * registered(...).
-	 * 
-	 * @see com.tle.web.sections.generic.AbstractSection#treeFinished(java.lang.String,
-	 *      com.tle.web.sections.SectionTree)
-	 */
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  /**
+   * Provide for the disabling of the Flickr-user field if a Flickr institution has been selected.
+   * Institutions are simply glorified Flickr users, so it makes no sense to attempt to filter on
+   * any (presumably, other) Flickr user as well. Note that field is not actually emptied: the Flick
+   * User section will ignore any content in the field if there is a valid institution currently
+   * selected. Also note that the disabler has to be set here in TreeFinished because the TreeLookup
+   * returns null during registered(...).
+   *
+   * @see com.tle.web.sections.generic.AbstractSection#treeFinished(java.lang.String,
+   *     com.tle.web.sections.SectionTree)
+   */
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-		TextField externalFlickrUserField = filterByFlickrUserSection.getFlickrIdField();
-		// SingleSelectionList<NameValue> licenceList =
-		// filterByCreativeCommonsLicencesSection.getLicenceList();
-		// Disable (both?) the Flick user text field (and the creative commons
-		// licence list?) if an institution has been picked.
-		// Also perform a new search immediately on institution selector change
-		flickrInstitutionSelector.addEventStatements(JSHandler.EVENT_CHANGE,
-			new OverrideHandler(externalFlickrUserField.createDisableFunction(), new NotEqualsExpression(
-				flickrInstitutionSelector.createGetExpression(), new StringExpression(getAnyInsti()))),
-			// new OverrideHandler(
-			// licenceList.createDisableFunction(),
-			// new NotEqualsExpression(
-			// flickrInstitutionSelector.createGetExpression(),
-			// new StringExpression(getAnyInsti()))),
-			searchResults.getRestartSearchHandler(tree));
-	}
+    TextField externalFlickrUserField = filterByFlickrUserSection.getFlickrIdField();
+    // SingleSelectionList<NameValue> licenceList =
+    // filterByCreativeCommonsLicencesSection.getLicenceList();
+    // Disable (both?) the Flick user text field (and the creative commons
+    // licence list?) if an institution has been picked.
+    // Also perform a new search immediately on institution selector change
+    flickrInstitutionSelector.addEventStatements(
+        JSHandler.EVENT_CHANGE,
+        new OverrideHandler(
+            externalFlickrUserField.createDisableFunction(),
+            new NotEqualsExpression(
+                flickrInstitutionSelector.createGetExpression(),
+                new StringExpression(getAnyInsti()))),
+        // new OverrideHandler(
+        // licenceList.createDisableFunction(),
+        // new NotEqualsExpression(
+        // flickrInstitutionSelector.createGetExpression(),
+        // new StringExpression(getAnyInsti()))),
+        searchResults.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("filter/filterbyflickrinstitution.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("filter/filterbyflickrinstitution.ftl", this);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FlickrSearchEvent event)
-	{
-		String validInstiFlickrId = checkValidInstitution(info);
-		if( validInstiFlickrId != null )
-		{
-			event.getParams().setUserId(validInstiFlickrId);
-			event.setUserFiltered(true);
-		}
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FlickrSearchEvent event) {
+    String validInstiFlickrId = checkValidInstitution(info);
+    if (validInstiFlickrId != null) {
+      event.getParams().setUserId(validInstiFlickrId);
+      event.setUserFiltered(true);
+    }
+  }
 
-	/**
-	 * Convenient public method to determine if there is a selection from the
-	 * Institutions list, and if so is it a selection of an actual institution
-	 * (and not a mere placeholder in the list for "[Any]" institution).
-	 * 
-	 * @param info
-	 * @return the Flickr-Id of the selected institution if applicable,
-	 *         otherwise null
-	 */
-	public String checkValidInstitution(SectionInfo info)
-	{
-		String selectedInsti = flickrInstitutionSelector.getSelectedValue(info);
-		String validInstiFlickrId = null;
-		if( selectedInsti != null && selectedInsti.length() > 0 )
-		{
-			for( int i = 0; i < allCommonsInstitutions.size(); ++i )
-			{
-				// Look for a match in the stored list of institution names, but
-				// ignore the value if the corresponding
-				// flickrID is a mere placeholder (which indicates 'no
-				// selection')
-				if( allCommonsInstitutions.get(i)[1].equals(selectedInsti) )
-				{
-					String correspondingFlickrId = allCommonsInstitutions.get(i)[0];
-					if( !correspondingFlickrId.equals(RESOURCES.key(NO_SELECTION_PLACEHOLDER)) )
-					{
-						validInstiFlickrId = correspondingFlickrId;
-						break; // from for-loop
-					}
-				}
-			}
-		}
-		return validInstiFlickrId;
-	}
+  /**
+   * Convenient public method to determine if there is a selection from the Institutions list, and
+   * if so is it a selection of an actual institution (and not a mere placeholder in the list for
+   * "[Any]" institution).
+   *
+   * @param info
+   * @return the Flickr-Id of the selected institution if applicable, otherwise null
+   */
+  public String checkValidInstitution(SectionInfo info) {
+    String selectedInsti = flickrInstitutionSelector.getSelectedValue(info);
+    String validInstiFlickrId = null;
+    if (selectedInsti != null && selectedInsti.length() > 0) {
+      for (int i = 0; i < allCommonsInstitutions.size(); ++i) {
+        // Look for a match in the stored list of institution names, but
+        // ignore the value if the corresponding
+        // flickrID is a mere placeholder (which indicates 'no
+        // selection')
+        if (allCommonsInstitutions.get(i)[1].equals(selectedInsti)) {
+          String correspondingFlickrId = allCommonsInstitutions.get(i)[0];
+          if (!correspondingFlickrId.equals(RESOURCES.key(NO_SELECTION_PLACEHOLDER))) {
+            validInstiFlickrId = correspondingFlickrId;
+            break; // from for-loop
+          }
+        }
+      }
+    }
+    return validInstiFlickrId;
+  }
 
-	/**
-	 * @see com.tle.web.search.filter.ResetFiltersListener#reset(com.tle.web.sections.SectionInfo)
-	 */
-	@Override
-	public void reset(SectionInfo info)
-	{
-		flickrInstitutionSelector.setSelectedValue(info, null);
-	}
+  /** @see com.tle.web.search.filter.ResetFiltersListener#reset(com.tle.web.sections.SectionInfo) */
+  @Override
+  public void reset(SectionInfo info) {
+    flickrInstitutionSelector.setSelectedValue(info, null);
+  }
 
-	/**
-	 * As a last ditch safety, return the presumed English-language default.
-	 * 
-	 * @return the anyInsti string that should have been set in registered()
-	 */
-	private String getAnyInsti()
-	{
-		return anyInsti == null ? "[Any]" : anyInsti;
-	}
+  /**
+   * As a last ditch safety, return the presumed English-language default.
+   *
+   * @return the anyInsti string that should have been set in registered()
+   */
+  private String getAnyInsti() {
+    return anyInsti == null ? "[Any]" : anyInsti;
+  }
 
-	public SingleSelectionList<String> getFlickrInstitutionSelector()
-	{
-		return flickrInstitutionSelector;
-	}
+  public SingleSelectionList<String> getFlickrInstitutionSelector() {
+    return flickrInstitutionSelector;
+  }
 }

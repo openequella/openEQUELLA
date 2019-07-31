@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,47 +29,41 @@ import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.SelectThumbnailSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 
-public class SelectThumbnail extends WizardCommand
-{
-	@PlugKey("command.selectthumbnail")
-	private static String KEY_SELECT_THUMBNAIL;
+public class SelectThumbnail extends WizardCommand {
+  @PlugKey("command.selectthumbnail")
+  private static String KEY_SELECT_THUMBNAIL;
 
-	static
-	{
-		PluginResourceHandler.init(SelectThumbnail.class);
-	}
+  static {
+    PluginResourceHandler.init(SelectThumbnail.class);
+  }
 
-	@SuppressWarnings("nls")
-	public SelectThumbnail()
-	{
-		super(KEY_SELECT_THUMBNAIL, "selectThumbnail");
-	}
+  @SuppressWarnings("nls")
+  public SelectThumbnail() {
+    super(KEY_SELECT_THUMBNAIL, "selectThumbnail");
+  }
 
-	@Override
-	public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunction)
-	{
-		SelectThumbnailSection section = info.lookupSection(SelectThumbnailSection.class);
-		return new OverrideHandler(section.getOpenFunction());
-	}
+  @Override
+  public JSHandler getJavascript(
+      SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunction) {
+    SelectThumbnailSection section = info.lookupSection(SelectThumbnailSection.class);
+    return new OverrideHandler(section.getOpenFunction());
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-		// nothing here
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
+    // nothing here
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		WizardState state = winfo.getWizardState();
-		return ((state.isLockedForEditing() || state.isNewItem() || (!state.isLockedForEditing() && state
-			.isRedraftAfterSave())));
-	}
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    WizardState state = winfo.getWizardState();
+    return ((state.isLockedForEditing()
+        || state.isNewItem()
+        || (!state.isLockedForEditing() && state.isRedraftAfterSave())));
+  }
 
-	@Override
-	public boolean addToMoreActionList()
-	{
-		return true;
-	}
-
+  @Override
+  public boolean addToMoreActionList() {
+    return true;
+  }
 }

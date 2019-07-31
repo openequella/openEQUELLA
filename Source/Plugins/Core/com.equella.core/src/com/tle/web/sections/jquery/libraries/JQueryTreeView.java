@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,8 @@
 
 package com.tle.web.sections.jquery.libraries;
 
+import static com.tle.web.sections.jquery.JQueryLibraryInclude.cssb;
+
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
@@ -27,39 +31,36 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
-import static com.tle.web.sections.jquery.JQueryLibraryInclude.css;
-import static com.tle.web.sections.jquery.JQueryLibraryInclude.cssb;
+public class JQueryTreeView implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-public class JQueryTreeView implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+  @SuppressWarnings("nls")
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude(
+          new String[] {
+            "jquery.treeview.js", "jquery.treeview.async.js",
+          },
+          cssb("jquery.treeview.css").hasRtl().make());
 
-	@SuppressWarnings("nls")
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(new String[]{"jquery.treeview.js",
-			"jquery.treeview.async.js",}, cssb("jquery.treeview.css").hasRtl().make());
+  public static final JSCallable FUNC_TREEVIEW =
+      new ExternallyDefinedFunction("treeview", PRERENDER); // $NON-NLS-1$
 
-	public static final JSCallable FUNC_TREEVIEW = new ExternallyDefinedFunction("treeview", PRERENDER); //$NON-NLS-1$
+  public static JQueryStatement treeView(ElementId tag, JSExpression params) {
+    return new JQueryStatement(tag, new FunctionCallExpression(FUNC_TREEVIEW, params));
+  }
 
-	public static JQueryStatement treeView(ElementId tag, JSExpression params)
-	{
-		return new JQueryStatement(tag, new FunctionCallExpression(FUNC_TREEVIEW, params));
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.treeview.name"); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.treeview.name"); //$NON-NLS-1$
-	}
+  @Override
+  public String getId() {
+    return "treeview"; //$NON-NLS-1$
+  }
 
-	@Override
-	public String getId()
-	{
-		return "treeview"; //$NON-NLS-1$
-	}
-
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

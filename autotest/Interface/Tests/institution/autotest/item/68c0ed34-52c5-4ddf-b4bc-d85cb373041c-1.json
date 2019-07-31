@@ -1,0 +1,64 @@
+{
+  "uuid" : "68c0ed34-52c5-4ddf-b4bc-d85cb373041c",
+  "version" : 1,
+  "name" : "SearchSuggestTest - first item",
+  "nameStrings" : {
+    "en_AU" : "SearchSuggestTest - first item"
+  },
+  "description" : "The term suggester provides a very convenient API to access word alternatives on token basis within a certain string distance. The API allows accessing each token in the stream individually while suggest-selection is left to the API consumer. Yet, often pre-selected suggestions are required in order to present to the end-user.",
+  "descriptionStrings" : {
+    "en_AU" : "The term suggester provides a very convenient API to access word alternatives on token basis within a certain string distance. The API allows accessing each token in the stream individually while suggest-selection is left to the API consumer. Yet, often pre-selected suggestions are required in order to present to the end-user."
+  },
+  "metadata" : "<xml><item><name>SearchSuggestTest - first item</name><description>The term suggester provides a very convenient API to access word alternatives on token basis within a certain string distance. The API allows accessing each token in the stream individually while suggest-selection is left to the API consumer. Yet, often pre-selected suggestions are required in order to present to the end-user.</description></item></xml>",
+  "status" : "live",
+  "createdDate" : "2014-05-12T15:43:46.414+10:00",
+  "modifiedDate" : "2014-05-12T15:43:49.995+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:46.414+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:46.419+10:00",
+      "type" : "statechange",
+      "state" : "live"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:49.995+10:00",
+      "type" : "edit",
+      "state" : "live"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false,
+    "liveApprovalDate" : "2014-05-12T15:43:46.419+10:00",
+    "start" : "2014-05-12T15:45:23.538+10:00",
+    "lastAction" : "2014-05-12T15:43:46.419+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/68c0ed34-52c5-4ddf-b4bc-d85cb373041c/1"
+  }
+}

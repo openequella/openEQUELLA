@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,47 +20,40 @@ package com.tle.beans.security;
 
 import java.io.Serializable;
 
-public class ACLEntryMapping implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+public class ACLEntryMapping implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private final long id;
-	private final char grant;
-	private final int priority;
-	private final String target;
-	private final String expression;
+  private final long id;
+  private final char grant;
+  private final int priority;
+  private final String target;
+  private final String expression;
 
-	public ACLEntryMapping(long id, char grant, int priority, String target, String expression)
-	{
-		this.id = id;
-		this.grant = grant;
-		this.priority = priority;
-		this.target = target;
-		this.expression = expression;
-	}
+  public ACLEntryMapping(long id, char grant, int priority, String target, String expression) {
+    this.id = id;
+    this.grant = grant;
+    this.priority = priority;
+    this.target = target;
+    this.expression = expression;
+  }
 
-	public int getPriority()
-	{
-		return priority;
-	}
+  public int getPriority() {
+    return priority;
+  }
 
-	public String getTarget()
-	{
-		return target;
-	}
+  public String getTarget() {
+    return target;
+  }
 
-	public String getExpression()
-	{
-		return expression;
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public char getGrant()
-	{
-		return grant;
-	}
+  public char getGrant() {
+    return grant;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public long getId() {
+    return id;
+  }
 }

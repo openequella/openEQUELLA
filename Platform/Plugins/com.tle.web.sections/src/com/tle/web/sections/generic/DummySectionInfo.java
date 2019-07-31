@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,69 +18,60 @@
 
 package com.tle.web.sections.generic;
 
-import java.util.EventListener;
-import java.util.Map;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.SectionEvent;
+import java.util.EventListener;
+import java.util.Map;
 
 /**
  * Use in places where you don't have a section info (eg. 'registered' methods)
- * 
+ *
  * @author Aaron
  */
 @NonNullByDefault
-public class DummySectionInfo extends DefaultSectionInfo
-{
-	@SuppressWarnings("null")
-	public DummySectionInfo()
-	{
-		// No controller, but that's ok, we won't use it
-		super(null);
-	}
+public class DummySectionInfo extends DefaultSectionInfo {
+  @SuppressWarnings("null")
+  public DummySectionInfo() {
+    // No controller, but that's ok, we won't use it
+    super(null);
+  }
 
-	@Override
-	public <L extends EventListener> void processEvent(SectionEvent<L> event, @Nullable SectionTree tree)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public <L extends EventListener> void processEvent(
+      SectionEvent<L> event, @Nullable SectionTree tree) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void forward(SectionInfo forward)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void forward(SectionInfo forward) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void forwardToUrl(String url, int code)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void forwardToUrl(String url, int code) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void forwardToUrl(String url)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void forwardToUrl(String url) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void forwardAsBookmark(SectionInfo forward)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void forwardAsBookmark(SectionInfo forward) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public SectionInfo createForward(String path, @Nullable Map<Object, Object> attributes)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public SectionInfo createForward(String path, @Nullable Map<Object, Object> attributes) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public boolean isReal()
-	{
-		return false;
-	}
+  @Override
+  public boolean isReal() {
+    return false;
+  }
 }

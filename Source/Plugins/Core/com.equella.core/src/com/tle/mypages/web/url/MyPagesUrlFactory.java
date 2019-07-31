@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,39 +24,32 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ViewItemUrl;
 
-/**
- * @author aholland
- */
-public interface MyPagesUrlFactory
-{
-	/**
-	 * @param info
-	 * @param wizid The current wizard state id
-	 * @param page The page to edit. May be null, in which case the first
-	 *            available page is displayed.
-	 * @param finishedCallback Only used in a modal situation. I.e. you call
-	 *            this to close the window.
-	 * @return
-	 */
-	MyPagesEditUrl createEditUrl(SectionInfo info, String wizid, HtmlAttachment page,
-		JSCallAndReference finishedCallback);
+/** @author aholland */
+public interface MyPagesUrlFactory {
+  /**
+   * @param info
+   * @param wizid The current wizard state id
+   * @param page The page to edit. May be null, in which case the first available page is displayed.
+   * @param finishedCallback Only used in a modal situation. I.e. you call this to close the window.
+   * @return
+   */
+  MyPagesEditUrl createEditUrl(
+      SectionInfo info, String wizid, HtmlAttachment page, JSCallAndReference finishedCallback);
 
-	/**
-	 * @param info
-	 * @param vitem
-	 * @param finishedCallback Only used in a modal situation. I.e. you call
-	 *            this to close the window.
-	 * @return
-	 */
-	ViewItemUrl createViewUrl(SectionInfo info, ViewableItem vitem);
+  /**
+   * @param info
+   * @param vitem
+   * @param finishedCallback Only used in a modal situation. I.e. you call this to close the window.
+   * @return
+   */
+  ViewItemUrl createViewUrl(SectionInfo info, ViewableItem vitem);
 
-	/**
-	 * @param info
-	 * @param vitem
-	 * @param page Cannot be null
-	 * @param finishedCallback Only used in a modal situation. I.e. you call
-	 *            this to close the window.
-	 * @return
-	 */
-	ViewItemUrl createViewUrl(SectionInfo info, ViewableItem vitem, HtmlAttachment page);
+  /**
+   * @param info
+   * @param vitem
+   * @param page Cannot be null
+   * @param finishedCallback Only used in a modal situation. I.e. you call this to close the window.
+   * @return
+   */
+  ViewItemUrl createViewUrl(SectionInfo info, ViewableItem vitem, HtmlAttachment page);
 }

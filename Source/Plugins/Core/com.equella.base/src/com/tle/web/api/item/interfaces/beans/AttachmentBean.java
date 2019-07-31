@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,61 +18,51 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-public abstract class AttachmentBean extends AbstractExtendableBean
-{
-	private String uuid;
-	private String description;
-	private String viewer;
-	private boolean preview;
+public abstract class AttachmentBean extends AbstractExtendableBean {
+  private String uuid;
+  private String description;
+  private String viewer;
+  private boolean preview;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public String getViewer()
-	{
-		return viewer;
-	}
+  public String getViewer() {
+    return viewer;
+  }
 
-	public void setViewer(String viewer)
-	{
-		this.viewer = viewer;
-	}
+  public void setViewer(String viewer) {
+    this.viewer = viewer;
+  }
 
-	@JsonIgnore
-	public abstract String getRawAttachmentType();
+  @JsonIgnore
+  public abstract String getRawAttachmentType();
 
-	public boolean isPreview()
-	{
-		return preview;
-	}
+  public boolean isPreview() {
+    return preview;
+  }
 
-	public void setPreview(boolean preview)
-	{
-		this.preview = preview;
-	}
+  public void setPreview(boolean preview) {
+    this.preview = preview;
+  }
 }

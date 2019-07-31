@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.admin.hierarchy;
 
-import java.awt.GridLayout;
-
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
@@ -28,51 +28,46 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
 import com.tle.core.remoting.RemoteUserService;
+import java.awt.GridLayout;
 
-/**
- * @author Nicholas Read
- */
-public class AccessControlTab extends AbstractTopicEditorTab
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class AccessControlTab extends AbstractTopicEditorTab {
+  private static final long serialVersionUID = 1L;
 
-	private final ClientService clientService;
+  private final ClientService clientService;
 
-	private AccessEditor editor;
+  private AccessEditor editor;
 
-	public AccessControlTab(ClientService clientService)
-	{
-		this.clientService = clientService;
-	}
+  public AccessControlTab(ClientService clientService) {
+    this.clientService = clientService;
+  }
 
-	@Override
-	public void setup(ChangeDetector changeDetector)
-	{
-		editor = new AccessEditor(clientService.getService(RemoteTLEAclManager.class),
-			clientService.getService(RemoteUserService.class));
+  @Override
+  public void setup(ChangeDetector changeDetector) {
+    editor =
+        new AccessEditor(
+            clientService.getService(RemoteTLEAclManager.class),
+            clientService.getService(RemoteUserService.class));
 
-		setLayout(new GridLayout(1, 1));
-		add(editor);
+    setLayout(new GridLayout(1, 1));
+    add(editor);
 
-		changeDetector.watch(editor);
-	}
+    changeDetector.watch(editor);
+  }
 
-	@Override
-	public void load(HierarchyPack pack)
-	{
-		TargetList targetList = pack.getTargetList();
-		editor.load(pack.getTopic(), targetList, Node.HIERARCHY_TOPIC);
-	}
+  @Override
+  public void load(HierarchyPack pack) {
+    TargetList targetList = pack.getTargetList();
+    editor.load(pack.getTopic(), targetList, Node.HIERARCHY_TOPIC);
+  }
 
-	@Override
-	public void save(HierarchyPack pack)
-	{
-		pack.setTargetList(editor.save());
-	}
+  @Override
+  public void save(HierarchyPack pack) {
+    pack.setTargetList(editor.save());
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		// nothing to validate
-	}
+  @Override
+  public void validation() throws EditorException {
+    // nothing to validate
+  }
 }

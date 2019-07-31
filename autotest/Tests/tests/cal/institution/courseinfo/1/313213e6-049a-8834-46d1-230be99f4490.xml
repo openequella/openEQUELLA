@@ -1,0 +1,48 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>63540</id>
+  <uuid>313213e6-049a-8834-46d1-230be99f4490</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2013-05-14 14:11:54.297</dateModified>
+  <dateCreated class="sql-timestamp">2009-04-08 14:43:33.143</dateCreated>
+  <description>
+    <id>63541</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63542</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>courseowner@owner.com</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>63543</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63544</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>A Simple Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>50</students>
+  <from class="sql-timestamp">2009-04-08 10:00:00.0</from>
+  <until class="sql-timestamp">2040-04-08 10:00:00.0</until>
+  <citation>Harvard</citation>
+  <departmentName>Department of simple courses</departmentName>
+  <courseType>i</courseType>
+  <code>1234</code>
+  <versionSelection>INSTITUTION_DEFAULT</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

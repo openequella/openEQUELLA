@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,28 +26,22 @@ import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.core.cloud.search.CloudSearch;
 import com.tle.core.cloud.search.filter.CloudFilterInfo;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface CloudService
-{
-	/**
-	 * @return true if equella can reach the interwebs and admin hasn't turned
-	 *         off cloud searching
-	 */
-	boolean isCloudy();
+public interface CloudService {
+  /** @return true if equella can reach the interwebs and admin hasn't turned off cloud searching */
+  boolean isCloudy();
 
-	int resultCount(String query);
+  int resultCount(String query);
 
-	CloudSearchResults search(CloudSearch search, int offset, int count);
+  CloudSearchResults search(CloudSearch search, int offset, int count);
 
-	CloudFilterInfo getCloudFilterInfo();
+  CloudFilterInfo getCloudFilterInfo();
 
-	@Nullable
-	CloudItem getItem(String uuid, int version);
+  @Nullable
+  CloudItem getItem(String uuid, int version);
 
-	int getLiveItemVersion(String uuid);
+  int getLiveItemVersion(String uuid);
 
-	MimeEntry getMimeType(CloudAttachment cloudAttachment);
+  MimeEntry getMimeType(CloudAttachment cloudAttachment);
 }

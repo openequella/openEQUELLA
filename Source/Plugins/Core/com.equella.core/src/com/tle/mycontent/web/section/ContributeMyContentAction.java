@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.mycontent.web.section;
-
-import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.mycontent.service.MyContentService;
@@ -36,62 +36,54 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class ContributeMyContentAction extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugURL("css/handler.css")
-	private static String CSS;
+public class ContributeMyContentAction extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @PlugURL("css/handler.css")
+  private static String CSS;
 
-	@Inject
-	private MyContentService myContentService;
+  @Inject private MyContentService myContentService;
 
-	@TreeLookup
-	private ScrapbookSubSearch scrapbook;
+  @TreeLookup private ScrapbookSubSearch scrapbook;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Component(name = "b")
-	private Link actionLink;
+  @Component(name = "b")
+  private Link actionLink;
 
-	private Label buttonLabel;
-	private String handlerId;
+  private Label buttonLabel;
+  private String handlerId;
 
-	public void setButtonLabel(Label buttonLabel)
-	{
-		this.buttonLabel = buttonLabel;
-	}
+  public void setButtonLabel(Label buttonLabel) {
+    this.buttonLabel = buttonLabel;
+  }
 
-	public void setHandlerId(String handlerId)
-	{
-		this.handlerId = handlerId;
-	}
+  public void setHandlerId(String handlerId) {
+    this.handlerId = handlerId;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		
-		actionLink.setStyleClass("add");
-		actionLink.setLabel(buttonLabel);
-		actionLink.setClickHandler(events.getNamedHandler("contribute"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !scrapbook.isEnabled(context) || !myContentService.isMyContentContributionAllowed() )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, actionLink);
-	}
+    actionLink.setStyleClass("add");
+    actionLink.setLabel(buttonLabel);
+    actionLink.setClickHandler(events.getNamedHandler("contribute"));
+  }
 
-	@EventHandlerMethod
-	public void contribute(SectionInfo info)
-	{
-		myContentService.forwardToContribute(info, handlerId);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!scrapbook.isEnabled(context) || !myContentService.isMyContentContributionAllowed()) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, actionLink);
+  }
+
+  @EventHandlerMethod
+  public void contribute(SectionInfo info) {
+    myContentService.forwardToContribute(info, handlerId);
+  }
 }

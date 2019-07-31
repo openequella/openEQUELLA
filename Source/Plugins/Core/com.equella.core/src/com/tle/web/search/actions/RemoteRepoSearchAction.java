@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.search.actions;
-
-import javax.inject.Inject;
 
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.services.user.UserSessionService;
@@ -34,51 +34,45 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class RemoteRepoSearchAction extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	private static final String SESSION_KEY = "REMOTE-REPO-BUTTON";
+public class RemoteRepoSearchAction extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  private static final String SESSION_KEY = "REMOTE-REPO-BUTTON";
 
-	@EventFactory
-	protected EventGenerator events;
+  @EventFactory protected EventGenerator events;
 
-	@Component(name = "b")
-	@PlugKey("actions.remoterepo")
-	private Button button;
+  @Component(name = "b")
+  @PlugKey("actions.remoterepo")
+  private Button button;
 
-	@Inject
-	private FederatedSearchService federatedSearchService;
+  @Inject private FederatedSearchService federatedSearchService;
 
-	@Inject
-	private UserSessionService userSessionService;
+  @Inject private UserSessionService userSessionService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		button.setClickHandler(events.getNamedHandler("remoteRepositories"));
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		button.setStyleClass("remote-repo");
-	}
+    button.setClickHandler(events.getNamedHandler("remoteRepositories"));
+    button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    button.setStyleClass("remote-repo");
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Boolean showButton = userSessionService.getAttribute(SESSION_KEY);
-		if( showButton == null )
-		{
-			showButton = federatedSearchService.listEnabledSearchable().size() > 0;
-			userSessionService.setAttribute(SESSION_KEY, showButton);
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Boolean showButton = userSessionService.getAttribute(SESSION_KEY);
+    if (showButton == null) {
+      showButton = federatedSearchService.listEnabledSearchable().size() > 0;
+      userSessionService.setAttribute(SESSION_KEY, showButton);
+    }
 
-		return !showButton ? null : SectionUtils.renderSectionResult(context, button);
-	}
+    return !showButton ? null : SectionUtils.renderSectionResult(context, button);
+  }
 
-	@EventHandlerMethod
-	public void remoteRepositories(SectionInfo info)
-	{
-		info.forwardToUrl(info.createForward("/access/remoterepo.do").getPublicBookmark().getHref());
-	}
+  @EventHandlerMethod
+  public void remoteRepositories(SectionInfo info) {
+    info.forwardToUrl(info.createForward("/access/remoterepo.do").getPublicBookmark().getHref());
+  }
 }

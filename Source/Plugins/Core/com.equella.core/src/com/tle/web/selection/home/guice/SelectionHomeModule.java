@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,39 +27,35 @@ import com.tle.web.selection.home.sections.SelectionRecentSection;
 import com.tle.web.selection.home.sections.ShowSelectionHomePortalsSection;
 import com.tle.web.selection.section.SelectionSummarySection;
 
-public class SelectionHomeModule extends SectionsModule
-{
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		NodeProvider node = node(RootSelectionHomeSection.class);
-		NodeProvider portalSection = node(ShowSelectionHomePortalsSection.class).placeHolder("SELECTION_HOME");
-		NodeProvider recent = node(SelectionRecentSectionHome.class).placeHolder("SELECTION_HOME_RECENT");
-		recent.child(ContributionsSegment.class);
-		recent.child(SelectionsSegment.class);
-		portalSection.child(recent);
-		portalSection.child(SelectionSummarySectionHome.class);
-		node.child(portalSection);
-		bind(Object.class).annotatedWith(Names.named("/access/selection/home")).toProvider(node);
-	}
+public class SelectionHomeModule extends SectionsModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    NodeProvider node = node(RootSelectionHomeSection.class);
+    NodeProvider portalSection =
+        node(ShowSelectionHomePortalsSection.class).placeHolder("SELECTION_HOME");
+    NodeProvider recent =
+        node(SelectionRecentSectionHome.class).placeHolder("SELECTION_HOME_RECENT");
+    recent.child(ContributionsSegment.class);
+    recent.child(SelectionsSegment.class);
+    portalSection.child(recent);
+    portalSection.child(SelectionSummarySectionHome.class);
+    node.child(portalSection);
+    bind(Object.class).annotatedWith(Names.named("/access/selection/home")).toProvider(node);
+  }
 
-	public static class SelectionSummarySectionHome extends SelectionSummarySection
-	{
-		@SuppressWarnings("nls")
-		public SelectionSummarySectionHome()
-		{
-			setLayout("{column: 'right', order: 1}");
-			setFinishedInBox(true);
-		}
-	}
+  public static class SelectionSummarySectionHome extends SelectionSummarySection {
+    @SuppressWarnings("nls")
+    public SelectionSummarySectionHome() {
+      setLayout("{column: 'right', order: 1}");
+      setFinishedInBox(true);
+    }
+  }
 
-	public static class SelectionRecentSectionHome extends SelectionRecentSection
-	{
-		@SuppressWarnings("nls")
-		public SelectionRecentSectionHome()
-		{
-			setLayout("{column:'right', order: 100}");
-		}
-	}
+  public static class SelectionRecentSectionHome extends SelectionRecentSection {
+    @SuppressWarnings("nls")
+    public SelectionRecentSectionHome() {
+      setLayout("{column:'right', order: 100}");
+    }
+  }
 }

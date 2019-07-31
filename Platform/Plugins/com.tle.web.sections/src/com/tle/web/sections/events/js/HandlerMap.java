@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,103 +18,80 @@
 
 package com.tle.web.sections.events.js;
 
+import com.tle.web.sections.js.JSStatements;
+import com.tle.web.sections.js.generic.StatementHandler;
+import com.tle.web.sections.js.generic.statement.StatementBlock;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.tle.web.sections.js.JSStatements;
-import com.tle.web.sections.js.generic.StatementHandler;
-import com.tle.web.sections.js.generic.statement.StatementBlock;
+public class HandlerMap {
+  private HandlerMap fallbackMap;
+  private Map<String, JSHandler> handlerMap;
 
-public class HandlerMap
-{
-	private HandlerMap fallbackMap;
-	private Map<String, JSHandler> handlerMap;
+  public void setEventHandler(String event, JSHandler handler) {
+    ensureHandlerMap();
+    handlerMap.put(event, handler);
+  }
 
-	public void setEventHandler(String event, JSHandler handler)
-	{
-		ensureHandlerMap();
-		handlerMap.put(event, handler);
-	}
+  private void ensureHandlerMap() {
+    if (handlerMap == null) {
+      handlerMap = new LinkedHashMap<String, JSHandler>();
+    }
+  }
 
-	private void ensureHandlerMap()
-	{
-		if( handlerMap == null )
-		{
-			handlerMap = new LinkedHashMap<String, JSHandler>();
-		}
-	}
+  public void addEventStatements(String event, JSStatements... statements) {
+    if (handlerMap != null && handlerMap.containsKey(event)) {
+      handlerMap.get(event).addStatements(StatementBlock.get(statements));
+    } else {
+      JSHandler newHandler = null;
+      if (fallbackMap != null) {
+        newHandler = fallbackMap.getHandler(event);
+      }
+      if (newHandler != null) {
+        newHandler = new StatementHandler(newHandler, StatementBlock.get(statements));
+      } else {
+        newHandler = new StatementHandler(statements);
+      }
+      ensureHandlerMap();
+      handlerMap.put(event, newHandler);
+    }
+  }
 
-	public void addEventStatements(String event, JSStatements... statements)
-	{
-		if( handlerMap != null && handlerMap.containsKey(event) )
-		{
-			handlerMap.get(event).addStatements(StatementBlock.get(statements));
-		}
-		else
-		{
-			JSHandler newHandler = null;
-			if( fallbackMap != null )
-			{
-				newHandler = fallbackMap.getHandler(event);
-			}
-			if( newHandler != null )
-			{
-				newHandler = new StatementHandler(newHandler, StatementBlock.get(statements));
-			}
-			else
-			{
-				newHandler = new StatementHandler(statements);
-			}
-			ensureHandlerMap();
-			handlerMap.put(event, newHandler);
-		}
-	}
+  public Set<String> getEventKeys() {
+    if (handlerMap == null && fallbackMap != null) {
+      return fallbackMap.getEventKeys();
+    }
+    if (fallbackMap == null && handlerMap != null) {
+      return handlerMap.keySet();
+    }
+    if (fallbackMap == null && handlerMap == null) {
+      return Collections.emptySet();
+    }
+    // else neither fallbackMap nor handlerMap is null
+    Set<String> allKeys = new HashSet<String>(handlerMap.keySet());
 
-	public Set<String> getEventKeys()
-	{
-		if( handlerMap == null && fallbackMap != null )
-		{
-			return fallbackMap.getEventKeys();
-		}
-		if( fallbackMap == null && handlerMap != null )
-		{
-			return handlerMap.keySet();
-		}
-		if( fallbackMap == null && handlerMap == null )
-		{
-			return Collections.emptySet();
-		}
-		// else neither fallbackMap nor handlerMap is null
-		Set<String> allKeys = new HashSet<String>(handlerMap.keySet());
+    // sonar can't figure out that fallbackMap cannot be null at this point
+    if (fallbackMap != null) {
+      allKeys.addAll(fallbackMap.getEventKeys());
+    }
 
-		// sonar can't figure out that fallbackMap cannot be null at this point
-		if( fallbackMap != null )
-		{
-			allKeys.addAll(fallbackMap.getEventKeys());
-		}
+    return allKeys;
+  }
 
-		return allKeys;
-	}
+  public JSHandler getHandler(String event) {
+    if (handlerMap != null && handlerMap.containsKey(event)) {
+      return handlerMap.get(event);
+    }
+    if (fallbackMap != null) {
+      return fallbackMap.getHandler(event);
+    }
+    return null;
+  }
 
-	public JSHandler getHandler(String event)
-	{
-		if( handlerMap != null && handlerMap.containsKey(event) )
-		{
-			return handlerMap.get(event);
-		}
-		if( fallbackMap != null )
-		{
-			return fallbackMap.getHandler(event);
-		}
-		return null;
-	}
-
-	public void setFallbackMap(HandlerMap fallbackMap)
-	{
-		this.fallbackMap = fallbackMap;
-	}
-
+  public void setFallbackMap(HandlerMap fallbackMap) {
+    this.fallbackMap = fallbackMap;
+  }
 }

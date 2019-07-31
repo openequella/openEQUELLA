@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.section;
-
-import java.io.StringReader;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.PropBagWrapper;
@@ -38,89 +35,83 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewitem.service.ItemXsltService;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.io.StringReader;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class FreemarkerSection extends AbstractParentViewItemSection<Object> implements DisplaySectionConfiguration
-{
-	@Inject
-	private ScriptingService scriptService;
-	@Inject
-	private ItemXsltService xmlService;
-	@Inject
-	private BasicFreemarkerFactory custFactory;
+public class FreemarkerSection extends AbstractParentViewItemSection<Object>
+    implements DisplaySectionConfiguration {
+  @Inject private ScriptingService scriptService;
+  @Inject private ItemXsltService xmlService;
+  @Inject private BasicFreemarkerFactory custFactory;
 
-	private String markup;
-	private String script;
+  private String markup;
+  private String script;
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( Check.isEmpty(markup) && Check.isEmpty(script) )
-		{
-			return null;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (Check.isEmpty(markup) && Check.isEmpty(script)) {
+      return null;
+    }
 
-		ItemSectionInfo itemInfo = getItemInfo(context);
+    ItemSectionInfo itemInfo = getItemInfo(context);
 
-		// The xmlService.getXmlForXslt call happens twice if you have both XSLT
-		// and Freemarker. No harm but a bit ghetto
-		ItemPack itemPack = new ItemPack(itemInfo.getItem(), xmlService.getXmlForXslt(context, itemInfo), null);
+    // The xmlService.getXmlForXslt call happens twice if you have both XSLT
+    // and Freemarker. No harm but a bit ghetto
+    ItemPack itemPack =
+        new ItemPack(itemInfo.getItem(), xmlService.getXmlForXslt(context, itemInfo), null);
 
-		StandardScriptContextParams params = new StandardScriptContextParams(itemPack, null,
-			true, null);
+    StandardScriptContextParams params =
+        new StandardScriptContextParams(itemPack, null, true, null);
 
-		params.getAttributes().put("context", context.getPreRenderContext());
-		ScriptContext scriptContext = scriptService.createScriptContext(params);
-		scriptContext.addScriptObject("attributes", new PropBagWrapper(new PropBagEx()));
+    params.getAttributes().put("context", context.getPreRenderContext());
+    ScriptContext scriptContext = scriptService.createScriptContext(params);
+    scriptContext.addScriptObject("attributes", new PropBagWrapper(new PropBagEx()));
 
-		// Run script
-		scriptService.executeScript(script, "itemSummary", scriptContext, false);
+    // Run script
+    scriptService.executeScript(script, "itemSummary", scriptContext, false);
 
-		// Uses custom Freemarker Factory (Removes access to internal sections
-		// functions) AdvancedWebScriptControl uses similar
-		FreemarkerSectionResult result = custFactory.createResult("viewItemFreemarker", //$NON-NLS-1$
-			new StringReader(markup), context);
-		// script context objects are available in the Freemarker templates
-		for( Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet() )
-		{
-			result.addExtraObject(entry.getKey(), entry.getValue());
-		}
+    // Uses custom Freemarker Factory (Removes access to internal sections
+    // functions) AdvancedWebScriptControl uses similar
+    FreemarkerSectionResult result =
+        custFactory.createResult(
+            "viewItemFreemarker", //$NON-NLS-1$
+            new StringReader(markup),
+            context);
+    // script context objects are available in the Freemarker templates
+    for (Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet()) {
+      result.addExtraObject(entry.getKey(), entry.getValue());
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "freemarker";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "freemarker";
+  }
 
-	@Override
-	public void associateConfiguration(SummarySectionsConfig config)
-	{
-		String configuration = config.getConfiguration();
-		try
-		{
-			PropBagEx xml = new PropBagEx(configuration);
-			markup = xml.getNode("markup");
-			script = xml.getNode("script");
-		}
-		catch( Exception e )
-		{
-			markup = configuration;
-		}
-	}
+  @Override
+  public void associateConfiguration(SummarySectionsConfig config) {
+    String configuration = config.getConfiguration();
+    try {
+      PropBagEx xml = new PropBagEx(configuration);
+      markup = xml.getNode("markup");
+      script = xml.getNode("script");
+    } catch (Exception e) {
+      markup = configuration;
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,84 +18,71 @@
 
 package com.tle.core.scripting.service;
 
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemPack;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.scripting.service.ScriptContextCreationParams;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tle.common.filesystem.handle.FileHandle;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemPack;
-import com.tle.common.scripting.service.ScriptContextCreationParams;
+/** @author aholland */
+public class StandardScriptContextParams implements ScriptContextCreationParams {
+  private final ItemPack<Item> itemPack;
+  private final FileHandle fileHandle;
+  private final boolean allowSystemCalls;
 
-/**
- * @author aholland
- */
-public class StandardScriptContextParams implements ScriptContextCreationParams
-{
-	private final ItemPack<Item> itemPack;
-	private final FileHandle fileHandle;
-	private final boolean allowSystemCalls;
+  private Map<String, Object> attributes;
 
-	private Map<String, Object> attributes;
+  public StandardScriptContextParams(
+      ItemPack<Item> itemPack,
+      FileHandle fileHandle,
+      boolean allowSystemCalls,
+      Map<String, Object> attributes) {
+    this.itemPack = itemPack;
+    this.attributes = attributes;
+    this.allowSystemCalls = allowSystemCalls;
 
-	public StandardScriptContextParams(ItemPack<Item> itemPack, FileHandle fileHandle, boolean allowSystemCalls,
-		Map<String, Object> attributes)
-	{
-		this.itemPack = itemPack;
-		this.attributes = attributes;
-		this.allowSystemCalls = allowSystemCalls;
+    if (fileHandle == null) {
+      this.fileHandle = new ErrorThrowingFileHandle();
+    } else {
+      this.fileHandle = fileHandle;
+    }
+  }
 
-		if( fileHandle == null )
-		{
-			this.fileHandle = new ErrorThrowingFileHandle();
-		}
-		else
-		{
-			this.fileHandle = fileHandle;
-		}
-	}
+  @Override
+  public ItemPack<Item> getItemPack() {
+    return itemPack;
+  }
 
-	@Override
-	public ItemPack<Item> getItemPack()
-	{
-		return itemPack;
-	}
+  @Override
+  public Map<String, Object> getAttributes() {
+    if (attributes == null) {
+      attributes = new HashMap<String, Object>();
+    }
+    return attributes;
+  }
 
-	@Override
-	public Map<String, Object> getAttributes()
-	{
-		if( attributes == null )
-		{
-			attributes = new HashMap<String, Object>();
-		}
-		return attributes;
-	}
+  @Override
+  public boolean isModerationAllowed() {
+    return false;
+  }
 
-	@Override
-	public boolean isModerationAllowed()
-	{
-		return false;
-	}
+  @Override
+  public boolean isAnOwner() {
+    return false;
+  }
 
-	@Override
-	public boolean isAnOwner()
-	{
-		return false;
-	}
+  @Override
+  public FileHandle getFileHandle() {
+    return fileHandle;
+  }
 
-	@Override
-	public FileHandle getFileHandle()
-	{
-		return fileHandle;
-	}
+  @Override
+  public boolean isAllowSystemCalls() {
+    return allowSystemCalls;
+  }
 
-	@Override
-	public boolean isAllowSystemCalls()
-	{
-		return allowSystemCalls;
-	}
-
-	protected void setAttributes(Map<String, Object> attributes)
-	{
-		this.attributes = attributes;
-	}
+  protected void setAttributes(Map<String, Object> attributes) {
+    this.attributes = attributes;
+  }
 }

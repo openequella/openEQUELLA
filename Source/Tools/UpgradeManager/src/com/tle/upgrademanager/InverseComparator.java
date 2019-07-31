@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,18 +20,15 @@ package com.tle.upgrademanager;
 
 import java.util.Comparator;
 
-public class InverseComparator<T> implements Comparator<T>
-{
-	private final Comparator<T> delegate;
+public class InverseComparator<T> implements Comparator<T> {
+  private final Comparator<T> delegate;
 
-	public InverseComparator(Comparator<T> delegate)
-	{
-		this.delegate = delegate;
-	}
+  public InverseComparator(Comparator<T> delegate) {
+    this.delegate = delegate;
+  }
 
-	@Override
-	public int compare(T o1, T o2)
-	{
-		return -delegate.compare(o1, o2);
-	}
+  @Override
+  public int compare(T o1, T o2) {
+    return -delegate.compare(o1, o2);
+  }
 }

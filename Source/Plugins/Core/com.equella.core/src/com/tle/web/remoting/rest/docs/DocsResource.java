@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,29 +18,25 @@
 
 package com.tle.web.remoting.rest.docs;
 
+import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import com.tle.core.guice.Bind;
-import com.tle.core.institution.InstitutionService;
-
 @Bind
 @Produces({"text/html"})
 @Path("/")
 @SuppressWarnings("nls")
-public class DocsResource
-{
-	@Inject
-	private InstitutionService institutionService;
+public class DocsResource {
+  @Inject private InstitutionService institutionService;
 
-	@GET
-	@Path("/")
-	@Produces("text/html")
-	public Response docs()
-	{
-		return new DocsRedirect(institutionService.institutionalise("apidocs.do"));
-	}
+  @GET
+  @Path("/")
+  @Produces("text/html")
+  public Response docs() {
+    return new DocsRedirect(institutionService.institutionalise("apidocs.do"));
+  }
 }

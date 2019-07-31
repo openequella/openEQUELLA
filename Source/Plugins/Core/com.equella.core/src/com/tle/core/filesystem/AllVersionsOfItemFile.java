@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,28 +24,24 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileHandleUtils;
 
 @NonNullByDefault
-public class AllVersionsOfItemFile extends AbstractAttachmentFile
-{
-	private static final long serialVersionUID = 1L;
+public class AllVersionsOfItemFile extends AbstractAttachmentFile {
+  private static final long serialVersionUID = 1L;
 
-	private final String itemUuid;
+  private final String itemUuid;
 
-	public AllVersionsOfItemFile(String itemUuid, @Nullable String collectionUuid)
-	{
-		super(collectionUuid);
-		this.itemUuid = itemUuid;
+  public AllVersionsOfItemFile(String itemUuid, @Nullable String collectionUuid) {
+    super(collectionUuid);
+    this.itemUuid = itemUuid;
 
-		FileHandleUtils.checkPath(itemUuid);
-	}
+    FileHandleUtils.checkPath(itemUuid);
+  }
 
-	public String getUuid()
-	{
-		return itemUuid;
-	}
+  public String getUuid() {
+    return itemUuid;
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), FileHandleUtils.getHashedPath(itemUuid));
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(super.createAbsolutePath(), FileHandleUtils.getHashedPath(itemUuid));
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,35 +18,38 @@
 
 package com.tle.core.email;
 
+import com.tle.common.settings.standard.MailSettings;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
 import javax.mail.internet.AddressException;
 
-import com.tle.common.settings.standard.MailSettings;
+public interface EmailService {
+  boolean isValidAddress(String emailAddress);
 
-public interface EmailService
-{
-	boolean isValidAddress(String emailAddress);
+  /**
+   * @param emails A whitespace or ; delimited list of email addresses.
+   * @throws AddressException
+   */
+  List<String> parseAddresses(String emails) throws AddressException;
 
-	/**
-	 * @param emails A whitespace or ; delimited list of email addresses.
-	 * @throws AddressException
-	 */
-	List<String> parseAddresses(String emails) throws AddressException;
+  <T> Callable<EmailResult<T>> createEmailer(
+      String subject, List<String> emailAddresses, String message, T key);
 
-	<T> Callable<EmailResult<T>> createEmailer(String subject, List<String> emailAddresses, String message, T key);
+  <T> Callable<EmailResult<T>> createEmailer(
+      String subject, List<String> emailAddresses, String message, T key, MailSettings settings);
 
-	<T> Callable<EmailResult<T>> createEmailer(String subject, List<String> emailAddresses, String message, T key,
-		MailSettings settings);
+  Future<EmailResult<String>> sendEmail(
+      String subject, List<String> emailAddresses, String message);
 
-	Future<EmailResult<String>> sendEmail(String subject, List<String> emailAddresses, String message);
+  Future<EmailResult<String>> sendEmail(
+      String subject,
+      List<String> emailAddresses,
+      String message,
+      MailSettings settings,
+      boolean enc);
 
-	Future<EmailResult<String>> sendEmail(String subject, List<String> emailAddresses, String message,
-		MailSettings settings, boolean enc);
+  Future<EmailResult<String>> sendSystemEmail(String subject, String message);
 
-	Future<EmailResult<String>> sendSystemEmail(String subject, String message);
-
-	boolean hasMailSettings();
+  boolean hasMailSettings();
 }

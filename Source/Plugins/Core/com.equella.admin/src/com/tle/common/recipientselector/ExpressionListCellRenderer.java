@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,38 +18,30 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.common.recipientselector.formatter.ExpressionFormatter;
+import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
-
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteUserService;
+/** @author Nicholas Read */
+public class ExpressionListCellRenderer extends DefaultListCellRenderer {
+  private static final long serialVersionUID = 1L;
+  private ExpressionFormatter formatter;
 
-/**
- * @author Nicholas Read
- */
-public class ExpressionListCellRenderer extends DefaultListCellRenderer
-{
-	private static final long serialVersionUID = 1L;
-	private ExpressionFormatter formatter;
+  public ExpressionListCellRenderer(RemoteUserService userService) {
+    formatter = new ExpressionFormatter(userService);
+  }
 
-	public ExpressionListCellRenderer(RemoteUserService userService)
-	{
-		formatter = new ExpressionFormatter(userService);
-	}
+  @Override
+  public Component getListCellRendererComponent(
+      JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    setText(formatter.convertToInfix(getExpressionString(value)));
+    return this;
+  }
 
-	@Override
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-		boolean cellHasFocus)
-	{
-		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		setText(formatter.convertToInfix(getExpressionString(value)));
-		return this;
-	}
-
-	protected String getExpressionString(Object object)
-	{
-		return (String) object;
-	}
+  protected String getExpressionString(Object object) {
+    return (String) object;
+  }
 }

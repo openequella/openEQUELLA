@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,29 +21,23 @@ package com.dytech.edge.exceptions;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.beans.exception.NotFoundException;
 
-/**
- * @author aholland
- */
-public class ItemNotFoundException extends NotFoundException
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class ItemNotFoundException extends NotFoundException {
+  private static final long serialVersionUID = 1L;
 
-	private final ItemKey itemId;
+  private final ItemKey itemId;
 
-	public ItemNotFoundException(ItemKey itemId)
-	{
-		this(itemId, false);
-	}
+  public ItemNotFoundException(ItemKey itemId) {
+    this(itemId, false);
+  }
 
-	@SuppressWarnings("nls")
-	public ItemNotFoundException(ItemKey itemId, boolean fromRequest)
-	{
-		super("Item not found " + itemId.toString(), fromRequest);
-		this.itemId = itemId;
-	}
+  @SuppressWarnings("nls")
+  public ItemNotFoundException(ItemKey itemId, boolean fromRequest) {
+    super("Item not found " + itemId.toString(), fromRequest);
+    this.itemId = itemId;
+  }
 
-	public ItemKey getItemId()
-	{
-		return itemId;
-	}
+  public ItemKey getItemId() {
+    return itemId;
+  }
 }

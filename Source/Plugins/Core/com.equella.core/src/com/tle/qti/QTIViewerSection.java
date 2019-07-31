@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +18,6 @@
 
 package com.tle.qti;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-
-import javax.inject.Inject;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.FileSystemService;
@@ -33,67 +29,60 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.template.Decorations;
 import com.tle.web.viewitem.viewer.AbstractViewerSection;
 import com.tle.web.viewurl.ViewItemResource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import javax.inject.Inject;
 
 @Bind
-public class QTIViewerSection extends AbstractViewerSection<QTIViewerSection.QTIViewerModel>
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private QTIService qtiService;
+public class QTIViewerSection extends AbstractViewerSection<QTIViewerSection.QTIViewerModel> {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private QTIService qtiService;
 
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
-	}
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource) throws IOException
-	{
-		Decorations.getDecorations(info).clearAllDecorations();
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) throws IOException {
+    Decorations.getDecorations(info).clearAllDecorations();
 
-		try( InputStream in = fileSystemService
-			.read(resource.getViewableItem().getFileHandle(), resource.getFilepath()) )
-		{
-			PropBagEx quizXml = new PropBagEx(in);
+    try (InputStream in =
+        fileSystemService.read(
+            resource.getViewableItem().getFileHandle(), resource.getFilepath())) {
+      PropBagEx quizXml = new PropBagEx(in);
 
-			String path = resource.getViewableItem().getItemdir() + resource.getFileDirectoryPath();
-			QTIQuiz quiz = qtiService.parseQuizXml(quizXml, path);
+      String path = resource.getViewableItem().getItemdir() + resource.getFileDirectoryPath();
+      QTIQuiz quiz = qtiService.parseQuizXml(quizXml, path);
 
-			QTIViewerModel model = getModel(info);
-			model.setQuiz(new QTIQuizRenderer(quiz));
+      QTIViewerModel model = getModel(info);
+      model.setQuiz(new QTIQuizRenderer(quiz));
 
-			return viewFactory.createResult("qtiviewer.ftl", this);
-		}
-	}
+      return viewFactory.createResult("qtiviewer.ftl", this);
+    }
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "qti"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "qti"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Class<QTIViewerModel> getModelClass()
-	{
-		return QTIViewerModel.class;
-	}
+  @Override
+  public Class<QTIViewerModel> getModelClass() {
+    return QTIViewerModel.class;
+  }
 
-	public static class QTIViewerModel
-	{
-		private QTIQuizRenderer quiz;
+  public static class QTIViewerModel {
+    private QTIQuizRenderer quiz;
 
-		public void setQuiz(QTIQuizRenderer quiz)
-		{
-			this.quiz = quiz;
-		}
+    public void setQuiz(QTIQuizRenderer quiz) {
+      this.quiz = quiz;
+    }
 
-		public QTIQuizRenderer getQuiz()
-		{
-			return quiz;
-		}
-	}
-
+    public QTIQuizRenderer getQuiz() {
+      return quiz;
+    }
+  }
 }

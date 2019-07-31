@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,14 +20,14 @@ package com.tle.web.api.searches
 
 import java.util.UUID
 
-import cats.data.OptionT
-import com.tle.core.db.{DB, RunWithDB}
+import cats.syntax.functor._
+import com.tle.core.db.RunWithDB
+import com.tle.core.searches._
 import com.tle.core.settings.SettingsDB
-import com.tle.web.api.ApiHelper
+import com.tle.web.api.{ApiHelper, EntityPaging}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.Response
 import javax.ws.rs._
-import javax.ws.rs.core.Response.Status
+import javax.ws.rs.core.Response
 
 @Api("Search page configuration")
 @Path("searches")
@@ -33,19 +35,38 @@ import javax.ws.rs.core.Response.Status
 class SearchConfigApi {
 
   @GET
+  @Path("config")
+  @ApiOperation(
+    value = "List all search configurations"
+  )
+  def listConfigs: EntityPaging[SearchConfig] = RunWithDB.execute {
+    SettingsDB.ensureEditSystem {
+      ApiHelper.allEntities(SearchConfigDB.readAllConfigs)
+    }
+  }
+
+  @GET
   @Path("config/{uuid}")
   @ApiOperation(value = "Get search configuration", response = classOf[SearchConfig])
   def getConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
     ApiHelper.entityOrNotFoundDB(SearchConfigDB.readConfig(configId))
   }
+  @DELETE
+  @Path("config/{uuid}")
+  @ApiOperation(value = "Delete a search configuration")
+  def deleteConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
+    SearchConfigDB.deleteConfig(configId).as(Response.noContent())
+  }
 
   @PUT
   @Path("config/{uuid}")
   @ApiOperation(value = "Edit search configuration")
-  def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfig): Response = {
+  def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfigEdit): Response = {
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
+        SearchConfigDB
+          .editConfig(configId, config)
+          .map(ApiHelper.validationOrOk)
       }
     }
   }
@@ -53,11 +74,13 @@ class SearchConfigApi {
   @POST
   @Path("config")
   @ApiOperation(value = "Create new search configuration")
-  def newConfig(config: SearchConfig): Response = {
+  def newConfig(config: SearchConfigEdit): Response = {
     val newID = UUID.randomUUID()
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
+        SearchConfigDB
+          .createConfig(newID, config)
+          .map(r => ApiHelper.validationOr(r.as(Response.ok().header("X-UUID", newID))))
       }
     }
   }
@@ -67,13 +90,16 @@ class SearchConfigApi {
   @ApiOperation("Resolve configuration for a page")
   def resolveConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
     for {
-      config <- SearchConfigDB.readPageConfig(pagename).flatMap { sc =>
-        SearchConfigDB.readConfig(sc.configId)
-      }.value
+      config <- SearchConfigDB
+        .readPageConfig(pagename)
+        .flatMap { sc =>
+          SearchConfigDB.readConfig(sc.configId)
+        }
+        .value
     } yield {
       (config, SearchDefaults.defaultMap.get(pagename)) match {
         case (Some(c), Some(d)) => Response.ok(SearchDefaults.mergeDefaults(d, c))
-        case (a, b) => ApiHelper.entityOrNotFound(a.orElse(b))
+        case (a, b)             => ApiHelper.entityOrNotFound(a.orElse(b))
       }
     }
   }
@@ -91,7 +117,7 @@ class SearchConfigApi {
   def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response =
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
+        SearchConfigDB.writePageConfig(pagename, config).as(Response.ok())
       }
     }
 }

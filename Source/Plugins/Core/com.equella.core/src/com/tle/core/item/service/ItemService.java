@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.core.item.service;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.hibernate.criterion.DetachedCriteria;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.ScriptContext;
@@ -48,137 +43,142 @@ import com.tle.core.item.operations.ItemOperationParams;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.scripting.WorkflowScriptObjectContributor;
 import com.tle.core.remoting.RemoteItemService;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.hibernate.criterion.DetachedCriteria;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @NonNullByDefault
-public interface ItemService extends RemoteItemService, ScriptEvaluator, WorkflowScriptObjectContributor
-{
-	Item getUnsecure(ItemKey itemId) throws ItemNotFoundException;
+public interface ItemService
+    extends RemoteItemService, ScriptEvaluator, WorkflowScriptObjectContributor {
+  Item getUnsecure(ItemKey itemId) throws ItemNotFoundException;
 
-	Item getUnsecureIfExists(ItemKey itemId);
+  Item getUnsecureIfExists(ItemKey itemId);
 
-	List<ItemId> getItemsWithUrl(String url, ItemDefinition itemDefinition, String excludedUuid);
+  boolean isItemInModeration(String uuid);
 
-	List<Item> getVersionDetails(String uuid);
+  List<ItemId> getItemsWithUrl(String url, ItemDefinition itemDefinition, String excludedUuid);
 
-	List<Item> getNextLiveItems(List<ItemId> items);
+  List<Item> getVersionDetails(String uuid);
 
-	/**
-	 * @param itemId
-	 * @param uuid
-	 * @return Never returns null.
-	 * @throws AttachmentNotFoundException
-	 */
-	Attachment getAttachmentForUuid(ItemKey itemId, String uuid);
+  List<Item> getNextLiveItems(List<ItemId> items);
 
-	Multimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
+  /**
+   * @param itemId
+   * @param uuid
+   * @return Never returns null.
+   * @throws AttachmentNotFoundException
+   */
+  Attachment getAttachmentForUuid(ItemKey itemId, String uuid);
 
-	int getLatestVersion(String uuid);
+  Multimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
 
-	Item getLatestVersionOfItem(String uuid);
+  int getLatestVersion(String uuid);
 
-	int getLiveItemVersion(String uuid);
+  Item getLatestVersionOfItem(String uuid);
 
-	ItemIdKey getLiveItemVersionId(String uuid);
+  int getLiveItemVersion(String uuid);
 
-	ItemPack<Item> getItemPack(ItemKey key);
+  ItemIdKey getLiveItemVersionId(String uuid);
 
-	PropBagEx getItemXmlPropBag(Item item);
+  ItemPack<Item> getItemPack(ItemKey key);
 
-	/**
-	 * Use the other version if possible
-	 */
-	PropBagEx getItemXmlPropBag(ItemKey key);
+  PropBagEx getItemXmlPropBag(Item item);
 
-	List<Item> queryItems(List<Long> itemkeys);
+  /** Use the other version if possible */
+  PropBagEx getItemXmlPropBag(ItemKey key);
 
-	List<Item> queryItems(List<ItemIdKey> itemkeys, ItemSelect select);
+  List<Item> queryItems(List<Long> itemkeys);
 
-	List<Item> queryItemsByUuids(List<String> uuids);
+  List<Item> queryItems(List<ItemIdKey> itemkeys, ItemSelect select);
 
-	<A> List<A> queryItems(DetachedCriteria criteria, Integer firstResult, Integer maxResults);
+  List<Item> queryItemsByUuids(List<String> uuids);
 
-	void updateIndexTimes(String whereClause, String[] names, Object[] values);
+  <A> List<A> queryItems(DetachedCriteria criteria, Integer firstResult, Integer maxResults);
 
-	List<ItemId> enumerateItems(String whereClause, String[] names, Object[] values);
+  void updateIndexTimes(String whereClause, String[] names, Object[] values);
 
-	List<ItemIdKey> getItemIdKeys(List<Long> ids);
+  List<ItemId> enumerateItems(String whereClause, String[] names, Object[] values);
 
-	ItemIdKey getItemIdKey(Long id);
+  List<ItemIdKey> getItemIdKeys(List<Long> ids);
 
-	/**
-	 * Returns uuid, version, name
-	 */
-	List<Triple<String, Integer, String>> enumerateItemNames(String whereClause, String[] names, Object[] values);
+  ItemIdKey getItemIdKey(Long id);
 
-	/* LEGACY or not.. */
+  /** Returns uuid, version, name */
+  List<Triple<String, Integer, String>> enumerateItemNames(
+      String whereClause, String[] names, Object[] values);
 
-	void forceUnlock(Item item);
+  /* LEGACY or not.. */
 
-	Map<ItemId, LanguageBundle> getItemNames(Collection<? extends ItemKey> keys);
+  void forceUnlock(Item item);
 
-	Map<ItemId, Long> getItemNameIds(Collection<? extends ItemKey> keys);
+  Map<ItemId, LanguageBundle> getItemNames(Collection<? extends ItemKey> keys);
 
-	Set<String> getCachedPrivileges(ItemKey itemKey);
+  Map<ItemId, Long> getItemNameIds(Collection<? extends ItemKey> keys);
 
-	Set<String> getItemPrivsFast(ItemKey itemId);
+  Set<String> getCachedPrivileges(ItemKey itemKey);
 
-	Set<String> getReferencedUsers();
+  Set<String> getItemPrivsFast(ItemKey itemId);
 
-	void delete(Item item);
+  Set<String> getReferencedUsers();
 
-	/**
-	 * Filters out item UUIDs from the given list for items that are not in any
-	 * of the given collections. Does not modify the passed in item UUID list.
-	 * The returned set is not guaranteed to have the contents the same
-	 * ordering.
-	 */
-	Set<String> unionItemUuidsWithCollectionUuids(Collection<String> itemUuids, Set<String> collectionUuids);
+  void delete(Item item);
 
-	Map<String, Object> getItemInfo(ItemId id);
+  /**
+   * Filters out item UUIDs from the given list for items that are not in any of the given
+   * collections. Does not modify the passed in item UUID list. The returned set is not guaranteed
+   * to have the contents the same ordering.
+   */
+  Set<String> unionItemUuidsWithCollectionUuids(
+      Collection<String> itemUuids, Set<String> collectionUuids);
 
-	Map<ItemId, Item> queryItemsByItemIds(List<? extends ItemKey> itemIds);
+  Map<String, Object> getItemInfo(ItemId id);
 
-	Item getForEdit(ItemKey itemId);
+  Map<ItemId, Item> queryItemsByItemIds(List<? extends ItemKey> itemIds);
 
-	Item getForNewVersion(ItemKey itemId);
+  Item getForEdit(ItemKey itemId);
 
-	Attachment getAttachmentForFilepath(ItemKey itemId, String filepath);
+  Item getForNewVersion(ItemKey itemId);
 
-	List<String> getNavReferencedAttachmentUuids(List<Item> items);
+  Attachment getAttachmentForFilepath(ItemKey itemId, String filepath);
 
-	Item getItemWithViewAttachmentPriv(ItemKey key);
+  List<String> getNavReferencedAttachmentUuids(List<Item> items);
 
-	void incrementViews(Item item);
+  Item getItemWithViewAttachmentPriv(ItemKey key);
 
-	void incrementViews(Attachment attachment);
+  void incrementViews(Item item);
 
-	/*
-	 * OPERATIONS
-	 */
+  void incrementViews(Attachment attachment);
 
-	ItemPack<Item> operation(ItemKey key, WorkflowOperation... operations);
+  /*
+   * OPERATIONS
+   */
 
-	void operateAll(ItemOperationFilter filter);
+  ItemPack<Item> operation(ItemKey key, WorkflowOperation... operations);
 
-	void operateAllInTransaction(ItemOperationFilter filter);
+  void operateAll(ItemOperationFilter filter);
 
-	void operateAll(ItemOperationFilter filter, FilterResultListener listener);
+  void operateAllInTransaction(ItemOperationFilter filter);
 
-	void executeOperationsNow(ItemOperationParams params, Collection<WorkflowOperation> operations);
+  void operateAll(ItemOperationFilter filter, FilterResultListener listener);
 
-	List<WorkflowOperation> executeExtensionOperationsNow(ItemOperationParams params, String type);
+  void executeOperationsNow(ItemOperationParams params, Collection<WorkflowOperation> operations);
 
-	List<WorkflowOperation> executeExtensionOperationsLater(ItemOperationParams params, String type);
+  List<WorkflowOperation> executeExtensionOperationsNow(ItemOperationParams params, String type);
 
-	boolean isAnOwner(Item item, String userUuid);
+  List<WorkflowOperation> executeExtensionOperationsLater(ItemOperationParams params, String type);
 
-	UserBean getOwner(Item item);
+  boolean isAnOwner(Item item, String userUuid);
 
-	ScriptContext createScriptContext(ItemPack itemPack, FileHandle fileHandle, Map<String, Object> attributes,
-		Map<String, Object> objects);
+  UserBean getOwner(Item item);
 
-	void updateMetadataBasedSecurity(PropBagEx itemxml, Item item);
+  ScriptContext createScriptContext(
+      ItemPack itemPack,
+      FileHandle fileHandle,
+      Map<String, Object> attributes,
+      Map<String, Object> objects);
+
+  void updateMetadataBasedSecurity(PropBagEx itemxml, Item item);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.admin.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.admin.baseentity.AccessControlTab;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
@@ -26,45 +25,40 @@ import com.tle.admin.tools.common.BaseEntityTool;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Workflow;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("nls")
-public class WorkflowEditor extends BaseEntityEditor<Workflow>
-{
-	public WorkflowEditor(BaseEntityTool<Workflow> tool, boolean readonly)
-	{
-		super(tool, readonly);
-	}
+public class WorkflowEditor extends BaseEntityEditor<Workflow> {
+  public WorkflowEditor(BaseEntityTool<Workflow> tool, boolean readonly) {
+    super(tool, readonly);
+  }
 
-	@Override
-	protected AbstractDetailsTab<Workflow> constructDetailsTab()
-	{
-		return new StepsTab();
-	}
+  @Override
+  protected AbstractDetailsTab<Workflow> constructDetailsTab() {
+    return new StepsTab();
+  }
 
-	@Override
-	protected List<BaseEntityTab<Workflow>> getTabs()
-	{
-		ArrayList<BaseEntityTab<Workflow>> tabs = new ArrayList<BaseEntityTab<Workflow>>();
-		tabs.add((StepsTab) detailsTab);
-		tabs.add(new AccessControlTab<Workflow>(Node.WORKFLOW));
-		return tabs;
-	}
+  @Override
+  protected List<BaseEntityTab<Workflow>> getTabs() {
+    ArrayList<BaseEntityTab<Workflow>> tabs = new ArrayList<BaseEntityTab<Workflow>>();
+    tabs.add((StepsTab) detailsTab);
+    tabs.add(new AccessControlTab<Workflow>(Node.WORKFLOW));
+    return tabs;
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.entname");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.entname");
+  }
 
-	@Override
-	protected String getWindowTitle()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.title");
-	}
+  @Override
+  protected String getWindowTitle() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.title");
+  }
 
-	@Override
-	public String getDocumentName()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.docname");
-	}
+  @Override
+  public String getDocumentName() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.docname");
+  }
 }

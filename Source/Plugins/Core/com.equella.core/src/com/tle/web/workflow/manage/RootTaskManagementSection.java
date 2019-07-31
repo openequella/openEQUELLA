@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,33 +25,36 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.render.Label;
 
-public class RootTaskManagementSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	@PlugKey("manage.title")
-	private static Label LABEL_TITLE;
+public class RootTaskManagementSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  @PlugKey("manage.title")
+  private static Label LABEL_TITLE;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected String getSessionKey()
-	{
-		return "$MANAGE_KEY$";
-	}
+  public static String URL = "/access/managetasks.do";
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected String getSessionKey() {
+    return "$MANAGE_KEY$";
+  }
 
-	@SuppressWarnings("nls")
-	public static SectionInfo create(InfoCreator creator)
-	{
-		return creator.createForward("/access/managetasks.do");
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.TWO_COLUMN;
-	}
+  @SuppressWarnings("nls")
+  public static SectionInfo create(InfoCreator creator) {
+    return creator.createForward(URL);
+  }
+
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.TWO_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,43 +20,34 @@ package com.tle.qti.data;
 
 import java.io.Serializable;
 
-/**
- * @author will
- */
-public class QTIResponseElement implements Serializable
-{
-	private static final long serialVersionUID = 1L;
-	private String id;
-	private QTIMaterial display;
-	private String type;
+/** @author will */
+public class QTIResponseElement implements Serializable {
+  private static final long serialVersionUID = 1L;
+  private String id;
+  private QTIMaterial display;
+  private String type;
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public QTIMaterial getDisplay()
-	{
-		return display;
-	}
+  public QTIMaterial getDisplay() {
+    return display;
+  }
 
-	public void setDisplay(QTIMaterial display)
-	{
-		this.display = display;
-	}
+  public void setDisplay(QTIMaterial display) {
+    this.display = display;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 }

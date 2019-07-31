@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,24 @@
 
 package com.tle.core.usermanagement.standard.service;
 
+import com.tle.beans.user.TLEUser;
+import com.tle.core.remoting.RemoteTLEUserService;
 import java.util.Collection;
 import java.util.List;
 
-import com.tle.beans.user.TLEUser;
-import com.tle.core.remoting.RemoteTLEUserService;
+public interface TLEUserService extends RemoteTLEUserService {
+  boolean checkPasswordMatch(TLEUser user, String password);
 
-public interface TLEUserService extends RemoteTLEUserService
-{
-	boolean checkPasswordMatch(TLEUser user, String password);
+  void validatePassword(String password, boolean passwordNotHashed);
 
-	void validatePassword(String password, boolean passwordNotHashed);
+  List<TLEUser> getInformationForUsers(Collection<String> ids);
 
-	List<TLEUser> getInformationForUsers(Collection<String> ids);
+  String edit(
+      String uuid, String username, String password, String first, String last, String email);
 
-	String edit(String uuid, String username, String password, String first, String last, String email);
+  String editSelf(TLEUser user, boolean passwordNotHashed);
 
-	String editSelf(TLEUser user, boolean passwordNotHashed);
+  void validate(TLEUser user, boolean passwordNotHashed);
 
-	void validate(TLEUser user, boolean passwordNotHashed);
-
-	String prepareQuery(String query);
+  String prepareQuery(String query);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -33,41 +35,37 @@ import com.tle.web.institution.tab.ServerTab;
 import com.tle.web.institution.tab.ThreadDumpTab;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class InstitutionModule extends OptionalConfigModule
-{
+public class InstitutionModule extends OptionalConfigModule {
 
-	@Override
-	protected void configure()
-	{
-		install(new InstSectionModule());
-		bindProp("versionserver.url", "https://version.equella.net/version");
-	}
+  @Override
+  protected void configure() {
+    install(new InstSectionModule());
+    bindProp("versionserver.url", "https://version.equella.net/version");
+  }
 
-	public class InstSectionModule extends SectionsModule {
-		@SuppressWarnings("nls")
-		@Override
-		protected void configure()
-		{
-			NodeProvider node = node(InstitutionSection.class);
-			node.child(ProgressSection.class);
-			node.child(TabsSection.class);
-			node.child(AutoTestSetupSection.class);
-			node.innerChild(AdminTab.class);
-			node.innerChild(ImportTab.class);
-			node.innerChild(DatabaseTab.class);
-			node.innerChild(serverTab());
-			node.innerChild(ThreadDumpTab.class);
-			node.innerChild(HealthTab.class);
-			bind(Object.class).annotatedWith(Names.named("/institutions")).toProvider(node);
-		}
+  public class InstSectionModule extends SectionsModule {
+    @SuppressWarnings("nls")
+    @Override
+    protected void configure() {
+      NodeProvider node = node(InstitutionSection.class);
+      node.child(ProgressSection.class);
+      node.child(TabsSection.class);
+      node.child(AutoTestSetupSection.class);
+      node.innerChild(AdminTab.class);
+      node.innerChild(ImportTab.class);
+      node.innerChild(DatabaseTab.class);
+      node.innerChild(serverTab());
+      node.innerChild(ThreadDumpTab.class);
+      node.innerChild(HealthTab.class);
+      bind(Object.class).annotatedWith(Names.named("/institutions")).toProvider(node);
+    }
 
-		private NodeProvider serverTab()
-		{
-			NodeProvider node = node(ServerTab.class);
-			node.child(ServerMessageTab.class);
-			node.child(EmailsTab.class);
-			node.child(PasswordTab.class);
-			return node;
-		}
-	}
+    private NodeProvider serverTab() {
+      NodeProvider node = node(ServerTab.class);
+      node.child(ServerMessageTab.class);
+      node.child(EmailsTab.class);
+      node.child(PasswordTab.class);
+      return node;
+    }
+  }
 }

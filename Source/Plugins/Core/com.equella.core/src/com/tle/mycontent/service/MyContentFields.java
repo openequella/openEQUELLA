@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.mycontent.service;
 
-public class MyContentFields
-{
-	private String title;
-	private String tags;
-	private String resourceId;
+public class MyContentFields {
+  private String title;
+  private String tags;
+  private String resourceId;
 
-	public String getTitle()
-	{
-		return title;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public String getTags()
-	{
-		return tags;
-	}
+  public String getTags() {
+    return tags;
+  }
 
-	public void setTags(String tags)
-	{
-		this.tags = tags;
-	}
+  public void setTags(String tags) {
+    this.tags = tags;
+  }
 
-	public String getResourceId()
-	{
-		return resourceId;
-	}
+  public String getResourceId() {
+    return resourceId;
+  }
 
-	public void setResourceId(String resourceId)
-	{
-		this.resourceId = resourceId;
-	}
+  public void setResourceId(String resourceId) {
+    this.resourceId = resourceId;
+  }
 }

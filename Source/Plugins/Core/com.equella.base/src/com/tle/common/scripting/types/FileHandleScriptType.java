@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,21 @@
 
 package com.tle.common.scripting.types;
 
-/**
- * @author Aaron
- */
-public interface FileHandleScriptType
-{
-	/**
-	 * @return Just the name of the file.
-	 */
-	String getName();
+/** @author Aaron */
+public interface FileHandleScriptType {
+  /** @return Just the name of the file. */
+  String getName();
 
-	/**
-	 * @return The path (including the filename) of the file, relative to the
-	 *         item.
-	 */
-	String getFilepath();
+  /** @return The path (including the filename) of the file, relative to the item. */
+  String getFilepath();
 
-	/**
-	 * @return Same as getFilepath()
-	 */
-	@Override
-	String toString();
+  /** @return Same as getFilepath() */
+  @Override
+  String toString();
 
-	/**
-	 * @return File handles for other items will always be read-only. Attempting
-	 *         use write/delete operations on these handles will throw an
-	 *         exception.
-	 */
-	boolean isReadOnly();
+  /**
+   * @return File handles for other items will always be read-only. Attempting use write/delete
+   *     operations on these handles will throw an exception.
+   */
+  boolean isReadOnly();
 }

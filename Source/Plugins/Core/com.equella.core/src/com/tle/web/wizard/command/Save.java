@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,57 +29,50 @@ import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.WizardSectionInfo;
 
 @SuppressWarnings("nls")
-public class Save extends WizardCommand
-{
-	static
-	{
-		PluginResourceHandler.init(Save.class);
-	}
+public class Save extends WizardCommand {
+  static {
+    PluginResourceHandler.init(Save.class);
+  }
 
-	@PlugKey("command.save.save")
-	private static String KEY_NAME;
+  @PlugKey("command.save.save")
+  private static String KEY_NAME;
 
-	public Save()
-	{
-		super(KEY_NAME, "save");
-	}
+  public Save() {
+    super(KEY_NAME, "save");
+  }
 
-	@Override
-	public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc)
-	{
-		WizardState state = winfo.getWizardState();
-		if( !state.isInDraft() )
-		{
-			return null;
-		}
-		SaveDialog saveDialog = info.lookupSection(SaveDialog.class);
-		return new OverrideHandler(saveDialog.getOpenFunction());
-	}
+  @Override
+  public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc) {
+    WizardState state = winfo.getWizardState();
+    if (!state.isInDraft()) {
+      return null;
+    }
+    SaveDialog saveDialog = info.lookupSection(SaveDialog.class);
+    return new OverrideHandler(saveDialog.getOpenFunction());
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		WizardState state = winfo.getWizardState();
-		return (state.isLockedForEditing() || state.isNewItem() || (!state.isLockedForEditing() && state
-			.isRedraftAfterSave()));
-	}
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    WizardState state = winfo.getWizardState();
+    return (state.isLockedForEditing()
+        || state.isNewItem()
+        || (!state.isLockedForEditing() && state.isRedraftAfterSave()));
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String type) throws Exception
-	{
-		SaveDialog saveDialog = info.lookupSection(SaveDialog.class);
-		saveDialog.save(info, "save", null);
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String type) throws Exception {
+    SaveDialog saveDialog = info.lookupSection(SaveDialog.class);
+    saveDialog.save(info, "save", null);
+    info.forceRedirect();
+  }
 
-	@Override
-	public boolean isMajorAction()
-	{
-		return true;
-	}
+  @Override
+  public boolean isMajorAction() {
+    return true;
+  }
 
-	@Override
-	public String getStyleClass()
-	{
-		return "save";
-	}
+  @Override
+  public String getStyleClass() {
+    return "save";
+  }
 }

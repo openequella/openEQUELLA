@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,36 @@
 
 package com.tle.web.viewitem;
 
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemKey;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.web.stream.WrappedContentStream;
 
-public abstract class WrappedFilestoreContentStream extends WrappedContentStream implements FilestoreContentStream
-{
-	protected FilestoreContentStream innerFile;
+public abstract class WrappedFilestoreContentStream extends WrappedContentStream
+    implements FilestoreContentStream {
+  protected FilestoreContentStream innerFile;
 
-	public WrappedFilestoreContentStream(FilestoreContentStream inner)
-	{
-		super(inner);
-		this.innerFile = inner;
-	}
+  public WrappedFilestoreContentStream(FilestoreContentStream inner) {
+    super(inner);
+    this.innerFile = inner;
+  }
 
-	@Override
-	public String getFileDirectoryPath()
-	{
-		return innerFile.getFileDirectoryPath();
-	}
+  @Override
+  public String getFileDirectoryPath() {
+    return innerFile.getFileDirectoryPath();
+  }
 
-	@Override
-	public FileHandle getFileHandle()
-	{
-		return innerFile.getFileHandle();
-	}
+  @Override
+  public FileHandle getFileHandle() {
+    return innerFile.getFileHandle();
+  }
 
-	@Override
-	public String getFilepath()
-	{
-		return innerFile.getFilepath();
-	}
+  @Override
+  public String getFilepath() {
+    return innerFile.getFilepath();
+  }
 
-	@Override
-	public ItemKey getItemId()
-	{
-		return innerFile.getItemId();
-	}
-
+  @Override
+  public ItemKey getItemId() {
+    return innerFile.getItemId();
+  }
 }

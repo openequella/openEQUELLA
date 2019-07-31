@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,29 +21,24 @@ package com.tle.core.item.standard.operations;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public class UserDeletedOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
-	private final String user;
+  private final String user;
 
-	@AssistedInject
-	private UserDeletedOperation(@Assisted String user)
-	{
-		this.user = user;
-	}
+  @AssistedInject
+  private UserDeletedOperation(@Assisted String user) {
+    this.user = user;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		if( isOwner(user) )
-		{
-			setOwner(""); //$NON-NLS-1$
-		}
-		getItem().getCollaborators().remove(user);
-		return true;
-	}
+  @Override
+  public boolean execute() {
+    if (isOwner(user)) {
+      setOwner(""); // $NON-NLS-1$
+    }
+    getItem().getCollaborators().remove(user);
+    return true;
+  }
 }

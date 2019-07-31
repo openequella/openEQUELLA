@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,24 +25,21 @@ import com.tle.mypages.web.section.RootMyPagesSection;
 import com.tle.web.sections.SectionNode;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class MyPagesControlModule extends SectionsModule
-{
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		NodeProvider node = node(RootMyPagesSection.class);
+public class MyPagesControlModule extends SectionsModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    NodeProvider node = node(RootMyPagesSection.class);
 
-		NodeProvider handlerNode = node(MyPagesContributeSection.class);
-		node.child(handlerNode);
+    NodeProvider handlerNode = node(MyPagesContributeSection.class);
+    node.child(handlerNode);
 
-		handlerNode.child(MyPagesHandlerPageActionsSection.class);
+    handlerNode.child(MyPagesHandlerPageActionsSection.class);
 
-		NodeProvider edNode = node(MyPagesEditorSection.class);
-		edNode.child(MyPagesExtrasSection.class);
-		handlerNode.child(edNode);
+    NodeProvider edNode = node(MyPagesEditorSection.class);
+    edNode.child(MyPagesExtrasSection.class);
+    handlerNode.child(edNode);
 
-		bind(SectionNode.class).annotatedWith(Names.named("myPagesTree")).toProvider(node);
-	}
-
+    bind(SectionNode.class).annotatedWith(Names.named("myPagesTree")).toProvider(node);
+  }
 }

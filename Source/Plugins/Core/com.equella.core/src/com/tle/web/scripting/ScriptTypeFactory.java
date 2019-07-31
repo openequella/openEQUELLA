@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,15 +32,15 @@ import com.tle.web.scripting.types.ItemScriptTypeImpl;
 import com.tle.web.scripting.types.SearchResultsScriptTypeImpl;
 
 @BindFactory
-public interface ScriptTypeFactory
-{
-	CollectionScriptTypeImpl createCollection(@Assisted("collection") ItemDefinition collection);
+public interface ScriptTypeFactory {
+  CollectionScriptTypeImpl createCollection(@Assisted("collection") ItemDefinition collection);
 
-	ItemScriptTypeImpl createItem(@Assisted("item") Item item);
+  ItemScriptTypeImpl createItem(@Assisted("item") Item item);
 
-	ItemScriptTypeImpl createItem(@Assisted("itemId") ItemId itemId);
+  ItemScriptTypeImpl createItem(@Assisted("itemId") ItemId itemId);
 
-	AttachmentScriptTypeImpl createAttachment(@Assisted("attachment") Attachment attachment, @Assisted("staging") FileHandle staging);
+  AttachmentScriptTypeImpl createAttachment(
+      @Assisted("attachment") Attachment attachment, @Assisted("staging") FileHandle staging);
 
-	SearchResultsScriptTypeImpl createSearchResults(@Assisted("results") SearchResults<Item> results);
+  SearchResultsScriptTypeImpl createSearchResults(@Assisted("results") SearchResults<Item> results);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,7 +20,6 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
-import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
@@ -26,39 +27,39 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQueryFancyBox implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryFancyBox implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final CssInclude CSS = JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().make();
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.fancybox.js", CSS).hasMin();
+  public static final CssInclude CSS =
+      JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().make();
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.fancybox.js", CSS).hasMin();
 
-	public static final JSCallAndReference FANCYBOX = new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
+  public static final JSCallAndReference FANCYBOX =
+      new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
 
-	public static final JSCallAndReference FANCYBOX_STATIC = new ExternallyDefinedFunction(JQueryCore.JQUERY,
-		"fancybox", -1, PRERENDER);
+  public static final JSCallAndReference FANCYBOX_STATIC =
+      new ExternallyDefinedFunction(JQueryCore.JQUERY, "fancybox", -1, PRERENDER);
 
-	public static final JSCallAndReference CLOSE = new ExternallyDefinedFunction(FANCYBOX_STATIC, "close", -1);
-	public static final JSCallAndReference SHOW_ACTIVITY = new ExternallyDefinedFunction(FANCYBOX_STATIC,
-		"showActivity", 0);
-	public static final JSCallAndReference HIDE_ACTIVITY = new ExternallyDefinedFunction(FANCYBOX_STATIC,
-		"hideActivity", 0);
+  public static final JSCallAndReference CLOSE =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "close", -1);
+  public static final JSCallAndReference SHOW_ACTIVITY =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "showActivity", 0);
+  public static final JSCallAndReference HIDE_ACTIVITY =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "hideActivity", 0);
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.fancybox.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.fancybox.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "fancybox";
-	}
+  @Override
+  public String getId() {
+    return "fancybox";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

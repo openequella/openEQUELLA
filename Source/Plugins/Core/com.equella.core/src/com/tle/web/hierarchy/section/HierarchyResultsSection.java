@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,18 +18,7 @@
 
 package com.tle.web.hierarchy.section;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
 import com.tle.core.freetext.service.FreeTextService;
-import com.tle.core.search.MappedSearchIndexValues;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.user.UserSessionService;
@@ -46,132 +37,69 @@ import com.tle.web.sections.equella.search.AbstractSearchActionsSection.Abstract
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.selection.SelectionService;
-import com.tle.web.selection.section.RootSelectionSection.Layout;
+import java.util.Collections;
+import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
-public class HierarchyResultsSection extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
-{
-	private static final Logger LOGGER = Logger.getLogger(HierarchyResultsSection.class);
+public class HierarchyResultsSection
+    extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel> {
+  private static final Logger LOGGER = Logger.getLogger(HierarchyResultsSection.class);
 
-	@Inject
-	private HierarchyItemList itemList;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private IntegrationService integrationService;
-	@Inject
-	private FreeTextService freeText;
-	@Inject
-	private UserSessionService sessionService;
+  @Inject private HierarchyItemList itemList;
+  @Inject private SelectionService selectionService;
+  @Inject private IntegrationService integrationService;
+  @Inject private FreeTextService freeText;
+  @Inject private UserSessionService sessionService;
 
-	@TreeLookup
-	private TopicDisplaySection topicDisplay;
-	@TreeLookup
-	private AbstractSearchActionsSection<? extends AbstractSearchActionsModel> searchActionsSection;
+  @TreeLookup private TopicDisplaySection topicDisplay;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !topicDisplay.isShowingResults(context) )
-		{
-			searchActionsSection.disableSearch(context);
-			return null;
-		}
-		return super.renderHtml(context);
-	}
+  @TreeLookup
+  private AbstractSearchActionsSection<? extends AbstractSearchActionsModel> searchActionsSection;
 
-	@Override
-	protected Label getDefaultResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		return topicDisplay.getResultsTitle(info, super.getDefaultResultsTitle(info, searchEvent, resultsEvent));
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!topicDisplay.isShowingResults(context)) {
+      searchActionsSection.disableSearch(context);
+      return null;
+    }
+    return super.renderHtml(context);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected FreetextSearchResultEvent createResultsEvent(SectionInfo info, FreetextSearchEvent searchEvent)
-	{
-		try
-		{
-			// having done a browse search, clear any currently stored
-			// search-search's indexed items from the session
-			sessionService.removeAttribute(MappedSearchIndexValues.MAPPED_SEARCH_ATTR_KEY);
+  @Override
+  protected Label getDefaultResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    return topicDisplay.getResultsTitle(
+        info, super.getDefaultResultsTitle(info, searchEvent, resultsEvent));
+  }
 
-			int[] count = freeText.countsFromFilters(Collections.singleton(searchEvent.getUnfilteredSearch()));
-			FreetextSearchResults<? extends FreetextResult> results = topicDisplay.processFreetextResults(info,
-				searchEvent);
+  @SuppressWarnings("nls")
+  @Override
+  protected FreetextSearchResultEvent createResultsEvent(
+      SectionInfo info, FreetextSearchEvent searchEvent) {
+    int[] count =
+        freeText.countsFromFilters(Collections.singleton(searchEvent.getUnfilteredSearch()));
+    FreetextSearchResults<? extends FreetextResult> results =
+        topicDisplay.processFreetextResults(info, searchEvent);
+    return new FreetextSearchResultEvent(results, searchEvent, count[0] - results.getAvailable());
+  }
 
-			// check for dynamic resources
-			List<Item> dynamicItems = topicDisplay.getDynamicKeyResourceItems(info);
+  @Override
+  public FreetextSearchEvent createSearchEvent(SectionInfo info) {
+    return topicDisplay.createFreetextSearchEvent(info);
+  }
 
-			int keyResourcesSize = results.getKeyResourcesSize() + dynamicItems.size();
-			int available = count[0] + keyResourcesSize;
-			// Only if we're not in a skinny session shall we map the index
-			// numbers, and hence enable the prev/next buttons.
-			boolean inSkinny = selectionService.getCurrentSession(info) != null
-				&& selectionService.getCurrentSession(info).getLayout() == Layout.SKINNY;
-			if( !inSkinny )
-			{
-				// double check
-				inSkinny = integrationService.isInIntegrationSession(info);
-			}
-			if( !inSkinny )
-			{
-				int offset = results.getOffset();
-				// add in the fixed key resources
-				List<Item> keyResourceItems = topicDisplay.getModel(info).getTopic().getKeyResources();
-				List<ItemId> keyResourceItemIds = null;
-				if( keyResourceItems.size() > 0 )
-				{
-					keyResourceItemIds = new ArrayList<ItemId>();
-					for( Item keyItem : keyResourceItems )
-					{
-						keyResourceItemIds.add(keyItem.getItemId());
-					}
-					for( Item dynaItem : dynamicItems )
-					{
-						keyResourceItemIds.add(dynaItem.getItemId());
-					}
-				}
+  @Override
+  public void processResults(SectionInfo info, FreetextSearchResultEvent event) {
+    topicDisplay.processResults(info, event, itemList);
+  }
 
-				MappedSearchIndexValues indexMap = new MappedSearchIndexValues(available, offset, keyResourcesSize);
-				indexMap.setKeyResourceItemIds(keyResourceItemIds);
-				sessionService.setAttribute(MappedSearchIndexValues.MAPPED_SEARCH_ATTR_KEY, indexMap);
-				for( int i = 0; i < results.getCount(); ++i )
-				{
-					Item item = results.getItem(i);
-					mapItemIdToSearchIndexForSession(results, searchEvent.getFinalSearch(), item, i);
-				}
-			}
-			return new FreetextSearchResultEvent(results, searchEvent, count[0] - results.getAvailable());
-		}
-		catch( Exception t )
-		{
-			LOGGER.error("Error searching", t);
-			return new FreetextSearchResultEvent(t, searchEvent);
-		}
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(itemList, id);
+  }
 
-	@Override
-	public FreetextSearchEvent createSearchEvent(SectionInfo info)
-	{
-		return topicDisplay.createFreetextSearchEvent(info);
-	}
-
-	@Override
-	public void processResults(SectionInfo info, FreetextSearchResultEvent event)
-	{
-		topicDisplay.processResults(info, event, itemList);
-	}
-
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(itemList, id);
-	}
-
-	@Override
-	public HierarchyItemList getItemList(SectionInfo info)
-	{
-		return itemList;
-	}
+  @Override
+  public HierarchyItemList getItemList(SectionInfo info) {
+    return itemList;
+  }
 }

@@ -1,0 +1,79 @@
+<com.tle.beans.item.Item>
+  <id>35991</id>
+  <uuid>99ee716a-a3d4-a83e-1590-c25fb3867719</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2005-10-03 16:29:32.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-05 15:55:34.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.99</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36012</id>
+      <uuid>a7888dac-f7ce-4ce9-83e5-8346ac701e3f</uuid>
+      <url>integers.gif</url>
+      <description>integers.gif</description>
+      <value1>108</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="01d4757e-b10e-788d-a713-176427d4f90c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>36009</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.449</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36010</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36011</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>integers</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>36006</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36007</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>integers</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>959</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

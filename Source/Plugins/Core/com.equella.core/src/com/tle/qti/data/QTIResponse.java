@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,98 +23,81 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * A response contains a list of available options (elements) that a user can
- * select for a question. The type can be fib (Fill-In-Blank) or choice
- * (multiple or single cardinality)
- * 
+ * A response contains a list of available options (elements) that a user can select for a question.
+ * The type can be fib (Fill-In-Blank) or choice (multiple or single cardinality)
+ *
  * @author will
  */
-public class QTIResponse implements Serializable
-{
-	private static final long serialVersionUID = 1L;
-	private String id;
-	private String type;
-	private boolean lookupId;
-	private QTIMaterial display;
-	private String cardinality;
-	private Map<String, QTIResponseElement> elements = new LinkedHashMap<String, QTIResponseElement>();
+public class QTIResponse implements Serializable {
+  private static final long serialVersionUID = 1L;
+  private String id;
+  private String type;
+  private boolean lookupId;
+  private QTIMaterial display;
+  private String cardinality;
+  private Map<String, QTIResponseElement> elements =
+      new LinkedHashMap<String, QTIResponseElement>();
 
-	public QTIResponse()
-	{
+  public QTIResponse() {}
 
-	}
+  public QTIResponse(
+      String id, String type, QTIMaterial display, String cardinality, boolean lookupId) {
+    this.id = id;
+    this.type = type;
+    this.display = display;
+    this.cardinality = cardinality;
+    this.lookupId = lookupId;
+  }
 
-	public QTIResponse(String id, String type, QTIMaterial display, String cardinality, boolean lookupId)
-	{
-		this.id = id;
-		this.type = type;
-		this.display = display;
-		this.cardinality = cardinality;
-		this.lookupId = lookupId;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public Map<String, QTIResponseElement> getElements() {
+    return elements;
+  }
 
-	public Map<String, QTIResponseElement> getElements()
-	{
-		return elements;
-	}
+  public void setElements(Map<String, QTIResponseElement> elements) {
+    this.elements = elements;
+  }
 
-	public void setElements(Map<String, QTIResponseElement> elements)
-	{
-		this.elements = elements;
-	}
+  public void putElement(String id, QTIResponseElement ele) {
+    elements.put(id, ele);
+  }
 
-	public void putElement(String id, QTIResponseElement ele)
-	{
-		elements.put(id, ele);
-	}
+  public void setDisplay(QTIMaterial display) {
+    this.display = display;
+  }
 
-	public void setDisplay(QTIMaterial display)
-	{
-		this.display = display;
-	}
+  public QTIMaterial getDisplay() {
+    return display;
+  }
 
-	public QTIMaterial getDisplay()
-	{
-		return display;
-	}
+  public void setCardinality(String cardinality) {
+    this.cardinality = cardinality;
+  }
 
-	public void setCardinality(String cardinality)
-	{
-		this.cardinality = cardinality;
-	}
+  public String getCardinality() {
+    return cardinality;
+  }
 
-	public String getCardinality()
-	{
-		return cardinality;
-	}
+  public void setLookupId(boolean lookupId) {
+    this.lookupId = lookupId;
+  }
 
-	public void setLookupId(boolean lookupId)
-	{
-		this.lookupId = lookupId;
-	}
-
-	public boolean isLookupId()
-	{
-		return lookupId;
-	}
+  public boolean isLookupId() {
+    return lookupId;
+  }
 }

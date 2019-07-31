@@ -3,7 +3,7 @@ module OEQ.UI.SearchFilters where
 import Prelude hiding (div)
 
 import Dispatcher.React (propsRenderer)
-import MaterialUI.Enums (subheading)
+import MaterialUI.Enums (subtitle1)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
 import React (ReactElement, childrenToArray, component, unsafeCreateElement)
@@ -14,7 +14,7 @@ filterSection :: {name::String, icon::ReactElement} -> Array ReactElement -> Rea
 filterSection = unsafeCreateElement $ withStyles styles $ component "Filter" $ \this -> do
   let render {icon, name,classes,children:c} = 
         div [P.className classes.container] $ [
-          typography {variant: subheading, className: classes.title} [text name ]
+          typography {variant: subtitle1, className: classes.title} [text name ]
         ] <> childrenToArray c  
   pure {render: propsRenderer render this}
   where 

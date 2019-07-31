@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,59 +22,49 @@ import com.tle.beans.entity.FederatedSearch;
 
 /**
  * Settings for search types that return results in XML format
- * 
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
-public abstract class XmlBasedSearchSettings extends SearchSettings
-{
-	private static final String SCHEMA_INPUT_TRANSFORM = "schemaInputTransform";
-	private static final String DISPLAY_XSLT = "xslt";
+public abstract class XmlBasedSearchSettings extends SearchSettings {
+  private static final String SCHEMA_INPUT_TRANSFORM = "schemaInputTransform";
+  private static final String DISPLAY_XSLT = "xslt";
 
-	private String schemaInputTransform;
-	private String displayXslt;
+  private String schemaInputTransform;
+  private String displayXslt;
 
-	public XmlBasedSearchSettings()
-	{
-	}
+  public XmlBasedSearchSettings() {}
 
-	public XmlBasedSearchSettings(FederatedSearch search)
-	{
-		this();
-		load(search);
-	}
+  public XmlBasedSearchSettings(FederatedSearch search) {
+    this();
+    load(search);
+  }
 
-	@Override
-	protected void _load()
-	{
-		schemaInputTransform = get(SCHEMA_INPUT_TRANSFORM, schemaInputTransform);
-		displayXslt = get(DISPLAY_XSLT, displayXslt);
-	}
+  @Override
+  protected void _load() {
+    schemaInputTransform = get(SCHEMA_INPUT_TRANSFORM, schemaInputTransform);
+    displayXslt = get(DISPLAY_XSLT, displayXslt);
+  }
 
-	@Override
-	protected void _save()
-	{
-		put(SCHEMA_INPUT_TRANSFORM, schemaInputTransform);
-		put(DISPLAY_XSLT, displayXslt);
-	}
+  @Override
+  protected void _save() {
+    put(SCHEMA_INPUT_TRANSFORM, schemaInputTransform);
+    put(DISPLAY_XSLT, displayXslt);
+  }
 
-	public String getSchemaInputTransform()
-	{
-		return schemaInputTransform;
-	}
+  public String getSchemaInputTransform() {
+    return schemaInputTransform;
+  }
 
-	public void setSchemaInputTransform(String schemaInputTransform)
-	{
-		this.schemaInputTransform = schemaInputTransform;
-	}
+  public void setSchemaInputTransform(String schemaInputTransform) {
+    this.schemaInputTransform = schemaInputTransform;
+  }
 
-	public String getDisplayXslt()
-	{
-		return displayXslt;
-	}
+  public String getDisplayXslt() {
+    return displayXslt;
+  }
 
-	public void setDisplayXslt(String displayXslt)
-	{
-		this.displayXslt = displayXslt;
-	}
+  public void setDisplayXslt(String displayXslt) {
+    this.displayXslt = displayXslt;
+  }
 }

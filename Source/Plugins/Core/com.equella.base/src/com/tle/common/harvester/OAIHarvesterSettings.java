@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,85 +19,69 @@
 package com.tle.common.harvester;
 
 @SuppressWarnings("nls")
-public class OAIHarvesterSettings extends HarvesterProfileSettings
-{
-	private static final String HARVESTER_TYPE = "OAIHarvesterSettings";
+public class OAIHarvesterSettings extends HarvesterProfileSettings {
+  private static final String HARVESTER_TYPE = "OAIHarvesterSettings";
 
-	private String server;
+  private String server;
 
-	private String aSet;
+  private String aSet;
 
-	private String format;
+  private String format;
 
-	public String getaSet()
-	{
-		return aSet;
-	}
+  public String getaSet() {
+    return aSet;
+  }
 
-	public void setaSet(String aSet)
-	{
-		this.aSet = aSet;
-	}
+  public void setaSet(String aSet) {
+    this.aSet = aSet;
+  }
 
-	public String getServer()
-	{
-		return server;
-	}
+  public String getServer() {
+    return server;
+  }
 
-	public void setServer(String server)
-	{
-		this.server = server;
-	}
+  public void setServer(String server) {
+    this.server = server;
+  }
 
-	public OAIHarvesterSettings()
-	{
-		super();
-	}
+  public OAIHarvesterSettings() {
+    super();
+  }
 
-	public OAIHarvesterSettings(HarvesterProfile gateway)
-	{
-		super(gateway);
-	}
+  public OAIHarvesterSettings(HarvesterProfile gateway) {
+    super(gateway);
+  }
 
-	@Override
-	protected void _load()
-	{
-		server = get("server", server);
-		format = get("format", format);
-		if( format == null || format.isEmpty() )
-		{
-			format = "oai_dc";
-		}
-		aSet = get("aSet", aSet);
-	}
+  @Override
+  protected void _load() {
+    server = get("server", server);
+    format = get("format", format);
+    if (format == null || format.isEmpty()) {
+      format = "oai_dc";
+    }
+    aSet = get("aSet", aSet);
+  }
 
-	@Override
-	protected void _save()
-	{
-		if( format == null || format.isEmpty() )
-		{
-			format = "oai_dc";
-		}
-		put("server", server);
-		put("format", format);
-		put("aSet", aSet);
-	}
+  @Override
+  protected void _save() {
+    if (format == null || format.isEmpty()) {
+      format = "oai_dc";
+    }
+    put("server", server);
+    put("format", format);
+    put("aSet", aSet);
+  }
 
-	@Override
-	protected String getType()
-	{
-		return HARVESTER_TYPE;
-	}
+  @Override
+  protected String getType() {
+    return HARVESTER_TYPE;
+  }
 
-	public void setFormat(String text)
-	{
-		format = text;
+  public void setFormat(String text) {
+    format = text;
+  }
 
-	}
-
-	public String getFormat()
-	{
-		return format;
-	}
-
+  public String getFormat() {
+    return format;
+  }
 }

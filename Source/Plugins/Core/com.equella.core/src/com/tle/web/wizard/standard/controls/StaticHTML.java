@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,36 +28,29 @@ import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CStaticHTML;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class StaticHTML extends AbstractSimpleWebControl
-{
-	private CStaticHTML staticHtml;
+public class StaticHTML extends AbstractSimpleWebControl {
+  private CStaticHTML staticHtml;
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		super.setWrappedControl(control);
-		staticHtml = (CStaticHTML) control;
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    super.setWrappedControl(control);
+    staticHtml = (CStaticHTML) control;
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		// nothing
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    // nothing
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return new SimpleSectionResult(staticHtml.getResolvedHtml());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return new SimpleSectionResult(staticHtml.getResolvedHtml());
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

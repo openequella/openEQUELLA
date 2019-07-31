@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,11 @@
 
 package com.tle.admin;
 
+import com.google.common.io.CharStreams;
+import com.tle.common.URLUtils;
+import com.tle.core.plugins.AbstractPluginService;
+import com.tle.core.remoting.RemotePluginDownloadService;
+import com.tle.core.remoting.RemotePluginDownloadService.PluginDetails;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +31,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PathResolver;
@@ -32,87 +38,76 @@ import org.java.plugin.registry.ManifestInfo;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.util.ExtendedProperties;
 
-import com.google.common.io.CharStreams;
-import com.tle.common.URLUtils;
-import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.remoting.RemotePluginDownloadService;
-import com.tle.core.remoting.RemotePluginDownloadService.PluginDetails;
+public class PluginServiceImpl extends AbstractPluginService {
+  private final RemotePluginDownloadService downloadService;
 
-public class PluginServiceImpl extends AbstractPluginService
-{
-	private final RemotePluginDownloadService downloadService;
+  @SuppressWarnings("nls")
+  public PluginServiceImpl(
+      URL serverUrl, String shortVersion, RemotePluginDownloadService downloadService) {
+    this.downloadService = downloadService;
 
-	@SuppressWarnings("nls")
-	public PluginServiceImpl(URL serverUrl, String shortVersion, RemotePluginDownloadService downloadService)
-	{
-		this.downloadService = downloadService;
+    ExtendedProperties properties = new ExtendedProperties();
+    properties.put(PathResolver.class.getName(), TleShadingPathResolver.class.getName());
+    try {
+      // eg, /tmp/.jpf-shadow/http%3A%2F%2Fdemo.equella.com/5.0.12345/
+      final String shadowFolderParam = System.getProperty("plugin.cache.dir");
+      final File shadowFolder;
+      if (shadowFolderParam == null) {
+        File f = new File(System.getProperty("java.io.tmpdir"), ".jpf-shadow");
+        f = new File(f, URLUtils.basicUrlEncode(serverUrl.toString()));
+        f = new File(f, shortVersion);
+        shadowFolder = f;
+      } else {
+        shadowFolder = new File(shadowFolderParam, shortVersion);
+      }
 
-		ExtendedProperties properties = new ExtendedProperties();
-		properties.put(PathResolver.class.getName(), TleShadingPathResolver.class.getName());
-		try
-		{
-			// eg, /tmp/.jpf-shadow/http%3A%2F%2Fdemo.equella.com/5.0.12345/
-			File f = new File(System.getProperty("java.io.tmpdir"), ".jpf-shadow");
-			f = new File(f, URLUtils.basicUrlEncode(serverUrl.toString()));
-			f = new File(f, shortVersion);
+      properties.put(
+          "com.tle.admin.TleShadingPathResolver.shadowFolder", shadowFolder.getCanonicalPath());
+    } catch (Exception ex) {
+      throw new RuntimeException("Error", ex);
+    }
+    ObjectFactory factory = ObjectFactory.newInstance(properties);
+    pluginManager = factory.createManager();
+  }
 
-			properties.put("com.tle.admin.TleShadingPathResolver.shadowFolder", f.getCanonicalPath());
-		}
-		catch( Exception ex )
-		{
-			throw new RuntimeException("Error", ex);
-		}
-		ObjectFactory factory = ObjectFactory.newInstance(properties);
-		pluginManager = factory.createManager();
-	}
+  @Override
+  public Object getBean(final PluginDescriptor plugin, final String clazzName) {
+    return instantiatePluginClass(plugin, clazzName);
+  }
 
-	@Override
-	public Object getBean(final PluginDescriptor plugin, final String clazzName)
-	{
-		return instantiatePluginClass(plugin, clazzName);
-	}
+  public Class<?> getBeanClass(final PluginDescriptor plugin, final String className) {
+    ensureActivated(plugin);
+    try {
+      return pluginManager.getPluginClassLoader(plugin).loadClass(className);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	public Class<?> getBeanClass(final PluginDescriptor plugin, final String className)
-	{
-		ensureActivated(plugin);
-		try
-		{
-			return pluginManager.getPluginClassLoader(plugin).loadClass(className);
-		}
-		catch( ClassNotFoundException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @SuppressWarnings("nls")
+  public void registerPlugins() throws IOException, JpfException {
+    List<TLEPluginLocation> locations = new ArrayList<TLEPluginLocation>();
+    List<PluginDetails> allPluginDetails = downloadService.getAllPluginDetails("admin-console");
+    for (PluginDetails details : allPluginDetails) {
+      File file = File.createTempFile("manifest", ".xml");
 
-	@SuppressWarnings("nls")
-	public void registerPlugins() throws IOException, JpfException
-	{
-		List<TLEPluginLocation> locations = new ArrayList<TLEPluginLocation>();
-		List<PluginDetails> allPluginDetails = downloadService.getAllPluginDetails("admin-console");
-		for( PluginDetails details : allPluginDetails )
-		{
-			File file = File.createTempFile("manifest", ".xml");
+      try (OutputStreamWriter writer =
+          new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+        CharStreams.copy(new StringReader(details.getManifestXml()), writer);
+      } finally {
+        file.deleteOnExit();
+      }
+      URL manifestUrl = file.toURI().toURL();
+      ManifestInfo info = pluginManager.getRegistry().readManifestInfo(manifestUrl);
+      TLEPluginLocation location =
+          new TLEPluginLocation(info, null, details.getBaseUrl(), manifestUrl);
+      locations.add(location);
+    }
+    pluginManager.publishPlugins(locations.toArray(new TLEPluginLocation[locations.size()]));
+  }
 
-			try( OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8") )
-			{
-				CharStreams.copy(new StringReader(details.getManifestXml()), writer);
-			}
-			finally
-			{
-				file.deleteOnExit();
-			}
-			URL manifestUrl = file.toURI().toURL();
-			ManifestInfo info = pluginManager.getRegistry().readManifestInfo(manifestUrl);
-			TLEPluginLocation location = new TLEPluginLocation(info, null, details.getBaseUrl(), manifestUrl);
-			locations.add(location);
-		}
-		pluginManager.publishPlugins(locations.toArray(new TLEPluginLocation[locations.size()]));
-	}
-
-	@Override
-	public boolean isPluginDisabled(TLEPluginLocation location)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public boolean isPluginDisabled(TLEPluginLocation location) {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,37 +20,31 @@ package com.dytech.edge.wizard.beans.control;
 
 import com.tle.beans.entity.LanguageBundle;
 
-public class GroupItem extends AbstractControlsWizardControl
-{
-	private static final long serialVersionUID = 1;
-	public static final String CLASS = "groupitem";
+public class GroupItem extends AbstractControlsWizardControl {
+  private static final long serialVersionUID = 1;
+  public static final String CLASS = "groupitem";
 
-	private LanguageBundle name;
-	private String value;
+  private LanguageBundle name;
+  private String value;
 
-	@Override
-	public String getClassType()
-	{
-		return CLASS; // Should never be needed
-	}
+  @Override
+  public String getClassType() {
+    return CLASS; // Should never be needed
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 
-	public String getValue()
-	{
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
+  public void setValue(String value) {
+    this.value = value;
+  }
 }

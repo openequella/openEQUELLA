@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.copyright.section;
-
-import java.io.IOException;
-import java.util.Collection;
 
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -54,199 +53,188 @@ import com.tle.web.sections.standard.renderers.LinkTagRenderer;
 import com.tle.web.viewurl.ItemUrlExtender;
 import com.tle.web.viewurl.ViewAttachmentUrl;
 import com.tle.web.viewurl.ViewItemUrl;
+import java.io.IOException;
+import java.util.Collection;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractCopyrightAgreementDialog extends EquellaDialog<AbstractCopyrightAgreementDialog.Model>
-{
+public abstract class AbstractCopyrightAgreementDialog
+    extends EquellaDialog<AbstractCopyrightAgreementDialog.Model> {
 
-	@PlugURL("css/agreedialog.css")
-	private static String URL_DIALOGCSS;
-	@PlugURL("js/agreedialog.js")
-	private static String URL_DIALOGJS;
-	@PlugKey("agreement.title")
-	private static Label LABEL_TITLE;
-	private static ExternallyDefinedFunction FUNC_AGREE;
+  @PlugURL("css/agreedialog.css")
+  private static String URL_DIALOGCSS;
 
-	static
-	{
-		PluginResourceHandler.init(AbstractCopyrightAgreementDialog.class);
-		FUNC_AGREE = new ExternallyDefinedFunction("acceptAgreement", new IncludeFile(URL_DIALOGJS));
-	}
+  @PlugURL("js/agreedialog.js")
+  private static String URL_DIALOGJS;
 
-	// Cannot be tree looked-up. CALAgreementSection section is inserted into
-	// the tree at the same place as CLA version, therefore we don't know which
-	// one we'll get.
-	// @TreeLookup
-	private AbstractCopyrightAgreementSection agreementSection;
+  @PlugKey("agreement.title")
+  private static Label LABEL_TITLE;
 
-	@Component
-	@PlugKey("agreement.accept")
-	private Button okButton;
-	@Component
-	@PlugKey("agreement.reject")
-	private Button cancelButton;
+  private static ExternallyDefinedFunction FUNC_AGREE;
 
-	private JSCallable acceptCall;
+  static {
+    PluginResourceHandler.init(AbstractCopyrightAgreementDialog.class);
+    FUNC_AGREE = new ExternallyDefinedFunction("acceptAgreement", new IncludeFile(URL_DIALOGJS));
+  }
 
-	public AbstractCopyrightAgreementDialog()
-	{
-		setAjax(true);
-	}
+  // Cannot be tree looked-up. CALAgreementSection section is inserted into
+  // the tree at the same place as CLA version, therefore we don't know which
+  // one we'll get.
+  // @TreeLookup
+  private AbstractCopyrightAgreementSection agreementSection;
 
-	protected abstract Class<? extends AbstractCopyrightAgreementSection> getAgreementSectionClass();
+  @Component
+  @PlugKey("agreement.accept")
+  private Button okButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		okButton.setComponentAttribute(ButtonType.class, ButtonType.ACCEPT);
-		cancelButton.setComponentAttribute(ButtonType.class, ButtonType.REJECT);
-	}
+  @Component
+  @PlugKey("agreement.reject")
+  private Button cancelButton;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  private JSCallable acceptCall;
 
-		agreementSection = tree.lookupSection(getAgreementSectionClass(), this);
+  public AbstractCopyrightAgreementDialog() {
+    setAjax(true);
+  }
 
-		cancelButton.setClickHandler(getCloseFunction());
-		acceptCall = ajaxEvents.getAjaxFunction("accept");
-	}
+  protected abstract Class<? extends AbstractCopyrightAgreementSection> getAgreementSectionClass();
 
-	@AjaxMethod
-	public boolean accept(SectionInfo info)
-	{
-		agreementSection.accept(info);
-		return true;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    okButton.setComponentAttribute(ButtonType.class, ButtonType.ACCEPT);
+    cancelButton.setComponentAttribute(ButtonType.class, ButtonType.REJECT);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		okButton.setClickHandler(context, FUNC_AGREE, acceptCall, getCloseFunction(), getModel(context).getLinkId(),
-			agreementSection.getAttachmentUuid(context));
+    agreementSection = tree.lookupSection(getAgreementSectionClass(), this);
 
-		return agreementSection.renderAgreement(context, null);
-	}
+    cancelButton.setClickHandler(getCloseFunction());
+    acceptCall = ajaxEvents.getAjaxFunction("accept");
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Lists.newArrayList(okButton, cancelButton);
-	}
+  @AjaxMethod
+  public boolean accept(SectionInfo info) {
+    agreementSection.accept(info);
+    return true;
+  }
 
-	@Override
-	public Model instantiateDialogModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	public Button getOkButton()
-	{
-		return okButton;
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    okButton.setClickHandler(
+        context,
+        FUNC_AGREE,
+        acceptCall,
+        getCloseFunction(),
+        getModel(context).getLinkId(),
+        agreementSection.getAttachmentUuid(context));
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+    return agreementSection.renderAgreement(context, null);
+  }
 
-	private ItemUrlExtender getLinkUrl(final String linkId)
-	{
-		return new ItemUrlExtender()
-		{
-			private static final long serialVersionUID = 1L;
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Lists.newArrayList(okButton, cancelButton);
+  }
 
-			@Override
-			public void execute(SectionInfo info)
-			{
-				getModel(info).setLinkId(linkId);
-			}
-		};
-	}
+  @Override
+  public Model instantiateDialogModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public static class Model extends DialogModel
-	{
-		@Bookmarked(name = "li")
-		private String linkId;
+  public Button getOkButton() {
+    return okButton;
+  }
 
-		public String getLinkId()
-		{
-			return linkId;
-		}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		public void setLinkId(String linkId)
-		{
-			this.linkId = linkId;
-		}
+  private ItemUrlExtender getLinkUrl(final String linkId) {
+    return new ItemUrlExtender() {
+      private static final long serialVersionUID = 1L;
 
-	}
+      @Override
+      public void execute(SectionInfo info) {
+        getModel(info).setLinkId(linkId);
+      }
+    };
+  }
 
-	public LinkTagRenderer createAgreementDialog(SectionInfo info, SectionInfo from, ViewItemUrl vurl,
-		LinkTagRenderer viewerTag, IAttachment attach)
-	{
-		viewerTag.setRel(null);
-		viewerTag.registerUse();
-		vurl.add(getLinkUrl(viewerTag.getElementId(from)));
-		vurl.add((BookmarkModifier) info.getAttribute(EventAuthoriser.class));
-		vurl.add(new ViewAttachmentUrl(attach.getUuid()));
-		vurl.setFilepath(UrlEncodedString.BLANK);
-		HtmlLinkState state = new HtmlLinkState(vurl);
-		getState(info).setContentsUrl(vurl);
-		DialogRenderer dialog = getSelectedRenderer(info.getRootRenderContext());
-		state.setClickHandler(new OverrideHandler(dialog.createOpenFunction()));
-		String attachUuid = attach.getUuid();
-		String linkClass = "copylink" + attachUuid; //$NON-NLS-1$
-		viewerTag.addClass("copylink_hidden " + linkClass); //$NON-NLS-1$
-		CopyrightLinkRenderer link = new CopyrightLinkRenderer(state, viewerTag);
-		link.addClass(linkClass);
-		link.setNestedRenderable(viewerTag.getNestedRenderable());
-		return link;
-	}
+  public static class Model extends DialogModel {
+    @Bookmarked(name = "li")
+    private String linkId;
 
-	public static class CopyrightLinkRenderer extends LinkRenderer
-	{
-		private final LinkTagRenderer viewerTag;
+    public String getLinkId() {
+      return linkId;
+    }
 
-		public CopyrightLinkRenderer(HtmlLinkState state, LinkTagRenderer viewerTag)
-		{
-			super(state);
-			this.viewerTag = viewerTag;
-		}
+    public void setLinkId(String linkId) {
+      this.linkId = linkId;
+    }
+  }
 
-		@Override
-		public TagRenderer setNestedRenderable(SectionRenderable nested)
-		{
-			super.setNestedRenderable(nested);
-			viewerTag.setNestedRenderable(nested);
-			return this;
-		}
+  public LinkTagRenderer createAgreementDialog(
+      SectionInfo info,
+      SectionInfo from,
+      ViewItemUrl vurl,
+      LinkTagRenderer viewerTag,
+      IAttachment attach) {
+    viewerTag.setRel(null);
+    viewerTag.registerUse();
+    vurl.add(getLinkUrl(viewerTag.getElementId(from)));
+    vurl.add((BookmarkModifier) info.getAttribute(EventAuthoriser.class));
+    vurl.add(new ViewAttachmentUrl(attach.getUuid()));
+    vurl.setFilepath(UrlEncodedString.BLANK);
+    HtmlLinkState state = new HtmlLinkState(vurl);
+    getState(info).setContentsUrl(vurl);
+    DialogRenderer dialog = getSelectedRenderer(info.getRootRenderContext());
+    state.setClickHandler(new OverrideHandler(dialog.createOpenFunction()));
+    String attachUuid = attach.getUuid();
+    String linkClass = "copylink" + attachUuid; // $NON-NLS-1$
+    viewerTag.addClass("copylink_hidden " + linkClass); // $NON-NLS-1$
+    CopyrightLinkRenderer link = new CopyrightLinkRenderer(state, viewerTag);
+    link.addClass(linkClass);
+    link.setNestedRenderable(viewerTag.getNestedRenderable());
+    return link;
+  }
 
-		@Override
-		protected void writeEnd(SectionWriter writer) throws IOException
-		{
-			super.writeEnd(writer);
-			viewerTag.realRender(writer);
-		}
+  public static class CopyrightLinkRenderer extends LinkRenderer {
+    private final LinkTagRenderer viewerTag;
 
-		@Override
-		public void preRender(PreRenderContext info)
-		{
-			super.preRender(info);
-			viewerTag.ensureClickable();
-			info.addCss(URL_DIALOGCSS);
-			info.preRender(viewerTag);
-		}
-	}
+    public CopyrightLinkRenderer(HtmlLinkState state, LinkTagRenderer viewerTag) {
+      super(state);
+      this.viewerTag = viewerTag;
+    }
+
+    @Override
+    public TagRenderer setNestedRenderable(SectionRenderable nested) {
+      super.setNestedRenderable(nested);
+      viewerTag.setNestedRenderable(nested);
+      return this;
+    }
+
+    @Override
+    protected void writeEnd(SectionWriter writer) throws IOException {
+      super.writeEnd(writer);
+      viewerTag.realRender(writer);
+    }
+
+    @Override
+    public void preRender(PreRenderContext info) {
+      super.preRender(info);
+      viewerTag.ensureClickable();
+      info.addCss(URL_DIALOGCSS);
+      info.preRender(viewerTag);
+    }
+  }
 }

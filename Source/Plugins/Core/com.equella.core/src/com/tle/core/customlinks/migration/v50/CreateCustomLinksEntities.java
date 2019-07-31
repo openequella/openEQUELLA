@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.core.customlinks.migration.v50;
-
-import javax.inject.Singleton;
 
 import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
@@ -30,30 +30,34 @@ import com.tle.core.hibernate.impl.TablesOnlyFilter;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.AbstractPluginService;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateCustomLinksEntities extends AbstractCreateMigration
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(CreateCustomLinksEntities.class)+".";
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("custom_link");
-	}
+public class CreateCustomLinksEntities extends AbstractCreateMigration {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(CreateCustomLinksEntities.class) + ".";
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{CustomLink.class, BaseEntity.class, LanguageBundle.class, Institution.class,
-				LanguageString.class, BaseEntity.Attribute.class};
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("custom_link");
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX+"customlinks.migration.title");
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      CustomLink.class,
+      BaseEntity.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class,
+      BaseEntity.Attribute.class
+    };
+  }
 
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "customlinks.migration.title");
+  }
 }

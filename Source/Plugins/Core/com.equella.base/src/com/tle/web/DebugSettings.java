@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,36 +19,36 @@
 package com.tle.web;
 
 @SuppressWarnings("nls")
-public final class DebugSettings
-{
-	private static boolean autoTestMode;
-	private static boolean debuggingMode;
-	private static boolean debugAaron;
+public final class DebugSettings {
+  private static boolean autoTestMode;
+  private static boolean debuggingMode;
+  private static boolean debugAaron;
+  private static boolean devMode;
 
-	static
-	{
-		autoTestMode = (System.getProperty("equella.autotest") != null);
-		debuggingMode = (System.getProperty("equella.debug") != null);
-		debugAaron = (System.getProperty("equella.debugaaron") != null);
-	}
+  static {
+    autoTestMode = (System.getProperty("equella.autotest") != null);
+    debuggingMode = (System.getProperty("equella.debug") != null);
+    debugAaron = (System.getProperty("equella.debugaaron") != null);
+    devMode = Boolean.getBoolean("equella.devmode");
+  }
 
-	public static boolean isAutoTestMode()
-	{
-		return autoTestMode;
-	}
+  public static boolean isAutoTestMode() {
+    return autoTestMode;
+  }
 
-	public static boolean isDebuggingMode()
-	{
-		return debuggingMode || debugAaron;
-	}
+  public static boolean isDebuggingMode() {
+    return debuggingMode || debugAaron;
+  }
 
-	public static boolean isDebugAaron()
-	{
-		return debugAaron;
-	}
+  public static boolean isDebugAaron() {
+    return debugAaron;
+  }
 
-	private DebugSettings()
-	{
-		throw new Error();
-	}
+  public static boolean isDevMode() {
+    return devMode;
+  }
+
+  private DebugSettings() {
+    throw new Error();
+  }
 }

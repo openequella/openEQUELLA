@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,39 @@
 
 package com.tle.core.item.standard.filter;
 
-import java.util.Calendar;
-import java.util.Map;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.ItemStatus;
 import com.tle.core.item.operations.WorkflowOperation;
+import java.util.Calendar;
+import java.util.Map;
 
-/**
- * @author jmaginnis
- */
-public class RemoveDeletedItemsFilter extends AbstractStandardOperationFilter
-{
-	private final int daysOld;
+/** @author jmaginnis */
+public class RemoveDeletedItemsFilter extends AbstractStandardOperationFilter {
+  private final int daysOld;
 
-	@AssistedInject
-	protected RemoveDeletedItemsFilter(@Assisted int daysOld)
-	{
-		this.daysOld = daysOld;
-	}
+  @AssistedInject
+  protected RemoveDeletedItemsFilter(@Assisted int daysOld) {
+    this.daysOld = daysOld;
+  }
 
-	@Override
-	public WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{operationFactory.purge(false)};
-	}
+  @Override
+  public WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {operationFactory.purge(false)};
+  }
 
-	@Override
-	public void queryValues(Map<String, Object> values)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		cal.add(Calendar.DAY_OF_YEAR, -daysOld);
-		values.put("dateModified", cal.getTime());
-		values.put("status", ItemStatus.DELETED.name());
-	}
+  @Override
+  public void queryValues(Map<String, Object> values) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.HOUR_OF_DAY, 23);
+    cal.set(Calendar.MINUTE, 59);
+    cal.add(Calendar.DAY_OF_YEAR, -daysOld);
+    values.put("dateModified", cal.getTime());
+    values.put("status", ItemStatus.DELETED.name());
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "status = :status and dateModified <= :dateModified";
-	}
+  @Override
+  public String getWhereClause() {
+    return "status = :status and dateModified <= :dateModified";
+  }
 }

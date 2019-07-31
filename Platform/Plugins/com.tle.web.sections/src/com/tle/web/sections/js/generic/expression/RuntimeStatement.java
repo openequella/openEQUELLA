@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,43 +27,36 @@ import com.tle.web.sections.js.JSStatements;
 
 /**
  * A JSStatements where the contents can be decided at runtime.
- * 
+ *
  * @author jolz
  */
 @NonNullByDefault
-public class RuntimeStatement implements JSStatements
-{
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return getRealStatements(info).getStatements(info);
-	}
+public class RuntimeStatement implements JSStatements {
+  @Override
+  public String getStatements(RenderContext info) {
+    return getRealStatements(info).getStatements(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(getRealStatements(info));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(getRealStatements(info));
+  }
 
-	protected JSStatements getRealStatements(RenderContext info)
-	{
-		JSStatements statements = info.getAttribute(this);
-		if( statements == null )
-		{
-			statements = createStatements(info);
-			info.setAttribute(this, statements);
-		}
-		return statements;
-	}
+  protected JSStatements getRealStatements(RenderContext info) {
+    JSStatements statements = info.getAttribute(this);
+    if (statements == null) {
+      statements = createStatements(info);
+      info.setAttribute(this, statements);
+    }
+    return statements;
+  }
 
-	public void setStatements(SectionInfo info, JSStatements statements)
-	{
-		info.setAttribute(this, statements);
-	}
+  public void setStatements(SectionInfo info, JSStatements statements) {
+    info.setAttribute(this, statements);
+  }
 
-	protected JSStatements createStatements(RenderContext info)
-	{
-		throw new SectionsRuntimeException("Statements not set and createStatements() not overridden"); //$NON-NLS-1$
-
-	}
+  protected JSStatements createStatements(RenderContext info) {
+    throw new SectionsRuntimeException(
+        "Statements not set and createStatements() not overridden"); //$NON-NLS-1$
+  }
 }

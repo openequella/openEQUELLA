@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,479 +32,414 @@ import com.tle.common.scripting.types.DrmPartyScriptType;
 import com.tle.common.scripting.types.DrmSettingsScriptType;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
-
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class DrmScriptWrapper extends AbstractScriptWrapper implements DrmScriptObject
-{
-	private static final long serialVersionUID = 1L;
-
-	@Inject
-	private UserService userService;
-
-	private final DefaultDrmSettingsScriptType drm;
-	private final Item item;
-
-	@Inject
-	protected DrmScriptWrapper(@Assisted("item") Item item, @Assisted("drmSettings") DrmSettings drmSettings)
-	{
-		this.item = item;
-		this.drm = new DefaultDrmSettingsScriptType(drmSettings);
-	}
-
-	@Override
-	public DrmSettingsScriptType getSettings()
-	{
-		return drm;
-	}
-
-	@Override
-	public DrmPartyScriptType createPartyFromUserId(String userId, boolean owner)
-	{
-		Party partyAndPartyAndYeah = new Party();
-		partyAndPartyAndYeah.setUserID("tle:" + userId);
-
-		UserBean user = userService.getInformationForUser(userId);
-		if( user != null )
-		{
-			partyAndPartyAndYeah.setEmail(user.getEmailAddress());
-			partyAndPartyAndYeah.setName(Format.format(user, Format.DEFAULT_USER_BEAN_FORMAT));
-		}
-		partyAndPartyAndYeah.setOwner(owner);
-
-		return new DefaultDrmPartyScriptType(partyAndPartyAndYeah);
-	}
-
-	@Override
-	public DrmPartyScriptType createParty(String name, String emailAddress, boolean owner)
-	{
-		Party partyAndPartyAndYeah = new Party();
-		partyAndPartyAndYeah.setName(name);
-		partyAndPartyAndYeah.setEmail(emailAddress);
-		partyAndPartyAndYeah.setOwner(owner);
-		return new DefaultDrmPartyScriptType(partyAndPartyAndYeah);
-	}
-
-	@Override
-	public void scriptExit()
-	{
-		super.scriptExit();
-
-		// if there are any values set in the local drm object, preserve them
-		DrmSettings localSettings = drm.getSettings();
-
-		if( drm.isChanged() )
-		{
-			if( Check.isEmpty(localSettings.getDrmPageUuid()) )
-			{
-				localSettings.setDrmPageUuid(DrmSettings.CUSTOM_SCRIPTED_DRMSETTINGS_PAGE_PLACEHOLDER);
-			}
-			if( item.getDrmSettings() == null )
-			{
-				item.setDrmSettings(localSettings);
-			}
-		}
-	}
-
-	public class DefaultDrmSettingsScriptType implements DrmSettingsScriptType
-	{
-		private static final long serialVersionUID = 1L;
-
-		private final DrmSettings settings;
-		private List<DrmPartyScriptType> owners;
-		private boolean changed;
-
-		public DefaultDrmSettingsScriptType(DrmSettings settings)
-		{
-			this.settings = settings;
-		}
-
-		protected DrmSettings getSettings()
-		{
-			return settings;
-		}
-
-		protected boolean isChanged()
-		{
-			return changed;
-		}
-
-		protected void setChanged()
-		{
-			changed = true;
-		}
-
-		@Override
-		@SuppressWarnings("deprecation")
-		public List<DrmPartyScriptType> getContentOwners()
-		{
-			if( owners == null )
-			{
-				owners = Lists
-					.newArrayList(Lists.transform(settings.getContentOwners(), new Function<Party, DrmPartyScriptType>()
-					{
-						@Override
-						public DrmPartyScriptType apply(Party party)
-						{
-							return new DefaultDrmPartyScriptType(DefaultDrmSettingsScriptType.this, party);
-						}
-					}));
-			}
-			return owners;
-		}
-
-		@Override
-		public void setContentOwners(List<DrmPartyScriptType> contentOwners)
-		{
-			changed = true;
-			owners = contentOwners;
-
-			List<Party> partyContentOwners = Lists
-				.newArrayList(Lists.transform(contentOwners, new Function<DrmPartyScriptType, Party>()
-				{
-					@Override
-					public Party apply(DrmPartyScriptType drmPartyScriptType)
-					{
-						DefaultDrmPartyScriptType scriptParty = ((DefaultDrmPartyScriptType) drmPartyScriptType);
-						scriptParty.setOwnerSettings(DefaultDrmSettingsScriptType.this);
-						return scriptParty.getWrapped();
-					}
-				}));
-			settings.setContentOwners(partyContentOwners);
-		}
-
-		@Override
-		public void addContentOwner(DrmPartyScriptType party)
-		{
-			changed = true;
-			DefaultDrmPartyScriptType scriptParty = (DefaultDrmPartyScriptType) party;
-			scriptParty.setOwnerSettings(this);
-			if( owners != null )
-			{
-				owners.add(party);
-			}
-			settings.getContentOwners().add(scriptParty.getWrapped());
-		}
-
-		@Override
-		public int getMaximumUsageCount()
-		{
-			return settings.getMaximumUsageCount();
-		}
-
-		@Override
-		public void setMaximumUsageCount(int maximumUsageCount)
-		{
-			changed = true;
-			settings.setMaximumUsageCount(maximumUsageCount);
-		}
-
-		@Override
-		public String getRequireAcceptanceFrom()
-		{
-			return settings.getRequireAcceptanceFrom();
-		}
-
-		@Override
-		public void setRequireAcceptanceFrom(String requireAcceptanceFrom)
-		{
-			changed = true;
-			settings.setRequireAcceptanceFrom(requireAcceptanceFrom);
-		}
-
-		@Override
-		public List<String> getRestrictedToRecipients()
-		{
-			return settings.getRestrictedToRecipients();
-		}
-
-		@Override
-		public void setRestrictedToRecipients(List<String> restrictedToRecipients)
-		{
-			changed = true;
-			settings.setRestrictedToRecipients(restrictedToRecipients);
-		}
-
-		@Override
-		public String getTermsOfAgreement()
-		{
-			return settings.getTermsOfAgreement();
-		}
-
-		@Override
-		public void setTermsOfAgreement(String termsOfAgreement)
-		{
-			changed = true;
-			settings.setTermsOfAgreement(termsOfAgreement);
-		}
-
-		@Override
-		public List<String> getUsages()
-		{
-			return settings.getUsageStrings();
-		}
-
-		@Override
-		@SuppressWarnings("deprecation")
-		public void setUsages(List<String> usages)
-		{
-			changed = true;
-			List<Usage> usageUsages = Lists.newArrayList(Lists.transform(usages, new Function<String, Usage>()
-			{
-				@Override
-				public Usage apply(String string)
-				{
-					return Usage.valueOf(string.toUpperCase());
-				}
-			}));
-			settings.setUsagesFromEnum(usageUsages);
-		}
-
-		@Override
-		public boolean addUsage(String usage)
-		{
-			Usage use = Usage.valueOf(usage.toUpperCase());
-			boolean added = settings.addUsage(use);
-			if( added )
-			{
-				changed = true;
-			}
-			return added;
-		}
-
-		@Override
-		public boolean removeUsage(String usage)
-		{
-			changed = true;
-			Usage use = Usage.valueOf(usage.toUpperCase());
-			return settings.removeUsage(use);
-		}
-
-		@Override
-		public boolean isAllowSummary()
-		{
-			return settings.isAllowSummary();
-		}
-
-		@Override
-		public void setAllowSummary(boolean allowSummary)
-		{
-			changed = true;
-			settings.setAllowSummary(allowSummary);
-		}
-
-		@Override
-		public boolean isAttributionOfOwnership()
-		{
-			return settings.isAttributionOfOwnership();
-		}
-
-		@Override
-		public void setAttributionOfOwnership(boolean attributionOfOwnership)
-		{
-			changed = true;
-			settings.setAttributionOfOwnership(attributionOfOwnership);
-		}
-
-		@Override
-		public boolean isEnforceAttribution()
-		{
-			return settings.isEnforceAttribution();
-		}
-
-		@Override
-		public void setEnforceAttribution(boolean enforceAttribution)
-		{
-			changed = true;
-			settings.setEnforceAttribution(enforceAttribution);
-		}
-
-		@Override
-		public boolean isHideLicencesFromOwner()
-		{
-			return settings.isHideLicencesFromOwner();
-		}
-
-		@Override
-		public void setHideLicencesFromOwner(boolean hideLicencesFromOwner)
-		{
-			changed = true;
-			settings.setHideLicencesFromOwner(hideLicencesFromOwner);
-		}
-
-		@Override
-		public boolean isOwnerMustAccept()
-		{
-			return settings.isOwnerMustAccept();
-		}
-
-		@Override
-		public void setOwnerMustAccept(boolean ownerMustAccept)
-		{
-			changed = true;
-			settings.setOwnerMustAccept(ownerMustAccept);
-		}
-
-		@Override
-		public boolean isPreviewAllowed()
-		{
-			return settings.isPreviewAllowed();
-		}
-
-		@Override
-		public void setPreviewAllowed(boolean previewAllowed)
-		{
-			changed = true;
-			settings.setPreviewAllowed(previewAllowed);
-		}
-
-		@Override
-		public boolean isRestrictToSector()
-		{
-			return settings.isRestrictToSector();
-		}
-
-		@Override
-		public void setRestrictToSector(boolean restrictToSector)
-		{
-			changed = true;
-			settings.setRestrictToSector(restrictToSector);
-		}
-
-		@Override
-		public boolean isShowLicenceCount()
-		{
-			return settings.isShowLicenceCount();
-		}
-
-		@Override
-		public void setShowLicenceCount(boolean showLicenceCount)
-		{
-			changed = true;
-			settings.setShowLicenceCount(showLicenceCount);
-		}
-
-		@Override
-		public boolean isStudentsMustAcceptIfInCompilation()
-		{
-			return settings.isStudentsMustAcceptIfInCompilation();
-		}
-
-		@Override
-		public void setStudentsMustAcceptIfInCompilation(boolean studentsMustAcceptIfInCompilation)
-		{
-			changed = true;
-			settings.setStudentsMustAcceptIfInCompilation(studentsMustAcceptIfInCompilation);
-		}
-	}
-
-	public static class DefaultDrmPartyScriptType implements DrmPartyScriptType
-	{
-		private static final long serialVersionUID = 1L;
-
-		private final Party party;
-		private DefaultDrmSettingsScriptType ownerSettings;
-		private boolean changed;
-
-		public DefaultDrmPartyScriptType(DefaultDrmSettingsScriptType ownerSettings, Party party)
-		{
-			this(party);
-			this.ownerSettings = ownerSettings;
-		}
-
-		public DefaultDrmPartyScriptType(Party party)
-		{
-			this.party = party;
-		}
-
-		protected void setOwnerSettings(DefaultDrmSettingsScriptType ownerSettings)
-		{
-			this.ownerSettings = ownerSettings;
-			if( changed )
-			{
-				ownerSettings.setChanged();
-			}
-		}
-
-		protected boolean isChanged()
-		{
-			return changed;
-		}
-
-		protected void setChanged()
-		{
-			changed = true;
-			if( ownerSettings != null )
-			{
-				ownerSettings.setChanged();
-			}
-		}
-
-		@Override
-		public String getEmail()
-		{
-			return party.getEmail();
-		}
-
-		@Override
-		public String getName()
-		{
-			return party.getName();
-		}
-
-		@Override
-		public String getUserID()
-		{
-			return party.getUserID();
-		}
-
-		@Override
-		public boolean isOwner()
-		{
-			return party.isOwner();
-		}
-
-		@Override
-		public void setEmail(String email)
-		{
-			setChanged();
-			party.setEmail(email);
-		}
-
-		@Override
-		public void setName(String name)
-		{
-			setChanged();
-			party.setName(name);
-		}
-
-		@Override
-		public void setOwner(boolean owner)
-		{
-			setChanged();
-			party.setOwner(owner);
-		}
-
-		@Override
-		public void setUserID(String uid)
-		{
-			setChanged();
-			party.setUserID(uid);
-		}
-
-		/**
-		 * Never use in scripts!
-		 * 
-		 * @return
-		 */
-		protected Party getWrapped()
-		{
-			return party;
-		}
-	}
+public class DrmScriptWrapper extends AbstractScriptWrapper implements DrmScriptObject {
+  private static final long serialVersionUID = 1L;
+
+  @Inject private UserService userService;
+
+  private final DefaultDrmSettingsScriptType drm;
+  private final Item item;
+
+  @Inject
+  protected DrmScriptWrapper(
+      @Assisted("item") Item item, @Assisted("drmSettings") DrmSettings drmSettings) {
+    this.item = item;
+    this.drm = new DefaultDrmSettingsScriptType(drmSettings);
+  }
+
+  @Override
+  public DrmSettingsScriptType getSettings() {
+    return drm;
+  }
+
+  @Override
+  public DrmPartyScriptType createPartyFromUserId(String userId, boolean owner) {
+    Party partyAndPartyAndYeah = new Party();
+    partyAndPartyAndYeah.setUserID("tle:" + userId);
+
+    UserBean user = userService.getInformationForUser(userId);
+    if (user != null) {
+      partyAndPartyAndYeah.setEmail(user.getEmailAddress());
+      partyAndPartyAndYeah.setName(Format.format(user, Format.DEFAULT_USER_BEAN_FORMAT));
+    }
+    partyAndPartyAndYeah.setOwner(owner);
+
+    return new DefaultDrmPartyScriptType(partyAndPartyAndYeah);
+  }
+
+  @Override
+  public DrmPartyScriptType createParty(String name, String emailAddress, boolean owner) {
+    Party partyAndPartyAndYeah = new Party();
+    partyAndPartyAndYeah.setName(name);
+    partyAndPartyAndYeah.setEmail(emailAddress);
+    partyAndPartyAndYeah.setOwner(owner);
+    return new DefaultDrmPartyScriptType(partyAndPartyAndYeah);
+  }
+
+  @Override
+  public void scriptExit() {
+    super.scriptExit();
+
+    // if there are any values set in the local drm object, preserve them
+    DrmSettings localSettings = drm.getSettings();
+
+    if (drm.isChanged()) {
+      if (Check.isEmpty(localSettings.getDrmPageUuid())) {
+        localSettings.setDrmPageUuid(DrmSettings.CUSTOM_SCRIPTED_DRMSETTINGS_PAGE_PLACEHOLDER);
+      }
+      if (item.getDrmSettings() == null) {
+        item.setDrmSettings(localSettings);
+      }
+    }
+  }
+
+  public class DefaultDrmSettingsScriptType implements DrmSettingsScriptType {
+    private static final long serialVersionUID = 1L;
+
+    private final DrmSettings settings;
+    private List<DrmPartyScriptType> owners;
+    private boolean changed;
+
+    public DefaultDrmSettingsScriptType(DrmSettings settings) {
+      this.settings = settings;
+    }
+
+    protected DrmSettings getSettings() {
+      return settings;
+    }
+
+    protected boolean isChanged() {
+      return changed;
+    }
+
+    protected void setChanged() {
+      changed = true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public List<DrmPartyScriptType> getContentOwners() {
+      if (owners == null) {
+        owners =
+            Lists.newArrayList(
+                Lists.transform(
+                    settings.getContentOwners(),
+                    new Function<Party, DrmPartyScriptType>() {
+                      @Override
+                      public DrmPartyScriptType apply(Party party) {
+                        return new DefaultDrmPartyScriptType(
+                            DefaultDrmSettingsScriptType.this, party);
+                      }
+                    }));
+      }
+      return owners;
+    }
+
+    @Override
+    public void setContentOwners(List<DrmPartyScriptType> contentOwners) {
+      changed = true;
+      owners = contentOwners;
+
+      List<Party> partyContentOwners =
+          Lists.newArrayList(
+              Lists.transform(
+                  contentOwners,
+                  new Function<DrmPartyScriptType, Party>() {
+                    @Override
+                    public Party apply(DrmPartyScriptType drmPartyScriptType) {
+                      DefaultDrmPartyScriptType scriptParty =
+                          ((DefaultDrmPartyScriptType) drmPartyScriptType);
+                      scriptParty.setOwnerSettings(DefaultDrmSettingsScriptType.this);
+                      return scriptParty.getWrapped();
+                    }
+                  }));
+      settings.setContentOwners(partyContentOwners);
+    }
+
+    @Override
+    public void addContentOwner(DrmPartyScriptType party) {
+      changed = true;
+      DefaultDrmPartyScriptType scriptParty = (DefaultDrmPartyScriptType) party;
+      scriptParty.setOwnerSettings(this);
+      if (owners != null) {
+        owners.add(party);
+      }
+      settings.getContentOwners().add(scriptParty.getWrapped());
+    }
+
+    @Override
+    public int getMaximumUsageCount() {
+      return settings.getMaximumUsageCount();
+    }
+
+    @Override
+    public void setMaximumUsageCount(int maximumUsageCount) {
+      changed = true;
+      settings.setMaximumUsageCount(maximumUsageCount);
+    }
+
+    @Override
+    public String getRequireAcceptanceFrom() {
+      return settings.getRequireAcceptanceFrom();
+    }
+
+    @Override
+    public void setRequireAcceptanceFrom(String requireAcceptanceFrom) {
+      changed = true;
+      settings.setRequireAcceptanceFrom(requireAcceptanceFrom);
+    }
+
+    @Override
+    public List<String> getRestrictedToRecipients() {
+      return settings.getRestrictedToRecipients();
+    }
+
+    @Override
+    public void setRestrictedToRecipients(List<String> restrictedToRecipients) {
+      changed = true;
+      settings.setRestrictedToRecipients(restrictedToRecipients);
+    }
+
+    @Override
+    public String getTermsOfAgreement() {
+      return settings.getTermsOfAgreement();
+    }
+
+    @Override
+    public void setTermsOfAgreement(String termsOfAgreement) {
+      changed = true;
+      settings.setTermsOfAgreement(termsOfAgreement);
+    }
+
+    @Override
+    public List<String> getUsages() {
+      return settings.getUsageStrings();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void setUsages(List<String> usages) {
+      changed = true;
+      List<Usage> usageUsages =
+          Lists.newArrayList(
+              Lists.transform(
+                  usages,
+                  new Function<String, Usage>() {
+                    @Override
+                    public Usage apply(String string) {
+                      return Usage.valueOf(string.toUpperCase());
+                    }
+                  }));
+      settings.setUsagesFromEnum(usageUsages);
+    }
+
+    @Override
+    public boolean addUsage(String usage) {
+      Usage use = Usage.valueOf(usage.toUpperCase());
+      boolean added = settings.addUsage(use);
+      if (added) {
+        changed = true;
+      }
+      return added;
+    }
+
+    @Override
+    public boolean removeUsage(String usage) {
+      changed = true;
+      Usage use = Usage.valueOf(usage.toUpperCase());
+      return settings.removeUsage(use);
+    }
+
+    @Override
+    public boolean isAllowSummary() {
+      return settings.isAllowSummary();
+    }
+
+    @Override
+    public void setAllowSummary(boolean allowSummary) {
+      changed = true;
+      settings.setAllowSummary(allowSummary);
+    }
+
+    @Override
+    public boolean isAttributionOfOwnership() {
+      return settings.isAttributionOfOwnership();
+    }
+
+    @Override
+    public void setAttributionOfOwnership(boolean attributionOfOwnership) {
+      changed = true;
+      settings.setAttributionOfOwnership(attributionOfOwnership);
+    }
+
+    @Override
+    public boolean isEnforceAttribution() {
+      return settings.isEnforceAttribution();
+    }
+
+    @Override
+    public void setEnforceAttribution(boolean enforceAttribution) {
+      changed = true;
+      settings.setEnforceAttribution(enforceAttribution);
+    }
+
+    @Override
+    public boolean isHideLicencesFromOwner() {
+      return settings.isHideLicencesFromOwner();
+    }
+
+    @Override
+    public void setHideLicencesFromOwner(boolean hideLicencesFromOwner) {
+      changed = true;
+      settings.setHideLicencesFromOwner(hideLicencesFromOwner);
+    }
+
+    @Override
+    public boolean isOwnerMustAccept() {
+      return settings.isOwnerMustAccept();
+    }
+
+    @Override
+    public void setOwnerMustAccept(boolean ownerMustAccept) {
+      changed = true;
+      settings.setOwnerMustAccept(ownerMustAccept);
+    }
+
+    @Override
+    public boolean isPreviewAllowed() {
+      return settings.isPreviewAllowed();
+    }
+
+    @Override
+    public void setPreviewAllowed(boolean previewAllowed) {
+      changed = true;
+      settings.setPreviewAllowed(previewAllowed);
+    }
+
+    @Override
+    public boolean isRestrictToSector() {
+      return settings.isRestrictToSector();
+    }
+
+    @Override
+    public void setRestrictToSector(boolean restrictToSector) {
+      changed = true;
+      settings.setRestrictToSector(restrictToSector);
+    }
+
+    @Override
+    public boolean isShowLicenceCount() {
+      return settings.isShowLicenceCount();
+    }
+
+    @Override
+    public void setShowLicenceCount(boolean showLicenceCount) {
+      changed = true;
+      settings.setShowLicenceCount(showLicenceCount);
+    }
+
+    @Override
+    public boolean isStudentsMustAcceptIfInCompilation() {
+      return settings.isStudentsMustAcceptIfInCompilation();
+    }
+
+    @Override
+    public void setStudentsMustAcceptIfInCompilation(boolean studentsMustAcceptIfInCompilation) {
+      changed = true;
+      settings.setStudentsMustAcceptIfInCompilation(studentsMustAcceptIfInCompilation);
+    }
+  }
+
+  public static class DefaultDrmPartyScriptType implements DrmPartyScriptType {
+    private static final long serialVersionUID = 1L;
+
+    private final Party party;
+    private DefaultDrmSettingsScriptType ownerSettings;
+    private boolean changed;
+
+    public DefaultDrmPartyScriptType(DefaultDrmSettingsScriptType ownerSettings, Party party) {
+      this(party);
+      this.ownerSettings = ownerSettings;
+    }
+
+    public DefaultDrmPartyScriptType(Party party) {
+      this.party = party;
+    }
+
+    protected void setOwnerSettings(DefaultDrmSettingsScriptType ownerSettings) {
+      this.ownerSettings = ownerSettings;
+      if (changed) {
+        ownerSettings.setChanged();
+      }
+    }
+
+    protected boolean isChanged() {
+      return changed;
+    }
+
+    protected void setChanged() {
+      changed = true;
+      if (ownerSettings != null) {
+        ownerSettings.setChanged();
+      }
+    }
+
+    @Override
+    public String getEmail() {
+      return party.getEmail();
+    }
+
+    @Override
+    public String getName() {
+      return party.getName();
+    }
+
+    @Override
+    public String getUserID() {
+      return party.getUserID();
+    }
+
+    @Override
+    public boolean isOwner() {
+      return party.isOwner();
+    }
+
+    @Override
+    public void setEmail(String email) {
+      setChanged();
+      party.setEmail(email);
+    }
+
+    @Override
+    public void setName(String name) {
+      setChanged();
+      party.setName(name);
+    }
+
+    @Override
+    public void setOwner(boolean owner) {
+      setChanged();
+      party.setOwner(owner);
+    }
+
+    @Override
+    public void setUserID(String uid) {
+      setChanged();
+      party.setUserID(uid);
+    }
+
+    /**
+     * Never use in scripts!
+     *
+     * @return
+     */
+    protected Party getWrapped() {
+      return party;
+    }
+  }
 }

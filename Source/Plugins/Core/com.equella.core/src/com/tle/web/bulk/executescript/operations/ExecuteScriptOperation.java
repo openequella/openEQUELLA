@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,26 +28,22 @@ import com.tle.core.scripting.service.StandardScriptContextParams;
 import com.tle.core.security.impl.SecureOnCall;
 
 @SecureOnCall(priv = "EDIT_ITEM")
-public class ExecuteScriptOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	ScriptingService scriptService;
-	private final String script;
+public class ExecuteScriptOperation extends AbstractWorkflowOperation {
+  @Inject ScriptingService scriptService;
+  private final String script;
 
-	@AssistedInject
-	public ExecuteScriptOperation(@Assisted("script") String script)
-	{
-		this.script = script;
-	}
+  @AssistedInject
+  public ExecuteScriptOperation(@Assisted("script") String script) {
+    this.script = script;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		StandardScriptContextParams params = new StandardScriptContextParams(getItemPack(), getStaging(), false, null);
+  @Override
+  public boolean execute() {
+    StandardScriptContextParams params =
+        new StandardScriptContextParams(getItemPack(), getStaging(), false, null);
 
-		ScriptContext scriptContext = scriptService.createScriptContext(params);
-		scriptService.executeScript(script, "bulkExecute", scriptContext, false);
-		return true;
-	}
-
+    ScriptContext scriptContext = scriptService.createScriptContext(params);
+    scriptService.executeScript(script, "bulkExecute", scriptContext, false);
+    return true;
+  }
 }

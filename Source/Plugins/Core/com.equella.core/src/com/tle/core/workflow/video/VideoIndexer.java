@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.core.workflow.video;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.attachments.Attachment;
@@ -28,45 +25,37 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
 import com.tle.freetext.IndexedItem;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class VideoIndexer extends AbstractIndexingExtension
-{
-	@Inject
-	private VideoService videoService;
+public class VideoIndexer extends AbstractIndexingExtension {
+  @Inject private VideoService videoService;
 
-	@Override
-	public void indexFast(IndexedItem indexedItem)
-	{
-		for( IAttachment attachment : indexedItem.getItem().getAttachments() )
-		{
-			final String thumb = attachment.getThumbnail();
-			if( !"suppress".equals(thumb) )
-			{
-				if( videoService.isVideo((Attachment) attachment) )
-				{
-					indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_VIDEO_THUMB, "true"));
-					break;
-				}
-			}
-		}
-	}
+  @Override
+  public void indexFast(IndexedItem indexedItem) {
+    for (IAttachment attachment : indexedItem.getItem().getAttachments()) {
+      final String thumb = attachment.getThumbnail();
+      if (!"suppress".equals(thumb)) {
+        if (videoService.isVideo((Attachment) attachment)) {
+          indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_VIDEO_THUMB, "true"));
+          break;
+        }
+      }
+    }
+  }
 
-	@Override
-	public void indexSlow(IndexedItem indexedItem)
-	{
-		//Nah
-	}
+  @Override
+  public void indexSlow(IndexedItem indexedItem) {
+    // Nah
+  }
 
-	@Override
-	public void loadForIndexing(List<IndexedItem> items)
-	{
-		//Nah
-	}
+  @Override
+  public void loadForIndexing(List<IndexedItem> items) {
+    // Nah
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,42 +21,35 @@ package com.tle.core.item.edit.attachment;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 
-public abstract class AbstractCustomAttachmentEditor extends AbstractAttachmentEditor
-{
-	protected CustomAttachment customAttachment;
+public abstract class AbstractCustomAttachmentEditor extends AbstractAttachmentEditor {
+  protected CustomAttachment customAttachment;
 
-	@Override
-	public boolean canEdit(Attachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			return ((CustomAttachment) attachment).getType().equals(getCustomType());
-		}
-		return false;
-	}
+  @Override
+  public boolean canEdit(Attachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      return ((CustomAttachment) attachment).getType().equals(getCustomType());
+    }
+    return false;
+  }
 
-	@Override
-	public void setAttachment(Attachment attachment)
-	{
-		super.setAttachment(attachment);
-		this.customAttachment = (CustomAttachment) attachment;
-	}
+  @Override
+  public void setAttachment(Attachment attachment) {
+    super.setAttachment(attachment);
+    this.customAttachment = (CustomAttachment) attachment;
+  }
 
-	@Override
-	public Attachment newAttachment()
-	{
-		CustomAttachment attachment = new CustomAttachment();
-		attachment.setType(getCustomType());
-		return attachment;
-	}
+  @Override
+  public Attachment newAttachment() {
+    CustomAttachment attachment = new CustomAttachment();
+    attachment.setType(getCustomType());
+    return attachment;
+  }
 
-	protected void editCustomData(String property, Object value)
-	{
-		if( hasBeenEdited(customAttachment.getData(property), value) )
-		{
-			customAttachment.setData(property, value);
-		}
-	}
+  protected void editCustomData(String property, Object value) {
+    if (hasBeenEdited(customAttachment.getData(property), value)) {
+      customAttachment.setData(property, value);
+    }
+  }
 
-	public abstract String getCustomType();
+  public abstract String getCustomType();
 }

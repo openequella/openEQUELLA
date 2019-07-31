@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,11 +26,11 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.Button;
 
 @TreeIndexed
-public interface DRMFilter extends Section
-{
-	void setSkip(SectionInfo info, boolean skip);
+public interface DRMFilter extends Section {
+  void setSkip(SectionInfo info, boolean skip);
 
-	void initAcceptButton(SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler);
+  void initAcceptButton(
+      SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler);
 
-	JSCallable getLicenseFunction();
+  JSCallable getLicenseFunction();
 }

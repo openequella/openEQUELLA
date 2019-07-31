@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,27 @@
 
 package com.tle.web.remoterepo.merlot;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.google.inject.Provider;
 import com.tle.core.guice.Bind;
 import com.tle.core.remoterepo.merlot.service.impl.MerlotSearchResult;
 import com.tle.web.remoterepo.RemoteRepoListEntry;
 import com.tle.web.remoterepo.RemoteRepoListEntryFactory;
 import com.tle.web.sections.SectionInfo;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class MerlotListEntryFactory implements RemoteRepoListEntryFactory<MerlotSearchResult>
-{
-	@Inject
-	private Provider<MerlotListEntry> entryProvider;
+public class MerlotListEntryFactory implements RemoteRepoListEntryFactory<MerlotSearchResult> {
+  @Inject private Provider<MerlotListEntry> entryProvider;
 
-	@Override
-	public RemoteRepoListEntry<MerlotSearchResult> createListEntry(SectionInfo info, MerlotSearchResult result)
-	{
-		MerlotListEntry entry = entryProvider.get();
-		entry.setResult(result);
-		entry.setInfo(info);
-		return entry;
-	}
+  @Override
+  public RemoteRepoListEntry<MerlotSearchResult> createListEntry(
+      SectionInfo info, MerlotSearchResult result) {
+    MerlotListEntry entry = entryProvider.get();
+    entry.setResult(result);
+    entry.setInfo(info);
+    return entry;
+  }
 }

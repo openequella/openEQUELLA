@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,7 @@
 
 package com.tle.web.hierarchy.section;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.dytech.edge.web.WebConstants;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
@@ -45,108 +41,88 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
-import com.tle.web.viewitem.ItemFilestoreServlet;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class RootHierarchySection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootHierarchySection.class);
-	public static final String HIERARCHYURL = "/hierarchy.do";
+    implements BlueBarEventListener {
+  private static PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(RootHierarchySection.class);
+  public static final String HIERARCHYURL = "/hierarchy.do";
 
-	@PlugURL("css/hierarchy.css")
-	private static String cssUrl;
+  @PlugURL("css/hierarchy.css")
+  private static String cssUrl;
 
-	@TreeLookup
-	private TopicDisplaySection topicSection;
+  @TreeLookup private TopicDisplaySection topicSection;
 
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private TLEAclManager aclManager;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return "hierarchyContext";
-	}
+  @Override
+  protected String getSessionKey() {
+    return "hierarchyContext";
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( aclManager.filterNonGrantedPrivileges(WebConstants.HIERARCHY_PAGE_PRIVILEGE).isEmpty() )
-		{
-			if( CurrentUser.isGuest() )
-			{
-				LogonSection.forwardToLogon(context,
-					institutionService.removeInstitution(context.getPublicBookmark().getHref()),
-					LogonSection.STANDARD_LOGON_PATH);
-				return null;
-			}
-			throw new AccessDeniedException(
-					urlHelper.getString("missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
-		}
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (aclManager.filterNonGrantedPrivileges(WebConstants.HIERARCHY_PAGE_PRIVILEGE).isEmpty()) {
+      if (CurrentUser.isGuest()) {
+        LogonSection.forwardToLogon(
+            context,
+            institutionService.removeInstitution(context.getPublicBookmark().getHref()),
+            LogonSection.STANDARD_LOGON_PATH);
+        return null;
+      }
+      throw new AccessDeniedException(
+          urlHelper.getString("missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
+    }
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		topicSection.addCrumbs(info, crumbs);
-		decorations.setTitle(getTitle(info));
-		decorations.setContentBodyClass("browse-layout search-layout");
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    topicSection.addCrumbs(info, crumbs);
+    decorations.setTitle(getTitle(info));
+    decorations.setContentBodyClass("browse-layout search-layout");
+  }
 
-	@Override
-	protected void createCssIncludes(List<CssInclude> includes)
-	{
-		includes.add(CssInclude.include(cssUrl).hasRtl().make());
-		super.createCssIncludes(includes);
-	}
+  @Override
+  protected void createCssIncludes(List<CssInclude> includes) {
+    includes.add(CssInclude.include(cssUrl).hasRtl().make());
+    super.createCssIncludes(includes);
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return topicSection.getPageTitle(info);
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return topicSection.getPageTitle(info);
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(viewFactory.createResult("hierarchyhelp.ftl", this));
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(viewFactory.createResult("hierarchyhelp.ftl", this));
+  }
 
-	/**
-	 * Browsers show annoying capacity to drop booleans from their event
-	 * parameters when that boolean is false. Accordingly the attempt in
-	 * ContextableSearchSection.afterParameters to remove previously held values
-	 * fails resulting in the 'reverse order' "rs" boolean checkbox becoming
-	 * stuck on true/checked once set. The best that can be said about this
-	 * workaround is that it's harmless where not required.
-	 * 
-	 * @param context
-	 */
-	@Override
-	protected boolean hasContextBeenSpecified(SectionInfo info)
-	{
-		return super.hasContextBeenSpecified(info) || getModel(info).isUpdateContext();
-	}
+  @Override
+  protected Map<String, String[]> buildSearchContext(SectionInfo info) {
+    final BookmarkEvent bookmarkEvent = new BookmarkEvent();
+    // If you ignore browser URL you lose the active topic.
+    bookmarkEvent.setIgnoredContexts(BookmarkEvent.CONTEXT_SESSION);
+    info.processEvent(bookmarkEvent);
+    return bookmarkEvent.getBookmarkState();
+  }
 
-	@Override
-	protected Map<String, String[]> buildSearchContext(SectionInfo info)
-	{
-		final BookmarkEvent bookmarkEvent = new BookmarkEvent();
-		// If you ignore browser URL you lose the active topic.
-		bookmarkEvent.setIgnoredContexts(BookmarkEvent.CONTEXT_SESSION);
-		info.processEvent(bookmarkEvent);
-		return bookmarkEvent.getBookmarkState();
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null
+        ? super.getDefaultLayout(info)
+        : ContentLayout.ONE_COLUMN;
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null ? super.getDefaultLayout(info)
-			: ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  protected String getPageName() {
+    return HIERARCHYURL;
+  }
 }

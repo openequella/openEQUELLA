@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,15 +17,6 @@
  */
 
 package com.tle.web.browseby;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.common.searching.Field;
@@ -50,384 +43,325 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.template.Breadcrumbs;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 public class BrowseSection extends AbstractPrototypeSection<BrowseSection.Model>
-	implements
-		SearchEventListener<FreetextSearchEvent>,
-		HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private FreetextIndex freetextIndex;
-	@EventFactory
-	private EventGenerator events;
-	@PlugKey("browseby.pagetitle")
-	private static String KEY_TITLE;
-	@PlugKey("alltitle")
-	private static Label LABEL_ROOT;
-	@TreeLookup
-	private BrowseSearchResults browseResults;
+    implements SearchEventListener<FreetextSearchEvent>, HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private FreetextIndex freetextIndex;
+  @EventFactory private EventGenerator events;
 
-	public Label getTitle(SectionInfo info)
-	{
-		Model model = getModel(info);
-		Breadcrumbs crumbs = Breadcrumbs.get(info);
-		BrowseRow row = getBrowseRows(info);
-		BrowseRow rootDisplayRow = model.getRootDisplayRow();
-		boolean useTitle = true;
-		while( !row.equals(rootDisplayRow) )
-		{
-			crumbs.add(row.getViewLink());
-			row = row.getChildren().get(0);
-			useTitle = false;
-		}
-		if( useTitle )
-		{
-			String pageName = model.getPageName();
-			if( pageName == null )
-			{
-				pageName = "??"; //$NON-NLS-1$
-			}
-			return new KeyLabel(KEY_TITLE, pageName);
-		}
-		else
-		{
-			return row.getTitle();
-		}
-	}
+  @PlugKey("browseby.pagetitle")
+  private static String KEY_TITLE;
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event)
-	{
-		BrowseSearch search = event.getDefaultSeach();
-		Model model = getModel(info);
-		List<String> fields = getFields(info);
-		List<String> values = model.getValues();
-		int i = 0;
-		List<Field> musts = new ArrayList<Field>();
-		if( values != null )
-		{
-			for( String value : values )
-			{
-				musts.add(new Field(fields.get(i), value));
-				i++;
-			}
-		}
-		search.setMustFields(musts);
-		Collection<String> collectionUuids = model.getCollections();
-		if( !Check.isEmpty(collectionUuids) )
-		{
-			search.setCollectionUuids(collectionUuids);
-		}
-	}
+  @PlugKey("alltitle")
+  private static Label LABEL_ROOT;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		getBrowseRows(context);
-		return viewFactory.createResult("browsepage.ftl", this); //$NON-NLS-1$
-	}
+  @TreeLookup private BrowseSearchResults browseResults;
 
-	@SuppressWarnings("nls")
-	private BrowseRow getBrowseRows(SectionInfo info)
-	{
-		Model model = getModel(info);
-		if( model.getRootRow() != null )
-		{
-			return model.getRootRow();
-		}
-		BrowseSearch search = new BrowseSearch();
-		Collection<String> collectionUuids = model.getCollections();
-		if( !Check.isEmpty(collectionUuids) )
-		{
-			search.setCollectionUuids(collectionUuids);
-		}
-		MatrixResults results = freetextIndex.matrixSearch(search, getFields(info), true);
-		BrowseRow rootNode = new BrowseRow(null, 0);
-		BrowseRow displayRootNode = rootNode;
-		rootNode.setTitle(LABEL_ROOT);
-		rootNode.setViewLink(new HtmlLinkState(LABEL_ROOT, events.getNamedHandler("view", Collections.emptyList())));
-		List<MatrixEntry> entries = results.getEntries();
-		List<String> selectedValues = model.getValues();
-		boolean showAll = Check.isEmpty(selectedValues);
-		int selSize = !showAll ? selectedValues.size() : 0;
-		for( MatrixEntry matrixEntry : entries )
-		{
-			List<String> values = matrixEntry.getFieldValues();
-			BrowseRow parentNode = rootNode;
-			List<String> valForView = new ArrayList<String>();
-			int ind = 0;
-			for( String value : values )
-			{
-				valForView.add(value);
-				boolean matches = false;
-				if( !showAll && selSize > ind )
-				{
-					matches = selectedValues.get(ind).equals(value);
-				}
-				if( value.isEmpty() || !showAll && (!matches && selSize - 1 >= ind) )
-				{
-					break;
-				}
-				HtmlLinkState linkState = new HtmlLinkState();
-				linkState.setLabel(new TextLabel(value));
-				BrowseRow row = parentNode.findChild(value);
-				if( row == null )
-				{
-					row = new BrowseRow(value, matrixEntry.getCount());
-					parentNode.addChild(row);
-				}
-				else
-				{
-					row.addCount(matrixEntry.getCount());
-				}
-				parentNode = row;
-				if( !linkState.isDisabled() )
-				{
-					linkState.setClickHandler(events.getNamedHandler("view", new ArrayList<String>(valForView)));
-				}
-				row.setViewLink(linkState);
-				if( matches && selSize - 1 == ind )
-				{
-					displayRootNode = row;
-				}
-				ind++;
-			}
-		}
-		displayRootNode.setHide(true);
-		model.setRootDisplayRow(displayRootNode);
-		model.setRootRow(rootNode);
-		return rootNode;
-	}
+  public Label getTitle(SectionInfo info) {
+    Model model = getModel(info);
+    Breadcrumbs crumbs = Breadcrumbs.get(info);
+    BrowseRow row = getBrowseRows(info);
+    BrowseRow rootDisplayRow = model.getRootDisplayRow();
+    boolean useTitle = true;
+    while (!row.equals(rootDisplayRow)) {
+      crumbs.add(row.getViewLink());
+      row = row.getChildren().get(0);
+      useTitle = false;
+    }
+    if (useTitle) {
+      String pageName = model.getPageName();
+      if (pageName == null) {
+        pageName = "??"; // $NON-NLS-1$
+      }
+      return new KeyLabel(KEY_TITLE, pageName);
+    } else {
+      return row.getTitle();
+    }
+  }
 
-	@EventHandlerMethod
-	public void view(SectionInfo info, List<String> nodeValues)
-	{
-		Model model = getModel(info);
-		if( !nodeValues.isEmpty() )
-		{
-			browseResults.startSearch(info);
-		}
-		model.setValues(nodeValues);
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) {
+    BrowseSearch search = event.getDefaultSeach();
+    Model model = getModel(info);
+    List<String> fields = getFields(info);
+    List<String> values = model.getValues();
+    int i = 0;
+    List<Field> musts = new ArrayList<Field>();
+    if (values != null) {
+      for (String value : values) {
+        musts.add(new Field(fields.get(i), value));
+        i++;
+      }
+    }
+    search.setMustFields(musts);
+    Collection<String> collectionUuids = model.getCollections();
+    if (!Check.isEmpty(collectionUuids)) {
+      search.setCollectionUuids(collectionUuids);
+    }
+  }
 
-	private List<String> getFields(SectionInfo info)
-	{
-		Model model = getModel(info);
-		String nodes = model.getNodes();
-		List<String> fields = new ArrayList<String>();
-		String[] nodeList = nodes.split(","); //$NON-NLS-1$
-		for( String node : nodeList )
-		{
-			fields.add(node.trim());
-		}
-		return fields;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    getBrowseRows(context);
+    return viewFactory.createResult("browsepage.ftl", this); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return ""; //$NON-NLS-1$
-	}
+  @SuppressWarnings("nls")
+  private BrowseRow getBrowseRows(SectionInfo info) {
+    Model model = getModel(info);
+    if (model.getRootRow() != null) {
+      return model.getRootRow();
+    }
+    BrowseSearch search = new BrowseSearch();
+    Collection<String> collectionUuids = model.getCollections();
+    if (!Check.isEmpty(collectionUuids)) {
+      search.setCollectionUuids(collectionUuids);
+    }
+    MatrixResults results = freetextIndex.matrixSearch(search, getFields(info), true, false);
+    BrowseRow rootNode = new BrowseRow(null, 0);
+    BrowseRow displayRootNode = rootNode;
+    rootNode.setTitle(LABEL_ROOT);
+    rootNode.setViewLink(
+        new HtmlLinkState(LABEL_ROOT, events.getNamedHandler("view", Collections.emptyList())));
+    List<MatrixEntry> entries = results.getEntries();
+    List<String> selectedValues = model.getValues();
+    boolean showAll = Check.isEmpty(selectedValues);
+    int selSize = !showAll ? selectedValues.size() : 0;
+    for (MatrixEntry matrixEntry : entries) {
+      List<String> values = matrixEntry.getFieldValues();
+      BrowseRow parentNode = rootNode;
+      List<String> valForView = new ArrayList<String>();
+      int ind = 0;
+      for (String value : values) {
+        valForView.add(value);
+        boolean matches = false;
+        if (!showAll && selSize > ind) {
+          matches = selectedValues.get(ind).equals(value);
+        }
+        if (value.isEmpty() || !showAll && (!matches && selSize - 1 >= ind)) {
+          break;
+        }
+        HtmlLinkState linkState = new HtmlLinkState();
+        linkState.setLabel(new TextLabel(value));
+        BrowseRow row = parentNode.findChild(value);
+        if (row == null) {
+          row = new BrowseRow(value, matrixEntry.getCount());
+          parentNode.addChild(row);
+        } else {
+          row.addCount(matrixEntry.getCount());
+        }
+        parentNode = row;
+        if (!linkState.isDisabled()) {
+          linkState.setClickHandler(
+              events.getNamedHandler("view", new ArrayList<String>(valForView)));
+        }
+        row.setViewLink(linkState);
+        if (matches && selSize - 1 == ind) {
+          displayRootNode = row;
+        }
+        ind++;
+      }
+    }
+    displayRootNode.setHide(true);
+    model.setRootDisplayRow(displayRootNode);
+    model.setRootRow(rootNode);
+    return rootNode;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @EventHandlerMethod
+  public void view(SectionInfo info, List<String> nodeValues) {
+    Model model = getModel(info);
+    if (!nodeValues.isEmpty()) {
+      browseResults.startSearch(info);
+    }
+    model.setValues(nodeValues);
+  }
 
-	public static class Model
-	{
-		@Bookmarked(parameter = "nodes", supported = true)
-		private String nodes;
-		@Bookmarked(parameter = "values")
-		private List<String> values;
-		@Bookmarked(parameter = "pageName", supported = true)
-		private String pageName;
-		@Bookmarked(parameter = "collections", supported = true)
-		private Collection<String> collections;
+  private List<String> getFields(SectionInfo info) {
+    Model model = getModel(info);
+    String nodes = model.getNodes();
+    List<String> fields = new ArrayList<String>();
+    String[] nodeList = nodes.split(","); // $NON-NLS-1$
+    for (String node : nodeList) {
+      fields.add(node.trim());
+    }
+    return fields;
+  }
 
-		private BrowseRow rootRow;
-		private BrowseRow rootDisplayRow;
+  @Override
+  public String getDefaultPropertyName() {
+    return ""; //$NON-NLS-1$
+  }
 
-		public String getPageName()
-		{
-			return pageName;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		public void setPageName(String pageName)
-		{
-			this.pageName = pageName;
-		}
+  public static class Model {
+    @Bookmarked(parameter = "nodes", supported = true)
+    private String nodes;
 
-		public String getNodes()
-		{
-			return nodes;
-		}
+    @Bookmarked(parameter = "values")
+    private List<String> values;
 
-		public void setNodes(String nodes)
-		{
-			this.nodes = nodes;
-		}
+    @Bookmarked(parameter = "pageName", supported = true)
+    private String pageName;
 
-		public List<String> getValues()
-		{
-			return values;
-		}
+    @Bookmarked(parameter = "collections", supported = true)
+    private Collection<String> collections;
 
-		public void setValues(List<String> values)
-		{
-			this.values = values;
-		}
+    private BrowseRow rootRow;
+    private BrowseRow rootDisplayRow;
 
-		public BrowseRow getRootRow()
-		{
-			return rootRow;
-		}
+    public String getPageName() {
+      return pageName;
+    }
 
-		public void setRootRow(BrowseRow rootRow)
-		{
-			this.rootRow = rootRow;
-		}
+    public void setPageName(String pageName) {
+      this.pageName = pageName;
+    }
 
-		public Collection<String> getCollections()
-		{
-			return collections;
-		}
+    public String getNodes() {
+      return nodes;
+    }
 
-		public void setCollections(Collection<String> collections)
-		{
-			this.collections = collections;
-		}
+    public void setNodes(String nodes) {
+      this.nodes = nodes;
+    }
 
-		public BrowseRow getRootDisplayRow()
-		{
-			return rootDisplayRow;
-		}
+    public List<String> getValues() {
+      return values;
+    }
 
-		public void setRootDisplayRow(BrowseRow rootDisplayRow)
-		{
-			this.rootDisplayRow = rootDisplayRow;
-		}
+    public void setValues(List<String> values) {
+      this.values = values;
+    }
 
-	}
+    public BrowseRow getRootRow() {
+      return rootRow;
+    }
 
-	public static class BrowseRow
-	{
-		private Label title;
-		private final String id;
-		private int count;
-		private boolean hide;
-		private List<BrowseRow> children;
-		private Map<String, BrowseRow> childMap;
-		private HtmlLinkState viewLink;
+    public void setRootRow(BrowseRow rootRow) {
+      this.rootRow = rootRow;
+    }
 
-		public BrowseRow(String id, int count)
-		{
-			this.id = id;
-			if( id != null )
-			{
-				title = new TextLabel(id);
-			}
-			this.count = count;
-		}
+    public Collection<String> getCollections() {
+      return collections;
+    }
 
-		public void addCount(int count)
-		{
-			this.count += count;
-		}
+    public void setCollections(Collection<String> collections) {
+      this.collections = collections;
+    }
 
-		public BrowseRow findChild(String value)
-		{
-			if( childMap != null )
-			{
-				return childMap.get(value);
-			}
-			return null;
-		}
+    public BrowseRow getRootDisplayRow() {
+      return rootDisplayRow;
+    }
 
-		public void addChild(BrowseRow child)
-		{
-			if( children == null )
-			{
-				children = new ArrayList<BrowseRow>();
-				childMap = new HashMap<String, BrowseRow>();
-			}
-			children.add(child);
-			childMap.put(child.getId(), child);
-		}
+    public void setRootDisplayRow(BrowseRow rootDisplayRow) {
+      this.rootDisplayRow = rootDisplayRow;
+    }
+  }
 
-		public int getCount()
-		{
-			return count;
-		}
+  public static class BrowseRow {
+    private Label title;
+    private final String id;
+    private int count;
+    private boolean hide;
+    private List<BrowseRow> children;
+    private Map<String, BrowseRow> childMap;
+    private HtmlLinkState viewLink;
 
-		public void setCount(int count)
-		{
-			this.count = count;
-		}
+    public BrowseRow(String id, int count) {
+      this.id = id;
+      if (id != null) {
+        title = new TextLabel(id);
+      }
+      this.count = count;
+    }
 
-		public List<BrowseRow> getChildren()
-		{
-			return children;
-		}
+    public void addCount(int count) {
+      this.count += count;
+    }
 
-		public void setChildren(List<BrowseRow> children)
-		{
-			this.children = children;
-		}
+    public BrowseRow findChild(String value) {
+      if (childMap != null) {
+        return childMap.get(value);
+      }
+      return null;
+    }
 
-		public boolean isHide()
-		{
-			return hide;
-		}
+    public void addChild(BrowseRow child) {
+      if (children == null) {
+        children = new ArrayList<BrowseRow>();
+        childMap = new HashMap<String, BrowseRow>();
+      }
+      children.add(child);
+      childMap.put(child.getId(), child);
+    }
 
-		public void setHide(boolean hide)
-		{
-			this.hide = hide;
-		}
+    public int getCount() {
+      return count;
+    }
 
-		public Label getTitle()
-		{
-			return title;
-		}
+    public void setCount(int count) {
+      this.count = count;
+    }
 
-		public void setTitle(Label title)
-		{
-			this.title = title;
-		}
+    public List<BrowseRow> getChildren() {
+      return children;
+    }
 
-		public String getId()
-		{
-			return id;
-		}
+    public void setChildren(List<BrowseRow> children) {
+      this.children = children;
+    }
 
-		public HtmlLinkState getViewLink()
-		{
-			return viewLink;
-		}
+    public boolean isHide() {
+      return hide;
+    }
 
-		public void setViewLink(HtmlLinkState viewLink)
-		{
-			this.viewLink = viewLink;
-		}
+    public void setHide(boolean hide) {
+      this.hide = hide;
+    }
 
-	}
+    public Label getTitle() {
+      return title;
+    }
 
-	public BrowseSearchResults getBrowseResults()
-	{
-		return browseResults;
-	}
+    public void setTitle(Label title) {
+      this.title = title;
+    }
 
-	public boolean isSearching(SectionInfo info)
-	{
-		return !Check.isEmpty(getModel(info).getValues());
-	}
+    public String getId() {
+      return id;
+    }
 
-	public boolean isContextSpecified(SectionInfo info)
-	{
-		return getModel(info).getNodes() != null;
-	}
+    public HtmlLinkState getViewLink() {
+      return viewLink;
+    }
 
+    public void setViewLink(HtmlLinkState viewLink) {
+      this.viewLink = viewLink;
+    }
+  }
+
+  public BrowseSearchResults getBrowseResults() {
+    return browseResults;
+  }
+
+  public boolean isSearching(SectionInfo info) {
+    return !Check.isEmpty(getModel(info).getValues());
+  }
+
+  public boolean isContextSpecified(SectionInfo info) {
+    return getModel(info).getNodes() != null;
+  }
 }

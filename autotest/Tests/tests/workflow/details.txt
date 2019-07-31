@@ -1,0 +1,26 @@
+*****************
+*				*
+*  Collections	*
+*				*
+*****************
+
+Auto assign by metadata
+Different Schema
+No Workflow
+Plan
+Simple 1 Step
+Simple 2 Step
+Simple 2 Step with Rejection Points
+Sibling Reject Points in Decision nodes
+
+*************************
+*						*
+*  Workflow Templates	*
+*						*
+*************************
+
+1 Step Workflow
+2 Step Workflow
+2 Step Workflow with Rejection Points
+Auto Assign by Metadata Workflow.
+Sibling Reject Points in Decision nodes

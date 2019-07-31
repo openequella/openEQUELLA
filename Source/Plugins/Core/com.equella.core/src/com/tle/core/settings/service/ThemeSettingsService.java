@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,20 +20,21 @@ package com.tle.core.settings.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface ThemeSettingsService {
 
-	NewUITheme getTheme() throws IOException;
-	InputStream getCustomLogo() throws IOException;
+  NewUITheme getTheme() throws IOException;
 
-	void setTheme(NewUITheme theme) throws JsonProcessingException;
-	void setLogo(File logoFile) throws IOException;
+  InputStream getCustomLogo() throws IOException;
 
-	boolean isCustomLogo();
+  void setTheme(NewUITheme theme) throws JsonProcessingException;
 
-	void deleteLogo();
+  void setLogo(File logoFile) throws IOException;
+
+  boolean isCustomLogo();
+
+  void deleteLogo();
 }

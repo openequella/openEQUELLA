@@ -1,0 +1,39 @@
+<com.tle.common.lti.consumers.entity.LtiConsumer>
+  <id>120323</id>
+  <uuid>64c40ff5-389a-49e5-83fd-e98ee5221a5c</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2015-03-24 12:00:27.311</dateModified>
+  <dateCreated class="sql-timestamp">2014-05-05 15:45:10.881</dateCreated>
+  <description>
+    <id>120591</id>
+    <strings/>
+  </description>
+  <name>
+    <id>120324</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>120325</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>canvas-autotest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <consumerKey>canvas-autotest</consumerKey>
+  <consumerSecret>ff835cf8-8a34-4f8c-b94d-10b892ed65be</consumerSecret>
+  <prefix></prefix>
+  <postfix></postfix>
+  <allowedExpression>*</allowedExpression>
+  <instructorRoles/>
+  <otherRoles/>
+  <customRoles/>
+  <unknownUser>2</unknownUser>
+  <unknownGroups/>
+</com.tle.common.lti.consumers.entity.LtiConsumer>

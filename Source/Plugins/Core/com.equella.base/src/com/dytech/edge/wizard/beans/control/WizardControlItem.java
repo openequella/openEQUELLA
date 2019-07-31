@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,72 +18,59 @@
 
 package com.dytech.edge.wizard.beans.control;
 
+import com.tle.beans.entity.LanguageBundle;
 import java.io.Serializable;
 
-import com.tle.beans.entity.LanguageBundle;
+public class WizardControlItem implements Serializable {
+  private static final long serialVersionUID = 1;
 
-public class WizardControlItem implements Serializable
-{
-	private static final long serialVersionUID = 1;
+  private LanguageBundle name;
+  private String value;
+  private String defaultValue;
 
-	private LanguageBundle name;
-	private String value;
-	private String defaultValue;
+  public WizardControlItem() {
+    this(null, "", "");
+  }
 
-	public WizardControlItem()
-	{
-		this(null, "", "");
-	}
+  public WizardControlItem(LanguageBundle name, String value) {
+    this(name, value, "");
+  }
 
-	public WizardControlItem(LanguageBundle name, String value)
-	{
-		this(name, value, "");
-	}
+  public WizardControlItem(LanguageBundle name, String value, String defaultValue) {
+    this.name = name;
+    this.value = value;
+    this.defaultValue = defaultValue;
+  }
 
-	public WizardControlItem(LanguageBundle name, String value, String defaultValue)
-	{
-		this.name = name;
-		this.value = value;
-		this.defaultValue = defaultValue;
-	}
+  public String getDefault() {
+    return defaultValue;
+  }
 
-	public String getDefault()
-	{
-		return defaultValue;
-	}
+  public void setDefault(String defaultValue) {
+    this.defaultValue = defaultValue;
+  }
 
-	public void setDefault(String defaultValue)
-	{
-		this.defaultValue = defaultValue;
-	}
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public String getValue()
-	{
-		return value;
-	}
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
+  public boolean isDefaultOption() {
+    return Boolean.parseBoolean(defaultValue);
+  }
 
-	public boolean isDefaultOption()
-	{
-		return Boolean.parseBoolean(defaultValue);
-	}
-
-	public void setDefaultOption(boolean b)
-	{
-		defaultValue = Boolean.toString(b);
-	}
+  public void setDefaultOption(boolean b) {
+    defaultValue = Boolean.toString(b);
+  }
 }

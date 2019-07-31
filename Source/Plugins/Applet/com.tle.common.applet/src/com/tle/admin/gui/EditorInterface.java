@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,40 @@
 
 package com.tle.admin.gui;
 
-import java.awt.Component;
-
 import com.dytech.gui.Changeable;
 import com.dytech.gui.JStatusBar;
+import java.awt.Component;
 
-/**
- * @author Nicholas Read
- */
-public interface EditorInterface extends Changeable
-{
-	/**
-	 * Save the document.
-	 */
-	void save() throws EditorException;
+/** @author Nicholas Read */
+public interface EditorInterface extends Changeable {
+  /** Save the document. */
+  void save() throws EditorException;
 
-	/**
-	 * Validate the document.
-	 */
-	void validation() throws EditorException;
+  /** Validate the document. */
+  void validation() throws EditorException;
 
-	/**
-	 * Close the editor.
-	 */
-	void close(Integer confirmOption);
+  /** Close the editor. */
+  void close(Integer confirmOption);
 
-	/**
-	 * Unlock any resources
-	 */
-	void unlock();
+  /** Unlock any resources */
+  void unlock();
 
-	/**
-	 * Allows for things to be done just before saving.
-	 */
-	boolean beforeSaving();
+  /** Allows for things to be done just before saving. */
+  boolean beforeSaving();
 
-	/**
-	 * Gets the name of the document type being edited.
-	 * 
-	 * @return the document name.
-	 */
-	String getDocumentName();
+  /**
+   * Gets the name of the document type being edited.
+   *
+   * @return the document name.
+   */
+  String getDocumentName();
 
-	/**
-	 * @return true if the document is read-only.
-	 */
-	boolean isReadOnly();
+  /** @return true if the document is read-only. */
+  boolean isReadOnly();
 
-	/**
-	 * The parent component
-	 */
-	Component getParentWindow();
+  /** The parent component */
+  Component getParentWindow();
 
-	/**
-	 * Gets the status bar of the editor.
-	 */
-	JStatusBar getStatusBar();
+  /** Gets the status bar of the editor. */
+  JStatusBar getStatusBar();
 }

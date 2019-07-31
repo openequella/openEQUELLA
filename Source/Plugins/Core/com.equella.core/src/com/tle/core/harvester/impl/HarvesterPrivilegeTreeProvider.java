@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,34 @@
 
 package com.tle.core.harvester.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileService;
 import com.tle.web.resources.ResourcesService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class HarvesterPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<HarvesterProfile>
-{
-	@Inject
-	public HarvesterPrivilegeTreeProvider(HarvesterProfileService harvesterService)
-	{
-		super(harvesterService, Node.ALL_HARVESTER_PROFILES,
-			ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
-				.key("securitytree.allharvesterprofiles"),
-			Node.HARVESTER_PROFILE, ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
-				.key("securitytree.targetallharvesterprofiles"));
-	}
+public class HarvesterPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<HarvesterProfile> {
+  @Inject
+  public HarvesterPrivilegeTreeProvider(HarvesterProfileService harvesterService) {
+    super(
+        harvesterService,
+        Node.ALL_HARVESTER_PROFILES,
+        ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+            .key("securitytree.allharvesterprofiles"),
+        Node.HARVESTER_PROFILE,
+        ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+            .key("securitytree.targetallharvesterprofiles"));
+  }
 
-	@Override
-	protected HarvesterProfile createEntity()
-	{
-		return new HarvesterProfile();
-	}
+  @Override
+  protected HarvesterProfile createEntity() {
+    return new HarvesterProfile();
+  }
 }

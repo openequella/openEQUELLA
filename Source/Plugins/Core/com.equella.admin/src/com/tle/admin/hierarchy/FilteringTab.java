@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.admin.hierarchy;
 
-import java.awt.Rectangle;
-
-import javax.swing.JCheckBox;
-
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.gui.EditorException;
@@ -30,62 +28,59 @@ import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.SearchSetAdapter;
-import com.tle.common.i18n.CurrentLocale;
+import java.awt.Rectangle;
+import javax.swing.JCheckBox;
 
-/**
- * @author Nicholas Read
- */
-public class FilteringTab extends AbstractTopicEditorTab
-{
-	private final EntityCache cache;
-	private final ClientService clientService;
+/** @author Nicholas Read */
+public class FilteringTab extends AbstractTopicEditorTab {
+  private final EntityCache cache;
+  private final ClientService clientService;
 
-	private JCheckBox showResults;
-	private SearchSetFilter filter;
+  private JCheckBox showResults;
+  private SearchSetFilter filter;
 
-	public FilteringTab(EntityCache cache, ClientService clientService)
-	{
-		this.cache = cache;
-		this.clientService = clientService;
-	}
+  public FilteringTab(EntityCache cache, ClientService clientService) {
+    this.cache = cache;
+    this.clientService = clientService;
+  }
 
-	@Override
-	public void setup(ChangeDetector changeDetector)
-	{
-		showResults = new JCheckBox(getString("filteringtab.display"), true); //$NON-NLS-1$
-		filter = new SearchSetFilter(cache, clientService);
+  @Override
+  public void setup(ChangeDetector changeDetector) {
+    showResults = new JCheckBox(getString("filteringtab.display"), true); // $NON-NLS-1$
+    filter = new SearchSetFilter(cache, clientService);
 
-		final int[] rows = {TableLayout.PREFERRED, TableLayout.FILL,};
-		final int[] cols = {TableLayout.FILL,};
+    final int[] rows = {
+      TableLayout.PREFERRED, TableLayout.FILL,
+    };
+    final int[] cols = {
+      TableLayout.FILL,
+    };
 
-		setLayout(new TableLayout(rows, cols));
+    setLayout(new TableLayout(rows, cols));
 
-		add(showResults, new Rectangle(0, 0, 1, 1));
-		add(filter, new Rectangle(0, 1, 1, 1));
+    add(showResults, new Rectangle(0, 0, 1, 1));
+    add(filter, new Rectangle(0, 1, 1, 1));
 
-		changeDetector.watch(showResults);
-		changeDetector.watch(filter);
-	}
+    changeDetector.watch(showResults);
+    changeDetector.watch(filter);
+  }
 
-	@Override
-	public void load(HierarchyPack pack)
-	{
-		HierarchyTopic topic = pack.getTopic();
-		showResults.setSelected(topic.isShowResults());
-		filter.load(new SearchSetAdapter(topic));
-	}
+  @Override
+  public void load(HierarchyPack pack) {
+    HierarchyTopic topic = pack.getTopic();
+    showResults.setSelected(topic.isShowResults());
+    filter.load(new SearchSetAdapter(topic));
+  }
 
-	@Override
-	public void save(HierarchyPack pack)
-	{
-		HierarchyTopic topic = pack.getTopic();
-		topic.setShowResults(showResults.isSelected());
-		filter.save(new SearchSetAdapter(topic));
-	}
+  @Override
+  public void save(HierarchyPack pack) {
+    HierarchyTopic topic = pack.getTopic();
+    topic.setShowResults(showResults.isSelected());
+    filter.save(new SearchSetAdapter(topic));
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		// nothing to validate
-	}
+  @Override
+  public void validation() throws EditorException {
+    // nothing to validate
+  }
 }

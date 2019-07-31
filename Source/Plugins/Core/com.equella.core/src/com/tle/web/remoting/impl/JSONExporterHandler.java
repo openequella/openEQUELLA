@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,25 @@
 
 package com.tle.web.remoting.impl;
 
-import javax.inject.Singleton;
-
-import org.java.plugin.registry.Extension;
-import org.springframework.web.HttpRequestHandler;
-
 import com.google.gson.Gson;
 import com.tle.core.guice.Bind;
 import com.tle.web.remoting.JSONService;
+import javax.inject.Singleton;
+import org.java.plugin.registry.Extension;
+import org.springframework.web.HttpRequestHandler;
 
 @Bind
 @Singleton
-public class JSONExporterHandler extends AbstractRemoteHandler<JSONService>
-{
-	private Gson gson = new Gson();
+public class JSONExporterHandler extends AbstractRemoteHandler<JSONService> {
+  private Gson gson = new Gson();
 
-	@Override
-	protected HttpRequestHandler createHandlerFromBean(Extension extension, JSONService handlerBean)
-	{
-		return new JSONExporter(gson, handlerBean);
-	}
+  @Override
+  protected HttpRequestHandler createHandlerFromBean(Extension extension, JSONService handlerBean) {
+    return new JSONExporter(gson, handlerBean);
+  }
 
-	@Override
-	protected String getExtensionPointName()
-	{
-		return "json"; //$NON-NLS-1$
-	}
-
+  @Override
+  protected String getExtensionPointName() {
+    return "json"; //$NON-NLS-1$
+  }
 }

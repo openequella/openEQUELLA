@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,38 +19,31 @@
 package com.tle.core.migration.impl;
 
 import com.tle.core.migration.MigrationState;
-
 import java.io.Serializable;
 import java.util.List;
 
+public class MigrationsToRun implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-public class MigrationsToRun implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private final List<MigrationState> migrations;
+  private final boolean firstTime;
+  private final boolean executions;
 
-	private final List<MigrationState> migrations;
-	private final boolean firstTime;
-	private final boolean executions;
+  public MigrationsToRun(List<MigrationState> migrations, boolean firstTime, boolean executions) {
+    this.migrations = migrations;
+    this.firstTime = firstTime;
+    this.executions = executions;
+  }
 
-	public MigrationsToRun(List<MigrationState> migrations, boolean firstTime, boolean executions)
-	{
-		this.migrations = migrations;
-		this.firstTime = firstTime;
-		this.executions = executions;
-	}
+  public List<MigrationState> getMigrations() {
+    return migrations;
+  }
 
-	public List<MigrationState> getMigrations()
-	{
-		return migrations;
-	}
+  public boolean isFirstTime() {
+    return firstTime;
+  }
 
-	public boolean isFirstTime()
-	{
-		return firstTime;
-	}
-
-	public boolean isExecutions()
-	{
-		return executions;
-	}
+  public boolean isExecutions() {
+    return executions;
+  }
 }

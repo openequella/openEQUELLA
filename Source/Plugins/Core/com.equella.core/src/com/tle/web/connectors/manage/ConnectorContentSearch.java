@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,61 +20,50 @@ package com.tle.web.connectors.manage;
 
 import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalContentSortType;
 
-public class ConnectorContentSearch
-{
-	private ExternalContentSortType sort;
-	private String course;
-	private String folder;
-	private boolean archived;
-	private boolean reverse;
+public class ConnectorContentSearch {
+  private ExternalContentSortType sort;
+  private String course;
+  private String folder;
+  private boolean archived;
+  private boolean reverse;
 
-	public ExternalContentSortType getSort()
-	{
-		return sort;
-	}
+  public ExternalContentSortType getSort() {
+    return sort;
+  }
 
-	public void setSort(ExternalContentSortType sort)
-	{
-		this.sort = sort;
-	}
+  public void setSort(ExternalContentSortType sort) {
+    this.sort = sort;
+  }
 
-	public String getCourse()
-	{
-		return course;
-	}
+  public String getCourse() {
+    return course;
+  }
 
-	public void setCourse(String course)
-	{
-		this.course = course;
-	}
+  public void setCourse(String course) {
+    this.course = course;
+  }
 
-	public boolean isArchived()
-	{
-		return archived;
-	}
+  public boolean isArchived() {
+    return archived;
+  }
 
-	public void setArchived(boolean archived)
-	{
-		this.archived = archived;
-	}
+  public void setArchived(boolean archived) {
+    this.archived = archived;
+  }
 
-	public String getFolder()
-	{
-		return folder;
-	}
+  public String getFolder() {
+    return folder;
+  }
 
-	public void setFolder(String folder)
-	{
-		this.folder = folder;
-	}
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
 
-	public boolean isReverse()
-	{
-		return reverse;
-	}
+  public boolean isReverse() {
+    return reverse;
+  }
 
-	public void setReverse(boolean reverse)
-	{
-		this.reverse = reverse;
-	}
+  public void setReverse(boolean reverse) {
+    this.reverse = reverse;
+  }
 }

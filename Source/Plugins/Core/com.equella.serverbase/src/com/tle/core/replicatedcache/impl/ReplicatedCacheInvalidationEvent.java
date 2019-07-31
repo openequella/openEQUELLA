@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,34 +21,30 @@ package com.tle.core.replicatedcache.impl;
 import com.tle.annotation.NonNull;
 import com.tle.core.events.ApplicationEvent;
 
-public final class ReplicatedCacheInvalidationEvent extends ApplicationEvent<ReplicatedCacheInvalidationListener>
-{
-	private final String cacheId;
-	private final String[] keys;
+public final class ReplicatedCacheInvalidationEvent
+    extends ApplicationEvent<ReplicatedCacheInvalidationListener> {
+  private final String cacheId;
+  private final String[] keys;
 
-	public ReplicatedCacheInvalidationEvent(@NonNull String cacheId, @NonNull String... keys)
-	{
-		super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
+  public ReplicatedCacheInvalidationEvent(@NonNull String cacheId, @NonNull String... keys) {
+    super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
 
-		this.cacheId = cacheId;
-		this.keys = keys;
-	}
+    this.cacheId = cacheId;
+    this.keys = keys;
+  }
 
-	@Override
-	public Class<ReplicatedCacheInvalidationListener> getListener()
-	{
-		return ReplicatedCacheInvalidationListener.class;
-	}
+  @Override
+  public Class<ReplicatedCacheInvalidationListener> getListener() {
+    return ReplicatedCacheInvalidationListener.class;
+  }
 
-	@Override
-	public void postEvent(ReplicatedCacheInvalidationListener listener)
-	{
-		listener.invalidateCacheEntries(cacheId, keys);
-	}
+  @Override
+  public void postEvent(ReplicatedCacheInvalidationListener listener) {
+    listener.invalidateCacheEntries(cacheId, keys);
+  }
 
-	@Override
-	public boolean requiresInstitution()
-	{
-		return true;
-	}
+  @Override
+  public boolean requiresInstitution() {
+    return true;
+  }
 }

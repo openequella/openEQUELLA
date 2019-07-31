@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,22 +18,20 @@
 
 package com.tle.web.sections.equella.annotation;
 
+import com.tle.web.sections.result.util.IconLabel.Icon;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.tle.web.sections.result.util.IconLabel.Icon;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface PlugKey
-{
-	String value();
+public @interface PlugKey {
+  String value();
 
-	boolean html() default true;
+  boolean html() default true;
 
-	boolean global() default false;
+  boolean global() default false;
 
-	Icon icon() default Icon.NONE;
+  Icon icon() default Icon.NONE;
 }

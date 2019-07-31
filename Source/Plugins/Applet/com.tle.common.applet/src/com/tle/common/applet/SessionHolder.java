@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,44 +19,35 @@
 package com.tle.common.applet;
 
 import java.net.URL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class SessionHolder
-{
-	static final Log LOGGER = LogFactory.getLog(SessionHolder.class);
+public class SessionHolder {
+  static final Log LOGGER = LogFactory.getLog(SessionHolder.class);
 
-	private final LoginService loginService;
-	private final KeepAliveTask keepAliveTask;
-	private final URL url;
+  private final LoginService loginService;
+  private final KeepAliveTask keepAliveTask;
+  private final URL url;
 
-	public SessionHolder(URL url)
-	{
-		this.url = url;
-		loginService = new LoginService(this);
-		keepAliveTask = new KeepAliveTask(this);
-	}
+  public SessionHolder(URL url) {
+    this.url = url;
+    loginService = new LoginService(this);
+    keepAliveTask = new KeepAliveTask(this);
+  }
 
-	public void enableKeepAlive(boolean b)
-	{
-		if( b )
-		{
-			keepAliveTask.onSchedule();
-		}
-		else
-		{
-			keepAliveTask.cancel();
-		}
-	}
+  public void enableKeepAlive(boolean b) {
+    if (b) {
+      keepAliveTask.onSchedule();
+    } else {
+      keepAliveTask.cancel();
+    }
+  }
 
-	public URL getUrl()
-	{
-		return url;
-	}
+  public URL getUrl() {
+    return url;
+  }
 
-	public LoginService getLoginService()
-	{
-		return loginService;
-	}
+  public LoginService getLoginService() {
+    return loginService;
+  }
 }

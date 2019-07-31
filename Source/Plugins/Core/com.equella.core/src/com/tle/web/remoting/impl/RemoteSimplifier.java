@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,27 +23,23 @@ import com.tle.beans.item.Item;
 import com.tle.core.hibernate.equella.service.InitialiserCallback;
 import com.tle.core.hibernate.equella.service.Property;
 
-public class RemoteSimplifier implements InitialiserCallback
-{
-	@Override
-	public void entitySimplified(Object old, Object newObj)
-	{
-		if( old instanceof Item )
-		{
-			Item item = (Item) old;
-			Item newItem = (Item) newObj;
-			newItem.setId(item.getId());
-			newItem.setUuid(item.getUuid());
-			newItem.setVersion(item.getVersion());
-			newItem.setName(LanguageBundle.clone(item.getName()));
-			newItem.setDescription(LanguageBundle.clone(item.getDescription()));
-			newItem.setStatus(item.getStatus());
-		}
-	}
+public class RemoteSimplifier implements InitialiserCallback {
+  @Override
+  public void entitySimplified(Object old, Object newObj) {
+    if (old instanceof Item) {
+      Item item = (Item) old;
+      Item newItem = (Item) newObj;
+      newItem.setId(item.getId());
+      newItem.setUuid(item.getUuid());
+      newItem.setVersion(item.getVersion());
+      newItem.setName(LanguageBundle.clone(item.getName()));
+      newItem.setDescription(LanguageBundle.clone(item.getDescription()));
+      newItem.setStatus(item.getStatus());
+    }
+  }
 
-	@Override
-	public void set(Object obj, Property property, Object value)
-	{
-		property.set(obj, value);
-	}
+  @Override
+  public void set(Object obj, Property property, Object value) {
+    property.set(obj, value);
+  }
 }

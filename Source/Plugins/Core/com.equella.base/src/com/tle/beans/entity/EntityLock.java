@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,7 @@
 
 package com.tle.beans.entity;
 
+import com.tle.beans.Institution;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,86 +29,71 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-import com.tle.beans.Institution;
-
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"entity_id"})})
-public class EntityLock
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@OneToOne(fetch = FetchType.LAZY)
-	private BaseEntity entity;
+public class EntityLock {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40)
-	private String userSession;
-	private String userID;
+  @OneToOne(fetch = FetchType.LAZY)
+  private BaseEntity entity;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "entityLockInstIndex")
-	private Institution institution;
+  @Column(length = 40)
+  private String userSession;
 
-	public EntityLock()
-	{
-		super();
-	}
+  private String userID;
 
-	public String getUserSession()
-	{
-		return userSession;
-	}
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "entityLockInstIndex")
+  private Institution institution;
 
-	public String getUserID()
-	{
-		return userID;
-	}
+  public EntityLock() {
+    super();
+  }
 
-	public void setUserID(String userID)
-	{
-		this.userID = userID;
-	}
+  public String getUserSession() {
+    return userSession;
+  }
 
-	public void setUserSession(String userSession)
-	{
-		this.userSession = userSession;
-	}
+  public String getUserID() {
+    return userID;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public void setUserID(String userID) {
+    this.userID = userID;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setUserSession(String userSession) {
+    this.userSession = userSession;
+  }
 
-	public BaseEntity getEntity()
-	{
-		return entity;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setEntity(BaseEntity entity)
-	{
-		this.entity = entity;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  public BaseEntity getEntity() {
+    return entity;
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  public void setEntity(BaseEntity entity) {
+    this.entity = entity;
+  }
+
+  public Institution getInstitution() {
+    return institution;
+  }
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 }

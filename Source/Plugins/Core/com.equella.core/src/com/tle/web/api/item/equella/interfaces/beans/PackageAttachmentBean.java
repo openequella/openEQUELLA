@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,45 +19,37 @@
 package com.tle.web.api.item.equella.interfaces.beans;
 
 @SuppressWarnings("nls")
-public class PackageAttachmentBean extends EquellaAttachmentBean
-{
-	private long size;
-	private String packageFile;
-	private boolean expand;
+public class PackageAttachmentBean extends EquellaAttachmentBean {
+  private long size;
+  private String packageFile;
+  private boolean expand;
 
-	public long getSize()
-	{
-		return size;
-	}
+  public long getSize() {
+    return size;
+  }
 
-	public void setSize(long size)
-	{
-		this.size = size;
-	}
+  public void setSize(long size) {
+    this.size = size;
+  }
 
-	public String getPackageFile()
-	{
-		return packageFile;
-	}
+  public String getPackageFile() {
+    return packageFile;
+  }
 
-	public void setPackageFile(String packageFile)
-	{
-		this.packageFile = packageFile;
-	}
+  public void setPackageFile(String packageFile) {
+    this.packageFile = packageFile;
+  }
 
-	@Override
-	public String getRawAttachmentType()
-	{
-		return "ims";
-	}
+  @Override
+  public String getRawAttachmentType() {
+    return "ims";
+  }
 
-	public boolean isExpand()
-	{
-		return expand;
-	}
+  public boolean isExpand() {
+    return expand;
+  }
 
-	public void setExpand(boolean expand)
-	{
-		this.expand = expand;
-	}
+  public void setExpand(boolean expand) {
+    this.expand = expand;
+  }
 }

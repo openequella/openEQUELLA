@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,37 +18,33 @@
 
 package com.dytech.edge.admin.wizard;
 
+import com.tle.common.i18n.CurrentLocale;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
-import com.tle.common.i18n.CurrentLocale;
+public class ReloadHandler implements ActionListener {
+  private JCheckBox reload = null;
 
-public class ReloadHandler implements ActionListener
-{
-	private JCheckBox reload = null;
+  public ReloadHandler(JCheckBox refresh) {
+    this.reload = refresh;
+  }
 
-	public ReloadHandler(JCheckBox refresh)
-	{
-		this.reload = refresh;
-	}
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (reload.isSelected()) {
+      int result =
+          JOptionPane.showConfirmDialog(
+              reload,
+              CurrentLocale.get("com.dytech.edge.admin.wizard.reloadhandler.selecting"),
+              CurrentLocale.get("com.dytech.edge.admin.wizard.reloadhandler.warning"),
+              JOptionPane.YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE);
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( reload.isSelected() )
-		{
-			int result = JOptionPane.showConfirmDialog(reload,
-				CurrentLocale.get("com.dytech.edge.admin.wizard.reloadhandler.selecting"),
-				CurrentLocale.get("com.dytech.edge.admin.wizard.reloadhandler.warning"), JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE);
-
-			if( result == JOptionPane.NO_OPTION )
-			{
-				reload.setSelected(false);
-			}
-		}
-	}
+      if (result == JOptionPane.NO_OPTION) {
+        reload.setSelected(false);
+      }
+    }
+  }
 }

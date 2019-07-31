@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,18 +21,17 @@ package com.tle.core.xml.service.impl;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
-
 import java.util.Collections;
 
 public class OldSingletonMapConverter extends ReflectionConverter {
 
-    private static final Class MAP = Collections.singletonMap(Boolean.TRUE, null).getClass();
+  private static final Class MAP = Collections.singletonMap(Boolean.TRUE, null).getClass();
 
-    public OldSingletonMapConverter(Mapper mapper, ReflectionProvider provider) {
-        super(mapper, provider);
-    }
+  public OldSingletonMapConverter(Mapper mapper, ReflectionProvider provider) {
+    super(mapper, provider);
+  }
 
-    public boolean canConvert(Class type) {
-        return MAP == type;
-    }
+  public boolean canConvert(Class type) {
+    return MAP == type;
+  }
 }

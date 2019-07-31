@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.activation.operation;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.tle.beans.item.ItemPack;
 import com.tle.core.activation.workflow.OperationFactory;
@@ -42,127 +38,114 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.model.Option;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class BulkDeactivateOperation implements BulkOperationExtension
-{
-	static
-	{
-		PluginResourceHandler.init(BulkDeactivateOperation.class);
-	}
+public class BulkDeactivateOperation implements BulkOperationExtension {
+  static {
+    PluginResourceHandler.init(BulkDeactivateOperation.class);
+  }
 
-	@Bind
-	public static class BulkDeactivateOperationExecutor implements BulkOperationExecutor
-	{
-		@Inject
-		private OperationFactory operationFactory;
-		@Inject
-		private ItemOperationFactory workflowFactory;
+  @Bind
+  public static class BulkDeactivateOperationExecutor implements BulkOperationExecutor {
+    @Inject private OperationFactory operationFactory;
+    @Inject private ItemOperationFactory workflowFactory;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{operationFactory.createDeactivate(), workflowFactory.reindexOnly(true)};
-		}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {
+        operationFactory.createDeactivate(), workflowFactory.reindexOnly(true)
+      };
+    }
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.activation.bulk.deactivate.title";
-		}
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.activation.bulk.deactivate.title";
+    }
+  }
 
-	private static final String BULK_VALUE = "deactivate"; //$NON-NLS-1$
+  private static final String BULK_VALUE = "deactivate"; // $NON-NLS-1$
 
-	@PlugKey("operation.")
-	private static String KEY_NAME;
-	@PlugKey("opresults.status")
-	private static String KEY_STATUS;
+  @PlugKey("operation.")
+  private static String KEY_NAME;
 
-	@Override
-	public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new ClassBeanLocator<BulkOperationExecutor>(BulkDeactivateOperationExecutor.class);
-	}
+  @PlugKey("opresults.status")
+  private static String KEY_STATUS;
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList)
-	{
-		opsList
-			.add(new KeyOption<OperationInfo>(KEY_NAME + BULK_VALUE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
-	}
+  @Override
+  public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId) {
+    return new ClassBeanLocator<BulkOperationExecutor>(BulkDeactivateOperationExecutor.class);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList) {
+    opsList.add(
+        new KeyOption<OperationInfo>(
+            KEY_NAME + BULK_VALUE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		// nothing
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    // nothing
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// nothing
-	}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    return null;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // nothing
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
+
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

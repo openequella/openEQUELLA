@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.integration;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.web.integration.generic.GenericIntegrationService.GenericIntegrationData;
@@ -27,82 +27,77 @@ import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
-import com.tle.web.selection.NewSelectionPage;
-import com.tle.web.template.RenderNewTemplate;
+import javax.inject.Inject;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class SingleSignonAction extends AbstractPrototypeSection<SingleSignonForm>
-{
-	@Inject
-	private IntegrationService integrationService;
+public class SingleSignonAction extends AbstractPrototypeSection<SingleSignonForm> {
+  @Inject private IntegrationService integrationService;
 
-	@DirectEvent
-	public void execute(SectionContext context) throws Exception
-	{
-		SectionUtils.dispatchToMethod(getModel(context).getMethod(), this, context);
-	}
+  @DirectEvent
+  public void execute(SectionContext context) throws Exception {
+    SectionUtils.dispatchToMethod(getModel(context).getMethod(), this, context);
+  }
 
-	public void unimplemented(SectionContext info) throws Exception
-	{
-		final SingleSignonForm form = getModel(info);
-		final String method = form.getMethod();
+  public void unimplemented(SectionContext info) throws Exception {
+    final SingleSignonForm form = getModel(info);
+    final String method = form.getMethod();
 
-		final Integration<? extends IntegrationSessionData> integ = integrationService
-			.getIntegrationServiceForId(method);
+    final Integration<? extends IntegrationSessionData> integ =
+        integrationService.getIntegrationServiceForId(method);
 
-		integ.setupSingleSignOn(info, form);
-	}
+    integ.setupSingleSignOn(info, form);
+  }
 
-	@SuppressWarnings("nls")
-	public void lms(SectionContext info) throws Exception
-	{
-		final SingleSignonForm formData = getModel(info);
+  @SuppressWarnings("nls")
+  public void lms(SectionContext info) throws Exception {
+    final SingleSignonForm formData = getModel(info);
 
-		final GenericIntegrationData data = new GenericIntegrationData(formData.getTemplate(), formData.getReturnurl(),
-			formData.getCancelurl(), formData.getReturnprefix(), info.getRequest().getHeader("Referer"),
-			formData.getAction(), true);
-		data.setCourseInfoCode(integrationService.getCourseInfoCode(formData.getCourseId(), formData.getCourseCode()));
+    final GenericIntegrationData data =
+        new GenericIntegrationData(
+            formData.getTemplate(),
+            formData.getReturnurl(),
+            formData.getCancelurl(),
+            formData.getReturnprefix(),
+            info.getRequest().getHeader("Referer"),
+            formData.getAction(),
+            true);
+    data.setCourseInfoCode(
+        integrationService.getCourseInfoCode(formData.getCourseId(), formData.getCourseCode()));
 
-		// If the caller hasn't specified the action, enforce the fits-all
-		// EQUELLA versions default; see #8152
-		String formDataAction = formData.getAction();
-		if( Check.isEmpty(formDataAction) )
-		{
-			formDataAction = IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION;
-		}
-		final IntegrationActionInfo action = integrationService.getActionInfo(formDataAction, formData.getOptions());
-		integrationService.standardForward(info, convertToForward(action, formData), data, action, formData);
-	}
+    // If the caller hasn't specified the action, enforce the fits-all
+    // EQUELLA versions default; see #8152
+    String formDataAction = formData.getAction();
+    if (Check.isEmpty(formDataAction)) {
+      formDataAction = IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION;
+    }
+    final IntegrationActionInfo action =
+        integrationService.getActionInfo(formDataAction, formData.getOptions());
+    integrationService.standardForward(
+        info, convertToForward(action, formData), data, action, formData);
+  }
 
-	private String convertToForward(IntegrationActionInfo action, SingleSignonForm model)
-	{
-		String forward = action.getPath();
-		if( forward == null )
-		{
-			forward = action.getName();
-		}
+  private String convertToForward(IntegrationActionInfo action, SingleSignonForm model) {
+    String forward = action.getPath();
+    if (forward == null) {
+      forward = action.getName();
+    }
 
-		if( action.getName().equals("standard") )
-		{
-			forward = forward + model.getQuery();
-		}
+    if (action.getName().equals("standard")) {
+      forward = forward + model.getQuery();
+    }
 
-		return forward.substring(1);
-	}
+    return forward.substring(1);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	@Override
-	public Class<SingleSignonForm> getModelClass()
-	{
-		return SingleSignonForm.class;
-	}
+  @Override
+  public Class<SingleSignonForm> getModelClass() {
+    return SingleSignonForm.class;
+  }
 }

@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>217215</id>
+  <institution>
+    <id>217136</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/item</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/equellaitem.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

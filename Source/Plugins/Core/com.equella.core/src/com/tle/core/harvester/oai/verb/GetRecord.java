@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,30 +23,24 @@ import com.tle.core.harvester.oai.data.Response;
 import com.tle.core.harvester.oai.error.CannotDisseminateFormatException;
 import com.tle.core.harvester.oai.error.IdDoesNotExistException;
 
-/**
- *
- */
-public class GetRecord extends Verb
-{
-	private static final String VERB = "GetRecord";
+/** */
+public class GetRecord extends Verb {
+  private static final String VERB = "GetRecord";
 
-	public GetRecord(String identifier, String metadataPrefix)
-	{
-		addParamater(IDENTIFIER, identifier);
-		addParamater(METADATA_PREFIX, metadataPrefix == null ? DC_PREFIX : metadataPrefix);
-	}
+  public GetRecord(String identifier, String metadataPrefix) {
+    addParamater(IDENTIFIER, identifier);
+    addParamater(METADATA_PREFIX, metadataPrefix == null ? DC_PREFIX : metadataPrefix);
+  }
 
-	@Override
-	public String getVerb()
-	{
-		return VERB;
-	}
+  @Override
+  public String getVerb() {
+    return VERB;
+  }
 
-	public Record getResult() throws IdDoesNotExistException, CannotDisseminateFormatException
-	{
-		Response response = call();
-		checkIdDoesNotExistError(response);
-		checkCannotDisseminateFormat(response);
-		return (Record) response.getMessage();
-	}
+  public Record getResult() throws IdDoesNotExistException, CannotDisseminateFormatException {
+    Response response = call();
+    checkIdDoesNotExistError(response);
+    checkCannotDisseminateFormat(response);
+    return (Record) response.getMessage();
+  }
 }

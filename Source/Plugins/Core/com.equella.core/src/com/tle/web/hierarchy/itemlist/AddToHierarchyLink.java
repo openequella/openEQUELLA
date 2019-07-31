@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,17 +18,11 @@
 
 package com.tle.web.hierarchy.itemlist;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.hierarchy.addkey.HierarchyTreeSection;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
@@ -49,95 +45,88 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
 public class AddToHierarchyLink extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	@PlugKey("itemlist.addtolink")
-	private static Label ADD_TO_HIERARCHY_LABEL;
+    implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  @PlugKey("itemlist.addtolink")
+  private static Label ADD_TO_HIERARCHY_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private TLEAclManager aclManager;
+  @Inject private TLEAclManager aclManager;
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(RenderContext context, List<ItemListEntry> entries,
-		final ListSettings<ItemListEntry> listSettings)
-	{
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return null;
-		}
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				if( entry.isFlagSet("com.tle.web.hierarchy.DontShow") )
-				{
-					return;
-				}
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      RenderContext context,
+      List<ItemListEntry> entries,
+      final ListSettings<ItemListEntry> listSettings) {
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return null;
+    }
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        if (entry.isFlagSet("com.tle.web.hierarchy.DontShow")) {
+          return;
+        }
 
-				final Set<String> privilege = aclManager.filterNonGrantedPrivileges(Collections
-					.singleton("MODIFY_KEY_RESOURCE"));
-				if( !privilege.isEmpty() )
-				{
-					attachHierarchyLink(entry, listSettings.getAttribute(GalleryItemList.GALLERY_FLAG) != null
-						|| listSettings.getAttribute(VideoItemList.VIDEO_FLAG) != null);
-				}
+        final Set<String> privilege =
+            aclManager.filterNonGrantedPrivileges(Collections.singleton("MODIFY_KEY_RESOURCE"));
+        if (!privilege.isEmpty()) {
+          attachHierarchyLink(
+              entry,
+              listSettings.getAttribute(GalleryItemList.GALLERY_FLAG) != null
+                  || listSettings.getAttribute(VideoItemList.VIDEO_FLAG) != null);
+        }
+      }
+    };
+  }
 
-			}
-		};
-	}
+  private HtmlLinkState attachHierarchyLink(ItemListEntry entry, boolean gallery) {
+    HtmlLinkState link;
+    final Item item = entry.getItem();
+    if (gallery) {
+      link =
+          new HtmlLinkState(
+              new IconLabel(Icon.HIERACHY, null, true),
+              events.getNamedHandler("goToHierarchyPage", item.getItemId()));
+      link.setTitle(ADD_TO_HIERARCHY_LABEL);
+      link.addClass("gallery-action");
+      entry.addRatingMetadataWithOrder(200, new LinkRenderer(link));
+    } else {
+      link =
+          new HtmlLinkState(
+              ADD_TO_HIERARCHY_LABEL,
+              events.getNamedHandler("goToHierarchyPage", item.getItemId()));
+      entry.addRatingMetadata(link);
+    }
+    return link;
+  }
 
-	private HtmlLinkState attachHierarchyLink(ItemListEntry entry, boolean gallery)
-	{
-		HtmlLinkState link;
-		final Item item = entry.getItem();
-		if( gallery )
-		{
-			link = new HtmlLinkState(new IconLabel(Icon.HIERACHY, null, true), events.getNamedHandler(
-				"goToHierarchyPage", item.getItemId()));
-			link.setTitle(ADD_TO_HIERARCHY_LABEL);
-			link.addClass("gallery-action");
-			entry.addRatingMetadataWithOrder(200, new LinkRenderer(link));
-		}
-		else
-		{
-			link = new HtmlLinkState(ADD_TO_HIERARCHY_LABEL, events.getNamedHandler("goToHierarchyPage",
-				item.getItemId()));
-			entry.addRatingMetadata(link);
-		}
-		return link;
-	}
+  @EventHandlerMethod
+  public void goToHierarchyPage(SectionInfo info, String itemId) {
+    ViewItemUrl hierarchyPageUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
+    SectionInfo viewInfo = hierarchyPageUrl.getSectionInfo();
+    ItemSummaryContentSection summary = viewInfo.lookupSection(ItemSummaryContentSection.class);
+    summary.setSummaryId(viewInfo, viewInfo.lookupSection(HierarchyTreeSection.class));
+    hierarchyPageUrl.forward(info);
+  }
 
-	@EventHandlerMethod
-	public void goToHierarchyPage(SectionInfo info, String itemId)
-	{
-		ViewItemUrl hierarchyPageUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
-		SectionInfo viewInfo = hierarchyPageUrl.getSectionInfo();
-		ItemSummaryContentSection summary = viewInfo.lookupSection(ItemSummaryContentSection.class);
-		summary.setSummaryId(viewInfo, viewInfo.lookupSection(HierarchyTreeSection.class));
-		hierarchyPageUrl.forward(info);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
-
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

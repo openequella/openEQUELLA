@@ -1,0 +1,29 @@
+{
+  "uuid": "4b492e6a-bfa7-48ed-8d6e-71d8763e4e78",
+  "name": "Notification Collection",
+  "nameStrings": {
+    "en": "Notification Collection"
+  },
+  "modifiedDate": "2014-05-12T15:43:41.700+10:00",
+  "createdDate": "2014-05-12T15:43:41.691+10:00",
+  "owner": {
+    "id": "system"
+  },
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
+  },
+  "schema": {
+    "uuid": "d9aba963-4648-e497-d62b-fc1ddf2d0199"
+  },
+  "workflow": {
+    "uuid": "117dead8-767d-4eff-ba06-5e1964f2f2db"
+  },
+  "_export": {
+    "exportVersion": "1.0"
+  },
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/4b492e6a-bfa7-48ed-8d6e-71d8763e4e78"
+  }
+}

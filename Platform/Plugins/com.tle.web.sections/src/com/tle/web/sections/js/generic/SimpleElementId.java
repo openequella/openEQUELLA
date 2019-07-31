@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,37 +21,31 @@ package com.tle.web.sections.js.generic;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.js.ElementId;
 
-public class SimpleElementId implements ElementId
-{
-	private String id;
-	private boolean used;
+public class SimpleElementId implements ElementId {
+  private String id;
+  private boolean used;
 
-	public SimpleElementId(String id)
-	{
-		this.id = id;
-	}
+  public SimpleElementId(String id) {
+    this.id = id;
+  }
 
-	@Override
-	public String getElementId(SectionInfo info)
-	{
-		return id;
-	}
+  @Override
+  public String getElementId(SectionInfo info) {
+    return id;
+  }
 
-	@Override
-	public void registerUse()
-	{
-		used = true;
-	}
+  @Override
+  public void registerUse() {
+    used = true;
+  }
 
-	@Override
-	public boolean isElementUsed()
-	{
-		return used;
-	}
+  @Override
+  public boolean isElementUsed() {
+    return used;
+  }
 
-	@Override
-	public boolean isStaticId()
-	{
-		return true;
-	}
+  @Override
+  public boolean isStaticId() {
+    return true;
+  }
 }

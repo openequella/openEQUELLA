@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,48 +20,40 @@ package com.tle.common;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/**
- * @author Nicholas Read
- */
-public class LazyTreeNode extends DefaultMutableTreeNode
-{
-	private String name;
-	private ChildrenState childrenState;
+/** @author Nicholas Read */
+public class LazyTreeNode extends DefaultMutableTreeNode {
+  private String name;
+  private ChildrenState childrenState;
 
-	public LazyTreeNode()
-	{
-		setAllowsChildren(true);
-		setChildrenState(ChildrenState.UNLOADED);
-	}
+  public LazyTreeNode() {
+    setAllowsChildren(true);
+    setChildrenState(ChildrenState.UNLOADED);
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public ChildrenState getChildrenState()
-	{
-		return childrenState;
-	}
+  public ChildrenState getChildrenState() {
+    return childrenState;
+  }
 
-	public void setChildrenState(ChildrenState childState)
-	{
-		this.childrenState = childState;
-	}
+  public void setChildrenState(ChildrenState childState) {
+    this.childrenState = childState;
+  }
 
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
+  @Override
+  public String toString() {
+    return getName();
+  }
 
-	public static enum ChildrenState
-	{
-		UNLOADED, LOADING, LOADED
-	}
+  public static enum ChildrenState {
+    UNLOADED,
+    LOADING,
+    LOADED
+  }
 }

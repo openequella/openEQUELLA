@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,94 +21,82 @@ package com.tle.beans.usermanagement.shibboleth.wrapper;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 
-/**
- * @author aholland
- */
-public class ExternalAuthorisationWrapperSettings extends UserManagementSettings
-{
-	public static final String USAGE_REMOTE_USER = "R"; //$NON-NLS-1$
-	public static final String USAGE_HTTP_HEADER = "H"; //$NON-NLS-1$
-	public static final String USAGE_ENV_VAR = "E"; //$NON-NLS-1$
+/** @author aholland */
+public class ExternalAuthorisationWrapperSettings extends UserManagementSettings {
+  public static final String USAGE_REMOTE_USER = "R"; // $NON-NLS-1$
+  public static final String USAGE_HTTP_HEADER = "H"; // $NON-NLS-1$
+  public static final String USAGE_ENV_VAR = "E"; // $NON-NLS-1$
 
-	private static final long serialVersionUID = -1473172672982262252L;
+  private static final long serialVersionUID = -1473172672982262252L;
 
-	@Property(key = "wrapper.shibboleth.useridentifier")
-	private String httpHeaderName;
-	@Property(key = "wrapper.shibboleth.environmentvarname")
-	private String environmentVarName;
+  @Property(key = "wrapper.shibboleth.useridentifier")
+  private String httpHeaderName;
 
-	@Property(key = "wrapper.shibboleth.usagetype")
-	private String usageType;
+  @Property(key = "wrapper.shibboleth.environmentvarname")
+  private String environmentVarName;
 
-	@Property(key = "wrapper.shibboleth.logouturl")
-	private String logoutUrl;
-	@Property(key = "wrapper.shibboleth.enabled")
-	boolean enabled;
+  @Property(key = "wrapper.shibboleth.usagetype")
+  private String usageType;
 
-	public String getHttpHeaderName()
-	{
-		return httpHeaderName;
-	}
+  @Property(key = "wrapper.shibboleth.logouturl")
+  private String logoutUrl;
 
-	public void setHttpHeaderName(String httpHeaderName)
-	{
-		this.httpHeaderName = httpHeaderName;
-	}
+  @Property(key = "wrapper.shibboleth.enabled")
+  boolean enabled;
 
-	public String getEnvironmentVarName()
-	{
-		return environmentVarName;
-	}
+  public String getHttpHeaderName() {
+    return httpHeaderName;
+  }
 
-	public void setEnvironmentVarName(String environmentVarName)
-	{
-		this.environmentVarName = environmentVarName;
-	}
+  public void setHttpHeaderName(String httpHeaderName) {
+    this.httpHeaderName = httpHeaderName;
+  }
 
-	public String getUsageType()
-	{
-		return usageType;
-	}
+  public String getEnvironmentVarName() {
+    return environmentVarName;
+  }
 
-	public void setUsageType(String usageType)
-	{
-		this.usageType = usageType;
-	}
+  public void setEnvironmentVarName(String environmentVarName) {
+    this.environmentVarName = environmentVarName;
+  }
 
-	public String getLogoutUrl()
-	{
-		return logoutUrl;
-	}
+  public String getUsageType() {
+    return usageType;
+  }
 
-	public void setLogoutUrl(String logoutUrl)
-	{
-		this.logoutUrl = logoutUrl;
-	}
+  public void setUsageType(String usageType) {
+    this.usageType = usageType;
+  }
 
-	public boolean isRemoteUser()
-	{
-		return (usageType == null || USAGE_REMOTE_USER.equals(usageType) || usageType.trim().length() == 0);
-	}
+  public String getLogoutUrl() {
+    return logoutUrl;
+  }
 
-	public boolean isHTTPHeader()
-	{
-		return (usageType != null && usageType.equals(USAGE_HTTP_HEADER));
-	}
+  public void setLogoutUrl(String logoutUrl) {
+    this.logoutUrl = logoutUrl;
+  }
 
-	public boolean isEnvironmentVar()
-	{
-		return (usageType != null && usageType.equals(USAGE_ENV_VAR));
-	}
+  public boolean isRemoteUser() {
+    return (usageType == null
+        || USAGE_REMOTE_USER.equals(usageType)
+        || usageType.trim().length() == 0);
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  public boolean isHTTPHeader() {
+    return (usageType != null && usageType.equals(USAGE_HTTP_HEADER));
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public boolean isEnvironmentVar() {
+    return (usageType != null && usageType.equals(USAGE_ENV_VAR));
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 }

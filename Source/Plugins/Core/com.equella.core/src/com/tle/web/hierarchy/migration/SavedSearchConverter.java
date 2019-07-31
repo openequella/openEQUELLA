@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.hierarchy.migration;
-
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.tle.beans.Institution;
 import com.tle.beans.UserPreference;
@@ -37,77 +34,76 @@ import com.tle.web.searching.section.SearchQuerySection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.generic.InfoBookmark;
+import java.util.Date;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class SavedSearchConverter
-{
-	@Inject
-	private SectionsController sectionsController;
+public class SavedSearchConverter {
+  @Inject private SectionsController sectionsController;
 
-	public FavouriteSearch convertSavedSearch(Institution institution, UserPreference pref, SavedSearch ss)
-	{
-		// Basic (Name, Date, Owner)
-		FavouriteSearch fs = new FavouriteSearch();
-		fs.setName(ss.getName());
-		fs.setQuery(ss.getQuery());
-		fs.setDateModified(new Date()); // No date available.
-		fs.setOwner(pref.getKey().getUserID());
-		fs.setInstitution(institution);
+  public FavouriteSearch convertSavedSearch(
+      Institution institution, UserPreference pref, SavedSearch ss) {
+    // Basic (Name, Date, Owner)
+    FavouriteSearch fs = new FavouriteSearch();
+    fs.setName(ss.getName());
+    fs.setQuery(ss.getQuery());
+    fs.setDateModified(new Date()); // No date available.
+    fs.setOwner(pref.getKey().getUserID());
+    fs.setInstitution(institution);
 
-		// Set URL
-		fs.setUrl(buildURL(ss));
+    // Set URL
+    fs.setUrl(buildURL(ss));
 
-		return fs;
-	}
+    return fs;
+  }
 
-	private String buildURL(SavedSearch ss)
-	{
-		SectionInfo info = null;
-		boolean isHier = !Check.isEmpty(ss.getHierarchyTopicUuid());
+  private String buildURL(SavedSearch ss) {
+    SectionInfo info = null;
+    boolean isHier = !Check.isEmpty(ss.getHierarchyTopicUuid());
 
-		if( !isHier )
-		{
-			info = sectionsController.createForward(RootSearchSection.SEARCHURL);
-			SearchQuerySection sqs = info.lookupSection(SearchQuerySection.class);
+    if (!isHier) {
+      info = sectionsController.createForward(RootSearchSection.SEARCHURL);
+      SearchQuerySection sqs = info.lookupSection(SearchQuerySection.class);
 
-			sqs.getQueryField().setValue(info, ss.getQuery());
+      sqs.getQueryField().setValue(info, ss.getQuery());
 
-			// Advanced Search Stuff
-			if( !Check.isEmpty(ss.getPowersearchUuid()) )
-			{
-				sqs.setPowerSearch(info, ss.getPowersearchUuid(), ss.getPowersearchxml());
-			}
+      // Advanced Search Stuff
+      if (!Check.isEmpty(ss.getPowersearchUuid())) {
+        sqs.setPowerSearch(info, ss.getPowersearchUuid(), ss.getPowersearchxml());
+      }
 
-			// Collection(s) - just use the first one...no guided
-			if( !Check.isEmpty(ss.getCollections()) )
-			{
-				sqs.setCollection(info, ss.getCollections().iterator().next());
-			}
-		}
-		else
-		{
-			info = sectionsController.createForward(RootHierarchySection.HIERARCHYURL);
+      // Collection(s) - just use the first one...no guided
+      if (!Check.isEmpty(ss.getCollections())) {
+        sqs.setCollection(info, ss.getCollections().iterator().next());
+      }
+    } else {
+      info = sectionsController.createForward(RootHierarchySection.HIERARCHYURL);
 
-			// Hierarchy Topic
-			TopicDisplaySection tds = info.lookupSection(TopicDisplaySection.class);
-			tds.getModel(info).setTopicId(ss.getHierarchyTopicUuid());
+      // Hierarchy Topic
+      TopicDisplaySection tds = info.lookupSection(TopicDisplaySection.class);
+      tds.getModel(info).setTopicId(ss.getHierarchyTopicUuid());
 
-			// Filter
-			FilterByKeywordSection fbkws = info.lookupSection(FilterByKeywordSection.class);
-			fbkws.setQuery(info, ss.getQuery());
-		}
+      // Filter
+      FilterByKeywordSection fbkws = info.lookupSection(FilterByKeywordSection.class);
+      fbkws.setQuery(info, ss.getQuery());
+    }
 
-		// Sorting
-		AbstractSortOptionsSection sos = info.lookupSection(AbstractSortOptionsSection.class);
-		sos.getSortOptions().setSelectedStringValue(info, ss.getSort());
+    // Sorting
+    AbstractSortOptionsSection sos = info.lookupSection(AbstractSortOptionsSection.class);
+    sos.getSortOptions().setSelectedStringValue(info, ss.getSort());
 
-		// Return the URL
-		AbstractRootSearchSection<?> rootSection = info.lookupSection(AbstractRootSearchSection.class);
-		InfoBookmark bookmark = rootSection.getPermanentUrl(info);
-		String url = String.format("%s?%s", info.getAttribute(SectionInfo.KEY_PATH), bookmark //$NON-NLS-1$
-			.getQuery());
+    // Return the URL
+    AbstractRootSearchSection<?> rootSection = info.lookupSection(AbstractRootSearchSection.class);
+    InfoBookmark bookmark = rootSection.getPermanentUrl(info);
+    String url =
+        String.format(
+            "%s?%s",
+            info.getAttribute(SectionInfo.KEY_PATH),
+            bookmark //$NON-NLS-1$
+                .getQuery());
 
-		return url;
-	}
+    return url;
+  }
 }

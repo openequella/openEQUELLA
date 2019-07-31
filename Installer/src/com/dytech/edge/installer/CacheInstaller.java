@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,24 +18,20 @@
 
 package com.dytech.edge.installer;
 
-import java.io.InputStream;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Installer;
 import com.dytech.installer.InstallerException;
+import java.io.InputStream;
 
-public class CacheInstaller
-{
-	public CacheInstaller() throws InstallerException
-	{
-		InputStream script = getClass().getResourceAsStream("/script/cache-script.xml");
-		InputStream commands = getClass().getResourceAsStream("/script/cache-commands.xml");
+public class CacheInstaller {
+  public CacheInstaller() throws InstallerException {
+    InputStream script = getClass().getResourceAsStream("/script/cache-script.xml");
+    InputStream commands = getClass().getResourceAsStream("/script/cache-commands.xml");
 
-		new Installer(new PropBagEx(script), new PropBagEx(commands));
-	}
+    new Installer(new PropBagEx(script), new PropBagEx(commands));
+  }
 
-	public static void main(String[] args) throws Exception
-	{
-		new CacheInstaller();
-	}
+  public static void main(String[] args) throws Exception {
+    new CacheInstaller();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,32 @@
 
 package com.tle.core.i18n.event;
 
-import java.util.Locale;
-
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.i18n.event.listener.LanguagePackChangedListener;
+import java.util.Locale;
 
-/**
- * @author Nicholas Read
- */
-public class LanguagePackChangedEvent extends ApplicationEvent<LanguagePackChangedListener>
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class LanguagePackChangedEvent extends ApplicationEvent<LanguagePackChangedListener> {
+  private static final long serialVersionUID = 1L;
 
-	private final Locale locale;
+  private final Locale locale;
 
-	public LanguagePackChangedEvent(Locale locale)
-	{
-		super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
-		this.locale = locale;
-	}
+  public LanguagePackChangedEvent(Locale locale) {
+    super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
+    this.locale = locale;
+  }
 
-	public Locale getLocale()
-	{
-		return locale;
-	}
+  public Locale getLocale() {
+    return locale;
+  }
 
-	@Override
-	public Class<LanguagePackChangedListener> getListener()
-	{
-		return LanguagePackChangedListener.class;
-	}
+  @Override
+  public Class<LanguagePackChangedListener> getListener() {
+    return LanguagePackChangedListener.class;
+  }
 
-	@Override
-	public void postEvent(LanguagePackChangedListener listener)
-	{
-		listener.languageChangedEvent(this);
-	}
+  @Override
+  public void postEvent(LanguagePackChangedListener listener) {
+    listener.languageChangedEvent(this);
+  }
 }

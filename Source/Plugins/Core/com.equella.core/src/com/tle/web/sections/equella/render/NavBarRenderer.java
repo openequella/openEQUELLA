@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,17 +23,14 @@ import com.tle.web.sections.equella.component.model.NavBarState;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.TagRenderer;
 
-public class NavBarRenderer extends TagRenderer
-{
-	public NavBarRenderer(FreemarkerFactory view, NavBarState state)
-	{
-		super("div", state);
-		nestedRenderable = view.createResultWithModel("component/navbar.ftl", state);
-	}
+public class NavBarRenderer extends TagRenderer {
+  public NavBarRenderer(FreemarkerFactory view, NavBarState state) {
+    super("div", state);
+    nestedRenderable = view.createResultWithModel("component/navbar.ftl", state);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(Bootstrap.CSS);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(Bootstrap.CSS);
+  }
 }

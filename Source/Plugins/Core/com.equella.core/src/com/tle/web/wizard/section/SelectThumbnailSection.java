@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.wizard.section;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -62,315 +58,280 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import com.tle.web.wizard.WizardState;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class SelectThumbnailSection extends EquellaDialog<SelectThumbnailSection.SelectThumbnailModel>
-{
-	@PlugKey("selectthumbnail.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("thumbnail.option.default")
-	private static String STRING_DEFAULT;
-	@PlugKey("thumbnail.option.none")
-	private static String STRING_NONE;
-	@PlugKey("thumbnail.option.custom")
-	private static String STRING_CUSTOM;
+public class SelectThumbnailSection
+    extends EquellaDialog<SelectThumbnailSection.SelectThumbnailModel> {
+  @PlugKey("selectthumbnail.title")
+  private static Label LABEL_TITLE;
 
-	@Component
-	@PlugKey("selectthumbnail.dialog.button.save")
-	private Button save;
-	@Component
-	@PlugKey("selectthumbnail.dialog.button.cancel")
-	private Button cancel;
+  @PlugKey("thumbnail.option.default")
+  private static String STRING_DEFAULT;
 
-	@Component(name = "sel")
-	private TextField selected;
-	@Component
-	private SingleSelectionList<NameValue> options;
+  @PlugKey("thumbnail.option.none")
+  private static String STRING_NONE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("thumbnail.option.custom")
+  private static String STRING_CUSTOM;
 
-	public enum ThumbnailOption
-	{
-		DEFAULT, NONE, CUSTOM;
+  @Component
+  @PlugKey("selectthumbnail.dialog.button.save")
+  private Button save;
 
-		@Override
-		public String toString()
-		{
-			return super.toString().toLowerCase();
-		}
-	}
+  @Component
+  @PlugKey("selectthumbnail.dialog.button.cancel")
+  private Button cancel;
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		SelectThumbnailModel model = getModel(context);
+  @Component(name = "sel")
+  private TextField selected;
 
-		WizardSectionInfo winfo = context.getAttributeForClass(WizardSectionInfo.class);
+  @Component private SingleSelectionList<NameValue> options;
 
-		if( !model.isLoaded() )
-		{
-			setupRadioOptions(context, winfo);
-		}
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-		List<SectionRenderable> thumbs = createAttachmentThumbs(context);
-		Option customOption = getCustomOption(context);
-		if( customOption != null )
-		{
-			if( thumbs == null )
-			{
-				customOption.setDisabled(true);
-			}
-			else
-			{
-				customOption.setDisabled(false);
-			}
-		}
+  public enum ThumbnailOption {
+    DEFAULT,
+    NONE,
+    CUSTOM;
 
-		model.setAttachmentThumbs(thumbs);
-		model.setLoaded(true);
-		return viewFactory.createResult("wizard/selectthumbnail.ftl", this);
-	}
+    @Override
+    public String toString() {
+      return super.toString().toLowerCase();
+    }
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Nullable
-	private Option getCustomOption(RenderContext context)
-	{
-		List<Option<NameValue>> allOptions = options.getListModel().getOptions(context);
-		for( Option<NameValue> option : allOptions )
-		{
-			if( option.getValue().equals(ThumbnailOption.CUSTOM.toString()) )
-			{
-				return option;
-			}
-		}
-		return null;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    SelectThumbnailModel model = getModel(context);
 
-	private void setupRadioOptions(SectionInfo info, WizardSectionInfo winfo)
-	{
-		WizardState state = winfo.getWizardState();
-		String thumb = state.getThumbnail();
-		if( Check.isEmpty(thumb) )
-		{
-			thumb = state.getItem().getThumb();
-		}
+    WizardSectionInfo winfo = context.getAttributeForClass(WizardSectionInfo.class);
 
-		if( thumb.contains(ThumbnailOption.DEFAULT.toString()) )
-		{
-			options.setSelectedStringValue(info, ThumbnailOption.DEFAULT.toString());
-		}
-		else if( thumb.contains(ThumbnailOption.NONE.toString()) )
-		{
-			options.setSelectedStringValue(info, ThumbnailOption.NONE.toString());
-		}
-		else if( thumb.contains(ThumbnailOption.CUSTOM.toString()) )
-		{
-			options.setSelectedStringValue(info, ThumbnailOption.CUSTOM.toString());
-			String[] split = thumb.split(":");
-			if( split.length == 2 )
-			{
-				String attachmentUuid = split[1];
-				selected.setValue(info, attachmentUuid);
-			}
-			else
-			{
-				options.setSelectedStringValue(info, ThumbnailOption.DEFAULT.toString());
-			}
-		}
-	}
+    if (!model.isLoaded()) {
+      setupRadioOptions(context, winfo);
+    }
 
-	@Nullable
-	private List<SectionRenderable> createAttachmentThumbs(SectionInfo info)
-	{
-		WizardSectionInfo winfo = info.getAttributeForClass(WizardSectionInfo.class);
-		List<SectionRenderable> thumbs = new ArrayList<>();
+    List<SectionRenderable> thumbs = createAttachmentThumbs(context);
+    Option customOption = getCustomOption(context);
+    if (customOption != null) {
+      if (thumbs == null) {
+        customOption.setDisabled(true);
+      } else {
+        customOption.setDisabled(false);
+      }
+    }
 
-		boolean noThumb = true;
-		List<Attachment> attachments = winfo.getItem().getAttachments();
-		for( Attachment attachment : attachments )
-		{
-			String thumbnail = attachment.getThumbnail();
-			if( thumbnail != null && !thumbnail.equals("suppress") )
-			{
-				TagRenderer li = new TagRenderer("li", new TagState());
-				noThumb = false;
-				li.addClass("thumbrow");
-				String value = selected.getValue(info);
+    model.setAttachmentThumbs(thumbs);
+    model.setLoaded(true);
+    return viewFactory.createResult("wizard/selectthumbnail.ftl", this);
+  }
 
-				if( options.getSelectedValueAsString(info).equals(ThumbnailOption.CUSTOM.toString()) )
-				{
-					if( Check.isEmpty(value) )
-					{
-						li.addClass("selected");
-						selected.setValue(info, attachment.getUuid());
-					}
-					else if( value.equals(attachment.getUuid()) )
-					{
-						li.addClass("selected");
-					}
-				}
+  @SuppressWarnings("rawtypes")
+  @Nullable
+  private Option getCustomOption(RenderContext context) {
+    List<Option<NameValue>> allOptions = options.getListModel().getOptions(context);
+    for (Option<NameValue> option : allOptions) {
+      if (option.getValue().equals(ThumbnailOption.CUSTOM.toString())) {
+        return option;
+      }
+    }
+    return null;
+  }
 
-				HtmlLinkState state = new HtmlLinkState();
-				state.addClass("thumbnail");
-				state.setData("id", attachment.getUuid());
-				state.setClickHandler(new OverrideHandler(events.getNamedHandler("selectThumbnail",
-					attachment.getUuid())));
-				LinkRenderer linkRenderer = new LinkRenderer(state);
+  private void setupRadioOptions(SectionInfo info, WizardSectionInfo winfo) {
+    WizardState state = winfo.getWizardState();
+    String thumb = state.getThumbnail();
+    if (Check.isEmpty(thumb)) {
+      thumb = state.getItem().getThumb();
+    }
 
-				SectionRenderable thumbnailForAttachment = getThumbnailUrlForAttachment(info, winfo.getViewableItem(),
-					attachment);
+    if (thumb.contains(ThumbnailOption.DEFAULT.toString())) {
+      options.setSelectedStringValue(info, ThumbnailOption.DEFAULT.toString());
+    } else if (thumb.contains(ThumbnailOption.NONE.toString())) {
+      options.setSelectedStringValue(info, ThumbnailOption.NONE.toString());
+    } else if (thumb.contains(ThumbnailOption.CUSTOM.toString())) {
+      options.setSelectedStringValue(info, ThumbnailOption.CUSTOM.toString());
+      String[] split = thumb.split(":");
+      if (split.length == 2) {
+        String attachmentUuid = split[1];
+        selected.setValue(info, attachmentUuid);
+      } else {
+        options.setSelectedStringValue(info, ThumbnailOption.DEFAULT.toString());
+      }
+    }
+  }
 
-				linkRenderer.setNestedRenderable(thumbnailForAttachment);
-				li.setNestedRenderable(linkRenderer);
-				thumbs.add(li);
-			}
-		}
+  @Nullable
+  private List<SectionRenderable> createAttachmentThumbs(SectionInfo info) {
+    WizardSectionInfo winfo = info.getAttributeForClass(WizardSectionInfo.class);
+    List<SectionRenderable> thumbs = new ArrayList<>();
 
-		if( noThumb )
-		{
-			return null;
-		}
+    boolean noThumb = true;
+    List<Attachment> attachments = winfo.getItem().getAttachments();
+    for (Attachment attachment : attachments) {
+      String thumbnail = attachment.getThumbnail();
+      if (thumbnail != null && !thumbnail.equals("suppress")) {
+        TagRenderer li = new TagRenderer("li", new TagState());
+        noThumb = false;
+        li.addClass("thumbrow");
+        String value = selected.getValue(info);
 
-		return thumbs;
-	}
+        if (options.getSelectedValueAsString(info).equals(ThumbnailOption.CUSTOM.toString())) {
+          if (Check.isEmpty(value)) {
+            li.addClass("selected");
+            selected.setValue(info, attachment.getUuid());
+          } else if (value.equals(attachment.getUuid())) {
+            li.addClass("selected");
+          }
+        }
 
-	@SuppressWarnings("rawtypes")
-	public SectionRenderable getThumbnailUrlForAttachment(SectionInfo info, ViewableItem viewableItem,
-		Attachment attachment)
-	{
-		return attachmentResourceService.getViewableResource(info, viewableItem, attachment)
-			.createStandardThumbnailRenderer(new TextLabel(attachment.getDescription())).addClass("file-thumbnail");
-	}
+        HtmlLinkState state = new HtmlLinkState();
+        state.addClass("thumbnail");
+        state.setData("id", attachment.getUuid());
+        state.setClickHandler(
+            new OverrideHandler(events.getNamedHandler("selectThumbnail", attachment.getUuid())));
+        LinkRenderer linkRenderer = new LinkRenderer(state);
 
-	@EventHandlerMethod
-	public void selectThumbnail(SectionInfo info, String uuid)
-	{
-		selected.setValue(info, uuid);
-		options.setSelectedStringValue(info, ThumbnailOption.CUSTOM.toString());
-	}
+        SectionRenderable thumbnailForAttachment =
+            getThumbnailUrlForAttachment(info, winfo.getViewableItem(), attachment);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setAjax(true);
+        linkRenderer.setNestedRenderable(thumbnailForAttachment);
+        li.setNestedRenderable(linkRenderer);
+        thumbs.add(li);
+      }
+    }
 
-		SimpleHtmlListModel<NameValue> optionValue = new SimpleHtmlListModel<NameValue>(new NameValue(
-			CurrentLocale.get(STRING_DEFAULT), ThumbnailOption.DEFAULT.toString()), new NameValue(
-			CurrentLocale.get(STRING_NONE), ThumbnailOption.NONE.toString()), new NameValue(
-			CurrentLocale.get(STRING_CUSTOM), ThumbnailOption.CUSTOM.toString()));
-		options.setListModel(optionValue);
-		options.setAlwaysSelect(true);
-		options.addChangeEventHandler(new ReloadHandler());
+    if (noThumb) {
+      return null;
+    }
 
-		final JSCallable commandExec = events.getSubmitValuesFunction("save");
-		final SimpleFunction execFunc = new SimpleFunction("exec", this, StatementBlock.get(Js.call_s(commandExec),
-			Js.call_s(getCloseFunction())));
+    return thumbs;
+  }
 
-		save.setClickHandler(execFunc);
-		save.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
-		cancel.setClickHandler(new OverrideHandler(getCloseFunction()));
-	}
+  @SuppressWarnings("rawtypes")
+  public SectionRenderable getThumbnailUrlForAttachment(
+      SectionInfo info, ViewableItem viewableItem, Attachment attachment) {
+    return attachmentResourceService
+        .getViewableResource(info, viewableItem, attachment)
+        .createStandardThumbnailRenderer(new TextLabel(attachment.getDescription()))
+        .addClass("file-thumbnail");
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		WizardSectionInfo wizInfo = info.getAttributeForClass(WizardSectionInfo.class);
-		WizardState state = wizInfo.getWizardState();
-		String thumb = ThumbnailOption.DEFAULT.toString();
-		String option = options.getSelectedValueAsString(info);
-		switch( option )
-		{
-			case "none":
-				thumb = ThumbnailOption.NONE.toString();
-				break;
+  @EventHandlerMethod
+  public void selectThumbnail(SectionInfo info, String uuid) {
+    selected.setValue(info, uuid);
+    options.setSelectedStringValue(info, ThumbnailOption.CUSTOM.toString());
+  }
 
-			case "custom":
-				if( !Check.isEmpty(selected.getValue(info)) )
-				{
-					thumb = ThumbnailOption.CUSTOM.toString() + ":" + selected.getValue(info);
-				}
-				break;
-		}
-		state.setThumbnail(thumb);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setAjax(true);
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		final Collection<Button> buttons = Lists.newArrayList(save, cancel);
-		return buttons;
-	}
+    SimpleHtmlListModel<NameValue> optionValue =
+        new SimpleHtmlListModel<NameValue>(
+            new NameValue(CurrentLocale.get(STRING_DEFAULT), ThumbnailOption.DEFAULT.toString()),
+            new NameValue(CurrentLocale.get(STRING_NONE), ThumbnailOption.NONE.toString()),
+            new NameValue(CurrentLocale.get(STRING_CUSTOM), ThumbnailOption.CUSTOM.toString()));
+    options.setListModel(optionValue);
+    options.setAlwaysSelect(true);
+    options.addChangeEventHandler(new ReloadHandler());
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+    final JSCallable commandExec = events.getSubmitValuesFunction("save");
+    final SimpleFunction execFunc =
+        new SimpleFunction(
+            "exec",
+            this,
+            StatementBlock.get(Js.call_s(commandExec), Js.call_s(getCloseFunction())));
 
-	@Override
-	public String getWidth()
-	{
-		return "647px";
-	}
+    save.setClickHandler(execFunc);
+    save.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+    cancel.setClickHandler(new OverrideHandler(getCloseFunction()));
+  }
 
-	@Override
-	public String getHeight()
-	{
-		return "433px";
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    WizardSectionInfo wizInfo = info.getAttributeForClass(WizardSectionInfo.class);
+    WizardState state = wizInfo.getWizardState();
+    String thumb = ThumbnailOption.DEFAULT.toString();
+    String option = options.getSelectedValueAsString(info);
+    switch (option) {
+      case "none":
+        thumb = ThumbnailOption.NONE.toString();
+        break;
 
-	@Override
-	public SelectThumbnailModel instantiateDialogModel(SectionInfo info)
-	{
-		return new SelectThumbnailModel();
-	}
+      case "custom":
+        if (!Check.isEmpty(selected.getValue(info))) {
+          thumb = ThumbnailOption.CUSTOM.toString() + ":" + selected.getValue(info);
+        }
+        break;
+    }
+    state.setThumbnail(thumb);
+  }
 
-	@Override
-	public Class<SelectThumbnailModel> getModelClass()
-	{
-		return SelectThumbnailModel.class;
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    final Collection<Button> buttons = Lists.newArrayList(save, cancel);
+    return buttons;
+  }
 
-	public SingleSelectionList<NameValue> getOptions()
-	{
-		return options;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	public TextField getSelected()
-	{
-		return selected;
-	}
+  @Override
+  public String getWidth() {
+    return "647px";
+  }
 
-	public static class SelectThumbnailModel extends DialogModel
-	{
-		private List<SectionRenderable> attachmentThumbs;
-		@Bookmarked
-		private boolean loaded;
+  @Override
+  public String getHeight() {
+    return "433px";
+  }
 
-		public List<SectionRenderable> getAttachmentThumbs()
-		{
-			return attachmentThumbs;
-		}
+  @Override
+  public SelectThumbnailModel instantiateDialogModel(SectionInfo info) {
+    return new SelectThumbnailModel();
+  }
 
-		public void setAttachmentThumbs(List<SectionRenderable> attachmentThumbs)
-		{
-			this.attachmentThumbs = attachmentThumbs;
-		}
+  @Override
+  public Class<SelectThumbnailModel> getModelClass() {
+    return SelectThumbnailModel.class;
+  }
 
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
+  public SingleSelectionList<NameValue> getOptions() {
+    return options;
+  }
 
-		public void setLoaded(boolean loaded)
-		{
-			this.loaded = loaded;
-		}
-	}
+  public TextField getSelected() {
+    return selected;
+  }
+
+  public static class SelectThumbnailModel extends DialogModel {
+    private List<SectionRenderable> attachmentThumbs;
+    @Bookmarked private boolean loaded;
+
+    public List<SectionRenderable> getAttachmentThumbs() {
+      return attachmentThumbs;
+    }
+
+    public void setAttachmentThumbs(List<SectionRenderable> attachmentThumbs) {
+      this.attachmentThumbs = attachmentThumbs;
+    }
+
+    public boolean isLoaded() {
+      return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+      this.loaded = loaded;
+    }
+  }
 }

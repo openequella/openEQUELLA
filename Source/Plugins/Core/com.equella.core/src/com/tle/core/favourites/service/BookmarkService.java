@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,24 @@
 
 package com.tle.core.favourites.service;
 
+import com.tle.beans.item.Bookmark;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemKey;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.tle.beans.item.Bookmark;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemKey;
+public interface BookmarkService {
+  void add(Item item, String tags, boolean latest);
 
-public interface BookmarkService
-{
-	void add(Item item, String tags, boolean latest);
+  void delete(long id);
 
-	void delete(long id);
+  Bookmark getByItem(ItemKey itemId);
 
-	Bookmark getByItem(ItemKey itemId);
+  /** Return a set of items that are not bookmarked by the current user. */
+  List<Item> filterNonBookmarkedItems(Collection<Item> items);
 
-	/**
-	 * Return a set of items that are not bookmarked by the current user.
-	 */
-	List<Item> filterNonBookmarkedItems(Collection<Item> items);
+  Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items);
 
-	Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items);
-
-	List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults);
+  List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults);
 }

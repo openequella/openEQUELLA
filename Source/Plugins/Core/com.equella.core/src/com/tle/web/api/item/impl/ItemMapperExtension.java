@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,27 @@
 
 package com.tle.web.api.item.impl;
 
-import javax.inject.Singleton;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.MapperExtension;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class ItemMapperExtension implements MapperExtension
-{
-	@Override
-	public void extendMapper(ObjectMapper mapper)
-	{
-		mapper.registerModule(new ItemMapperExtensionModule());
-	}
+public class ItemMapperExtension implements MapperExtension {
+  @Override
+  public void extendMapper(ObjectMapper mapper) {
+    mapper.registerModule(new ItemMapperExtensionModule());
+  }
 
-	public static class ItemMapperExtensionModule extends SimpleModule
-	{
-		public ItemMapperExtensionModule()
-		{
-			super("ItemMapperExtensionModule");
-			registerSubtypes(new NamedType(EquellaItemBean.class, "equellaItem"));
-		}
-	}
+  public static class ItemMapperExtensionModule extends SimpleModule {
+    public ItemMapperExtensionModule() {
+      super("ItemMapperExtensionModule");
+      registerSubtypes(new NamedType(EquellaItemBean.class, "equellaItem"));
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.sections.standard.renderers.toggle;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.tle.common.Check;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionUtils;
@@ -26,61 +25,53 @@ import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlBooleanState;
+import java.io.IOException;
+import java.util.Map;
 
 @SuppressWarnings("nls")
-public class ImageTogglerRenderer extends AbstractHiddenToggler
-{
-	private static final String CSS_URL = ResourcesService.getResourceHelper(ImageTogglerRenderer.class).url(
-		"css/toggler.css");
+public class ImageTogglerRenderer extends AbstractHiddenToggler {
+  private static final String CSS_URL =
+      ResourcesService.getResourceHelper(ImageTogglerRenderer.class).url("css/toggler.css");
 
-	public ImageTogglerRenderer(HtmlBooleanState bstate)
-	{
-		super(bstate);
-		addClass("imageToggler");
-	}
+  public ImageTogglerRenderer(HtmlBooleanState bstate) {
+    super(bstate);
+    addClass("imageToggler");
+  }
 
-	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-	{
-		super.prepareFirstAttributes(writer, attrs);
-		if( bstate.isChecked() )
-		{
-			addClass(attrs, "imageTogglerChecked");
-		}
-		else
-		{
-			addClass(attrs, "imageTogglerUnchecked");
-		}
-		SectionRenderable renderable = getNestedRenderable();
-		if( renderable != null )
-		{
-			String altText = SectionUtils.renderToString(writer.getInfo(), renderable);
-			if( !Check.isEmpty(altText) )
-			{
-				attrs.put("alt", altText);
-			}
-		}
-	}
+  @Override
+  protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+      throws IOException {
+    super.prepareFirstAttributes(writer, attrs);
+    if (bstate.isChecked()) {
+      addClass(attrs, "imageTogglerChecked");
+    } else {
+      addClass(attrs, "imageTogglerUnchecked");
+    }
+    SectionRenderable renderable = getNestedRenderable();
+    if (renderable != null) {
+      String altText = SectionUtils.renderToString(writer.getInfo(), renderable);
+      if (!Check.isEmpty(altText)) {
+        attrs.put("alt", altText);
+      }
+    }
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		super.preRender(info);
-		info.addCss(CSS_URL);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    super.preRender(info);
+    info.addCss(CSS_URL);
+  }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		// nothing
-	}
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    // nothing
+  }
 
-	@Override
-	protected void writeEnd(SectionWriter writer) throws IOException
-	{
-		super.writeEnd(writer);
+  @Override
+  protected void writeEnd(SectionWriter writer) throws IOException {
+    super.writeEnd(writer);
 
-		// This is to work around a Chrome/Safari rendering issue - see #3058
-		writer.write("&nbsp;");
-	}
+    // This is to work around a Chrome/Safari rendering issue - see #3058
+    writer.write("&nbsp;");
+  }
 }

@@ -1,0 +1,10 @@
+<com.tle.beans.item.Relation>
+  <id>117558</id>
+  <firstItem>
+    <id>117408</id>
+  </firstItem>
+  <secondItem>
+    <id>117063</id>
+  </secondItem>
+  <relationType>RandomType</relationType>
+</com.tle.beans.item.Relation>

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,8 @@
 
 package com.tle.web.favourites.menu;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import com.tle.core.guice.Bind;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.guice.Bind;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
@@ -30,36 +27,38 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.section.MenuContributor;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class FavouritesMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		FavouritesMenuContributor.class).key("menu.favourites"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(FavouritesMenuContributor.class).url(
-		"images/menu-icon-favourites.png");
+public class FavouritesMenuContributor implements MenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(FavouritesMenuContributor.class)
+              .key("menu.favourites"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(FavouritesMenuContributor.class)
+          .url("images/menu-icon-favourites.png");
 
-	@Override
-	public void clearCachedData()
-	{
-		// Boom
-	}
+  @Override
+  public void clearCachedData() {
+    // Boom
+  }
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return Collections.emptyList();
-		}
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return Collections.emptyList();
+    }
 
-		// TODO: We should be generating a bookmark to the section rather than
-		// hard-coding the URL
-		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
-		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
-		return Collections.singletonList(mc);
-	}
+    // TODO: We should be generating a bookmark to the section rather than
+    // hard-coding the URL
+    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
+    hls.setLabel(LABEL_KEY);
+    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
+    return Collections.singletonList(mc);
+  }
 }

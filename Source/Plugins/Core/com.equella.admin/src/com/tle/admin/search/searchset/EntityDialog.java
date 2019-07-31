@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,12 @@
 
 package com.tle.admin.search.searchset;
 
+import com.dytech.gui.ComponentHelper;
+import com.tle.admin.i18n.Lookup;
+import com.tle.beans.NameId;
+import com.tle.common.applet.gui.AppletGuiUtils;
+import com.tle.common.gui.models.GenericListModel;
+import com.tle.common.i18n.CurrentLocale;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -28,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -39,203 +46,158 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.dytech.gui.ComponentHelper;
-import com.tle.admin.i18n.Lookup;
-import com.tle.beans.NameId;
-import com.tle.common.applet.gui.AppletGuiUtils;
-import com.tle.common.gui.models.GenericListModel;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.i18n.StringLookup;
-import com.tle.core.plugins.AbstractPluginService;
-
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class EntityDialog implements ActionListener, ListSelectionListener, MouseListener
-{
-	private JButton okButton;
-	private JButton cancelButton;
-	private JList list;
-	private GenericListModel<NameId> model;
-	private String title;
+public class EntityDialog implements ActionListener, ListSelectionListener, MouseListener {
+  private JButton okButton;
+  private JButton cancelButton;
+  private JList list;
+  private GenericListModel<NameId> model;
+  private String title;
 
-	private JPanel content;
-	private JDialog dialog;
-	private boolean cancelled = true;
+  private JPanel content;
+  private JDialog dialog;
+  private boolean cancelled = true;
 
-	public EntityDialog(String entityName)
-	{
-		setup(entityName);
-	}
+  public EntityDialog(String entityName) {
+    setup(entityName);
+  }
 
-	private static String getString(String key, Object... vals)
-	{
-		return Lookup.lookup.text(key, vals);
-	}
+  private static String getString(String key, Object... vals) {
+    return Lookup.lookup.text(key, vals);
+  }
 
-	private void setup(String entityName)
-	{
-		title = getString("entitydialog.select", entityName);
+  private void setup(String entityName) {
+    title = getString("entitydialog.select", entityName);
 
-		model = new GenericListModel<NameId>();
-		list = new JList(model);
-		list.addListSelectionListener(this);
-		list.addMouseListener(this);
+    model = new GenericListModel<NameId>();
+    list = new JList(model);
+    list.addListSelectionListener(this);
+    list.addMouseListener(this);
 
-		JScrollPane scroll = new JScrollPane(list);
+    JScrollPane scroll = new JScrollPane(list);
 
-		okButton = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.ok"));
-		cancelButton = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.cancel"));
+    okButton = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.ok"));
+    cancelButton = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.cancel"));
 
-		okButton.addActionListener(this);
-		cancelButton.addActionListener(this);
+    okButton.addActionListener(this);
+    cancelButton.addActionListener(this);
 
-		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		buttons.add(okButton);
-		buttons.add(cancelButton);
+    JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    buttons.add(okButton);
+    buttons.add(cancelButton);
 
-		buttons.setPreferredSize(buttons.getMinimumSize());
+    buttons.setPreferredSize(buttons.getMinimumSize());
 
-		content = new JPanel(new BorderLayout(5, 5));
-		content.setBorder(AppletGuiUtils.DEFAULT_BORDER);
+    content = new JPanel(new BorderLayout(5, 5));
+    content.setBorder(AppletGuiUtils.DEFAULT_BORDER);
 
-		content.add(new JLabel(title), BorderLayout.NORTH);
-		content.add(scroll, BorderLayout.CENTER);
-		content.add(buttons, BorderLayout.SOUTH);
+    content.add(new JLabel(title), BorderLayout.NORTH);
+    content.add(scroll, BorderLayout.CENTER);
+    content.add(buttons, BorderLayout.SOUTH);
 
-		updateButtons();
-	}
+    updateButtons();
+  }
 
-	private void updateButtons()
-	{
-		okButton.setEnabled(!list.isSelectionEmpty());
-	}
+  private void updateButtons() {
+    okButton.setEnabled(!list.isSelectionEmpty());
+  }
 
-	public List<NameId> showDialog(Component parent)
-	{
-		dialog = ComponentHelper.createJDialog(parent);
-		dialog.setModal(true);
-		dialog.getContentPane().add(content);
-		dialog.setTitle(title);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  public List<NameId> showDialog(Component parent) {
+    dialog = ComponentHelper.createJDialog(parent);
+    dialog.setModal(true);
+    dialog.getContentPane().add(content);
+    dialog.setTitle(title);
+    dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		dialog.setSize(300, 300);
-		ComponentHelper.centreOnScreen(dialog);
+    dialog.setSize(300, 300);
+    ComponentHelper.centreOnScreen(dialog);
 
-		dialog.setVisible(true);
+    dialog.setVisible(true);
 
-		if( cancelled || list.isSelectionEmpty() )
-		{
-			return Collections.emptyList();
-		}
-		else
-		{
-			List<NameId> results = new ArrayList<NameId>();
-			for( int i : list.getSelectedIndices() )
-			{
-				results.add(model.get(i));
-			}
-			return results;
-		}
-	}
+    if (cancelled || list.isSelectionEmpty()) {
+      return Collections.emptyList();
+    } else {
+      List<NameId> results = new ArrayList<NameId>();
+      for (int i : list.getSelectedIndices()) {
+        results.add(model.get(i));
+      }
+      return results;
+    }
+  }
 
-	private void closeDialog(boolean cancelled)
-	{
-		this.cancelled = cancelled;
-		dialog.dispose();
-		dialog = null;
-	}
+  private void closeDialog(boolean cancelled) {
+    this.cancelled = cancelled;
+    dialog.dispose();
+    dialog = null;
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		closeDialog(e.getSource() == cancelButton);
-	}
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    closeDialog(e.getSource() == cancelButton);
+  }
 
-	@Override
-	public void valueChanged(ListSelectionEvent e)
-	{
-		updateButtons();
-	}
+  @Override
+  public void valueChanged(ListSelectionEvent e) {
+    updateButtons();
+  }
 
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-		if( e.getClickCount() == 2 )
-		{
-			closeDialog(false);
-		}
-	}
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    if (e.getClickCount() == 2) {
+      closeDialog(false);
+    }
+  }
 
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseEntered(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseExited(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mousePressed(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	protected void loadEntities(Collection<NameId> usableEntities, Set<NameId> filterOut)
-	{
-		for( NameId entity : usableEntities )
-		{
-			if( !filterOut.contains(entity) )
-			{
-				model.add(entity);
-			}
-		}
-	}
+  protected void loadEntities(Collection<NameId> usableEntities, Set<NameId> filterOut) {
+    for (NameId entity : usableEntities) {
+      if (!filterOut.contains(entity)) {
+        model.add(entity);
+      }
+    }
+  }
 
-	/**
-	 * @author Nicholas Read
-	 */
-	public static class ItemDefinitionDialog extends EntityDialog
-	{
-		public ItemDefinitionDialog(Collection<NameId> values, Set<NameId> filterOut)
-		{
-			super(getString("entitydialog.collection"));
-			loadEntities(values, filterOut);
-		}
-	}
+  /** @author Nicholas Read */
+  public static class ItemDefinitionDialog extends EntityDialog {
+    public ItemDefinitionDialog(Collection<NameId> values, Set<NameId> filterOut) {
+      super(getString("entitydialog.collection"));
+      loadEntities(values, filterOut);
+    }
+  }
 
-	/**
-	 * @author Nicholas Read
-	 */
-	public static class SchemaDialog extends EntityDialog
-	{
-		public SchemaDialog(Collection<NameId> values, Set<NameId> filterOut)
-		{
-			super(getString("entitydialog.schema"));
-			loadEntities(values, filterOut);
-		}
-	}
+  /** @author Nicholas Read */
+  public static class SchemaDialog extends EntityDialog {
+    public SchemaDialog(Collection<NameId> values, Set<NameId> filterOut) {
+      super(getString("entitydialog.schema"));
+      loadEntities(values, filterOut);
+    }
+  }
 
-	/**
-	 * @author Nicholas Read
-	 */
-	public static class CourseInfoDialog extends EntityDialog
-	{
-		public CourseInfoDialog(Collection<NameId> values, Set<NameId> filterOut)
-		{
-			super(getString("entitydialog.course"));
-			loadEntities(values, filterOut);
-		}
-	}
+  /** @author Nicholas Read */
+  public static class CourseInfoDialog extends EntityDialog {
+    public CourseInfoDialog(Collection<NameId> values, Set<NameId> filterOut) {
+      super(getString("entitydialog.course"));
+      loadEntities(values, filterOut);
+    }
+  }
 }

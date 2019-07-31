@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.sidebar.actions;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.IItem;
 import com.tle.web.sections.SectionInfo;
@@ -37,58 +37,49 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.SelectedResourceKey;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.viewable.ViewableItem;
+import javax.inject.Inject;
 
-public abstract class AbstractUnselectItemSummarySection<I extends IItem<?>, M> extends AbstractPrototypeSection<M>
-	implements
-		ViewableChildInterface,
-		HtmlRenderer
-{
-	@EventFactory
-	private EventGenerator events;
+public abstract class AbstractUnselectItemSummarySection<I extends IItem<?>, M>
+    extends AbstractPrototypeSection<M> implements ViewableChildInterface, HtmlRenderer {
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private SelectionService selectionService;
+  @Inject private SelectionService selectionService;
 
-	@Component
-	@PlugKey("summary.sidebar.actions.unselectitem.title")
-	private Button button;
+  @Component
+  @PlugKey("summary.sidebar.actions.unselectitem.title")
+  private Button button;
 
-	protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
+  protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
 
-	protected abstract String getItemExtensionType();
+  protected abstract String getItemExtensionType();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, button);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!canView(context)) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, button);
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		button.setStyleClass("unselect");
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		button.setClickHandler(events.getNamedHandler("unselect"));
-	}
+    button.setStyleClass("unselect");
+    button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    button.setClickHandler(events.getNamedHandler("unselect"));
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return selectionService
-			.isSelected(info, getViewableItem(info).getItemId(), null, getItemExtensionType(), false);
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return selectionService.isSelected(
+        info, getViewableItem(info).getItemId(), null, getItemExtensionType(), false);
+  }
 
-	@EventHandlerMethod
-	public void unselect(SectionInfo info)
-	{
-		selectionService.removeSelectedResource(info, new SelectedResourceKey(getViewableItem(info).getItemId(),
-			getItemExtensionType()));
-	}
+  @EventHandlerMethod
+  public void unselect(SectionInfo info) {
+    selectionService.removeSelectedResource(
+        info, new SelectedResourceKey(getViewableItem(info).getItemId(), getItemExtensionType()));
+  }
 }

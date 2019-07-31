@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,22 +24,21 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 
-public final class WizardJSLibrary
-{
-	static
-	{
-		PluginResourceHandler.init(WizardJSLibrary.class);
-	}
+public final class WizardJSLibrary {
+  static {
+    PluginResourceHandler.init(WizardJSLibrary.class);
+  }
 
-	@PlugURL("scripts/wizardctrl.js")
-	private static String URL_LIBRARY;
+  @PlugURL("scripts/wizardctrl.js")
+  private static String URL_LIBRARY;
 
-	public static final IncludeFile INCLUDE = new IncludeFile(URL_LIBRARY);
-	private static final ExternallyDefinedFunction WIZARDCTRLCLASS = new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
-	public static final JSCallable AffixDiv = new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
+  public static final IncludeFile INCLUDE = new IncludeFile(URL_LIBRARY);
+  private static final ExternallyDefinedFunction WIZARDCTRLCLASS =
+      new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
+  public static final JSCallable AffixDiv =
+      new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
 
-	private WizardJSLibrary()
-	{
-		throw new Error();
-	}
+  private WizardJSLibrary() {
+    throw new Error();
+  }
 }

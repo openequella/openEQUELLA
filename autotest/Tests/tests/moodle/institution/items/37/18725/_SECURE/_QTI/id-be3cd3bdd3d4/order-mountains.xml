@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    identifier="order-mountains" title="Scottish Mountains" adaptive="false" timeDependent="false">
+    <responseDeclaration identifier="RESPONSE" cardinality="ordered" baseType="identifier">
+        <correctResponse>
+            <value>BenNevis</value>
+            <value>BenMacdui</value>
+            <value>Bidean</value>
+            <value>CreagMeagaidh</value>
+        </correctResponse>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+    <outcomeDeclaration identifier="iSCORE" cardinality="single" baseType="integer"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <stylesheet href="flickrMash.css" type="text/css"/>
+    <itemBody>
+        <orderInteraction responseIdentifier="RESPONSE" shuffle="true" orientation="vertical">
+            <prompt>Put these mountains in <strong>DESCENDING</strong> order of height</prompt>
+            <simpleChoice identifier="BenNevis">
+                <div class="c1">
+                    <div class="c1p1">
+                        <div class="c2">Ben Nevis</div>
+                        <div class="c3">
+                            <strong>User:</strong>&#160;<a
+                                href="http://www.flickr.com/people/12491204@N00/">euphbass</a><br/>
+                            <strong>Added:</strong>&#160;3/7/10&#160;<strong>Taken:</strong>&#160;3/6/10&#160;<strong>Last
+                                Updated:</strong>&#160;2/27/11<br/>
+                            <strong>Tags:</strong>&#160;snow, skiing, bennevis, nevisrange, anochmor<br/>
+                            <strong>License:</strong>&#160;<a
+                                href="http://creativecommons.org/licenses/by-nc-nd/2.0/"
+                                >Attribution-NonCommercial-NoDerivs License</a></div>
+                    </div>
+                    <div class="c4">
+                        <div class="c4p1"><img
+                                src="http://farm3.static.flickr.com/2710/4414106953_a72b46d4dd_t.jpg"
+                                alt="Ben Nevis"/></div>
+                        <div class="c5"><a class="c5a"
+                                href="http://www.flickr.com/photos/12491204@N00/4414106953/">View
+                                Photo</a></div>
+                    </div>
+                    <div id="myFlickr4414106953">
+                        <!-- <div class="margin: 10px;"><a href="http://www.flickr.com/photos/12491204@N00/4414106953/" target="_blank" title="View Photo on Flickr"><img src="http://farm3.static.flickr.com/2710/4414106953_a72b46d4dd.jpg" alt="Ben Nevis 2"></a></div> --></div>
+                </div>
+                <div>&#160;</div>
+            </simpleChoice>
+            <simpleChoice identifier="BenMacdui">
+                <div class="c1">
+                    <div class="c1p1">
+                        <div class="c2">Ben Macdui</div>
+                        <div class="c3">
+                            <strong>User:</strong>&#160;<a
+                                href="http://www.flickr.com/people/87012937@N00/">Teardust</a><br/>
+                            <strong>Added:</strong>&#160;6/2/09&#160;<strong>Taken:</strong>&#160;6/1/09&#160;<strong>Last
+                                Updated:</strong>&#160;6/6/09<br/>
+                            <strong>Latitude:</strong>&#160;57.087673&#160;<strong>Longitude:</strong>&#160;-3.682994<br/>
+                            <strong>Tags:</strong>&#160;mountains, walking, scotland, hills,
+                            cairngorms, benmacdui<br/>
+                            <strong>License:</strong>&#160;All Rights Reserved</div>
+                    </div>
+                    <div class="c4">
+                        <div class="c4p1"><img
+                                src="http://farm3.static.flickr.com/2429/3590186482_8fab80ee3b_t.jpg"
+                                alt="Ben Macdui"/></div>
+                        <div class="c5"><a class="c5a"
+                                href="http://www.flickr.com/photos/87012937@N00/3590186482/">View
+                                Photo</a></div>
+                    </div>
+                    <div id="myFlickr3590186482">
+                        <!-- <div class="margin: 10px;"><a href="http://www.flickr.com/photos/87012937@N00/3590186482/" target="_blank" title="View Photo on Flickr"><img src="http://farm3.static.flickr.com/2429/3590186482_8fab80ee3b.jpg" alt="Ben Macdui"></a></div> --></div>
+                </div>
+                <div>&#160;</div>
+            </simpleChoice>
+            <simpleChoice identifier="Bidean">
+                <div class="c1">
+                    <div class="c1p1">
+                        <div class="c2">Bidean nam Bian</div>
+                        <div class="c3">
+                            <strong>User:</strong>&#160;<a
+                                href="http://www.flickr.com/people/32275723@N08/">John_White49</a><br/>
+                            <strong>Added:</strong>&#160;11/9/08&#160;<strong>Taken:</strong>&#160;10/18/03&#160;<strong>Last
+                                Updated:</strong>&#160;11/16/08<br/>
+                            <strong>Tags:</strong>&#160;bideannambian, stobghabhar<br/>
+                            <strong>License:</strong>&#160;All Rights Reserved</div>
+                    </div>
+                    <div class="c4">
+                        <div class="c4p1"><img
+                                src="http://farm4.static.flickr.com/3005/3015281497_e91e4e1e7b_t.jpg"
+                                alt="Bidean nam Bian"/></div>
+                        <div class="c5"><a class="c5a"
+                                href="http://www.flickr.com/photos/32275723@N08/3015281497/">View
+                                Photo</a></div>
+                    </div>
+                    <div id="myFlickr3015281497">
+                        <!-- <div class="margin: 10px;"><a href="http://www.flickr.com/photos/32275723@N08/3015281497/" target="_blank" title="View Photo on Flickr"><img src="http://farm4.static.flickr.com/3005/3015281497_e91e4e1e7b.jpg" alt="Bidean nam Bian"></a></div> --></div>
+                </div>
+                <div>&#160;</div>
+            </simpleChoice>
+            <simpleChoice identifier="CreagMeagaidh">
+                <div class="c1">
+                    <div class="c1p1">
+                        <div class="c2">Creag Meagaidh</div>
+                        <div class="c3">
+                            <strong>User:</strong>&#160;<a
+                                href="http://www.flickr.com/people/70887256@N00/">swan-scot</a><br/>
+                            <strong>Added:</strong>&#160;4/15/09&#160;<strong>Taken:</strong>&#160;4/13/09&#160;<strong>Last
+                                Updated:</strong>&#160;4/15/09<br/>
+                            <strong>Tags:</strong>&#160;scotland, hillwalking, munro, creagmeagaidh<br/>
+                            <strong>License:</strong>&#160;All Rights Reserved</div>
+                    </div>
+                    <div class="c4">
+                        <div class="c4p1"><img
+                                src="http://farm4.static.flickr.com/3557/3445120347_691a8f7542_t.jpg"
+                                alt="Creag Meagaidh"/></div>
+                        <div class="c5"><a class="c5a"
+                                href="http://www.flickr.com/photos/70887256@N00/3445120347/">View
+                                Photo</a></div>
+                    </div>
+                    <div id="myFlickr3445120347">
+                        <!-- <div class="margin: 10px;"><a href="http://www.flickr.com/photos/70887256@N00/3445120347/" target="_blank" title="View Photo on Flickr"><img src="http://farm4.static.flickr.com/3557/3445120347_691a8f7542.jpg" alt="Creag Meagaidh"></a></div> --></div>
+                </div>
+                <div>&#160;</div>
+            </simpleChoice>
+        </orderInteraction>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK"> Yes, all
+                correct.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No"> No,
+                    <printedVariable identifier="iSCORE"/> correct.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE"/>
+                    <correct identifier="RESPONSE"/>
+                </match>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">4.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">OK</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="1">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">BenNevis</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="2">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">BenMacdui</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="3">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">Bidean</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="4">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">CreagMeagaidh</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">No</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="iSCORE">
+            <round>
+                <variable identifier="SCORE"/>
+            </round>
+        </setOutcomeValue>
+    </responseProcessing>
+</assessmentItem>

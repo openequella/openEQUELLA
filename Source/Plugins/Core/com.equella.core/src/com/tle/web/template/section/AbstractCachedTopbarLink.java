@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,28 @@
 
 package com.tle.web.template.section;
 
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractCachedTopbarLink implements TopbarLink
-{
-	private Cache<String, Integer> countCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES)
-		.softValues().build();
+public abstract class AbstractCachedTopbarLink implements TopbarLink {
+  private Cache<String, Integer> countCache =
+      CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).softValues().build();
 
-	public int getCachedValue()
-	{
-		Integer count = countCache.getIfPresent(getSessionKey());
-		if( count == null )
-		{
-			count = getCount();
-			countCache.put(getSessionKey(), new Integer(count));
-		}
-		return count;
-	}
+  public int getCachedValue() {
+    Integer count = countCache.getIfPresent(getSessionKey());
+    if (count == null) {
+      count = getCount();
+      countCache.put(getSessionKey(), new Integer(count));
+    }
+    return count;
+  }
 
-	public void clearCachedCount()
-	{
-		countCache.invalidate(getSessionKey());
-	}
+  public void clearCachedCount() {
+    countCache.invalidate(getSessionKey());
+  }
 
-	public abstract int getCount();
+  public abstract int getCount();
 
-	public abstract String getSessionKey();
+  public abstract String getSessionKey();
 }

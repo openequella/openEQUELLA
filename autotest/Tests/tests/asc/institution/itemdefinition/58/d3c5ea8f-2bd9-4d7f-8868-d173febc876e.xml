@@ -1,0 +1,650 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116178</id>
+  <uuid>d3c5ea8f-2bd9-4d7f-8868-d173febc876e</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-29 14:19:39.862</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-29 14:19:39.862</dateCreated>
+  <name>
+    <id>116179</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116180</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>dtec15127 deleteSubtree method</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Basic</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116181</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>XML Outputter</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>The XML:
+&lt;div id=&quot;ascMessage&quot;&gt;
+	&lt;pre&gt;
+		${xml.asString()?html}
+	&lt;/pre&gt;
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Populate Leaf</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;pop&apos;) == &apos;Populate Leaf&apos;)
+{
+	xml.deleteNode(&apos;subtree&apos;);
+	var sub = xml.createSubtree(&apos;subtree&apos;);
+	sub.add(&apos;a/test&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test&apos;, &apos;2222&apos;);
+	sub.add(&apos;a/test2&apos;, &apos;3333&apos;);
+}</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}pop&quot; value=&quot;Populate Leaf&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Populate Complex</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>logger.log(&apos;PopComplexPOST: &apos; + request.get(&apos;pop&apos;));
+
+if (request.get(&apos;pop&apos;) == &apos;Populate Complex&apos;)
+{
+	logger.log(&apos;Populate Complex&apos;);
+	xml.deleteNode(&apos;subtree&apos;);
+	var sub = xml.createSubtree(&apos;subtree&apos;);
+	sub.add(&apos;a/test1&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test1/child1&apos;,&apos;11&apos;);
+	sub.add(&apos;a/test1/child2&apos;,&apos;12&apos;);
+	sub.add(&apos;a/test1/child3&apos;,&apos;13&apos;);
+	sub.add(&apos;a/test1/child1/grandkid1&apos;,&apos;111&apos;);
+	sub.add(&apos;a/test1/child1/grandkid2&apos;,&apos;112&apos;);
+	sub.add(&apos;a/test1/child1/grandkid3&apos;,&apos;113&apos;);
+	sub.add(&apos;a/test1/child2/grandkid1&apos;,&apos;121&apos;);
+	sub.add(&apos;a/test1/child2/grandkid2&apos;,&apos;122&apos;);
+	sub.add(&apos;a/test&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test2&apos;, &apos;3333&apos;);
+	logger.log(sub.toString());
+}</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}pop&quot; value=&quot;Populate Complex&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Populate Mixed</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;pop&apos;) == &apos;Populate Mixed&apos;)
+{
+	xml.deleteNode(&apos;subtree&apos;);
+	var sub = xml.createSubtree(&apos;subtree&apos;);
+	sub.add(&apos;a/test1&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test1/child1&apos;,&apos;11&apos;);
+	sub.add(&apos;a/test1/child2&apos;,&apos;12&apos;);
+	sub.add(&apos;a/test1/child3&apos;,&apos;13&apos;);
+	sub.add(&apos;a/test1/child1/grandkid1&apos;,&apos;111&apos;);
+	sub.add(&apos;a/test1/child1/grandkid2&apos;,&apos;112&apos;);
+	sub.add(&apos;a/test1/child1/grandkid3&apos;,&apos;113&apos;);
+	sub.add(&apos;a/test1/child2/grandkid1&apos;,&apos;121&apos;);
+	sub.add(&apos;a/test1/child2/grandkid2&apos;,&apos;122&apos;);
+	sub.add(&apos;a/test1&apos;, &apos;2222&apos;);
+	sub.add(&apos;a/test1&apos;, &apos;2233&apos;);
+	sub.add(&apos;a/test2&apos;, &apos;3333&apos;);
+}</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}pop&quot; value=&quot;Populate Mixed&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Populate Delete Nothing</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;pop&apos;) == &apos;Populate Delete Nothing&apos;)
+{
+	xml.deleteNode(&apos;subtree&apos;);
+	var sub = xml.createSubtree(&apos;subtree&apos;);
+	sub.add(&apos;a/test&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test&apos;, &apos;1111&apos;);
+	sub.add(&apos;a/test2&apos;, &apos;3333&apos;);
+}</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}pop&quot; value=&quot;Populate Delete Nothing&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Delete Leaf</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;del&apos;) == &apos;Delete Leaf&apos;)
+{
+	var subtrees = xml.getAllSubtrees(&apos;subtree/a/test&apos;);
+	for (var i=0; i &lt; subtrees.length; i++)
+	{
+		xml.deleteSubtree(subtrees[i]);
+	}
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}del&quot; value=&quot;Delete Leaf&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Delete Complex</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;del&apos;) == &apos;Delete Complex&apos;)
+{
+	var subtrees = xml.getAllSubtrees(&apos;subtree/a/test1&apos;);
+	for (var i=0; i &lt; subtrees.length; i++)
+	{
+		xml.deleteSubtree(subtrees[i]);
+	}
+}</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}del&quot; value=&quot;Delete Complex&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Delete Mixed</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;del&apos;) == &apos;Delete Mixed&apos;)
+{
+	var subtrees = xml.getAllSubtrees(&apos;subtree/a/test1&apos;);
+	for (var i=0; i &lt; subtrees.length; i++)
+	{
+		xml.deleteSubtree(subtrees[i]);
+	}
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}del&quot; value=&quot;Delete Mixed&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <customName>Delete Nothing</customName>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;del&apos;) == &apos;Delete Nothing&apos;)
+{
+	var subtrees = xml.getAllSubtrees(&apos;subtree/a/test6&apos;);
+	for (var i=0; i &lt; subtrees.length; i++)
+	{
+		xml.deleteSubtree(subtrees[i]);
+	}
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;input type=&quot;button&quot; onclick=&quot;${submitJavascript}&quot; name=&quot;${prefix}del&quot; value=&quot;Delete Nothing&quot; class=&quot;button-big&quot;&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>3353b2ff-53d4-4377-802d-3e62f40c05f3</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>bf6649c6-31b0-48db-9021-5623502fe31b</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>64a29ef2-c1dd-41a7-988c-c887f2c4bfa5</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

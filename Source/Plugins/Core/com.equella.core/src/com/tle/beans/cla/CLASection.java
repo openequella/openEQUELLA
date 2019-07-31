@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,7 @@
 
 package com.tle.beans.cla;
 
+import com.tle.core.copyright.Section;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,122 +28,107 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-
-import com.tle.core.copyright.Section;
 
 @Entity
 @AccessType("field")
 @Table(name = "cla_section")
-public class CLASection implements Section
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@JoinColumn(nullable = false)
-	@Index(name = "claportionIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private CLAPortion portion;
-	private String range;
-	private String copyrightStatus;
-	@Column(length = 40)
-	@Index(name = "claattachmentIndex")
-	private String attachment;
-	private Boolean illustration;
-	@Column(length = 20)
-	private String rangeStart;
-	@Column(length = 20)
-	private String rangeEnd;
+public class CLASection implements Section {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Override
-	public boolean isIllustration()
-	{
-		return (illustration != null ? illustration : false);
-	}
+  @JoinColumn(nullable = false)
+  @Index(name = "claportionIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private CLAPortion portion;
 
-	public void setIllustration(boolean illustration)
-	{
-		this.illustration = illustration;
-	}
+  private String range;
+  private String copyrightStatus;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 40)
+  @Index(name = "claattachmentIndex")
+  private String attachment;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  private Boolean illustration;
 
-	@Override
-	public String getRange()
-	{
-		return range;
-	}
+  @Column(length = 20)
+  private String rangeStart;
 
-	public void setRange(String range)
-	{
-		this.range = range;
-	}
+  @Column(length = 20)
+  private String rangeEnd;
 
-	@Override
-	public String getCopyrightStatus()
-	{
-		return copyrightStatus;
-	}
+  @Override
+  public boolean isIllustration() {
+    return (illustration != null ? illustration : false);
+  }
 
-	public void setCopyrightStatus(String copyrightStatus)
-	{
-		this.copyrightStatus = copyrightStatus;
-	}
+  public void setIllustration(boolean illustration) {
+    this.illustration = illustration;
+  }
 
-	@Override
-	public String getAttachment()
-	{
-		return attachment;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setAttachment(String attachment)
-	{
-		if( attachment != null && attachment.length() >= 40 )
-		{
-			attachment = attachment.substring(0, 40);
-		}
-		this.attachment = attachment;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public CLAPortion getPortion()
-	{
-		return portion;
-	}
+  @Override
+  public String getRange() {
+    return range;
+  }
 
-	public void setPortion(CLAPortion portion)
-	{
-		this.portion = portion;
-	}
+  public void setRange(String range) {
+    this.range = range;
+  }
 
-	public String getRangeStart()
-	{
-		return rangeStart;
-	}
+  @Override
+  public String getCopyrightStatus() {
+    return copyrightStatus;
+  }
 
-	public void setRangeStart(String rangeStart)
-	{
-		this.rangeStart = rangeStart;
-	}
+  public void setCopyrightStatus(String copyrightStatus) {
+    this.copyrightStatus = copyrightStatus;
+  }
 
-	public String getRangeEnd()
-	{
-		return rangeEnd;
-	}
+  @Override
+  public String getAttachment() {
+    return attachment;
+  }
 
-	public void setRangeEnd(String rangeEnd)
-	{
-		this.rangeEnd = rangeEnd;
-	}
+  public void setAttachment(String attachment) {
+    if (attachment != null && attachment.length() >= 40) {
+      attachment = attachment.substring(0, 40);
+    }
+    this.attachment = attachment;
+  }
+
+  @Override
+  public CLAPortion getPortion() {
+    return portion;
+  }
+
+  public void setPortion(CLAPortion portion) {
+    this.portion = portion;
+  }
+
+  public String getRangeStart() {
+    return rangeStart;
+  }
+
+  public void setRangeStart(String rangeStart) {
+    this.rangeStart = rangeStart;
+  }
+
+  public String getRangeEnd() {
+    return rangeEnd;
+  }
+
+  public void setRangeEnd(String rangeEnd) {
+    this.rangeEnd = rangeEnd;
+  }
 }

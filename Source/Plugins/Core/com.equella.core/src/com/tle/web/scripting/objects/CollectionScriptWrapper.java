@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,35 +25,30 @@ import com.tle.common.scripting.types.CollectionScriptType;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
 import com.tle.web.scripting.ScriptTypeFactory;
-
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Bind(CollectionScriptObject.class)
 @Singleton
-public class CollectionScriptWrapper extends AbstractScriptWrapper implements CollectionScriptObject
-{
-	@Inject
-	private ScriptTypeFactory scriptTypeFactory;
+public class CollectionScriptWrapper extends AbstractScriptWrapper
+    implements CollectionScriptObject {
+  @Inject private ScriptTypeFactory scriptTypeFactory;
 
-	@Inject
-	private ItemDefinitionService collectionService;
+  @Inject private ItemDefinitionService collectionService;
 
-	@Override
-	public CollectionScriptType getFromUuid(String uuid)
-	{
-		ItemDefinition collection = collectionService.getByUuid(uuid);
-		if( collection != null )
-		{
-			return scriptTypeFactory.createCollection(collection);
-		}
-		return null;
-	}
+  @Override
+  public CollectionScriptType getFromUuid(String uuid) {
+    ItemDefinition collection = collectionService.getByUuid(uuid);
+    if (collection != null) {
+      return scriptTypeFactory.createCollection(collection);
+    }
+    return null;
+  }
 
-	@Override
-	public List<CollectionScriptType> listCollections()
-	{
-		return Lists.transform(collectionService.enumerateEnabled(), c -> scriptTypeFactory.createCollection(c));
-	}
+  @Override
+  public List<CollectionScriptType> listCollections() {
+    return Lists.transform(
+        collectionService.enumerateEnabled(), c -> scriptTypeFactory.createCollection(c));
+  }
 }

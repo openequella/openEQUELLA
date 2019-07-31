@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,38 +20,31 @@ package com.tle.core.taxonomy.schema;
 
 import com.dytech.edge.wizard.beans.control.Multi;
 
-public class PickList extends Multi
-{
-	private static final long serialVersionUID = 1;
-	public static final String CLASS = "picklist"; //$NON-NLS-1$
+public class PickList extends Multi {
+  private static final long serialVersionUID = 1;
+  public static final String CLASS = "picklist"; // $NON-NLS-1$
 
-	private String taxonomy;
-	private boolean multiple;
+  private String taxonomy;
+  private boolean multiple;
 
-	@Override
-	public String getClassType()
-	{
-		return CLASS;
-	}
+  @Override
+  public String getClassType() {
+    return CLASS;
+  }
 
-	public String getTaxonomy()
-	{
-		return taxonomy;
-	}
+  public String getTaxonomy() {
+    return taxonomy;
+  }
 
-	public void setTaxonomy(String taxonomy)
-	{
-		this.taxonomy = taxonomy;
-	}
+  public void setTaxonomy(String taxonomy) {
+    this.taxonomy = taxonomy;
+  }
 
-	public boolean isMultiple()
-	{
-		return multiple;
-	}
+  public boolean isMultiple() {
+    return multiple;
+  }
 
-	public void setMultiple(boolean multiple)
-	{
-		this.multiple = multiple;
-	}
-
+  public void setMultiple(boolean multiple) {
+    this.multiple = multiple;
+  }
 }

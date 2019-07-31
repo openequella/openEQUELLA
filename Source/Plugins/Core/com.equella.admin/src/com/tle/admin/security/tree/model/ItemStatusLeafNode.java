@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,39 +23,33 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.common.security.ItemStatusTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 
-/**
- * @author Nicholas Read
- */
-public class ItemStatusLeafNode extends AbstractLeafNode<ItemStatus>
-{
-	private final ItemStatus status;
-	private final ItemDefinition itemDefinition;
-	private final String displayName;
+/** @author Nicholas Read */
+public class ItemStatusLeafNode extends AbstractLeafNode<ItemStatus> {
+  private final ItemStatus status;
+  private final ItemDefinition itemDefinition;
+  private final String displayName;
 
-	public ItemStatusLeafNode(ItemDefinition itemDefinition, ItemStatus status)
-	{
-		super(status, itemDefinition == null ? Node.GLOBAL_ITEM_STATUS : Node.ITEM_STATUS);
+  public ItemStatusLeafNode(ItemDefinition itemDefinition, ItemStatus status) {
+    super(status, itemDefinition == null ? Node.GLOBAL_ITEM_STATUS : Node.ITEM_STATUS);
 
-		this.itemDefinition = itemDefinition;
-		this.status = status;
+    this.itemDefinition = itemDefinition;
+    this.status = status;
 
-		String temp = status.toString();
-		displayName = Character.toUpperCase(temp.charAt(0)) + temp.substring(1);
-	}
+    String temp = status.toString();
+    displayName = Character.toUpperCase(temp.charAt(0)) + temp.substring(1);
+  }
 
-	@Override
-	public Object getTargetObject()
-	{
-		return new ItemStatusTarget(status, itemDefinition);
-	}
+  @Override
+  public Object getTargetObject() {
+    return new ItemStatusTarget(status, itemDefinition);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.tle.admin.security.tree.model.SecurityTreeNode#getDisplayName()
-	 */
-	@Override
-	public String getDisplayName()
-	{
-		return displayName;
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.tle.admin.security.tree.model.SecurityTreeNode#getDisplayName()
+   */
+  @Override
+  public String getDisplayName() {
+    return displayName;
+  }
 }

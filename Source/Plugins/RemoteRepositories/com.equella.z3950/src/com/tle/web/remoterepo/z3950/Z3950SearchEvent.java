@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,30 +24,23 @@ import com.tle.core.remoterepo.z3950.Z3950Constants.Operator;
 import com.tle.web.remoterepo.event.RemoteRepoSearchEvent;
 import com.tle.web.sections.SectionId;
 
-/**
- * @author Aaron
- */
-public class Z3950SearchEvent extends RemoteRepoSearchEvent<Z3950SearchEvent>
-{
-	private AdvancedSearchOptions advanced;
+/** @author Aaron */
+public class Z3950SearchEvent extends RemoteRepoSearchEvent<Z3950SearchEvent> {
+  private AdvancedSearchOptions advanced;
 
-	public Z3950SearchEvent(SectionId sectionId, FederatedSearch search)
-	{
-		super(sectionId, search);
-	}
+  public Z3950SearchEvent(SectionId sectionId, FederatedSearch search) {
+    super(sectionId, search);
+  }
 
-	public void addExtra(String attributes, String term, Operator operator)
-	{
-		if( advanced == null )
-		{
-			advanced = new AdvancedSearchOptions();
-		}
+  public void addExtra(String attributes, String term, Operator operator) {
+    if (advanced == null) {
+      advanced = new AdvancedSearchOptions();
+    }
 
-		advanced.addExtra(attributes, term, operator);
-	}
+    advanced.addExtra(attributes, term, operator);
+  }
 
-	public AdvancedSearchOptions getAdvancedOptions()
-	{
-		return advanced;
-	}
+  public AdvancedSearchOptions getAdvancedOptions() {
+    return advanced;
+  }
 }

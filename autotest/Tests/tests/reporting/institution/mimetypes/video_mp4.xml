@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309918</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>m4v</string>
+    <string>mp4</string>
+  </extensions>
+  <type>video/mp4</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/video.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

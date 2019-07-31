@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.common.interfaces;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * We might want to consider some sort of referencing standard, e.g.
  * http://dojotoolkit.org/reference-guide/dojox/json/ref.html
- * 
+ *
  * @author Aaron
  */
 @XmlRootElement
-public class UuidReference
-{
-	private String uuid;
+public class UuidReference {
+  private String uuid;
 
-	public UuidReference()
-	{
-	}
+  public UuidReference() {}
 
-	public UuidReference(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public UuidReference(String uuid) {
+    this.uuid = uuid;
+  }
 
-	@JsonProperty("$ref")
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @JsonProperty("$ref")
+  public String getUuid() {
+    return uuid;
+  }
 
-	@JsonProperty("$ref")
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  @JsonProperty("$ref")
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.search.filter;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import com.dytech.edge.exceptions.BadRequestException;
 import com.tle.annotation.NonNullByDefault;
@@ -61,267 +59,241 @@ import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.sections.standard.renderers.DivRenderer;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 public abstract class AbstractFilterByDateRangeSection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractPrototypeSection<AbstractFilterByDateRangeSection.Model>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<SE>
-{
-	private static final String CLEAR_DIV = "clear";
+    extends AbstractPrototypeSection<AbstractFilterByDateRangeSection.Model>
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<SE> {
+  private static final String CLEAR_DIV = "clear";
 
-	@ResourceHelper
-	private PluginResourceHelper RESOURCES;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ResourceHelper private PluginResourceHelper RESOURCES;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(name = "dp", supported = true)
-	private Calendar datePrimary;
-	@Component(name = "ds", supported = true)
-	private Calendar dateSecondary;
-	@Component(name = "r", supported = true)
-	private SingleSelectionList<BundleNameValue> range;
-	@Component
-	private Button clearButton;
+  @Component(name = "dp", supported = true)
+  private Calendar datePrimary;
 
-	private ElementId elementId;
+  @Component(name = "ds", supported = true)
+  private Calendar dateSecondary;
 
-	public enum DateRange
-	{
-		AFTER("filter.bydate.after"), BEFORE("filter.bydate.before"), BETWEEN("filter.bydate.between"), ON(
-			"filter.bydate.on");
+  @Component(name = "r", supported = true)
+  private SingleSelectionList<BundleNameValue> range;
 
-		private final String name;
+  @Component private Button clearButton;
 
-		DateRange(String name)
-		{
-			this.name = name;
-		}
+  private ElementId elementId;
 
-		public String getName()
-		{
-			return name;
-		}
-	}
+  public enum DateRange {
+    AFTER("filter.bydate.after"),
+    BEFORE("filter.bydate.before"),
+    BETWEEN("filter.bydate.between"),
+    ON("filter.bydate.on");
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    private final String name;
 
-		List<BundleNameValue> rangeOptions = new ArrayList<BundleNameValue>();
-		for( DateRange dr : DateRange.values() )
-		{
-			rangeOptions.add(new BundleNameValue(RESOURCES.key(dr.getName()), dr.name()));
-		}
+    DateRange(String name) {
+      this.name = name;
+    }
 
-		range.setListModel(new SimpleHtmlListModel<BundleNameValue>(rangeOptions));
-		range.setAlwaysSelect(true);
-		String[] names = getParameterNames();
-		datePrimary.setParameterId(names[0]);
-		dateSecondary.setParameterId(names[1]);
-		range.setParameterId(names[2]);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+    public String getName() {
+      return name;
+    }
+  }
 
-	protected abstract String[] getParameterNames();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	public abstract Label getTitle();
+    List<BundleNameValue> rangeOptions = new ArrayList<BundleNameValue>();
+    for (DateRange dr : DateRange.values()) {
+      rangeOptions.add(new BundleNameValue(RESOURCES.key(dr.getName()), dr.name()));
+    }
 
-	public abstract String getAjaxDiv();
+    range.setListModel(new SimpleHtmlListModel<BundleNameValue>(rangeOptions));
+    range.setAlwaysSelect(true);
+    String[] names = getParameterNames();
+    datePrimary.setParameterId(names[0]);
+    dateSecondary.setParameterId(names[1]);
+    range.setParameterId(names[2]);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  protected abstract String[] getParameterNames();
 
-		datePrimary.setEventHandler(JSHandler.EVENT_CHANGE,
-			new OverrideHandler(searchResults.getResultsUpdater(tree, events.getEventHandler("showClear"), CLEAR_DIV)));
-		dateSecondary.setEventHandler(JSHandler.EVENT_CHANGE,
-			new OverrideHandler(searchResults.getResultsUpdater(tree, events.getEventHandler("showClear"), CLEAR_DIV)));
+  public abstract Label getTitle();
 
-		elementId = new SimpleElementId(id + "between");
+  public abstract String getAjaxDiv();
 
-		ExternallyDefinedFunction showhide = new ExternallyDefinedFunction("showhide", new IncludeFile(
-			RESOURCES.url("js/filterbydate.js"), JQueryUIEffects.BLIND));
-		range.addChangeEventHandler(new OverrideHandler(new StatementHandler(showhide, elementId, range
-			.createGetExpression()), searchResults.getRestartSearchHandler(tree)));
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-		clearButton.setClickHandler(new OverrideHandler(searchResults.getResultsUpdater(tree,
-			events.getEventHandler("clear"), getAjaxDiv())));
-	}
+    datePrimary.setEventHandler(
+        JSHandler.EVENT_CHANGE,
+        new OverrideHandler(
+            searchResults.getResultsUpdater(tree, events.getEventHandler("showClear"), CLEAR_DIV)));
+    dateSecondary.setEventHandler(
+        JSHandler.EVENT_CHANGE,
+        new OverrideHandler(
+            searchResults.getResultsUpdater(tree, events.getEventHandler("showClear"), CLEAR_DIV)));
 
-	@EventHandlerMethod
-	public void clear(SectionInfo info)
-	{
-		datePrimary.clearDate(info);
-		dateSecondary.clearDate(info);
-		getModel(info).setShowClearLink(false);
-	}
+    elementId = new SimpleElementId(id + "between");
 
-	@EventHandlerMethod
-	public void showClear(SectionInfo info)
-	{
-		checkForDates(info);
-	}
+    ExternallyDefinedFunction showhide =
+        new ExternallyDefinedFunction(
+            "showhide",
+            new IncludeFile(RESOURCES.url("js/filterbydate.js"), JQueryUIEffects.BLIND));
+    range.addChangeEventHandler(
+        new OverrideHandler(
+            new StatementHandler(showhide, elementId, range.createGetExpression()),
+            searchResults.getRestartSearchHandler(tree)));
 
-	private void checkForDates(SectionInfo info)
-	{
-		Model model = getModel(info);
-		if( datePrimary.isDateSet(info) || dateSecondary.isDateSet(info) )
-		{
-			model.setShowClearLink(true);
-		}
-	}
+    clearButton.setClickHandler(
+        new OverrideHandler(
+            searchResults.getResultsUpdater(tree, events.getEventHandler("clear"), getAjaxDiv())));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		TagState tagState = new TagState();
-		tagState.setElementId(elementId);
+  @EventHandlerMethod
+  public void clear(SectionInfo info) {
+    datePrimary.clearDate(info);
+    dateSecondary.clearDate(info);
+    getModel(info).setShowClearLink(false);
+  }
 
-		checkForDates(context);
+  @EventHandlerMethod
+  public void showClear(SectionInfo info) {
+    checkForDates(info);
+  }
 
-		if( !range.getSelectedValueAsString(context).equals(DateRange.BETWEEN.toString()) )
-		{
-			tagState.setStyle("display: none");
-		}
-		getModel(context).setBetween(new DivRenderer(tagState));
-		return viewFactory.createResult("filter/filterbydate.ftl", context);
-	}
+  private void checkForDates(SectionInfo info) {
+    Model model = getModel(info);
+    if (datePrimary.isDateSet(info) || dateSecondary.isDateSet(info)) {
+      model.setShowClearLink(true);
+    }
+  }
 
-	@Nullable
-	protected Date[] getDateRange(SectionInfo info)
-	{
-		TleDate priDate = datePrimary.getDate(info);
-		TleDate secDate = dateSecondary.getDate(info);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    TagState tagState = new TagState();
+    tagState.setElementId(elementId);
 
-		DateRange selRange;
-		try
-		{
-			selRange = DateRange.valueOf(range.getSelectedValueAsString(info));
-		}
-		catch( IllegalArgumentException dodge )
-		{
-			throw new BadRequestException(range.getElementId(info));
-		}
+    checkForDates(context);
 
-		/*
-		 * Allows the selection of a start date ahead of the current end date
-		 * the same as the wizard control
-		 */
-		if( secDate != null && (priDate != null && priDate.after(secDate)) && selRange.equals(DateRange.BETWEEN) )
-		{
-			final TleDate temp = secDate;
-			secDate = priDate;
-			priDate = temp;
-		}
+    if (!range.getSelectedValueAsString(context).equals(DateRange.BETWEEN.toString())) {
+      tagState.setStyle("display: none");
+    }
+    getModel(context).setBetween(new DivRenderer(tagState));
+    return viewFactory.createResult("filter/filterbydate.ftl", context);
+  }
 
-		switch( selRange )
-		{
-			case AFTER:
-				if( priDate != null )
-				{
-					return new Date[]{toDate(priDate), null};
-				}
-				break;
-			case BEFORE:
-				if( priDate != null )
-				{
-					return new Date[]{null, toDate(priDate)};
-				}
-				break;
-			case BETWEEN:
-				if( priDate != null || secDate != null )
-				{
-					return new Date[]{toDate(priDate), toDate(secDate)};
-				}
-				break;
-			case ON:
-				if( priDate != null )
-				{
-					return new Date[]{toDate(priDate), toDate(priDate.addDays(1))};
-				}
-				break;
-		}
-		return null;
-	}
+  @Nullable
+  protected Date[] getDateRange(SectionInfo info) {
+    TleDate priDate = datePrimary.getDate(info);
+    TleDate secDate = dateSecondary.getDate(info);
 
-	@Nullable
-	private Date toDate(@Nullable TleDate date)
-	{
-		if( date == null )
-		{
-			return null;
-		}
-		return UtcDate.convertUtcMidnightToLocalMidnight(date, CurrentTimeZone.get()).toDate();
-	}
+    DateRange selRange;
+    try {
+      selRange = DateRange.valueOf(range.getSelectedValueAsString(info));
+    } catch (IllegalArgumentException dodge) {
+      throw new BadRequestException(range.getElementId(info));
+    }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+    /*
+     * Allows the selection of a start date ahead of the current end date
+     * the same as the wizard control
+     */
+    if (secDate != null
+        && (priDate != null && priDate.after(secDate))
+        && selRange.equals(DateRange.BETWEEN)) {
+      final TleDate temp = secDate;
+      secDate = priDate;
+      priDate = temp;
+    }
 
-	public Calendar getDatePrimary()
-	{
-		return datePrimary;
-	}
+    switch (selRange) {
+      case AFTER:
+        if (priDate != null) {
+          return new Date[] {toDate(priDate), null};
+        }
+        break;
+      case BEFORE:
+        if (priDate != null) {
+          return new Date[] {null, toDate(priDate)};
+        }
+        break;
+      case BETWEEN:
+        if (priDate != null || secDate != null) {
+          return new Date[] {toDate(priDate), toDate(secDate)};
+        }
+        break;
+      case ON:
+        if (priDate != null) {
+          return new Date[] {toDate(priDate), toDate(priDate.addDays(1))};
+        }
+        break;
+    }
+    return null;
+  }
 
-	public Calendar getDateSecondary()
-	{
-		return dateSecondary;
-	}
+  @Nullable
+  private Date toDate(@Nullable TleDate date) {
+    if (date == null) {
+      return null;
+    }
+    return UtcDate.convertUtcMidnightToLocalMidnight(date, CurrentTimeZone.get()).toDate();
+  }
 
-	public SingleSelectionList<BundleNameValue> getRange()
-	{
-		return range;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public Button getClearButton()
-	{
-		return clearButton;
-	}
+  public Calendar getDatePrimary() {
+    return datePrimary;
+  }
 
-	public static class Model
-	{
-		private boolean showClearLink;
-		private DivRenderer between;
+  public Calendar getDateSecondary() {
+    return dateSecondary;
+  }
 
-		public DivRenderer getBetween()
-		{
-			return between;
-		}
+  public SingleSelectionList<BundleNameValue> getRange() {
+    return range;
+  }
 
-		public void setBetween(DivRenderer between)
-		{
-			this.between = between;
-		}
+  public Button getClearButton() {
+    return clearButton;
+  }
 
-		public boolean isShowClearLink()
-		{
-			return showClearLink;
-		}
+  public static class Model {
+    private boolean showClearLink;
+    private DivRenderer between;
 
-		public void setShowClearLink(boolean showClearLink)
-		{
-			this.showClearLink = showClearLink;
-		}
-	}
+    public DivRenderer getBetween() {
+      return between;
+    }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		clear(info);
-		range.setSelectedStringValue(info, null);
-	}
+    public void setBetween(DivRenderer between) {
+      this.between = between;
+    }
+
+    public boolean isShowClearLink() {
+      return showClearLink;
+    }
+
+    public void setShowClearLink(boolean showClearLink) {
+      this.showClearLink = showClearLink;
+    }
+  }
+
+  @Override
+  public void reset(SectionInfo info) {
+    clear(info);
+    range.setSelectedStringValue(info, null);
+  }
 }

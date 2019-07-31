@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,86 +18,85 @@
 
 package com.tle.web.template.section;
 
-import java.util.List;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import java.util.List;
 
-public interface MenuContributor
-{
-	List<MenuContribution> getMenuContributions(SectionInfo info);
+public interface MenuContributor {
+  static final String KEY_MENU_UPDATED = "MenuUpdated";
 
-	void clearCachedData();
+  List<MenuContribution> getMenuContributions(SectionInfo info);
 
-	class MenuContribution
-	{
-		private final HtmlLinkState link;
-		private final String backgroundImagePath;
-		private final int groupPriority;
-		private final int linkPriority;
-		private final String systemIcon;
-		private final String route;
-		private boolean customImage;
+  void clearCachedData();
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon,
-								String route)
-		{
-			this.link = link;
-			this.backgroundImagePath = backgroundImage;
-			this.groupPriority = groupPriority;
-			this.linkPriority = linkPriority;
-			this.systemIcon = systemIcon;
-			this.route = route;
-		}
+  class MenuContribution {
+    private final HtmlLinkState link;
+    private final String backgroundImagePath;
+    private final int groupPriority;
+    private final int linkPriority;
+    private final String systemIcon;
+    private final String route;
+    private boolean customImage;
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon)
-		{
-			this(link, backgroundImage, groupPriority, linkPriority, systemIcon, null);
-		}
+    public MenuContribution(
+        HtmlLinkState link,
+        String backgroundImage,
+        int groupPriority,
+        int linkPriority,
+        String systemIcon,
+        String route) {
+      this.link = link;
+      this.backgroundImagePath = backgroundImage;
+      this.groupPriority = groupPriority;
+      this.linkPriority = linkPriority;
+      this.systemIcon = systemIcon;
+      this.route = route;
+    }
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority)
-		{
-			this(link, backgroundImage, groupPriority, linkPriority, null, null);
-		}
+    public MenuContribution(
+        HtmlLinkState link,
+        String backgroundImage,
+        int groupPriority,
+        int linkPriority,
+        String systemIcon) {
+      this(link, backgroundImage, groupPriority, linkPriority, systemIcon, null);
+    }
 
-		public String getRoute()
-		{
-			return route;
-		}
+    public MenuContribution(
+        HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority) {
+      this(link, backgroundImage, groupPriority, linkPriority, null, null);
+    }
 
-		public HtmlLinkState getLink()
-		{
-			return link;
-		}
+    public String getRoute() {
+      return route;
+    }
 
-		public String getBackgroundImagePath()
-		{
-			return backgroundImagePath;
-		}
+    public HtmlLinkState getLink() {
+      return link;
+    }
 
-		public boolean isCustomImage()
-		{
-			return customImage;
-		}
+    public String getBackgroundImagePath() {
+      return backgroundImagePath;
+    }
 
-		public void setCustomImage(boolean customImage)
-		{
-			this.customImage = customImage;
-		}
+    public boolean isCustomImage() {
+      return customImage;
+    }
 
-		public int getGroupPriority()
-		{
-			return groupPriority;
-		}
+    public void setCustomImage(boolean customImage) {
+      this.customImage = customImage;
+    }
 
-		public int getLinkPriority()
-		{
-			return linkPriority;
-		}
+    public int getGroupPriority() {
+      return groupPriority;
+    }
 
-		public String getSystemIcon()
-		{
-			return systemIcon;
-		}
-	}
+    public int getLinkPriority() {
+      return linkPriority;
+    }
+
+    public String getSystemIcon() {
+      return systemIcon;
+    }
+  }
 }

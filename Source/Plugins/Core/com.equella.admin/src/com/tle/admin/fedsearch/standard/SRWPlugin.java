@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,54 +18,44 @@
 
 package com.tle.admin.fedsearch.standard;
 
+import com.tle.admin.fedsearch.SearchPlugin;
+import com.tle.beans.search.SRWSettings;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import com.tle.admin.fedsearch.SearchPlugin;
-import com.tle.beans.search.SRWSettings;
-import com.tle.common.i18n.CurrentLocale;
+/** @author cofarrell */
+public class SRWPlugin extends SearchPlugin<SRWSettings> {
+  private JTextField urlField;
+  private JTextField schemaIdField;
 
-/**
- * @author cofarrell
- */
-public class SRWPlugin extends SearchPlugin<SRWSettings>
-{
-	private JTextField urlField;
-	private JTextField schemaIdField;
+  public SRWPlugin() {
+    super(SRWSettings.class);
+  }
 
-	public SRWPlugin()
-	{
-		super(SRWSettings.class);
-	}
+  @Override
+  public void initGUI() {
+    urlField = new JTextField();
+    schemaIdField = new JTextField();
 
-	@Override
-	public void initGUI()
-	{
-		urlField = new JTextField();
-		schemaIdField = new JTextField();
+    panel.add(new JLabel(s("url")));
+    panel.add(urlField);
+    panel.add(new JLabel(s("schemaId")));
+    panel.add(schemaIdField);
+  }
 
-		panel.add(new JLabel(s("url")));
-		panel.add(urlField);
-		panel.add(new JLabel(s("schemaId")));
-		panel.add(schemaIdField);
-	}
+  private String s(String keyPart) {
+    return getString("srwplugin." + keyPart);
+  }
 
-	private String s(String keyPart)
-	{
-		return getString("srwplugin." + keyPart);
-	}
+  @Override
+  public void load(SRWSettings settings) {
+    urlField.setText(settings.getUrl());
+    schemaIdField.setText(settings.getSchemaId());
+  }
 
-	@Override
-	public void load(SRWSettings settings)
-	{
-		urlField.setText(settings.getUrl());
-		schemaIdField.setText(settings.getSchemaId());
-	}
-
-	@Override
-	public void save(SRWSettings settings)
-	{
-		settings.setUrl(urlField.getText());
-		settings.setSchemaId(schemaIdField.getText());
-	}
+  @Override
+  public void save(SRWSettings settings) {
+    settings.setUrl(urlField.getText());
+    settings.setSchemaId(schemaIdField.getText());
+  }
 }

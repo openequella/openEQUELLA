@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,32 @@
 
 package com.tle.web.sections.equella.component.model;
 
-import java.util.Map;
-
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlValueState;
+import java.util.Map;
 
-/**
- * @author Andrew Gibb
- */
-public class MultiEditBoxState extends HtmlComponentState
-{
-	private int size;
-	private Map<String, HtmlValueState> localeMap;
+/** @author Andrew Gibb */
+public class MultiEditBoxState extends HtmlComponentState {
+  private int size;
+  private Map<String, HtmlValueState> localeMap;
 
-	public MultiEditBoxState()
-	{
-		super("multieditbox"); //$NON-NLS-1$
-	}
+  public MultiEditBoxState() {
+    super("multieditbox"); // $NON-NLS-1$
+  }
 
-	public Map<String, HtmlValueState> getLocaleMap()
-	{
-		return localeMap;
-	}
+  public Map<String, HtmlValueState> getLocaleMap() {
+    return localeMap;
+  }
 
-	public void setLocaleMap(Map<String, HtmlValueState> localeMap)
-	{
-		this.localeMap = localeMap;
-	}
+  public void setLocaleMap(Map<String, HtmlValueState> localeMap) {
+    this.localeMap = localeMap;
+  }
 
-	public int getSize()
-	{
-		return size;
-	}
+  public int getSize() {
+    return size;
+  }
 
-	public void setSize(int size)
-	{
-		this.size = size;
-	}
-
+  public void setSize(int size) {
+    this.size = size;
+  }
 }

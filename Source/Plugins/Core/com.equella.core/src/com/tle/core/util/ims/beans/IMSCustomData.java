@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,35 +23,28 @@ import com.tle.core.xstream.XMLData;
 import com.tle.core.xstream.XMLDataMappings;
 import com.tle.core.xstream.mapping.PropBagMapping;
 
-/**
- * @author Aaron
- */
-public class IMSCustomData implements XMLData
-{
-	private static final long serialVersionUID = 1L;
+/** @author Aaron */
+public class IMSCustomData implements XMLData {
+  private static final long serialVersionUID = 1L;
 
-	private static XMLDataMappings mappings;
+  private static XMLDataMappings mappings;
 
-	private PropBagEx xml;
+  private PropBagEx xml;
 
-	public PropBagEx getXml()
-	{
-		return xml;
-	}
+  public PropBagEx getXml() {
+    return xml;
+  }
 
-	public void setXml(PropBagEx xml)
-	{
-		this.xml = xml;
-	}
+  public void setXml(PropBagEx xml) {
+    this.xml = xml;
+  }
 
-	@Override
-	public synchronized XMLDataMappings getMappings()
-	{
-		if( mappings == null )
-		{
-			mappings = new XMLDataMappings();
-			mappings.addNodeMapping(new PropBagMapping("xml", "custom", true));
-		}
-		return mappings;
-	}
+  @Override
+  public synchronized XMLDataMappings getMappings() {
+    if (mappings == null) {
+      mappings = new XMLDataMappings();
+      mappings.addNodeMapping(new PropBagMapping("xml", "custom", true));
+    }
+    return mappings;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,54 +25,44 @@ import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 
-public class AllDataHibernateMigrationFilter implements HibernateCreationFilter
-{
-	private boolean includeGenerators = true;
+public class AllDataHibernateMigrationFilter implements HibernateCreationFilter {
+  private boolean includeGenerators = true;
 
-	@Override
-	public boolean includeForeignKey(Table table, ForeignKey fk)
-	{
-		return true;
-	}
+  @Override
+  public boolean includeForeignKey(Table table, ForeignKey fk) {
+    return true;
+  }
 
-	@Override
-	public boolean includeGenerator(PersistentIdentifierGenerator pig)
-	{
-		return includeGenerators;
-	}
+  @Override
+  public boolean includeGenerator(PersistentIdentifierGenerator pig) {
+    return includeGenerators;
+  }
 
-	@Override
-	public boolean includeIndex(Table table, Index index)
-	{
-		return true;
-	}
+  @Override
+  public boolean includeIndex(Table table, Index index) {
+    return true;
+  }
 
-	@Override
-	public boolean includeObject(AuxiliaryDatabaseObject object)
-	{
-		return true;
-	}
+  @Override
+  public boolean includeObject(AuxiliaryDatabaseObject object) {
+    return true;
+  }
 
-	@Override
-	public boolean includeTable(Table table)
-	{
-		return true;
-	}
+  @Override
+  public boolean includeTable(Table table) {
+    return true;
+  }
 
-	@Override
-	public boolean includeUniqueKey(Table table, UniqueKey uk)
-	{
-		return true;
-	}
+  @Override
+  public boolean includeUniqueKey(Table table, UniqueKey uk) {
+    return true;
+  }
 
-	public boolean isIncludeGenerators()
-	{
-		return includeGenerators;
-	}
+  public boolean isIncludeGenerators() {
+    return includeGenerators;
+  }
 
-	public void setIncludeGenerators(boolean includeGenerators)
-	{
-		this.includeGenerators = includeGenerators;
-	}
-
+  public void setIncludeGenerators(boolean includeGenerators) {
+    this.includeGenerators = includeGenerators;
+  }
 }

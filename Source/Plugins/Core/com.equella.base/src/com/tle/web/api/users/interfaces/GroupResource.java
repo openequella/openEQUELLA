@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +18,12 @@
 
 package com.tle.web.api.users.interfaces;
 
+import com.tle.web.api.interfaces.beans.SearchBean;
+import com.tle.web.api.interfaces.beans.UserBean;
+import com.tle.web.api.users.interfaces.beans.GroupBean;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,42 +37,36 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.tle.web.api.interfaces.beans.SearchBean;
-import com.tle.web.api.interfaces.beans.UserBean;
-import com.tle.web.api.users.interfaces.beans.GroupBean;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 // Note: EQUELLA overrides the root Path
 @Produces(MediaType.APPLICATION_JSON)
 @Path("localgroup/")
 @Api(value = "Local groups", description = "localgroup")
-public interface GroupResource
-{
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Retrieve a group")
-	public GroupBean getGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+public interface GroupResource {
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Retrieve a group")
+  public GroupBean getGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/{uuid}/user")
-	@ApiOperation("Get users in a group")
-	public SearchBean<UserBean> getUsersInGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid,
-		@QueryParam("recursive") boolean recursive);
+  @GET
+  @Path("/{uuid}/user")
+  @ApiOperation("Get users in a group")
+  public SearchBean<UserBean> getUsersInGroup(
+      @Context UriInfo uriInfo,
+      @PathParam("uuid") String uuid,
+      @QueryParam("recursive") boolean recursive);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a group")
-	public Response editGroup(@PathParam("uuid") String uuid, @ApiParam GroupBean group);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a group")
+  public Response editGroup(@PathParam("uuid") String uuid, @ApiParam GroupBean group);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a group")
-	public Response deleteGroup(@PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a group")
+  public Response deleteGroup(@PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/")
-	@ApiOperation("Add a group")
-	public Response addGroup(@ApiParam GroupBean group);
+  @POST
+  @Path("/")
+  @ApiOperation("Add a group")
+  public Response addGroup(@ApiParam GroupBean group);
 }

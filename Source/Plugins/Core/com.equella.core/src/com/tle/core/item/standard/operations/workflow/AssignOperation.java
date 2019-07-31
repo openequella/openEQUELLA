@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,31 +26,25 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.security.impl.SecureInModeration;
 
 @SecureInModeration
-public class AssignOperation extends SpecificTaskOperation
-{
-	@AssistedInject
-	public AssignOperation(@Assisted String taskId)
-	{
-		super(taskId);
-	}
+public class AssignOperation extends SpecificTaskOperation {
+  @AssistedInject
+  public AssignOperation(@Assisted String taskId) {
+    super(taskId);
+  }
 
-	@Override
-	public boolean execute()
-	{
-		TaskStatus status = getTaskStatus();
-		String assignedTo = status.getAssignedTo();
-		HistoryEvent event = createHistory(Type.assign);
-		if( assignedTo != null && assignedTo.equals(getUserId()) )
-		{
-			status.setAssignedTo(null);
-			event.setUser(null);
-		}
-		else
-		{
-			status.setAssignedTo(getUserId());
-		}
-		setStepFromTask(event);
-		updateModeration();
-		return true;
-	}
+  @Override
+  public boolean execute() {
+    TaskStatus status = getTaskStatus();
+    String assignedTo = status.getAssignedTo();
+    HistoryEvent event = createHistory(Type.assign);
+    if (assignedTo != null && assignedTo.equals(getUserId())) {
+      status.setAssignedTo(null);
+      event.setUser(null, null);
+    } else {
+      status.setAssignedTo(getUserId());
+    }
+    setStepFromTask(event);
+    updateModeration();
+    return true;
+  }
 }

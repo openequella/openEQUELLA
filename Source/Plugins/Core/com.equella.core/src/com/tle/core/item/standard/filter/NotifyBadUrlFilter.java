@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,35 @@
 
 package com.tle.core.item.standard.filter;
 
-import java.util.Map;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.ReferencedURL;
 import com.tle.core.item.operations.WorkflowOperation;
+import java.util.Map;
 
 @SuppressWarnings("nls")
-public class NotifyBadUrlFilter extends AbstractStandardOperationFilter
-{
-	private ReferencedURL rurl;
+public class NotifyBadUrlFilter extends AbstractStandardOperationFilter {
+  private ReferencedURL rurl;
 
-	@AssistedInject
-	public NotifyBadUrlFilter(@Assisted ReferencedURL rurl)
-	{
-		this.rurl = rurl;
-	}
+  @AssistedInject
+  public NotifyBadUrlFilter(@Assisted ReferencedURL rurl) {
+    this.rurl = rurl;
+  }
 
-	@Override
-	protected WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{operationFactory.notifyBadUrl(), operationFactory.reIndexIfRequired(),};
-	}
+  @Override
+  protected WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {
+      operationFactory.notifyBadUrl(), operationFactory.reIndexIfRequired(),
+    };
+  }
 
-	@Override
-	public void queryValues(Map<String, Object> values)
-	{
-		values.put("rurl", rurl);
-	}
+  @Override
+  public void queryValues(Map<String, Object> values) {
+    values.put("rurl", rurl);
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "i.status IN ('LIVE', 'REVIEW', 'MODERATING', 'ARCHIVED') AND :rurl IN ELEMENTS(i.referencedUrls)";
-	}
-
+  @Override
+  public String getWhereClause() {
+    return "i.status IN ('LIVE', 'REVIEW', 'MODERATING', 'ARCHIVED') AND :rurl IN ELEMENTS(i.referencedUrls)";
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,79 +18,66 @@
 
 package com.tle.web.api.schema.beans;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.beans.entity.schema.Citation;
 import com.tle.web.api.schema.interfaces.beans.SchemaBean;
+import java.util.List;
+import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * An EQUELLA-compatible variety of SchemaBean.
- * 
+ *
  * @author larry
  */
 @XmlRootElement
-public class EquellaSchemaBean extends SchemaBean
-{
-	private List<Citation> citations;
+public class EquellaSchemaBean extends SchemaBean {
+  private List<Citation> citations;
 
-	private Map<String, String> exportTransformsMap;
+  private Map<String, String> exportTransformsMap;
 
-	private Map<String, String> importTransformsMap;
+  private Map<String, String> importTransformsMap;
 
-	private String ownerUuid;
+  private String ownerUuid;
 
-	private String serializedDefinition;
+  private String serializedDefinition;
 
-	public List<Citation> getCitations()
-	{
-		return citations;
-	}
+  public List<Citation> getCitations() {
+    return citations;
+  }
 
-	public void setCitations(List<Citation> citations)
-	{
-		this.citations = citations;
-	}
+  public void setCitations(List<Citation> citations) {
+    this.citations = citations;
+  }
 
-	public Map<String, String> getExportTransformsMap()
-	{
-		return exportTransformsMap;
-	}
+  public Map<String, String> getExportTransformsMap() {
+    return exportTransformsMap;
+  }
 
-	public void setExportTransformsMap(Map<String, String> exportTransformsMap)
-	{
-		this.exportTransformsMap = exportTransformsMap;
-	}
+  public void setExportTransformsMap(Map<String, String> exportTransformsMap) {
+    this.exportTransformsMap = exportTransformsMap;
+  }
 
-	public Map<String, String> getImportTransformsMap()
-	{
-		return importTransformsMap;
-	}
+  public Map<String, String> getImportTransformsMap() {
+    return importTransformsMap;
+  }
 
-	public void setImportTransformsMap(Map<String, String> importTransformsMap)
-	{
-		this.importTransformsMap = importTransformsMap;
-	}
+  public void setImportTransformsMap(Map<String, String> importTransformsMap) {
+    this.importTransformsMap = importTransformsMap;
+  }
 
-	public String getOwnerUuid()
-	{
-		return ownerUuid;
-	}
+  public String getOwnerUuid() {
+    return ownerUuid;
+  }
 
-	public void setOwnerUuid(String ownerUuid)
-	{
-		this.ownerUuid = ownerUuid;
-	}
+  public void setOwnerUuid(String ownerUuid) {
+    this.ownerUuid = ownerUuid;
+  }
 
-	public String getSerializedDefinition()
-	{
-		return serializedDefinition;
-	}
+  public String getSerializedDefinition() {
+    return serializedDefinition;
+  }
 
-	public void setSerializedDefinition(String serializedDefinition)
-	{
-		this.serializedDefinition = serializedDefinition;
-	}
+  public void setSerializedDefinition(String serializedDefinition) {
+    this.serializedDefinition = serializedDefinition;
+  }
 }

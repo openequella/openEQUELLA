@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,14 +19,17 @@
 package com.tle.core.hierarchy.impl;
 
 import com.google.inject.assistedinject.Assisted;
-import com.tle.core.guice.BindFactory;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.guice.BindFactory;
 
 @BindFactory
-public interface HierarchyTaskFactory
-{
-	ImportTask createImportTask(UserState userState, String xml, long topicInto, @Assisted("newids") boolean newids,
-		@Assisted("useSecurity") boolean useSecurity);
+public interface HierarchyTaskFactory {
+  ImportTask createImportTask(
+      UserState userState,
+      String xml,
+      long topicInto,
+      @Assisted("newids") boolean newids,
+      @Assisted("useSecurity") boolean useSecurity);
 
-	ExportTask createExportTask(UserState userState, long exportId, boolean withSecurity);
+  ExportTask createExportTask(UserState userState, long exportId, boolean withSecurity);
 }

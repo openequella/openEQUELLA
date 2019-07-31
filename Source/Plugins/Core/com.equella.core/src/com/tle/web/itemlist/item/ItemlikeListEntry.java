@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.itemlist.item;
 
-import java.util.List;
-
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
@@ -26,35 +26,33 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TagState;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.List;
 
-/**
- * @author Aaron
- */
-public interface ItemlikeListEntry<I extends IItem<?>> extends ListEntry
-{
-	// This can be null in the case that the item no longer exists
-	@Nullable
-	I getItem();
+/** @author Aaron */
+public interface ItemlikeListEntry<I extends IItem<?>> extends ListEntry {
+  // This can be null in the case that the item no longer exists
+  @Nullable
+  I getItem();
 
-	List<ViewableResource> getViewableResources();
+  List<ViewableResource> getViewableResources();
 
-	// Debateable...
+  // Debateable...
 
-	TagState getTag();
+  TagState getTag();
 
-	Label getSelectLabel();
+  Label getSelectLabel();
 
-	Label getUnselectLabel();
+  Label getUnselectLabel();
 
-	void setToggle(SectionRenderable toggle);
+  void setToggle(SectionRenderable toggle);
 
-	void addExtras(SectionRenderable extra);
+  void addExtras(SectionRenderable extra);
 
-	UnmodifiableAttachments getAttachments();
+  UnmodifiableAttachments getAttachments();
 
-	void setSelected(boolean selected);
+  void setSelected(boolean selected);
 
-	boolean isSelectable();
+  boolean isSelectable();
 
-	void setSelectable(boolean selectable);
+  void setSelectable(boolean selectable);
 }

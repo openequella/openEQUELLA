@@ -1,0 +1,35 @@
+server.url = "http://hostname:8080/"
+server.password = autotestpassword
+
+//tests.insts = null //"fiveo"
+//
+webdriver {
+  chrome {
+//    driver = ${HOME}"/bin/chromedriver"
+//    headless = true
+  }
+  firefox {
+//    headless = true
+  }
+}
+
+tests {
+//  suitenames = ["testng-codebuild.yaml"]
+//  parallel = true
+//  maxthreads = 2
+}
+
+//install {
+//  zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.5.zip"
+//  hostname = "boorah"
+//  url = "http://boorah:8080/"
+//  jacoco = "output=tcpserver"
+//}
+//
+//proxy {
+////  host = "localhost"
+////  port = 8888
+//}
+//coverage {
+//  address = "localhost:6300"
+//}

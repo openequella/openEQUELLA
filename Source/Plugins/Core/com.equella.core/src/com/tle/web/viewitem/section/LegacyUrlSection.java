@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,39 +24,34 @@ import com.tle.web.sections.events.ParametersEventListener;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.viewitem.DRMFilter;
 
-public class LegacyUrlSection extends AbstractPrototypeSection<Object> implements ParametersEventListener
-{
-	public boolean canView(SectionInfo info) throws Exception
-	{
-		return true;
-	}
+public class LegacyUrlSection extends AbstractPrototypeSection<Object>
+    implements ParametersEventListener {
+  public boolean canView(SectionInfo info) throws Exception {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "legacyurl"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "legacyurl"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	@Override
-	public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception
-	{
-		String convert = event.getParameter("convert", false); //$NON-NLS-1$
-		if( convert != null )
-		{
-			ConversionSection conversion = info.lookupSection(ConversionSection.class);
-			conversion.setConvert(info, convert);
-		}
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+    String convert = event.getParameter("convert", false); // $NON-NLS-1$
+    if (convert != null) {
+      ConversionSection conversion = info.lookupSection(ConversionSection.class);
+      conversion.setConvert(info, convert);
+    }
 
-		if( event.getBooleanParameter("preview", false) ) //$NON-NLS-1$
-		{
-			DRMFilter drm = info.lookupSection(DRMFilter.class);
-			drm.setSkip(info, true);
-		}
-	}
+    if (event.getBooleanParameter("preview", false)) // $NON-NLS-1$
+    {
+      DRMFilter drm = info.lookupSection(DRMFilter.class);
+      drm.setSkip(info, true);
+    }
+  }
 }

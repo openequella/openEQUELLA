@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +18,6 @@
 
 package com.tle.web.itemadmin.section;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
@@ -29,44 +27,36 @@ import com.tle.web.itemadmin.WithinEntry;
 import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.TreeLookup;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class ItemAdminFavouriteSearchSection extends AbstractFavouriteSearchSection
-{
-	@Inject
-	private BundleCache bundleCache;
-	@TreeLookup
-	private ItemAdminQuerySection iaqs;
+public class ItemAdminFavouriteSearchSection extends AbstractFavouriteSearchSection {
+  @Inject private BundleCache bundleCache;
+  @TreeLookup private ItemAdminQuerySection iaqs;
 
-	@Override
-	protected String getWithin(SectionInfo info)
-	{
-		WithinEntry wi = iaqs.getCollectionList().getSelectedValue(info);
-		if( wi != null )
-		{
-			BaseEntityLabel label = wi.getBel();
-			return new BundleNameValue(label.getBundleId(), label.getUuid(), bundleCache).getName();
-		}
-		return null;
-	}
+  @Override
+  protected String getWithin(SectionInfo info) {
+    WithinEntry wi = iaqs.getCollectionList().getSelectedValue(info);
+    if (wi != null) {
+      BaseEntityLabel label = wi.getBel();
+      return new BundleNameValue(label.getBundleId(), label.getUuid(), bundleCache).getName();
+    }
+    return null;
+  }
 
-	@Override
-	protected String getCriteria(SectionInfo info)
-	{
-		StringBuilder sbuf = new StringBuilder();
-		List<String> criteriaList = iaqs.getModel(info).getCriteria();
-		if( !Check.isEmpty(criteriaList) )
-		{
-			for( String criteria : criteriaList )
-			{
-				sbuf.append(criteria);
-				sbuf.append('\n');
-			}
-		}
+  @Override
+  protected String getCriteria(SectionInfo info) {
+    StringBuilder sbuf = new StringBuilder();
+    List<String> criteriaList = iaqs.getModel(info).getCriteria();
+    if (!Check.isEmpty(criteriaList)) {
+      for (String criteria : criteriaList) {
+        sbuf.append(criteria);
+        sbuf.append('\n');
+      }
+    }
 
-		return sbuf.toString();
-	}
+    return sbuf.toString();
+  }
 }

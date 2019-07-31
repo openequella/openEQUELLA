@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,38 @@
 
 package com.tle.web.navigation;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.web.template.section.TopbarLink;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TopbarLinkService
-{
-	private PluginTracker<TopbarLink> links;
+public class TopbarLinkService {
+  private PluginTracker<TopbarLink> links;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		links = new PluginTracker<TopbarLink>(pluginService, "com.tle.web.sections.equella", "topbarLink", "class",
-			new PluginTracker.ExtensionParamComparator("order"));
-		links.setBeanKey("class");
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    links =
+        new PluginTracker<TopbarLink>(
+            pluginService,
+            "com.tle.web.sections.equella",
+            "topbarLink",
+            "class",
+            new PluginTracker.ExtensionParamComparator("order"));
+    links.setBeanKey("class");
+  }
 
-	}
+  public PluginTracker<TopbarLink> getTopbarLinks() {
+    return links;
+  }
 
-	public PluginTracker<TopbarLink> getTopbarLinks()
-	{
-		return links;
-	}
-
-	public void clearCachedData()
-	{
-		for( TopbarLink link : links.getBeanList() )
-		{
-			link.clearCachedCount();
-		}
-	}
+  public void clearCachedData() {
+    for (TopbarLink link : links.getBeanList()) {
+      link.clearCachedCount();
+    }
+  }
 }

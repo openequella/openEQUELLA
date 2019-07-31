@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,262 +20,237 @@ package com.tle.web.integration;
 
 import com.tle.web.sections.annotations.Bookmarked;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bookmarked(supported = true)
-public class SingleSignonForm
-{
-	@Bookmarked(stateful = false)
-	private String method;
-	@Bookmarked(stateful = false)
-	private String template;
-	@Bookmarked(stateful = false)
-	private String returnurl;
-	@Bookmarked(stateful = false)
-	private String returnprefix;
-	@Bookmarked(stateful = false)
-	private String action;
-	@Bookmarked(stateful = false)
-	private String courseId;
-	@Bookmarked(stateful = false)
-	private String courseCode;
-	@Bookmarked(stateful = false)
-	private String cancelurl;
-	@Bookmarked(stateful = false)
-	private String options;
-	@Bookmarked(stateful = false)
-	private String query;
-	@Bookmarked(stateful = false)
-	private boolean itemonly = false;
-	@Bookmarked(stateful = false)
-	private boolean packageonly = false;
-	@Bookmarked(stateful = false)
-	private boolean attachmentonly = false;
-	@Bookmarked(stateful = false)
-	private boolean selectMultiple = false;
-	@Bookmarked(stateful = false)
-	private boolean useDownloadPrivilege = false;
-	@Bookmarked(stateful = false)
-	private String itemXml;
-	@Bookmarked(stateful = false)
-	private String powerXml;
-	@Bookmarked(stateful = false, parameter = "structure")
-	private String structure;
-	@Bookmarked(stateful = false)
-	private boolean forcePost;
-	@Bookmarked(stateful = false)
-	private boolean cancelDisabled;
-	@Bookmarked(stateful = false)
-	private boolean attachmentUuidUrls;
+public class SingleSignonForm {
+  @Bookmarked(stateful = false)
+  private String method;
 
-	public String getAction()
-	{
-		return action;
-	}
+  @Bookmarked(stateful = false)
+  private String template;
 
-	public void setAction(String action)
-	{
-		this.action = action;
-	}
+  @Bookmarked(stateful = false)
+  private String returnurl;
 
-	public String getReturnprefix()
-	{
-		return returnprefix;
-	}
+  @Bookmarked(stateful = false)
+  private String returnprefix;
 
-	public void setReturnprefix(String returnprefix)
-	{
-		this.returnprefix = returnprefix;
-	}
+  @Bookmarked(stateful = false)
+  private String action;
 
-	public String getReturnurl()
-	{
-		return returnurl;
-	}
+  @Bookmarked(stateful = false)
+  private String courseId;
 
-	public void setReturnurl(String returnurl)
-	{
-		this.returnurl = returnurl;
-	}
+  @Bookmarked(stateful = false)
+  private String courseCode;
 
-	public String getCourseId()
-	{
-		return courseId;
-	}
+  @Bookmarked(stateful = false)
+  private String cancelurl;
 
-	public void setCourseId(String courseId)
-	{
-		this.courseId = courseId;
-	}
+  @Bookmarked(stateful = false)
+  private String options;
 
-	public String getCourseCode()
-	{
-		return courseCode;
-	}
+  @Bookmarked(stateful = false)
+  private String query;
 
-	public void setCourseCode(String courseCode)
-	{
-		this.courseCode = courseCode;
-	}
+  @Bookmarked(stateful = false)
+  private boolean itemonly = false;
 
-	public boolean isItemonly()
-	{
-		return itemonly;
-	}
+  @Bookmarked(stateful = false)
+  private boolean packageonly = false;
 
-	public boolean isPackageonly()
-	{
-		return packageonly;
-	}
+  @Bookmarked(stateful = false)
+  private boolean attachmentonly = false;
 
-	public void setPackageonly(boolean packageonly)
-	{
-		this.packageonly = packageonly;
-	}
+  @Bookmarked(stateful = false)
+  private boolean selectMultiple = false;
 
-	public void setItemonly(boolean itemonly)
-	{
-		this.itemonly = itemonly;
-	}
+  @Bookmarked(stateful = false)
+  private boolean useDownloadPrivilege = false;
 
-	public boolean isAttachmentonly()
-	{
-		return attachmentonly;
-	}
+  @Bookmarked(stateful = false)
+  private String itemXml;
 
-	public void setAttachmentonly(boolean attachmentonly)
-	{
-		this.attachmentonly = attachmentonly;
-	}
+  @Bookmarked(stateful = false)
+  private String powerXml;
 
-	public String getCancelurl()
-	{
-		return cancelurl;
-	}
+  @Bookmarked(stateful = false, parameter = "structure")
+  private String structure;
 
-	public void setCancelurl(String cancelurl)
-	{
-		this.cancelurl = cancelurl;
-	}
+  @Bookmarked(stateful = false)
+  private boolean forcePost;
 
-	public String getTemplate()
-	{
-		return template;
-	}
+  @Bookmarked(stateful = false)
+  private boolean cancelDisabled;
 
-	public void setTemplate(String template)
-	{
-		this.template = template;
-	}
+  @Bookmarked(stateful = false)
+  private boolean attachmentUuidUrls;
 
-	public String getOptions()
-	{
-		return options;
-	}
+  public String getAction() {
+    return action;
+  }
 
-	public void setOptions(String options)
-	{
-		this.options = options;
-	}
+  public void setAction(String action) {
+    this.action = action;
+  }
 
-	public String getQuery()
-	{
-		return query;
-	}
+  public String getReturnprefix() {
+    return returnprefix;
+  }
 
-	public void setQuery(String query)
-	{
-		this.query = query;
-	}
+  public void setReturnprefix(String returnprefix) {
+    this.returnprefix = returnprefix;
+  }
 
-	public String getMethod()
-	{
-		return method;
-	}
+  public String getReturnurl() {
+    return returnurl;
+  }
 
-	public void setMethod(String method)
-	{
-		this.method = method;
-	}
+  public void setReturnurl(String returnurl) {
+    this.returnurl = returnurl;
+  }
 
-	public void setSelectMultiple(boolean selectMultiple)
-	{
-		this.selectMultiple = selectMultiple;
-	}
+  public String getCourseId() {
+    return courseId;
+  }
 
-	public boolean isSelectMultiple()
-	{
-		return selectMultiple;
-	}
+  public void setCourseId(String courseId) {
+    this.courseId = courseId;
+  }
 
-	public void setUseDownloadPrivilege(boolean useDownloadPrivilege)
-	{
-		this.useDownloadPrivilege = useDownloadPrivilege;
-	}
+  public String getCourseCode() {
+    return courseCode;
+  }
 
-	public boolean isUseDownloadPrivilege()
-	{
-		return useDownloadPrivilege;
-	}
+  public void setCourseCode(String courseCode) {
+    this.courseCode = courseCode;
+  }
 
-	public String getItemXml()
-	{
-		return itemXml;
-	}
+  public boolean isItemonly() {
+    return itemonly;
+  }
 
-	public void setItemXml(String itemXml)
-	{
-		this.itemXml = itemXml;
-	}
+  public boolean isPackageonly() {
+    return packageonly;
+  }
 
-	public String getPowerXml()
-	{
-		return powerXml;
-	}
+  public void setPackageonly(boolean packageonly) {
+    this.packageonly = packageonly;
+  }
 
-	public void setPowerXml(String powerXml)
-	{
-		this.powerXml = powerXml;
-	}
+  public void setItemonly(boolean itemonly) {
+    this.itemonly = itemonly;
+  }
 
-	public String getStructure()
-	{
-		return structure;
-	}
+  public boolean isAttachmentonly() {
+    return attachmentonly;
+  }
 
-	public void setStructure(String structure)
-	{
-		this.structure = structure;
-	}
+  public void setAttachmentonly(boolean attachmentonly) {
+    this.attachmentonly = attachmentonly;
+  }
 
-	public boolean isForcePost()
-	{
-		return forcePost;
-	}
+  public String getCancelurl() {
+    return cancelurl;
+  }
 
-	public void setForcePost(boolean forcePost)
-	{
-		this.forcePost = forcePost;
-	}
+  public void setCancelurl(String cancelurl) {
+    this.cancelurl = cancelurl;
+  }
 
-	public boolean isCancelDisabled()
-	{
-		return cancelDisabled;
-	}
+  public String getTemplate() {
+    return template;
+  }
 
-	public void setCancelDisabled(boolean cancelDisabled)
-	{
-		this.cancelDisabled = cancelDisabled;
-	}
+  public void setTemplate(String template) {
+    this.template = template;
+  }
 
-	public boolean isAttachmentUuidUrls()
-	{
-		return attachmentUuidUrls;
-	}
+  public String getOptions() {
+    return options;
+  }
 
-	public void setAttachmentUuidUrls(boolean attachmentUuidUrls)
-	{
-		this.attachmentUuidUrls = attachmentUuidUrls;
-	}
+  public void setOptions(String options) {
+    this.options = options;
+  }
+
+  public String getQuery() {
+    return query;
+  }
+
+  public void setQuery(String query) {
+    this.query = query;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public void setSelectMultiple(boolean selectMultiple) {
+    this.selectMultiple = selectMultiple;
+  }
+
+  public boolean isSelectMultiple() {
+    return selectMultiple;
+  }
+
+  public void setUseDownloadPrivilege(boolean useDownloadPrivilege) {
+    this.useDownloadPrivilege = useDownloadPrivilege;
+  }
+
+  public boolean isUseDownloadPrivilege() {
+    return useDownloadPrivilege;
+  }
+
+  public String getItemXml() {
+    return itemXml;
+  }
+
+  public void setItemXml(String itemXml) {
+    this.itemXml = itemXml;
+  }
+
+  public String getPowerXml() {
+    return powerXml;
+  }
+
+  public void setPowerXml(String powerXml) {
+    this.powerXml = powerXml;
+  }
+
+  public String getStructure() {
+    return structure;
+  }
+
+  public void setStructure(String structure) {
+    this.structure = structure;
+  }
+
+  public boolean isForcePost() {
+    return forcePost;
+  }
+
+  public void setForcePost(boolean forcePost) {
+    this.forcePost = forcePost;
+  }
+
+  public boolean isCancelDisabled() {
+    return cancelDisabled;
+  }
+
+  public void setCancelDisabled(boolean cancelDisabled) {
+    this.cancelDisabled = cancelDisabled;
+  }
+
+  public boolean isAttachmentUuidUrls() {
+    return attachmentUuidUrls;
+  }
+
+  public void setAttachmentUuidUrls(boolean attachmentUuidUrls) {
+    this.attachmentUuidUrls = attachmentUuidUrls;
+  }
 }

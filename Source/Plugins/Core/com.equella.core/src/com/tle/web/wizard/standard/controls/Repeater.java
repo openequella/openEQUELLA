@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -54,436 +56,397 @@ import com.tle.web.wizard.controls.GroupsCtrl.ControlGroup;
 import com.tle.web.wizard.controls.WebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.page.ControlResult;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("nls")
 @Bind
-public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
-{
-	private static final String CLASS_REMOVE = "repeater-remove";
-	private static final String CLASS_MOVE = "repeater-move";
-	private static final String CLASS_MOVE_UP = "move-up";
-	private static final String CLASS_MOVE_DOWN = "move-down";
+public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
+  private static final String CLASS_REMOVE = "repeater-remove";
+  private static final String CLASS_MOVE = "repeater-move";
+  private static final String CLASS_MOVE_UP = "move-up";
+  private static final String CLASS_MOVE_DOWN = "move-down";
 
-	static
-	{
-		PluginResourceHandler.init(Repeater.class);
-	}
+  static {
+    PluginResourceHandler.init(Repeater.class);
+  }
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@PlugURL("js/repeater.js")
-	private static String URL_REPEATERJS;
-	@PlugKey("repeater.confirmremove")
-	private static Label CONFIRM_REMOVE;
-	private static final IncludeFile INCJS = new IncludeFile(URL_REPEATERJS, WizardJSLibrary.INCLUDE,
-		JQueryUIEffects.SLIDE);
-	private static ExternallyDefinedFunction REPEATER = new ExternallyDefinedFunction("repeater", INCJS);
+  @PlugURL("js/repeater.js")
+  private static String URL_REPEATERJS;
 
-	@Component
-	private Link addButton;
-	@Component
-	private Link addTopButton;
+  @PlugKey("repeater.confirmremove")
+  private static Label CONFIRM_REMOVE;
 
-	private CRepeater crepeater;
-	private String addedDivId;
+  private static final IncludeFile INCJS =
+      new IncludeFile(URL_REPEATERJS, WizardJSLibrary.INCLUDE, JQueryUIEffects.SLIDE);
+  private static ExternallyDefinedFunction REPEATER =
+      new ExternallyDefinedFunction("repeater", INCJS);
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		crepeater = (CRepeater) control;
-		super.setWrappedControl(control);
-	}
+  @Component private Link addButton;
+  @Component private Link addTopButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		//@formatter:off
-		addButton.addReadyStatements(new JQueryStatement(this, new FunctionCallExpression(REPEATER,
-			new ObjectExpression(
-					"addAjax", ajax.getAjaxFunction("addAjax"),
-					"addButton", addButton,
-					"addTopButton", addTopButton,
-					"disablers", new ArrayExpression(addButton.createDisableFunction(), addTopButton.createDisableFunction()),
-					"removeAjax", ajax.getAjaxFunction("removeAjax"),
-					"swapIndexAjax", ajax.getAjaxFunction("swapIndexAjax"),
-					"confirmRemoveMessage", new RuntimeExpression()
-						{
-							@Override
-							protected JSExpression createExpression(RenderContext info)
-							{
-								return new StringExpression(CONFIRM_REMOVE.getText());
-							}
-						}
-			))));
-		//@formatter:on
-		addedDivId = getSectionId() + "_groups";
-	}
+  private CRepeater crepeater;
+  private String addedDivId;
 
-	@AjaxMethod
-	public JSONResponseCallback addAjax(AjaxRenderContext context, boolean top)
-	{
-		getModel(context).setRenderMeOnly(true);
-		final int numGroups = crepeater.getGroups().size();
-		final String ajaxId = (top ? addedDivId : getSectionId() + "_gajax_" + numGroups);
-		context.addAjaxDivs(ajaxId);
-		context.setModalId(getSectionId());
-		context.setFormBookmarkEvent(new BookmarkEvent(this, true, context));
-		add(context, (top ? 0 : numGroups));
-		return new JSONResponseCallback()
-		{
-			@Override
-			public Object getResponseObject(AjaxRenderContext context)
-			{
-				return new RepeaterUpdate(context, context.getFullDOMResult(), ajaxId);
-			}
-		};
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    crepeater = (CRepeater) control;
+    super.setWrappedControl(control);
+  }
 
-	@AjaxMethod
-	public JSONResponseCallback removeAjax(AjaxRenderContext context, int index)
-	{
-		getModel(context).setRenderMeOnly(true);
-		context.addAjaxDivs(addedDivId);
-		context.setModalId(getSectionId());
-		context.setFormBookmarkEvent(new BookmarkEvent(this, true, context));
-		remove(context, index);
-		return new JSONResponseCallback()
-		{
-			@Override
-			public Object getResponseObject(AjaxRenderContext context)
-			{
-				return new RepeaterUpdate(context, context.getFullDOMResult(), addedDivId);
-			}
-		};
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    // @formatter:off
+    addButton.addReadyStatements(
+        new JQueryStatement(
+            this,
+            new FunctionCallExpression(
+                REPEATER,
+                new ObjectExpression(
+                    "addAjax",
+                    ajax.getAjaxFunction("addAjax"),
+                    "addButton",
+                    addButton,
+                    "addTopButton",
+                    addTopButton,
+                    "disablers",
+                    new ArrayExpression(
+                        addButton.createDisableFunction(), addTopButton.createDisableFunction()),
+                    "removeAjax",
+                    ajax.getAjaxFunction("removeAjax"),
+                    "swapIndexAjax",
+                    ajax.getAjaxFunction("swapIndexAjax"),
+                    "confirmRemoveMessage",
+                    new RuntimeExpression() {
+                      @Override
+                      protected JSExpression createExpression(RenderContext info) {
+                        return new StringExpression(CONFIRM_REMOVE.getText());
+                      }
+                    }))));
+    // @formatter:on
+    addedDivId = getSectionId() + "_groups";
+  }
 
-	@AjaxMethod
-	public JSONResponseCallback swapIndexAjax(AjaxRenderContext context, int oldIndex, int newIndex)
-	{
-		getModel(context).setRenderMeOnly(true);
-		context.addAjaxDivs(addedDivId);
-		context.setModalId(getSectionId());
-		swapIndex(oldIndex, newIndex);
-		doEdits(context); // helps with the path overrides
-		return new JSONResponseCallback()
-		{
-			@Override
-			public Object getResponseObject(AjaxRenderContext context)
-			{
-				return new RepeaterUpdate(context, context.getFullDOMResult(), addedDivId);
-			}
-		};
-	}
+  @AjaxMethod
+  public JSONResponseCallback addAjax(AjaxRenderContext context, boolean top) {
+    getModel(context).setRenderMeOnly(true);
+    final int numGroups = crepeater.getGroups().size();
+    final String ajaxId = (top ? addedDivId : getSectionId() + "_gajax_" + numGroups);
+    context.addAjaxDivs(ajaxId);
+    context.setModalId(getSectionId());
+    context.setFormBookmarkEvent(new BookmarkEvent(this, true, context));
+    add(context, (top ? 0 : numGroups));
+    return new JSONResponseCallback() {
+      @Override
+      public Object getResponseObject(AjaxRenderContext context) {
+        return new RepeaterUpdate(context, context.getFullDOMResult(), ajaxId);
+      }
+    };
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		crepeater.setEmpty(false);
+  @AjaxMethod
+  public JSONResponseCallback removeAjax(AjaxRenderContext context, int index) {
+    getModel(context).setRenderMeOnly(true);
+    context.addAjaxDivs(addedDivId);
+    context.setModalId(getSectionId());
+    context.setFormBookmarkEvent(new BookmarkEvent(this, true, context));
+    remove(context, index);
+    return new JSONResponseCallback() {
+      @Override
+      public Object getResponseObject(AjaxRenderContext context) {
+        return new RepeaterUpdate(context, context.getFullDOMResult(), addedDivId);
+      }
+    };
+  }
 
-		// Check if we are removing a group.
-		List<List<WebControl>> webGroups = getWebGroups();
-		int size = webGroups.size();
-		for( int i = size - 1; i >= 0; i-- )
-		{
-			// path overrides for advanced script control
-			final WizardPage wizardPage = crepeater.getWizardPage();
-			wizardPage.pushPathOverride(crepeater, crepeater.getFirstTarget().getTarget(), i);
+  @AjaxMethod
+  public JSONResponseCallback swapIndexAjax(AjaxRenderContext context, int oldIndex, int newIndex) {
+    getModel(context).setRenderMeOnly(true);
+    context.addAjaxDivs(addedDivId);
+    context.setModalId(getSectionId());
+    swapIndex(oldIndex, newIndex);
+    doEdits(context); // helps with the path overrides
+    return new JSONResponseCallback() {
+      @Override
+      public Object getResponseObject(AjaxRenderContext context) {
+        return new RepeaterUpdate(context, context.getFullDOMResult(), addedDivId);
+      }
+    };
+  }
 
-			List<WebControl> vGroup = webGroups.get(i);
-			processGroup(vGroup, info);
-			wizardPage.popPathOverride(crepeater);
-		}
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    crepeater.setEmpty(false);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final RepeaterModel model = getModel(context);
-		final List<RepeaterRenderedGroup> renderedGroups = new ArrayList<RepeaterRenderedGroup>();
-		final List<List<WebControl>> groups = getWebGroups();
+    // Check if we are removing a group.
+    List<List<WebControl>> webGroups = getWebGroups();
+    int size = webGroups.size();
+    for (int i = size - 1; i >= 0; i--) {
+      // path overrides for advanced script control
+      final WizardPage wizardPage = crepeater.getWizardPage();
+      wizardPage.pushPathOverride(crepeater, crepeater.getFirstTarget().getTarget(), i);
 
-		// path overrides for advanced script control (freemarker)
-		// push overrides for parent repeaters if this control is the only one
-		// being rendered
-		final WizardPage wizardPage = crepeater.getWizardPage();
-		List<Pair<CRepeater, Integer>> parentChain = (model.isRenderMeOnly() ? pushParentOverrides(wizardPage) : null);
+      List<WebControl> vGroup = webGroups.get(i);
+      processGroup(vGroup, info);
+      wizardPage.popPathOverride(crepeater);
+    }
+  }
 
-		int index = 0;
-		for( List<WebControl> controls : groups )
-		{
-			wizardPage.pushPathOverride(crepeater, crepeater.getFirstTarget().getTarget(), index);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final RepeaterModel model = getModel(context);
+    final List<RepeaterRenderedGroup> renderedGroups = new ArrayList<RepeaterRenderedGroup>();
+    final List<List<WebControl>> groups = getWebGroups();
 
-			List<ControlResult> results = getWebWizardPage().renderChildren(context, controls,
-				getSectionId() + "_" + index);
+    // path overrides for advanced script control (freemarker)
+    // push overrides for parent repeaters if this control is the only one
+    // being rendered
+    final WizardPage wizardPage = crepeater.getWizardPage();
+    List<Pair<CRepeater, Integer>> parentChain =
+        (model.isRenderMeOnly() ? pushParentOverrides(wizardPage) : null);
 
-			HtmlLinkState removeLink = new HtmlLinkState().addClass(getSectionId() + CLASS_REMOVE).addClass(
-				CLASS_REMOVE);
-			removeLink.setElementId(new AppendedElementId(this, "index" + index));
-			removeLink.setDisablable(true);
-			removeLink.addReadyStatements(new JQueryStatement(removeLink, new FunctionCallExpression("data",
-				"repeater.index", index)));
+    int index = 0;
+    for (List<WebControl> controls : groups) {
+      wizardPage.pushPathOverride(crepeater, crepeater.getFirstTarget().getTarget(), index);
 
-			RepeaterRenderedGroup group = new RepeaterRenderedGroup(results);
-			LinkRenderer remove = new LinkRenderer(removeLink);
-			addDisabler(context, remove);
-			group.setDeleteButton(remove);
+      List<ControlResult> results =
+          getWebWizardPage().renderChildren(context, controls, getSectionId() + "_" + index);
 
-			HtmlLinkState moveDown = new HtmlLinkState().addClass(CLASS_MOVE)
-				.addClass(getSectionId() + CLASS_MOVE_DOWN);
-			moveDown.setElementId(new AppendedElementId(this, "moveDownIndex" + index));
-			moveDown.setLabel(new IconLabel(Icon.DOWN, null));
-			moveDown.setDisablable(true);
-			moveDown.addReadyStatements(new JQueryStatement(moveDown, new FunctionCallExpression("data",
-				"repeater.index", index)));
+      HtmlLinkState removeLink =
+          new HtmlLinkState().addClass(getSectionId() + CLASS_REMOVE).addClass(CLASS_REMOVE);
+      removeLink.setElementId(new AppendedElementId(this, "index" + index));
+      removeLink.setDisablable(true);
+      removeLink.addReadyStatements(
+          new JQueryStatement(
+              removeLink, new FunctionCallExpression("data", "repeater.index", index)));
 
-			LinkRenderer moveDownLink = new LinkRenderer(moveDown);
-			addDisabler(context, moveDownLink);
-			group.setMoveDownButton(moveDownLink);
+      RepeaterRenderedGroup group = new RepeaterRenderedGroup(results);
+      LinkRenderer remove = new LinkRenderer(removeLink);
+      addDisabler(context, remove);
+      group.setDeleteButton(remove);
 
-			HtmlLinkState moveUp = new HtmlLinkState().addClass(CLASS_MOVE).addClass(getSectionId() + CLASS_MOVE_UP);
-			moveUp.setElementId(new AppendedElementId(this, "moveUpIndex" + index));
-			moveUp.setDisablable(true);
-			moveUp.setLabel(new IconLabel(Icon.UP, null));
-			moveUp.addReadyStatements(new JQueryStatement(moveUp, new FunctionCallExpression("data", "repeater.index",
-				index)));
+      HtmlLinkState moveDown =
+          new HtmlLinkState().addClass(CLASS_MOVE).addClass(getSectionId() + CLASS_MOVE_DOWN);
+      moveDown.setElementId(new AppendedElementId(this, "moveDownIndex" + index));
+      moveDown.setLabel(new IconLabel(Icon.DOWN, null));
+      moveDown.setDisablable(true);
+      moveDown.addReadyStatements(
+          new JQueryStatement(
+              moveDown, new FunctionCallExpression("data", "repeater.index", index)));
 
-			LinkRenderer moveUpLink = new LinkRenderer(moveUp);
-			addDisabler(context, moveUpLink);
-			group.setMoveUpButton(moveUpLink);
+      LinkRenderer moveDownLink = new LinkRenderer(moveDown);
+      addDisabler(context, moveDownLink);
+      group.setMoveDownButton(moveDownLink);
 
-			renderedGroups.add(group);
+      HtmlLinkState moveUp =
+          new HtmlLinkState().addClass(CLASS_MOVE).addClass(getSectionId() + CLASS_MOVE_UP);
+      moveUp.setElementId(new AppendedElementId(this, "moveUpIndex" + index));
+      moveUp.setDisablable(true);
+      moveUp.setLabel(new IconLabel(Icon.UP, null));
+      moveUp.addReadyStatements(
+          new JQueryStatement(moveUp, new FunctionCallExpression("data", "repeater.index", index)));
 
-			wizardPage.popPathOverride(crepeater);
-			index++;
-		}
-		popParentOverrides(wizardPage, parentChain);
+      LinkRenderer moveUpLink = new LinkRenderer(moveUp);
+      addDisabler(context, moveUpLink);
+      group.setMoveUpButton(moveUpLink);
 
-		model.setRenderedGroups(renderedGroups);
-		boolean disabled = (groups.size() >= crepeater.getMax());
-		addButton.setDisabled(context, disabled);
-		addTopButton.setDisabled(context, disabled);
-		addDisablers(context, addButton, addTopButton);
-		addDisableablesForControls(context);
-		return viewFactory.createResult("repeater/repeater.ftl", context);
-	}
+      renderedGroups.add(group);
 
-	/**
-	 * @param wizardPage
-	 * @return A list of parents with the index of where the control sits within
-	 *         the parent
-	 */
-	private List<Pair<CRepeater, Integer>> pushParentOverrides(WizardPage wizardPage)
-	{
-		final List<Pair<CRepeater, Integer>> parentChain = Lists.newArrayList();
-		HTMLControl parent = crepeater.getParent();
-		HTMLControl child = crepeater;
-		while( parent != null )
-		{
-			if( parent instanceof CRepeater ) // it will be
-			{
-				parentChain.add(new Pair<CRepeater, Integer>((CRepeater) parent, indexOf(((CRepeater) parent), child)));
-			}
+      wizardPage.popPathOverride(crepeater);
+      index++;
+    }
+    popParentOverrides(wizardPage, parentChain);
 
-			child = parent;
-			parent = parent.getParent();
-		}
+    model.setRenderedGroups(renderedGroups);
+    boolean disabled = (groups.size() >= crepeater.getMax());
+    addButton.setDisabled(context, disabled);
+    addTopButton.setDisabled(context, disabled);
+    addDisablers(context, addButton, addTopButton);
+    addDisableablesForControls(context);
+    return viewFactory.createResult("repeater/repeater.ftl", context);
+  }
 
-		if( parentChain.size() > 0 )
-		{
-			for( int i = parentChain.size() - 1; i >= 0; i-- )
-			{
-				Pair<CRepeater, Integer> rep = parentChain.get(i);
-				CRepeater repeater2 = rep.getFirst();
-				wizardPage.pushPathOverride(repeater2, repeater2.getFirstTarget().getTarget(), rep.getSecond());
-			}
-		}
-		return parentChain;
-	}
+  /**
+   * @param wizardPage
+   * @return A list of parents with the index of where the control sits within the parent
+   */
+  private List<Pair<CRepeater, Integer>> pushParentOverrides(WizardPage wizardPage) {
+    final List<Pair<CRepeater, Integer>> parentChain = Lists.newArrayList();
+    HTMLControl parent = crepeater.getParent();
+    HTMLControl child = crepeater;
+    while (parent != null) {
+      if (parent instanceof CRepeater) // it will be
+      {
+        parentChain.add(
+            new Pair<CRepeater, Integer>((CRepeater) parent, indexOf(((CRepeater) parent), child)));
+      }
 
-	/**
-	 * @param parent
-	 * @param child
-	 * @return The index of the <em>group</em> that this child is found in.
-	 */
-	private int indexOf(CRepeater parent, HTMLControl child)
-	{
-		for( ControlGroup group : parent.getGroups() )
-		{
-			if( group.contains(child) )
-			{
-				return group.getIndex();
-			}
-		}
-		throw new Error("Child not found in parent!");
-	}
+      child = parent;
+      parent = parent.getParent();
+    }
 
-	private void popParentOverrides(WizardPage wizardPage, List<Pair<CRepeater, Integer>> parentChain)
-	{
-		if( parentChain != null )
-		{
-			for( int i = 0; i < parentChain.size(); i++ )
-			{
-				Pair<CRepeater, Integer> rep = parentChain.get(i);
-				CRepeater repeater = rep.getFirst();
-				wizardPage.popPathOverride(repeater);
-			}
-		}
-	}
+    if (parentChain.size() > 0) {
+      for (int i = parentChain.size() - 1; i >= 0; i--) {
+        Pair<CRepeater, Integer> rep = parentChain.get(i);
+        CRepeater repeater2 = rep.getFirst();
+        wizardPage.pushPathOverride(
+            repeater2, repeater2.getFirstTarget().getTarget(), rep.getSecond());
+      }
+    }
+    return parentChain;
+  }
 
-	private void add(SectionInfo info, int index)
-	{
-		crepeater.addAndEvaluate(index);
-		getWebWizardPage().ensureTreeAdded(info, false);
-	}
+  /**
+   * @param parent
+   * @param child
+   * @return The index of the <em>group</em> that this child is found in.
+   */
+  private int indexOf(CRepeater parent, HTMLControl child) {
+    for (ControlGroup group : parent.getGroups()) {
+      if (group.contains(child)) {
+        return group.getIndex();
+      }
+    }
+    throw new Error("Child not found in parent!");
+  }
 
-	public void remove(SectionInfo info, int index)
-	{
-		crepeater.removeGroup(info, index);
-	}
+  private void popParentOverrides(
+      WizardPage wizardPage, List<Pair<CRepeater, Integer>> parentChain) {
+    if (parentChain != null) {
+      for (int i = 0; i < parentChain.size(); i++) {
+        Pair<CRepeater, Integer> rep = parentChain.get(i);
+        CRepeater repeater = rep.getFirst();
+        wizardPage.popPathOverride(repeater);
+      }
+    }
+  }
 
-	public void swapIndex(int oldIndex, int newIndex)
-	{
-		if( newIndex < crepeater.getGroups().size() && newIndex >= 0 )
-		{
-			crepeater.swapGroups(oldIndex, newIndex);
-			// web groups
-			List<List<WebControl>> webGroups = getWebGroups();
-			List<WebControl> movingWeb = webGroups.get(oldIndex);
-			webGroups.set(oldIndex, webGroups.get(newIndex));
-			webGroups.set(newIndex, movingWeb);
-		}
-	}
+  private void add(SectionInfo info, int index) {
+    crepeater.addAndEvaluate(index);
+    getWebWizardPage().ensureTreeAdded(info, false);
+  }
 
-	@Override
-	public Class<RepeaterModel> getModelClass()
-	{
-		return RepeaterModel.class;
-	}
+  public void remove(SectionInfo info, int index) {
+    crepeater.removeGroup(info, index);
+  }
 
-	public static class RepeaterModel extends WebControlModel
-	{
-		private List<RepeaterRenderedGroup> renderedGroups;
-		private boolean renderMeOnly;
+  public void swapIndex(int oldIndex, int newIndex) {
+    if (newIndex < crepeater.getGroups().size() && newIndex >= 0) {
+      crepeater.swapGroups(oldIndex, newIndex);
+      // web groups
+      List<List<WebControl>> webGroups = getWebGroups();
+      List<WebControl> movingWeb = webGroups.get(oldIndex);
+      webGroups.set(oldIndex, webGroups.get(newIndex));
+      webGroups.set(newIndex, movingWeb);
+    }
+  }
 
-		public List<RepeaterRenderedGroup> getRenderedGroups()
-		{
-			return renderedGroups;
-		}
+  @Override
+  public Class<RepeaterModel> getModelClass() {
+    return RepeaterModel.class;
+  }
 
-		public void setRenderedGroups(List<RepeaterRenderedGroup> renderedGroups)
-		{
-			this.renderedGroups = renderedGroups;
-		}
+  public static class RepeaterModel extends WebControlModel {
+    private List<RepeaterRenderedGroup> renderedGroups;
+    private boolean renderMeOnly;
 
-		public boolean isRenderMeOnly()
-		{
-			return renderMeOnly;
-		}
+    public List<RepeaterRenderedGroup> getRenderedGroups() {
+      return renderedGroups;
+    }
 
-		public void setRenderMeOnly(boolean renderMeOnly)
-		{
-			this.renderMeOnly = renderMeOnly;
-		}
-	}
+    public void setRenderedGroups(List<RepeaterRenderedGroup> renderedGroups) {
+      this.renderedGroups = renderedGroups;
+    }
 
-	public static class RepeaterRenderedGroup extends RenderedGroup
-	{
-		private LinkRenderer deleteButton;
-		private LinkRenderer moveDownButton;
-		private LinkRenderer moveUpButton;
+    public boolean isRenderMeOnly() {
+      return renderMeOnly;
+    }
 
-		public RepeaterRenderedGroup(List<ControlResult> results)
-		{
-			super(results);
-		}
+    public void setRenderMeOnly(boolean renderMeOnly) {
+      this.renderMeOnly = renderMeOnly;
+    }
+  }
 
-		public void setMoveUpButton(LinkRenderer moveUp)
-		{
-			this.moveUpButton = moveUp;
-		}
+  public static class RepeaterRenderedGroup extends RenderedGroup {
+    private LinkRenderer deleteButton;
+    private LinkRenderer moveDownButton;
+    private LinkRenderer moveUpButton;
 
-		public LinkRenderer getMoveUpButton()
-		{
-			return moveUpButton;
-		}
+    public RepeaterRenderedGroup(List<ControlResult> results) {
+      super(results);
+    }
 
-		public void setMoveDownButton(LinkRenderer moveDown)
-		{
-			this.moveDownButton = moveDown;
-		}
+    public void setMoveUpButton(LinkRenderer moveUp) {
+      this.moveUpButton = moveUp;
+    }
 
-		public LinkRenderer getMoveDownButton()
-		{
-			return moveDownButton;
-		}
+    public LinkRenderer getMoveUpButton() {
+      return moveUpButton;
+    }
 
-		public LinkRenderer getDeleteButton()
-		{
-			return deleteButton;
-		}
+    public void setMoveDownButton(LinkRenderer moveDown) {
+      this.moveDownButton = moveDown;
+    }
 
-		public void setDeleteButton(LinkRenderer deleteButton)
-		{
-			this.deleteButton = deleteButton;
-		}
-	}
+    public LinkRenderer getMoveDownButton() {
+      return moveDownButton;
+    }
 
-	public Link getAddButton()
-	{
-		return addButton;
-	}
+    public LinkRenderer getDeleteButton() {
+      return deleteButton;
+    }
 
-	public Link getAddTopButton()
-	{
-		return addTopButton;
-	}
+    public void setDeleteButton(LinkRenderer deleteButton) {
+      this.deleteButton = deleteButton;
+    }
+  }
 
-	public class RepeaterUpdate extends AbstractDOMResult
-	{
-		private final boolean disabled;
-		private final String message;
-		private AjaxCaptureResult added;
+  public Link getAddButton() {
+    return addButton;
+  }
 
-		public RepeaterUpdate(SectionInfo info, FullDOMResult result, String divId)
-		{
-			super(result);
-			this.added = result != null ? new AjaxCaptureResult(result.getHtml().get(divId)) : null;
-			Label message = Repeater.this.getMessage();
-			this.message = message != null ? message.getText() : null;
-			this.disabled = addButton.isDisabled(info);
-		}
-		/*
-		public RepeaterUpdate(SectionInfo info)
-		{
-			Label message = Repeater.this.getMessage();
-			this.message = message != null ? message.getText() : null;
-			this.disabled = addButton.isDisabled(info);
-		}
-*/
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+  public Link getAddTopButton() {
+    return addTopButton;
+  }
 
-		public String getMessage()
-		{
-			return message;
-		}
+  public class RepeaterUpdate extends AbstractDOMResult {
+    private final boolean disabled;
+    private final String message;
+    private AjaxCaptureResult added;
 
-		public AjaxCaptureResult getAdded()
-		{
-			return added;
-		}
-	}
+    public RepeaterUpdate(SectionInfo info, FullDOMResult result, String divId) {
+      super(result);
+      this.added = result != null ? new AjaxCaptureResult(result.getHtml().get(divId)) : null;
+      Label message = Repeater.this.getMessage();
+      this.message = message != null ? message.getText() : null;
+      this.disabled = addButton.isDisabled(info);
+    }
+    /*
+    		public RepeaterUpdate(SectionInfo info)
+    		{
+    			Label message = Repeater.this.getMessage();
+    			this.message = message != null ? message.getText() : null;
+    			this.disabled = addButton.isDisabled(info);
+    		}
+    */
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return addButton;
-	}
+    public String getMessage() {
+      return message;
+    }
+
+    public AjaxCaptureResult getAdded() {
+      return added;
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return addButton;
+  }
 }

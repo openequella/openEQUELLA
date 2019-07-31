@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,43 +19,35 @@
 package com.tle.core.cloud.beans;
 
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CloudNavigationSettingsBean
-{
-	private boolean hideUnreferencedAttachments;
-	private boolean showSplitOption;
-	private List<CloudNavigationNodeBean> nodes;
+public class CloudNavigationSettingsBean {
+  private boolean hideUnreferencedAttachments;
+  private boolean showSplitOption;
+  private List<CloudNavigationNodeBean> nodes;
 
-	public boolean isHideUnreferencedAttachments()
-	{
-		return hideUnreferencedAttachments;
-	}
+  public boolean isHideUnreferencedAttachments() {
+    return hideUnreferencedAttachments;
+  }
 
-	public void setHideUnreferencedAttachments(boolean hideUnreferencedAttachments)
-	{
-		this.hideUnreferencedAttachments = hideUnreferencedAttachments;
-	}
+  public void setHideUnreferencedAttachments(boolean hideUnreferencedAttachments) {
+    this.hideUnreferencedAttachments = hideUnreferencedAttachments;
+  }
 
-	public boolean isShowSplitOption()
-	{
-		return showSplitOption;
-	}
+  public boolean isShowSplitOption() {
+    return showSplitOption;
+  }
 
-	public void setShowSplitOption(boolean showSplitOption)
-	{
-		this.showSplitOption = showSplitOption;
-	}
+  public void setShowSplitOption(boolean showSplitOption) {
+    this.showSplitOption = showSplitOption;
+  }
 
-	public List<CloudNavigationNodeBean> getNodes()
-	{
-		return nodes;
-	}
+  public List<CloudNavigationNodeBean> getNodes() {
+    return nodes;
+  }
 
-	public void setNodes(List<CloudNavigationNodeBean> nodes)
-	{
-		this.nodes = nodes;
-	}
+  public void setNodes(List<CloudNavigationNodeBean> nodes) {
+    this.nodes = nodes;
+  }
 }

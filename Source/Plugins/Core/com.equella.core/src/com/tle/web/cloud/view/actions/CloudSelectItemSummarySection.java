@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,20 +25,16 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.summary.sidebar.actions.AbstractSelectItemSummarySection;
 
-/**
- * @author Aaron
- */
-public class CloudSelectItemSummarySection extends AbstractSelectItemSummarySection<CloudItem, Object>
-{
-	@Override
-	protected ViewableItem<CloudItem> getViewableItem(SectionInfo info)
-	{
-		return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
-	}
+/** @author Aaron */
+public class CloudSelectItemSummarySection
+    extends AbstractSelectItemSummarySection<CloudItem, Object> {
+  @Override
+  protected ViewableItem<CloudItem> getViewableItem(SectionInfo info) {
+    return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
+  }
 
-	@Override
-	protected String getItemExtensionType()
-	{
-		return CloudConstants.ITEM_EXTENSION;
-	}
+  @Override
+  protected String getItemExtensionType() {
+    return CloudConstants.ITEM_EXTENSION;
+  }
 }

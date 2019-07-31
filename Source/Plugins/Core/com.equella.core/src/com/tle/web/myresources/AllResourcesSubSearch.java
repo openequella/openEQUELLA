@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,24 +20,19 @@ package com.tle.web.myresources;
 
 import com.tle.web.sections.SectionInfo;
 
-public class AllResourcesSubSearch extends AbstractMyResourcesSubSearch
-{
+public class AllResourcesSubSearch extends AbstractMyResourcesSubSearch {
 
-	public AllResourcesSubSearch(String nameKey)
-	{
-		super(nameKey, "all", 1000); //$NON-NLS-1$
-	}
+  public AllResourcesSubSearch(String nameKey) {
+    super(nameKey, "all", 1000); // $NON-NLS-1$
+  }
 
-	@Override
-	public MyResourcesSearch createDefaultSearch(SectionInfo info)
-	{
-		return new MyResourcesSearch();
-	}
+  @Override
+  public MyResourcesSearch createDefaultSearch(SectionInfo info) {
+    return new MyResourcesSearch();
+  }
 
-	@Override
-	public void setupFilters(SectionInfo info)
-	{
-		// Use default filters
-	}
-
+  @Override
+  public void setupFilters(SectionInfo info) {
+    // Use default filters
+  }
 }

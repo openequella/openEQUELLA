@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -38,46 +40,38 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 
 @SuppressWarnings("nls")
 public class MerlotFilterKeywordTypeSection extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		SearchEventListener<MerlotRemoteRepoSearchEvent>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    implements HtmlRenderer, SearchEventListener<MerlotRemoteRepoSearchEvent> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@ResourceHelper
-	private PluginResourceHelper RESOURCES;
+  @ResourceHelper private PluginResourceHelper RESOURCES;
 
-	@Component(name = "kc")
-	private SingleSelectionList<NameValue> typeList;
+  @Component(name = "kc")
+  private SingleSelectionList<NameValue> typeList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-		final SimpleHtmlListModel<NameValue> listModel = new SimpleHtmlListModel<NameValue>();
-		listModel.add(new BundleNameValue(RESOURCES.key("filter.type.all"), KeywordUse.ALL.name()));
-		listModel.add(new BundleNameValue(RESOURCES.key("filter.type.any"), KeywordUse.ANY.name()));
-		listModel.add(new BundleNameValue(RESOURCES.key("filter.type.phrase"), KeywordUse.EXACT_PHRASE.name()));
-		typeList.setListModel(listModel);
-		typeList.setAlwaysSelect(true);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+    final SimpleHtmlListModel<NameValue> listModel = new SimpleHtmlListModel<NameValue>();
+    listModel.add(new BundleNameValue(RESOURCES.key("filter.type.all"), KeywordUse.ALL.name()));
+    listModel.add(new BundleNameValue(RESOURCES.key("filter.type.any"), KeywordUse.ANY.name()));
+    listModel.add(
+        new BundleNameValue(RESOURCES.key("filter.type.phrase"), KeywordUse.EXACT_PHRASE.name()));
+    typeList.setListModel(listModel);
+    typeList.setAlwaysSelect(true);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("filter/merlotfiltertype.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("filter/merlotfiltertype.ftl", this);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event) 
-	{
-		event.setKeywordUse(KeywordUse.valueOf(typeList.getSelectedValueAsString(info)));
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event) {
+    event.setKeywordUse(KeywordUse.valueOf(typeList.getSelectedValueAsString(info)));
+  }
 
-	public SingleSelectionList<NameValue> getTypeList()
-	{
-		return typeList;
-	}
+  public SingleSelectionList<NameValue> getTypeList() {
+    return typeList;
+  }
 }

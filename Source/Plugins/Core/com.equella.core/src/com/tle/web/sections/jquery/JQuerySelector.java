@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -31,100 +33,93 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.expression.PropertyExpression;
 import com.tle.web.sections.js.generic.expression.StringExpression;
 
-public class JQuerySelector extends AbstractExpression
-{
-	private ElementId elementId;
-	private JSExpression expr;
-	private JSExpression contextExpr;
+public class JQuerySelector extends AbstractExpression {
+  private ElementId elementId;
+  private JSExpression expr;
+  private JSExpression contextExpr;
 
-	public enum Type
-	{
-		ID, CLASS, RAW, NAME
-	}
+  public enum Type {
+    ID,
+    CLASS,
+    RAW,
+    NAME
+  }
 
-	private String getSelectString(Type type, String id)
-	{
-		String typeChar = "";
-		switch( type )
-		{
-			case ID:
-				typeChar = "#";
-				break;
-			case CLASS:
-				typeChar = ".";
-				break;
-			case RAW:
-				typeChar = "";
-				break;
-			case NAME:
-				return "[name=\"" + JSUtils.escape(id, false) + "\"]";
-		}
-		return typeChar + JSUtils.escape(id, false);
-	}
+  private String getSelectString(Type type, String id) {
+    String typeChar = "";
+    switch (type) {
+      case ID:
+        typeChar = "#";
+        break;
+      case CLASS:
+        typeChar = ".";
+        break;
+      case RAW:
+        typeChar = "";
+        break;
+      case NAME:
+        return "[name=\"" + JSUtils.escape(id, false) + "\"]";
+    }
+    return typeChar + JSUtils.escape(id, false);
+  }
 
-	public JQuerySelector(Object expr)
-	{
-		this.expr = JSUtils.convertExpression(expr);
-	}
+  public JQuerySelector(Object expr) {
+    this.expr = JSUtils.convertExpression(expr);
+  }
 
-	public JQuerySelector(ElementId id)
-	{
-		this.elementId = id;
-		id.registerUse();
-	}
+  public JQuerySelector(ElementId id) {
+    this.elementId = id;
+    id.registerUse();
+  }
 
-	public JQuerySelector(Type type, String id)
-	{
-		this.expr = new StringExpression(getSelectString(type, id));
-	}
+  public JQuerySelector(Type type, String id) {
+    this.expr = new StringExpression(getSelectString(type, id));
+  }
 
-	public void setContextExpr(JSExpression contextExpr)
-	{
-		this.contextExpr = contextExpr;
-	}
+  public void setContextExpr(JSExpression contextExpr) {
+    this.contextExpr = contextExpr;
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		if( expr == null )
-		{
-			expr = new StringExpression(getSelectString(Type.ID, elementId.getElementId(info)));
-		}
+  @Override
+  public String getExpression(RenderContext info) {
+    if (expr == null) {
+      expr = new StringExpression(getSelectString(Type.ID, elementId.getElementId(info)));
+    }
 
-		return JQueryCore.JQUERY.getExpressionForCall(info, contextExpr == null ? new JSExpression[]{expr}
-			: new JSExpression[]{expr, contextExpr});
-	}
+    return JQueryCore.JQUERY.getExpressionForCall(
+        info,
+        contextExpr == null ? new JSExpression[] {expr} : new JSExpression[] {expr, contextExpr});
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, JQueryCore.JQUERY, expr, contextExpr);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, JQueryCore.JQUERY, expr, contextExpr);
+  }
 
-	public static JSExpression valueSetExpression(ElementId element, Object value)
-	{
-		return new CombinedPropertyExpression(new JQuerySelector(element), new PropertyExpression(
-			new FunctionCallExpression("val", value)));
-	}
+  public static JSExpression valueSetExpression(ElementId element, Object value) {
+    return new CombinedPropertyExpression(
+        new JQuerySelector(element),
+        new PropertyExpression(new FunctionCallExpression("val", value)));
+  }
 
-	public static JSExpression valueGetExpression(ElementId element)
-	{
-		return new CombinedPropertyExpression(new JQuerySelector(element), new PropertyExpression(
-			new FunctionCallExpression("val")));
-	}
+  public static JSExpression valueGetExpression(ElementId element) {
+    return new CombinedPropertyExpression(
+        new JQuerySelector(element), new PropertyExpression(new FunctionCallExpression("val")));
+  }
 
-	public static JSExpression methodCallExpression(ElementId element, JSCallable method, Object... params)
-	{
-		return methodCallExpression(new JQuerySelector(element), method, params);
-	}
+  public static JSExpression methodCallExpression(
+      ElementId element, JSCallable method, Object... params) {
+    return methodCallExpression(new JQuerySelector(element), method, params);
+  }
 
-	public static JSExpression methodCallExpression(Type type, String id, JSCallable method, Object... params)
-	{
-		return methodCallExpression(new JQuerySelector(type, id), method, params);
-	}
+  public static JSExpression methodCallExpression(
+      Type type, String id, JSCallable method, Object... params) {
+    return methodCallExpression(new JQuerySelector(type, id), method, params);
+  }
 
-	private static JSExpression methodCallExpression(JQuerySelector selector, JSCallable method, Object... params)
-	{
-		return new CombinedPropertyExpression(selector, new PropertyExpression(Js.call(method, params)));
-	}
+  private static JSExpression methodCallExpression(
+      JQuerySelector selector, JSCallable method, Object... params) {
+    return new CombinedPropertyExpression(
+        selector, new PropertyExpression(Js.call(method, params)));
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,30 @@
 
 package com.tle.core.remoterepo.parser.mods.impl;
 
+import com.tle.core.xml.XmlDocument;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.w3c.dom.Node;
 
-import com.tle.core.xml.XmlDocument;
+/** @author aholland */
+public class ModsNotes extends ModsPart {
+  protected Map<String, Set<String>> notes;
+  protected Set<String> allNotes;
 
-/**
- * @author aholland
- */
-public class ModsNotes extends ModsPart
-{
-	protected Map<String, Set<String>> notes;
-	protected Set<String> allNotes;
+  public ModsNotes(XmlDocument xml, Node context) {
+    super(xml, context);
+  }
 
-	public ModsNotes(XmlDocument xml, Node context)
-	{
-		super(xml, context);
-	}
-
-	public Set<String> getNotes()
-	{
-		if( allNotes == null )
-		{
-			allNotes = new HashSet<String>();
-			notes = new HashMap<String, Set<String>>();
-			for( Node n : xml.nodeList("note", context) )
-			{
-				allNotes.add(XmlDocument.getTextContent(n));
-			}
-		}
-		return allNotes;
-	}
+  public Set<String> getNotes() {
+    if (allNotes == null) {
+      allNotes = new HashSet<String>();
+      notes = new HashMap<String, Set<String>>();
+      for (Node n : xml.nodeList("note", context)) {
+        allNotes.add(XmlDocument.getTextContent(n));
+      }
+    }
+    return allNotes;
+  }
 }

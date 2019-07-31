@@ -1,0 +1,1 @@
+<xml>			<item global="true" myitem="true">								<name>Superscript</name>				<description>Superscript for equations</description>								<itemstatus>live</itemstatus>												<itembody>					<html>    x&lt;sup&gt;5&lt;/sup&gt;</html>				</itembody>																				<keywords/>			</item>		</xml>

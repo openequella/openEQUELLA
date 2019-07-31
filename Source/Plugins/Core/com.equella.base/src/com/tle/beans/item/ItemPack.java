@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,111 +18,88 @@
 
 package com.tle.beans.item;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 @NonNullByDefault
-public class ItemPack<I extends IItem<?>>
-{
-	@Nullable
-	private PropBagEx xml;
-	@Nullable
-	private I originalItem;
-	@Nullable
-	private I item;
-	@Nullable
-	private String stagingID;
-	/* @LazyNonNull */
-	@Nullable
-	private Map<String, Object> attributes;
+public class ItemPack<I extends IItem<?>> {
+  @Nullable private PropBagEx xml;
+  @Nullable private I originalItem;
+  @Nullable private I item;
+  @Nullable private String stagingID;
+  /* @LazyNonNull */
+  @Nullable private Map<String, Object> attributes;
 
-	public ItemPack()
-	{
-		super();
-	}
+  public ItemPack() {
+    super();
+  }
 
-	public ItemPack(I item, PropBagEx xml, @Nullable String stagingID)
-	{
-		this.item = item;
-		this.xml = xml;
-		this.stagingID = stagingID;
-	}
+  public ItemPack(I item, PropBagEx xml, @Nullable String stagingID) {
+    this.item = item;
+    this.xml = xml;
+    this.stagingID = stagingID;
+  }
 
-	@Nullable
-	public String getStagingID()
-	{
-		return stagingID;
-	}
+  @Nullable
+  public String getStagingID() {
+    return stagingID;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public <T> T getAttribute(String key)
-	{
-		if( attributes == null )
-		{
-			return null;
-		}
-		return (T) attributes.get(key);
-	}
+  @SuppressWarnings("unchecked")
+  @Nullable
+  public <T> T getAttribute(String key) {
+    if (attributes == null) {
+      return null;
+    }
+    return (T) attributes.get(key);
+  }
 
-	public void setAttribute(String key, @Nullable Object attribute)
-	{
-		if( attributes == null )
-		{
-			attributes = new HashMap<String, Object>();
-		}
-		attributes.put(key, attribute);
-	}
+  public void setAttribute(String key, @Nullable Object attribute) {
+    if (attributes == null) {
+      attributes = new HashMap<String, Object>();
+    }
+    attributes.put(key, attribute);
+  }
 
-	public void setStagingID(String stagingID)
-	{
-		this.stagingID = stagingID;
-	}
+  public void setStagingID(String stagingID) {
+    this.stagingID = stagingID;
+  }
 
-	@Nullable
-	public I getItem()
-	{
-		return item;
-	}
+  @Nullable
+  public I getItem() {
+    return item;
+  }
 
-	public void setItem(I item)
-	{
-		this.item = item;
-	}
+  public void setItem(I item) {
+    this.item = item;
+  }
 
-	@Nullable
-	public PropBagEx getXml()
-	{
-		return xml;
-	}
+  @Nullable
+  public PropBagEx getXml() {
+    return xml;
+  }
 
-	@Nullable
-	public ItemId getItemId()
-	{
-		if( item == null )
-		{
-			return null;
-		}
-		return item.getItemId();
-	}
+  @Nullable
+  public ItemId getItemId() {
+    if (item == null) {
+      return null;
+    }
+    return item.getItemId();
+  }
 
-	public void setXml(PropBagEx xml)
-	{
-		this.xml = xml;
-	}
+  public void setXml(PropBagEx xml) {
+    this.xml = xml;
+  }
 
-	@Nullable
-	public I getOriginalItem()
-	{
-		return originalItem;
-	}
+  @Nullable
+  public I getOriginalItem() {
+    return originalItem;
+  }
 
-	public void setOriginalItem(I originalItem)
-	{
-		this.originalItem = originalItem;
-	}
+  public void setOriginalItem(I originalItem) {
+    this.originalItem = originalItem;
+  }
 }

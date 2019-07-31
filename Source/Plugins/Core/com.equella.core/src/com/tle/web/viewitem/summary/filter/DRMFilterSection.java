@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.viewitem.summary.filter;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.exceptions.DRMException;
 import com.tle.beans.item.DrmSettings;
@@ -69,392 +69,325 @@ import com.tle.web.viewitem.summary.sidebar.MinorActionsGroupSection;
 import com.tle.web.viewurl.UseViewer;
 import com.tle.web.viewurl.ViewItemFilter;
 import com.tle.web.viewurl.ViewItemResource;
+import javax.inject.Inject;
 
-//@formatter:off
+// @formatter:off
 /**
- * The following logic applies:
- * If item has DRM
- *     If you are a Guest
- *         If preview allowed on the DRM
- *             If you can't view the item (VIEW + DISCOVER)
- *                 1 Kick to login screen
- *             Else
- *                 2 Show the reject / preview screen (no Accept)
- *         Else
- *             3 Kick to login screen
- *     Else If you can't view the item (VIEW + DISCOVER)
- *         4 Throw an access denied exception
- *     Else
- *         5 Show the accept / reject / preview screen
+ * The following logic applies: If item has DRM If you are a Guest If preview allowed on the DRM If
+ * you can't view the item (VIEW + DISCOVER) 1 Kick to login screen Else 2 Show the reject / preview
+ * screen (no Accept) Else 3 Kick to login screen Else If you can't view the item (VIEW + DISCOVER)
+ * 4 Throw an access denied exception Else 5 Show the accept / reject / preview screen
  */
-//@formatter:on
+// @formatter:on
 @SuppressWarnings("nls")
 public class DRMFilterSection extends AbstractContentSection<DRMFilterSection.DRMFilterModel>
-	implements
-		ViewItemFilter,
-		DRMFilter
-{
-	static
-	{
-		PluginResourceHandler.init(DRMFilterSection.class);
-	}
+    implements ViewItemFilter, DRMFilter {
+  static {
+    PluginResourceHandler.init(DRMFilterSection.class);
+  }
 
-	@PlugURL("scripts/drmlicense.js")
-	private static IncludeFile INC_JS;
-	private static JSCallable LICENSE_FUNC = new ExternallyDefinedFunction("drmLicenseResponse", INC_JS);
+  @PlugURL("scripts/drmlicense.js")
+  private static IncludeFile INC_JS;
 
-	@PlugKey("summary.sidebar.summary.termsofuse.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.drm.error.guestandnopreview")
-	private static Label LABEL_NOPREVIEW;
+  private static JSCallable LICENSE_FUNC =
+      new ExternallyDefinedFunction("drmLicenseResponse", INC_JS);
 
-	@Inject
-	private DrmService drmService;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private SelectionService selectionService;
+  @PlugKey("summary.sidebar.summary.termsofuse.title")
+  private static Label LABEL_TITLE;
 
-	@TreeLookup
-	private RootItemFileSection rootFileSection;
-	@TreeLookup
-	private SummarySection summarySection;
-	@TreeLookup
-	private MajorActionsGroupSection majorActionsGroupSection;
-	@TreeLookup
-	private MinorActionsGroupSection minorActionsGroupSection;
-	//This is bad. Real bad.
-	@TreeLookup(mandatory = false)
-	private ItemDetailsAndActionsSummarySection integItemDetailsSection;
-	@TreeLookup(mandatory = false)
-	private ItemDetailsGroupSection itemDetailsSection;
+  @PlugKey("filter.drm.error.guestandnopreview")
+  private static Label LABEL_NOPREVIEW;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Component
-	private Button acceptButton;
-	@Component
-	private Button previewButton;
-	@Component
-	private Button rejectButton;
+  @Inject private DrmService drmService;
+  @Inject private ConfigurationService configService;
+  @Inject private SelectionService selectionService;
 
-	// The following is actually used... I know... shit way of doing it.
-	@Inject
-	@Component
-	DRMLicenseDialog licenseDialog;
+  @TreeLookup private RootItemFileSection rootFileSection;
+  @TreeLookup private SummarySection summarySection;
+  @TreeLookup private MajorActionsGroupSection majorActionsGroupSection;
+  @TreeLookup private MinorActionsGroupSection minorActionsGroupSection;
+  // This is bad. Real bad.
+  @TreeLookup(mandatory = false)
+  private ItemDetailsAndActionsSummarySection integItemDetailsSection;
 
-	private final JSCallable hideReject = new ExternallyDefinedFunction("hideReject", INC_JS);
+  @TreeLookup(mandatory = false)
+  private ItemDetailsGroupSection itemDetailsSection;
 
-	public Button getAcceptButton()
-	{
-		return acceptButton;
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Component private Button acceptButton;
+  @Component private Button previewButton;
+  @Component private Button rejectButton;
 
-	public Button getPreviewButton()
-	{
-		return previewButton;
-	}
+  // The following is actually used... I know... shit way of doing it.
+  @Inject @Component DRMLicenseDialog licenseDialog;
 
-	public Button getRejectButton()
-	{
-		return rejectButton;
-	}
+  private final JSCallable hideReject = new ExternallyDefinedFunction("hideReject", INC_JS);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  public Button getAcceptButton() {
+    return acceptButton;
+  }
 
-		rejectButton.addClickStatements(ScriptStatement.HISTORY_BACK);
-		previewButton.setClickHandler(events.getSubmitValuesFunction("preview"));
-	}
+  public Button getPreviewButton() {
+    return previewButton;
+  }
 
-	@Override
-	public int getOrder()
-	{
-		return 0;
-	}
+  public Button getRejectButton() {
+    return rejectButton;
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		rootFileSection.addFilterMapping(Type.ALWAYS, this);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public ViewItemResource filter(SectionInfo info, ViewItemResource resource)
-	{
-		ViewableItem<Item> viewableItem = resource.getViewableItem();
-		boolean summary = resource.getViewer() == summarySection;
-		ItemKey itemId = viewableItem.getItemId();
+    rejectButton.addClickStatements(ScriptStatement.HISTORY_BACK);
+    previewButton.setClickHandler(events.getSubmitValuesFunction("preview"));
+  }
 
-		boolean mustShow = resource.getBooleanAttribute(ViewItemResource.KEY_MUST_SHOW);
-		boolean alwaysSkip = !viewableItem.isDRMApplicable() || !viewableItem.isItemForReal();
-		if( alwaysSkip )
-		{
-			drmService.addPreviewItem(itemId);
-		}
-		if( alwaysSkip || (!summary && !viewableItem.getPrivileges().contains("VIEW_ITEM")) )
-		{
-			return resource;
-		}
-		DRMFilterModel model = getModel(info);
-		if( drmService.havePreviewedThisSession(itemId) )
-		{
-			model.setSkip(true);
-			return resource;
-		}
+  @Override
+  public int getOrder() {
+    return 0;
+  }
 
-		boolean previewable = previewable(info);
-		boolean compositionAllowed = compositionAllowed(info);
-		boolean inComposition = drmService.isReferredFromDifferentItem(info.getRequest(), itemId);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    rootFileSection.addFilterMapping(Type.ALWAYS, this);
+  }
 
-		// only skip the drm acceptance if its not a composition or they are
-		// allowed
-		if( (model.isSkip() && (previewable || isTransientAcceptances())) || (inComposition && compositionAllowed) )
-		{
-			drmService.addPreviewItem(itemId);
-			return resource;
-		}
+  @Override
+  public ViewItemResource filter(SectionInfo info, ViewItemResource resource) {
+    ViewableItem<Item> viewableItem = resource.getViewableItem();
+    boolean summary = resource.getViewer() == summarySection;
+    ItemKey itemId = viewableItem.getItemId();
 
-		// Don't reshow the drm previewable for files inside of a package if its
-		// allowed in compositions (see #5479)
-		if( previewable && compositionAllowed && drmService.isReferredFromSamePackage(info.getRequest(), itemId) )
-		{
-			drmService.addPreviewItem(itemId);
-			return resource;
-		}
+    boolean mustShow = resource.getBooleanAttribute(ViewItemResource.KEY_MUST_SHOW);
+    boolean alwaysSkip = !viewableItem.isDRMApplicable() || !viewableItem.isItemForReal();
+    if (alwaysSkip) {
+      drmService.addPreviewItem(itemId);
+    }
+    if (alwaysSkip || (!summary && !viewableItem.getPrivileges().contains("VIEW_ITEM"))) {
+      return resource;
+    }
+    DRMFilterModel model = getModel(info);
+    if (drmService.havePreviewedThisSession(itemId)) {
+      model.setSkip(true);
+      return resource;
+    }
 
-		if( drmService.requiresAcceptanceCheck(itemId, summary, inComposition) )
-		{
-			if( mustShow )
-			{
-				resource.setAttribute(ViewItemResource.KEY_PREFER_STREAM, true);
-				return resource;
-			}
+    boolean previewable = previewable(info);
+    boolean compositionAllowed = compositionAllowed(info);
+    boolean inComposition = drmService.isReferredFromDifferentItem(info.getRequest(), itemId);
 
-			Item item = viewableItem.getItem();
-			tryDRMAuthorisation(item);
-			DrmSettings rights = drmService.requiresAcceptance(item, summary, inComposition);
-			if( rights != null )
-			{
-				I18nDRM drm = new I18nDRM(rights);
-				model.setCanpreview(drm.canPreview());
-				model.setDrm(drm);
-				model.setItemTitle(new ItemNameLabel(item, this.bundleCache));
+    // only skip the drm acceptance if its not a composition or they are
+    // allowed
+    if ((model.isSkip() && (previewable || isTransientAcceptances()))
+        || (inComposition && compositionAllowed)) {
+      drmService.addPreviewItem(itemId);
+      return resource;
+    }
 
-				// apart from the SearchPrevNextButtons, we hide the contents of
-				// the actions column
-				showActionSections(info, false);
+    // Don't reshow the drm previewable for files inside of a package if its
+    // allowed in compositions (see #5479)
+    if (previewable
+        && compositionAllowed
+        && drmService.isReferredFromSamePackage(info.getRequest(), itemId)) {
+      drmService.addPreviewItem(itemId);
+      return resource;
+    }
 
-				// Tell the content section to render this DRMSection as a
-				// priority over the item summary it would usually show
-				itemSummaryContentSection.setSubsiduarySectionId(info, this);
+    if (drmService.requiresAcceptanceCheck(itemId, summary, inComposition)) {
+      if (mustShow) {
+        resource.setAttribute(ViewItemResource.KEY_PREFER_STREAM, true);
+        return resource;
+      }
 
-				return new UseViewer(resource, summarySection);
-			}
-		}
-		return resource;
-	}
+      Item item = viewableItem.getItem();
+      tryDRMAuthorisation(item);
+      DrmSettings rights = drmService.requiresAcceptance(item, summary, inComposition);
+      if (rights != null) {
+        I18nDRM drm = new I18nDRM(rights);
+        model.setCanpreview(drm.canPreview());
+        model.setDrm(drm);
+        model.setItemTitle(new ItemNameLabel(item, this.bundleCache));
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( selectionService.getCurrentSession(context) == null && Decorations.getDecorations(context).isMenuHidden() )
-		{
-			CssInclude nomenucss = CssInclude.include(MenuSection.getHiddenMenuCSS()).make();
-			acceptButton.getState(context).addPreRenderable(nomenucss);
-		}
+        // apart from the SearchPrevNextButtons, we hide the contents of
+        // the actions column
+        showActionSections(info, false);
 
-		// May throw AccessDenied if preview not allowed and user is Guest
-		JSHandler previewHandler = events.getNamedHandler("preview");
-		initAcceptButton(context, acceptButton, events.getNamedHandler("accept"), previewHandler);
+        // Tell the content section to render this DRMSection as a
+        // priority over the item summary it would usually show
+        itemSummaryContentSection.setSubsiduarySectionId(info, this);
 
-		rejectButton.addReadyStatements(context, hideReject, rejectButton.getElementId(context));
-		Decorations.getDecorations(context).setTitle(LABEL_TITLE);
-		return viewFactory.createResult("viewitem/drm/license.ftl", this);
-	}
+        return new UseViewer(resource, summarySection);
+      }
+    }
+    return resource;
+  }
 
-	@Override
-	public void initAcceptButton(SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler)
-	{
-		if( !CurrentUser.isGuest() )
-		{
-			acceptButton.setClickHandler(info, isTransientAcceptances() ? previewHandler : handler);
-			return;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (selectionService.getCurrentSession(context) == null
+        && Decorations.getDecorations(context).isMenuHidden()) {
+      CssInclude nomenucss = CssInclude.include(MenuSection.getHiddenMenuCSS()).make();
+      acceptButton.getState(context).addPreRenderable(nomenucss);
+    }
 
-		if( previewable(info) )
-		{
-			acceptButton.setDisplayed(info, false);
-			return;
-		}
+    // May throw AccessDenied if preview not allowed and user is Guest
+    JSHandler previewHandler = events.getNamedHandler("preview");
+    initAcceptButton(context, acceptButton, events.getNamedHandler("accept"), previewHandler);
 
-		// throw access denied since a guest can never accept an agreement
-		throw new AccessDeniedException(LABEL_NOPREVIEW.getText());
-	}
+    rejectButton.addReadyStatements(context, hideReject, rejectButton.getElementId(context));
+    Decorations.getDecorations(context).setTitle(LABEL_TITLE);
+    return viewFactory.createResult("viewitem/drm/license.ftl", this);
+  }
 
-	@Override
-	public JSCallable getLicenseFunction()
-	{
-		return LICENSE_FUNC;
-	}
+  @Override
+  public void initAcceptButton(
+      SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler) {
+    if (!CurrentUser.isGuest()) {
+      acceptButton.setClickHandler(info, isTransientAcceptances() ? previewHandler : handler);
+      return;
+    }
 
-	/**
-	 * @return true if both current user was autoLoggedIn and the transientDrm
-	 *         flag in login settings is true, otherwise false.
-	 */
-	private boolean isTransientAcceptances()
-	{
-		return CurrentUser.wasAutoLoggedIn()
-			&& configService.getProperties(new AutoLogin()).isTransientDrmAcceptances();
-	}
+    if (previewable(info)) {
+      acceptButton.setDisplayed(info, false);
+      return;
+    }
 
-	@EventHandlerMethod
-	public void accept(SectionInfo info)
-	{
-		ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
-		drmService.acceptLicense(viewableItem.getItem());
-	}
+    // throw access denied since a guest can never accept an agreement
+    throw new AccessDeniedException(LABEL_NOPREVIEW.getText());
+  }
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void preview(SectionInfo info)
-	{
-		getModel(info).setSkip(true);
-		ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
-		drmService.addPreviewItem(viewableItem.getItemId());
-	}
+  @Override
+  public JSCallable getLicenseFunction() {
+    return LICENSE_FUNC;
+  }
 
-	private boolean previewable(SectionInfo info)
-	{
-		ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
-		DrmSettings drm = viewableItem.getItem().getDrmSettings();
-		return (drm != null && drm.isPreviewAllowed());
-	}
+  /**
+   * @return true if both current user was autoLoggedIn and the transientDrm flag in login settings
+   *     is true, otherwise false.
+   */
+  private boolean isTransientAcceptances() {
+    return CurrentUser.wasAutoLoggedIn()
+        && configService.getProperties(new AutoLogin()).isTransientDrmAcceptances();
+  }
 
-	private boolean compositionAllowed(SectionInfo info)
-	{
-		ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
-		DrmSettings drm = viewableItem.getItem().getDrmSettings();
-		return (drm != null && !drm.isStudentsMustAcceptIfInCompilation());
-	}
+  @EventHandlerMethod
+  public void accept(SectionInfo info) {
+    ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
+    drmService.acceptLicense(viewableItem.getItem());
+  }
 
-	private void tryDRMAuthorisation(Item item)
-	{
-		try
-		{
-			drmService.isAuthorised(item, CurrentUser.getUserState().getIpAddress());
-		}
-		catch( DRMException ex )
-		{
-			if( CurrentUser.isGuest() )
-			{
-				throw new AccessDeniedException(CurrentLocale.get("com.tle.web.viewitem.drmfilter.drmprotected"));
-			}
-			throw ex;
-		}
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void preview(SectionInfo info) {
+    getModel(info).setSkip(true);
+    ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
+    drmService.addPreviewItem(viewableItem.getItemId());
+  }
 
-	/**
-	 * set most actions in the major, and the entirety of the minor, actions to
-	 * be hidden
-	 * 
-	 * @param info
-	 */
-	private void showActionSections(SectionInfo info, boolean show)
-	{
-		if( majorActionsGroupSection.getChildSectionIds(info) != null )
-		{
-			for( SectionId renda : majorActionsGroupSection.getChildSectionIds(info) )
-			{
-				if( renda instanceof HideableFromDRMSection )
-				{
-					((HideableFromDRMSection) renda).showSection(info, show);
-				}
-			}
-		}
-		if( integItemDetailsSection != null )
-		{
-			integItemDetailsSection.showSection(info, show);
-		}
-		if( itemDetailsSection != null )
-		{
-			itemDetailsSection.showSection(info, show);
-		}
-		minorActionsGroupSection.showSection(info, show);
-	}
+  private boolean previewable(SectionInfo info) {
+    ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
+    DrmSettings drm = viewableItem.getItem().getDrmSettings();
+    return (drm != null && drm.isPreviewAllowed());
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "drm";
-	}
+  private boolean compositionAllowed(SectionInfo info) {
+    ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
+    DrmSettings drm = viewableItem.getItem().getDrmSettings();
+    return (drm != null && !drm.isStudentsMustAcceptIfInCompilation());
+  }
 
-	@Override
-	public Class<DRMFilterModel> getModelClass()
-	{
-		return DRMFilterModel.class;
-	}
+  private void tryDRMAuthorisation(Item item) {
+    try {
+      drmService.isAuthorised(item, CurrentUser.getUserState().getIpAddress());
+    } catch (DRMException ex) {
+      if (CurrentUser.isGuest()) {
+        throw new AccessDeniedException(
+            CurrentLocale.get("com.tle.web.viewitem.drmfilter.drmprotected"));
+      }
+      throw ex;
+    }
+  }
 
-	public static class DRMFilterModel
-	{
-		@Bookmarked(name = "s", legacyName = "skip")
-		private boolean skip;
+  /**
+   * set most actions in the major, and the entirety of the minor, actions to be hidden
+   *
+   * @param info
+   */
+  private void showActionSections(SectionInfo info, boolean show) {
+    if (majorActionsGroupSection.getChildSectionIds(info) != null) {
+      for (SectionId renda : majorActionsGroupSection.getChildSectionIds(info)) {
+        if (renda instanceof HideableFromDRMSection) {
+          ((HideableFromDRMSection) renda).showSection(info, show);
+        }
+      }
+    }
+    if (integItemDetailsSection != null) {
+      integItemDetailsSection.showSection(info, show);
+    }
+    if (itemDetailsSection != null) {
+      itemDetailsSection.showSection(info, show);
+    }
+    minorActionsGroupSection.showSection(info, show);
+  }
 
-		private Label itemTitle;
+  @Override
+  public String getDefaultPropertyName() {
+    return "drm";
+  }
 
-		private I18nDRM drm;
-		private boolean canpreview;
+  @Override
+  public Class<DRMFilterModel> getModelClass() {
+    return DRMFilterModel.class;
+  }
 
-		public Label getItemTitle()
-		{
-			return itemTitle;
-		}
+  public static class DRMFilterModel {
+    @Bookmarked(name = "s", legacyName = "skip")
+    private boolean skip;
 
-		public void setItemTitle(Label itemTitle)
-		{
-			this.itemTitle = itemTitle;
-		}
+    private Label itemTitle;
 
-		public boolean isCanpreview()
-		{
-			return canpreview;
-		}
+    private I18nDRM drm;
+    private boolean canpreview;
 
-		public void setCanpreview(boolean canpreview)
-		{
-			this.canpreview = canpreview;
-		}
+    public Label getItemTitle() {
+      return itemTitle;
+    }
 
-		public I18nDRM getDrm()
-		{
-			return drm;
-		}
+    public void setItemTitle(Label itemTitle) {
+      this.itemTitle = itemTitle;
+    }
 
-		public void setDrm(I18nDRM drm)
-		{
-			this.drm = drm;
-		}
+    public boolean isCanpreview() {
+      return canpreview;
+    }
 
-		public boolean isSkip()
-		{
-			return skip;
-		}
+    public void setCanpreview(boolean canpreview) {
+      this.canpreview = canpreview;
+    }
 
-		public void setSkip(boolean skip)
-		{
-			this.skip = skip;
-		}
-	}
+    public I18nDRM getDrm() {
+      return drm;
+    }
 
-	@Override
-	public void setSkip(SectionInfo info, boolean b)
-	{
-		getModel(info).setSkip(b);
-	}
+    public void setDrm(I18nDRM drm) {
+      this.drm = drm;
+    }
 
-	public boolean isPreviewing(SectionInfo info)
-	{
-		return getModel(info).isSkip();
-	}
+    public boolean isSkip() {
+      return skip;
+    }
+
+    public void setSkip(boolean skip) {
+      this.skip = skip;
+    }
+  }
+
+  @Override
+  public void setSkip(SectionInfo info, boolean b) {
+    getModel(info).setSkip(b);
+  }
+
+  public boolean isPreviewing(SectionInfo info) {
+    return getModel(info).isSkip();
+  }
 }

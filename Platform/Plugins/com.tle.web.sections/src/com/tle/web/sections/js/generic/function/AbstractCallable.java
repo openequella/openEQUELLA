@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,19 +25,17 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 
 @NonNullByDefault
-public abstract class AbstractCallable implements JSCallable
-{
-	@SuppressWarnings("nls")
-	@Override
-	public String getExpressionForCall(RenderContext info, JSExpression... params)
-	{
-		int numParams = getNumberOfParams(info);
-		if( numParams == -1 || numParams == params.length )
-		{
-			return getCallExpression(info, params);
-		}
-		throw new SectionsRuntimeException("Expected " + numParams + " parameters but found " + params.length);
-	}
+public abstract class AbstractCallable implements JSCallable {
+  @SuppressWarnings("nls")
+  @Override
+  public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    int numParams = getNumberOfParams(info);
+    if (numParams == -1 || numParams == params.length) {
+      return getCallExpression(info, params);
+    }
+    throw new SectionsRuntimeException(
+        "Expected " + numParams + " parameters but found " + params.length);
+  }
 
-	protected abstract String getCallExpression(RenderContext info, JSExpression[] params);
+  protected abstract String getCallExpression(RenderContext info, JSExpression[] params);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.portal.section.admin;
-
-import javax.inject.Inject;
 
 import com.tle.common.portal.entity.Portlet;
 import com.tle.core.guice.Bind;
@@ -36,94 +36,94 @@ import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
-public class PortletListItem extends AbstractListEntry
-{
-	static
-	{
-		PluginResourceHandler.init(PortletListItem.class);
-	}
+public class PortletListItem extends AbstractListEntry {
+  static {
+    PluginResourceHandler.init(PortletListItem.class);
+  }
 
-	@PlugKey("admin.list.operation.delete")
-	private static Label labelDelete;
-	@PlugKey("admin.list.value.no")
-	private static Label labelNo;
-	@PlugKey("admin.list.value.yes")
-	private static Label labelYes;
-	@PlugKey("admin.list.operation.edit")
-	private static Label labelEdit;
-	@PlugKey("admin.list.label.owner")
-	private static Label labelOwner;
-	@PlugKey("admin.list.label.institutionwide")
-	private static Label labelInst;
-	@PlugKey("admin.list.label.type")
-	private static Label labelType;
+  @PlugKey("admin.list.operation.delete")
+  private static Label labelDelete;
 
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private PortletService portletService;
+  @PlugKey("admin.list.value.no")
+  private static Label labelNo;
 
-	private Portlet portlet;
-	private JSHandler editHandler;
-	private JSHandler deleteHandler;
-	private HtmlLinkState ownerLink;
+  @PlugKey("admin.list.value.yes")
+  private static Label labelYes;
 
-	@Override
-	public Label getDescription()
-	{
-		return new BundleLabel(portlet.getDescription(), bundleCache);
-	}
+  @PlugKey("admin.list.operation.edit")
+  private static Label labelEdit;
 
-	@Override
-	public HtmlLinkState getTitle()
-	{
-		HtmlLinkState state = new HtmlLinkState();
-		state.setLabel(new BundleLabel(portlet.getName(), portlet.getUuid(), bundleCache));
-		state.setClickHandler(editHandler);
-		return state;
-	}
+  @PlugKey("admin.list.label.owner")
+  private static Label labelOwner;
 
-	@Override
-	protected void setupMetadata(RenderContext context)
-	{
-		super.setupMetadata(context);
-		addMetadata(new StdMetadataEntry(labelInst, new LabelRenderer(portlet.isInstitutional() ? labelYes : labelNo)));
+  @PlugKey("admin.list.label.institutionwide")
+  private static Label labelInst;
 
-		addMetadata(new StdMetadataEntry(labelOwner, new LinkRenderer(ownerLink)));
+  @PlugKey("admin.list.label.type")
+  private static Label labelType;
 
-		addMetadata(new StdMetadataEntry(labelType, new LabelRenderer(new KeyLabel(portletService
-			.mapAllAvailableTypes().get(portlet.getType()).getNameKey()))));
+  @Inject private BundleCache bundleCache;
+  @Inject private PortletService portletService;
 
-		HtmlLinkState edit = new HtmlLinkState(labelEdit, editHandler);
-		addRatingAction(new ButtonRenderer(edit).showAs(ButtonType.EDIT));
+  private Portlet portlet;
+  private JSHandler editHandler;
+  private JSHandler deleteHandler;
+  private HtmlLinkState ownerLink;
 
-		// TODO: There should probably be an OperationMetadataEntry
-		HtmlLinkState delete = new HtmlLinkState(labelDelete, deleteHandler);
-		addRatingAction(new ButtonRenderer(delete).showAs(ButtonType.DELETE));
-	}
+  @Override
+  public Label getDescription() {
+    return new BundleLabel(portlet.getDescription(), bundleCache);
+  }
 
-	public void setPortlet(Portlet portlet)
-	{
-		this.portlet = portlet;
-	}
+  @Override
+  public HtmlLinkState getTitle() {
+    HtmlLinkState state = new HtmlLinkState();
+    state.setLabel(new BundleLabel(portlet.getName(), portlet.getUuid(), bundleCache));
+    state.setClickHandler(editHandler);
+    return state;
+  }
 
-	public void setEditHandler(JSHandler editHandler)
-	{
-		this.editHandler = editHandler;
-	}
+  @Override
+  protected void setupMetadata(RenderContext context) {
+    super.setupMetadata(context);
+    addMetadata(
+        new StdMetadataEntry(
+            labelInst, new LabelRenderer(portlet.isInstitutional() ? labelYes : labelNo)));
 
-	public void setDeleteHandler(JSHandler deleteHandler)
-	{
-		this.deleteHandler = deleteHandler;
-	}
+    addMetadata(new StdMetadataEntry(labelOwner, new LinkRenderer(ownerLink)));
 
-	public void setOwnerLabel(HtmlLinkState ownerLink)
-	{
-		this.ownerLink = ownerLink;
-	}
+    addMetadata(
+        new StdMetadataEntry(
+            labelType,
+            new LabelRenderer(
+                new KeyLabel(
+                    portletService.mapAllAvailableTypes().get(portlet.getType()).getNameKey()))));
+
+    HtmlLinkState edit = new HtmlLinkState(labelEdit, editHandler);
+    addRatingAction(new ButtonRenderer(edit).showAs(ButtonType.EDIT));
+
+    // TODO: There should probably be an OperationMetadataEntry
+    HtmlLinkState delete = new HtmlLinkState(labelDelete, deleteHandler);
+    addRatingAction(new ButtonRenderer(delete).showAs(ButtonType.DELETE));
+  }
+
+  public void setPortlet(Portlet portlet) {
+    this.portlet = portlet;
+  }
+
+  public void setEditHandler(JSHandler editHandler) {
+    this.editHandler = editHandler;
+  }
+
+  public void setDeleteHandler(JSHandler deleteHandler) {
+    this.deleteHandler = deleteHandler;
+  }
+
+  public void setOwnerLabel(HtmlLinkState ownerLink) {
+    this.ownerLink = ownerLink;
+  }
 }

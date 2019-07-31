@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.galleryviewer;
-
-import javax.inject.Singleton;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -31,53 +31,49 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkTagRenderer;
 import com.tle.web.viewurl.ResourceViewerConfigDialog;
 import com.tle.web.viewurl.ViewableResource;
+import javax.inject.Singleton;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 @Singleton
-public class FancyBoxViewer extends AbstractResourceViewer
-{
-	@Override
-	public String getViewerId()
-	{
-		return "fancy";
-	}
+public class FancyBoxViewer extends AbstractResourceViewer {
+  @Override
+  public String getViewerId() {
+    return "fancy";
+  }
 
-	@Nullable
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return null;
+  }
 
-	@Override
-	public LinkTagRenderer createLinkRenderer(SectionInfo info, ViewableResource resource, Bookmark viewUrl)
-	{
-		final HtmlLinkState state = new HtmlLinkState(viewUrl);
-		final ItemKey itemId = resource.getViewableItem().getItemId();
-		state.setRel(itemId.toString());
-		return new FancyBoxLinkRenderer(state);
-	}
+  @Override
+  public LinkTagRenderer createLinkRenderer(
+      SectionInfo info, ViewableResource resource, Bookmark viewUrl) {
+    final HtmlLinkState state = new HtmlLinkState(viewUrl);
+    final ItemKey itemId = resource.getViewableItem().getItemId();
+    state.setRel(itemId.toString());
+    return new FancyBoxLinkRenderer(state);
+  }
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		// Does not (currently) support external resources because of a XSS
-		// limitation (the dialog doesn't like the redirect to an external site)
-		if( resource.isExternalResource() )
-		{
-			return false;
-		}
-		String mimeType = resource.getMimeType();
-		return (mimeType.startsWith("image")) && !resource.getBooleanAttribute(ViewableResource.KEY_TARGETS_FRAME);
-	}
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    // Does not (currently) support external resources because of a XSS
+    // limitation (the dialog doesn't like the redirect to an external site)
+    if (resource.isExternalResource()) {
+      return false;
+    }
+    String mimeType = resource.getMimeType();
+    return (mimeType.startsWith("image"))
+        && !resource.getBooleanAttribute(ViewableResource.KEY_TARGETS_FRAME);
+  }
 
-	@Nullable
-	@Override
-	public ResourceViewerConfigDialog createConfigDialog(String parentId, SectionTree tree,
-		ResourceViewerConfigDialog defaultDialog)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public ResourceViewerConfigDialog createConfigDialog(
+      String parentId, SectionTree tree, ResourceViewerConfigDialog defaultDialog) {
+    return null;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,85 +21,71 @@ package com.tle.core.security.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SecurityAttribute
-{
-	enum OnCallMode
-	{
-		DOMAIN, TOPLEVEL, ANY
-	}
+public class SecurityAttribute {
+  enum OnCallMode {
+    DOMAIN,
+    TOPLEVEL,
+    ANY
+  }
 
-	private Set<String> onCallPrivileges;
-	private Set<String> filterPrivileges;
-	private OnCallMode onCallmode;
-	private boolean systemOnly;
-	private boolean filterMatching;
-	private int domainArg;
+  private Set<String> onCallPrivileges;
+  private Set<String> filterPrivileges;
+  private OnCallMode onCallmode;
+  private boolean systemOnly;
+  private boolean filterMatching;
+  private int domainArg;
 
-	public boolean isSystemOnly()
-	{
-		return systemOnly;
-	}
+  public boolean isSystemOnly() {
+    return systemOnly;
+  }
 
-	public void setSystemOnly(boolean systemOnly)
-	{
-		this.systemOnly = systemOnly;
-	}
+  public void setSystemOnly(boolean systemOnly) {
+    this.systemOnly = systemOnly;
+  }
 
-	public boolean isFilterMatching()
-	{
-		return filterMatching;
-	}
+  public boolean isFilterMatching() {
+    return filterMatching;
+  }
 
-	public void setFilterMatching(boolean filterMatching)
-	{
-		this.filterMatching = filterMatching;
-	}
+  public void setFilterMatching(boolean filterMatching) {
+    this.filterMatching = filterMatching;
+  }
 
-	public int getDomainArg()
-	{
-		return domainArg;
-	}
+  public int getDomainArg() {
+    return domainArg;
+  }
 
-	public void setDomainArg(int domainArg)
-	{
-		this.domainArg = domainArg;
-	}
+  public void setDomainArg(int domainArg) {
+    this.domainArg = domainArg;
+  }
 
-	public Set<String> getOnCallPrivileges()
-	{
-		return onCallPrivileges;
-	}
+  public Set<String> getOnCallPrivileges() {
+    return onCallPrivileges;
+  }
 
-	public Set<String> getFilterPrivileges()
-	{
-		return filterPrivileges;
-	}
+  public Set<String> getFilterPrivileges() {
+    return filterPrivileges;
+  }
 
-	public void addOnCallPrivilege(String priv)
-	{
-		if( onCallPrivileges == null )
-		{
-			onCallPrivileges = new HashSet<String>();
-		}
-		onCallPrivileges.add(priv);
-	}
+  public void addOnCallPrivilege(String priv) {
+    if (onCallPrivileges == null) {
+      onCallPrivileges = new HashSet<String>();
+    }
+    onCallPrivileges.add(priv);
+  }
 
-	public void addFilterPrivilege(String priv)
-	{
-		if( filterPrivileges == null )
-		{
-			filterPrivileges = new HashSet<String>();
-		}
-		filterPrivileges.add(priv);
-	}
+  public void addFilterPrivilege(String priv) {
+    if (filterPrivileges == null) {
+      filterPrivileges = new HashSet<String>();
+    }
+    filterPrivileges.add(priv);
+  }
 
-	public OnCallMode getOnCallmode()
-	{
-		return onCallmode;
-	}
+  public OnCallMode getOnCallmode() {
+    return onCallmode;
+  }
 
-	public void setOnCallmode(OnCallMode onCallmode)
-	{
-		this.onCallmode = onCallmode;
-	}
+  public void setOnCallmode(OnCallMode onCallmode) {
+    this.onCallmode = onCallmode;
+  }
 }

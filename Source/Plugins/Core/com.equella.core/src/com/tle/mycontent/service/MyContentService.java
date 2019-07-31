@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.mycontent.service;
 
-import java.io.InputStream;
-import java.util.Set;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -26,42 +25,44 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
 import com.tle.web.sections.SectionInfo;
+import java.util.Set;
 
-/**
- * @author aholland
- */
-public interface MyContentService
-{
-	boolean isMyContentContributionAllowed();
+/** @author aholland */
+public interface MyContentService {
+  boolean isMyContentContributionAllowed();
 
-	ItemDefinition getMyContentItemDef();
+  ItemDefinition getMyContentItemDef();
 
-	boolean isMyContentItem(Item item);
+  boolean isMyContentItem(Item item);
 
-	/**
-	 * @param info
-	 * @return Are we able to return?
-	 */
-	boolean returnFromContribute(SectionInfo info);
+  /**
+   * @param info
+   * @return Are we able to return?
+   */
+  boolean returnFromContribute(SectionInfo info);
 
-	Set<String> getContentHandlerIds();
+  Set<String> getContentHandlerIds();
 
-	String getContentHandlerNameKey(String handlerId);
+  String getContentHandlerNameKey(String handlerId);
 
-	ContentHandler getHandlerForId(String handlerId);
+  ContentHandler getHandlerForId(String handlerId);
 
-	WorkflowOperation getEditOperation(MyContentFields fields, String filename, String stagingUuid, boolean removeExistingAttachments, boolean useExistingAttachment);
+  WorkflowOperation getEditOperation(
+      MyContentFields fields,
+      String filename,
+      String stagingUuid,
+      boolean removeExistingAttachments,
+      boolean useExistingAttachment);
 
-	MyContentFields getFieldsForItem(ItemId itemId);
+  MyContentFields getFieldsForItem(ItemId itemId);
 
-	void delete(ItemId itemId);
+  void delete(ItemId itemId);
 
-	void forwardToEditor(SectionInfo info, ItemId itemId);
+  void forwardToEditor(SectionInfo info, ItemId itemId);
 
-	ContributeMyContentAction createActionForHandler(String handlerId);
+  ContributeMyContentAction createActionForHandler(String handlerId);
 
-	void forwardToContribute(SectionInfo info, String handlerId);
+  void forwardToContribute(SectionInfo info, String handlerId);
 
-	void restore(ItemId itemId);
-
+  void restore(ItemId itemId);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,27 @@
 
 package com.tle.web.sections.standard.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.registry.handler.CachedScannerHandler;
 import com.tle.web.sections.standard.ComponentFactory;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ComponentRegistrationHandler extends CachedScannerHandler<ComponentScanner>
-{
-	@Inject
-	private ComponentFactory factory;
+public class ComponentRegistrationHandler extends CachedScannerHandler<ComponentScanner> {
+  @Inject private ComponentFactory factory;
 
-	@Override
-	protected ComponentScanner newEntry(Class<?> clazz)
-	{
-		return new ComponentScanner(clazz, this);
-	}
+  @Override
+  protected ComponentScanner newEntry(Class<?> clazz) {
+    return new ComponentScanner(clazz, this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree, Section section)
-	{
-		ComponentScanner scanner = getForClass(section.getClass());
-		scanner.registerComponents(id, tree, section, factory);
-	}
+  @Override
+  public void registered(String id, SectionTree tree, Section section) {
+    ComponentScanner scanner = getForClass(section.getClass());
+    scanner.registerComponents(id, tree, section, factory);
+  }
 }

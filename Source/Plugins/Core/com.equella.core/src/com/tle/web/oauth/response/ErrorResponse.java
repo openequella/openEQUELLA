@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,53 +20,44 @@ package com.tle.web.oauth.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ErrorResponse
-{
-	private String error;
-	private String errorDescription;
-	private String errorUri;
-	private String state;
+public class ErrorResponse {
+  private String error;
+  private String errorDescription;
+  private String errorUri;
+  private String state;
 
-	@JsonProperty("error")
-	public String getError()
-	{
-		return error;
-	}
+  @JsonProperty("error")
+  public String getError() {
+    return error;
+  }
 
-	public void setError(String error)
-	{
-		this.error = error;
-	}
+  public void setError(String error) {
+    this.error = error;
+  }
 
-	@JsonProperty("error_description")
-	public String getErrorDescription()
-	{
-		return errorDescription;
-	}
+  @JsonProperty("error_description")
+  public String getErrorDescription() {
+    return errorDescription;
+  }
 
-	public void setErrorDescription(String errorDescription)
-	{
-		this.errorDescription = errorDescription;
-	}
+  public void setErrorDescription(String errorDescription) {
+    this.errorDescription = errorDescription;
+  }
 
-	public String getErrorUri()
-	{
-		return errorUri;
-	}
+  public String getErrorUri() {
+    return errorUri;
+  }
 
-	@JsonProperty("error_uri")
-	public void setErrorUri(String errorUri)
-	{
-		this.errorUri = errorUri;
-	}
+  @JsonProperty("error_uri")
+  public void setErrorUri(String errorUri) {
+    this.errorUri = errorUri;
+  }
 
-	public String getState()
-	{
-		return state;
-	}
+  public String getState() {
+    return state;
+  }
 
-	public void setState(String state)
-	{
-		this.state = state;
-	}
+  public void setState(String state) {
+    this.state = state;
+  }
 }

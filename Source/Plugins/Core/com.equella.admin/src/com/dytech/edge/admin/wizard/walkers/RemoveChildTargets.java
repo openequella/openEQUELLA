@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,44 +21,32 @@ package com.dytech.edge.admin.wizard.walkers;
 import com.dytech.edge.admin.wizard.model.AbstractControlModel;
 import com.dytech.edge.admin.wizard.model.Control;
 
-/**
- * @author Nicholas Read
- */
-public class RemoveChildTargets extends ControlTreeWalker
-{
-	private boolean removedTargets = false;
+/** @author Nicholas Read */
+public class RemoveChildTargets extends ControlTreeWalker {
+  private boolean removedTargets = false;
 
-	/**
-	 * Constructs a new TreeToXmlWalker.
-	 */
-	public RemoveChildTargets()
-	{
-		super();
-	}
+  /** Constructs a new TreeToXmlWalker. */
+  public RemoveChildTargets() {
+    super();
+  }
 
-	/**
-	 * @return Returns the removedTargets.
-	 */
-	public boolean hasRemovedTargets()
-	{
-		return removedTargets;
-	}
+  /** @return Returns the removedTargets. */
+  public boolean hasRemovedTargets() {
+    return removedTargets;
+  }
 
-	@Override
-	protected boolean onDescent(Control control)
-	{
-		// Check that we are not performing this on the top control.
-		if( control != getBaseControl() )
-		{
-			// See if there are any targets to remove
-			removedTargets = removedTargets || !control.getTargets().isEmpty();
+  @Override
+  protected boolean onDescent(Control control) {
+    // Check that we are not performing this on the top control.
+    if (control != getBaseControl()) {
+      // See if there are any targets to remove
+      removedTargets = removedTargets || !control.getTargets().isEmpty();
 
-			// Remove any targets
-			if( control instanceof AbstractControlModel )
-			{
-				((AbstractControlModel<?>) control).getControl().getTargetnodes().clear();
-			}
-		}
-		return true;
-	}
+      // Remove any targets
+      if (control instanceof AbstractControlModel) {
+        ((AbstractControlModel<?>) control).getControl().getTargetnodes().clear();
+      }
+    }
+    return true;
+  }
 }

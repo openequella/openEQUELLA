@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.itemlist.item;
 
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -25,15 +25,16 @@ import com.tle.core.services.item.FreetextResult;
 import com.tle.web.itemlist.ListEntriesSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
+import java.util.List;
 
 @NonNullByDefault
-public interface ItemlikeList<I extends IItem<?>, LE extends ItemlikeListEntry<I>> extends ListEntriesSection<LE>
-{
-	LE addItem(SectionInfo info, I item, @Nullable FreetextResult result);
+public interface ItemlikeList<I extends IItem<?>, LE extends ItemlikeListEntry<I>>
+    extends ListEntriesSection<LE> {
+  LE addItem(SectionInfo info, I item, @Nullable FreetextResult result, int index, int available);
 
-	void setNullItemsRemovedOnModel(SectionInfo info, boolean nullItemsRemoved);
+  void setNullItemsRemovedOnModel(SectionInfo info, boolean nullItemsRemoved);
 
-	ListSettings<LE> getListSettings(SectionInfo info);
+  ListSettings<LE> getListSettings(SectionInfo info);
 
-	List<LE> initEntries(RenderContext context);
+  List<LE> initEntries(RenderContext context);
 }

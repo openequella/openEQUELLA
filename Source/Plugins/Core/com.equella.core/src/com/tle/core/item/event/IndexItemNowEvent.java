@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,35 +22,27 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.IndexItemNowListener;
 
-/**
- * @author Nicholas Read
- */
-public class IndexItemNowEvent extends ApplicationEvent<IndexItemNowListener>
-{
-	private static final long serialVersionUID = 1L;
-	private final ItemIdKey itemIdKey;
+/** @author Nicholas Read */
+public class IndexItemNowEvent extends ApplicationEvent<IndexItemNowListener> {
+  private static final long serialVersionUID = 1L;
+  private final ItemIdKey itemIdKey;
 
-	public IndexItemNowEvent(ItemIdKey key)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.itemIdKey = key;
-	}
+  public IndexItemNowEvent(ItemIdKey key) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.itemIdKey = key;
+  }
 
-	public ItemIdKey getItemIdKey()
-	{
-		return itemIdKey;
-	}
+  public ItemIdKey getItemIdKey() {
+    return itemIdKey;
+  }
 
-	@Override
-	public Class<IndexItemNowListener> getListener()
-	{
-		return IndexItemNowListener.class;
-	}
+  @Override
+  public Class<IndexItemNowListener> getListener() {
+    return IndexItemNowListener.class;
+  }
 
-	@Override
-	public void postEvent(IndexItemNowListener listener)
-	{
-		listener.indexItemNowEvent(this);
-	}
-
+  @Override
+  public void postEvent(IndexItemNowListener listener) {
+    listener.indexItemNowEvent(this);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,7 +18,6 @@
 
 package com.tle.web.favourites.portal;
 
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -25,14 +26,13 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.home.RecentSelectionsSegment;
 
 @Bind
-public class FavouritesSegment extends FavouritesPortletRenderer implements RecentSelectionsSegment
-{
-	@PlugKey("favourites.portal.name")
-	private static Label TITLE;
+public class FavouritesSegment extends FavouritesPortletRenderer
+    implements RecentSelectionsSegment {
+  @PlugKey("favourites.portal.name")
+  private static Label TITLE;
 
-	@Override
-	public String getTitle(SectionInfo info, SelectionSession session)
-	{
-		return TITLE.getText(); //$NON-NLS-1$
-	}
+  @Override
+  public String getTitle(SectionInfo info, SelectionSession session) {
+    return TITLE.getText(); // $NON-NLS-1$
+  }
 }

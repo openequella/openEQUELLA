@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,39 @@
 
 package com.tle.web.api.users.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class RoleBean extends AbstractExtendableBean
-{
-	private final String id;
-	private String name;
-	private String expression;
+public class RoleBean extends AbstractExtendableBean {
+  private final String id;
+  private String name;
+  private String expression;
 
-	@JsonCreator
-	public RoleBean(@JsonProperty("id") String id)
-	{
-		this.id = id;
-	}
+  @JsonCreator
+  public RoleBean(@JsonProperty("id") String id) {
+    this.id = id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getExpression()
-	{
-		return expression;
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public void setExpression(String expression)
-	{
-		this.expression = expression;
-	}
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
 }

@@ -1,13 +1,17 @@
-import { Routes, Route } from "./routes";
+import * as React from "react";
 import { AclEditorProps } from "./acleditor";
-import { TemplateProps } from "./Template";
+import { TemplateProps } from "tsrc/mainui/Template";
+
+interface GenericPageProps {
+  updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
+}
+
+interface SettingsPageProps extends GenericPageProps {
+  refreshUser: () => void;
+}
 
 export interface Bridge {
-    routes: Routes,
-    router: (route: Route) => {
-        href: string;
-        onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-    },
-    Template: React.ComponentType<TemplateProps>
-    AclEditor: React.ComponentType<AclEditorProps>
+  AclEditor: React.ComponentType<AclEditorProps>;
+  SettingsPage: React.ComponentType<SettingsPageProps>;
+  SearchPage: React.ComponentType<GenericPageProps>;
 }

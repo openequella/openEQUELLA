@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,55 +23,45 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.module.ModuleImpl;
 import com.tle.core.remoterepo.merlot.syndication.MerlotModule;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("serial")
-public class MerlotModuleImpl extends ModuleImpl implements MerlotModule
-{
-	private String title;
-	private String url;
+public class MerlotModuleImpl extends ModuleImpl implements MerlotModule {
+  private String title;
+  private String url;
 
-	protected MerlotModuleImpl()
-	{
-		super(MerlotModule.class, MerlotModule.URI);
-	}
+  protected MerlotModuleImpl() {
+    super(MerlotModule.class, MerlotModule.URI);
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return title;
-	}
+  @Override
+  public String getTitle() {
+    return title;
+  }
 
-	@Override
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  @Override
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	@Override
-	public String getUrl()
-	{
-		return url;
-	}
+  @Override
+  public String getUrl() {
+    return url;
+  }
 
-	@Override
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  @Override
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	@Override
-	public void copyFrom(CopyFrom obj)
-	{
-		MerlotModule other = (MerlotModule) obj;
-		title = other.getTitle();
-		url = other.getUrl();
-	}
+  @Override
+  public void copyFrom(CopyFrom obj) {
+    MerlotModule other = (MerlotModule) obj;
+    title = other.getTitle();
+    url = other.getUrl();
+  }
 
-	@Override
-	public Class<? extends CopyFrom> getInterface()
-	{
-		return Module.class;
-	}
+  @Override
+  public Class<? extends CopyFrom> getInterface() {
+    return Module.class;
+  }
 }

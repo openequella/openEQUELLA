@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,104 +18,88 @@
 
 package com.tle.web.dispatcher;
 
+import com.tle.common.URLUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.tle.common.URLUtils;
+public final class RemappedRequest extends HttpServletRequestWrapper {
+  private String contextPath;
+  private String servletPath;
+  private String pathInfo;
+  private String requestURI;
+  private final HttpServletRequest wrapped;
 
-public final class RemappedRequest extends HttpServletRequestWrapper
-{
-	private String contextPath;
-	private String servletPath;
-	private String pathInfo;
-	private String requestURI;
-	private final HttpServletRequest wrapped;
+  private RemappedRequest(
+      HttpServletRequest request, String context, String servletPath, String pathInfo) {
+    super(request);
+    this.wrapped = request;
+    this.contextPath = context;
+    this.servletPath = servletPath;
+    this.pathInfo = pathInfo;
+    setupURI();
+  }
 
-	private RemappedRequest(HttpServletRequest request, String context, String servletPath, String pathInfo)
-	{
-		super(request);
-		this.wrapped = request;
-		this.contextPath = context;
-		this.servletPath = servletPath;
-		this.pathInfo = pathInfo;
-		setupURI();
-	}
+  @SuppressWarnings("nls")
+  private void setupURI() {
+    // Note that this will not give us an exact match for the original
+    // Request URI since plus symbols will be instead be reconstructed as
+    // %20's. Generating correct URLs isn't a bad thing though, right?
+    this.requestURI =
+        URLUtils.urlEncode(contextPath + servletPath + (pathInfo != null ? pathInfo : ""), false);
+  }
 
-	@SuppressWarnings("nls")
-	private void setupURI()
-	{
-		// Note that this will not give us an exact match for the original
-		// Request URI since plus symbols will be instead be reconstructed as
-		// %20's. Generating correct URLs isn't a bad thing though, right?
-		this.requestURI = URLUtils.urlEncode(contextPath + servletPath + (pathInfo != null ? pathInfo : ""), false);
-	}
+  @Override
+  public String getContextPath() {
+    return contextPath;
+  }
 
-	@Override
-	public String getContextPath()
-	{
-		return contextPath;
-	}
+  @Override
+  public String getPathInfo() {
+    return pathInfo;
+  }
 
-	@Override
-	public String getPathInfo()
-	{
-		return pathInfo;
-	}
+  @Override
+  public String getServletPath() {
+    return servletPath;
+  }
 
-	@Override
-	public String getServletPath()
-	{
-		return servletPath;
-	}
+  @Override
+  public String getRequestURI() {
+    return requestURI;
+  }
 
-	@Override
-	public String getRequestURI()
-	{
-		return requestURI;
-	}
+  @Override
+  public void setAttribute(String name, Object o) {
+    if (name.equals("org.apache.catalina.core.DISPATCHER_REQUEST_PATH")) // $NON-NLS-1$
+    {
+      try {
+        servletPath = URLDecoder.decode((String) o, "UTF-8"); // $NON-NLS-1$
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException();
+      }
+      pathInfo = null;
+      setupURI();
+    }
+    super.setAttribute(name, o);
+  }
 
-	@Override
-	public void setAttribute(String name, Object o)
-	{
-		if( name.equals("org.apache.catalina.core.DISPATCHER_REQUEST_PATH") ) //$NON-NLS-1$
-		{
-			try
-			{
-				servletPath = URLDecoder.decode((String) o, "UTF-8"); //$NON-NLS-1$
-			}
-			catch( UnsupportedEncodingException e )
-			{
-				throw new RuntimeException();
-			}
-			pathInfo = null;
-			setupURI();
-		}
-		super.setAttribute(name, o);
-	}
+  public HttpServletRequest getWrapped() {
+    return wrapped;
+  }
 
-	public HttpServletRequest getWrapped()
-	{
-		return wrapped;
-	}
-
-	public static HttpServletRequest wrap(HttpServletRequest request, String context, String servletPath,
-		String pathInfo)
-	{
-		if( request instanceof RemappedRequest )
-		{
-			RemappedRequest orig = (RemappedRequest) request;
-			orig.contextPath = context;
-			orig.pathInfo = pathInfo;
-			orig.servletPath = servletPath;
-			orig.setupURI();
-			return orig;
-		}
-		else
-		{
-			return new RemappedRequest(request, context, servletPath, pathInfo);
-		}
-	}
+  public static HttpServletRequest wrap(
+      HttpServletRequest request, String context, String servletPath, String pathInfo) {
+    if (request instanceof RemappedRequest) {
+      RemappedRequest orig = (RemappedRequest) request;
+      orig.contextPath = context;
+      orig.pathInfo = pathInfo;
+      orig.servletPath = servletPath;
+      orig.setupURI();
+      return orig;
+    } else {
+      return new RemappedRequest(request, context, servletPath, pathInfo);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,31 +21,27 @@ package com.dytech.edge.admin.wizard.model;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 
-public class CustomControlModel<T extends CustomControl> extends AbstractControlModel<T>
-{
-	public CustomControlModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+public class CustomControlModel<T extends CustomControl> extends AbstractControlModel<T> {
+  public CustomControlModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public void setWrappedObject(Object wrappedObject)
-	{
-		CustomControl newWrapped = (CustomControl) getControlRepository().getNewWrappedObject(getDefinition().getId());
-		((CustomControl) wrappedObject).cloneTo(newWrapped);
-		super.setWrappedObject(newWrapped);
-	}
+  @Override
+  public void setWrappedObject(Object wrappedObject) {
+    CustomControl newWrapped =
+        (CustomControl) getControlRepository().getNewWrappedObject(getDefinition().getId());
+    ((CustomControl) wrappedObject).cloneTo(newWrapped);
+    super.setWrappedObject(newWrapped);
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getWrappedObject()
-	{
-		return (T) super.getWrappedObject();
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  public T getWrappedObject() {
+    return (T) super.getWrappedObject();
+  }
 
-	@Override
-	public Object save()
-	{
-		return new CustomControl(getWrappedObject());
-	}
+  @Override
+  public Object save() {
+    return new CustomControl(getWrappedObject());
+  }
 }

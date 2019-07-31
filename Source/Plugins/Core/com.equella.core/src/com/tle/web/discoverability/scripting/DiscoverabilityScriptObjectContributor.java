@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,26 @@
 
 package com.tle.web.discoverability.scripting;
 
-import java.util.Map;
-
-import javax.inject.Singleton;
-
 import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.core.guice.Bind;
 import com.tle.core.scripting.service.ScriptObjectContributor;
 import com.tle.web.discoverability.scripting.impl.MetaScriptWrapper;
 import com.tle.web.discoverability.scripting.objects.MetaScriptObject;
 import com.tle.web.sections.events.PreRenderContext;
+import java.util.Map;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class DiscoverabilityScriptObjectContributor implements ScriptObjectContributor
-{
-	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
-	{
+public class DiscoverabilityScriptObjectContributor implements ScriptObjectContributor {
+  @Override
+  public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params) {
 
-		final PreRenderContext render = (PreRenderContext) params.getAttributes().get("context"); //$NON-NLS-1$
-		if( render != null )
-		{
-			objects.put(MetaScriptObject.DEFAULT_VARIABLE, new MetaScriptWrapper(render));
-		}
-	}
+    final PreRenderContext render =
+        (PreRenderContext) params.getAttributes().get("context"); // $NON-NLS-1$
+    if (render != null) {
+      objects.put(MetaScriptObject.DEFAULT_VARIABLE, new MetaScriptWrapper(render));
+    }
+  }
 }

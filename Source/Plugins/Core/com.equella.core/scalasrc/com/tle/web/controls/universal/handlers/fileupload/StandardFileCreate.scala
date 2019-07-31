@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,14 +23,15 @@ import com.tle.web.controls.universal.StagingContext
 
 object StandardFileCreate {
 
-  def fileAttachmentFromUpload(uploaded: SuccessfulUpload, suppressThumb: Boolean): AttachmentCreate = {
+  def fileAttachmentFromUpload(uploaded: SuccessfulUpload,
+                               suppressThumb: Boolean): AttachmentCreate = {
     def createStaged(stg: StagingContext) = {
       val fa = new FileAttachment
       fa.setFilename(uploaded.uploadPath)
       fa.setDescription(uploaded.description)
       fa.setMd5sum(uploaded.fileInfo.getMd5CheckSum)
       fa.setSize(uploaded.fileInfo.getLength)
-      stg.gatherAdditionalMetadata(uploaded.originalFilename).foreach { a =>
+      stg.gatherAdditionalMetadata(uploaded.uploadPath).foreach { a =>
         fa.setData(a._1, a._2)
       }
       fa
@@ -38,7 +41,9 @@ object StandardFileCreate {
       case fa: FileAttachment =>
         stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
         fa.setFilename(uploaded.originalFilename)
-        fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
+        fa.setThumbnail(
+          if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE
+          else stg.thumbRequest(uploaded.originalFilename))
         stg.deregisterFilename(uploaded.id)
         fa
     }

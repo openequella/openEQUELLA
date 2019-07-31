@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.coursedefaults;
-
-import java.text.ParseException;
-import java.util.Date;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -52,273 +49,228 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.text.ParseException;
+import java.util.Date;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class CourseDefaultsSettingsSection
-	extends
-		OneColumnLayout<CourseDefaultsSettingsSection.CourseDefaultsSettingsModel>
-{
-	@PlugKey("coursedefaults.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("coursedefaults.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
+    extends OneColumnLayout<CourseDefaultsSettingsSection.CourseDefaultsSettingsModel> {
+  @PlugKey("coursedefaults.title")
+  private static Label TITLE_LABEL;
 
-	/**
-	 * Constraints on order of dates (ie start <= end) established by notAfter &
-	 * notBefore parameters in the freemarker template.
-	 */
-	@Component(name = "sdt", stateful = false)
-	private Calendar startDate;
-	@Component(name = "edt", stateful = false)
-	private Calendar endDate;
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
-	@Component
-	@PlugKey("settings.clear.button")
-	private Button clearButton;
-	@Component(stateful = false)
-	@PlugKey("portionrestrictions.checkbox")
-	private Checkbox portionRestrictions;
+  @PlugKey("coursedefaults.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  /**
+   * Constraints on order of dates (ie start <= end) established by notAfter & notBefore parameters
+   * in the freemarker template.
+   */
+  @Component(name = "sdt", stateful = false)
+  private Calendar startDate;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @Component(name = "edt", stateful = false)
+  private Calendar endDate;
 
-	private static final String CLEAR_DIV = "clear";
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private CourseDefaultsSettingsPrivilegeTreeProvider securityProvider;
+  @Component
+  @PlugKey("settings.clear.button")
+  private Button clearButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		final JSHandler updateClear = new OverrideHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("showClear"), CLEAR_DIV));
+  @Component(stateful = false)
+  @PlugKey("portionrestrictions.checkbox")
+  private Checkbox portionRestrictions;
 
-		startDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
-		endDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
+  @EventFactory private EventGenerator events;
 
-		clearButton.setClickHandler(events.getNamedHandler("clear"));
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @AjaxFactory private AjaxGenerator ajax;
 
-	/**
-	 */
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
-		if( !getModel(info).isLoaded() )
-		{
-			CourseDefaultsSettings settings = getCourseDefaultsSettings();
-			portionRestrictions.setChecked(info, settings.isPortionRestrictionsEnabled());
+  private static final String CLEAR_DIV = "clear";
 
-			Date start = null;
-			try
-			{
-				if( !Check.isEmpty(settings.getStartDate()) )
-				{
-					start = CourseDefaultsSettings.parseDate(settings.getStartDate());
-				}
-			}
-			catch( ParseException pe )
-			{
-				// Ignore
-			}
-			if( start != null )
-			{
-				startDate.setDate(info, new UtcDate(start));
-			}
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
+  @Inject private CourseDefaultsSettingsPrivilegeTreeProvider securityProvider;
 
-			Date end = null;
-			try
-			{
-				if( !Check.isEmpty(settings.getEndDate()) )
-				{
-					end = CourseDefaultsSettings.parseDate(settings.getEndDate());
-				}
-			}
-			catch( ParseException pe )
-			{
-				// Ignore
-			}
-			if( end != null )
-			{
-				endDate.setDate(info, new UtcDate(end));
-			}
-			getModel(info).setLoaded(true);
-		}
-		else
-		{
-			// filthy, filthy hack to get around the clear button fudging things
-			// up
-			portionRestrictions.setChecked(info, portionRestrictions.isChecked(info));
-		}
-		checkForDates(info);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    final JSHandler updateClear =
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("showClear"), CLEAR_DIV));
 
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "coursedefaultssettings.ftl", this));
-	}
+    startDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
+    endDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-		checkForDates(info);
-	}
+    clearButton.setClickHandler(events.getNamedHandler("clear"));
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-	private CourseDefaultsSettings getCourseDefaultsSettings()
-	{
-		return configService.getProperties(new CourseDefaultsSettings());
-	}
+  /** */
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
+    if (!getModel(info).isLoaded()) {
+      CourseDefaultsSettings settings = getCourseDefaultsSettings();
+      portionRestrictions.setChecked(info, settings.isPortionRestrictionsEnabled());
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		saveSystemConstants(info);
-		receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-	}
+      Date start = null;
+      try {
+        if (!Check.isEmpty(settings.getStartDate())) {
+          start = CourseDefaultsSettings.parseDate(settings.getStartDate());
+        }
+      } catch (ParseException pe) {
+        // Ignore
+      }
+      if (start != null) {
+        startDate.setDate(info, new UtcDate(start));
+      }
 
-	@EventHandlerMethod
-	public void clear(SectionInfo info)
-	{
-		startDate.clearDate(info);
-		endDate.clearDate(info);
-		getModel(info).setShowClearLink(false);
-		getModel(info).setLoaded(true);
-	}
+      Date end = null;
+      try {
+        if (!Check.isEmpty(settings.getEndDate())) {
+          end = CourseDefaultsSettings.parseDate(settings.getEndDate());
+        }
+      } catch (ParseException pe) {
+        // Ignore
+      }
+      if (end != null) {
+        endDate.setDate(info, new UtcDate(end));
+      }
+      getModel(info).setLoaded(true);
+    } else {
+      // filthy, filthy hack to get around the clear button fudging things
+      // up
+      portionRestrictions.setChecked(info, portionRestrictions.isChecked(info));
+    }
+    checkForDates(info);
 
-	@EventHandlerMethod
-	public void showClear(SectionInfo info)
-	{
-		checkForDates(info);
-	}
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "coursedefaultssettings.ftl", this));
+  }
 
-	private void checkForDates(SectionInfo info)
-	{
-		CourseDefaultsSettingsModel model = getModel(info);
-		boolean atLeastOneDateRendered = (startDate.isDateSet(info) || endDate.isDateSet(info));
-		model.setShowClearLink(atLeastOneDateRendered);
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+    checkForDates(info);
+  }
 
-	private void saveSystemConstants(SectionInfo info)
-	{
-		final CourseDefaultsSettings courseDefaultsSettings = getCourseDefaultsSettings();
-		courseDefaultsSettings.setStartDate(extractFormattedDateFromControl(info, startDate));
-		courseDefaultsSettings.setEndDate(extractFormattedDateFromControl(info, endDate));
-		courseDefaultsSettings.setPortionRestrictionsEnabled(portionRestrictions.isChecked(info));
-		configService.setProperties(courseDefaultsSettings);
+  private CourseDefaultsSettings getCourseDefaultsSettings() {
+    return configService.getProperties(new CourseDefaultsSettings());
+  }
 
-		getModel(info).setLoaded(false);
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    saveSystemConstants(info);
+    receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+  }
 
-	/**
-	 * static because all variables are passed in , no access to members
-	 * required.
-	 * 
-	 * @param info
-	 * @param dateControl
-	 * @return formatted string, or null if no date exists or cannot be
-	 *         formatted.
-	 */
-	@Nullable
-	private static String extractFormattedDateFromControl(SectionInfo info, Calendar dateControl)
-	{
-		TleDate controlDate = dateControl.getDate(info);
-		String dateAsString = null;
-		try
-		{
-			dateAsString = CourseDefaultsSettings
-				.formatDateToPlainString(controlDate == null ? null : controlDate.toDate());
-		}
-		catch( IllegalArgumentException iae )
-		{
-			// plough on to return null
-		}
-		return dateAsString;
-	}
+  @EventHandlerMethod
+  public void clear(SectionInfo info) {
+    startDate.clearDate(info);
+    endDate.clearDate(info);
+    getModel(info).setShowClearLink(false);
+    getModel(info).setLoaded(true);
+  }
 
-	/**
-	 * @return the startDate
-	 */
-	public Calendar getStartDate()
-	{
-		return startDate;
-	}
+  @EventHandlerMethod
+  public void showClear(SectionInfo info) {
+    checkForDates(info);
+  }
 
-	/**
-	 * @return the endDate
-	 */
-	public Calendar getEndDate()
-	{
-		return endDate;
-	}
+  private void checkForDates(SectionInfo info) {
+    CourseDefaultsSettingsModel model = getModel(info);
+    boolean atLeastOneDateRendered = (startDate.isDateSet(info) || endDate.isDateSet(info));
+    model.setShowClearLink(atLeastOneDateRendered);
+  }
 
-	/**
-	 * @return the saveButton
-	 */
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  private void saveSystemConstants(SectionInfo info) {
+    final CourseDefaultsSettings courseDefaultsSettings = getCourseDefaultsSettings();
+    courseDefaultsSettings.setStartDate(extractFormattedDateFromControl(info, startDate));
+    courseDefaultsSettings.setEndDate(extractFormattedDateFromControl(info, endDate));
+    courseDefaultsSettings.setPortionRestrictionsEnabled(portionRestrictions.isChecked(info));
+    configService.setProperties(courseDefaultsSettings);
 
-	/**
-	 * @return the clearButton
-	 */
-	public Button getClearButton()
-	{
-		return clearButton;
-	}
+    getModel(info).setLoaded(false);
+  }
 
-	public Checkbox getPortionRestrictions()
-	{
-		return portionRestrictions;
-	}
+  /**
+   * static because all variables are passed in , no access to members required.
+   *
+   * @param info
+   * @param dateControl
+   * @return formatted string, or null if no date exists or cannot be formatted.
+   */
+  @Nullable
+  private static String extractFormattedDateFromControl(SectionInfo info, Calendar dateControl) {
+    TleDate controlDate = dateControl.getDate(info);
+    String dateAsString = null;
+    try {
+      dateAsString =
+          CourseDefaultsSettings.formatDateToPlainString(
+              controlDate == null ? null : controlDate.toDate());
+    } catch (IllegalArgumentException iae) {
+      // plough on to return null
+    }
+    return dateAsString;
+  }
 
-	@Override
-	public Class<CourseDefaultsSettingsModel> getModelClass()
-	{
-		return CourseDefaultsSettingsModel.class;
-	}
+  /** @return the startDate */
+  public Calendar getStartDate() {
+    return startDate;
+  }
 
-	public static class CourseDefaultsSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		@Bookmarked
-		private boolean loaded;
-		@Bookmarked(stateful = false)
-		private boolean showClearLink;
+  /** @return the endDate */
+  public Calendar getEndDate() {
+    return endDate;
+  }
 
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
+  /** @return the saveButton */
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-		public void setLoaded(boolean loaded)
-		{
-			this.loaded = loaded;
-		}
+  /** @return the clearButton */
+  public Button getClearButton() {
+    return clearButton;
+  }
 
-		public boolean isShowClearLink()
-		{
-			return showClearLink;
-		}
+  public Checkbox getPortionRestrictions() {
+    return portionRestrictions;
+  }
 
-		public void setShowClearLink(boolean showClearLink)
-		{
-			this.showClearLink = showClearLink;
-		}
+  @Override
+  public Class<CourseDefaultsSettingsModel> getModelClass() {
+    return CourseDefaultsSettingsModel.class;
+  }
 
-	}
+  public static class CourseDefaultsSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    @Bookmarked private boolean loaded;
+
+    @Bookmarked(stateful = false)
+    private boolean showClearLink;
+
+    public boolean isLoaded() {
+      return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+      this.loaded = loaded;
+    }
+
+    public boolean isShowClearLink() {
+      return showClearLink;
+    }
+
+    public void setShowClearLink(boolean showClearLink) {
+      this.showClearLink = showClearLink;
+    }
+  }
 }

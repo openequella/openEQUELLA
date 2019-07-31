@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,26 @@
 
 package com.tle.core.customlinks.dao;
 
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.impl.SecureOnReturn;
+import java.util.List;
+import javax.inject.Singleton;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind(CustomLinkDao.class)
 @Singleton
-public class CustomLinkDaoImpl extends AbstractEntityDaoImpl<CustomLink> implements CustomLinkDao
-{
-	public CustomLinkDaoImpl()
-	{
-		super(CustomLink.class);
-	}
+public class CustomLinkDaoImpl extends AbstractEntityDaoImpl<CustomLink> implements CustomLinkDao {
+  public CustomLinkDaoImpl() {
+    super(CustomLink.class);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	@SecureOnReturn(priv = "VIEW_CUSTOM_LINK")
-	public List<CustomLink> listLinksForUser()
-	{
-		return enumerateAll();
-	}
-
+  @Override
+  @Transactional(propagation = Propagation.REQUIRED)
+  @SecureOnReturn(priv = "VIEW_CUSTOM_LINK")
+  public List<CustomLink> listLinksForUser() {
+    return enumerateAll();
+  }
 }

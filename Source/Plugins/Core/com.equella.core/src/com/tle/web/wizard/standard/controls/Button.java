@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -31,47 +33,39 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CButton;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class Button extends AbstractSimpleWebControl
-{
-	@Component(stateful = false)
-	private com.tle.web.sections.standard.Button button;
-	@EventFactory
-	private EventGenerator events;
+public class Button extends AbstractSimpleWebControl {
+  @Component(stateful = false)
+  private com.tle.web.sections.standard.Button button;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		button.setClickHandler(events.getNamedHandler("clicked")); //$NON-NLS-1$
-	}
+  @EventFactory private EventGenerator events;
 
-	@EventHandlerMethod
-	public void clicked(SectionInfo info)
-	{
-		((CButton) getWrappedControl()).setActionFired(true);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    button.setClickHandler(events.getNamedHandler("clicked")); // $NON-NLS-1$
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisabler(context, button);
-		button.setLabel(context, new TextLabel(getTitle()));
-		return SectionUtils.renderSection(context, button.getSectionId());
-	}
+  @EventHandlerMethod
+  public void clicked(SectionInfo info) {
+    ((CButton) getWrappedControl()).setActionFired(true);
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		// nothing
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisabler(context, button);
+    button.setLabel(context, new TextLabel(getTitle()));
+    return SectionUtils.renderSection(context, button.getSectionId());
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return button;
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    // nothing
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return button;
+  }
 }

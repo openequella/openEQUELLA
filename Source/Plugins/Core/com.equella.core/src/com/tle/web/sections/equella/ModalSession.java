@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,44 +22,35 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class ModalSession implements Serializable
-{
-	private static final long serialVersionUID = 1L;
-	public static final String KEY_IGNORE_CURRENT_SESSION = "KEY_IGNORE_CURRENT_SESSION";
+public class ModalSession implements Serializable {
+  private static final long serialVersionUID = 1L;
+  public static final String KEY_IGNORE_CURRENT_SESSION = "KEY_IGNORE_CURRENT_SESSION";
 
-	private final ModalSessionCallback finishedCallback;
-	private Map<Object, Object> attributes;
+  private final ModalSessionCallback finishedCallback;
+  private Map<Object, Object> attributes;
 
-	public ModalSession(ModalSessionCallback finishedCallback)
-	{
-		this.finishedCallback = finishedCallback;
-	}
+  public ModalSession(ModalSessionCallback finishedCallback) {
+    this.finishedCallback = finishedCallback;
+  }
 
-	public ModalSessionCallback getFinishedCallback()
-	{
-		return finishedCallback;
-	}
+  public ModalSessionCallback getFinishedCallback() {
+    return finishedCallback;
+  }
 
-	@SuppressWarnings("unchecked")
-	public <T> T getAttribute(Object key)
-	{
-		if( attributes == null )
-		{
-			return null;
-		}
-		return (T) attributes.get(key);
-	}
+  @SuppressWarnings("unchecked")
+  public <T> T getAttribute(Object key) {
+    if (attributes == null) {
+      return null;
+    }
+    return (T) attributes.get(key);
+  }
 
-	public void setAttribute(Object key, Object attribute)
-	{
-		if( attributes == null )
-		{
-			attributes = new HashMap<Object, Object>();
-		}
-		attributes.put(key, attribute);
-	}
+  public void setAttribute(Object key, Object attribute) {
+    if (attributes == null) {
+      attributes = new HashMap<Object, Object>();
+    }
+    attributes.put(key, attribute);
+  }
 }

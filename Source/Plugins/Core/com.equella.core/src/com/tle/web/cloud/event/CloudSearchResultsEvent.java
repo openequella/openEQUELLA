@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,57 +24,52 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;
 import com.tle.web.sections.equella.search.event.SearchResultsListener;
 
-public class CloudSearchResultsEvent extends AbstractSearchResultsEvent<CloudSearchResultsEvent>
-{
-	private final CloudSearchResults results;
-	private final int filteredOut;
-	private final CloudSearchEvent event;
+public class CloudSearchResultsEvent extends AbstractSearchResultsEvent<CloudSearchResultsEvent> {
+  private final CloudSearchResults results;
+  private final int filteredOut;
+  private final CloudSearchEvent event;
 
-	public CloudSearchResultsEvent(CloudSearchEvent searchEvent, CloudSearchResults results, int filteredOut)
-	{
-		this.results = results;
-		this.filteredOut = filteredOut;
-		this.event = searchEvent;
-	}
+  public CloudSearchResultsEvent(
+      CloudSearchEvent searchEvent, CloudSearchResults results, int filteredOut) {
+    this.results = results;
+    this.filteredOut = filteredOut;
+    this.event = searchEvent;
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, SearchResultsListener<CloudSearchResultsEvent> listener)
-		throws Exception
-	{
-		listener.processResults(info, this);
-	}
+  @Override
+  public void fire(
+      SectionId sectionId,
+      SectionInfo info,
+      SearchResultsListener<CloudSearchResultsEvent> listener)
+      throws Exception {
+    listener.processResults(info, this);
+  }
 
-	@Override
-	public int getOffset()
-	{
-		return results.getOffset();
-	}
+  @Override
+  public int getOffset() {
+    return results.getOffset();
+  }
 
-	@Override
-	public int getCount()
-	{
-		return results.getCount();
-	}
+  @Override
+  public int getCount() {
+    return results.getCount();
+  }
 
-	@Override
-	public int getMaximumResults()
-	{
-		return results.getAvailable();
-	}
+  @Override
+  public int getMaximumResults() {
+    return results.getAvailable();
+  }
 
-	@Override
-	public int getFilteredOut()
-	{
-		return filteredOut;
-	}
+  @Override
+  public int getFilteredOut() {
+    return filteredOut;
+  }
 
-	public CloudSearchResults getResults()
-	{
-		return results;
-	}
+  public CloudSearchResults getResults() {
+    return results;
+  }
 
-	public CloudSearchEvent getEvent()
-	{
-		return event;
-	}
+  public CloudSearchEvent getEvent() {
+    return event;
+  }
 }

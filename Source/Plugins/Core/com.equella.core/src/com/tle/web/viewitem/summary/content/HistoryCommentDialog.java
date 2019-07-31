@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -39,85 +41,73 @@ import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 
 @NonNullByDefault
 @Bind
-public class HistoryCommentDialog extends EquellaDialog<HistoryCommentDialog.HistoryCommentModel>
-{
-	@PlugKey("summary.content.history.comment.title")
-	private static Label TITLE_LABEL;
+public class HistoryCommentDialog extends EquellaDialog<HistoryCommentDialog.HistoryCommentModel> {
+  @PlugKey("summary.content.history.comment.title")
+  private static Label TITLE_LABEL;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		setAjax(true);
-	}
+    setAjax(true);
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("showComment");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("showComment");
+  }
 
-	@EventHandlerMethod
-	public void showComment(SectionInfo info, long commentId)
-	{
-		HistoryCommentModel model = getModel(info);
-		model.setCommentId(commentId);
-		super.showDialog(info);
-	}
+  @EventHandlerMethod
+  public void showComment(SectionInfo info, long commentId) {
+    HistoryCommentModel model = getModel(info);
+    model.setCommentId(commentId);
+    super.showDialog(info);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE_LABEL;
+  }
 
-	@Nullable
-	@Override
-	@SuppressWarnings("nls")
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		final long commentId = getModel(context).getCommentId();
+  @Nullable
+  @Override
+  @SuppressWarnings("nls")
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    final long commentId = getModel(context).getCommentId();
 
-		WorkflowStatus ws = ParentViewItemSectionUtils.getItemInfo(context).getWorkflowStatus();
-		for( WorkflowEvent we : ws.getEvents() )
-		{
-			if( we.getId() == commentId )
-			{
-				return new DivRenderer(new LabelRenderer(new TextLabel(SectionUtils.ent(we.getComment()).replaceAll(
-					"\n", "<br>"), true)));
-			}
-		}
+    WorkflowStatus ws = ParentViewItemSectionUtils.getItemInfo(context).getWorkflowStatus();
+    for (WorkflowEvent we : ws.getEvents()) {
+      if (we.getId() == commentId) {
+        return new DivRenderer(
+            new LabelRenderer(
+                new TextLabel(SectionUtils.ent(we.getComment()).replaceAll("\n", "<br>"), true)));
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public String getWidth()
-	{
-		return "600px";
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public String getWidth() {
+    return "600px";
+  }
 
-	@Override
-	public HistoryCommentModel instantiateDialogModel(SectionInfo info)
-	{
-		return new HistoryCommentModel();
-	}
+  @Override
+  public HistoryCommentModel instantiateDialogModel(SectionInfo info) {
+    return new HistoryCommentModel();
+  }
 
-	public static class HistoryCommentModel extends DialogModel
-	{
-		private long commentId;
+  public static class HistoryCommentModel extends DialogModel {
+    private long commentId;
 
-		public void setCommentId(long commentId)
-		{
-			this.commentId = commentId;
-		}
+    public void setCommentId(long commentId) {
+      this.commentId = commentId;
+    }
 
-		public long getCommentId()
-		{
-			return commentId;
-		}
-	}
+    public long getCommentId() {
+      return commentId;
+    }
+  }
 }

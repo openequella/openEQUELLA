@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,8 +36,11 @@ import scala.collection.JavaConverters._
 object NotificationEmailer {
   val MAX_EMAIL_NOTIFICATIONS = 30
 
-  lazy val tracker: PluginTracker[NotificationExtension] = new PluginTracker(AbstractPluginService.get(), "com.tle.core.notification",
-    "notificationExtension", "type").setBeanKey("bean")
+  lazy val tracker: PluginTracker[NotificationExtension] =
+    new PluginTracker(AbstractPluginService.get(),
+                      "com.tle.core.notification",
+                      "notificationExtension",
+                      "type").setBeanKey("bean")
 
   def extensionForType(str: String): Option[NotificationExtension] =
     Option(tracker.getExtension(str)).map(tracker.getBeanByExtension)
@@ -44,55 +49,66 @@ object NotificationEmailer {
 }
 
 class NotificationEmailer(batched: Boolean,
-                          processDate: Date, attemptId: String, dao: NotificationDao, emailService: EmailService)
-  extends Callable[java.lang.Iterable[Callable[EmailResult[EmailKey]]]] {
-
+                          processDate: Date,
+                          attemptId: String,
+                          dao: NotificationDao,
+                          emailService: EmailService)
+    extends Callable[java.lang.Iterable[Callable[EmailResult[EmailKey]]]] {
 
   override def call: java.lang.Iterable[Callable[EmailResult[EmailKey]]] = {
     val userBean = CurrentUser.getDetails
-    val inst = CurrentInstitution.get()
-    val user = userBean.getUniqueID
+    val inst     = CurrentInstitution.get()
+    val user     = userBean.getUniqueID
     dao.updateLastAttempt(user, batched, processDate, attemptId)
     val reasonMap = dao.getReasonCounts(user, attemptId).asScala.mapValues(_.intValue()).toMap
-    val canSend = emailService.hasMailSettings && Option(userBean.getEmailAddress).exists(_.nonEmpty)
+    val canSend = emailService.hasMailSettings && Option(userBean.getEmailAddress)
+      .exists(_.nonEmpty)
     val ext2Reasons = reasonMap.keys.groupBy(extensionForType)
-    val emailCallers = ext2Reasons.flatMap { case (extO, reasons) =>
-      (extO, canSend) match {
-        case (Some(ext), true) =>
-          val newestNotes = dao.getNewestNotificationsForUser(MAX_EMAIL_NOTIFICATIONS, user, reasons.asJavaCollection, attemptId).asScala
-          ext.emails(userBean, newestNotes, reasonMap).map { ne =>
-            val id = UUID.randomUUID()
-            def successCB() : Unit = {
-              val (p,d) = ne.pertainsTo.partition(n => ext.isIndexed(n.getReason))
-              def ids(n: Iterable[Notification]) = n.map(_.getId.asInstanceOf[java.lang.Long]).asJavaCollection
-              dao.deleteUnindexedById(user, ids(d), attemptId)
-              dao.markProcessedById(user, ids(p), attemptId)
-              if (LOGGER.isDebugEnabled)
-              {
-                LOGGER.debug(s"Successful sent email $id")
+    val emailCallers = ext2Reasons.flatMap {
+      case (extO, reasons) =>
+        (extO, canSend) match {
+          case (Some(ext), true) =>
+            val newestNotes = dao
+              .getNewestNotificationsForUser(MAX_EMAIL_NOTIFICATIONS,
+                                             user,
+                                             reasons.asJavaCollection,
+                                             attemptId)
+              .asScala
+            ext.emails(userBean, newestNotes, reasonMap).map { ne =>
+              val id = UUID.randomUUID()
+              def successCB(): Unit = {
+                val (p, d) = ne.pertainsTo.partition(n => ext.isIndexed(n.getReason))
+                def ids(n: Iterable[Notification]) =
+                  n.map(_.getId.asInstanceOf[java.lang.Long]).asJavaCollection
+                dao.deleteUnindexedById(user, ids(d), attemptId)
+                dao.markProcessedById(user, ids(p), attemptId)
+                if (LOGGER.isDebugEnabled) {
+                  LOGGER.debug(s"Successful sent email $id")
+                }
               }
-            }
-            if (LOGGER.isDebugEnabled) {
-              LOGGER.debug(
-                s"""EMAIL-ID: $id
+              if (LOGGER.isDebugEnabled) {
+                LOGGER.debug(s"""EMAIL-ID: $id
                    |USER: ${userBean.getUsername}
                    |SUBJECT: ${ne.subject}
                    |CONTENT:
                    |${ne.text}
                  """.stripMargin)
+              }
+              val emailKey = EmailKey(id, userBean, inst, successCB)
+              emailService.createEmailer(ne.subject,
+                                         Collections.singletonList(userBean.getEmailAddress),
+                                         ne.text,
+                                         emailKey)
             }
-            val emailKey = EmailKey(id, userBean, inst, successCB)
-            emailService.createEmailer(ne.subject, Collections.singletonList(userBean.getEmailAddress), ne.text, emailKey)
-          }
-        case (Some(ext), false) =>
-          val (p, d) = reasons.partition(ext.isIndexed)
-          dao.markProcessed(user, p.asJavaCollection, attemptId)
-          dao.deleteUnindexed(user, d.asJavaCollection, attemptId)
-          Seq.empty
-        case (None, _) =>
-          dao.deleteUnindexed(user, reasons.asJavaCollection, attemptId)
-          Seq.empty
-      }
+          case (Some(ext), false) =>
+            val (p, d) = reasons.partition(ext.isIndexed)
+            dao.markProcessed(user, p.asJavaCollection, attemptId)
+            dao.deleteUnindexed(user, d.asJavaCollection, attemptId)
+            Seq.empty
+          case (None, _) =>
+            dao.deleteUnindexed(user, reasons.asJavaCollection, attemptId)
+            Seq.empty
+        }
     }
     emailCallers.asJava
   }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.connectors.dialog;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
@@ -40,149 +40,122 @@ import com.tle.web.sections.js.generic.function.ParentFrameFunction;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
-public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model>
-{
-	@PlugKey("dialog.lmsauth.title")
-	private static Label LABEL_TITLE;
+public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
+  @PlugKey("dialog.lmsauth.title")
+  private static Label LABEL_TITLE;
 
-	@Inject
-	private ConnectorService connectorService;
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+  @Inject private ConnectorService connectorService;
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	private ParentFrameFunction parentCallback;
-	@Nullable
-	private LMSAuthUrlCallable authUrlCallable;
+  private ParentFrameFunction parentCallback;
+  @Nullable private LMSAuthUrlCallable authUrlCallable;
 
-	public LMSAuthDialog()
-	{
-		setAjax(true);
-	}
+  public LMSAuthDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		final Model model = getModel(context);
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    final Model model = getModel(context);
 
-		final String forwardUrl = new BookmarkAndModify(context, events.getNamedModifier("finishedAuth")).getHref();
-		try
-		{
-			final String authUrl;
-			if( authUrlCallable != null )
-			{
-				authUrl = authUrlCallable.getAuthorisationUrl(context, forwardUrl);
-			}
-			else
-			{
-				final String connectorUuid = model.getConnectorUuid();
-				if( connectorUuid == null )
-				{
-					throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
-				}
-				final Connector connector = connectorService.getByUuid(connectorUuid);
-				authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
-			}
-			model.setAuthUrl(authUrl);
-		}
-		catch( Exception e )
-		{
-			throw Throwables.propagate(e);
-		}
+    final String forwardUrl =
+        new BookmarkAndModify(context, events.getNamedModifier("finishedAuth")).getHref();
+    try {
+      final String authUrl;
+      if (authUrlCallable != null) {
+        authUrl = authUrlCallable.getAuthorisationUrl(context, forwardUrl);
+      } else {
+        final String connectorUuid = model.getConnectorUuid();
+        if (connectorUuid == null) {
+          throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
+        }
+        final Connector connector = connectorService.getByUuid(connectorUuid);
+        authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
+      }
+      model.setAuthUrl(authUrl);
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
 
-		return view.createResult("dialog/lmsauth.ftl", this);
-	}
+    return view.createResult("dialog/lmsauth.ftl", this);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
+  }
 
-	@EventHandlerMethod
-	public void finishedAuth(SectionInfo info)
-	{
-		//		final Model model = getModel(info);
-		//		final String connectorUuid = model.getConnectorUuid();
-		//		if( connectorUuid == null )
-		//		{
-		//			throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
-		//		}
-		//		final Connector connector = connectorService.getByUuid(connectorUuid);
-		//		repositoryService.finishedAuthorisation(connector);
+  @EventHandlerMethod
+  public void finishedAuth(SectionInfo info) {
+    //		final Model model = getModel(info);
+    //		final String connectorUuid = model.getConnectorUuid();
+    //		if( connectorUuid == null )
+    //		{
+    //			throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
+    //		}
+    //		final Connector connector = connectorService.getByUuid(connectorUuid);
+    //		repositoryService.finishedAuthorisation(connector);
 
-		//Close the dialog
-		closeDialog(info, parentCallback, (Object) null);
-	}
+    // Close the dialog
+    closeDialog(info, parentCallback, (Object) null);
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "1024px";
-	}
+  @Override
+  public String getWidth() {
+    return "1024px";
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public Model instantiateDialogModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Model instantiateDialogModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public void setConnectorUuid(SectionInfo info, String connectorUuid)
-	{
-		getModel(info).setConnectorUuid(connectorUuid);
-	}
+  public void setConnectorUuid(SectionInfo info, String connectorUuid) {
+    getModel(info).setConnectorUuid(connectorUuid);
+  }
 
-	public void setAuthUrlCallable(LMSAuthUrlCallable authUrlCallable)
-	{
-		this.authUrlCallable = authUrlCallable;
-	}
+  public void setAuthUrlCallable(LMSAuthUrlCallable authUrlCallable) {
+    this.authUrlCallable = authUrlCallable;
+  }
 
-	public interface LMSAuthUrlCallable
-	{
-		String getAuthorisationUrl(SectionInfo info, String forwardUrl);
-	}
+  public interface LMSAuthUrlCallable {
+    String getAuthorisationUrl(SectionInfo info, String forwardUrl);
+  }
 
-	@NonNullByDefault(false)
-	public static class Model extends DialogModel
-	{
-		@Bookmarked(name = "c")
-		private String connectorUuid;
-		private String authUrl;
+  @NonNullByDefault(false)
+  public static class Model extends DialogModel {
+    @Bookmarked(name = "c")
+    private String connectorUuid;
 
-		public String getConnectorUuid()
-		{
-			return connectorUuid;
-		}
+    private String authUrl;
 
-		public void setConnectorUuid(String connectorUuid)
-		{
-			this.connectorUuid = connectorUuid;
-		}
+    public String getConnectorUuid() {
+      return connectorUuid;
+    }
 
-		public String getAuthUrl()
-		{
-			return authUrl;
-		}
+    public void setConnectorUuid(String connectorUuid) {
+      this.connectorUuid = connectorUuid;
+    }
 
-		public void setAuthUrl(String authUrl)
-		{
-			this.authUrl = authUrl;
-		}
-	}
+    public String getAuthUrl() {
+      return authUrl;
+    }
+
+    public void setAuthUrl(String authUrl) {
+      this.authUrl = authUrl;
+    }
+  }
 }

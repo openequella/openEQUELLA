@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,30 @@
 
 package com.tle.upgrade.upgraders;
 
-import java.io.File;
-
 import com.dytech.common.io.FileUtils;
 import com.tle.upgrade.UpgradeResult;
+import java.io.File;
 
 @SuppressWarnings("nls")
-public class ConvertBoneCPtoHikariCP extends AbstractUpgrader
-{
+public class ConvertBoneCPtoHikariCP extends AbstractUpgrader {
 
-	@Override
-	public String getId()
-	{
-		return "ConvertBoneCPtoHikariCP";
-	}
+  @Override
+  public String getId() {
+    return "ConvertBoneCPtoHikariCP";
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception
-	{
-		File configFolder = new File(tleInstallDir, CONFIG_FOLDER);
-		copyResource("data/hikari.properties", configFolder);
-		File existingBoneCP = new File(configFolder, "bonecp.properties");
-		if( existingBoneCP.exists() )
-		{
-			FileUtils.delete(existingBoneCP);
-		}
-	}
+  @Override
+  public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
+    File configFolder = new File(tleInstallDir, CONFIG_FOLDER);
+    copyResource("data/hikari.properties", configFolder);
+    File existingBoneCP = new File(configFolder, "bonecp.properties");
+    if (existingBoneCP.exists()) {
+      FileUtils.delete(existingBoneCP);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,53 +29,43 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class FunctionCallExpression extends AbstractExpression
-{
-	protected JSCallable function;
-	@Nullable
-	protected JSExpression[] params;
+public class FunctionCallExpression extends AbstractExpression {
+  protected JSCallable function;
+  @Nullable protected JSExpression[] params;
 
-	public FunctionCallExpression(JSCallable function, Object... params)
-	{
-		this.function = function;
-		this.params = JSUtils.convertExpressions(params);
-	}
+  public FunctionCallExpression(JSCallable function, Object... params) {
+    this.function = function;
+    this.params = JSUtils.convertExpressions(params);
+  }
 
-	public FunctionCallExpression(String function, Object... params)
-	{
-		this(new ExternallyDefinedFunction(function), params);
-	}
+  public FunctionCallExpression(String function, Object... params) {
+    this(new ExternallyDefinedFunction(function), params);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(function);
-		info.preRender(params);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(function);
+    info.preRender(params);
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		return function.getExpressionForCall(info, params);
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    return function.getExpressionForCall(info, params);
+  }
 
-	@Override
-	public String toString()
-	{
-		StringBuilder paramStr = new StringBuilder();
-		if( params != null )
-		{
-			boolean first = true;
-			for( JSExpression p : params )
-			{
-				if( !first )
-				{
-					paramStr.append(", ");
-				}
-				paramStr.append(p);
-				first = false;
-			}
-		}
-		return function + "(" + paramStr + ")";
-	}
+  @Override
+  public String toString() {
+    StringBuilder paramStr = new StringBuilder();
+    if (params != null) {
+      boolean first = true;
+      for (JSExpression p : params) {
+        if (!first) {
+          paramStr.append(", ");
+        }
+        paramStr.append(p);
+        first = false;
+      }
+    }
+    return function + "(" + paramStr + ")";
+  }
 }

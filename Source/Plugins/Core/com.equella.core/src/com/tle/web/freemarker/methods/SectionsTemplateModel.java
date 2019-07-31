@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,30 +20,23 @@ package com.tle.web.freemarker.methods;
 
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.SectionsRuntimeException;
-
 import freemarker.core.Environment;
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-public class SectionsTemplateModel implements TemplateModel
-{
+public class SectionsTemplateModel implements TemplateModel {
 
-	public SectionWriter getSectionWriter()
-	{
-		try
-		{
-			AdapterTemplateModel model = (AdapterTemplateModel) Environment.getCurrentEnvironment().getGlobalVariable(
-				"_info");
-			if( model != null )
-			{
-				return (SectionWriter) model.getAdaptedObject(SectionWriter.class);
-			}
-			return null;
-		}
-		catch( TemplateModelException e )
-		{
-			throw new SectionsRuntimeException(e);
-		}
-	}
+  public SectionWriter getSectionWriter() {
+    try {
+      AdapterTemplateModel model =
+          (AdapterTemplateModel) Environment.getCurrentEnvironment().getGlobalVariable("_info");
+      if (model != null) {
+        return (SectionWriter) model.getAdaptedObject(SectionWriter.class);
+      }
+      return null;
+    } catch (TemplateModelException e) {
+      throw new SectionsRuntimeException(e);
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,22 @@
 
 package com.tle.web.scorm;
 
-public interface ScormAPI
-{
-	String initialize(String param);
+public interface ScormAPI {
+  String initialize(String param);
 
-	String terminate(String param);
+  String terminate(String param);
 
-	String getValue(String name);
+  String getValue(String name);
 
-	String setValue(String name, String value);
+  String setValue(String name, String value);
 
-	String commit(String param);
+  String commit(String param);
 
-	String getLastError();
+  String getLastError();
 
-	String getErrorString(String errCode);
+  String getErrorString(String errCode);
 
-	String getDiagnostic(String error);
+  String getDiagnostic(String error);
 
-	void setCurrentIdentifier(String ident);
+  void setCurrentIdentifier(String ident);
 }

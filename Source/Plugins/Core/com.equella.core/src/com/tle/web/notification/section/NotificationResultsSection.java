@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.notification.section;
-
-import java.util.List;
 
 import com.google.inject.Inject;
 import com.tle.common.search.DefaultSearch;
@@ -31,53 +31,46 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
+import java.util.List;
 
 public class NotificationResultsSection
-	extends
-		AbstractFreetextResultsSection<NotificationItemListEntry, AbstractSearchResultsSection.SearchResultsModel>
-{
-	@PlugKey("noresults.items")
-	private static Label LABEL_NOAVAILABLE;
-	@PlugKey("noresults.items.filtered")
-	private static Label LABEL_NORESULTS;
+    extends AbstractFreetextResultsSection<
+        NotificationItemListEntry, AbstractSearchResultsSection.SearchResultsModel> {
+  @PlugKey("noresults.items")
+  private static Label LABEL_NOAVAILABLE;
 
-	@Inject
-	private NotificationItemList itemList;
+  @PlugKey("noresults.items.filtered")
+  private static Label LABEL_NORESULTS;
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(itemList, id);
-	}
+  @Inject private NotificationItemList itemList;
 
-	@Override
-	public NotificationItemList getItemList(SectionInfo info)
-	{
-		return itemList;
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(itemList, id);
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return new NotificationSearch();
-	}
+  @Override
+  public NotificationItemList getItemList(SectionInfo info) {
+    return itemList;
+  }
 
-	@Override
-	protected Label getNoResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		if( !searchEvent.isFiltered() )
-		{
-			return LABEL_NOAVAILABLE;
-		}
-		return LABEL_NORESULTS;
-	}
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return new NotificationSearch();
+  }
 
-	@Override
-	protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList)
-	{
-		super.addAjaxUpdateDivs(tree, ajaxList);
-		ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
-	}
+  @Override
+  protected Label getNoResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    if (!searchEvent.isFiltered()) {
+      return LABEL_NOAVAILABLE;
+    }
+    return LABEL_NORESULTS;
+  }
 
+  @Override
+  protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList) {
+    super.addAjaxUpdateDivs(tree, ajaxList);
+    ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
+  }
 }

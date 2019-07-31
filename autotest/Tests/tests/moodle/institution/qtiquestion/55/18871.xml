@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18871</id>
+  <uuid>32221bbb-dde3-4f5e-b25f-9d387a98a990</uuid>
+  <identifier>QuizBowl-multi-geometry</identifier>
+  <title>What sort of triangle</title>
+  <lang>en</lang>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@4f2fa2bc(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;div&gt;@1080364353(xPath=/assessmentItem[@identifier=&quot;QuizBowl-multi-geometry&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@2a49476e(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml,lineNumber=37,columnNumber=14))
+        1 =&gt; &lt;p&gt;@821075058(xPath=/assessmentItem[@identifier=&quot;QuizBowl-multi-geometry&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@4af1978(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml,lineNumber=50,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@61937583(xPath=/assessmentItem[@identifier=&quot;QuizBowl-multi-geometry&quot;],location=XmlSourceLocationInformation@5f89e40d(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml,lineNumber=8,columnNumber=44))(systemId=_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@55db427b
+    sourceLocation =&gt; XmlSourceLocationInformation@2de9c546(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml,lineNumber=36,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@61937583(xPath=/assessmentItem[@identifier=&quot;QuizBowl-multi-geometry&quot;],location=XmlSourceLocationInformation@5f89e40d(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml,lineNumber=8,columnNumber=44))(systemId=_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@4e968e36
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

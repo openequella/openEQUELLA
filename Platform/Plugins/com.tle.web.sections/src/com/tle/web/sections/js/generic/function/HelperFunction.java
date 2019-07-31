@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,31 +22,26 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.header.HeaderHelper;
 import com.tle.web.sections.js.JSCallable;
 
-public final class HelperFunction extends RuntimeRefFunction
-{
-	public static final HelperFunction TRIGGER = new HelperFunction(HelperType.T_TRIGGER);
+public final class HelperFunction extends RuntimeRefFunction {
+  public static final HelperFunction TRIGGER = new HelperFunction(HelperType.T_TRIGGER);
 
-	private enum HelperType
-	{
-		T_TRIGGER
-	}
+  private enum HelperType {
+    T_TRIGGER
+  }
 
-	private HelperType type;
+  private HelperType type;
 
-	private HelperFunction(HelperType type)
-	{
-		this.type = type;
-	}
+  private HelperFunction(HelperType type) {
+    this.type = type;
+  }
 
-	@Override
-	protected JSCallable getRealFunction(RenderContext info)
-	{
-		HeaderHelper helper = info.getHelper();
-		switch( type )
-		{
-			case T_TRIGGER:
-				return helper.getTriggerEventFunction();
-		}
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  protected JSCallable getRealFunction(RenderContext info) {
+    HeaderHelper helper = info.getHelper();
+    switch (type) {
+      case T_TRIGGER:
+        return helper.getTriggerEventFunction();
+    }
+    throw new UnsupportedOperationException();
+  }
 }

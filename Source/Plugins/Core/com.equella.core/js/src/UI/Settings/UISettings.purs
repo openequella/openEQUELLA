@@ -2,16 +2,17 @@ module OEQ.UI.Settings.UISettings where
 
 import Prelude
 
+import Common.Strings (languageStrings)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
-import Control.MonadZero (guard)
 import Data.Either (either)
 import Data.Lens.Record (prop)
 import Data.Lens.Setter (set)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Symbol (SProxy(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getState, modifyState, renderer)
+import Dispatcher.React (getProps, getState, modifyState, renderer)
+import Effect (Effect)
 import Effect.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
@@ -27,14 +28,14 @@ import Network.HTTP.Affjax (get, put_)
 import Network.HTTP.Affjax.Request (json)
 import Network.HTTP.Affjax.Response (json) as Resp
 import OEQ.Data.Settings (UISettings, decodeUISettings, encodeUISettings)
-import OEQ.Environment (baseUrl, prepLangStrings)
-import OEQ.MainUI.Routes (Route(..), routeHref)
+import OEQ.Environment (baseUrl)
+import OEQ.MainUI.TSRoutes (link, routes)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props as DP
 import Web.HTML (window)
-import Web.HTML.Location (reload, replace)
+import Web.HTML.Location (replace)
 import Web.HTML.Window (location)
 
 
@@ -49,11 +50,11 @@ type State eff = {
 initialState :: forall eff. State eff
 initialState = {disabled:true, saving:Nothing, newUIEnabled: false, settings: {newUI: {enabled:false, newSearch: false}}}
 
-uiSettingsEditor :: ReactElement
-uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ component "UISettings" $ \this -> do 
+uiSettingsEditor :: {refreshUser :: Effect Unit} -> ReactElement
+uiSettingsEditor = unsafeCreateLeafElement $ withStyles styles $ component "UISettings" $ \this -> do 
   let
     d = eval >>> affAction this
-    string = prepLangStrings rawStrings
+    string = languageStrings.uiconfig
     _newSearch = prop (SProxy :: SProxy "newSearch")
     _enabled = prop (SProxy :: SProxy "enabled")
     _newUI = prop (SProxy :: SProxy "newUI")
@@ -65,7 +66,6 @@ uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ compone
     render {state: s@{settings:uis@{newUI}}, props: {classes}} =
       let
         disabled = not newUI.enabled
-        themePageLink = routeHref ThemePage
       in
       expansionPanelDetails_ [
         D.div' [
@@ -81,19 +81,23 @@ uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ compone
                 formControlLabel' {label: string.enableSearch, control: switch' {checked: newUI.newSearch,
                                disabled, onChange: mkEffectFn2 \e -> d <<< SetNewSearch }}
               ]
-            ],          
-            button
-              {onClick: themePageLink.onClick, variant: contained, disabled}
-              [text string.themeSettingsButton]
+            ],
+            link {to: routes."ThemeConfig".path} [
+              button
+                {variant: contained, disabled}
+                [text string.themeSettingsButton]
+            ]
           ]
         ]
       ]
     save = do
       {saving} <- getState
+      {refreshUser} <- getProps
       newFiber <- lift $ forkAff $ do
-        delay (Milliseconds 1000.0)
+        delay (Milliseconds 100.0)
         {settings} <- runReaderT getState this
         void $ put_ (baseUrl <> "api/settings/ui") $ json $ encodeUISettings settings
+        liftEffect refreshUser
       modifyState _{saving=Just newFiber}
       lift $ maybe (pure unit) (killFiber (error "")) saving
 
@@ -134,28 +138,3 @@ uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ compone
         width: 300
       }
     }
-
-
-rawStrings :: { prefix :: String
-, strings :: { facet :: { name :: String
-                        , path :: String
-                        , title :: String
-                        }
-             , enableNew :: String
-             , enableSearch :: String
-             , themeSettingsButton :: String
-             }
-}
-rawStrings = {
-  prefix: "uiconfig", 
-  strings: {
-    facet: {
-      name: "Name",
-      path: "Path",
-      title: "Search facets"
-    },
-    enableNew: "Enable new UI",
-    enableSearch: "Enable new search page",
-    themeSettingsButton: "Edit Theme Settings"
-  }
-}

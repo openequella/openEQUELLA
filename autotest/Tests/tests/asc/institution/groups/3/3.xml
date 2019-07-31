@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>116100</id>
+  <uuid>9be1ae20-9544-4e73-8e13-e1ee29c450d5</uuid>
+  <name>group 2</name>
+  <description></description>
+  <users>
+    <string>ad2c30da-2b1c-4427-b21c-45ef5bd09f11</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

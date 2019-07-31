@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,42 +20,33 @@ package com.tle.core.harvester.old;
 
 import java.util.Date;
 
-/**
- * @author Nicholas Read
- */
-public class TLEItem
-{
-	private String uuid;
-	private int version;
-	private Date created;
-	private Date modified;
+/** @author Nicholas Read */
+public class TLEItem {
+  private String uuid;
+  private int version;
+  private Date created;
+  private Date modified;
 
-	public TLEItem(String uuid, int version, Date created, Date modified)
-	{
-		this.uuid = uuid;
-		this.version = version;
-		this.created = created;
-		this.modified = modified;
+  public TLEItem(String uuid, int version, Date created, Date modified) {
+    this.uuid = uuid;
+    this.version = version;
+    this.created = created;
+    this.modified = modified;
+  }
 
-	}
+  public Date getCreationDate() {
+    return created;
+  }
 
-	public Date getCreationDate()
-	{
-		return created;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public int getVersion()
-	{
-		return version;
-	}
-
-	public Date getModifiedDate()
-	{
-		return modified;
-	}
+  public Date getModifiedDate() {
+    return modified;
+  }
 }

@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>120430</id>
+  <institution>
+    <id>120267</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>sv4crc</string>
+  </extensions>
+  <type>application/x-sv4crc</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

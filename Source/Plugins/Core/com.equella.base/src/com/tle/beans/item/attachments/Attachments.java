@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,32 +24,31 @@ import java.util.List;
 /*
  * @author aholland
  */
-public interface Attachments extends Iterable<IAttachment>
-{
-	/**
-	 * @param <T>
-	 * @param attachmentType
-	 * @return An UNMODIFIABLE list
-	 */
-	<T extends IAttachment> List<T> getList(AttachmentType attachmentType);
+public interface Attachments extends Iterable<IAttachment> {
+  /**
+   * @param <T>
+   * @param attachmentType
+   * @return An UNMODIFIABLE list
+   */
+  <T extends IAttachment> List<T> getList(AttachmentType attachmentType);
 
-	ImsAttachment getIms();
+  ImsAttachment getIms();
 
-	<T extends IAttachment> Iterator<T> getIterator(AttachmentType attachmentType);
+  <T extends IAttachment> Iterator<T> getIterator(AttachmentType attachmentType);
 
-	List<CustomAttachment> getCustomList(String type);
+  List<CustomAttachment> getCustomList(String type);
 
-	CustomAttachment getFirstCustomOfType(String type);
+  CustomAttachment getFirstCustomOfType(String type);
 
-	IAttachment getAttachmentByUuid(String uuid);
+  IAttachment getAttachmentByUuid(String uuid);
 
-	IAttachment getAttachmentByFilename(String filename);
+  IAttachment getAttachmentByFilename(String filename);
 
-	/**
-	 * Does a UUID comparison.
-	 * 
-	 * @param attachment
-	 * @return
-	 */
-	boolean contains(IAttachment attachment);
+  /**
+   * Does a UUID comparison.
+   *
+   * @param attachment
+   * @return
+   */
+  boolean contains(IAttachment attachment);
 }

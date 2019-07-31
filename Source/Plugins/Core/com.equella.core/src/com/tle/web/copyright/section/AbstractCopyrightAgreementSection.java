@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.copyright.section;
-
-import java.util.Collection;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -73,301 +70,265 @@ import com.tle.web.viewurl.ViewItemFilter;
 import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.Collection;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
- * If you extend this you must provide your own agreement.ftl and
- * dialog/agreement.ftl
- * 
+ * If you extend this you must provide your own agreement.ftl and dialog/agreement.ftl
+ *
  * @author Aaron
  */
 @NonNullByDefault
 @TreeIndexed
 @SuppressWarnings("nls")
 public abstract class AbstractCopyrightAgreementSection
-	extends
-		AbstractPrototypeSection<AbstractCopyrightAgreementSection.Model> implements ViewItemViewer, ViewItemFilter
+    extends AbstractPrototypeSection<AbstractCopyrightAgreementSection.Model>
+    implements ViewItemViewer, ViewItemFilter {
 
-{
-	private CopyrightService<? extends Holding, ? extends Portion, ? extends Section> copyrightService;
-	private CopyrightWebService<? extends Holding> copyrightWebService;
+  private CopyrightService<? extends Holding, ? extends Portion, ? extends Section>
+      copyrightService;
+  private CopyrightWebService<? extends Holding> copyrightWebService;
 
-	@Inject
-	private BundleCache bundleCache;
+  @Inject private BundleCache bundleCache;
 
-	@EventFactory
-	private EventGenerator events;
-	@Component
-	@PlugKey("agreement.accept")
-	private Button okButton;
-	@Component
-	@PlugKey("agreement.reject")
-	private Button cancelButton;
-	@TreeLookup
-	private RootItemFileSection rootFileSection;
-	@TreeLookup
-	private ViewAttachmentSection viewAttachmentSection;
+  @EventFactory private EventGenerator events;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @Component
+  @PlugKey("agreement.accept")
+  private Button okButton;
 
-	@Inject
-	private TLEAclManager aclService;
+  @Component
+  @PlugKey("agreement.reject")
+  private Button cancelButton;
 
-	@PostConstruct
-	void setupServices()
-	{
-		copyrightService = getCopyrightServiceImpl();
-		copyrightWebService = getCopyrightWebServiceImpl();
-	}
+  @TreeLookup private RootItemFileSection rootFileSection;
+  @TreeLookup private ViewAttachmentSection viewAttachmentSection;
 
-	protected abstract CopyrightWebService<? extends Holding> getCopyrightWebServiceImpl();
+  @ViewFactory private FreemarkerFactory view;
 
-	protected abstract CopyrightService<? extends Holding, ? extends Portion, ? extends Section> getCopyrightServiceImpl();
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public void registered(final String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PostConstruct
+  void setupServices() {
+    copyrightService = getCopyrightServiceImpl();
+    copyrightWebService = getCopyrightWebServiceImpl();
+  }
 
-		okButton.setStyleClass("focus");
-		okButton.setClickHandler(events.getNamedHandler("accept"));
-		okButton.setComponentAttribute(ButtonType.class, ButtonType.ACCEPT);
+  protected abstract CopyrightWebService<? extends Holding> getCopyrightWebServiceImpl();
 
-		cancelButton.setClickHandler(new OverrideHandler(new ScriptStatement("history.back();")));
-		cancelButton.setComponentAttribute(ButtonType.class, ButtonType.REJECT);
-	}
+  protected abstract CopyrightService<? extends Holding, ? extends Portion, ? extends Section>
+      getCopyrightServiceImpl();
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		rootFileSection.addFilterMapping(Type.ALWAYS, this);
-	}
+  @Override
+  public void registered(final String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	public JSCallable getShowAgreementFunction()
-	{
-		return getDialog().getOpenFunction();
-	}
+    okButton.setStyleClass("focus");
+    okButton.setClickHandler(events.getNamedHandler("accept"));
+    okButton.setComponentAttribute(ButtonType.class, ButtonType.ACCEPT);
 
-	protected abstract AbstractCopyrightAgreementDialog getDialog();
+    cancelButton.setClickHandler(new OverrideHandler(new ScriptStatement("history.back();")));
+    cancelButton.setComponentAttribute(ButtonType.class, ButtonType.REJECT);
+  }
 
-	public boolean canView(SectionInfo context)
-	{
-		return true;
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    rootFileSection.addFilterMapping(Type.ALWAYS, this);
+  }
 
-	@Override
-	public int getOrder()
-	{
-		return 0;
-	}
+  public JSCallable getShowAgreementFunction() {
+    return getDialog().getOpenFunction();
+  }
 
-	@Override
-	public ViewItemResource filter(SectionInfo info, ViewItemResource resource)
-	{
-		ViewableItem<Item> viewableItem = resource.getViewableItem();
-		if( viewableItem.isItemForReal() && copyrightService.isCopyrightedItem(viewableItem.getItem()) )
-		{
-			boolean showAgreement = false;
-			final IAttachment attachment = getAttachment(info, resource);
-			if( attachment != null )
-			{
-				AgreementStatus status = copyrightService.getAgreementStatus(viewableItem.getItem(), attachment);
-				showAgreement = status != null && status.isNeedsAgreement();
-			}
+  protected abstract AbstractCopyrightAgreementDialog getDialog();
 
-			if( showAgreement )
-			{
-				return new UseViewer(resource, this);
-			}
-		}
-		return resource;
-	}
+  public boolean canView(SectionInfo context) {
+    return true;
+  }
 
-	@Override
-	@Nullable
-	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
-	{
-		final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
-		if( viewableResource != null )
-		{
-			final IAttachment attachment = viewableResource.getAttachment();
-			return attachment;
-		}
-		return null;
-	}
+  @Override
+  public int getOrder() {
+    return 0;
+  }
 
-	/**
-	 * This must run before the agreement filters decide they still need to display
-	 */
-	@EventHandlerMethod
-	public void accept(SectionInfo info)
-	{
-		// Cannot invoke rootFileSection.getViewItemResource since it runs the filters again and shows
-		// a second agreement when already accepted.  Basically, this is pretty dirty.
-		ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
-		copyrightService.acceptAgreement(viewableItem.getItem(),
-			viewAttachmentSection.getAttachment(info, rootFileSection.getBaseViewItemResource(info)));
-	}
+  @Override
+  public ViewItemResource filter(SectionInfo info, ViewItemResource resource) {
+    ViewableItem<Item> viewableItem = resource.getViewableItem();
+    if (viewableItem.isItemForReal()
+        && copyrightService.isCopyrightedItem(viewableItem.getItem())) {
+      boolean showAgreement = false;
+      final IAttachment attachment = getAttachment(info, resource);
+      if (attachment != null) {
+        AgreementStatus status =
+            copyrightService.getAgreementStatus(viewableItem.getItem(), attachment);
+        showAgreement = status != null && status.isNeedsAgreement();
+      }
 
-	public Collection<Button> getButtons(SectionInfo info, SectionId id)
-	{
-		return Lists.newArrayList(okButton, cancelButton);
-	}
+      if (showAgreement) {
+        return new UseViewer(resource, this);
+      }
+    }
+    return resource;
+  }
 
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource)
-	{
-		// this is rubbish
-		Collection<Button> buttons = getButtons(info, this);
-		SectionRenderable sr = null;
-		for( Button b : buttons )
-		{
-			ButtonRenderer br = (ButtonRenderer) SectionUtils.renderSection(info, b);
-			if( br != null )
-			{
-				ButtonType type = b.getComponentAttribute(ButtonType.class);
-				if( type != null )
-				{
-					br.showAs(type);
-				}
-				sr = CombinedRenderer.combineResults(sr, br);
-			}
-		}
-		return renderAgreement(info, resource, sr);
-	}
+  @Override
+  @Nullable
+  public IAttachment getAttachment(SectionInfo info, ViewItemResource resource) {
+    final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
+    if (viewableResource != null) {
+      final IAttachment attachment = viewableResource.getAttachment();
+      return attachment;
+    }
+    return null;
+  }
 
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
-	}
+  /** This must run before the agreement filters decide they still need to display */
+  @EventHandlerMethod
+  public void accept(SectionInfo info) {
+    // Cannot invoke rootFileSection.getViewItemResource since it runs the filters again and shows
+    // a second agreement when already accepted.  Basically, this is pretty dirty.
+    ViewableItem<Item> viewableItem = rootFileSection.getViewableItem(info);
+    copyrightService.acceptAgreement(
+        viewableItem.getItem(),
+        viewAttachmentSection.getAttachment(info, rootFileSection.getBaseViewItemResource(info)));
+  }
 
-	public SectionRenderable renderAgreement(RenderContext info, ViewItemResource resource, SectionRenderable buttons)
-	{
-		Model model = getModel(info);
-		Item item = (Item) resource.getViewableItem().getItem();
-		Decorations.getDecorations(info).setTitle(new ItemNameLabel(item, bundleCache));
-		ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
-		AgreementStatus status = copyrightService.getAgreementStatus(item, viewableResource.getAttachment());
-		if( status.isInactive()
-			&& aclService.filterNonGrantedPrivileges(ActivationConstants.VIEW_INACTIVE_PORTIONS).isEmpty() )
-		{
-			model.setException(copyrightService.createViolation(item));
-			return view.createResult("violation.ftl", this);
-		}
+  public Collection<Button> getButtons(SectionInfo info, SectionId id) {
+    return Lists.newArrayList(okButton, cancelButton);
+  }
 
-		SectionRenderable agreement;
-		String agreementText = copyrightWebService.getAgreement(status.getAgreementFile());
-		if( agreementText == null )
-		{
-			agreement = getStandardAgreement(info);
-			model.setStandardAgreement(true);
-		}
-		else
-		{
-			agreement = new SimpleSectionResult(agreementText);
-			model.setStandardAgreement(false);
-		}
-		model.setButtons(buttons);
-		model.setAgreement(agreement);
-		model.setInIntegration(rootFileSection.isInIntegration(info));
-		return view.createResult("agreement.ftl", this);
-	}
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) {
+    // this is rubbish
+    Collection<Button> buttons = getButtons(info, this);
+    SectionRenderable sr = null;
+    for (Button b : buttons) {
+      ButtonRenderer br = (ButtonRenderer) SectionUtils.renderSection(info, b);
+      if (br != null) {
+        ButtonType type = b.getComponentAttribute(ButtonType.class);
+        if (type != null) {
+          br.showAs(type);
+        }
+        sr = CombinedRenderer.combineResults(sr, br);
+      }
+    }
+    return renderAgreement(info, resource, sr);
+  }
 
-	protected abstract SectionRenderable getStandardAgreement(RenderContext info);
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
+  }
 
-	@Override
-	public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource)
-	{
-		return null;
-	}
+  public SectionRenderable renderAgreement(
+      RenderContext info, ViewItemResource resource, SectionRenderable buttons) {
+    Model model = getModel(info);
+    Item item = (Item) resource.getViewableItem().getItem();
+    Decorations.getDecorations(info).setTitle(new ItemNameLabel(item, bundleCache));
+    ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
+    AgreementStatus status =
+        copyrightService.getAgreementStatus(item, viewableResource.getAttachment());
+    if (status.isInactive()
+        && aclService
+            .filterNonGrantedPrivileges(ActivationConstants.VIEW_INACTIVE_PORTIONS)
+            .isEmpty()) {
+      model.setException(copyrightService.createViolation(item));
+      return view.createResult("violation.ftl", this);
+    }
 
-	public static class Model
-	{
-		private SectionRenderable agreement;
-		private SectionRenderable buttons;
-		private CopyrightViolationException exception;
-		private boolean standardAgreement;
-		private boolean inIntegration;
+    SectionRenderable agreement;
+    String agreementText = copyrightWebService.getAgreement(status.getAgreementFile());
+    if (agreementText == null) {
+      agreement = getStandardAgreement(info);
+      model.setStandardAgreement(true);
+    } else {
+      agreement = new SimpleSectionResult(agreementText);
+      model.setStandardAgreement(false);
+    }
+    model.setButtons(buttons);
+    model.setAgreement(agreement);
+    model.setInIntegration(rootFileSection.isInIntegration(info));
+    return view.createResult("agreement.ftl", this);
+  }
 
-		public CopyrightViolationException getException()
-		{
-			return exception;
-		}
+  protected abstract SectionRenderable getStandardAgreement(RenderContext info);
 
-		public void setException(CopyrightViolationException exception)
-		{
-			this.exception = exception;
-		}
+  @Override
+  public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource) {
+    return null;
+  }
 
-		public SectionRenderable getAgreement()
-		{
-			return agreement;
-		}
+  public static class Model {
+    private SectionRenderable agreement;
+    private SectionRenderable buttons;
+    private CopyrightViolationException exception;
+    private boolean standardAgreement;
+    private boolean inIntegration;
 
-		public void setAgreement(SectionRenderable agreement)
-		{
-			this.agreement = agreement;
-		}
+    public CopyrightViolationException getException() {
+      return exception;
+    }
 
-		public SectionRenderable getButtons()
-		{
-			return buttons;
-		}
+    public void setException(CopyrightViolationException exception) {
+      this.exception = exception;
+    }
 
-		public void setButtons(SectionRenderable buttons)
-		{
-			this.buttons = buttons;
-		}
+    public SectionRenderable getAgreement() {
+      return agreement;
+    }
 
-		public boolean isStandardAgreement()
-		{
-			return standardAgreement;
-		}
+    public void setAgreement(SectionRenderable agreement) {
+      this.agreement = agreement;
+    }
 
-		public void setStandardAgreement(boolean standardAgreement)
-		{
-			this.standardAgreement = standardAgreement;
-		}
+    public SectionRenderable getButtons() {
+      return buttons;
+    }
 
-		public boolean isInIntegration()
-		{
-			return inIntegration;
-		}
+    public void setButtons(SectionRenderable buttons) {
+      this.buttons = buttons;
+    }
 
-		public void setInIntegration(boolean inIntegration)
-		{
-			this.inIntegration = inIntegration;
-		}
-	}
+    public boolean isStandardAgreement() {
+      return standardAgreement;
+    }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+    public void setStandardAgreement(boolean standardAgreement) {
+      this.standardAgreement = standardAgreement;
+    }
 
-	public SectionRenderable renderAgreement(RenderContext context, SectionRenderable buttons)
-	{
-		ViewItemResource resource = rootFileSection.getViewItemResource(context);
-		return renderAgreement(context, resource, buttons);
-	}
+    public boolean isInIntegration() {
+      return inIntegration;
+    }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "cagr";
-	}
+    public void setInIntegration(boolean inIntegration) {
+      this.inIntegration = inIntegration;
+    }
+  }
 
-	public String getAttachmentUuid(SectionInfo info)
-	{
-		ViewableResource viewableResource = rootFileSection.getViewItemResource(info).getAttribute(
-			ViewableResource.class);
-		return viewableResource.getAttachment().getUuid();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  public SectionRenderable renderAgreement(RenderContext context, SectionRenderable buttons) {
+    ViewItemResource resource = rootFileSection.getViewItemResource(context);
+    return renderAgreement(context, resource, buttons);
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "cagr";
+  }
+
+  public String getAttachmentUuid(SectionInfo info) {
+    ViewableResource viewableResource =
+        rootFileSection.getViewItemResource(info).getAttribute(ViewableResource.class);
+    return viewableResource.getAttachment().getUuid();
+  }
+
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,63 +18,53 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class BrightspaceUsageResults
-{
-	@JsonProperty("TotalEquellaLinkUsageCount")
-	private int totalEquellaLinkUsageCount;
-	@JsonProperty("ResultSetCount")
-	private int resultSetCount;
-	@JsonProperty("Next")
-	private String next;
-	@JsonProperty("Objects")
-	private BrightspaceEquellaLink[] objects;
+public class BrightspaceUsageResults {
+  @JsonProperty("TotalEquellaLinkUsageCount")
+  private int totalEquellaLinkUsageCount;
 
-	public int getTotalEquellaLinkUsageCount()
-	{
-		return totalEquellaLinkUsageCount;
-	}
+  @JsonProperty("ResultSetCount")
+  private int resultSetCount;
 
-	public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount)
-	{
-		this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
-	}
+  @JsonProperty("Next")
+  private String next;
 
-	public int getResultSetCount()
-	{
-		return resultSetCount;
-	}
+  @JsonProperty("Objects")
+  private BrightspaceEquellaLink[] objects;
 
-	public void setResultSetCount(int resultSetCount)
-	{
-		this.resultSetCount = resultSetCount;
-	}
+  public int getTotalEquellaLinkUsageCount() {
+    return totalEquellaLinkUsageCount;
+  }
 
-	public String getNext()
-	{
-		return next;
-	}
+  public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount) {
+    this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
+  }
 
-	public void setNext(String next)
-	{
-		this.next = next;
-	}
+  public int getResultSetCount() {
+    return resultSetCount;
+  }
 
-	public BrightspaceEquellaLink[] getObjects()
-	{
-		return objects;
-	}
+  public void setResultSetCount(int resultSetCount) {
+    this.resultSetCount = resultSetCount;
+  }
 
-	public void setObjects(BrightspaceEquellaLink[] objects)
-	{
-		this.objects = objects;
-	}
+  public String getNext() {
+    return next;
+  }
+
+  public void setNext(String next) {
+    this.next = next;
+  }
+
+  public BrightspaceEquellaLink[] getObjects() {
+    return objects;
+  }
+
+  public void setObjects(BrightspaceEquellaLink[] objects) {
+    this.objects = objects;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,37 +18,29 @@
 
 package com.tle.web.api.item.equella.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author larry
- */
+/** @author larry */
 @XmlRootElement
-public class SchemaScriptBean extends AbstractExtendableBean
-{
-	private BaseEntityReference schema;
-	private String script;
+public class SchemaScriptBean extends AbstractExtendableBean {
+  private BaseEntityReference schema;
+  private String script;
 
-	public BaseEntityReference getSchema()
-	{
-		return schema;
-	}
+  public BaseEntityReference getSchema() {
+    return schema;
+  }
 
-	public void setSchema(BaseEntityReference schema)
-	{
-		this.schema = schema;
-	}
+  public void setSchema(BaseEntityReference schema) {
+    this.schema = schema;
+  }
 
-	public String getScript()
-	{
-		return script;
-	}
+  public String getScript() {
+    return script;
+  }
 
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  public void setScript(String script) {
+    this.script = script;
+  }
 }

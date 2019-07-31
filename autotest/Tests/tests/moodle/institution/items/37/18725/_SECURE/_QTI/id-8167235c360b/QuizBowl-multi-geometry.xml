@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:m="http://www.w3.org/1998/Math/MathML" toolName="Mathqurate" toolVersion="1.0"
+    xml:lang="en" identifier="QuizBowl-multi-geometry" title="What sort of triangle"
+    adaptive="false" timeDependent="false">
+    <responseDeclaration identifier="RESPONSE1" cardinality="single" baseType="identifier"/>
+    <responseDeclaration identifier="RESPONSE2" cardinality="single" baseType="string"/>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="SCORE1" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="SCORE2" cardinality="single" baseType="float">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <outcomeDeclaration identifier="Alternatives" cardinality="ordered" baseType="string">
+        <defaultValue>
+            <value>equilateral triangle</value>
+            <value>isosceles triangle</value>
+            <value>equiangular triangle</value>
+            <value>triangle</value>
+        </defaultValue>
+    </outcomeDeclaration>
+
+    <itemBody>
+        <div>
+            <p>What is the question to which this is the answer?</p><br/>
+            <blockquote>
+                <p>"It is a triangle with three equal sides."</p>
+            </blockquote>
+            <p><br/>Select the form of question and then enter the rest of the question in the
+                box.</p>
+            <p><inlineChoiceInteraction responseIdentifier="RESPONSE1" shuffle="true">
+                    <inlineChoice identifier="Q1">What is</inlineChoice>
+                    <inlineChoice identifier="Q2">How would you define</inlineChoice>
+                </inlineChoiceInteraction>
+                <textEntryInteraction responseIdentifier="RESPONSE2" expectedLength="50"/>?</p>
+        </div>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK"> Yes,
+                that's correct.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Isosceles"> No,
+                an isosceles triangle has only two sides equal; if all three sides are equal we say
+                it is an equilateral triangle.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Equiangular">
+                The angles are also equal, but it is called an equilateral
+                triangle.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="Triangle"> It
+                is a special sort of triangle, called an equilateral triangle.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No"> No, that's
+                not correct.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE1"/>
+                    <baseValue baseType="identifier">Q1</baseValue>
+                </match>
+                <setOutcomeValue identifier="SCORE1">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElseIf>
+                <match>
+                    <variable identifier="RESPONSE1"/>
+                    <baseValue baseType="identifier">Q2</baseValue>
+                </match>
+                <setOutcomeValue identifier="SCORE1">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+            </responseElseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE1">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <responseCondition>
+            <responseIf>
+                <substring caseSensitive="false">
+                    <index n="1">
+                        <variable identifier="Alternatives"/>
+                    </index>
+                    <variable identifier="RESPONSE2"/>
+                </substring>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">1.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">OK</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElseIf>
+                <substring caseSensitive="false">
+                    <index n="2">
+                        <variable identifier="Alternatives"/>
+                    </index>
+                    <variable identifier="RESPONSE2"/>
+                </substring>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">0.5</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">Isosceles</baseValue>
+                </setOutcomeValue>
+            </responseElseIf>
+            <responseElseIf>
+                <substring caseSensitive="false">
+                    <index n="3">
+                        <variable identifier="Alternatives"/>
+                    </index>
+                    <variable identifier="RESPONSE2"/>
+                </substring>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">0.5</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">Equiangular</baseValue>
+                </setOutcomeValue>
+            </responseElseIf>
+            <responseElseIf>
+                <substring caseSensitive="false">
+                    <index n="4">
+                        <variable identifier="Alternatives"/>
+                    </index>
+                    <variable identifier="RESPONSE2"/>
+                </substring>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">Triangle</baseValue>
+                </setOutcomeValue>
+            </responseElseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE2">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">No</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="SCORE">
+            <sum>
+                <variable identifier="SCORE1"/>
+                <variable identifier="SCORE2"/>
+            </sum>
+        </setOutcomeValue>
+    </responseProcessing>
+</assessmentItem>

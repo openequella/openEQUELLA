@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,28 @@
 
 package com.tle.core.item.serializer;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.item.Comment;
 import com.tle.core.guice.Bind;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.interfaces.beans.CommentBean;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ItemCommentSerializer
-{
-	public CommentBean serialize(Comment comment)
-	{
-		CommentBean commentBean = new CommentBean();
-		commentBean.setUuid(comment.getUuid());
-		commentBean.setComment(comment.getComment());
-		commentBean.setPostedDate(comment.getDateCreated());
-		if( !comment.isAnonymous() )
-		{
-			UserBean user = new UserBean();
-			user.setId(comment.getOwner());
-			commentBean.setPostedBy(user);
-		}
-		else
-		{
-			commentBean.setAnonymous(true);
-		}
-		commentBean.setRating(comment.getRating());
-		return commentBean;
-	}
+public class ItemCommentSerializer {
+  public CommentBean serialize(Comment comment) {
+    CommentBean commentBean = new CommentBean();
+    commentBean.setUuid(comment.getUuid());
+    commentBean.setComment(comment.getComment());
+    commentBean.setPostedDate(comment.getDateCreated());
+    if (!comment.isAnonymous()) {
+      UserBean user = new UserBean();
+      user.setId(comment.getOwner());
+      commentBean.setPostedBy(user);
+    } else {
+      commentBean.setAnonymous(true);
+    }
+    commentBean.setRating(comment.getRating());
+    return commentBean;
+  }
 }

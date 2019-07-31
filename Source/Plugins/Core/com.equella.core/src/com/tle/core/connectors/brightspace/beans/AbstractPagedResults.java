@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,69 +18,56 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public abstract class AbstractPagedResults<T>
-{
-	@JsonProperty("PagingInfo")
-	private PagingInfo pagingInfo;
-	@JsonProperty("Items")
-	private List<T> items;
+public abstract class AbstractPagedResults<T> {
+  @JsonProperty("PagingInfo")
+  private PagingInfo pagingInfo;
 
-	public PagingInfo getPagingInfo()
-	{
-		return pagingInfo;
-	}
+  @JsonProperty("Items")
+  private List<T> items;
 
-	public void setPagingInfo(PagingInfo pagingInfo)
-	{
-		this.pagingInfo = pagingInfo;
-	}
+  public PagingInfo getPagingInfo() {
+    return pagingInfo;
+  }
 
-	public List<T> getItems()
-	{
-		return items;
-	}
+  public void setPagingInfo(PagingInfo pagingInfo) {
+    this.pagingInfo = pagingInfo;
+  }
 
-	public void setItems(List<T> items)
-	{
-		this.items = items;
-	}
+  public List<T> getItems() {
+    return items;
+  }
 
-	public static class PagingInfo
-	{
-		@JsonProperty("Bookmark")
-		private String bookmark;
-		@JsonProperty("HasMoreItems")
-		private boolean hasMoreItems;
+  public void setItems(List<T> items) {
+    this.items = items;
+  }
 
-		public String getBookmark()
-		{
-			return bookmark;
-		}
+  public static class PagingInfo {
+    @JsonProperty("Bookmark")
+    private String bookmark;
 
-		public void setBookmark(String bookmark)
-		{
-			this.bookmark = bookmark;
-		}
+    @JsonProperty("HasMoreItems")
+    private boolean hasMoreItems;
 
-		public boolean isHasMoreItems()
-		{
-			return hasMoreItems;
-		}
+    public String getBookmark() {
+      return bookmark;
+    }
 
-		public void setHasMoreItems(boolean hasMoreItems)
-		{
-			this.hasMoreItems = hasMoreItems;
-		}
-	}
+    public void setBookmark(String bookmark) {
+      this.bookmark = bookmark;
+    }
+
+    public boolean isHasMoreItems() {
+      return hasMoreItems;
+    }
+
+    public void setHasMoreItems(boolean hasMoreItems) {
+      this.hasMoreItems = hasMoreItems;
+    }
+  }
 }

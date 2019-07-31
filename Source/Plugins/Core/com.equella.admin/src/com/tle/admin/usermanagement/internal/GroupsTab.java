@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,23 +17,6 @@
  */
 
 package com.tle.admin.usermanagement.internal;
-
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.util.Enumeration;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
@@ -51,426 +36,407 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteTLEGroupService;
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.util.Enumeration;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-/**
- * @author Nicholas Read
- */
-public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionListener
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionListener {
+  private static final long serialVersionUID = 1L;
 
-	private final RemoteTLEGroupService groupService;
+  private final RemoteTLEGroupService groupService;
 
-	private GroupDetailsPanel details;
+  private GroupDetailsPanel details;
 
-	private JTextField query;
-	JTree tree;
-	private DefaultTreeModel model;
+  private JTextField query;
+  JTree tree;
+  private DefaultTreeModel model;
 
-	public GroupsTab(ClientService services)
-	{
-		groupService = services.getService(RemoteTLEGroupService.class);
+  public GroupsTab(ClientService services) {
+    groupService = services.getService(RemoteTLEGroupService.class);
 
-		setupGui(services);
-	}
+    setupGui(services);
+  }
 
-	private void setupGui(ClientService services)
-	{
-		query = new JTextField();
-		query.setAction(searchAction);
+  private void setupGui(ClientService services) {
+    query = new JTextField();
+    query.setAction(searchAction);
 
-		JButton search = new JButton(searchAction);
+    JButton search = new JButton(searchAction);
 
-		JPanel searchPanel = new JPanel();
-		searchPanel.setLayout(new BorderLayout(5, 5));
-		searchPanel.add(query, BorderLayout.CENTER);
-		searchPanel.add(search, BorderLayout.EAST);
+    JPanel searchPanel = new JPanel();
+    searchPanel.setLayout(new BorderLayout(5, 5));
+    searchPanel.add(query, BorderLayout.CENTER);
+    searchPanel.add(search, BorderLayout.EAST);
 
-		model = new DefaultTreeModel(new GroupTreeNode());
-		model.setAsksAllowsChildren(true);
+    model = new DefaultTreeModel(new GroupTreeNode());
+    model.setAsksAllowsChildren(true);
 
-		tree = new JTree(model);
-		tree.addTreeSelectionListener(this);
-		tree.setShowsRootHandles(true);
-		tree.setRootVisible(false);
-		tree.addMouseListener(new TreePopupListener(tree, addAction, removeAction));
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    tree = new JTree(model);
+    tree.addTreeSelectionListener(this);
+    tree.setShowsRootHandles(true);
+    tree.setRootVisible(false);
+    tree.addMouseListener(new TreePopupListener(tree, addAction, removeAction));
+    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-		JButton add = new JButton(addAction);
-		JButton remove = new JButton(removeAction);
+    JButton add = new JButton(addAction);
+    JButton remove = new JButton(removeAction);
 
-		details = new GroupDetailsPanel(services, saveAction);
+    details = new GroupDetailsPanel(services, saveAction);
 
-		final int width1 = remove.getPreferredSize().width;
-		final int height1 = searchPanel.getPreferredSize().height;
-		final int height2 = remove.getPreferredSize().height;
+    final int width1 = remove.getPreferredSize().width;
+    final int height1 = searchPanel.getPreferredSize().height;
+    final int height2 = remove.getPreferredSize().height;
 
-		final int[] rows = {height1, TableLayout.FILL, height2,};
-		final int[] cols = {50, width1, width1, 50, TableLayout.FILL,};
+    final int[] rows = {
+      height1, TableLayout.FILL, height2,
+    };
+    final int[] cols = {
+      50, width1, width1, 50, TableLayout.FILL,
+    };
 
-		setLayout(new TableLayout(rows, cols));
-		setBorder(AppletGuiUtils.DEFAULT_BORDER);
+    setLayout(new TableLayout(rows, cols));
+    setBorder(AppletGuiUtils.DEFAULT_BORDER);
 
-		add(new JIgnoreChangeComponent(searchPanel), new Rectangle(0, 0, 4, 1));
-		add(new JIgnoreChangeComponent(new JScrollPane(tree)), new Rectangle(0, 1, 4, 1));
-		add(new JIgnoreChangeComponent(add), new Rectangle(1, 2, 1, 1));
-		add(new JIgnoreChangeComponent(remove), new Rectangle(2, 2, 1, 1));
-		add(details, new Rectangle(4, 0, 1, 3));
+    add(new JIgnoreChangeComponent(searchPanel), new Rectangle(0, 0, 4, 1));
+    add(new JIgnoreChangeComponent(new JScrollPane(tree)), new Rectangle(0, 1, 4, 1));
+    add(new JIgnoreChangeComponent(add), new Rectangle(1, 2, 1, 1));
+    add(new JIgnoreChangeComponent(remove), new Rectangle(2, 2, 1, 1));
+    add(details, new Rectangle(4, 0, 1, 3));
 
-		updateGui();
-	}
+    updateGui();
+  }
 
-	private void updateGui()
-	{
-		removeAction.update();
-	}
+  private void updateGui() {
+    removeAction.update();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event
-	 * .TreeSelectionEvent)
-	 */
-	@Override
-	public void valueChanged(final TreeSelectionEvent e)
-	{
-		if( e.getSource() == tree )
-		{
-			GlassSwingWorker<TLEGroup> worker = new GlassSwingWorker<TLEGroup>()
-			{
-				@Override
-				public TLEGroup construct()
-				{
-					GroupTreeNode node = getSelectedGroupNode();
-					if( node == null )
-					{
-						return null;
-					}
-					else
-					{
-						return groupService.get(node.getId());
-					}
-				}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event
+   * .TreeSelectionEvent)
+   */
+  @Override
+  public void valueChanged(final TreeSelectionEvent e) {
+    if (e.getSource() == tree) {
+      GlassSwingWorker<TLEGroup> worker =
+          new GlassSwingWorker<TLEGroup>() {
+            @Override
+            public TLEGroup construct() {
+              GroupTreeNode node = getSelectedGroupNode();
+              if (node == null) {
+                return null;
+              } else {
+                return groupService.get(node.getId());
+              }
+            }
 
-				@Override
-				public void finished()
-				{
-					final TLEGroup g = get();
+            @Override
+            public void finished() {
+              final TLEGroup g = get();
 
-					details.loadGroup(g, new TreeUpdateName()
-					{
-						@Override
-						public void update(String name)
-						{
-							updateTreeName(e.getOldLeadSelectionPath(), name);
-						}
-					});
-					updateGui();
-				}
+              details.loadGroup(
+                  g,
+                  new TreeUpdateName() {
+                    @Override
+                    public void update(String name) {
+                      updateTreeName(e.getOldLeadSelectionPath(), name);
+                    }
+                  });
+              updateGui();
+            }
 
-				@Override
-				public void exception()
-				{
-					getException().printStackTrace();
-				}
-			};
-			worker.setComponent(this);
-			worker.start();
-		}
-	}
+            @Override
+            public void exception() {
+              getException().printStackTrace();
+            }
+          };
+      worker.setComponent(this);
+      worker.start();
+    }
+  }
 
-	private GroupTreeNode getSelectedGroupNode()
-	{
-		TreePath selectionPath = tree.getSelectionPath();
-		if( selectionPath != null )
-		{
-			return (GroupTreeNode) selectionPath.getLastPathComponent();
-		}
-		else
-		{
-			return null;
-		}
-	}
+  private GroupTreeNode getSelectedGroupNode() {
+    TreePath selectionPath = tree.getSelectionPath();
+    if (selectionPath != null) {
+      return (GroupTreeNode) selectionPath.getLastPathComponent();
+    } else {
+      return null;
+    }
+  }
 
-	private final TLEAction removeAction = new RemoveAction()
-	{
-		private static final long serialVersionUID = 1L;
+  private final TLEAction removeAction =
+      new RemoveAction() {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			boolean performDelete = false;
-			final boolean deleteChildren;
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          boolean performDelete = false;
+          final boolean deleteChildren;
 
-			final GroupTreeNode selectedGroupNode = getSelectedGroupNode();
-			if( selectedGroupNode.getChildCount() == 0 )
-			{
-				performDelete = JOptionPane.showConfirmDialog(
-					GroupsTab.this,
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.confirm",
-						selectedGroupNode.getName())) == JOptionPane.YES_OPTION;
-				deleteChildren = false;
-			}
-			else
-			{
-				Object[] buttons = new String[]{
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.delete"),
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.keep"),
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.cancel")};
-				int result = JOptionPane.showOptionDialog(GroupsTab.this,
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.containssubgroups"),
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.action"),
-					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[2]);
+          final GroupTreeNode selectedGroupNode = getSelectedGroupNode();
+          if (selectedGroupNode.getChildCount() == 0) {
+            performDelete =
+                JOptionPane.showConfirmDialog(
+                        GroupsTab.this,
+                        CurrentLocale.get(
+                            "com.tle.admin.usermanagement.internal.groupstabs.confirm",
+                            selectedGroupNode.getName()))
+                    == JOptionPane.YES_OPTION;
+            deleteChildren = false;
+          } else {
+            Object[] buttons =
+                new String[] {
+                  CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.delete"),
+                  CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.keep"),
+                  CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.cancel")
+                };
+            int result =
+                JOptionPane.showOptionDialog(
+                    GroupsTab.this,
+                    CurrentLocale.get(
+                        "com.tle.admin.usermanagement.internal.groupstabs.containssubgroups"),
+                    CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.action"),
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    buttons,
+                    buttons[2]);
 
-				performDelete = result == JOptionPane.YES_OPTION || result == JOptionPane.NO_OPTION;
-				deleteChildren = result == JOptionPane.YES_OPTION;
-			}
+            performDelete = result == JOptionPane.YES_OPTION || result == JOptionPane.NO_OPTION;
+            deleteChildren = result == JOptionPane.YES_OPTION;
+          }
 
-			if( performDelete )
-			{
-				GlassSwingWorker<?> worker = new GlassSwingWorker<Object>()
-				{
-					@Override
-					public Object construct()
-					{
-						groupService.delete(getSelectedGroupNode().getId(), deleteChildren);
-						return null;
-					}
+          if (performDelete) {
+            GlassSwingWorker<?> worker =
+                new GlassSwingWorker<Object>() {
+                  @Override
+                  public Object construct() {
+                    groupService.delete(getSelectedGroupNode().getId(), deleteChildren);
+                    return null;
+                  }
 
-					@Override
-					public void finished()
-					{
-						details.clearChanges();
-						details.loadGroup(null);
-						doSearch();
-					}
+                  @Override
+                  public void finished() {
+                    details.clearChanges();
+                    details.loadGroup(null);
+                    doSearch();
+                  }
 
-					@Override
-					public void exception()
-					{
-						Driver.displayInformation(getComponent(),
-							CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.error"));
-						getException().printStackTrace();
-					}
-				};
-				worker.setComponent(GroupsTab.this);
-				worker.start();
-			}
-		}
+                  @Override
+                  public void exception() {
+                    Driver.displayInformation(
+                        getComponent(),
+                        CurrentLocale.get(
+                            "com.tle.admin.usermanagement.internal.groupstabs.error"));
+                    getException().printStackTrace();
+                  }
+                };
+            worker.setComponent(GroupsTab.this);
+            worker.start();
+          }
+        }
 
-		@Override
-		public void update()
-		{
-			setEnabled(tree.getSelectionCount() > 0);
-		}
-	};
+        @Override
+        public void update() {
+          setEnabled(tree.getSelectionCount() > 0);
+        }
+      };
 
-	private final TLEAction addAction = new AddAction()
-	{
-		private static final long serialVersionUID = 1L;
+  private final TLEAction addAction =
+      new AddAction() {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			final GroupTreeNode parentGroup = getSelectedGroupNode();
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          final GroupTreeNode parentGroup = getSelectedGroupNode();
 
-			String prompt = null;
-			while( Check.isEmpty(prompt) )
-			{
-				prompt = JOptionPane.showInputDialog(GroupsTab.this,
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.enter"),
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.new"),
-					JOptionPane.QUESTION_MESSAGE);
+          String prompt = null;
+          while (Check.isEmpty(prompt)) {
+            prompt =
+                JOptionPane.showInputDialog(
+                    GroupsTab.this,
+                    CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.enter"),
+                    CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.new"),
+                    JOptionPane.QUESTION_MESSAGE);
 
-				if( prompt == null )
-				{
-					return;
-				}
-				else if( prompt.trim().length() == 0 )
-				{
-					JOptionPane.showMessageDialog(GroupsTab.this,
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.notempty"));
-				}
-			}
+            if (prompt == null) {
+              return;
+            } else if (prompt.trim().length() == 0) {
+              JOptionPane.showMessageDialog(
+                  GroupsTab.this,
+                  CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.notempty"));
+            }
+          }
 
-			final String newGroupName = prompt;
+          final String newGroupName = prompt;
 
-			GlassSwingWorker<GroupTreeNode> worker = new GlassSwingWorker<GroupTreeNode>()
-			{
-				@Override
-				public GroupTreeNode construct()
-				{
-					GroupTreeNode result = null;
-					if( groupService.getByName(newGroupName) == null )
-					{
-						result = new GroupTreeNode();
-						result.setName(newGroupName);
+          GlassSwingWorker<GroupTreeNode> worker =
+              new GlassSwingWorker<GroupTreeNode>() {
+                @Override
+                public GroupTreeNode construct() {
+                  GroupTreeNode result = null;
+                  if (groupService.getByName(newGroupName) == null) {
+                    result = new GroupTreeNode();
+                    result.setName(newGroupName);
 
-						String parentId = null;
-						if( parentGroup != null )
-						{
-							parentId = parentGroup.getId();
-						}
+                    String parentId = null;
+                    if (parentGroup != null) {
+                      parentId = parentGroup.getId();
+                    }
 
-						result.setId(groupService.add(parentId, newGroupName));
-					}
-					return result;
-				}
+                    result.setId(groupService.add(parentId, newGroupName));
+                  }
+                  return result;
+                }
 
-				@Override
-				public void finished()
-				{
-					GroupTreeNode group = get();
-					if( group == null )
-					{
-						JOptionPane.showMessageDialog(getComponent(),
-							CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.inuse"));
-					}
-					else
-					{
-						GroupTreeNode parent = parentGroup;
-						if( parent == null )
-						{
-							parent = (GroupTreeNode) model.getRoot();
-						}
+                @Override
+                public void finished() {
+                  GroupTreeNode group = get();
+                  if (group == null) {
+                    JOptionPane.showMessageDialog(
+                        getComponent(),
+                        CurrentLocale.get(
+                            "com.tle.admin.usermanagement.internal.groupstabs.inuse"));
+                  } else {
+                    GroupTreeNode parent = parentGroup;
+                    if (parent == null) {
+                      parent = (GroupTreeNode) model.getRoot();
+                    }
 
-						model.insertNodeInto(group, parent, parent.getChildCount());
-						tree.setSelectionPath(new TreePath(group.getPath()));
-					}
-				}
+                    model.insertNodeInto(group, parent, parent.getChildCount());
+                    tree.setSelectionPath(new TreePath(group.getPath()));
+                  }
+                }
 
-				@Override
-				public void exception()
-				{
-					Driver.displayInformation(getComponent(),
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.errorcreating"));
-					getException().printStackTrace();
-				}
-			};
-			worker.setComponent(GroupsTab.this);
-			worker.start();
-		}
-	};
+                @Override
+                public void exception() {
+                  Driver.displayInformation(
+                      getComponent(),
+                      CurrentLocale.get(
+                          "com.tle.admin.usermanagement.internal.groupstabs.errorcreating"));
+                  getException().printStackTrace();
+                }
+              };
+          worker.setComponent(GroupsTab.this);
+          worker.start();
+        }
+      };
 
-	private final TLEAction saveAction = new SaveAction()
-	{
-		private static final long serialVersionUID = 1L;
+  private final TLEAction saveAction =
+      new SaveAction() {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			new MyGlassSwingWorker<String>(GroupsTab.this)
-			{
-				@Override
-				public String doStuff()
-				{
-					return details.saveLoadedGroup();
-				}
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          new MyGlassSwingWorker<String>(GroupsTab.this) {
+            @Override
+            public String doStuff() {
+              return details.saveLoadedGroup();
+            }
 
-				@Override
-				public void finished()
-				{
-					TreePath selectionPath = tree.getSelectionPath();
-					if( selectionPath != null )
-					{
-						GroupTreeNode node = (GroupTreeNode) selectionPath.getLastPathComponent();
-						node.setName(get());
-						model.nodeChanged(node);
-						tree.expandPath(selectionPath);
-					}
-					JOptionPane.showMessageDialog(getComponent(), "Group saved successfully");
-				}
-			}.start();
-		}
+            @Override
+            public void finished() {
+              TreePath selectionPath = tree.getSelectionPath();
+              if (selectionPath != null) {
+                GroupTreeNode node = (GroupTreeNode) selectionPath.getLastPathComponent();
+                node.setName(get());
+                model.nodeChanged(node);
+                tree.expandPath(selectionPath);
+              }
+              JOptionPane.showMessageDialog(getComponent(), "Group saved successfully");
+            }
+          }.start();
+        }
 
-		@Override
-		public void update()
-		{
-			if( details != null )
-			{
-				details.setEnabled();
-			}
-		}
-	};
+        @Override
+        public void update() {
+          if (details != null) {
+            details.setEnabled();
+          }
+        }
+      };
 
-	interface TreeUpdateName
-	{
-		void update(String name);
-	}
+  interface TreeUpdateName {
+    void update(String name);
+  }
 
-	void updateTreeName(TreePath selectionPath, String name)
-	{
-		if( selectionPath != null )
-		{
-			GroupTreeNode node = (GroupTreeNode) selectionPath.getLastPathComponent();
-			node.setName(name);
-			model.nodeChanged(node);
-			tree.expandPath(selectionPath);
-		}
-	}
+  void updateTreeName(TreePath selectionPath, String name) {
+    if (selectionPath != null) {
+      GroupTreeNode node = (GroupTreeNode) selectionPath.getLastPathComponent();
+      node.setName(name);
+      model.nodeChanged(node);
+      tree.expandPath(selectionPath);
+    }
+  }
 
-	private final TLEAction searchAction = new SearchAction()
-	{
-		private static final long serialVersionUID = 1L;
+  private final TLEAction searchAction =
+      new SearchAction() {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			doSearch();
-		}
-	};
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          doSearch();
+        }
+      };
 
-	private void doSearch()
-	{
-		GlassSwingWorker<GroupTreeNode> w = new GlassSwingWorker<GroupTreeNode>()
-		{
-			@Override
-			public GroupTreeNode construct()
-			{
-				GroupTreeNode results = groupService.searchTree(query.getText());
-				results.sortChildren();
-				return results;
-			}
+  private void doSearch() {
+    GlassSwingWorker<GroupTreeNode> w =
+        new GlassSwingWorker<GroupTreeNode>() {
+          @Override
+          public GroupTreeNode construct() {
+            GroupTreeNode results = groupService.searchTree(query.getText());
+            results.sortChildren();
+            return results;
+          }
 
-			@Override
-			public void finished()
-			{
-				GroupTreeNode root = get();
-				model.setRoot(root);
+          @Override
+          public void finished() {
+            GroupTreeNode root = get();
+            model.setRoot(root);
 
-				if( root.getChildCount() == 0 )
-				{
-					JOptionPane.showMessageDialog(getComponent(),
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.noresults"));
-				}
-				else
-				{
-					Enumeration<?> e = root.depthFirstEnumeration();
-					while( e.hasMoreElements() )
-					{
-						GroupTreeNode node = (GroupTreeNode) e.nextElement();
-						if( node.getChildCount() == 0 )
-						{
-							tree.expandPath(new TreePath(model.getPathToRoot(node)));
-						}
-					}
-				}
-			}
+            if (root.getChildCount() == 0) {
+              JOptionPane.showMessageDialog(
+                  getComponent(),
+                  CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.noresults"));
+            } else {
+              Enumeration<?> e = root.depthFirstEnumeration();
+              while (e.hasMoreElements()) {
+                GroupTreeNode node = (GroupTreeNode) e.nextElement();
+                if (node.getChildCount() == 0) {
+                  tree.expandPath(new TreePath(model.getPathToRoot(node)));
+                }
+              }
+            }
+          }
 
-			@Override
-			public void exception()
-			{
-				JOptionPane.showMessageDialog(getComponent(),
-					CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.errorsearching"));
-				getException().printStackTrace();
-			}
-		};
-		w.setComponent(this);
-		w.start();
-	}
+          @Override
+          public void exception() {
+            JOptionPane.showMessageDialog(
+                getComponent(),
+                CurrentLocale.get(
+                    "com.tle.admin.usermanagement.internal.groupstabs.errorsearching"));
+            getException().printStackTrace();
+          }
+        };
+    w.setComponent(this);
+    w.start();
+  }
 
-	public void save()
-	{
-		details.saveLoadedGroup();
-	}
+  public void save() {
+    details.saveLoadedGroup();
+  }
 }

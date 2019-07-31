@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.workflow.tasks;
 
-import javax.inject.Inject;
-
 import com.tle.common.search.DefaultSearch;
 import com.tle.core.workflow.freetext.TaskListSearch;
 import com.tle.web.search.base.AbstractFreetextResultsSection;
@@ -25,36 +25,30 @@ import com.tle.web.search.base.AbstractSearchResultsSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.workflow.tasks.TaskItemList.TaskItemListEntry;
+import javax.inject.Inject;
 
 public class TaskListResultsSection
-	extends
-		AbstractFreetextResultsSection<TaskItemListEntry, AbstractSearchResultsSection.SearchResultsModel>
-{
-	@Inject
-	private TaskItemList taskItemList;
+    extends AbstractFreetextResultsSection<
+        TaskItemListEntry, AbstractSearchResultsSection.SearchResultsModel> {
+  @Inject private TaskItemList taskItemList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+  }
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(taskItemList, id);
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(taskItemList, id);
+  }
 
-	@Override
-	public TaskItemList getItemList(SectionInfo info)
-	{
-		return taskItemList;
-	}
+  @Override
+  public TaskItemList getItemList(SectionInfo info) {
+    return taskItemList;
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return new TaskListSearch();
-	}
-
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return new TaskListSearch();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,46 +29,38 @@ import com.tle.web.sections.render.GenericNamedResult;
 import com.tle.web.sections.render.HtmlRenderer;
 
 @SuppressWarnings("nls")
-public class ServerMessageSection extends AbstractPrototypeSection<ServerMessageSection.ServerMessageModel>
-	implements
-		HtmlRenderer
-{
-	@Inject
-	private SystemConfigService systemConfigService;
+public class ServerMessageSection
+    extends AbstractPrototypeSection<ServerMessageSection.ServerMessageModel>
+    implements HtmlRenderer {
+  @Inject private SystemConfigService systemConfigService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !systemConfigService.isSystemSchemaUp() || !systemConfigService.isServerMessageEnabled() )
-		{
-			return null;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!systemConfigService.isSystemSchemaUp() || !systemConfigService.isServerMessageEnabled()) {
+      return null;
+    }
 
-		getModel(context).setServerMessage(systemConfigService.getServerMessage());
-		return new GenericNamedResult("servermessage", viewFactory.createResult("servermessage.ftl", context));
-	}
+    getModel(context).setServerMessage(systemConfigService.getServerMessage());
+    return new GenericNamedResult(
+        "servermessage", viewFactory.createResult("servermessage.ftl", context));
+  }
 
-	@Override
-	public Class<ServerMessageModel> getModelClass()
-	{
-		return ServerMessageModel.class;
-	}
+  @Override
+  public Class<ServerMessageModel> getModelClass() {
+    return ServerMessageModel.class;
+  }
 
-	public static class ServerMessageModel
-	{
-		private String serverMessage;
+  public static class ServerMessageModel {
+    private String serverMessage;
 
-		public String getServerMessage()
-		{
-			return serverMessage;
-		}
+    public String getServerMessage() {
+      return serverMessage;
+    }
 
-		public void setServerMessage(String serverMessage)
-		{
-			this.serverMessage = serverMessage;
-		}
-	}
+    public void setServerMessage(String serverMessage) {
+      this.serverMessage = serverMessage;
+    }
+  }
 }

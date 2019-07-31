@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,21 @@
 
 package com.tle.web.sections.ajax;
 
-public class SimpleDOMResult extends AbstractDOMResult
-{
-	private final String html;
-	private final String readyScript;
+public class SimpleDOMResult extends AbstractDOMResult {
+  private final String html;
+  private final String readyScript;
 
-	public SimpleDOMResult(AbstractDOMResult result, String html, String readyScript)
-	{
-		super(result);
-		this.html = html;
-		this.readyScript = readyScript;
-	}
+  public SimpleDOMResult(AbstractDOMResult result, String html, String readyScript) {
+    super(result);
+    this.html = html;
+    this.readyScript = readyScript;
+  }
 
-	public String getHtml()
-	{
-		return html;
-	}
+  public String getHtml() {
+    return html;
+  }
 
-	public String getReadyScript()
-	{
-		return readyScript;
-	}
+  public String getReadyScript() {
+    return readyScript;
+  }
 }

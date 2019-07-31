@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,65 +18,49 @@
 
 package com.dytech.edge.admin.wizard.model;
 
-import java.util.List;
-
 import com.dytech.edge.wizard.beans.FixedMetadata;
 import com.dytech.edge.wizard.beans.Metadata;
 import com.tle.admin.controls.repository.ControlDefinition;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class MetadataModel extends BasicAbstractControl
-{
-	private FixedMetadata fixed;
+public class MetadataModel extends BasicAbstractControl {
+  private FixedMetadata fixed;
 
-	/**
-	 * Constructs a new MetadataModel
-	 */
-	public MetadataModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+  /** Constructs a new MetadataModel */
+  public MetadataModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public void setWrappedObject(Object wrappedObject)
-	{
-		super.setWrappedObject(wrappedObject);
-		this.fixed = (FixedMetadata) wrappedObject;
-	}
+  @Override
+  public void setWrappedObject(Object wrappedObject) {
+    super.setWrappedObject(wrappedObject);
+    this.fixed = (FixedMetadata) wrappedObject;
+  }
 
-	/**
-	 * @return Returns the metadata.
-	 */
-	public List<Metadata> getMetadata()
-	{
-		return fixed.getData();
-	}
+  /** @return Returns the metadata. */
+  public List<Metadata> getMetadata() {
+    return fixed.getData();
+  }
 
-	@Override
-	public String getControlClass()
-	{
-		return "metadata";
-	}
+  @Override
+  public String getControlClass() {
+    return "metadata";
+  }
 
-	@Override
-	public Object save()
-	{
-		return fixed;
-	}
+  @Override
+  public Object save() {
+    return fixed;
+  }
 
-	@Override
-	public void setScript(String script)
-	{
-		fixed.setScript(script);
-	}
+  @Override
+  public void setScript(String script) {
+    fixed.setScript(script);
+  }
 
-	@Override
-	public String getScript()
-	{
-		return fixed.getScript();
-	}
-
+  @Override
+  public String getScript() {
+    return fixed.getScript();
+  }
 }

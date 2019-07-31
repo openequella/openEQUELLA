@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,31 +24,25 @@ import com.tle.web.sections.render.Label;
 /*
  * @author aholland
  */
-public class MimeTypesEditModel
-{
-	@Bookmarked
-	private long editId;
+public class MimeTypesEditModel {
+  @Bookmarked private long editId;
 
-	// Render time
-	private Label errorKey;
+  // Render time
+  private Label errorKey;
 
-	public Label getErrorLabel()
-	{
-		return errorKey;
-	}
+  public Label getErrorLabel() {
+    return errorKey;
+  }
 
-	public void setErrorLabel(Label errorKey)
-	{
-		this.errorKey = errorKey;
-	}
+  public void setErrorLabel(Label errorKey) {
+    this.errorKey = errorKey;
+  }
 
-	public long getEditId()
-	{
-		return editId;
-	}
+  public long getEditId() {
+    return editId;
+  }
 
-	public void setEditId(long editId)
-	{
-		this.editId = editId;
-	}
+  public void setEditId(long editId) {
+    this.editId = editId;
+  }
 }

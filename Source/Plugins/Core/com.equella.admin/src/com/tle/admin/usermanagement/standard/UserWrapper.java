@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,46 +26,42 @@ import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
 
-public class UserWrapper extends GeneralPlugin<UserManagementSettings>
-{
-	private UsersTab userPanel;
+public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
+  private UsersTab userPanel;
 
-	public UserWrapper()
-	{
-		super();
-	}
+  public UserWrapper() {
+    super();
+  }
 
-	@Override
-	public void init()
-	{
-		super.init();
-		userPanel = new UsersTab(clientService.getService(RemoteTLEUserService.class),
-			clientService.getService(RemoteTLEGroupService.class), clientService.getService(RemoteUserService.class));
-		addFillComponent(userPanel);
-	}
+  @Override
+  public void init() {
+    super.init();
+    userPanel =
+        new UsersTab(
+            clientService.getService(RemoteTLEUserService.class),
+            clientService.getService(RemoteTLEGroupService.class),
+            clientService.getService(RemoteUserService.class));
+    addFillComponent(userPanel);
+  }
 
-	@Override
-	public boolean hasSave()
-	{
-		return false;
-	}
+  @Override
+  public boolean hasSave() {
+    return false;
+  }
 
-	@Override
-	public void load(UserManagementSettings settings)
-	{
-		// Nothing to see here, move along...
-	}
+  @Override
+  public void load(UserManagementSettings settings) {
+    // Nothing to see here, move along...
+  }
 
-	@Override
-	public boolean save(UserManagementSettings settings) throws EditorException
-	{
-		userPanel.save();
-		return true;
-	}
+  @Override
+  public boolean save(UserManagementSettings settings) throws EditorException {
+    userPanel.save();
+    return true;
+  }
 
-	@Override
-	public String getDocumentName()
-	{
-		return "user";
-	}
+  @Override
+  public String getDocumentName() {
+    return "user";
+  }
 }

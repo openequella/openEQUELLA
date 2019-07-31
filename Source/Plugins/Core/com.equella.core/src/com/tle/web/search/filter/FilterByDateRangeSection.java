@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,45 +18,38 @@
 
 package com.tle.web.search.filter;
 
-import java.util.Date;
-
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
+import java.util.Date;
 
-public class FilterByDateRangeSection extends AbstractFilterByDateRangeSection<FreetextSearchEvent>
-{
-	@PlugKey("filter.bydate.title")
-	private static Label LABEL_TITLE;
+public class FilterByDateRangeSection
+    extends AbstractFilterByDateRangeSection<FreetextSearchEvent> {
+  @PlugKey("filter.bydate.title")
+  private static Label LABEL_TITLE;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected String[] getParameterNames()
-	{
-		return new String[]{"dp", "ds", "dr"};
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected String[] getParameterNames() {
+    return new String[] {"dp", "ds", "dr"};
+  }
 
-	@Override
-	public String getAjaxDiv()
-	{
-		return "date-range-filter"; //$NON-NLS-1$
-	}
+  @Override
+  public String getAjaxDiv() {
+    return "date-range-filter"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		Date[] dateRange = getDateRange(info);
-		if( dateRange != null )
-		{
-			event.filterByDateRange(dateRange);
-		}
-	}
-
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    Date[] dateRange = getDateRange(info);
+    if (dateRange != null) {
+      event.filterByDateRange(dateRange);
+    }
+  }
 }

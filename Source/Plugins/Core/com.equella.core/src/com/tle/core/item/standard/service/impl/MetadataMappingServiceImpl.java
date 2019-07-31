@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,19 +17,6 @@
  */
 
 package com.tle.core.item.standard.service.impl;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.ScriptContext;
@@ -45,101 +34,93 @@ import com.tle.core.item.standard.service.MetadataMappingService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.FileSystemService;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Bind(MetadataMappingService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class MetadataMappingServiceImpl implements MetadataMappingService
-{
-	private PluginTracker<PackageMapper> mapperTracker;
+public class MetadataMappingServiceImpl implements MetadataMappingService {
+  private PluginTracker<PackageMapper> mapperTracker;
 
-	private static Log LOGGER = LogFactory.getLog(MetadataMappingService.class);
+  private static Log LOGGER = LogFactory.getLog(MetadataMappingService.class);
 
-	@Inject
-	private ScriptingService scriptingService;
-	@Inject
-	private FileSystemService fileSystemService;
+  @Inject private ScriptingService scriptingService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		mapperTracker = new PluginTracker<PackageMapper>(pluginService, "com.tle.web.wizard", "metadatamapper", null);
-		mapperTracker.setBeanKey("class");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    mapperTracker =
+        new PluginTracker<PackageMapper>(
+            pluginService, "com.tle.web.wizard", "metadatamapper", null);
+    mapperTracker.setBeanKey("class");
+  }
 
-	@Override
-	public void mapPackage(ItemDefinition collection, FileHandle handle, String packageName, PropBagEx itemxml)
-	{
-		List<PackageMapper> mappers = mapperTracker.getBeanList();
-		for( PackageMapper packageMapper : mappers )
-		{
-			if( packageMapper.isSupportedPackage(handle, packageName) )
-			{
-				packageMapper.mapMetadata(collection, itemxml, handle, packageName);
-			}
-		}
+  @Override
+  public void mapPackage(
+      ItemDefinition collection, FileHandle handle, String packageName, PropBagEx itemxml) {
+    List<PackageMapper> mappers = mapperTracker.getBeanList();
+    for (PackageMapper packageMapper : mappers) {
+      if (packageMapper.isSupportedPackage(handle, packageName)) {
+        packageMapper.mapMetadata(collection, itemxml, handle, packageName);
+      }
+    }
+  }
 
-	}
+  @Override
+  public void mapHtmlTags(
+      ItemDefinition collection, FileHandle handle, List<String> filenames, PropBagEx itemxml) {
+    Collection<HTMLMapping> mappings = collection.getMetadataMapping().getHtmlMapping();
+    if (!Check.isEmpty(mappings)) {
+      Set<String> metaTags = new HashSet<String>();
+      for (HTMLMapping htmlMapping : mappings) {
+        metaTags.add(htmlMapping.getHtml());
+      }
+      HtmlMapper mapper = new HtmlMapper(metaTags);
+      for (String filename : filenames) {
+        try (InputStream stream = fileSystemService.read(handle, filename)) {
+          mapper.mapMetaTags(stream);
+        } catch (Exception e) {
+          LOGGER.debug("Failed mapping file:" + filename, e);
+        }
+      }
+      Map<String, String> mappedTags = mapper.getMappings();
 
-	@Override
-	public void mapHtmlTags(ItemDefinition collection, FileHandle handle, List<String> filenames, PropBagEx itemxml)
-	{
-		Collection<HTMLMapping> mappings = collection.getMetadataMapping().getHtmlMapping();
-		if( !Check.isEmpty(mappings) )
-		{
-			Set<String> metaTags = new HashSet<String>();
-			for( HTMLMapping htmlMapping : mappings )
-			{
-				metaTags.add(htmlMapping.getHtml());
-			}
-			HtmlMapper mapper = new HtmlMapper(metaTags);
-			for( String filename : filenames )
-			{
-				try( InputStream stream = fileSystemService.read(handle, filename) )
-				{
-					mapper.mapMetaTags(stream);
-				}
-				catch( Exception e )
-				{
-					LOGGER.debug("Failed mapping file:" + filename, e);
-				}
-			}
-			Map<String, String> mappedTags = mapper.getMappings();
+      for (HTMLMapping htmlMapping : mappings) {
+        String metaTag = htmlMapping.getHtml();
+        if (mappedTags.containsKey(metaTag)) {
+          String xpath = htmlMapping.getItemdef();
+          itemxml.deleteAll(xpath);
+          itemxml.setNode(xpath, mappedTags.get(metaTag));
+        }
+      }
+    }
+  }
 
-			for( HTMLMapping htmlMapping : mappings )
-			{
-				String metaTag = htmlMapping.getHtml();
-				if( mappedTags.containsKey(metaTag) )
-				{
-					String xpath = htmlMapping.getItemdef();
-					itemxml.deleteAll(xpath);
-					itemxml.setNode(xpath, mappedTags.get(metaTag));
-				}
-			}
+  @Override
+  public void mapLiterals(
+      ItemDefinition collection, PropBagEx itemxml, ScriptContext scriptContext) {
+    Collection<LiteralMapping> mappings = collection.getMetadataMapping().getLiteralMapping();
+    if (mappings != null) {
+      for (LiteralMapping target : mappings) {
+        String targetValue = target.getValue();
+        for (Literal literal : target.getLiterals()) {
+          String value = literal.getValue();
+          String script = literal.getScript();
 
-		}
-	}
-
-	@Override
-	public void mapLiterals(ItemDefinition collection, PropBagEx itemxml, ScriptContext scriptContext)
-	{
-		Collection<LiteralMapping> mappings = collection.getMetadataMapping().getLiteralMapping();
-		if( mappings != null )
-		{
-			for( LiteralMapping target : mappings )
-			{
-				String targetValue = target.getValue();
-				for( Literal literal : target.getLiterals() )
-				{
-					String value = literal.getValue();
-					String script = literal.getScript();
-
-					if( scriptingService.evaluateScript(script, "metadataMapper", scriptContext) )
-					{
-						itemxml.setNode(targetValue, value);
-					}
-				}
-			}
-		}
-	}
+          if (scriptingService.evaluateScript(script, "metadataMapper", scriptContext)) {
+            itemxml.setNode(targetValue, value);
+          }
+        }
+      }
+    }
+  }
 }

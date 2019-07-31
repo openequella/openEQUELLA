@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,28 +24,22 @@ import com.tle.common.PathUtils;
 import com.tle.common.institution.CurrentInstitution;
 
 @NonNullByDefault
-public class CustomisationFile extends InstitutionFile
-{
-	private static final long serialVersionUID = 1L;
+public class CustomisationFile extends InstitutionFile {
+  private static final long serialVersionUID = 1L;
 
-	private static final String CUSTOM2_FOLDER = "Custom2";
+  private static final String CUSTOM2_FOLDER = "Custom2";
 
-	/**
-	 * References the current customisation for the given institution.
-	 */
-	public CustomisationFile()
-	{
-		this(CurrentInstitution.get());
-	}
+  /** References the current customisation for the given institution. */
+  public CustomisationFile() {
+    this(CurrentInstitution.get());
+  }
 
-	public CustomisationFile(Institution inst)
-	{
-		super(inst);
-	}
+  public CustomisationFile(Institution inst) {
+    super(inst);
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), CUSTOM2_FOLDER);
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(super.createAbsolutePath(), CUSTOM2_FOLDER);
+  }
 }

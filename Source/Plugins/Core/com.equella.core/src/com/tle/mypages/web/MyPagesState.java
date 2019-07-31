@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +18,6 @@
 
 package com.tle.mypages.web;
 
-import java.io.ObjectStreamException;
-import java.util.UUID;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Throwables;
 import com.tle.beans.item.Item;
@@ -33,154 +29,136 @@ import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.item.service.ItemFileService;
 import com.tle.web.wizard.WizardStateInterface;
+import java.io.ObjectStreamException;
+import java.util.UUID;
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 /*
  * @author aholland
  */
-public class MyPagesState implements WizardStateInterface
-{
-	private static final long serialVersionUID = 1L;
+public class MyPagesState implements WizardStateInterface {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private static Provider<MyPagesState> provider;
-	@Inject
-	private transient ItemFileService itemFileService;
+  @Inject private static Provider<MyPagesState> provider;
+  @Inject private transient ItemFileService itemFileService;
 
-	private final String wizid;
+  private final String wizid;
 
-	private ItemId itemId;
-	private Item item;
-	private String xml;
-	private transient volatile PropBagEx xmlBag;
-	private String stagingId;
-	private boolean newItem;
-	private WorkflowStatus workflowStatus;
+  private ItemId itemId;
+  private Item item;
+  private String xml;
+  private transient volatile PropBagEx xmlBag;
+  private String stagingId;
+  private boolean newItem;
+  private WorkflowStatus workflowStatus;
 
-	public MyPagesState()
-	{
-		wizid = UUID.randomUUID().toString();
-	}
+  public MyPagesState() {
+    wizid = UUID.randomUUID().toString();
+  }
 
-	@Override
-	public String getWizid()
-	{
-		return wizid;
-	}
+  @Override
+  public String getWizid() {
+    return wizid;
+  }
 
-	public boolean isNewItem()
-	{
-		return newItem;
-	}
+  public boolean isNewItem() {
+    return newItem;
+  }
 
-	public void setNewItem(boolean newItem)
-	{
-		this.newItem = newItem;
-	}
+  public void setNewItem(boolean newItem) {
+    this.newItem = newItem;
+  }
 
-	@Override
-	public ItemId getItemId()
-	{
-		return itemId;
-	}
+  @Override
+  public ItemId getItemId() {
+    return itemId;
+  }
 
-	public void setItemId(ItemId itemId)
-	{
-		this.itemId = itemId;
-	}
+  public void setItemId(ItemId itemId) {
+    this.itemId = itemId;
+  }
 
-	@Override
-	public ItemPack<Item> getItemPack()
-	{
-		return new ItemPack<>(item, getItemxml(), stagingId);
-	}
+  @Override
+  public ItemPack<Item> getItemPack() {
+    return new ItemPack<>(item, getItemxml(), stagingId);
+  }
 
-	@Override
-	public void setItemPack(ItemPack<Item> itemPack)
-	{
-		item = itemPack.getItem();
-		xmlBag = itemPack.getXml();
-		xml = (xmlBag == null ? null : xmlBag.toString());
-		stagingId = itemPack.getStagingID();
-	}
+  @Override
+  public void setItemPack(ItemPack<Item> itemPack) {
+    item = itemPack.getItem();
+    xmlBag = itemPack.getXml();
+    xml = (xmlBag == null ? null : xmlBag.toString());
+    stagingId = itemPack.getStagingID();
+  }
 
-	@Override
-	public String getStagingId()
-	{
-		return stagingId;
-	}
+  @Override
+  public String getStagingId() {
+    return stagingId;
+  }
 
-	@Override
-	public ModifiableAttachments getAttachments()
-	{
-		return new ModifiableAttachments(item);
-	}
+  @Override
+  public ModifiableAttachments getAttachments() {
+    return new ModifiableAttachments(item);
+  }
 
-	@Override
-	public FileHandle getFileHandle()
-	{
-		String staging = getStagingId();
-		if( staging != null && staging.length() > 0 )
-		{
-			return new StagingFile(staging);
-		}
-		return itemFileService.getItemFile(item);
-	}
+  @Override
+  public FileHandle getFileHandle() {
+    String staging = getStagingId();
+    if (staging != null && staging.length() > 0) {
+      return new StagingFile(staging);
+    }
+    return itemFileService.getItemFile(item);
+  }
 
-	@Override
-	public Item getItem()
-	{
-		return item;
-	}
+  @Override
+  public Item getItem() {
+    return item;
+  }
 
-	@Override
-	public PropBagEx getItemxml()
-	{
-		if( xmlBag == null )
-		{
-			xmlBag = new PropBagEx(xml);
-		}
-		return xmlBag;
-	}
+  @Override
+  public PropBagEx getItemxml() {
+    if (xmlBag == null) {
+      xmlBag = new PropBagEx(xml);
+    }
+    return xmlBag;
+  }
 
-	@Override
-	public WorkflowStatus getWorkflowStatus()
-	{
-		return workflowStatus;
-	}
+  @Override
+  public WorkflowStatus getWorkflowStatus() {
+    return workflowStatus;
+  }
 
-	public void setWorkflowStatus(WorkflowStatus workflowStatus)
-	{
-		this.workflowStatus = workflowStatus;
-	}
+  public void setWorkflowStatus(WorkflowStatus workflowStatus) {
+    this.workflowStatus = workflowStatus;
+  }
 
-	@Override
-	public void onSessionSave()
-	{
-		if( xmlBag != null )
-		{
-			xml = xmlBag.toString();
-		}
-		xmlBag = null;
-	}
+  @Override
+  public void onSessionSave() {
+    if (xmlBag != null) {
+      xml = xmlBag.toString();
+    }
+    xmlBag = null;
+  }
 
-	@Override
-	public MyPagesState clone()
-	{
-		try
-		{
-			final MyPagesState other = (MyPagesState) super.clone();
-			other.xmlBag = null;
+  @Override
+  public MyPagesState clone() {
+    try {
+      final MyPagesState other = (MyPagesState) super.clone();
+      other.xmlBag = null;
 
-			return other;
-		}
-		catch( CloneNotSupportedException e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+      return other;
+    } catch (CloneNotSupportedException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	private Object readResolve() throws ObjectStreamException
-	{
-		return provider.get();
-	}
+  private Object readResolve() throws ObjectStreamException {
+    return provider.get();
+  }
+
+  @Override
+  public int getStateVersion() {
+    return 0;
+  }
 }

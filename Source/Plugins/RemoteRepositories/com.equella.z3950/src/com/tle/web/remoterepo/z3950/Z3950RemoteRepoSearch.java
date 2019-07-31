@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,30 +24,24 @@ import com.tle.beans.search.Z3950Settings;
 import com.tle.core.guice.Bind;
 import com.tle.web.remoterepo.impl.AbstractRemoteRepoSearch;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
-public class Z3950RemoteRepoSearch extends AbstractRemoteRepoSearch
-{
-	@Override
-	protected String getTreePath()
-	{
-		return "/access/z3950.do";
-	}
+public class Z3950RemoteRepoSearch extends AbstractRemoteRepoSearch {
+  @Override
+  protected String getTreePath() {
+    return "/access/z3950.do";
+  }
 
-	@Override
-	public SearchSettings createSettings(FederatedSearch search)
-	{
-		Z3950Settings settings = new Z3950Settings();
-		settings.load(search);
-		return settings;
-	}
+  @Override
+  public SearchSettings createSettings(FederatedSearch search) {
+    Z3950Settings settings = new Z3950Settings();
+    settings.load(search);
+    return settings;
+  }
 
-	@Override
-	public String getContextKey()
-	{
-		return Z3950RootRemoteRepoSection.CONTEXT_KEY;
-	}
+  @Override
+  public String getContextKey() {
+    return Z3950RootRemoteRepoSection.CONTEXT_KEY;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.search.filter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
@@ -28,65 +27,57 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.utils.KeyOption;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.Option;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class FilterByCollectionSection
-	extends
-		AbstractFilterByCollectionSection<AbstractFilterByCollectionSection.AbstractFilterByCollectionModel>
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(FilterByCollectionSection.class);
+    extends AbstractFilterByCollectionSection<
+        AbstractFilterByCollectionSection.AbstractFilterByCollectionModel> {
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(FilterByCollectionSection.class);
 
-	@Override
-	public DynamicHtmlListModel<WhereEntry> getCollectionModel()
-	{
-		return new FilterByCollectionListModel();
-	}
+  @Override
+  public DynamicHtmlListModel<WhereEntry> getCollectionModel() {
+    return new FilterByCollectionListModel();
+  }
 
-	public class FilterByCollectionListModel extends DynamicHtmlListModel<WhereEntry>
-	{
-		public FilterByCollectionListModel()
-		{
-			setSort(true);
-		}
+  public class FilterByCollectionListModel extends DynamicHtmlListModel<WhereEntry> {
+    public FilterByCollectionListModel() {
+      setSort(true);
+    }
 
-		@Nullable
-		@Override
-		public WhereEntry getValue(SectionInfo info, @Nullable String value)
-		{
-			if( value == null || ALL_KEY.equals(value) )
-			{
-				return null;
-			}
-			return new WhereEntry(value);
-		}
+    @Nullable
+    @Override
+    public WhereEntry getValue(SectionInfo info, @Nullable String value) {
+      if (value == null || ALL_KEY.equals(value)) {
+        return null;
+      }
+      return new WhereEntry(value);
+    }
 
-		@Override
-		protected Option<WhereEntry> getTopOption()
-		{
-			return new KeyOption<WhereEntry>(r.key("filter.query.collection.all"), ALL_KEY, null);
-		}
+    @Override
+    protected Option<WhereEntry> getTopOption() {
+      return new KeyOption<WhereEntry>(r.key("filter.query.collection.all"), ALL_KEY, null);
+    }
 
-		@Override
-		protected Iterable<WhereEntry> populateModel(SectionInfo info)
-		{
-			List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
+    @Override
+    protected Iterable<WhereEntry> populateModel(SectionInfo info) {
+      List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
 
-			List<BaseEntityLabel> listSearchable = itemDefinitionService.listSearchable();
+      List<BaseEntityLabel> listSearchable = itemDefinitionService.listSearchable();
 
-			for( BaseEntityLabel bel : listSearchable )
-			{
-				collectionOptions.add(new WhereEntry(bel));
-			}
+      for (BaseEntityLabel bel : listSearchable) {
+        collectionOptions.add(new WhereEntry(bel));
+      }
 
-			return collectionOptions;
-		}
+      return collectionOptions;
+    }
 
-		@Override
-		protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj)
-		{
-			return obj.convert();
-		}
-	}
-
+    @Override
+    protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj) {
+      return obj.convert();
+    }
+  }
 }

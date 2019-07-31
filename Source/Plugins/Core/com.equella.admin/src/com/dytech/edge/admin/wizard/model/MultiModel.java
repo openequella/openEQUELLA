@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,76 +18,61 @@
 
 package com.dytech.edge.admin.wizard.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.wizard.beans.control.Multi;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.common.applet.client.ClientService;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class MultiModel extends AbstractControlModel<Multi>
-{
-	private Multi multi;
+public class MultiModel extends AbstractControlModel<Multi> {
+  private Multi multi;
 
-	/**
-	 * Constructs a new MultiModel.
-	 */
-	public MultiModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+  /** Constructs a new MultiModel. */
+  public MultiModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public void setWrappedObject(Object wrappedObject)
-	{
-		super.setWrappedObject(wrappedObject);
-		this.multi = (Multi) wrappedObject;
-	}
+  @Override
+  public void setWrappedObject(Object wrappedObject) {
+    super.setWrappedObject(wrappedObject);
+    this.multi = (Multi) wrappedObject;
+  }
 
-	@Override
-	public List<?> getChildObjects()
-	{
-		return multi.getControls();
-	}
+  @Override
+  public List<?> getChildObjects() {
+    return multi.getControls();
+  }
 
-	@Override
-	public boolean allowsChildren()
-	{
-		return true;
-	}
+  @Override
+  public boolean allowsChildren() {
+    return true;
+  }
 
-	@Override
-	public String getTargetBase()
-	{
-		String base = super.getTargetBase();
-		if( !multi.getTargetnodes().isEmpty() )
-		{
-			base += multi.getTargetnodes().get(0).getTarget();
-		}
-		return base;
-	}
+  @Override
+  public String getTargetBase() {
+    String base = super.getTargetBase();
+    if (!multi.getTargetnodes().isEmpty()) {
+      base += multi.getTargetnodes().get(0).getTarget();
+    }
+    return base;
+  }
 
-	@Override
-	public List<String> getContexts()
-	{
-		return Arrays.asList("multi");
-	}
+  @Override
+  public List<String> getContexts() {
+    return Arrays.asList("multi");
+  }
 
-	@Override
-	public String doValidation(ClientService clientService)
-	{
-		String error = Validation.hasTarget(getControl());
+  @Override
+  public String doValidation(ClientService clientService) {
+    String error = Validation.hasTarget(getControl());
 
-		if( error == null )
-		{
-			error = Validation.hasChildren(this);
-		}
+    if (error == null) {
+      error = Validation.hasChildren(this);
+    }
 
-		return error;
-	}
+    return error;
+  }
 }

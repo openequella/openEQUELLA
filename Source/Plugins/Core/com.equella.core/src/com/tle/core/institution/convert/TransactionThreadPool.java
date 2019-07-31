@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,173 +18,131 @@
 
 package com.tle.core.institution.convert;
 
+import com.tle.common.usermanagement.user.AuthenticatedThread;
+import com.tle.core.hibernate.CurrentDataSource;
+import com.tle.core.hibernate.DataSourceHolder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.tle.core.hibernate.CurrentDataSource;
-import com.tle.core.hibernate.DataSourceHolder;
-import com.tle.common.usermanagement.user.AuthenticatedThread;
+public class TransactionThreadPool {
+  private List<TransactionThread> freeThreads = new LinkedList<TransactionThread>();
+  private List<TransactionThread> inUseThreads = new LinkedList<TransactionThread>();
+  private boolean closing;
+  private volatile Throwable throwable;
+  private Converter converter;
+  private DataSourceHolder dataSource;
 
-public class TransactionThreadPool
-{
-	private List<TransactionThread> freeThreads = new LinkedList<TransactionThread>();
-	private List<TransactionThread> inUseThreads = new LinkedList<TransactionThread>();
-	private boolean closing;
-	private volatile Throwable throwable;
-	private Converter converter;
-	private DataSourceHolder dataSource;
+  public TransactionThreadPool(Converter converter, int poolSize) {
+    this.converter = converter;
+    for (int i = 0; i < poolSize; i++) {
+      freeThreads.add(new TransactionThread());
+    }
+    dataSource = CurrentDataSource.get();
+  }
 
-	public TransactionThreadPool(Converter converter, int poolSize)
-	{
-		this.converter = converter;
-		for( int i = 0; i < poolSize; i++ )
-		{
-			freeThreads.add(new TransactionThread());
-		}
-		dataSource = CurrentDataSource.get();
-	}
+  public synchronized void doInTransaction(Runnable runnable) {
+    while (freeThreads.isEmpty() && throwable == null) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        // who cares
+      }
+    }
+    if (throwable != null) {
+      return;
+    }
+    TransactionThread thread = freeThreads.remove(0);
+    inUseThreads.add(thread);
+    thread.setRunnable(runnable);
+  }
 
-	public synchronized void doInTransaction(Runnable runnable)
-	{
-		while( freeThreads.isEmpty() && throwable == null )
-		{
-			try
-			{
-				wait();
-			}
-			catch( InterruptedException e )
-			{
-				// who cares
-			}
-		}
-		if( throwable != null )
-		{
-			return;
-		}
-		TransactionThread thread = freeThreads.remove(0);
-		inUseThreads.add(thread);
-		thread.setRunnable(runnable);
-	}
+  private void reportError(Throwable t) {
+    if (throwable == null) {
+      this.throwable = t;
+    }
+  }
 
-	private void reportError(Throwable t)
-	{
-		if( throwable == null )
-		{
-			this.throwable = t;
-		}
-	}
+  private synchronized boolean threadFinished(TransactionThread thread) {
+    inUseThreads.remove(thread);
+    freeThreads.add(thread);
+    notifyAll();
+    return closing;
+  }
 
-	private synchronized boolean threadFinished(TransactionThread thread)
-	{
-		inUseThreads.remove(thread);
-		freeThreads.add(thread);
-		notifyAll();
-		return closing;
-	}
+  private class TransactionThread extends AuthenticatedThread {
+    private Runnable runnable;
+    private boolean end;
 
-	private class TransactionThread extends AuthenticatedThread
-	{
-		private Runnable runnable;
-		private boolean end;
+    @Override
+    public synchronized void doRun() {
+      CurrentDataSource.set(dataSource);
+      while (!end) {
+        while (runnable == null && !end) {
+          try {
+            wait();
+          } catch (InterruptedException e) {
+            // Don't care
+          }
+        }
 
-		@Override
-		public synchronized void doRun()
-		{
-			CurrentDataSource.set(dataSource);
-			while( !end )
-			{
-				while( runnable == null && !end )
-				{
-					try
-					{
-						wait();
-					}
-					catch( InterruptedException e )
-					{
-						// Don't care
-					}
-				}
+        try {
+          if (!end) {
+            converter.doInTransaction(runnable);
+          }
+        } catch (Exception t) {
+          reportError(t);
+        } finally {
+          runnable = null;
+          end = threadFinished(this);
+        }
+      }
+    }
 
-				try
-				{
-					if( !end )
-					{
-						converter.doInTransaction(runnable);
-					}
-				}
-				catch( Exception t )
-				{
-					reportError(t);
-				}
-				finally
-				{
-					runnable = null;
-					end = threadFinished(this);
-				}
-			}
-		}
+    public synchronized void end() {
+      end = true;
+      interrupt();
+    }
 
-		public synchronized void end()
-		{
-			end = true;
-			interrupt();
-		}
+    public synchronized void setRunnable(Runnable runnable) {
+      this.runnable = runnable;
+      if (!isAlive()) {
+        start();
+      }
+      notifyAll();
+    }
+  }
 
-		public synchronized void setRunnable(Runnable runnable)
-		{
-			this.runnable = runnable;
-			if( !isAlive() )
-			{
-				start();
-			}
-			notifyAll();
-		}
-	}
+  public void close() {
+    closing = true;
+    List<TransactionThread> toEnd = new ArrayList<TransactionThread>();
+    synchronized (this) {
+      if (throwable != null) {
+        toEnd.addAll(inUseThreads);
+      }
+      toEnd.addAll(freeThreads);
+    }
+    for (TransactionThread thread : toEnd) {
+      thread.end();
+    }
+    synchronized (this) {
+      while (inUseThreads.size() > 0) {
+        try {
+          wait();
+        } catch (InterruptedException e) {
+          // don't care
+        }
+      }
+      if (throwable != null) {
+        if (throwable instanceof RuntimeException) {
+          throw (RuntimeException) throwable;
+        }
+        throw new RuntimeException(throwable);
+      }
+    }
+  }
 
-	public void close()
-	{
-		closing = true;
-		List<TransactionThread> toEnd = new ArrayList<TransactionThread>();
-		synchronized( this )
-		{
-			if( throwable != null )
-			{
-				toEnd.addAll(inUseThreads);
-			}
-			toEnd.addAll(freeThreads);
-		}
-		for( TransactionThread thread : toEnd )
-		{
-			thread.end();
-		}
-		synchronized( this )
-		{
-			while( inUseThreads.size() > 0 )
-			{
-				try
-				{
-					wait();
-				}
-				catch( InterruptedException e )
-				{
-					// don't care
-				}
-			}
-			if( throwable != null )
-			{
-				if( throwable instanceof RuntimeException )
-				{
-					throw (RuntimeException) throwable;
-				}
-				throw new RuntimeException(throwable);
-			}
-		}
-	}
-
-	public boolean hasException()
-	{
-		return throwable != null;
-	}
-
+  public boolean hasException() {
+    return throwable != null;
+  }
 }

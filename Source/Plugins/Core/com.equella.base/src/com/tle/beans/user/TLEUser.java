@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,10 @@
 
 package com.tle.beans.user;
 
+import com.tle.beans.Institution;
+import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,159 +32,135 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-
-import com.tle.beans.Institution;
-import com.tle.common.Format;
-import com.tle.common.usermanagement.user.valuebean.UserBean;
 
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"uuid", "institution_id"})})
-public class TLEUser implements UserBean
-{
-	private static final long serialVersionUID = 1L;
+public class TLEUser implements UserBean {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Index(name = "userUuidIndex")
-	@Column(length = 40, nullable = false)
-	private String uuid;
+  @Index(name = "userUuidIndex")
+  @Column(length = 40, nullable = false)
+  private String uuid;
 
-	@JoinColumn(nullable = false)
-	@Index(name = "userInstitutionIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Institution institution;
+  @JoinColumn(nullable = false)
+  @Index(name = "userInstitutionIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Institution institution;
 
-	@Column(nullable = false)
-	private String username;
-	@Column(nullable = false)
-	private String firstName;
-	@Column(nullable = false)
-	private String lastName;
-	private String emailAddress;
-	@Column(nullable = false)
-	private String password;
+  @Column(nullable = false)
+  private String username;
 
-	public TLEUser()
-	{
-		super();
-	}
+  @Column(nullable = false)
+  private String firstName;
 
-	@Override
-	public String getEmailAddress()
-	{
-		return emailAddress;
-	}
+  @Column(nullable = false)
+  private String lastName;
 
-	public void setEmailAddress(String email)
-	{
-		this.emailAddress = email;
-	}
+  private String emailAddress;
 
-	@Override
-	public String getFirstName()
-	{
-		return firstName;
-	}
+  @Column(nullable = false)
+  private String password;
 
-	public void setFirstName(String firstName)
-	{
-		this.firstName = firstName;
-	}
+  public TLEUser() {
+    super();
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  @Override
+  public String getEmailAddress() {
+    return emailAddress;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setEmailAddress(String email) {
+    this.emailAddress = email;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @Override
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public String getLastName()
-	{
-		return lastName;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setLastName(String lastName)
-	{
-		this.lastName = lastName;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	@Override
-	public String getUsername()
-	{
-		return username;
-	}
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 
-	public String getPassword()
-	{
-		return password;
-	}
+  @Override
+  public String getLastName() {
+    return lastName;
+  }
 
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-	@Override
-	public String getUniqueID()
-	{
-		return getUuid();
-	}
+  @Override
+  public String getUsername() {
+    return username;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return getUuid().hashCode();
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( obj instanceof TLEUser )
-		{
-			TLEUser rhs = (TLEUser) obj;
-			return Objects.equals(id, rhs.id);
-		}
-		return false;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	@Override
-	public String toString()
-	{
-		return Format.format(this);
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  @Override
+  public String getUniqueID() {
+    return getUuid();
+  }
+
+  @Override
+  public int hashCode() {
+    return getUuid().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof TLEUser) {
+      TLEUser rhs = (TLEUser) obj;
+      return Objects.equals(id, rhs.id);
+    }
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    return Format.format(this);
+  }
 }

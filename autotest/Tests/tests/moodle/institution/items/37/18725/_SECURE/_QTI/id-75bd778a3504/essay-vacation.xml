@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thie example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="essay-vacation" title="What we did in the vacation" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="string"/>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="20.0"/>
+	<itemBody>
+		<p>Write a few lines about what you did during the vacation.</p>
+		<extendedTextInteraction responseIdentifier="RESPONSE" expectedLength="200">
+			<prompt>Write 20-50 words.</prompt>
+		</extendedTextInteraction>
+	    <p>Here is a sample response:</p>
+	    <blockquote>
+	        <p>We went to Wales for our holiday. We stayed in a cottage on a hill.</p>
+	        <p>Whie we were there, we rode on a small train, climbed a mountain and walked on a beach.</p>
+	    </blockquote>
+	</itemBody>
+</assessmentItem>

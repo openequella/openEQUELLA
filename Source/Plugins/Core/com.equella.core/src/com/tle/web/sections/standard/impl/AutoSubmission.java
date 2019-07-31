@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,27 +32,32 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class AutoSubmission implements PreRenderable
-{
-	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(AutoSubmission.class);
+public class AutoSubmission implements PreRenderable {
+  private static final PluginResourceHelper URL_HELPER =
+      ResourcesService.getResourceHelper(AutoSubmission.class);
 
-	protected static final String NAMESPACE = "AutoSubmit.";
-	protected static final JSCallable SETUP = new ExternallyDefinedFunction(NAMESPACE + "setupAutoSubmit",
-		new IncludeFile(URL_HELPER.url("js/autosubmit.js")), new CssInclude(URL_HELPER.url("css/autosubmit.css")));
+  protected static final String NAMESPACE = "AutoSubmit.";
+  protected static final JSCallable SETUP =
+      new ExternallyDefinedFunction(
+          NAMESPACE + "setupAutoSubmit",
+          new IncludeFile(URL_HELPER.url("js/autosubmit.js")),
+          new CssInclude(URL_HELPER.url("css/autosubmit.css")));
 
-	protected final ElementId control;
-	protected final ElementId autoSubmitButton;
+  protected final ElementId control;
+  protected final ElementId autoSubmitButton;
 
-	public AutoSubmission(ElementId control, ElementId autoSubmitButton)
-	{
-		this.control = control;
-		this.autoSubmitButton = autoSubmitButton;
-	}
+  public AutoSubmission(ElementId control, ElementId autoSubmitButton) {
+    this.control = control;
+    this.autoSubmitButton = autoSubmitButton;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		JQueryCore.appendReady(info, new FunctionCallStatement(SETUP, new ElementByIdExpression(control),
-			new ElementByIdExpression(autoSubmitButton)));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    JQueryCore.appendReady(
+        info,
+        new FunctionCallStatement(
+            SETUP,
+            new ElementByIdExpression(control),
+            new ElementByIdExpression(autoSubmitButton)));
+  }
 }

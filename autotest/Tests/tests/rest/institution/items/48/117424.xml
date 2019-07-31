@@ -1,0 +1,108 @@
+<com.tle.beans.item.Item>
+  <id>117424</id>
+  <uuid>cc7a3e13-4f44-4481-8bc2-881cecfbed96</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-10-29 16:11:50.05</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-29 16:11:50.053</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.782</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>true</moderating>
+  <status>MODERATING</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6bf51943-9d20-4934-a228-8edcec6691ae"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117426</id>
+    <start class="sql-timestamp">2012-10-29 16:11:50.073</start>
+    <lastAction class="sql-timestamp">2012-10-29 16:11:50.05</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses>
+      <com.tle.common.workflow.WorkflowItemStatus>
+        <id>117427</id>
+        <node class="com.tle.common.workflow.node.WorkflowItem" workflow="0f7bd496-8466-4fa5-b166-8132cc5294e4">3c4926a7-4b28-4ea2-88b8-42da1902a9ed</node>
+        <status>i</status>
+        <comments/>
+        <dateDue class="sql-timestamp">2022-10-29 16:00:00.0</dateDue>
+        <started class="sql-timestamp">2012-10-29 16:11:50.05</started>
+        <overdue>false</overdue>
+        <acceptedUsers/>
+        <cause>
+          <id>117428</id>
+          <node class="com.tle.common.workflow.node.SerialNode" workflow="0f7bd496-8466-4fa5-b166-8132cc5294e4">3bedced8-2355-42e0-aaa6-3c44c34c33be</node>
+          <status>i</status>
+          <comments/>
+        </cause>
+      </com.tle.common.workflow.WorkflowItemStatus>
+      <com.tle.common.workflow.WorkflowNodeStatus reference="../com.tle.common.workflow.WorkflowItemStatus/cause"/>
+    </statuses>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117431</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:11:50.05</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117432</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:11:50.05</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117433</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:11:50.05</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117434</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-10-29 16:11:50.05</date>
+      <step>3bedced8-2355-42e0-aaa6-3c44c34c33be</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117429</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117430</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>TaskApiTest - High priority, short due date</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

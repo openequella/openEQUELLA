@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.core.qti.migration;
-
-import java.util.Set;
-
-import javax.inject.Singleton;
 
 import com.google.common.collect.Sets;
 import com.tle.beans.Institution;
@@ -33,42 +31,40 @@ import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.ClassDependencies;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.Set;
+import javax.inject.Singleton;
 
 /**
  * Creates the Test schema, as opposed to the results which will come later.
- * 
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CreateQtiTestSchema extends AbstractCreateMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(CreateQtiTestSchema.class)
-		+ ".migration.createschema.";
+public class CreateQtiTestSchema extends AbstractCreateMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(CreateQtiTestSchema.class) + ".migration.createschema.";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "title");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter(new String[]{"qti_assessment_test", "qti_assessment_item",
-				"qti_assessment_item_ref"});
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter(
+        new String[] {"qti_assessment_test", "qti_assessment_item", "qti_assessment_item_ref"});
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		final Set<Class<?>> domainClasses = Sets.newHashSet();
-		domainClasses.add(QtiAssessmentItem.class);
-		domainClasses.add(QtiAssessmentItemRef.class);
-		domainClasses.add(QtiAssessmentTest.class);
-		domainClasses.add(Institution.class);
-		domainClasses.addAll(ClassDependencies.item());
-		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    final Set<Class<?>> domainClasses = Sets.newHashSet();
+    domainClasses.add(QtiAssessmentItem.class);
+    domainClasses.add(QtiAssessmentItemRef.class);
+    domainClasses.add(QtiAssessmentTest.class);
+    domainClasses.add(Institution.class);
+    domainClasses.addAll(ClassDependencies.item());
+    return domainClasses.toArray(new Class<?>[domainClasses.size()]);
+  }
 }

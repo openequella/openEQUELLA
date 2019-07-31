@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,7 +20,6 @@ package com.tle.web.api.collection.resource;
 
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.common.security.SecurityConstants;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
@@ -28,7 +29,6 @@ import com.tle.web.api.collection.interfaces.CollectionResource;
 import com.tle.web.api.collection.interfaces.beans.AllCollectionsSecurityBean;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -36,42 +36,33 @@ import javax.inject.Singleton;
 @Bind(CollectionResource.class)
 @Singleton
 public class CollectionResourceImpl
-	extends
-		AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
-		implements CollectionResource
-{
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private CollectionBeanSerializer collectionSerializer;
+    extends AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
+    implements CollectionResource {
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private CollectionBeanSerializer collectionSerializer;
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return CollectionResource.class;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return CollectionResource.class;
+  }
 
-	@Override
-	public AbstractEntityService<?, ItemDefinition> getEntityService()
-	{
-		return collectionService;
-	}
+  @Override
+  public AbstractEntityService<?, ItemDefinition> getEntityService() {
+    return collectionService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer()
-	{
-		return collectionSerializer;
-	}
+  @Override
+  protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer() {
+    return collectionSerializer;
+  }
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
+  }
 
-	@Override
-	protected AllCollectionsSecurityBean createAllSecurityBean()
-	{
-		return new AllCollectionsSecurityBean();
-	}
+  @Override
+  protected AllCollectionsSecurityBean createAllSecurityBean() {
+    return new AllCollectionsSecurityBean();
+  }
 }

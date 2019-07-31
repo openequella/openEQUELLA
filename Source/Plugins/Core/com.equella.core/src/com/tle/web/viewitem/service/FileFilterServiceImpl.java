@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,34 @@
 
 package com.tle.web.viewitem.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.web.viewitem.FilestoreContentFilter;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind(FileFilterService.class)
 @Singleton
-public class FileFilterServiceImpl implements FileFilterService
-{
-	private PluginTracker<FilestoreContentFilter> filters;
+public class FileFilterServiceImpl implements FileFilterService {
+  private PluginTracker<FilestoreContentFilter> filters;
 
-	@Override
-	public List<FilestoreContentFilter> getFilters()
-	{
-		return filters.getBeanList();
-	}
+  @Override
+  public List<FilestoreContentFilter> getFilters() {
+    return filters.getBeanList();
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		filters = new PluginTracker<FilestoreContentFilter>(pluginService, "com.tle.web.viewitem", "contentFilter", null,
-			new PluginTracker.ExtensionParamComparator("order")).setBeanKey("bean");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    filters =
+        new PluginTracker<FilestoreContentFilter>(
+                pluginService,
+                "com.tle.web.viewitem",
+                "contentFilter",
+                null,
+                new PluginTracker.ExtensionParamComparator("order"))
+            .setBeanKey("bean");
+  }
 }

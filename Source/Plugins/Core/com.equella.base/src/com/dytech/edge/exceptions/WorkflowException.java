@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,19 @@
 
 package com.dytech.edge.exceptions;
 
-/**
- * Represents an exception occuring during workflow.
- */
-public class WorkflowException extends RuntimeApplicationException
-{
-	private static final long serialVersionUID = 1L;
+/** Represents an exception occuring during workflow. */
+public class WorkflowException extends RuntimeApplicationException {
+  private static final long serialVersionUID = 1L;
 
-	public WorkflowException(String msg)
-	{
-		super(msg);
-	}
+  public WorkflowException(String msg) {
+    super(msg);
+  }
 
-	public WorkflowException(String msg, Throwable t)
-	{
-		super(msg, t);
-	}
+  public WorkflowException(String msg, Throwable t) {
+    super(msg, t);
+  }
 
-	public WorkflowException(Throwable t)
-	{
-		super(t);
-	}
+  public WorkflowException(Throwable t) {
+    super(t);
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,29 +26,24 @@ import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.event.WaitForItemIndexEvent;
 
-public class ReindexOnlyOperation extends AbstractStandardWorkflowOperation
-{
-	private final boolean wait;
+public class ReindexOnlyOperation extends AbstractStandardWorkflowOperation {
+  private final boolean wait;
 
-	@AssistedInject
-	protected ReindexOnlyOperation(@Assisted("wait") boolean wait)
-	{
-		this.wait = wait;
-	}
+  @AssistedInject
+  protected ReindexOnlyOperation(@Assisted("wait") boolean wait) {
+    this.wait = wait;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Item item = getItem();
-		item.setDateForIndex(params.getDateNow());
-		ItemIdKey idKey = params.getItemIdKey();
-		addAfterCommitEvent(new IndexItemNowEvent(idKey));
-		addAfterCommitEvent(new IndexItemBackgroundEvent(idKey, false));
-		if( wait )
-		{
-			addAfterCommitEvent(new WaitForItemIndexEvent(idKey));
-		}
-		return false;
-	}
-
+  @Override
+  public boolean execute() {
+    Item item = getItem();
+    item.setDateForIndex(params.getDateNow());
+    ItemIdKey idKey = params.getItemIdKey();
+    addAfterCommitEvent(new IndexItemNowEvent(idKey));
+    addAfterCommitEvent(new IndexItemBackgroundEvent(idKey, false));
+    if (wait) {
+      addAfterCommitEvent(new WaitForItemIndexEvent(idKey));
+    }
+    return false;
+  }
 }

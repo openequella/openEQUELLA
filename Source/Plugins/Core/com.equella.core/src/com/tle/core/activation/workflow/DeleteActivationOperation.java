@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,28 +24,22 @@ import com.tle.beans.activation.ActivateRequest;
 import com.tle.core.activation.ActivateRequestDao;
 import com.tle.core.security.impl.SecureOnCall;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SecureOnCall(priv = "DELETE_ACTIVATION_ITEM")
-public class DeleteActivationOperation extends AbstractBulkableActivationOperation
-{
-	@AssistedInject
-	public DeleteActivationOperation()
-	{
-		super();
-	}
+public class DeleteActivationOperation extends AbstractBulkableActivationOperation {
+  @AssistedInject
+  public DeleteActivationOperation() {
+    super();
+  }
 
-	@AssistedInject
-	public DeleteActivationOperation(@Assisted long requestId)
-	{
-		super(requestId);
-	}
+  @AssistedInject
+  public DeleteActivationOperation(@Assisted long requestId) {
+    super(requestId);
+  }
 
-	@Override
-	protected boolean doOperation(ActivateRequest request, ActivateRequestDao dao)
-	{
-		dao.delete(request);
-		return true;
-	}
+  @Override
+  protected boolean doOperation(ActivateRequest request, ActivateRequestDao dao) {
+    dao.delete(request);
+    return true;
+  }
 }

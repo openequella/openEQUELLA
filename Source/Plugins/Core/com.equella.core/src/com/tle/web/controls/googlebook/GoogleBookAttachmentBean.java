@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,67 +21,55 @@ package com.tle.web.controls.googlebook;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 
 @SuppressWarnings("nls")
-public class GoogleBookAttachmentBean extends EquellaAttachmentBean
-{
-	private String bookId;
-	private String viewUrl;
-	private String thumbUrl;
-	private String publishedDate;
-	private String pages;
+public class GoogleBookAttachmentBean extends EquellaAttachmentBean {
+  private String bookId;
+  private String viewUrl;
+  private String thumbUrl;
+  private String publishedDate;
+  private String pages;
 
-	public String getBookId()
-	{
-		return bookId;
-	}
+  public String getBookId() {
+    return bookId;
+  }
 
-	public void setBookId(String bookId)
-	{
-		this.bookId = bookId;
-	}
+  public void setBookId(String bookId) {
+    this.bookId = bookId;
+  }
 
-	public String getViewUrl()
-	{
-		return viewUrl;
-	}
+  public String getViewUrl() {
+    return viewUrl;
+  }
 
-	public void setViewUrl(String viewUrl)
-	{
-		this.viewUrl = viewUrl;
-	}
+  public void setViewUrl(String viewUrl) {
+    this.viewUrl = viewUrl;
+  }
 
-	public String getThumbUrl()
-	{
-		return thumbUrl;
-	}
+  public String getThumbUrl() {
+    return thumbUrl;
+  }
 
-	public void setThumbUrl(String thumbUrl)
-	{
-		this.thumbUrl = thumbUrl;
-	}
+  public void setThumbUrl(String thumbUrl) {
+    this.thumbUrl = thumbUrl;
+  }
 
-	public String getPublishedDate()
-	{
-		return publishedDate;
-	}
+  public String getPublishedDate() {
+    return publishedDate;
+  }
 
-	public void setPublishedDate(String publishedDate)
-	{
-		this.publishedDate = publishedDate;
-	}
+  public void setPublishedDate(String publishedDate) {
+    this.publishedDate = publishedDate;
+  }
 
-	public String getPages()
-	{
-		return pages;
-	}
+  public String getPages() {
+    return pages;
+  }
 
-	public void setPages(String pages)
-	{
-		this.pages = pages;
-	}
+  public void setPages(String pages) {
+    this.pages = pages;
+  }
 
-	@Override
-	public String getRawAttachmentType()
-	{
-		return "custom/googlebook";
-	}
+  @Override
+  public String getRawAttachmentType() {
+    return "custom/googlebook";
+  }
 }

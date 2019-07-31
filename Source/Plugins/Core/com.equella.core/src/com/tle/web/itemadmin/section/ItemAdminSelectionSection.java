@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.itemadmin.section;
-
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemIdKey;
@@ -35,90 +33,82 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
+import javax.inject.Inject;
 
 @NonNullByDefault
-public class ItemAdminSelectionSection extends AbstractBulkSelectionSection<ItemIdKey>
-{
-	private static final String KEY_SELECTIONS = "itemadminSelections"; //$NON-NLS-1$
+public class ItemAdminSelectionSection extends AbstractBulkSelectionSection<ItemIdKey> {
+  private static final String KEY_SELECTIONS = "itemadminSelections"; // $NON-NLS-1$
 
-	@PlugKey("itemadmin.selectionsbox.selectall")
-	private static Label LABEL_SELECTALL;
-	@PlugKey("itemadmin.selectionsbox.unselect")
-	private static Label LABEL_UNSELECTALL;
-	@PlugKey("itemadmin.selectionsbox.viewselected")
-	private static Label LABEL_VIEWSELECTED;
-	@PlugKey("itemadmin.selectionsbox.pleaseselect")
-	private static Label LABEL_PLEASE;
-	@PlugKey("itemadmin.selectionsbox.count")
-	private static String LABEL_COUNT;
+  @PlugKey("itemadmin.selectionsbox.selectall")
+  private static Label LABEL_SELECTALL;
 
-	@Component
-	@Inject
-	private ItemAdminResultsDialog bulkDialog;
-	@Inject
-	private FreeTextService freeTextService;
+  @PlugKey("itemadmin.selectionsbox.unselect")
+  private static Label LABEL_UNSELECTALL;
 
-	@TreeLookup
-	private AbstractFreetextResultsSection<?, ?> resultsSection;
+  @PlugKey("itemadmin.selectionsbox.viewselected")
+  private static Label LABEL_VIEWSELECTED;
 
-	@Override
-	@EventHandlerMethod
-	public void selectAll(SectionInfo info)
-	{
-		FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
-		info.processEvent(searchEvent);
-		DefaultSearch search = searchEvent.getFinalSearch();
-		LongSet bitSet = freeTextService.searchIdsBitSet(search);
-		Model<ItemIdKey> model = getModel(info);
-		model.setBitSet(bitSet);
-		model.setModifiedSelection(true);
-	}
+  @PlugKey("itemadmin.selectionsbox.pleaseselect")
+  private static Label LABEL_PLEASE;
 
-	@Override
-	protected String getKeySelections()
-	{
-		return KEY_SELECTIONS;
-	}
+  @PlugKey("itemadmin.selectionsbox.count")
+  private static String LABEL_COUNT;
 
-	@Override
-	protected Label getLabelSelectAll()
-	{
-		return LABEL_SELECTALL;
-	}
+  @Component @Inject private ItemAdminResultsDialog bulkDialog;
+  @Inject private FreeTextService freeTextService;
 
-	@Override
-	protected Label getLabelUnselectAll()
-	{
-		return LABEL_UNSELECTALL;
-	}
+  @TreeLookup private AbstractFreetextResultsSection<?, ?> resultsSection;
 
-	@Override
-	protected Label getLabelViewSelected()
-	{
-		return LABEL_VIEWSELECTED;
-	}
+  @Override
+  @EventHandlerMethod
+  public void selectAll(SectionInfo info) {
+    FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
+    info.processEvent(searchEvent);
+    DefaultSearch search = searchEvent.getFinalSearch();
+    LongSet bitSet = freeTextService.searchIdsBitSet(search);
+    Model<ItemIdKey> model = getModel(info);
+    model.setBitSet(bitSet);
+    model.setModifiedSelection(true);
+  }
 
-	@Override
-	protected Label getPleaseSelectLabel()
-	{
-		return LABEL_PLEASE;
-	}
+  @Override
+  protected String getKeySelections() {
+    return KEY_SELECTIONS;
+  }
 
-	@Override
-	protected Label getSelectionBoxCountLabel(int selectionCount)
-	{
-		return new PluralKeyLabel(LABEL_COUNT, selectionCount);
-	}
+  @Override
+  protected Label getLabelSelectAll() {
+    return LABEL_SELECTALL;
+  }
 
-	@Override
-	protected AbstractBulkResultsDialog<ItemIdKey> getBulkDialog()
-	{
-		return bulkDialog;
-	}
+  @Override
+  protected Label getLabelUnselectAll() {
+    return LABEL_UNSELECTALL;
+  }
 
-	@Override
-	protected boolean useBitSet()
-	{
-		return true;
-	}
+  @Override
+  protected Label getLabelViewSelected() {
+    return LABEL_VIEWSELECTED;
+  }
+
+  @Override
+  protected Label getPleaseSelectLabel() {
+    return LABEL_PLEASE;
+  }
+
+  @Override
+  protected Label getSelectionBoxCountLabel(int selectionCount) {
+    return new PluralKeyLabel(LABEL_COUNT, selectionCount);
+  }
+
+  @Override
+  protected AbstractBulkResultsDialog<ItemIdKey> getBulkDialog() {
+    return bulkDialog;
+  }
+
+  @Override
+  protected boolean useBitSet() {
+    return true;
+  }
 }

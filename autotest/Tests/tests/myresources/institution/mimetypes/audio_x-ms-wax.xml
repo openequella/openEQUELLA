@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>35275</id>
+  <institution>
+    <id>35074</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>wax</string>
+  </extensions>
+  <type>audio/x-ms-wax</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

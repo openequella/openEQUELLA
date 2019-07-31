@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.remoterepo.sru;
 
-import javax.inject.Inject;
-
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.core.remoterepo.sru.service.SruService;
 import com.tle.core.remoterepo.sru.service.impl.SruSearchResult;
@@ -26,34 +26,27 @@ import com.tle.web.remoterepo.RemoteRepoListEntryFactory;
 import com.tle.web.remoterepo.section.RemoteRepoResultsSection;
 import com.tle.web.remoterepo.section.RemoteRepoResultsSection.RemoteRepoResultsModel;
 import com.tle.web.sections.SectionInfo;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
+/** @author larry */
 public class SruResultsSection
-	extends
-		RemoteRepoResultsSection<SruSearchEvent, SruSearchResult, RemoteRepoResultsModel>
-{
-	@Inject
-	private SruService sruService;
-	@Inject
-	private SruListEntryFactory sruFac;
+    extends RemoteRepoResultsSection<SruSearchEvent, SruSearchResult, RemoteRepoResultsModel> {
+  @Inject private SruService sruService;
+  @Inject private SruListEntryFactory sruFac;
 
-	@Override
-	protected SruSearchResults doSearch(SectionInfo info, SruSearchEvent search)
-	{
-		return sruService.search(search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
-	}
+  @Override
+  protected SruSearchResults doSearch(SectionInfo info, SruSearchEvent search) {
+    return sruService.search(
+        search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
+  }
 
-	@Override
-	protected RemoteRepoListEntryFactory<SruSearchResult> getEntryFactory()
-	{
-		return sruFac;
-	}
+  @Override
+  protected RemoteRepoListEntryFactory<SruSearchResult> getEntryFactory() {
+    return sruFac;
+  }
 
-	@Override
-	protected SruSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch)
-	{
-		return new SruSearchEvent(getRootRemoteRepoSection(), fedSearch);
-	}
+  @Override
+  protected SruSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch) {
+    return new SruSearchEvent(getRootRemoteRepoSection(), fedSearch);
+  }
 }

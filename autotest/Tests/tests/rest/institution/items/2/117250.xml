@@ -1,0 +1,57 @@
+<com.tle.beans.item.Item>
+  <id>117250</id>
+  <uuid>e9164456-01ea-4866-bb4a-c4c098adf56b</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-01 14:26:00.897</dateModified>
+  <dateCreated class="sql-timestamp">2014-04-01 14:26:00.897</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.91</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>PERSONAL</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>117263</id>
+      <uuid>01fc6255-a7ef-4a2b-a9b3-82879cc7529b</uuid>
+      <url>avatar.png</url>
+      <description>avatar.png</description>
+      <value1>0</value1>
+      <value2>false</value2>
+      <thumbnail>_THUMBS/avatar.png.jpeg</thumbnail>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6b356e2e-e6a0-235a-5730-15ad1d8ad630"/>
+  <collaborators/>
+  <referencedUrls/>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117254</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117256</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>scrapbookItemTestTitlemyresource</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>15412</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

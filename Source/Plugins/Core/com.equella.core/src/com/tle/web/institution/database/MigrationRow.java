@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,38 +21,32 @@ package com.tle.web.institution.database;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 
-public class MigrationRow
-{
-	private final int percent;
-	private final String id;
-	private final SpanRenderer label;
-	private final HtmlComponentState errorLink;
+public class MigrationRow {
+  private final int percent;
+  private final String id;
+  private final SpanRenderer label;
+  private final HtmlComponentState errorLink;
 
-	public MigrationRow(int percent, String id, SpanRenderer label, HtmlComponentState errorLink)
-	{
-		this.percent = percent;
-		this.id = id;
-		this.label = label;
-		this.errorLink = errorLink;
-	}
+  public MigrationRow(int percent, String id, SpanRenderer label, HtmlComponentState errorLink) {
+    this.percent = percent;
+    this.id = id;
+    this.label = label;
+    this.errorLink = errorLink;
+  }
 
-	public int getPercent()
-	{
-		return percent;
-	}
+  public int getPercent() {
+    return percent;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public SpanRenderer getLabel()
-	{
-		return label;
-	}
+  public SpanRenderer getLabel() {
+    return label;
+  }
 
-	public HtmlComponentState getErrorLink()
-	{
-		return errorLink;
-	}
+  public HtmlComponentState getErrorLink() {
+    return errorLink;
+  }
 }

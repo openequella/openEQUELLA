@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,33 @@
 
 package com.tle.core.usermanagement.standard.wrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings.SharedSecretValue;
 import com.tle.common.usermanagement.util.TokenSecurity.Token;
 import com.tle.core.guice.Bind;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Bind
-public class SharedSecretWrapper extends AbstractSharedSecretWrapper<SharedSecretValue>
-{
-	static final Log LOGGER = LogFactory.getLog(SharedSecretWrapper.class);
+public class SharedSecretWrapper extends AbstractSharedSecretWrapper<SharedSecretValue> {
+  static final Log LOGGER = LogFactory.getLog(SharedSecretWrapper.class);
 
-	@Override
-	protected String getUsername(SharedSecretValue value, Token token)
-	{
-		return value.getPrefix() + token.getInsecure() + value.getPostfix();
-	}
+  @Override
+  protected String getUsername(SharedSecretValue value, Token token) {
+    return value.getPrefix() + token.getInsecure() + value.getPostfix();
+  }
 
-	@Override
-	protected boolean isAutoCreate(SharedSecretValue value)
-	{
-		return value.isAutoCreate();
-	}
+  @Override
+  protected boolean isAutoCreate(SharedSecretValue value) {
+    return value.isAutoCreate();
+  }
 
-	@Override
-	protected boolean isIgnoreNonExistantUser(SharedSecretValue value)
-	{
-		return value.isIgnoreNonExistantUser();
-	}
+  @Override
+  protected boolean isIgnoreNonExistantUser(SharedSecretValue value) {
+    return value.isIgnoreNonExistantUser();
+  }
 
-	@Override
-	public boolean isAuditable()
-	{
-		return true;
-	}
+  @Override
+  public boolean isAuditable() {
+    return true;
+  }
 }

@@ -1,0 +1,33 @@
+{
+  "uuid" : "da0339dc-4f4f-4553-8e58-e4d031a92d49",
+  "name" : "createFromScratchTest",
+  "nameStrings" : {
+    "en_AU" : "createFromScratchTest"
+  },
+  "modifiedDate" : "2014-05-12T15:43:52.385+10:00",
+  "createdDate" : "2014-05-12T15:43:52.379+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "clientId" : "createFromScratchTest",
+  "clientSecret" : "createFromScratchTest",
+  "redirectUrl" : "default",
+  "permissions" : [ ],
+  "userId" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "tokens" : [ {
+      "userId" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+      "username" : "AutoTest",
+      "token" : "8e365df3-fff9-4808-b5e4-068bebec688f",
+      "created" : "2014-05-12T15:43:52.532+10:00",
+      "permissions" : [ ]
+    } ]
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/oauth/da0339dc-4f4f-4553-8e58-e4d031a92d49"
+  }
+}

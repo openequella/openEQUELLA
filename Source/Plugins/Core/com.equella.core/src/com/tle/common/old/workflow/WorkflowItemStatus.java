@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,74 +18,63 @@
 
 package com.tle.common.old.workflow;
 
+import com.tle.common.old.workflow.node.WorkflowNode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Type;
-
-import com.tle.common.old.workflow.node.WorkflowNode;
 
 @Entity
 @AccessType("field")
 @DiscriminatorValue("task")
-public class WorkflowItemStatus extends WorkflowNodeStatus
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowItemStatus extends WorkflowNodeStatus {
+  private static final long serialVersionUID = 1L;
 
-	private Date dateDue;
-	@Column(length = 40)
-	private String assignedTo;
-	@Type(type = "xstream_immutable")
-	private Set<String> acceptedUsers = new HashSet<String>();
+  private Date dateDue;
 
-	public WorkflowItemStatus()
-	{
-		super();
-	}
+  @Column(length = 40)
+  private String assignedTo;
 
-	public WorkflowItemStatus(WorkflowNode node)
-	{
-		super(node);
-	}
+  @Type(type = "xstream_immutable")
+  private Set<String> acceptedUsers = new HashSet<String>();
 
-	public Set<String> getAcceptedUsers()
-	{
-		return acceptedUsers;
-	}
+  public WorkflowItemStatus() {
+    super();
+  }
 
-	public void setAcceptedUsers(Set<String> acceptedUsers)
-	{
-		this.acceptedUsers = acceptedUsers;
-	}
+  public WorkflowItemStatus(WorkflowNode node) {
+    super(node);
+  }
 
-	public void addAccepted(String userId)
-	{
-		acceptedUsers.add(userId);
-	}
+  public Set<String> getAcceptedUsers() {
+    return acceptedUsers;
+  }
 
-	public String getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public void setAcceptedUsers(Set<String> acceptedUsers) {
+    this.acceptedUsers = acceptedUsers;
+  }
 
-	public void setAssignedTo(String assignedTo)
-	{
-		this.assignedTo = assignedTo;
-	}
+  public void addAccepted(String userId) {
+    acceptedUsers.add(userId);
+  }
 
-	public Date getDateDue()
-	{
-		return dateDue;
-	}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-	public void setDateDue(Date dateDue)
-	{
-		this.dateDue = dateDue;
-	}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
+
+  public Date getDateDue() {
+    return dateDue;
+  }
+
+  public void setDateDue(Date dateDue) {
+    this.dateDue = dateDue;
+  }
 }

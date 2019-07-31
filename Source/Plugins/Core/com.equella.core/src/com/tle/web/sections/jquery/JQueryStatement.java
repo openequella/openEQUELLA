@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,44 +27,36 @@ import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.expression.PropertyExpression;
 import com.tle.web.sections.js.generic.expression.ScriptExpression;
 
-public class JQueryStatement implements JSStatements
-{
-	private final JSExpression combined;
+public class JQueryStatement implements JSStatements {
+  private final JSExpression combined;
 
-	public JQueryStatement(JQuerySelector selector, JSExpression property)
-	{
-		combined = PropertyExpression.create(selector, property);
-	}
+  public JQueryStatement(JQuerySelector selector, JSExpression property) {
+    combined = PropertyExpression.create(selector, property);
+  }
 
-	public JQueryStatement(Type type, String id, String property)
-	{
-		this(new JQuerySelector(type, id), new ScriptExpression(property));
-	}
+  public JQueryStatement(Type type, String id, String property) {
+    this(new JQuerySelector(type, id), new ScriptExpression(property));
+  }
 
-	public JQueryStatement(Type type, String id, JSExpression property)
-	{
-		this(new JQuerySelector(type, id), property);
-	}
+  public JQueryStatement(Type type, String id, JSExpression property) {
+    this(new JQuerySelector(type, id), property);
+  }
 
-	public JQueryStatement(ElementId id, String property)
-	{
-		this(new JQuerySelector(id), new ScriptExpression(property));
-	}
+  public JQueryStatement(ElementId id, String property) {
+    this(new JQuerySelector(id), new ScriptExpression(property));
+  }
 
-	public JQueryStatement(ElementId id, JSExpression property)
-	{
-		this(new JQuerySelector(id), property);
-	}
+  public JQueryStatement(ElementId id, JSExpression property) {
+    this(new JQuerySelector(id), property);
+  }
 
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return combined.getExpression(info) + ';';
-	}
+  @Override
+  public String getStatements(RenderContext info) {
+    return combined.getExpression(info) + ';';
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(combined);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(combined);
+  }
 }

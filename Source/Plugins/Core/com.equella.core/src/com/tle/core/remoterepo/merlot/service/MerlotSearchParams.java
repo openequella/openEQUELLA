@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,46 @@
 
 package com.tle.core.remoterepo.merlot.service;
 
-import java.util.Set;
-
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.util.TleDate;
+import java.util.Set;
 
-public interface MerlotSearchParams
-{
-	public enum KeywordUse
-	{
-		ALL, ANY, EXACT_PHRASE
-	}
+public interface MerlotSearchParams {
+  public enum KeywordUse {
+    ALL,
+    ANY,
+    EXACT_PHRASE
+  }
 
-	KeywordUse getKeywordUse();
+  KeywordUse getKeywordUse();
 
-	String getQuery();
+  String getQuery();
 
-	FederatedSearch getMerlotSearch();
+  FederatedSearch getMerlotSearch();
 
-	String getCategory();
+  String getCategory();
 
-	String getCommunity();
+  String getCommunity();
 
-	String getLanguage();
+  String getLanguage();
 
-	String getMaterialType();
+  String getMaterialType();
 
-	String getTechnicalFormat();
+  String getTechnicalFormat();
 
-	String getMaterialAudience();
+  String getMaterialAudience();
 
-	String getSort();
+  String getSort();
 
-	boolean isCost();
+  boolean isCost();
 
-	boolean isCreativeCommons();
+  boolean isCreativeCommons();
 
-	Set<String> getMobileOS();
+  Set<String> getMobileOS();
 
-	Set<String> getMobileType();
+  Set<String> getMobileType();
 
-	TleDate getCreatedBefore();
+  TleDate getCreatedBefore();
 
-	TleDate getCreatedAfter();
+  TleDate getCreatedAfter();
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,103 +18,83 @@
 
 package com.tle.beans.entity.itemdef;
 
+import com.tle.common.Check;
+import com.tle.common.security.TargetList;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.tle.common.Check;
-import com.tle.common.security.TargetList;
+/** @author Andrew Gibb */
+public class DynamicMetadataRule implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-/**
- * @author Andrew Gibb
- */
-public class DynamicMetadataRule implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private String id;
+  private String name;
+  private String path;
+  private String type;
+  private TargetList targetList;
 
-	private String id;
-	private String name;
-	private String path;
-	private String type;
-	private TargetList targetList;
+  public DynamicMetadataRule() {
+    super();
+  }
 
-	public DynamicMetadataRule()
-	{
-		super();
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public String getPath() {
+    return path;
+  }
 
-	public String getPath()
-	{
-		return path;
-	}
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-	public void setPath(String path)
-	{
-		this.path = path;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public TargetList getTargetList() {
+    if (targetList == null) {
+      targetList = new TargetList();
+    }
+    return targetList;
+  }
 
-	public TargetList getTargetList()
-	{
-		if( targetList == null )
-		{
-			targetList = new TargetList();
-		}
-		return targetList;
-	}
+  public void setTargetList(TargetList targetList) {
+    this.targetList = targetList;
+  }
 
-	public void setTargetList(TargetList targetList)
-	{
-		this.targetList = targetList;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+    if (!(obj instanceof DynamicMetadataRule)) {
+      return false;
+    }
 
-		if( !(obj instanceof DynamicMetadataRule) )
-		{
-			return false;
-		}
+    return Objects.equals(id, ((DynamicMetadataRule) obj).id);
+  }
 
-		return Objects.equals(id, ((DynamicMetadataRule) obj).id);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Check.getHashCode(id, name, path, type);
-	}
+  @Override
+  public int hashCode() {
+    return Check.getHashCode(id, name, path, type);
+  }
 }

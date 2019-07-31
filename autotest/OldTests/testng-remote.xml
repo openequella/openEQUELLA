@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Remote Suite" parallel="instances" data-provider-thread-count="4" thread-count="8" configfailurepolicy="continue">
+	<suite-files>
+		<suite-file path="./testng-institution-sync.xml"/>
+		<suite-file path="./testng-remote-moodle.xml"/>
+		<!-- 
+		<suite-file path="./testng-institution-sync.xml"/>
+		<suite-file path="./testng-remote-admin.xml"/>
+		<suite-file path="./testng-remote-blackboard.xml"/>
+		<suite-file path="./testng-remote-moodle.xml"/>
+		<suite-file path="./testng-remote-canvas.xml"/>
+		<suite-file path="./testng-remote-remoterepo.xml"/>
+		<suite-file path="./testng-remote-misc.xml"/>
+		 -->
+	</suite-files>
+</suite>

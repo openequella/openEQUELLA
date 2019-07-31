@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +18,28 @@
 
 package com.tle.common.recipientselector;
 
-/**
- * @author Nicholas Read
- */
-public class FinderEvent
-{
-	private UserGroupRoleFinder source;
-	private int selectionCount;
+/** @author Nicholas Read */
+public class FinderEvent {
+  private UserGroupRoleFinder source;
+  private int selectionCount;
 
-	public FinderEvent()
-	{
-		super();
-	}
+  public FinderEvent() {
+    super();
+  }
 
-	public UserGroupRoleFinder getSource()
-	{
-		return source;
-	}
+  public UserGroupRoleFinder getSource() {
+    return source;
+  }
 
-	public void setSource(UserGroupRoleFinder source)
-	{
-		this.source = source;
-	}
+  public void setSource(UserGroupRoleFinder source) {
+    this.source = source;
+  }
 
-	public int getSelectionCount()
-	{
-		return selectionCount;
-	}
+  public int getSelectionCount() {
+    return selectionCount;
+  }
 
-	public void setSelectionCount(int selectionCount)
-	{
-		this.selectionCount = selectionCount;
-	}
+  public void setSelectionCount(int selectionCount) {
+    this.selectionCount = selectionCount;
+  }
 }

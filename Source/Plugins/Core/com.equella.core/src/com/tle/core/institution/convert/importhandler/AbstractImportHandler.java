@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,23 +21,19 @@ package com.tle.core.institution.convert.importhandler;
 import com.thoughtworks.xstream.XStream;
 import com.tle.core.institution.convert.XmlHelper;
 
-public abstract class AbstractImportHandler<T> implements ImportHandler<T>
-{
-	private XStream xstream;
-	protected final XmlHelper xmlHelper;
+public abstract class AbstractImportHandler<T> implements ImportHandler<T> {
+  private XStream xstream;
+  protected final XmlHelper xmlHelper;
 
-	public AbstractImportHandler(XmlHelper xmlHelper, XStream xstream)
-	{
-		this.xmlHelper = xmlHelper;
-		this.xstream = xstream;
-	}
+  public AbstractImportHandler(XmlHelper xmlHelper, XStream xstream) {
+    this.xmlHelper = xmlHelper;
+    this.xstream = xstream;
+  }
 
-	protected synchronized XStream getXStream()
-	{
-		if( xstream == null )
-		{
-			xstream = xmlHelper.createXStream(getClass().getClassLoader());
-		}
-		return xstream;
-	}
+  protected synchronized XStream getXStream() {
+    if (xstream == null) {
+      xstream = xmlHelper.createXStream(getClass().getClassLoader());
+    }
+    return xstream;
+  }
 }

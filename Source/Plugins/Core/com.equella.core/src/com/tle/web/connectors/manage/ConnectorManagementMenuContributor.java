@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.connectors.manage;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
 import com.tle.web.connectors.service.ConnectorManagementPrivilegeTreeProvider;
@@ -29,45 +28,44 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.section.AbstractCachedMenuContributor;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ConnectorManagementMenuContributor extends AbstractCachedMenuContributor<Boolean>
-{
-	@PlugKey("connector.manage.menu")
-	private static Label LABEL_MENU;
-	@PlugURL("images/icons/manage-external-resources.png")
-	private static String URL_ICON;
+public class ConnectorManagementMenuContributor extends AbstractCachedMenuContributor<Boolean> {
+  @PlugKey("connector.manage.menu")
+  private static Label LABEL_MENU;
 
-	private static final String KEY = ConnectorManagementMenuContributor.class.getName();
+  @PlugURL("images/icons/manage-external-resources.png")
+  private static String URL_ICON;
 
-	@Inject
-	private ConnectorManagementPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConnectorService connectorService;
+  private static final String KEY = ConnectorManagementMenuContributor.class.getName();
 
-	@Override
-	@SuppressWarnings("nls")
-	protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks)
-	{
-		if( hasManageTasks )
-		{
-			return new MenuContribution(
-				new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/manageconnectors.do")), URL_ICON, 30, 6);
-		}
-		return null;
-	}
+  @Inject private ConnectorManagementPrivilegeTreeProvider securityProvider;
+  @Inject private ConnectorService connectorService;
 
-	@Override
-	protected Boolean getCachedObject(SectionInfo info)
-	{
-		return Boolean.valueOf(securityProvider.isAuthorised() && !connectorService.listForViewing().isEmpty());
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks) {
+    if (hasManageTasks) {
+      return new MenuContribution(
+          new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/manageconnectors.do")),
+          URL_ICON,
+          30,
+          6);
+    }
+    return null;
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return KEY;
-	}
+  @Override
+  protected Boolean getCachedObject(SectionInfo info) {
+    return Boolean.valueOf(
+        securityProvider.isAuthorised() && !connectorService.listForViewing().isEmpty());
+  }
 
+  @Override
+  protected String getSessionKey() {
+    return KEY;
+  }
 }

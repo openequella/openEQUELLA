@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,29 +20,22 @@ package com.tle.core.taxonomy.scripting.types;
 
 /**
  * These are retrieved and manipulated with the TaxonomyScriptType
- * 
+ *
  * @author aholland
  */
-public interface TermScriptType
-{
-	/**
-	 * @return The node name of the term (i.e. not the full path)
-	 */
-	String getTerm();
+public interface TermScriptType {
+  /** @return The node name of the term (i.e. not the full path) */
+  String getTerm();
 
-	/**
-	 * @return The full path to this term.
-	 */
-	String getFullPath();
+  /** @return The full path to this term. */
+  String getFullPath();
 
-	/**
-	 * @return true if this node has no child nodes.
-	 */
-	boolean isLeaf();
+  /** @return true if this node has no child nodes. */
+  boolean isLeaf();
 
-	/**
-	 * @param attributeKey The key of the custom data field.
-	 * @return The value of the custom data (if any)
-	 */
-	String getData(String attributeKey);
+  /**
+   * @param attributeKey The key of the custom data field.
+   * @return The value of the custom data (if any)
+   */
+  String getData(String attributeKey);
 }

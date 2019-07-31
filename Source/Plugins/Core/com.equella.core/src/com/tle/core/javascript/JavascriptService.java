@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,18 +18,14 @@
 
 package com.tle.core.javascript;
 
+import com.tle.common.javascript.RemoteJavascriptService;
 import java.util.List;
 
-import com.tle.common.javascript.RemoteJavascriptService;
+/** @author aholland */
+public interface JavascriptService extends RemoteJavascriptService {
+  List<JavascriptLibrary> getAllJavascriptLibraries();
 
-/**
- * @author aholland
- */
-public interface JavascriptService extends RemoteJavascriptService
-{
-	List<JavascriptLibrary> getAllJavascriptLibraries();
+  JavascriptLibrary getJavascriptLibrary(String libraryId);
 
-	JavascriptLibrary getJavascriptLibrary(String libraryId);
-
-	JavascriptModule getJavascriptModule(String libraryId, String moduleId);
+  JavascriptModule getJavascriptModule(String libraryId, String moduleId);
 }

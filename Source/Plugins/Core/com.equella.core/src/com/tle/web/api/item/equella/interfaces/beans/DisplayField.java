@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,31 +20,26 @@ package com.tle.web.api.item.equella.interfaces.beans;
 
 import com.tle.common.interfaces.I18NString;
 
-public class DisplayField
-{
-    private final String type;
-    private final I18NString name;
-    private final I18NString html;
+public class DisplayField {
+  private final String type;
+  private final I18NString name;
+  private final I18NString html;
 
-    public DisplayField(String type, I18NString name, I18NString html)
-    {
-        this.type = type;
-        this.name = name;
-        this.html = html;
-    }
+  public DisplayField(String type, I18NString name, I18NString html) {
+    this.type = type;
+    this.name = name;
+    this.html = html;
+  }
 
-    public I18NString getName()
-    {
-        return name;
-    }
+  public I18NString getName() {
+    return name;
+  }
 
-    public I18NString getHtml()
-    {
-        return html;
-    }
+  public I18NString getHtml() {
+    return html;
+  }
 
-    public String getType()
-    {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.web.sections.standard.model;
 
-public class HtmlTabState extends HtmlComponentState
-{
-	private String currentTab;
-	private TabModel tabModel;
-	private boolean renderSelectedOnly;
+public class HtmlTabState extends HtmlComponentState {
+  private String currentTab;
+  private TabModel tabModel;
+  private boolean renderSelectedOnly;
 
-	public boolean isRenderSelectedOnly()
-	{
-		return renderSelectedOnly;
-	}
+  public boolean isRenderSelectedOnly() {
+    return renderSelectedOnly;
+  }
 
-	public void setRenderSelectedOnly(boolean renderSelectedOnly)
-	{
-		this.renderSelectedOnly = renderSelectedOnly;
-	}
+  public void setRenderSelectedOnly(boolean renderSelectedOnly) {
+    this.renderSelectedOnly = renderSelectedOnly;
+  }
 
-	public String getCurrentTab()
-	{
-		return currentTab;
-	}
+  public String getCurrentTab() {
+    return currentTab;
+  }
 
-	public void setCurrentTab(String currentTab)
-	{
-		this.currentTab = currentTab;
-	}
+  public void setCurrentTab(String currentTab) {
+    this.currentTab = currentTab;
+  }
 
-	public TabModel getTabModel()
-	{
-		return tabModel;
-	}
+  public TabModel getTabModel() {
+    return tabModel;
+  }
 
-	public void setTabModel(TabModel tabModel)
-	{
-		this.tabModel = tabModel;
-	}
+  public void setTabModel(TabModel tabModel) {
+    this.tabModel = tabModel;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.itemlist.standard;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -47,91 +45,89 @@ import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 public class ItemListCommentsDisplaySection extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	private static final CssInclude CSS = CssInclude
-		.include(
-			ResourcesService.getResourceHelper(ItemListCommentsDisplaySection.class).url("css/commentsdisplay.css"))
-		.make();
+    implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  private static final CssInclude CSS =
+      CssInclude.include(
+              ResourcesService.getResourceHelper(ItemListCommentsDisplaySection.class)
+                  .url("css/commentsdisplay.css"))
+          .make();
 
-	@EventFactory
-	private EventGenerator events;
-	@Inject
-	private ItemDao itemDao;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
+  @EventFactory private EventGenerator events;
+  @Inject private ItemDao itemDao;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-	@PlugKey(value = "comments.existingcount")
-	private static String X_COMMENTS_KEY;
+  @PlugKey(value = "comments.existingcount")
+  private static String X_COMMENTS_KEY;
 
-	private static String[] RATING_CLASSES = new String[]{"zero", "one", "two", "three", "four", "five"};
+  private static String[] RATING_CLASSES =
+      new String[] {"zero", "one", "two", "three", "four", "five"};
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(final RenderContext context,
-		List<ItemListEntry> entries, ListSettings<ItemListEntry> settings)
-	{
-		List<Item> items = AbstractItemlikeListEntry.getItems(entries);
-		final List<Integer> commentCounts = itemDao.getCommentCounts(items);
-		final int i[] = new int[]{0};
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				if( entry.isFlagSet("com.tle.web.viewitem.DontShowRating") )
-				{
-					return;
-				}
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      final RenderContext context,
+      List<ItemListEntry> entries,
+      ListSettings<ItemListEntry> settings) {
+    List<Item> items = AbstractItemlikeListEntry.getItems(entries);
+    final List<Integer> commentCounts = itemDao.getCommentCounts(items);
+    final int i[] = new int[] {0};
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        if (entry.isFlagSet("com.tle.web.viewitem.DontShowRating")) {
+          return;
+        }
 
-				// srsly, this could be done with an ftl
-				int size = commentCounts.get(i[0]++);
-				Label label = new PluralKeyLabel(X_COMMENTS_KEY, size);
-				Item item = entry.getItem();
+        // srsly, this could be done with an ftl
+        int size = commentCounts.get(i[0]++);
+        Label label = new PluralKeyLabel(X_COMMENTS_KEY, size);
+        Item item = entry.getItem();
 
-				TagState starSpanState = new TagState();
-				String alt = RATING_CLASSES[entry.getRating()] + " star rating average";
-				starSpanState.addClass("screen-reader");
-				starSpanState.addTagProcessor(new ExtraAttributes("tabindex", "0", "alt", alt, "title", alt));
-				SpanRenderer screenReaderSpan = new SpanRenderer(starSpanState, alt);
+        TagState starSpanState = new TagState();
+        String alt = RATING_CLASSES[entry.getRating()] + " star rating average";
+        starSpanState.addClass("screen-reader");
+        starSpanState.addTagProcessor(
+            new ExtraAttributes("tabindex", "0", "alt", alt, "title", alt));
+        SpanRenderer screenReaderSpan = new SpanRenderer(starSpanState, alt);
 
-				DivRenderer stars = new DivRenderer("itemresult-stars " + RATING_CLASSES[entry.getRating()], "");
-				// FIXME:
-				CSS.preRender(context.getPreRenderContext());
+        DivRenderer stars =
+            new DivRenderer("itemresult-stars " + RATING_CLASSES[entry.getRating()], "");
+        // FIXME:
+        CSS.preRender(context.getPreRenderContext());
 
-				entry.addRatingMetadataWithOrder(-100, screenReaderSpan, stars,
-					new HtmlLinkState(label, events.getNamedHandler("seeComments", item.getItemId())));
-			}
-		};
-	}
+        entry.addRatingMetadataWithOrder(
+            -100,
+            screenReaderSpan,
+            stars,
+            new HtmlLinkState(label, events.getNamedHandler("seeComments", item.getItemId())));
+      }
+    };
+  }
 
-	@EventHandlerMethod
-	public void seeComments(SectionInfo info, String itemId)
-	{
-		ViewItemUrl commentsUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
-		commentsUrl.setAnchor("#comments");
-		commentsUrl.forward(info);
-	}
+  @EventHandlerMethod
+  public void seeComments(SectionInfo info, String itemId) {
+    ViewItemUrl commentsUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
+    commentsUrl.setAnchor("#comments");
+    commentsUrl.forward(info);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

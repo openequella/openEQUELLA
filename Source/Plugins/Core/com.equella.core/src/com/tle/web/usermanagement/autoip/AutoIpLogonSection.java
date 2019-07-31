@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.usermanagement.autoip;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.settings.standard.AutoLogin;
@@ -35,77 +35,64 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class AutoIpLogonSection extends AbstractPrototypeSection<AutoIpLogonSection.Model> implements HtmlRenderer
-{
-	@Component
-	private Link autoLogonLink;
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class AutoIpLogonSection extends AbstractPrototypeSection<AutoIpLogonSection.Model>
+    implements HtmlRenderer {
+  @Component private Link autoLogonLink;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private AutoIpLogonService autoIpLogonService;
-	@Inject
-	private ConfigurationService configService;
+  @Inject private AutoIpLogonService autoIpLogonService;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		autoLogonLink.setClickHandler(events.getNamedHandler("autoIPLogon"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    autoLogonLink.setClickHandler(events.getNamedHandler("autoIPLogon"));
+  }
 
-	public Link getAutoLogonLink()
-	{
-		return autoLogonLink;
-	}
+  public Link getAutoLogonLink() {
+    return autoLogonLink;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Model model = getModel(context);
-		AutoLogin autoLogin = configService.getProperties(new AutoLogin());
-		if( autoIpLogonService.isAutoLoginAvailable(autoLogin) )
-		{
-			model.setAutoUsername(autoLogin.getUsername());
-			return viewFactory.createResult("autoiplogon.ftl", this);
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Model model = getModel(context);
+    AutoLogin autoLogin = configService.getProperties(new AutoLogin());
+    if (autoIpLogonService.isAutoLoginAvailable(autoLogin)) {
+      model.setAutoUsername(autoLogin.getUsername());
+      return viewFactory.createResult("autoiplogon.ftl", this);
+    }
+    return null;
+  }
 
-	/**
-	 * @param info
-	 * @return true if the Auto IP Login is enabled, appropriate and successful
-	 */
-	@EventHandlerMethod(preventXsrf = false)
-	public void autoIPLogon(SectionInfo info)
-	{
-		autoIpLogonService.autoLogon(info.getRequest());
-	}
+  /**
+   * @param info
+   * @return true if the Auto IP Login is enabled, appropriate and successful
+   */
+  @EventHandlerMethod(preventXsrf = false)
+  public void autoIPLogon(SectionInfo info) {
+    autoIpLogonService.autoLogon(info.getRequest());
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public static class Model
-	{
-		private String autoUsername;
+  public static class Model {
+    private String autoUsername;
 
-		public String getAutoUsername()
-		{
-			return autoUsername;
-		}
+    public String getAutoUsername() {
+      return autoUsername;
+    }
 
-		public void setAutoUsername(String autoUsername)
-		{
-			this.autoUsername = autoUsername;
-		}
-	}
+    public void setAutoUsername(String autoUsername) {
+      this.autoUsername = autoUsername;
+    }
+  }
 }

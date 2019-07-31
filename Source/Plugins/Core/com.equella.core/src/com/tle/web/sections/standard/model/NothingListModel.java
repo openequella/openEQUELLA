@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,55 +18,46 @@
 
 package com.tle.web.sections.standard.model;
 
+import com.tle.web.sections.SectionInfo;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.tle.web.sections.SectionInfo;
+public class NothingListModel<T> implements HtmlListModel<T> {
 
-public class NothingListModel<T> implements HtmlListModel<T>
-{
+  @Override
+  public Option<T> getOption(SectionInfo info, String value) {
+    return null;
+  }
 
-	@Override
-	public Option<T> getOption(SectionInfo info, String value)
-	{
-		return null;
-	}
+  @Override
+  public List<Option<T>> getOptions(SectionInfo info) {
+    return Collections.emptyList();
+  }
 
-	@Override
-	public List<Option<T>> getOptions(SectionInfo info)
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  public List<T> getValues(SectionInfo info, Collection<String> values) {
+    return Collections.emptyList();
+  }
 
-	@Override
-	public List<T> getValues(SectionInfo info, Collection<String> values)
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  public T getValue(SectionInfo info, String value) {
+    return null;
+  }
 
-	@Override
-	public T getValue(SectionInfo info, String value)
-	{
-		return null;
-	}
+  @Override
+  public String getDefaultValue(SectionInfo info) {
+    return null;
+  }
 
-	@Override
-	public String getDefaultValue(SectionInfo info)
-	{
-		return null;
-	}
+  @Override
+  public Set<String> getMatchingValues(SectionInfo info, Set<String> values) {
+    return values;
+  }
 
-	@Override
-	public Set<String> getMatchingValues(SectionInfo info, Set<String> values)
-	{
-		return values;
-	}
-
-	@Override
-	public String getStringValue(SectionInfo info, T value)
-	{
-		return null;
-	}
+  @Override
+  public String getStringValue(SectionInfo info, T value) {
+    return null;
+  }
 }

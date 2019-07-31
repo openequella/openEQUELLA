@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,55 +21,44 @@ package com.tle.common.interfaces;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CsvList
-{
-	private final List<String> values;
+public class CsvList {
+  private final List<String> values;
 
-	public CsvList(List<String> values)
-	{
-		this.values = values;
-	}
+  public CsvList(List<String> values) {
+    this.values = values;
+  }
 
-	public List<String> getValues()
-	{
-		return values;
-	}
+  public List<String> getValues() {
+    return values;
+  }
 
-	@SuppressWarnings("nls")
-	public static CsvList valueOf(String value)
-	{
-		final List<String> values = new ArrayList<String>();
-		final String[] valsArr = value.split(",");
-		for( String val : valsArr )
-		{
-			val = val.trim();
-			if( !val.isEmpty() )
-			{
-				values.add(val);
-			}
-		}
-		return new CsvList(values);
-	}
+  @SuppressWarnings("nls")
+  public static CsvList valueOf(String value) {
+    final List<String> values = new ArrayList<String>();
+    final String[] valsArr = value.split(",");
+    for (String val : valsArr) {
+      val = val.trim();
+      if (!val.isEmpty()) {
+        values.add(val);
+      }
+    }
+    return new CsvList(values);
+  }
 
-	public static List<String> asList(CsvList list, String... defaultValues)
-	{
-		if( list == null )
-		{
-			if( defaultValues.length == 0 )
-			{
-				return Collections.emptyList();
-			}
-			List<String> all = new ArrayList<String>();
-			for(String val : defaultValues)
-			{
-				all.add(val);
-			}
-			return all;
-		}
-		return list.getValues();
-	}
+  public static List<String> asList(CsvList list, String... defaultValues) {
+    if (list == null) {
+      if (defaultValues.length == 0) {
+        return Collections.emptyList();
+      }
+      List<String> all = new ArrayList<String>();
+      for (String val : defaultValues) {
+        all.add(val);
+      }
+      return all;
+    }
+    return list.getValues();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,48 @@
 
 package com.tle.admin.helper;
 
-/**
- * @author Nicholas Read
- */
-public class Network
-{
-	private String name;
-	private String min;
-	private String max;
+/** @author Nicholas Read */
+public class Network {
+  private String name;
+  private String min;
+  private String max;
 
-	public Network()
-	{
-		super();
-	}
+  public Network() {
+    super();
+  }
 
-	public Network(String name, String min, String max)
-	{
-		this.name = name;
-		this.min = min;
-		this.max = max;
-	}
+  public Network(String name, String min, String max) {
+    this.name = name;
+    this.min = min;
+    this.max = max;
+  }
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 
-	public String getMax()
-	{
-		return max;
-	}
+  public String getMax() {
+    return max;
+  }
 
-	public String getMin()
-	{
-		return min;
-	}
+  public String getMin() {
+    return min;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setMax(String max)
-	{
-		this.max = max;
-	}
+  public void setMax(String max) {
+    this.max = max;
+  }
 
-	public void setMin(String min)
-	{
-		this.min = min;
-	}
+  public void setMin(String min) {
+    this.min = min;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 }

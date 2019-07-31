@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,39 @@
 
 package com.tle.core.freetext.extracter.standard;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class Office2007DocxExtracter extends AbstractOffice2007Extracter
-{
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.");
-	}
+public class Office2007DocxExtracter extends AbstractOffice2007Extracter {
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry
+        .getType()
+        .startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.");
+  }
 
-	@Override
-	public String getFileToIndex()
-	{
-		return "word/document.xml";
-	}
+  @Override
+  public String getFileToIndex() {
+    return "word/document.xml";
+  }
 
-	@Override
-	public String getNameOfElementToIndex()
-	{
-		return "w:t";
-	}
+  @Override
+  public String getNameOfElementToIndex() {
+    return "w:t";
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().contains("wordprocessingml");
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().contains("wordprocessingml");
+  }
 
-	@Override
-	public boolean multipleFiles()
-	{
-		return false;
-	}
+  @Override
+  public boolean multipleFiles() {
+    return false;
+  }
 }

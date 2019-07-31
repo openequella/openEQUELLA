@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,29 +27,31 @@ import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.workflow.notification.NotificationLangStrings.KEYPFX_EMAIL_SUBJECT
 import javax.inject.Singleton
 
-case class ScriptTaskGroup(reason: String, taskName: String) extends NotificationGroup
-{
+case class ScriptTaskGroup(reason: String, taskName: String) extends NotificationGroup {
   override def templateName: String = "notification-script.ftl"
 
-  def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason, taskName)
+  def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT + reason, taskName)
 
   def headerHello(user: UserBean) = NotificationLangStrings.userHeaderLabel(user)
 
-  def headerReason(total: Int) = new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+reason, total), taskName)
+  def headerReason(total: Int) =
+    new KeyLabel(
+      NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER + reason, total),
+      taskName)
 }
 
 @Bind
 @Singleton
-class ScriptTaskNotification extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class ScriptTaskNotification
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
   type N = ScriptNotification
 
-  case class ScriptNotification(note: Notification, item: Item) extends TaskNotification
-  {
+  case class ScriptNotification(note: Notification, item: Item) extends TaskNotification {
     def group = ScriptTaskGroup(note.getReason, getTaskName.getText)
   }
 
   def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, ScriptNotification)
 
 }
-
-

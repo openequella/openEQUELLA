@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,11 @@
 
 package com.tle.core.freetext.extracter.standard;
 
+import com.tle.beans.mime.MimeEntry;
+import com.tle.core.guice.Bind;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.inject.Singleton;
-
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -31,56 +33,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 
-import com.tle.beans.mime.MimeEntry;
-import com.tle.core.guice.Bind;
-
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class MsExcelExtracter extends AbstractTextExtracterExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
+public class MsExcelExtracter extends AbstractTextExtracterExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
 
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().startsWith("application/vnd.ms-excel");
-	}
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry.getType().startsWith("application/vnd.ms-excel");
+  }
 
-	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-		throws IOException
-	{
-		// Ignore parseDuration for now.
-		try
-		{
-			Metadata meta = new Metadata();
-			ContentHandler handler = new BodyContentHandler();
-			Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
-			parser.parse(input, handler, meta, new ParseContext());
+  @Override
+  public void extractText(
+      String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
+      throws IOException {
+    // Ignore parseDuration for now.
+    try {
+      Metadata meta = new Metadata();
+      ContentHandler handler = new BodyContentHandler();
+      Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
+      parser.parse(input, handler, meta, new ParseContext());
 
-			String content = handler.toString();
+      String content = handler.toString();
 
-			if( content.length() > maxSize )
-			{
-				content = content.substring(0, maxSize);
-			}
+      if (content.length() > maxSize) {
+        content = content.substring(0, maxSize);
+      }
 
-			outputText.append(content);
-			if( LOGGER.isDebugEnabled() )
-			{
-				LOGGER.debug("Excel Summary:" + content); //$NON-NLS-1$
-			}
-		}
-		catch( Exception e )
-		{
-			// Do nothing
-		}
-	}
+      outputText.append(content);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Excel Summary:" + content); // $NON-NLS-1$
+      }
+    } catch (Exception e) {
+      // Do nothing
+    }
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().contains("ms-excel");
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().contains("ms-excel");
+  }
 }

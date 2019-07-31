@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,29 +18,24 @@
 
 package com.tle.core.reporting.birttypes;
 
+import com.dytech.edge.wizard.beans.control.ListBox;
+import com.dytech.edge.wizard.beans.control.ShuffleBox;
+import com.dytech.edge.wizard.beans.control.WizardControl;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 
-import com.dytech.edge.wizard.beans.control.ListBox;
-import com.dytech.edge.wizard.beans.control.ShuffleBox;
-import com.dytech.edge.wizard.beans.control.WizardControl;
+public class ListBoxBirtType extends AbstractListBirtType {
+  public ListBoxBirtType(IScalarParameterDefn def, int paramNum, IParameterGroupDefn group) {
+    super(def, paramNum, group);
+  }
 
-public class ListBoxBirtType extends AbstractListBirtType
-{
-	public ListBoxBirtType(IScalarParameterDefn def, int paramNum, IParameterGroupDefn group)
-	{
-		super(def, paramNum, group);
-	}
-
-	@Override
-	protected WizardControl createControl(IGetParameterDefinitionTask paramTask)
-	{
-		if( scalarDef.getScalarParameterType().equals("multi-value") ) //$NON-NLS-1$
-		{
-			return new ShuffleBox();
-		}
-		return new ListBox();
-	}
-
+  @Override
+  protected WizardControl createControl(IGetParameterDefinitionTask paramTask) {
+    if (scalarDef.getScalarParameterType().equals("multi-value")) // $NON-NLS-1$
+    {
+      return new ShuffleBox();
+    }
+    return new ListBox();
+  }
 }

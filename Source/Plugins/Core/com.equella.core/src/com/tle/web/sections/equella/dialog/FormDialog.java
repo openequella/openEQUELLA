@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.sections.equella.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
@@ -28,48 +27,44 @@ import com.tle.web.sections.standard.dialog.model.DialogControl;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.sections.standard.impl.RenderFactoryRenderer;
 import com.tle.web.template.DialogTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A dialog for displaying a list of form controls.
- * <p>
- * This is a base class for displaying a dialog with a list of controls (
- * {@link DialogControl}), and a list of buttons.
- * 
+ *
+ * <p>This is a base class for displaying a dialog with a list of controls ( {@link DialogControl}),
+ * and a list of buttons.
+ *
  * @author jmaginnis
  */
 @NonNullByDefault
-public abstract class FormDialog extends EquellaDialog<DialogModel>
-{
-	protected List<DialogControl> controls = new ArrayList<DialogControl>();
+public abstract class FormDialog extends EquellaDialog<DialogModel> {
+  protected List<DialogControl> controls = new ArrayList<DialogControl>();
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return new RenderFactoryRenderer(getControls(context), renderFactory);
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return new RenderFactoryRenderer(getControls(context), renderFactory);
+  }
 
-	public ControlsState getControls(SectionInfo info)
-	{
-		String controlsId = getSectionId() + "controls"; //$NON-NLS-1$
-		ControlsState state = info.getAttribute(controlsId);
-		if( state == null )
-		{
-			state = new ControlsState();
-			state.setElementId(getState(info));
-			state.setControls(controls);
-			info.setAttribute(controlsId, state);
-		}
-		return state;
-	}
+  public ControlsState getControls(SectionInfo info) {
+    String controlsId = getSectionId() + "controls"; // $NON-NLS-1$
+    ControlsState state = info.getAttribute(controlsId);
+    if (state == null) {
+      state = new ControlsState();
+      state.setElementId(getState(info));
+      state.setControls(controls);
+      info.setAttribute(controlsId, state);
+    }
+    return state;
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 
-	public void setTemplate(DialogTemplate template)
-	{
-		this.template = template;
-	}
+  public void setTemplate(DialogTemplate template) {
+    this.template = template;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,66 +20,52 @@ package com.tle.web.api.item.interfaces.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
-public class DrmPartyBean
-{
-	private String userId;
-	private String name;
-	private String email;
-	private boolean owner;
+public class DrmPartyBean {
+  private String userId;
+  private String name;
+  private String email;
+  private boolean owner;
 
-	public DrmPartyBean()
-	{
-	}
+  public DrmPartyBean() {}
 
-	public DrmPartyBean(String userId, String name, String email, boolean owner)
-	{
-		this.userId = userId;
-		this.name = name;
-		this.email = email;
-		this.owner = owner;
-	}
+  public DrmPartyBean(String userId, String name, String email, boolean owner) {
+    this.userId = userId;
+    this.name = name;
+    this.email = email;
+    this.owner = owner;
+  }
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getEmail()
-	{
-		return email;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setEmail(String email)
-	{
-		this.email = email;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public boolean isOwner()
-	{
-		return owner;
-	}
+  public boolean isOwner() {
+    return owner;
+  }
 
-	public void setOwner(boolean owner)
-	{
-		this.owner = owner;
-	}
+  public void setOwner(boolean owner) {
+    this.owner = owner;
+  }
 }

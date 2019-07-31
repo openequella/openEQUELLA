@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.mycontent.web.search;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Check;
@@ -32,70 +32,62 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import javax.inject.Inject;
 
 @Bind
-public class MyContentItemListEntry extends StandardItemListEntry
-{
-	static
-	{
-		PluginResourceHandler.init(MyContentItemListEntry.class);
-	}
+public class MyContentItemListEntry extends StandardItemListEntry {
+  static {
+    PluginResourceHandler.init(MyContentItemListEntry.class);
+  }
 
-	@PlugKey("list.tags")
-	private static Label LABEL_TAGS;
-	@PlugKey("selectscrap")
-	private static Label LABEL_SELECT;
+  @PlugKey("list.tags")
+  private static Label LABEL_TAGS;
 
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private MyContentService myContentService;
+  @PlugKey("selectscrap")
+  private static Label LABEL_SELECT;
 
-	private ContentHandler handler;
+  @Inject private ItemService itemService;
+  @Inject private MyContentService myContentService;
 
-	private HtmlLinkState titleLink;
+  private ContentHandler handler;
 
-	@SuppressWarnings("nls")
-	@Override
-	public boolean isFlagSet(String flagKey)
-	{
-		if( flagKey.equals("com.tle.web.favourites.DontShow") || flagKey.equals("com.tle.web.viewitem.DontShowRating")
-			|| flagKey.equals("com.tle.web.hierarchy.DontShow")
-			|| flagKey.equals("com.tle.web.itemlist.standard.DontShowAttachments") )
-		{
-			return true;
-		}
-		return super.isFlagSet(flagKey);
-	}
+  private HtmlLinkState titleLink;
 
-	@Override
-	public HtmlLinkState getTitle()
-	{
-		if( titleLink != null )
-		{
-			return titleLink;
-		}
-		return super.getTitle();
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public boolean isFlagSet(String flagKey) {
+    if (flagKey.equals("com.tle.web.favourites.DontShow")
+        || flagKey.equals("com.tle.web.viewitem.DontShowRating")
+        || flagKey.equals("com.tle.web.hierarchy.DontShow")
+        || flagKey.equals("com.tle.web.itemlist.standard.DontShowAttachments")) {
+      return true;
+    }
+    return super.isFlagSet(flagKey);
+  }
 
-	@Override
-	public void init(RenderContext context, ListSettings<?> settings)
-	{
-		super.init(context, settings);
-		PropBagEx itemxml = itemService.getItemXmlPropBag(getItem());
-		String tags = itemxml.getNode(MyContentConstants.KEYWORDS_NODE);
-		if( !Check.isEmpty(tags) )
-		{
-			addDelimitedMetadata(LABEL_TAGS, tags);
-		}
-		String handlerId = itemxml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
-		handler = myContentService.getHandlerForId(handlerId);
-		titleLink = handler.decorate(info, this);
-	}
+  @Override
+  public HtmlLinkState getTitle() {
+    if (titleLink != null) {
+      return titleLink;
+    }
+    return super.getTitle();
+  }
 
-	@Override
-	public Label getSelectLabel()
-	{
-		return LABEL_SELECT;
-	}
+  @Override
+  public void init(RenderContext context, ListSettings<?> settings) {
+    super.init(context, settings);
+    PropBagEx itemxml = itemService.getItemXmlPropBag(getItem());
+    String tags = itemxml.getNode(MyContentConstants.KEYWORDS_NODE);
+    if (!Check.isEmpty(tags)) {
+      addDelimitedMetadata(LABEL_TAGS, tags);
+    }
+    String handlerId = itemxml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
+    handler = myContentService.getHandlerForId(handlerId);
+    titleLink = handler.decorate(info, this);
+  }
+
+  @Override
+  public Label getSelectLabel() {
+    return LABEL_SELECT;
+  }
 }

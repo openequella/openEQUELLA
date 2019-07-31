@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,39 +21,29 @@ package com.tle.core.reporting.birttypes;
 import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 
-public final class BirtTypeUtils
-{
-	private BirtTypeUtils()
-	{
-		throw new Error();
-	}
+public final class BirtTypeUtils {
+  private BirtTypeUtils() {
+    throw new Error();
+  }
 
-	public static AbstractBirtType createWrapper(IScalarParameterDefn scalarDef, int paramNum, IParameterGroupDefn group)
-	{
-		AbstractBirtType control = null;
+  public static AbstractBirtType createWrapper(
+      IScalarParameterDefn scalarDef, int paramNum, IParameterGroupDefn group) {
+    AbstractBirtType control = null;
 
-		int controlType = scalarDef.getControlType();
-		if( controlType == IScalarParameterDefn.CHECK_BOX )
-		{
-			control = new CheckBoxBirtType(scalarDef, paramNum);
-		}
-		else if( controlType == IScalarParameterDefn.TEXT_BOX )
-		{
-			control = new TextBoxBirtType(scalarDef, paramNum);
-		}
-		else if( controlType == IScalarParameterDefn.LIST_BOX )
-		{
-			control = new ListBoxBirtType(scalarDef, paramNum, group);
-		}
-		else if( controlType == IScalarParameterDefn.RADIO_BUTTON )
-		{
-			control = new RadioButtonBirtType(scalarDef, paramNum);
-		}
-		if( control == null )
-		{
-			throw new BirtTypeException("invalid control type specified."); //$NON-NLS-1$
-		}
+    int controlType = scalarDef.getControlType();
+    if (controlType == IScalarParameterDefn.CHECK_BOX) {
+      control = new CheckBoxBirtType(scalarDef, paramNum);
+    } else if (controlType == IScalarParameterDefn.TEXT_BOX) {
+      control = new TextBoxBirtType(scalarDef, paramNum);
+    } else if (controlType == IScalarParameterDefn.LIST_BOX) {
+      control = new ListBoxBirtType(scalarDef, paramNum, group);
+    } else if (controlType == IScalarParameterDefn.RADIO_BUTTON) {
+      control = new RadioButtonBirtType(scalarDef, paramNum);
+    }
+    if (control == null) {
+      throw new BirtTypeException("invalid control type specified."); // $NON-NLS-1$
+    }
 
-		return control;
-	}
+    return control;
+  }
 }

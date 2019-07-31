@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.cla.web;
 
-import javax.inject.Inject;
-
 import com.tle.beans.cla.CLAHolding;
 import com.tle.beans.cla.CLAPortion;
 import com.tle.beans.cla.CLASection;
@@ -25,24 +25,21 @@ import com.tle.cla.web.service.CLAWebServiceImpl;
 import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightAttachmentFilter;
+import javax.inject.Inject;
 
 @Bind
-public class CLAAttachmentViewFilter extends AbstractCopyrightAttachmentFilter<CLAHolding, CLAPortion, CLASection>
-{
+public class CLAAttachmentViewFilter
+    extends AbstractCopyrightAttachmentFilter<CLAHolding, CLAPortion, CLASection> {
 
-	@Inject
-	CLAWebServiceImpl claWebService;
+  @Inject CLAWebServiceImpl claWebService;
 
-	@Override
-	protected CLAWebServiceImpl getCopyrightWebServiceImpl()
-	{
-		return claWebService;
-	}
+  @Override
+  protected CLAWebServiceImpl getCopyrightWebServiceImpl() {
+    return claWebService;
+  }
 
-	@Override
-	protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl()
-	{
-		return claWebService.getCopyrightServiceImpl();
-	}
-
+  @Override
+  protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl() {
+    return claWebService.getCopyrightServiceImpl();
+  }
 }

@@ -1,0 +1,26 @@
+{
+  "uuid": "c7194cd0-f586-49b6-9fcc-4b1c5237efd9",
+  "name": "Save Script Test",
+  "nameStrings": {
+    "en": "Save Script Test"
+  },
+  "modifiedDate": "2014-05-12T15:43:41.797+10:00",
+  "createdDate": "2014-05-12T15:43:41.795+10:00",
+  "owner": {
+    "id": "system"
+  },
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
+  },
+  "schema": {
+    "uuid": "d9aba963-4648-e497-d62b-fc1ddf2d0199"
+  },
+  "_export": {
+    "exportVersion": "1.0"
+  },
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/c7194cd0-f586-49b6-9fcc-4b1c5237efd9"
+  }
+}

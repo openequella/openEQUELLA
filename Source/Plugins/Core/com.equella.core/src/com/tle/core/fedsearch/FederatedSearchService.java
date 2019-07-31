@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,30 +18,27 @@
 
 package com.tle.core.fedsearch;
 
-import java.util.List;
-
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteFederatedSearchService;
+import java.util.List;
 
 public interface FederatedSearchService
-	extends
-		AbstractEntityService<EntityEditingBean, FederatedSearch>,
-		RemoteFederatedSearchService
-{
-	List<BaseEntityLabel> listSearchable();
+    extends AbstractEntityService<EntityEditingBean, FederatedSearch>,
+        RemoteFederatedSearchService {
+  List<BaseEntityLabel> listSearchable();
 
-	List<BaseEntityLabel> listEnabledSearchable();
+  List<BaseEntityLabel> listEnabledSearchable();
 
-	List<Long> findEngineNamesForType(String type);
+  List<Long> findEngineNamesForType(String type);
 
-	FederatedSearch getForSearching(String uuid);
+  FederatedSearch getForSearching(String uuid);
 
-	List<FederatedSearch> getForCollectionUuid(String uuid);
+  List<FederatedSearch> getForCollectionUuid(String uuid);
 
-	List<FederatedSearch> enumerateSearchable();
+  List<FederatedSearch> enumerateSearchable();
 
-	List<FederatedSearch> enumerateEnabledSearchable();
+  List<FederatedSearch> enumerateEnabledSearchable();
 }

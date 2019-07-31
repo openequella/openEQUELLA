@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,31 +18,29 @@
 
 package com.tle.core.remoting;
 
+import com.tle.beans.user.GroupTreeNode;
+import com.tle.beans.user.TLEGroup;
 import java.util.Collection;
 import java.util.List;
 
-import com.tle.beans.user.GroupTreeNode;
-import com.tle.beans.user.TLEGroup;
+public interface RemoteTLEGroupService {
+  String add(String parentID, String name);
 
-public interface RemoteTLEGroupService
-{
-	String add(String parentID, String name);
+  TLEGroup get(String id);
 
-	TLEGroup get(String id);
+  TLEGroup getByName(String name);
 
-	TLEGroup getByName(String name);
+  String edit(final TLEGroup group);
 
-	String edit(final TLEGroup group);
+  void delete(String groupID, boolean deleteChildren);
 
-	void delete(String groupID, boolean deleteChildren);
+  List<TLEGroup> search(String query);
 
-	List<TLEGroup> search(String query);
+  List<TLEGroup> search(String query, String parentId);
 
-	List<TLEGroup> search(String query, String parentId);
+  List<TLEGroup> search(String query, String userId, boolean allParents);
 
-	List<TLEGroup> search(String query, String userId, boolean allParents);
+  GroupTreeNode searchTree(String query);
 
-	GroupTreeNode searchTree(String query);
-
-	List<TLEGroup> getInformationForGroups(Collection<String> groups);
+  List<TLEGroup> getInformationForGroups(Collection<String> groups);
 }

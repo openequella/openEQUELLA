@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,50 +18,41 @@
 
 package com.tle.web.sections.render;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSStatements;
+import java.io.IOException;
+import java.util.Map;
 
-public class PreRenderOnly implements SectionRenderable, JSStatements, TagProcessor
-{
-	private PreRenderable prerender;
+public class PreRenderOnly implements SectionRenderable, JSStatements, TagProcessor {
+  private PreRenderable prerender;
 
-	public PreRenderOnly()
-	{
-		// nothing
-	}
+  public PreRenderOnly() {
+    // nothing
+  }
 
-	@Override
-	public void processAttributes(SectionWriter writer, Map<String, String> attrs)
-	{
-		// nothing
-	}
+  @Override
+  public void processAttributes(SectionWriter writer, Map<String, String> attrs) {
+    // nothing
+  }
 
-	public PreRenderOnly(PreRenderable prerender)
-	{
-		this.prerender = prerender;
-	}
+  public PreRenderOnly(PreRenderable prerender) {
+    this.prerender = prerender;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(prerender);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(prerender);
+  }
 
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return ""; //$NON-NLS-1$
-	}
+  @Override
+  public String getStatements(RenderContext info) {
+    return ""; //$NON-NLS-1$
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		// nothing
-	}
-
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    // nothing
+  }
 }

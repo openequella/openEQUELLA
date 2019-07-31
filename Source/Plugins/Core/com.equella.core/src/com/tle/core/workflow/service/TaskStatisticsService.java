@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,23 @@
 
 package com.tle.core.workflow.service;
 
-import java.util.Date;
-import java.util.List;
-
 import com.tle.beans.item.Item;
 import com.tle.common.workflow.Trend;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.core.workflow.TaskTrend;
+import java.util.Date;
+import java.util.List;
 
-public interface TaskStatisticsService
-{
-	List<TaskTrend> getWaitingTasks(Trend trend);
+public interface TaskStatisticsService {
+  List<TaskTrend> getWaitingTasks(Trend trend);
 
-	List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend);
+  List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend);
 
-	void enterTask(Item item, WorkflowItem task, Date entry);
+  void enterTask(Item item, WorkflowItem task, Date entry);
 
-	void exitTask(Item item, WorkflowItem task, Date entry);
+  void exitTask(Item item, WorkflowItem task, Date entry);
 
-	void exitAllTasksForItem(Item item, Date end);
+  void exitAllTasksForItem(Item item, Date end);
 
-	void restoreTasksForItem(Item item);
+  void restoreTasksForItem(Item item);
 }

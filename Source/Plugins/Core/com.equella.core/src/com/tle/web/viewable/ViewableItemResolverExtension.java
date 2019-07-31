@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,21 +29,22 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewItemUrl;
 
 @NonNullByDefault
-public interface ViewableItemResolverExtension
-{
-	<I extends IItem<?>> ViewableItem<I> createViewableItem(I item);
+public interface ViewableItemResolverExtension {
+  <I extends IItem<?>> ViewableItem<I> createViewableItem(I item);
 
-	<I extends IItem<?>> ViewableItem<I> createIntegrationViewableItem(I item, boolean latest,
-		ViewableItemType viewableItemType);
+  <I extends IItem<?>> ViewableItem<I> createIntegrationViewableItem(
+      I item, boolean latest, ViewableItemType viewableItemType);
 
-	<I extends IItem<?>> ViewableItem<I> createIntegrationViewableItem(ItemKey itemKey, boolean latest,
-		ViewableItemType viewableItemType);
+  <I extends IItem<?>> ViewableItem<I> createIntegrationViewableItem(
+      ItemKey itemKey, boolean latest, ViewableItemType viewableItemType);
 
-	<I extends IItem<?>> ViewItemUrl createViewItemUrl(SectionInfo info, ViewableItem<I> viewableItem);
+  <I extends IItem<?>> ViewItemUrl createViewItemUrl(
+      SectionInfo info, ViewableItem<I> viewableItem);
 
-	<I extends IItem<?>> ViewItemUrl createViewItemUrl(SectionInfo info, ViewableItem<I> viewableItem,
-		UrlEncodedString path, int flags);
+  <I extends IItem<?>> ViewItemUrl createViewItemUrl(
+      SectionInfo info, ViewableItem<I> viewableItem, UrlEncodedString path, int flags);
 
-	@Nullable
-	<I extends IItem<?>> Bookmark createThumbnailAttachmentLink(I item, boolean latest, @Nullable String attachmentUuid);
+  @Nullable
+  <I extends IItem<?>> Bookmark createThumbnailAttachmentLink(
+      I item, boolean latest, @Nullable String attachmentUuid);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,7 +20,6 @@ package com.tle.web.remoting.resteasy;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
@@ -26,23 +27,19 @@ import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 @Provider
 @ServerInterceptor
 @SuppressWarnings("nls")
-public class CorsInterceptor implements PostProcessInterceptor
-{
-	@Override
-	public void postProcess(ServerResponse response)
-	{
-		process(response);
-	}
+public class CorsInterceptor implements PostProcessInterceptor {
+  @Override
+  public void postProcess(ServerResponse response) {
+    process(response);
+  }
 
-	public static void runPostProcess(ServerResponse response)
-	{
-		process(response);
-	}
+  public static void runPostProcess(ServerResponse response) {
+    process(response);
+  }
 
-	private static void process(ServerResponse response)
-	{
-		final MultivaluedMap<String, Object> metadata = response.getMetadata();
-		metadata.putSingle("Access-Control-Allow-Origin", "*");
-		metadata.putSingle("Access-Control-Expose-Headers", "Location");
-	}
+  private static void process(ServerResponse response) {
+    final MultivaluedMap<String, Object> metadata = response.getMetadata();
+    metadata.putSingle("Access-Control-Allow-Origin", "*");
+    metadata.putSingle("Access-Control-Expose-Headers", "Location");
+  }
 }

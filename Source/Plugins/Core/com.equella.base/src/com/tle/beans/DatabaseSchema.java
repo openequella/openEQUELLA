@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,187 +19,163 @@
 package com.tle.beans;
 
 import com.tle.common.Check;
-
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
 
 @Entity
 @SuppressWarnings("nls")
 @Table(name = DatabaseSchema.TABLE_NAME)
-public class DatabaseSchema implements Serializable
-{
-	private static final long serialVersionUID = -1L;
+public class DatabaseSchema implements Serializable {
+  private static final long serialVersionUID = -1L;
 
-	public static final String TABLE_NAME = "sys_database_schema";
+  public static final String TABLE_NAME = "sys_database_schema";
 
-	public static final DatabaseSchema SYSTEM_SCHEMA = new DatabaseSchema(-1);
+  public static final DatabaseSchema SYSTEM_SCHEMA = new DatabaseSchema(-1);
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Column(length = 512)
-	private String url;
-	@Column(length = 64)
-	private String username;
-	@Column(length = 64)
-	private String password;
-	@Column(length = 512)
-	private String reportingUrl;
-	@Column(length = 64)
-	private String reportingUsername;
-	@Column(length = 64)
-	private String reportingPassword;
-	@Column(name = "`online`")
-	private boolean online;
-	@Lob
-	private String description;
-	private boolean useSystem;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	public DatabaseSchema()
-	{
-		// nothing
-	}
+  @Column(length = 512)
+  private String url;
 
-	public DatabaseSchema(long id)
-	{
-		this.id = id;
-	}
+  @Column(length = 64)
+  private String username;
 
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 64)
+  private String password;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Column(length = 512)
+  private String reportingUrl;
 
-	public String getUrl()
-	{
-		return url;
-	}
+  @Column(length = 64)
+  private String reportingUsername;
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  @Column(length = 64)
+  private String reportingPassword;
 
-	public String getUsername()
-	{
-		return username;
-	}
+  @Column(name = "`online`")
+  private boolean online;
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  @Lob private String description;
+  private boolean useSystem;
 
-	public String getPassword()
-	{
-		return password;
-	}
+  public DatabaseSchema() {
+    // nothing
+  }
 
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
+  public DatabaseSchema(long id) {
+    this.id = id;
+  }
 
-	public String getReportingUrl()
-	{
-		return reportingUrl;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setReportingUrl(String reportingUrl)
-	{
-		this.reportingUrl = reportingUrl;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public String getReportingUsername()
-	{
-		return reportingUsername;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public void setReportingUsername(String reportingUsername)
-	{
-		this.reportingUsername = reportingUsername;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public String getReportingPassword()
-	{
-		return reportingPassword;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setReportingPassword(String reportingPassword)
-	{
-		this.reportingPassword = reportingPassword;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public boolean isOnline()
-	{
-		return online;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public void setOnline(boolean online)
-	{
-		this.online = online;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public String getReportingUrl() {
+    return reportingUrl;
+  }
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  public void setReportingUrl(String reportingUrl) {
+    this.reportingUrl = reportingUrl;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return Long.valueOf(id).hashCode();
-	}
+  public String getReportingUsername() {
+    return reportingUsername;
+  }
 
-	@Override
-	public String toString()
-	{
-		String str = username + '@' + url;
-		if( !Check.isEmpty(description) )
-		{
-			return '\'' + description + "' " + str;
-		}
-		return str;
-	}
+  public void setReportingUsername(String reportingUsername) {
+    this.reportingUsername = reportingUsername;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+  public String getReportingPassword() {
+    return reportingPassword;
+  }
 
-		if( !(obj instanceof DatabaseSchema) )
-		{
-			return false;
-		}
+  public void setReportingPassword(String reportingPassword) {
+    this.reportingPassword = reportingPassword;
+  }
 
-		return id == ((DatabaseSchema) obj).id;
-	}
+  public boolean isOnline() {
+    return online;
+  }
 
-	public boolean isSystem()
-	{
-		return id == -1;
-	}
+  public void setOnline(boolean online) {
+    this.online = online;
+  }
 
-	public boolean isUseSystem()
-	{
-		return useSystem;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setUseSystem(boolean useSystem)
-	{
-		this.useSystem = useSystem;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.valueOf(id).hashCode();
+  }
+
+  @Override
+  public String toString() {
+    String str = username + '@' + url;
+    if (!Check.isEmpty(description)) {
+      return '\'' + description + "' " + str;
+    }
+    return str;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (!(obj instanceof DatabaseSchema)) {
+      return false;
+    }
+
+    return id == ((DatabaseSchema) obj).id;
+  }
+
+  public boolean isSystem() {
+    return id == -1;
+  }
+
+  public boolean isUseSystem() {
+    return useSystem;
+  }
+
+  public void setUseSystem(boolean useSystem) {
+    this.useSystem = useSystem;
+  }
 }

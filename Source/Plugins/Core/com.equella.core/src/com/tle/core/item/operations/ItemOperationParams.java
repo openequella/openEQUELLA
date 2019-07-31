@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.core.item.operations;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
@@ -29,93 +26,94 @@ import com.tle.beans.workflow.SecurityStatus;
 import com.tle.common.workflow.WorkflowNodeStatus;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.NodeStatus;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-/**
- * @author aholland
- */
-public interface ItemOperationParams
-{
-	public static final int COMMIT_HOOK_PRIORITY_LOW = 1000;
-	public static final int COMMIT_HOOK_PRIORITY_MEDIUM = 500;
-	public static final int COMMIT_HOOK_PRIORITY_HIGH = 0;
+/** @author aholland */
+public interface ItemOperationParams {
+  public static final int COMMIT_HOOK_PRIORITY_LOW = 1000;
+  public static final int COMMIT_HOOK_PRIORITY_MEDIUM = 500;
+  public static final int COMMIT_HOOK_PRIORITY_HIGH = 0;
 
-	void setAttribute(String name, String value);
+  void setAttribute(String name, String value);
 
-	Date getDateNow();
+  Date getDateNow();
 
-	ItemKey getItemKey();
+  ItemKey getItemKey();
 
-	void setItemKey(ItemKey itemKey, long id);
+  void setItemKey(ItemKey itemKey, long id);
 
-	ItemIdKey getItemIdKey();
+  ItemIdKey getItemIdKey();
 
-	void setStopImmediately(boolean stopImmediately);
+  void setStopImmediately(boolean stopImmediately);
 
-	ItemPack<Item> getItemPack();
+  ItemPack<Item> getItemPack();
 
-	List<ApplicationEvent<?>> getAfterCommitEvents();
+  List<ApplicationEvent<?>> getAfterCommitEvents();
 
-	List<ApplicationEvent<?>> getAfterCommitAllEvents();
+  List<ApplicationEvent<?>> getAfterCommitAllEvents();
 
-	void setUpdate(boolean update);
+  void setUpdate(boolean update);
 
-	boolean isUpdate();
+  boolean isUpdate();
 
-	void setItemPack(ItemPack<Item> itemPack);
+  void setItemPack(ItemPack<Item> itemPack);
 
-	Map<String, String> getAttributes();
+  Map<String, String> getAttributes();
 
-	void setModified(boolean modified);
+  void setModified(boolean modified);
 
-	boolean isModified();
+  boolean isModified();
 
-	void setUpdateSecurity(boolean update);
+  void setUpdateSecurity(boolean update);
 
-	boolean isUpdateSecurity();
+  boolean isUpdateSecurity();
 
-	void setWentLive(boolean wentLive);
+  void setWentLive(boolean wentLive);
 
-	boolean isWentLive();
+  boolean isWentLive();
 
-	void setRequiresReindex(boolean requiresReindex);
+  void setRequiresReindex(boolean requiresReindex);
 
-	boolean isRequiresReindex();
+  boolean isRequiresReindex();
 
-	void setNotificationsAdded(boolean notificationsAdded);
+  void setNotificationsAdded(boolean notificationsAdded);
 
-	boolean isNotificationsAdded();
+  boolean isNotificationsAdded();
 
-	void addAfterSaveHook(Runnable runnable);
+  void addAfterSaveHook(Runnable runnable);
 
-	Collection<Runnable> getAfterCommit();
+  Collection<Runnable> getAfterCommit();
 
-	List<Runnable> getAfterSave();
+  List<Runnable> getAfterSave();
 
-	void addAfterCommitHook(int priority, Runnable runnable);
+  void addAfterCommitHook(int priority, Runnable runnable);
 
-	void setSecurityObject(Object object);
+  void setSecurityObject(Object object);
 
-	Object getSecurityObject();
+  Object getSecurityObject();
 
-	SecurityStatus getSecurityStatus();
+  SecurityStatus getSecurityStatus();
 
-	void setSecurityStatus(SecurityStatus securityStatus);
+  void setSecurityStatus(SecurityStatus securityStatus);
 
-	void addFilter(ItemOperationFilter filter);
+  void addFilter(ItemOperationFilter filter);
 
-	List<ItemOperationFilter> getExtraFilters();
+  List<ItemOperationFilter> getExtraFilters();
 
-	void addOperation(WorkflowOperation operation);
+  void addOperation(WorkflowOperation operation);
 
-	void setCause(WorkflowNodeStatus status);
+  void setCause(WorkflowNodeStatus status);
 
-	WorkflowNodeStatus getCause();
+  WorkflowNodeStatus getCause();
 
-	List<WorkflowOperation> getOperations();
+  List<WorkflowOperation> getOperations();
 
-	void reset(ItemKey itemKey, long key, ItemPack itemPack);
+  void reset(ItemKey itemKey, long key, ItemPack itemPack);
 
-	Map<String, NodeStatus> getStatusMap();
+  Map<String, NodeStatus> getStatusMap();
 
-	void clearAllStatuses();
+  void clearAllStatuses();
 }

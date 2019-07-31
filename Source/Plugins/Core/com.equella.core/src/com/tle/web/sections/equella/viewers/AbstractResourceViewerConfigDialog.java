@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.sections.equella.viewers;
-
-import java.util.Collection;
 
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -34,65 +34,58 @@ import com.tle.web.sections.standard.js.JSONComponentMappings;
 import com.tle.web.sections.standard.js.impl.CollectJSONFunction;
 import com.tle.web.sections.standard.js.impl.PopulateFromJSONFunction;
 import com.tle.web.viewurl.ResourceViewerConfigDialog;
+import java.util.Collection;
 
 @NonNullByDefault
-public abstract class AbstractResourceViewerConfigDialog extends FormDialog implements ResourceViewerConfigDialog
-{
-	@Component
-	private Button okButton;
-	@Component
-	private Button cancelButton;
+public abstract class AbstractResourceViewerConfigDialog extends FormDialog
+    implements ResourceViewerConfigDialog {
+  @Component private Button okButton;
+  @Component private Button cancelButton;
 
-	private CollectJSONFunction collectFunction;
-	protected PopulateFromJSONFunction populateFunction;
-	protected JSONComponentMappings mappings;
+  private CollectJSONFunction collectFunction;
+  protected PopulateFromJSONFunction populateFunction;
+  protected JSONComponentMappings mappings;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		setInline(true);
+    setInline(true);
 
-		okButton.setLabel(new KeyLabel(ButtonKeys.OK));
-		okButton.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+    okButton.setLabel(new KeyLabel(ButtonKeys.OK));
+    okButton.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
 
-		cancelButton.setLabel(new KeyLabel(ButtonKeys.CANCEL));
-		cancelButton.setClickHandler(new OverrideHandler(getCloseFunction()));
+    cancelButton.setLabel(new KeyLabel(ButtonKeys.CANCEL));
+    cancelButton.setClickHandler(new OverrideHandler(getCloseFunction()));
 
-		mappings = new JSONComponentMappings();
-	}
+    mappings = new JSONComponentMappings();
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		collectFunction = new CollectJSONFunction("collect" + id, mappings);
-		populateFunction = new PopulateFromJSONFunction("populate" + id, mappings);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    collectFunction = new CollectJSONFunction("collect" + id, mappings);
+    populateFunction = new PopulateFromJSONFunction("populate" + id, mappings);
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Lists.newArrayList(okButton, cancelButton);
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Lists.newArrayList(okButton, cancelButton);
+  }
 
-	@Override
-	public JSCallable getCollectFunction()
-	{
-		return collectFunction;
-	}
+  @Override
+  public JSCallable getCollectFunction() {
+    return collectFunction;
+  }
 
-	@Override
-	public JSCallable getPopulateFunction()
-	{
-		return populateFunction;
-	}
+  @Override
+  public JSCallable getPopulateFunction() {
+    return populateFunction;
+  }
 
-	@Override
-	public Button getOkButton()
-	{
-		return okButton;
-	}
+  @Override
+  public Button getOkButton() {
+    return okButton;
+  }
 }

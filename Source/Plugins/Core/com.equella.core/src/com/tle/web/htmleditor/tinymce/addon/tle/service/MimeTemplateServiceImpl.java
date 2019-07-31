@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,18 +17,6 @@
  */
 
 package com.tle.web.htmleditor.tinymce.addon.tle.service;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.log4j.Logger;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.cache.CacheLoader;
@@ -50,162 +40,148 @@ import com.tle.web.viewurl.ResourceViewer;
 import com.tle.web.viewurl.ViewItemService;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(MimeTemplateService.class)
 @Singleton
-public class MimeTemplateServiceImpl implements MimeTemplateService, MimeTypesUpdatedListener
-{
-	private static final Logger LOGGER = Logger.getLogger(MimeTemplateService.class);
+public class MimeTemplateServiceImpl implements MimeTemplateService, MimeTypesUpdatedListener {
+  private static final Logger LOGGER = Logger.getLogger(MimeTemplateService.class);
 
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private MimeTemplateFreemarkerFactory custFactory;
-	@Inject
-	private ViewItemService viewItemService;
+  @Inject private RunAsInstitution runAs;
+  @Inject private MimeTypeService mimeService;
+  @Inject private MimeTemplateFreemarkerFactory custFactory;
+  @Inject private ViewItemService viewItemService;
 
-	private InstitutionCache<Set<String>> embeddableCache;
+  private InstitutionCache<Set<String>> embeddableCache;
 
-	@Inject
-	public void setInstitutionService(InstitutionService service)
-	{
-		embeddableCache = service.newInstitutionAwareCache(new CacheLoader<Institution, Set<String>>()
-		{
-			@Override
-			public Set<String> load(Institution key)
-			{
-				return fillCache();
-			}
-		});
-	}
+  @Inject
+  public void setInstitutionService(InstitutionService service) {
+    embeddableCache =
+        service.newInstitutionAwareCache(
+            new CacheLoader<Institution, Set<String>>() {
+              @Override
+              public Set<String> load(Institution key) {
+                return fillCache();
+              }
+            });
+  }
 
-	@Override
-	public String getTemplateForMimeType(String mime)
-	{
-		MimeEntry mimeEntry = mimeService.getEntryForMimeType(mime);
-		if( mimeEntry != null )
-		{
-			return getTemplateForMimeEntry(mimeEntry);
-		}
-		return null;
-	}
+  @Override
+  public String getTemplateForMimeType(String mime) {
+    MimeEntry mimeEntry = mimeService.getEntryForMimeType(mime);
+    if (mimeEntry != null) {
+      return getTemplateForMimeEntry(mimeEntry);
+    }
+    return null;
+  }
 
-	@Override
-	public String getTemplateForMimeEntry(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getAttributes().get(TinyMceAddonConstants.MIME_TEMPLATE_KEY);
-	}
+  @Override
+  public String getTemplateForMimeEntry(MimeEntry mimeEntry) {
+    return mimeEntry.getAttributes().get(TinyMceAddonConstants.MIME_TEMPLATE_KEY);
+  }
 
-	@Override
-	public String getPopulatedTemplate(SectionInfo info, ViewableResource vres, String title)
-	{
-		final String template = getTemplateForMimeType(vres.getMimeType());
-		// replace url and title
-		if( template != null )
-		{
-			final String vhref = vres.createDefaultViewerUrl()
-				.addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT).getHref();
+  @Override
+  public String getPopulatedTemplate(SectionInfo info, ViewableResource vres, String title) {
+    final String template = getTemplateForMimeType(vres.getMimeType());
+    // replace url and title
+    if (template != null) {
+      final String vhref =
+          vres.createDefaultViewerUrl()
+              .addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT)
+              .getHref();
 
-			final FreemarkerSectionResult res = custFactory.createResult("mimetemplate", new StringReader(template),
-				null);
-			// These 3 are more or less deprecated now. Use the 'resource'
-			// variable.
-			res.addExtraObject("url", vres.createCanonicalUrl().getHref());
-			res.addExtraObject("vurl", vhref);
-			res.addExtraObject("title", title);
-			res.addExtraObject("resource", new ResourceWrapper(vres, title));
+      final FreemarkerSectionResult res =
+          custFactory.createResult("mimetemplate", new StringReader(template), null);
+      // These 3 are more or less deprecated now. Use the 'resource'
+      // variable.
+      res.addExtraObject("url", vres.createCanonicalUrl().getHref());
+      res.addExtraObject("vurl", vhref);
+      res.addExtraObject("title", title);
+      res.addExtraObject("resource", new ResourceWrapper(vres, title));
 
-			final StringWriter outbuf = new StringWriter();
-			try
-			{
-				res.realRender(new SectionWriter(outbuf, info.getRootRenderContext()));
-			}
-			catch( IOException io )
-			{
-				LOGGER.error("Error rendering MIME template", io);
-				return null;
-			}
-			return outbuf.toString();
-		}
-		return null;
-	}
+      final StringWriter outbuf = new StringWriter();
+      try {
+        res.realRender(new SectionWriter(outbuf, info.getRootRenderContext()));
+      } catch (IOException io) {
+        LOGGER.error("Error rendering MIME template", io);
+        return null;
+      }
+      return outbuf.toString();
+    }
+    return null;
+  }
 
-	@Override
-	public Collection<String> getEmbeddableMimeTypes()
-	{
-		return embeddableCache.getCache();
-	}
+  @Override
+  public Collection<String> getEmbeddableMimeTypes() {
+    return embeddableCache.getCache();
+  }
 
-	protected Set<String> fillCache()
-	{
-		final Set<String> embeds = new HashSet<String>();
-		runAs.executeAsSystem(CurrentInstitution.get(), new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				MimeTypesSearchResults results = mimeService.searchByMimeType(Constants.BLANK, 0, -1);
-				for( MimeEntry entry : results.getResults() )
-				{
-					String template = getTemplateForMimeEntry(entry);
-					if( !Check.isEmpty(template) )
-					{
-						embeds.add(entry.getType());
-					}
-				}
-			}
-		});
-		return embeds;
-	}
+  protected Set<String> fillCache() {
+    final Set<String> embeds = new HashSet<String>();
+    runAs.executeAsSystem(
+        CurrentInstitution.get(),
+        new Runnable() {
+          @Override
+          public void run() {
+            MimeTypesSearchResults results = mimeService.searchByMimeType(Constants.BLANK, 0, -1);
+            for (MimeEntry entry : results.getResults()) {
+              String template = getTemplateForMimeEntry(entry);
+              if (!Check.isEmpty(template)) {
+                embeds.add(entry.getType());
+              }
+            }
+          }
+        });
+    return embeds;
+  }
 
-	@Override
-	public void clearMimeCache()
-	{
-		embeddableCache.clear();
-	}
+  @Override
+  public void clearMimeCache() {
+    embeddableCache.clear();
+  }
 
-	public class ResourceWrapper
-	{
-		private final ViewableResource vres;
-		private final String title;
+  public class ResourceWrapper {
+    private final ViewableResource vres;
+    private final String title;
 
-		protected ResourceWrapper(ViewableResource vres, String title)
-		{
-			this.vres = vres;
-			this.title = title;
-		}
+    protected ResourceWrapper(ViewableResource vres, String title) {
+      this.vres = vres;
+      this.title = title;
+    }
 
-		public String getDefaultViewerUrl()
-		{
-			return vres.createDefaultViewerUrl().addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT)
-				.getHref();
-		}
+    public String getDefaultViewerUrl() {
+      return vres.createDefaultViewerUrl()
+          .addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT)
+          .getHref();
+    }
 
-		public String getCanonicalUrl()
-		{
-			return vres.createCanonicalUrl().getHref();
-		}
+    public String getCanonicalUrl() {
+      return vres.createCanonicalUrl().getHref();
+    }
 
-		public String getViewerUrl(String viewer)
-		{
-			ResourceViewer resourceViewer = viewItemService.getViewer(viewer);
-			if( resourceViewer != null )
-			{
-				return resourceViewer.createViewItemUrl(vres.getInfo(), vres)
-					.addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT).getHref();
-			}
-			return "";
-		}
+    public String getViewerUrl(String viewer) {
+      ResourceViewer resourceViewer = viewItemService.getViewer(viewer);
+      if (resourceViewer != null) {
+        return resourceViewer
+            .createViewItemUrl(vres.getInfo(), vres)
+            .addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_IGNORE_TRANSIENT)
+            .getHref();
+      }
+      return "";
+    }
 
-		public String getTitle()
-		{
-			return title;
-		}
-	}
+    public String getTitle() {
+      return title;
+    }
+  }
 }

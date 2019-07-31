@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,72 +21,59 @@ package com.tle.web.api.item.tasks.interfaces.beans;
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.common.interfaces.I18NString;
 
-public class TaskBean
-{
-	private String uuid;
-	private I18NString name;
-	private I18NString description;
-	private int priority;
-	private boolean unanimous;
-	private BaseEntityReference workflow;
+public class TaskBean {
+  private String uuid;
+  private I18NString name;
+  private I18NString description;
+  private int priority;
+  private boolean unanimous;
+  private BaseEntityReference workflow;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public int getPriority()
-	{
-		return priority;
-	}
+  public int getPriority() {
+    return priority;
+  }
 
-	public void setPriority(int priority)
-	{
-		this.priority = priority;
-	}
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-	public boolean isUnanimous()
-	{
-		return unanimous;
-	}
+  public boolean isUnanimous() {
+    return unanimous;
+  }
 
-	public void setUnanimous(boolean unanimous)
-	{
-		this.unanimous = unanimous;
-	}
+  public void setUnanimous(boolean unanimous) {
+    this.unanimous = unanimous;
+  }
 
-	public I18NString getName()
-	{
-		return name;
-	}
+  public I18NString getName() {
+    return name;
+  }
 
-	public void setName(I18NString name)
-	{
-		this.name = name;
-	}
+  public void setName(I18NString name) {
+    this.name = name;
+  }
 
-	public I18NString getDescription()
-	{
-		return description;
-	}
+  public I18NString getDescription() {
+    return description;
+  }
 
-	public void setDescription(I18NString description)
-	{
-		this.description = description;
-	}
+  public void setDescription(I18NString description) {
+    this.description = description;
+  }
 
-	public BaseEntityReference getWorkflow()
-	{
-		return workflow;
-	}
+  public BaseEntityReference getWorkflow() {
+    return workflow;
+  }
 
-	public void setWorkflow(BaseEntityReference workflow)
-	{
-		this.workflow = workflow;
-	}
+  public void setWorkflow(BaseEntityReference workflow) {
+    this.workflow = workflow;
+  }
 }

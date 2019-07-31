@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.core.legacy.initial;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import org.hibernate.classic.Session;
 
 import com.tle.beans.Institution;
 import com.tle.beans.ItemDefinitionScript;
@@ -72,89 +67,161 @@ import com.tle.core.migration.AbstractHibernateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Singleton;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
-public class EnsureForeignKeyIndexes extends AbstractHibernateMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(EnsureForeignKeyIndexes.class) + ".ensurefki."; //$NON-NLS-1$
+public class EnsureForeignKeyIndexes extends AbstractHibernateMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(EnsureForeignKeyIndexes.class) + ".ensurefki."; // $NON-NLS-1$
 
-	@SuppressWarnings("nls")
-	@Override
-	public void migrate(MigrationResult status) throws Exception
-	{
-		status.setupSubTaskStatus(AbstractCreateMigration.KEY_CALCULATING, 100);
-		status.setCanRetry(true);
-		HibernateMigrationHelper helper = createMigrationHelper();
-		List<String> sql = new ArrayList<String>();
-		Session session = helper.getFactory().openSession();
+  @SuppressWarnings("nls")
+  @Override
+  public void migrate(MigrationResult status) throws Exception {
+    status.setupSubTaskStatus(AbstractCreateMigration.KEY_CALCULATING, 100);
+    status.setCanRetry(true);
+    HibernateMigrationHelper helper = createMigrationHelper();
+    List<String> sql = new ArrayList<String>();
+    Session session = helper.getFactory().openSession();
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "hierarchy_topic", "parentTopic", "hiearchyPowerSearch",
-			"hierarchyName", "hierarchyShortDescription", "hierarchyLongDescription", "hierarchySName",
-			"hierarchyRSName"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session,
+            "hierarchy_topic",
+            "parentTopic",
+            "hiearchyPowerSearch",
+            "hierarchyName",
+            "hierarchyShortDescription",
+            "hierarchyLongDescription",
+            "hierarchySName",
+            "hierarchyRSName"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "tlegroup", "parentGroup"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "workflow_node_status", "nodeStatusModStatusIndex",
-			"nodeStatusNodeIndex"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "tlegroup", "parentGroup"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "workflow_node_status", "nodeStatusModStatusIndex", "nodeStatusNodeIndex"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "workflow_node", "workflowNodeName", "workflowNodeWorkflow",
-			"workflowNodeParent", "workflowNodeDesc"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session,
+            "workflow_node",
+            "workflowNodeName",
+            "workflowNodeWorkflow",
+            "workflowNodeParent",
+            "workflowNodeDesc"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "item", "itemModerationStatus", "itemName",
-			"itemDescription", "itemItemDefinition", "itemDrmSettings"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session,
+            "item",
+            "itemModerationStatus",
+            "itemName",
+            "itemDescription",
+            "itemItemDefinition",
+            "itemDrmSettings"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "audit_log_entry", "auditInstituion"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "activate_request", "activateRequestItem",
-			"activateRequestCourse"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "bookmark", "bookmarkItem"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "base_entity", "baseEntityName", "baseEntityDescription"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "access_entry", "accessEntryExpression",
-			"accessEntryInstitution"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "audit_log_entry", "auditInstituion"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "activate_request", "activateRequestItem", "activateRequestCourse"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "bookmark", "bookmarkItem"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "base_entity", "baseEntityName", "baseEntityDescription"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "access_entry", "accessEntryExpression", "accessEntryInstitution"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "share_pass", "sharePassItem", "sharePassInstitution"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "share_pass", "sharePassItem", "sharePassInstitution"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "item_definition", "collectionSchema", "collectionWorkflow",
-			"collectionBlobs"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session,
+            "item_definition",
+            "collectionSchema",
+            "collectionWorkflow",
+            "collectionBlobs"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "language", "languageInstitution"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "language", "languageInstitution"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "item_navigation_node", "itemNavNodeItem",
-			"itemNavNodeParent"));
-		sql.addAll(helper.getAddIndexesIfRequired(session, "power_search", "powerSearchSchema"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "item_navigation_node", "itemNavNodeItem", "itemNavNodeParent"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "power_search", "powerSearchSchema"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "item_navigation_tab", "itemNavTabNode",
-			"itemNavTabAttachment"));
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "item_navigation_tab", "itemNavTabNode", "itemNavTabAttachment"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "drm_acceptance", "drmAcceptItem"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "drm_acceptance", "drmAcceptItem"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "comments", "commentItem"));
+    sql.addAll(helper.getAddIndexesIfRequired(session, "comments", "commentItem"));
 
-		sql.addAll(helper.getAddIndexesIfRequired(session, "relation", "relationFirstItem", "relationSecondItem"));
-		session.close();
-		runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
-	}
+    sql.addAll(
+        helper.getAddIndexesIfRequired(
+            session, "relation", "relationFirstItem", "relationSecondItem"));
+    session.close();
+    runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{Institution.class, Item.class, LanguageBundle.class, DrmSettings.class,
-				ItemDefinition.class, Schema.class, ItemXml.class, ModerationStatus.class, ItemdefBlobs.class,
-				Workflow.class, WorkflowNode.class, WorkflowNodeStatus.class, ItemNavigationNode.class,
-				HistoryEvent.class, ReferencedURL.class, Attachment.class, DrmAcceptance.class, Comment.class,
-				SharePass.class, LanguageString.class, ItemNavigationTab.class, Bookmark.class,
-				CourseInfo.class, HierarchyTopic.class, PowerSearch.class, TLEGroup.class, WorkflowItem.class,
-				ActivateRequest.class, AccessEntry.class, AccessExpression.class, Language.class, Relation.class,
-				WorkflowMessage.class, BaseEntity.class, BaseEntity.Attribute.class, VersionSelection.class,
-				NavigationSettings.class, SchemaTransform.class, ItemDefinitionScript.class,
-				HierarchyTopic.Attribute.class, Citation.class, SchemaScript.class, TargetListEntry.class,
-				ACLEntryMapping.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      Institution.class,
+      Item.class,
+      LanguageBundle.class,
+      DrmSettings.class,
+      ItemDefinition.class,
+      Schema.class,
+      ItemXml.class,
+      ModerationStatus.class,
+      ItemdefBlobs.class,
+      Workflow.class,
+      WorkflowNode.class,
+      WorkflowNodeStatus.class,
+      ItemNavigationNode.class,
+      HistoryEvent.class,
+      ReferencedURL.class,
+      Attachment.class,
+      DrmAcceptance.class,
+      Comment.class,
+      SharePass.class,
+      LanguageString.class,
+      ItemNavigationTab.class,
+      Bookmark.class,
+      CourseInfo.class,
+      HierarchyTopic.class,
+      PowerSearch.class,
+      TLEGroup.class,
+      WorkflowItem.class,
+      ActivateRequest.class,
+      AccessEntry.class,
+      AccessExpression.class,
+      Language.class,
+      Relation.class,
+      WorkflowMessage.class,
+      BaseEntity.class,
+      BaseEntity.Attribute.class,
+      VersionSelection.class,
+      NavigationSettings.class,
+      SchemaTransform.class,
+      ItemDefinitionScript.class,
+      HierarchyTopic.Attribute.class,
+      Citation.class,
+      SchemaScript.class,
+      TargetListEntry.class,
+      ACLEntryMapping.class
+    };
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
+  }
 }

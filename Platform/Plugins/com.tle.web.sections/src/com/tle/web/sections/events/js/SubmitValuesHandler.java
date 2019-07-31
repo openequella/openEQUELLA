@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,44 +25,38 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 
-public class SubmitValuesHandler extends OverrideHandler
-{
-	private final JSExpression[] parameters;
-	private final SubmitValuesFunction valuesFunction;
+public class SubmitValuesHandler extends OverrideHandler {
+  private final JSExpression[] parameters;
+  private final SubmitValuesFunction valuesFunction;
 
-	public SubmitValuesHandler(ParameterizedEvent pevent, Object... params)
-	{
-		this(new SubmitValuesFunction(pevent), JSUtils.convertExpressions(params));
-	}
+  public SubmitValuesHandler(ParameterizedEvent pevent, Object... params) {
+    this(new SubmitValuesFunction(pevent), JSUtils.convertExpressions(params));
+  }
 
-	public SubmitValuesHandler(SubmitValuesFunction valuesFunction, JSExpression[] params)
-	{
-		this.parameters = params;
-		this.valuesFunction = valuesFunction;
-		addStatements(new FunctionCallStatement(valuesFunction, (Object[]) params));
-	}
+  public SubmitValuesHandler(SubmitValuesFunction valuesFunction, JSExpression[] params) {
+    this.parameters = params;
+    this.valuesFunction = valuesFunction;
+    addStatements(new FunctionCallStatement(valuesFunction, (Object[]) params));
+  }
 
-	public JSExpression[] getParameters()
-	{
-		return parameters;
-	}
+  public JSExpression[] getParameters() {
+    return parameters;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		super.preRender(info);
-		info.preRender(parameters);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    super.preRender(info);
+    info.preRender(parameters);
+  }
 
-	public SubmitValuesHandler setValidate(boolean validate)
-	{
-		valuesFunction.setValidate(validate);
-		return this;
-	}
+  public SubmitValuesHandler setValidate(boolean validate) {
+    valuesFunction.setValidate(validate);
+    return this;
+  }
 
-	@Override
-	public JSBookmarkModifier getModifier()
-	{
-		return new EventModifier(valuesFunction.getFirstParam(), valuesFunction.getEvent(), (Object[]) parameters);
-	}
+  @Override
+  public JSBookmarkModifier getModifier() {
+    return new EventModifier(
+        valuesFunction.getFirstParam(), valuesFunction.getEvent(), (Object[]) parameters);
+  }
 }

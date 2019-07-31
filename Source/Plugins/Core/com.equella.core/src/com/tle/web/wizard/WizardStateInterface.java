@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,37 @@
 
 package com.tle.web.wizard;
 
-import java.io.Serializable;
-
 import com.dytech.devlib.PropBagEx;
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
+import com.tle.common.filesystem.handle.FileHandle;
+import java.io.Serializable;
 
-public interface WizardStateInterface extends Serializable, Cloneable
-{
-	String getWizid();
+public interface WizardStateInterface extends Serializable, Cloneable {
+  String getWizid();
 
-	ModifiableAttachments getAttachments();
+  ModifiableAttachments getAttachments();
 
-	void setItemPack(ItemPack<Item> pack);
+  void setItemPack(ItemPack<Item> pack);
 
-	ItemPack<Item> getItemPack();
+  ItemPack<Item> getItemPack();
 
-	FileHandle getFileHandle();
+  int getStateVersion();
 
-	Item getItem();
+  FileHandle getFileHandle();
 
-	ItemKey getItemId();
+  Item getItem();
 
-	PropBagEx getItemxml();
+  ItemKey getItemId();
 
-	WorkflowStatus getWorkflowStatus();
+  PropBagEx getItemxml();
 
-	String getStagingId();
+  WorkflowStatus getWorkflowStatus();
 
-	void onSessionSave();
+  String getStagingId();
 
-	WizardStateInterface clone();
+  void onSessionSave();
 }

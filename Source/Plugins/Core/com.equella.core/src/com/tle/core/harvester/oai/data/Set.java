@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,33 @@
 
 package com.tle.core.harvester.oai.data;
 
-/**
- * 
- */
-public class Set
-{
-	private String spec;
-	private String name;
-	private Object description;
+/** */
+public class Set {
+  private String spec;
+  private String name;
+  private Object description;
 
-	public Object getDescription()
-	{
-		return description;
-	}
+  public Object getDescription() {
+    return description;
+  }
 
-	public void setDescription(Object description)
-	{
-		this.description = description;
-	}
+  public void setDescription(Object description) {
+    this.description = description;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getSpec()
-	{
-		return spec;
-	}
+  public String getSpec() {
+    return spec;
+  }
 
-	public void setSpec(String spec)
-	{
-		this.spec = spec;
-	}
+  public void setSpec(String spec) {
+    this.spec = spec;
+  }
 }

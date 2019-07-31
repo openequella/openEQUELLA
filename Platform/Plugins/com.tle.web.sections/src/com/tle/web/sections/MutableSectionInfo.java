@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,47 @@
 
 package com.tle.web.sections;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.events.ParametersEvent;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @NonNullByDefault
-public interface MutableSectionInfo extends SectionInfo
-{
-	void setRequest(@Nullable HttpServletRequest request);
+public interface MutableSectionInfo extends SectionInfo {
+  void setRequest(@Nullable HttpServletRequest request);
 
-	void setResponse(@Nullable HttpServletResponse response);
+  void setResponse(@Nullable HttpServletResponse response);
 
-	void addTree(SectionTree tree);
+  void addTree(SectionTree tree);
 
-	void removeTree(SectionTree tree);
+  void removeTree(SectionTree tree);
 
-	void addTreeToBottom(SectionTree tree, boolean processParams);
+  void addTreeToBottom(SectionTree tree, boolean processParams);
 
-	/**
-	 * Process the event queue, until it is empty. <br>
-	 * Typically this is only called by the {@code SectionsController}
-	 */
-	void processQueue();
+  /**
+   * Process the event queue, until it is empty. <br>
+   * Typically this is only called by the {@code SectionsController}
+   */
+  void processQueue();
 
-	SectionTree getRootTree();
+  SectionTree getRootTree();
 
-	void fireBeforeEvents();
+  void fireBeforeEvents();
 
-	void fireReadyToRespond(boolean redirect);
+  void fireReadyToRespond(boolean redirect);
 
-	List<SectionId> getRootIds();
+  List<SectionId> getRootIds();
 
-	List<SectionTree> getTrees();
+  List<SectionTree> getTrees();
 
-	/**
-	 * Add a parameters event which will be processed by any new trees added
-	 * with processParams flag set.
-	 * 
-	 * @see #addTreeToBottom(SectionTree, boolean)
-	 * @param event
-	 */
-	void addParametersEvent(ParametersEvent event);
-
+  /**
+   * Add a parameters event which will be processed by any new trees added with processParams flag
+   * set.
+   *
+   * @see #addTreeToBottom(SectionTree, boolean)
+   * @param event
+   */
+  void addParametersEvent(ParametersEvent event);
 }

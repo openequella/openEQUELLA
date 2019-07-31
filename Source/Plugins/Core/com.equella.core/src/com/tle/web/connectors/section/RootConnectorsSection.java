@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,10 +21,6 @@ package com.tle.web.connectors.section;
 import static com.tle.common.connectors.ConnectorConstants.PRIV_CREATE_CONNECTOR;
 import static com.tle.common.connectors.ConnectorConstants.PRIV_EDIT_CONNECTOR;
 
-import java.util.Arrays;
-
-import javax.inject.Inject;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.web.entities.section.AbstractRootEntitySection;
@@ -32,38 +30,35 @@ import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
+import java.util.Arrays;
+import javax.inject.Inject;
 
 @Bind
-public class RootConnectorsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
-{
-	@PlugKey("connectors.page.title")
-	private static Label TITLE_LABEL;
+public class RootConnectorsSection extends AbstractRootEntitySection<OneColumnLayoutModel> {
+  @PlugKey("connectors.page.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclService;
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info)
-	{
-		return !aclService.filterNonGrantedPrivileges(Arrays.asList(PRIV_EDIT_CONNECTOR, PRIV_CREATE_CONNECTOR))
-			.isEmpty();
-	}
+  @Override
+  protected boolean canView(SectionInfo info) {
+    return !aclService
+        .filterNonGrantedPrivileges(Arrays.asList(PRIV_EDIT_CONNECTOR, PRIV_CREATE_CONNECTOR))
+        .isEmpty();
+  }
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
-	{
-		return SettingsList.asLinkOrNull(SettingsList.connectorSettings());
-	}
+  @Override
+  protected HtmlLinkState getShowEntitiesLink(SectionInfo info) {
+    return SettingsList.asLinkOrNull(SettingsList.connectorSettings());
+  }
 }

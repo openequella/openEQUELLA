@@ -1,0 +1,39 @@
+<com.tle.beans.entity.DynaCollection>
+  <id>216086</id>
+  <uuid>00a1109f-a59d-0297-65cd-b45062b1bdd5</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-10-17 11:10:42.297</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 16:21:27.597</dateCreated>
+  <name>
+    <id>216087</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216088</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>OAI Dynamic Collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <usageIds>
+    <string>oaiUsage</string>
+  </usageIds>
+  <freetextQuery>OAIEndpointTest</freetextQuery>
+  <itemDefs>
+    <com.tle.beans.ItemDefinitionScript>
+      <entity entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="d9615562-3e3e-43bc-8fb5-8867c25285ef"/>
+    </com.tle.beans.ItemDefinitionScript>
+  </itemDefs>
+  <schemas>
+    <com.tle.beans.SchemaScript>
+      <entity entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+    </com.tle.beans.SchemaScript>
+  </schemas>
+</com.tle.beans.entity.DynaCollection>

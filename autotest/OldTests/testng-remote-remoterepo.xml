@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite remoterepo" parallel="instances" data-provider-thread-count="4" thread-count="8" configfailurepolicy="continue">
+	<test name="Remote Repo Tests">
+		<packages>
+			<package name="com.tle.webtests.remotetest.contribute.remoterepo" />
+		</packages>
+	</test>
+</suite>

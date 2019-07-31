@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,20 +18,9 @@
 
 package com.tle.admin.harvester.tool;
 
-import java.awt.Component;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Date;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
-import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.DateSelector;
@@ -38,199 +29,187 @@ import com.tle.admin.harvester.standard.HarvesterPlugin;
 import com.tle.admin.i18n.Lookup;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.RemoteHarvesterProfileService;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
+import java.awt.Component;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 @SuppressWarnings("nls")
-public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> implements ActionListener
-{
-	private HarvesterPlugin<?> plugin;
-	protected JNameValuePanel namePanel;
+public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> implements ActionListener {
+  private HarvesterPlugin<?> plugin;
+  protected JNameValuePanel namePanel;
 
-	private final JButton runBtn;
-	private final JButton testBtn;
+  private final JButton runBtn;
+  private final JButton testBtn;
 
-	private final HarvesterProfileEditor editor;
+  private final HarvesterProfileEditor editor;
 
-	private final DateSelector dateSelect;
+  private final DateSelector dateSelect;
 
-	private static StringLookup lookup = Lookup.lookup.prefix("actionstab");
-	@Override
-	public void setDriver(Driver driver)
-	{
-		super.setDriver(driver);
-		plugin.setDriver(driver);
-	}
+  private static StringLookup lookup = Lookup.lookup.prefix("actionstab");
 
-	public HarvesterActionsTab(HarvesterProfileEditor editor)
-	{
-		dateSelect = new DateSelector();
+  @Override
+  public void setDriver(Driver driver) {
+    super.setDriver(driver);
+    plugin.setDriver(driver);
+  }
 
-		JPanel runPanel = new JPanel();
-		JPanel testPanel = new JPanel();
+  public HarvesterActionsTab(HarvesterProfileEditor editor) {
+    dateSelect = new DateSelector();
 
-		runBtn = new JButton(lookup.text("run"));
-		testBtn = new JButton(lookup.text("test"));
+    JPanel runPanel = new JPanel();
+    JPanel testPanel = new JPanel();
 
-		runBtn.addActionListener(this);
-		testBtn.addActionListener(this);
+    runBtn = new JButton(lookup.text("run"));
+    testBtn = new JButton(lookup.text("test"));
 
-		putBtnOnPanel(runPanel, runBtn);
-		putBtnOnPanel(testPanel, testBtn);
+    runBtn.addActionListener(this);
+    testBtn.addActionListener(this);
 
-		namePanel = new JNameValuePanel();
+    putBtnOnPanel(runPanel, runBtn);
+    putBtnOnPanel(testPanel, testBtn);
 
-		namePanel.addNameAndComponent(lookup.text("lastdate"), dateSelect);
-		namePanel.addNameAndComponent(lookup.text("testlabel"), testPanel);
-		namePanel.addNameAndComponent(lookup.text("runnow"), runPanel);
+    namePanel = new JNameValuePanel();
 
-		this.editor = editor;
-	}
+    namePanel.addNameAndComponent(lookup.text("lastdate"), dateSelect);
+    namePanel.addNameAndComponent(lookup.text("testlabel"), testPanel);
+    namePanel.addNameAndComponent(lookup.text("runnow"), runPanel);
 
-	private void putBtnOnPanel(JPanel aPanel, JButton aButton)
-	{
-		final int width = aButton.getPreferredSize().width;
-		final int height = aButton.getPreferredSize().height;
+    this.editor = editor;
+  }
 
-		final int[] rows = {height};
-		final int[] cols = {width, TableLayout.FILL};
+  private void putBtnOnPanel(JPanel aPanel, JButton aButton) {
+    final int width = aButton.getPreferredSize().width;
+    final int height = aButton.getPreferredSize().height;
 
-		aPanel.setLayout(new TableLayout(rows, cols, 5, 5));
-		aPanel.add(aButton, new Rectangle(0, 0, 1, 1));
-	}
+    final int[] rows = {height};
+    final int[] cols = {width, TableLayout.FILL};
 
-	@Override
-	public String getTitle()
-	{
-		return lookup.text("name");
-	}
+    aPanel.setLayout(new TableLayout(rows, cols, 5, 5));
+    aPanel.add(aButton, new Rectangle(0, 0, 1, 1));
+  }
 
-	@Override
-	public void init(Component parent)
-	{
-		TableLayout layout = new TableLayout(new int[]{TableLayout.FILL}, new int[]{TableLayout.DOUBLE_FILL,
-				TableLayout.FILL});
-		layout.setColumnSize(1, 0);
-		setLayout(layout);
-		add(namePanel.getComponent(), new Rectangle(0, 0, 1, 1));
-	}
+  @Override
+  public String getTitle() {
+    return lookup.text("name");
+  }
 
-	@Override
-	public void load()
-	{
-		final HarvesterProfile havProfile = state.getEntity();
+  @Override
+  public void init(Component parent) {
+    TableLayout layout =
+        new TableLayout(
+            new int[] {TableLayout.FILL}, new int[] {TableLayout.DOUBLE_FILL, TableLayout.FILL});
+    layout.setColumnSize(1, 0);
+    setLayout(layout);
+    add(namePanel.getComponent(), new Rectangle(0, 0, 1, 1));
+  }
 
-		Date lastRun = havProfile.getLastRun();
-		if( lastRun == null )
-		{
-			lastRun = new Date(0);
-		}
+  @Override
+  public void load() {
+    final HarvesterProfile havProfile = state.getEntity();
 
-		dateSelect.setDate(lastRun);
-	}
+    Date lastRun = havProfile.getLastRun();
+    if (lastRun == null) {
+      lastRun = new Date(0);
+    }
 
-	@Override
-	public void save()
-	{
-		final HarvesterProfile havProfile = state.getEntity();
+    dateSelect.setDate(lastRun);
+  }
 
-		Date lastRun = dateSelect.getDate();
-		if( lastRun == null )
-		{
-			lastRun = new Date(0);
-		}
+  @Override
+  public void save() {
+    final HarvesterProfile havProfile = state.getEntity();
 
-		havProfile.setLastRun(lastRun);
-	}
+    Date lastRun = dateSelect.getDate();
+    if (lastRun == null) {
+      lastRun = new Date(0);
+    }
 
-	public void setPlugin(HarvesterPlugin<?> plugin)
-	{
-		this.plugin = plugin;
-	}
+    havProfile.setLastRun(lastRun);
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		// Nothing to do here
-	}
+  public void setPlugin(HarvesterPlugin<?> plugin) {
+    this.plugin = plugin;
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		Object src = e.getSource();
-		if( src.equals(runBtn) )
-		{
-			int option = JOptionPane.showConfirmDialog(namePanel.getComponent(), lookup.text("alert"), lookup.text("sure"),
-				JOptionPane.YES_NO_OPTION);
+  @Override
+  public void validation() throws EditorException {
+    // Nothing to do here
+  }
 
-			if( option == JOptionPane.YES_OPTION )
-			{
-				if( validateAndSave() )
-				{
-					final HarvesterProfile havProfile = state.getEntity();
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    Object src = e.getSource();
+    if (src.equals(runBtn)) {
+      int option =
+          JOptionPane.showConfirmDialog(
+              namePanel.getComponent(),
+              lookup.text("alert"),
+              lookup.text("sure"),
+              JOptionPane.YES_NO_OPTION);
 
-					RemoteHarvesterProfileService harvesterService = clientService
-						.getService(RemoteHarvesterProfileService.class);
-					harvesterService.startHarvesterTask(havProfile.getUuid(), true);
+      if (option == JOptionPane.YES_OPTION) {
+        if (validateAndSave()) {
+          final HarvesterProfile havProfile = state.getEntity();
 
-					JOptionPane.showMessageDialog(namePanel.getComponent(), lookup.text("running"));
-				}
-			}
-		}
-		else if( src.equals(testBtn) )
-		{
-			testCurrentHarvester();
-		}
-	}
+          RemoteHarvesterProfileService harvesterService =
+              clientService.getService(RemoteHarvesterProfileService.class);
+          harvesterService.startHarvesterTask(havProfile.getUuid(), true);
 
-	private void testCurrentHarvester()
-	{
-		if( validateAndSave() )
-		{
-			final HarvesterProfile havProfile = state.getEntity();
-			final RemoteHarvesterProfileService harvesterService = clientService
-				.getService(RemoteHarvesterProfileService.class);
+          JOptionPane.showMessageDialog(namePanel.getComponent(), lookup.text("running"));
+        }
+      }
+    } else if (src.equals(testBtn)) {
+      testCurrentHarvester();
+    }
+  }
 
-			GlassSwingWorker<?> worker = new GlassSwingWorker<Integer>()
-			{
-				@Override
-				public Integer construct() throws Exception
-				{
-					return harvesterService.testProfile(havProfile.getUuid());
-				}
+  private void testCurrentHarvester() {
+    if (validateAndSave()) {
+      final HarvesterProfile havProfile = state.getEntity();
+      final RemoteHarvesterProfileService harvesterService =
+          clientService.getService(RemoteHarvesterProfileService.class);
 
-				@Override
-				public void finished()
-				{
-					JOptionPane.showMessageDialog(namePanel.getComponent(), lookup.text("testpass", get()));
-				}
+      GlassSwingWorker<?> worker =
+          new GlassSwingWorker<Integer>() {
+            @Override
+            public Integer construct() throws Exception {
+              return harvesterService.testProfile(havProfile.getUuid());
+            }
 
-				@Override
-				public void exception()
-				{
-					Exception ex = getException();
-					ex.printStackTrace();
-					Driver.displayInformation(HarvesterActionsTab.this.getComponent(),
-							lookup.text("testfailed", ex.getMessage()));
-				}
-			};
-			worker.setComponent(namePanel.getComponent());
-			worker.start();
-		}
-	}
+            @Override
+            public void finished() {
+              JOptionPane.showMessageDialog(
+                  namePanel.getComponent(), lookup.text("testpass", get()));
+            }
 
-	private boolean validateAndSave()
-	{
-		try
-		{
-			editor.validation();
-			editor.save();
-			return true;
-		}
-		catch( EditorException ex )
-		{
-			JOptionPane.showMessageDialog(namePanel.getComponent(), ex.getLocalizedMessage());
-			return false;
-		}
-	}
+            @Override
+            public void exception() {
+              Exception ex = getException();
+              ex.printStackTrace();
+              Driver.displayInformation(
+                  HarvesterActionsTab.this.getComponent(),
+                  lookup.text("testfailed", ex.getMessage()));
+            }
+          };
+      worker.setComponent(namePanel.getComponent());
+      worker.start();
+    }
+  }
+
+  private boolean validateAndSave() {
+    try {
+      editor.validation();
+      editor.save();
+      return true;
+    } catch (EditorException ex) {
+      JOptionPane.showMessageDialog(namePanel.getComponent(), ex.getLocalizedMessage());
+      return false;
+    }
+  }
 }

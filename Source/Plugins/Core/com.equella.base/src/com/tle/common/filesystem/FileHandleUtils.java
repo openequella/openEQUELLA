@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,34 +23,28 @@ import com.tle.common.Check;
 import com.tle.common.PathUtils;
 
 @NonNullByDefault
-public final class FileHandleUtils
-{
-	private static final int NUMBER_OF_FOLDERS = 128;
+public final class FileHandleUtils {
+  private static final int NUMBER_OF_FOLDERS = 128;
 
-	public static String getBucketFolder(Object id)
-	{
-		final int folder = id.hashCode() & (NUMBER_OF_FOLDERS - 1);
-		return Integer.toString(folder);
-	}
+  public static String getBucketFolder(Object id) {
+    final int folder = id.hashCode() & (NUMBER_OF_FOLDERS - 1);
+    return Integer.toString(folder);
+  }
 
-	public static String getHashedPath(Object id)
-	{
-		return PathUtils.filePath(getBucketFolder(id), id.toString());
-	}
+  public static String getHashedPath(Object id) {
+    return PathUtils.filePath(getBucketFolder(id), id.toString());
+  }
 
-	@SuppressWarnings("nls")
-	public static void checkPath(String path)
-	{
-		Check.checkNotEmpty(path);
+  @SuppressWarnings("nls")
+  public static void checkPath(String path) {
+    Check.checkNotEmpty(path);
 
-		if( path.indexOf("..") >= 0 )
-		{
-			throw new IllegalArgumentException("Argument must not contain parent reference");
-		}
-	}
+    if (path.indexOf("..") >= 0) {
+      throw new IllegalArgumentException("Argument must not contain parent reference");
+    }
+  }
 
-	private FileHandleUtils()
-	{
-		throw new Error();
-	}
+  private FileHandleUtils() {
+    throw new Error();
+  }
 }

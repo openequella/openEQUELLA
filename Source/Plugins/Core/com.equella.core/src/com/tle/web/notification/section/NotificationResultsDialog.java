@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.notification.section;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.inject.Inject;
 import com.tle.annotation.NonNullByDefault;
@@ -44,71 +43,70 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.RendererConstants;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.util.ArrayList;
+import java.util.List;
 
 @NonNullByDefault
 @Bind
-public class NotificationResultsDialog extends AbstractBulkResultsDialog<ItemNotificationId>
-{
-	@PlugKey("opresults.count")
-	private static String OPRESULTS_COUNT_KEY;
+public class NotificationResultsDialog extends AbstractBulkResultsDialog<ItemNotificationId> {
+  @PlugKey("opresults.count")
+  private static String OPRESULTS_COUNT_KEY;
 
-	@Inject
-	private NotificationService notificationService;
-	@Inject
-	private ItemService itemService;
+  @Inject private NotificationService notificationService;
+  @Inject private ItemService itemService;
 
-	@TreeLookup
-	private AbstractBulkSelectionSection<ItemNotificationId> selectionSection;
+  @TreeLookup private AbstractBulkSelectionSection<ItemNotificationId> selectionSection;
 
-	@Override
-	protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(SectionTree tree, String parentId)
-	{
-		// there are no bulk operations for notifications
-		return new DynamicHtmlListModel<OperationInfo>()
-		{
-			@Nullable
-			@Override
-			protected Iterable<OperationInfo> populateModel(SectionInfo info)
-			{
-				return null;
-			}
-		};
-	}
+  @Override
+  protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(
+      SectionTree tree, String parentId) {
+    // there are no bulk operations for notifications
+    return new DynamicHtmlListModel<OperationInfo>() {
+      @Nullable
+      @Override
+      protected Iterable<OperationInfo> populateModel(SectionInfo info) {
+        return null;
+      }
+    };
+  }
 
-	@Override
-	protected Label getOpResultCountLabel(int totalSelections)
-	{
-		return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
-	}
+  @Override
+  protected Label getOpResultCountLabel(int totalSelections) {
+    return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
+  }
 
-	@Override
-	protected List<SelectionRow> getRows(List<ItemNotificationId> pageOfIds)
-	{
-		List<SelectionRow> rows = new ArrayList<SelectionRow>();
-		for( ItemNotificationId noteId : pageOfIds )
-		{
-			Notification itemNotification = notificationService.getNotification(noteId.getNotificationId());
-			Item item = itemService.get(noteId);
+  @Override
+  protected List<SelectionRow> getRows(List<ItemNotificationId> pageOfIds) {
+    List<SelectionRow> rows = new ArrayList<SelectionRow>();
+    for (ItemNotificationId noteId : pageOfIds) {
+      Notification itemNotification =
+          notificationService.getNotification(noteId.getNotificationId());
+      Item item = itemService.get(noteId);
 
-			String itemName = CurrentLocale.get(item.getName(), item.getUuid());
-			String reason = itemNotification.getReason();
-			WebNotificationExtension extension = (WebNotificationExtension) notificationService
-				.getExtensionForType(reason);
-			Label reasonLabel = extension.getReasonFilterLabel(reason);
-			Label description = new TextLabel(itemName + " - " + reasonLabel.getText()); //$NON-NLS-1$
-			// TODO: reason is different from dialog to item list
-			rows.add(new SelectionRow(description, new HtmlComponentState(RendererConstants.LINK, events
-				.getNamedHandler("removeSelection", noteId.getUuid(), //$NON-NLS-1$
-					noteId.getVersion(), noteId.getNotificationId()))));
-		}
+      String itemName = CurrentLocale.get(item.getName(), item.getUuid());
+      String reason = itemNotification.getReason();
+      WebNotificationExtension extension =
+          (WebNotificationExtension) notificationService.getExtensionForType(reason);
+      Label reasonLabel = extension.getReasonFilterLabel(reason);
+      Label description = new TextLabel(itemName + " - " + reasonLabel.getText()); // $NON-NLS-1$
+      // TODO: reason is different from dialog to item list
+      rows.add(
+          new SelectionRow(
+              description,
+              new HtmlComponentState(
+                  RendererConstants.LINK,
+                  events.getNamedHandler(
+                      "removeSelection",
+                      noteId.getUuid(), // $NON-NLS-1$
+                      noteId.getVersion(),
+                      noteId.getNotificationId()))));
+    }
 
-		return rows;
-	}
+    return rows;
+  }
 
-	@EventHandlerMethod
-	public void removeSelection(SectionInfo info, String uuid, int version, long activationId)
-	{
-		selectionSection.removeSelection(info, new ItemNotificationId(uuid, version, activationId));
-	}
-
+  @EventHandlerMethod
+  public void removeSelection(SectionInfo info, String uuid, int version, long activationId) {
+    selectionSection.removeSelection(info, new ItemNotificationId(uuid, version, activationId));
+  }
 }

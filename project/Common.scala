@@ -23,10 +23,11 @@ object Common {
   }
 
   private val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
-  private val configFile = sys.props.get("config.file").getOrElse("build.conf")
-  val buildConfig = ConfigFactory.load(ConfigFactory.parseFile(file(configFile))).withFallback(defaultConfig)
+  private val configFile    = sys.props.get("config.file").getOrElse("build.conf")
+  val buildConfig =
+    ConfigFactory.load(ConfigFactory.parseFile(file(configFile))).withFallback(defaultConfig)
 
-  def loadLangProperties(f: File, prefix: String, group: String) : LangStrings = {
+  def loadLangProperties(f: File, prefix: String, group: String): LangStrings = {
     val p = new Properties()
 
     Using.fileInputStream(f) { finp =>
@@ -34,13 +35,14 @@ object Common {
       if (xml) p.loadFromXML(finp) else p.load(finp)
       val s = p.asScala.map {
         case (k, v) if k.startsWith("/") => k.substring(1) -> v
-        case (k, v) => prefix+k -> v
+        case (k, v)                      => prefix + k     -> v
       }
       LangStrings(group, xml, s.toMap)
     }
   }
 
-  val pluginElemOrder = Seq("doc", "attributes", "requires", "runtime", "extension-point", "extension")
+  val pluginElemOrder =
+    Seq("doc", "attributes", "requires", "runtime", "extension-point", "extension")
 
   def insertPluginChildElement(pluginElem: Element, childName: String): Element = {
 
@@ -48,7 +50,8 @@ object Common {
 
     @tailrec
     def insertionPoint(elems: List[Element], insertIndex: Int): Int = elems match {
-      case elem :: tail if pluginElemOrder.indexOf(elem.getName) < orderNum => insertionPoint(tail, pluginElem.indexOf(elem)+1)
+      case elem :: tail if pluginElemOrder.indexOf(elem.getName) < orderNum =>
+        insertionPoint(tail, pluginElem.indexOf(elem) + 1)
       case _ => insertIndex
     }
     val rt = new Element(childName)
@@ -56,13 +59,23 @@ object Common {
     rt
   }
 
-  def runYarn(script: String, dir: File): Unit = {
+  def nodeScript(script: String, dir: File): Unit = {
     val os = sys.props("os.name").toLowerCase
     val precmd = os match {
       case x if x contains "windows" => Seq("cmd", "/C")
-      case _ => Seq.empty
+      case _                         => Seq.empty
     }
-    if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
-      sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
+    if (Process(precmd ++ Seq("npm", "run", script), dir).! > 0)
+      sys.error(s"Running node script '$script' in dir ${dir.absolutePath} failed")
+  }
+
+  def nodeInstall(dir: File): Unit = {
+    val os = sys.props("os.name").toLowerCase
+    val precmd = os match {
+      case x if x contains "windows" => Seq("cmd", "/C")
+      case _                         => Seq.empty
+    }
+    if (Process(precmd ++ Seq("npm", "install"), dir).! > 0)
+      sys.error(s"Running node install in dir ${dir.absolutePath} failed")
   }
 }

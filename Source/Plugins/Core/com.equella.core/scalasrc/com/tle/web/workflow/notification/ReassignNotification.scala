@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,17 +26,20 @@ import javax.inject.{Inject, Singleton}
 
 @Bind
 @Singleton
-class ReassignNotification extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class ReassignNotification
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
   type N = ReassignNoteModel
   @Inject
   var userService: UserService = _
 
-  case class ReassignNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification with OwnerLookup
-  {
+  case class ReassignNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item)
+      extends TaskNotification
+      with OwnerLookup {
     def group = StdNotificationGroup("notification-reassigned.ftl", note.getReason)
   }
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, ReassignNoteModel(new LazyUserLookup(userService)))
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createDataIgnore(notes, ReassignNoteModel(new LazyUserLookup(userService)))
 }
-
-

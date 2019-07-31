@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,54 +18,49 @@
 
 package com.tle.core.item.standard.operations;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.Item;
+import java.util.HashSet;
+import java.util.Set;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public class ModifyCollaboratorsOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
-	private boolean remove;
-	private boolean bulkAdd;
-	private String user;
-	private Set<String> allCollabs;
+  private boolean remove;
+  private boolean bulkAdd;
+  private String user;
+  private Set<String> allCollabs;
 
-	@AssistedInject
-	private ModifyCollaboratorsOperation(@Assisted Set<String> allCollabs)
-	{
-		this.allCollabs = allCollabs;
-		this.bulkAdd = true;
-	}
+  @AssistedInject
+  private ModifyCollaboratorsOperation(@Assisted Set<String> allCollabs) {
+    this.allCollabs = allCollabs;
+    this.bulkAdd = true;
+  }
 
-	@AssistedInject
-	private ModifyCollaboratorsOperation(@Assisted String user, @Assisted boolean remove)
-	{
-		this.user = user;
-		this.remove = remove;
-	}
+  @AssistedInject
+  private ModifyCollaboratorsOperation(@Assisted String user, @Assisted boolean remove) {
+    this.user = user;
+    this.remove = remove;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Item item = getItem();
+  @Override
+  public boolean execute() {
+    Item item = getItem();
 
-		if( bulkAdd )
-		{
-			Set<String> newAndOld = new HashSet<String>(allCollabs);
-			newAndOld.addAll(item.getCollaborators());
-			item.setCollaborators(newAndOld);
-			params.setUpdateSecurity(true);
-			return true;
-		}
+    if (bulkAdd) {
+      Set<String> newAndOld = new HashSet<String>(allCollabs);
+      newAndOld.addAll(item.getCollaborators());
+      item.setCollaborators(newAndOld);
+      params.setUpdateSecurity(true);
+      return true;
+    }
 
-		// Add or remove a single collaborator
-		Set<String> collabs = item.getCollaborators();
-		boolean success = remove ? collabs.remove(user) : collabs.add(user);
-		params.setUpdateSecurity(success);
-		return success;
-	}
+    // Add or remove a single collaborator
+    Set<String> collabs = item.getCollaborators();
+    boolean success = remove ? collabs.remove(user) : collabs.add(user);
+    params.setUpdateSecurity(success);
+    return success;
+  }
 }

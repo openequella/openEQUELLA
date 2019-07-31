@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    identifier="MultipleAnswer-choice-materials" title="Applications of materials" adaptive="false" timeDependent="false">
+    <responseDeclaration identifier="RESPONSE" cardinality="multiple" baseType="identifier">
+        <correctResponse>
+            <value>A</value>
+            <value>I</value>
+        </correctResponse>
+        <mapping lowerBound="0" upperBound="2" defaultValue="0">
+            <mapEntry mapKey="A" mappedValue="1"/>
+            <mapEntry mapKey="I" mappedValue="1"/>
+        </mapping>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="2.0"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+        <choiceInteraction responseIdentifier="RESPONSE" shuffle="true" maxChoices="0">
+            <prompt>Select the application(s) for which aluminium alloy is most suitable:</prompt>
+            <simpleChoice identifier="A" fixed="false">Aircraft</simpleChoice>
+            <simpleChoice identifier="I" fixed="false">Irrigation pipes</simpleChoice>
+            <simpleChoice identifier="C" fixed="false">Cultivator tines</simpleChoice>
+            <simpleChoice identifier="R" fixed="false">Racing cars</simpleChoice>
+        </choiceInteraction>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK">
+                Yes, that's correct.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No">
+                No, that's not correct.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <mapResponse identifier="RESPONSE"/>
+                </setOutcomeValue>
+                <responseCondition>
+                    <responseIf>
+                        <equal toleranceMode="exact">
+                            <variable identifier="SCORE"/>
+                            <baseValue baseType="float">2.0</baseValue>
+                        </equal>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">OK</baseValue>
+                        </setOutcomeValue>
+                    </responseIf>
+                    <responseElse>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">No</baseValue>
+                        </setOutcomeValue>
+                    </responseElse>
+                </responseCondition>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

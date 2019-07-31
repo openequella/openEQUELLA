@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,32 +24,27 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.core.search.VirtualisableAndValue;
 
-public abstract class VirtualisationHelper<T>
-{
-	public abstract SearchSet getSearchSet(T obj);
+public abstract class VirtualisationHelper<T> {
+  public abstract SearchSet getSearchSet(T obj);
 
-	public abstract T newFromPrototypeForValue(T obj, String value);
+  public abstract T newFromPrototypeForValue(T obj, String value);
 
-	public VirtualisableAndValue<T> newVirtualisedPathFromPrototypeForValue(T obj, String value, int count)
-	{
-		return new VirtualisableAndValue<T>(newFromPrototypeForValue(obj, value), value, count);
-	}
+  public VirtualisableAndValue<T> newVirtualisedPathFromPrototypeForValue(
+      T obj, String value, int count) {
+    return new VirtualisableAndValue<T>(newFromPrototypeForValue(obj, value), value, count);
+  }
 
-	public LanguageBundle newLanguageBundleForValue(LanguageBundle bundle, String value)
-	{
-		bundle = LanguageBundle.clone(bundle);
-		if( !LangUtils.isEmpty(bundle) )
-		{
-			for( LanguageString ls : bundle.getStrings().values() )
-			{
-				ls.setText(modifyString(ls.getText(), value));
-			}
-		}
-		return bundle;
-	}
+  public LanguageBundle newLanguageBundleForValue(LanguageBundle bundle, String value) {
+    bundle = LanguageBundle.clone(bundle);
+    if (!LangUtils.isEmpty(bundle)) {
+      for (LanguageString ls : bundle.getStrings().values()) {
+        ls.setText(modifyString(ls.getText(), value));
+      }
+    }
+    return bundle;
+  }
 
-	protected String modifyString(String text, String value)
-	{
-		return text;
-	}
+  protected String modifyString(String text, String value) {
+    return text;
+  }
 }

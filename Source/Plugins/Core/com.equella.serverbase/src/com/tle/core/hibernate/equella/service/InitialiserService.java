@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,15 +20,14 @@ package com.tle.core.hibernate.equella.service;
 
 import java.util.function.Function;
 
-public interface InitialiserService
-{
-	<T> T unwrapHibernate(T object);
+public interface InitialiserService {
+  <T> T unwrapHibernate(T object);
 
-	<T> T initialise(T object);
+  <T> T initialise(T object);
 
-	<T> T initialise(T object, InitialiserCallback callback);
+  <T> T initialise(T object, InitialiserCallback callback);
 
-	void initialiseClones(Object item);
+  void initialiseClones(Object item);
 
-	<T> Function<T, T> createCloner(ClassLoader classLoader);
+  <T> Function<T, T> createCloner(ClassLoader classLoader);
 }

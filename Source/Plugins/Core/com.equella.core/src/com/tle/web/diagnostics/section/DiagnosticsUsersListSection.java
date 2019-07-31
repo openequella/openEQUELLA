@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.diagnostics.section;
-
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
@@ -56,226 +54,185 @@ import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class DiagnosticsUsersListSection extends AbstractPrototypeSection<DiagnosticsUsersListSection.Model>
-	implements
-		HtmlRenderer
-{
-	@PlugKey("diagnostics.title")
-	private static Label LABEL_TITLE;
+public class DiagnosticsUsersListSection
+    extends AbstractPrototypeSection<DiagnosticsUsersListSection.Model> implements HtmlRenderer {
+  @PlugKey("diagnostics.title")
+  private static Label LABEL_TITLE;
 
-	@PlugKey("no.group.found")
-	private static Label LABEL_NO_GROUP_FOUND;
-	@PlugKey("no.user.found")
-	private static Label LABEL_NO_USER_FOUND;
+  @PlugKey("no.group.found")
+  private static Label LABEL_NO_GROUP_FOUND;
 
-	@PlugKey("table.gropus.prefix")
-	private static Label GROUP_PREFIX;
+  @PlugKey("no.user.found")
+  private static Label LABEL_NO_USER_FOUND;
 
-	@PlugKey("table.users.prefix")
-	private static Label USER_PREFIX;
+  @PlugKey("table.gropus.prefix")
+  private static Label GROUP_PREFIX;
 
-	@ViewFactory
-	private FreemarkerFactory freemarkerFactory;
-	@Component(name = "g")
-	private Button groupsDialog;
-	@Component(name = "u")
-	private Button usersDialog;
+  @PlugKey("table.users.prefix")
+  private static Label USER_PREFIX;
 
-	@Inject
-	private UserService userService;
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+  @ViewFactory private FreemarkerFactory freemarkerFactory;
 
-	@Inject
-	@Component
-	private SelectUserDialog userGroupsDialog;
+  @Component(name = "g")
+  private Button groupsDialog;
 
-	@Inject
-	@Component
-	private SelectGroupDialog selectGroupDialog;
+  @Component(name = "u")
+  private Button usersDialog;
 
-	@Component
-	private SelectionsTable groupsTable;
+  @Inject private UserService userService;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-	@Component
-	private Table usersTable;
+  @Inject @Component private SelectUserDialog userGroupsDialog;
 
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @Inject @Component private SelectGroupDialog selectGroupDialog;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setTitle(LABEL_TITLE);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
+  @Component private SelectionsTable groupsTable;
 
-		return freemarkerFactory.createResult("diagnostics.ftl", context);
-	}
+  @Component private Table usersTable;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		userLinkSection = userLinkService.register(tree, id);
-		groupsTable.setFilterable(true);
-		usersTable.setFilterable(true);
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		getUserGroupsDialog().setAjax(true);
-		getUserGroupsDialog().setMultipleUsers(false);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setTitle(LABEL_TITLE);
+    Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
-		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
-		userGroupsDialog.setOkCallback(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("getGroups"), inplace, "usergroups"));
+    return freemarkerFactory.createResult("diagnostics.ftl", context);
+  }
 
-		getSelectGroupDialog().setAjax(true);
-		getSelectGroupDialog().setMultipleGroups(false);
-		getSelectGroupDialog().setOkCallback(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("getMembers"), inplace, "groupmembers"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    userLinkSection = userLinkService.register(tree, id);
+    groupsTable.setFilterable(true);
+    usersTable.setFilterable(true);
 
-	@EventHandlerMethod
-	public void getGroups(SectionInfo info, String usersJson) throws Exception
-	{
-		final SelectedUser selectedUser = SelectUserDialog.userFromJsonString(usersJson);
-		final Model model = getModel(info);
+    getUserGroupsDialog().setAjax(true);
+    getUserGroupsDialog().setMultipleUsers(false);
 
-		if( selectedUser != null )
-		{
-			String userId = selectedUser.getUuid();
-			HtmlLinkState userLink = userLinkSection.createLink(info, userId);
-			model.setUserSelected(true);
-			groupsTable.setColumnHeadings(info, GROUP_PREFIX.getText() + " " + userLink.getLabel().getText());
-			List<GroupBean> groups = userService.getGroupsContainingUser(userId);
+    JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
+    userGroupsDialog.setOkCallback(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("getGroups"), inplace, "usergroups"));
 
-			if( groups.size() > 0 )
-			{
-				for( GroupBean group : groups )
-				{
-					groupsTable.addRow(info, group.getName());
-				}
-			}
-			else
-			{
-				groupsTable.addRow(info, LABEL_NO_GROUP_FOUND);
-			}
-		}
-		else
-		{
-			model.setUserSelected(false);
-		}
-	}
+    getSelectGroupDialog().setAjax(true);
+    getSelectGroupDialog().setMultipleGroups(false);
+    getSelectGroupDialog()
+        .setOkCallback(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("getMembers"), inplace, "groupmembers"));
+  }
 
-	@EventHandlerMethod
-	public void getMembers(SectionInfo info, String groupJson) throws Exception
-	{
-		final SelectedGroup selectedGroup = SelectGroupDialog.groupFromJsonString(groupJson);
-		final Model model = getModel(info);
-		if( selectedGroup != null )
-		{
-			model.setGroupSelected(true);
-			String groupId = selectedGroup.getUuid();
+  @EventHandlerMethod
+  public void getGroups(SectionInfo info, String usersJson) throws Exception {
+    final SelectedUser selectedUser = SelectUserDialog.userFromJsonString(usersJson);
+    final Model model = getModel(info);
 
-			final List<UserBean> users = userService.getUsersInGroup(groupId, true);
+    if (selectedUser != null) {
+      String userId = selectedUser.getUuid();
+      HtmlLinkState userLink = userLinkSection.createLink(info, userId);
+      model.setUserSelected(true);
+      groupsTable.setColumnHeadings(
+          info, GROUP_PREFIX.getText() + " " + userLink.getLabel().getText());
+      List<GroupBean> groups = userService.getGroupsContainingUser(userId);
 
-			final TableState usersTableState = usersTable.getState(info);
+      if (groups.size() > 0) {
+        for (GroupBean group : groups) {
+          groupsTable.addRow(info, group.getName());
+        }
+      } else {
+        groupsTable.addRow(info, LABEL_NO_GROUP_FOUND);
+      }
+    } else {
+      model.setUserSelected(false);
+    }
+  }
 
-			usersTableState.setColumnHeadings(USER_PREFIX.getText() + " " + selectedGroup.getDisplayName());
+  @EventHandlerMethod
+  public void getMembers(SectionInfo info, String groupJson) throws Exception {
+    final SelectedGroup selectedGroup = SelectGroupDialog.groupFromJsonString(groupJson);
+    final Model model = getModel(info);
+    if (selectedGroup != null) {
+      model.setGroupSelected(true);
+      String groupId = selectedGroup.getUuid();
 
-			if( users.size() > 0 )
-			{
-				for( UserBean user : users )
-				{
-					usersTableState.addRow(userLinkSection.createLink(info, user.getUniqueID()));
-				}
-			}
-			else
-			{
-				usersTableState.addRow(LABEL_NO_USER_FOUND);
-			}
-		}
-		else
-		{
-			model.setGroupSelected(false);
-		}
-	}
+      final List<UserBean> users = userService.getUsersInGroup(groupId, true);
 
-	public Button getGroupsDialog()
-	{
-		return groupsDialog;
-	}
+      final TableState usersTableState = usersTable.getState(info);
 
-	public Button getUsersDialog()
-	{
-		return usersDialog;
-	}
+      usersTableState.setColumnHeadings(
+          USER_PREFIX.getText() + " " + selectedGroup.getDisplayName());
 
-	@Override
-	public Class<Model> getModelClass()
-	{
-		return Model.class;
-	}
+      if (users.size() > 0) {
+        for (UserBean user : users) {
+          usersTableState.addRow(userLinkSection.createLink(info, user.getUniqueID()));
+        }
+      } else {
+        usersTableState.addRow(LABEL_NO_USER_FOUND);
+      }
+    } else {
+      model.setGroupSelected(false);
+    }
+  }
 
-	/**
-	 * @return the selectUserDialog
-	 */
-	public SelectUserDialog getUserGroupsDialog()
-	{
-		return userGroupsDialog;
-	}
+  public Button getGroupsDialog() {
+    return groupsDialog;
+  }
 
-	/**
-	 * @return the selectGroupDialog
-	 */
-	public SelectGroupDialog getSelectGroupDialog()
-	{
-		return selectGroupDialog;
-	}
+  public Button getUsersDialog() {
+    return usersDialog;
+  }
 
-	/**
-	 * @return the groupsTable
-	 */
-	public SelectionsTable getGroupsTable()
-	{
-		return groupsTable;
-	}
+  @Override
+  public Class<Model> getModelClass() {
+    return Model.class;
+  }
 
-	/**
-	 * @return the usersTable
-	 */
-	public Table getUsersTable()
-	{
-		return usersTable;
-	}
+  /** @return the selectUserDialog */
+  public SelectUserDialog getUserGroupsDialog() {
+    return userGroupsDialog;
+  }
 
-	public static class Model
-	{
-		private boolean userSelected;
-		private boolean groupSelected;
+  /** @return the selectGroupDialog */
+  public SelectGroupDialog getSelectGroupDialog() {
+    return selectGroupDialog;
+  }
 
-		public boolean isUserSelected()
-		{
-			return userSelected;
-		}
+  /** @return the groupsTable */
+  public SelectionsTable getGroupsTable() {
+    return groupsTable;
+  }
 
-		public void setUserSelected(boolean userSelected)
-		{
-			this.userSelected = userSelected;
-		}
+  /** @return the usersTable */
+  public Table getUsersTable() {
+    return usersTable;
+  }
 
-		public boolean isGroupSelected()
-		{
-			return groupSelected;
-		}
+  public static class Model {
+    private boolean userSelected;
+    private boolean groupSelected;
 
-		public void setGroupSelected(boolean groupSelected)
-		{
-			this.groupSelected = groupSelected;
-		}
-	}
+    public boolean isUserSelected() {
+      return userSelected;
+    }
+
+    public void setUserSelected(boolean userSelected) {
+      this.userSelected = userSelected;
+    }
+
+    public boolean isGroupSelected() {
+      return groupSelected;
+    }
+
+    public void setGroupSelected(boolean groupSelected) {
+      this.groupSelected = groupSelected;
+    }
+  }
 }

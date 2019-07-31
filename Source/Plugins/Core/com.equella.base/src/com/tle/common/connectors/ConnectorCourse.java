@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,30 +18,25 @@
 
 package com.tle.common.connectors;
 
-public class ConnectorCourse extends ConnectorFolder
-{
-	private static final long serialVersionUID = 1L;
+public class ConnectorCourse extends ConnectorFolder {
+  private static final long serialVersionUID = 1L;
 
-	private String courseCode;
+  private String courseCode;
 
-	public ConnectorCourse(String id)
-	{
-		super(id, null);
-	}
+  public ConnectorCourse(String id) {
+    super(id, null);
+  }
 
-	@Override
-	public ConnectorCourse getCourse()
-	{
-		return this;
-	}
+  @Override
+  public ConnectorCourse getCourse() {
+    return this;
+  }
 
-	public String getCourseCode()
-	{
-		return courseCode;
-	}
+  public String getCourseCode() {
+    return courseCode;
+  }
 
-	public void setCourseCode(String courseCode)
-	{
-		this.courseCode = courseCode;
-	}
+  public void setCourseCode(String courseCode) {
+    this.courseCode = courseCode;
+  }
 }

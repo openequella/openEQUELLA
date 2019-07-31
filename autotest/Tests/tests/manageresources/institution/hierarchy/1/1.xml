@@ -1,0 +1,93 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>202863</id>
+  <uuid>c93ad696-860f-d5ef-231f-2778682044a3</uuid>
+  <listPosition>0</listPosition>
+  <advancedSearch entityclass="com.tle.beans.entity.PowerSearch" uuid="b157440a-c0b8-a4f0-8718-31eb5876bdd5"/>
+  <keyResources/>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas>
+    <com.tle.beans.SchemaScript>
+      <entity entityclass="com.tle.beans.entity.Schema" uuid="2859a529-d4d4-ad99-9157-1db457ee2313"/>
+    </com.tle.beans.SchemaScript>
+  </addSchemas>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>202866</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202867</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Browse Activity Plans</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <shortDescription>
+    <id>202870</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202871</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This topic area is a temporary place holder allowing you to browse all activity plans.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </shortDescription>
+  <longDescription>
+    <id>202864</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202865</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This topic area is a temporary place holder allowing you to browse all activity plans.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </longDescription>
+  <subtopicsSectionName>
+    <id>202872</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202873</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Subtopics</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </subtopicsSectionName>
+  <resultsSectionName>
+    <id>202868</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202869</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Results</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </resultsSectionName>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

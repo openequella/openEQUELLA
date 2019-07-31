@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,31 +23,26 @@ import com.tle.common.wizard.controls.universal.UniversalSettings;
 
 /**
  * TODO: this should be in it's own plugin!
- * 
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
-public class ITunesUSettings extends UniversalSettings
-{
-	private static final String INSTITUTION_ID = "institutionId";
+public class ITunesUSettings extends UniversalSettings {
+  private static final String INSTITUTION_ID = "institutionId";
 
-	public ITunesUSettings(CustomControl wrapped)
-	{
-		super(wrapped);
-	}
+  public ITunesUSettings(CustomControl wrapped) {
+    super(wrapped);
+  }
 
-	public ITunesUSettings(UniversalSettings settings)
-	{
-		super(settings.getWrapped());
-	}
+  public ITunesUSettings(UniversalSettings settings) {
+    super(settings.getWrapped());
+  }
 
-	public String getInstitutionId()
-	{
-		return (String) wrapped.getAttributes().get(INSTITUTION_ID);
-	}
+  public String getInstitutionId() {
+    return (String) wrapped.getAttributes().get(INSTITUTION_ID);
+  }
 
-	public void setInstitutionId(String institutionId)
-	{
-		wrapped.getAttributes().put(INSTITUTION_ID, institutionId);
-	}
+  public void setInstitutionId(String institutionId) {
+    wrapped.getAttributes().put(INSTITUTION_ID, institutionId);
+  }
 }

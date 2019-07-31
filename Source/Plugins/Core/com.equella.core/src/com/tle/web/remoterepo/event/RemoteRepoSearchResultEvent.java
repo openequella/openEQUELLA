@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,55 +27,48 @@ import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;
 import com.tle.web.sections.equella.search.event.SearchResultsListener;
 
 public class RemoteRepoSearchResultEvent<R extends RemoteRepoSearchResult>
-	extends
-		AbstractSearchResultsEvent<RemoteRepoSearchResultEvent<R>>
-{
-	private final SearchResults<R> results;
+    extends AbstractSearchResultsEvent<RemoteRepoSearchResultEvent<R>> {
+  private final SearchResults<R> results;
 
-	public RemoteRepoSearchResultEvent(SearchResults<R> results)
-	{
-		this.results = results;
-		String errorMessage = results.getErrorMessage();
-		if( !Check.isEmpty(errorMessage) )
-		{
-			setErrored(true);
-			setErrorMessage(errorMessage);
-		}
-	}
+  public RemoteRepoSearchResultEvent(SearchResults<R> results) {
+    this.results = results;
+    String errorMessage = results.getErrorMessage();
+    if (!Check.isEmpty(errorMessage)) {
+      setErrored(true);
+      setErrorMessage(errorMessage);
+    }
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info,
-		SearchResultsListener<RemoteRepoSearchResultEvent<R>> listener) throws Exception
-	{
-		listener.processResults(info, this);
-	}
+  @Override
+  public void fire(
+      SectionId sectionId,
+      SectionInfo info,
+      SearchResultsListener<RemoteRepoSearchResultEvent<R>> listener)
+      throws Exception {
+    listener.processResults(info, this);
+  }
 
-	@Override
-	public int getCount()
-	{
-		return results.getCount();
-	}
+  @Override
+  public int getCount() {
+    return results.getCount();
+  }
 
-	@Override
-	public int getMaximumResults()
-	{
-		return results.getAvailable();
-	}
+  @Override
+  public int getMaximumResults() {
+    return results.getAvailable();
+  }
 
-	@Override
-	public int getOffset()
-	{
-		return results.getOffset();
-	}
+  @Override
+  public int getOffset() {
+    return results.getOffset();
+  }
 
-	public SearchResults<R> getResults()
-	{
-		return results;
-	}
+  public SearchResults<R> getResults() {
+    return results;
+  }
 
-	@Override
-	public int getFilteredOut()
-	{
-		return 0;
-	}
+  @Override
+  public int getFilteredOut() {
+    return 0;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,126 +18,113 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import java.util.Date;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import com.tle.web.api.interfaces.beans.UserBean;
-
+import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class HistoryEventBean extends AbstractExtendableBean
-{
-	private UserBean user;
-	private Date date;
-	private String step;
-	private String toStep;
-	private String stepName;
-	private String toStepName;
-	private String comment;
-	// WTF is this?
-	// private boolean applies;
-	private String type;
-	private String state;
+public class HistoryEventBean extends AbstractExtendableBean {
+  private UserBean user;
+  private Date date;
+  private String step;
+  private String toStep;
+  private String stepName;
+  private String toStepName;
+  private String comment;
+  // WTF is this?
+  // private boolean applies;
+  private String type;
+  private String state;
+  public String impersonatedBy;
 
-	public UserBean getUser()
-	{
-		return user;
-	}
+  public UserBean getUser() {
+    return user;
+  }
 
-	public void setUser(UserBean user)
-	{
-		this.user = user;
-	}
+  public String getImpersonatedBy() {
+    return impersonatedBy;
+  }
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public void setImpersonatedBy(String impersonatedBy) {
+    this.impersonatedBy = impersonatedBy;
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  public void setUser(UserBean user) {
+    this.user = user;
+  }
 
-	public String getStep()
-	{
-		return step;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public void setStep(String step)
-	{
-		this.step = step;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public String getToStep()
-	{
-		return toStep;
-	}
+  public String getStep() {
+    return step;
+  }
 
-	public void setToStep(String toStep)
-	{
-		this.toStep = toStep;
-	}
+  public void setStep(String step) {
+    this.step = step;
+  }
 
-	public String getStepName()
-	{
-		return stepName;
-	}
+  public String getToStep() {
+    return toStep;
+  }
 
-	public void setStepName(String stepName)
-	{
-		this.stepName = stepName;
-	}
+  public void setToStep(String toStep) {
+    this.toStep = toStep;
+  }
 
-	public String getToStepName()
-	{
-		return toStepName;
-	}
+  public String getStepName() {
+    return stepName;
+  }
 
-	public void setToStepName(String toStepName)
-	{
-		this.toStepName = toStepName;
-	}
+  public void setStepName(String stepName) {
+    this.stepName = stepName;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public String getToStepName() {
+    return toStepName;
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public void setToStepName(String toStepName) {
+    this.toStepName = toStepName;
+  }
 
-	// public boolean isApplies()
-	// {
-	// return applies;
-	// }
-	//
-	// public void setApplies(boolean applies)
-	// {
-	// this.applies = applies;
-	// }
+  public String getComment() {
+    return comment;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  // public boolean isApplies()
+  // {
+  // return applies;
+  // }
+  //
+  // public void setApplies(boolean applies)
+  // {
+  // this.applies = applies;
+  // }
 
-	public String getState()
-	{
-		return state;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setState(String state)
-	{
-		this.state = state;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
 }

@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+  <head>
+    <title>Air pressure: particle model</title>
+    <style type="text/css">
+  		TD.contentTopCell DIV.mainContentTop DIV.innerNoSep { padding-top: 15px; padding-bottom: 3px; padding-left: 18px; padding-right: 10px;}
+  		TD.contentTopCell DIV.mainContentTop DIV.innerNoSep DIV.detailsheading { font-weight: bold; padding-bottom: 3px; padding-left: 10px; border-bottom: solid 1px #C2D5E8;}
+  		TD.contentTopCell DIV.mainContentTop DIV.innerNoSep DIV.defaultorgfile {padding-left: 10px; padding-top: 5px;}
+		TD.contentTopCell DIV.mainContentTop DIV.innerNoSep DIV.defaultorgfile DIV.defaultorgfilelink { font-weight: bold; padding-bottom: 5px;}
+
+		DIV.uploadReportContent { margin: 0px; color: black; padding-top: 12px; padding-left: 20px; padding-right: 20px; padding-bottom: 25px;}
+		DIV.uploadReportContent DIV {padding-left: 8px; padding-top: 3px; }
+		DIV.uploadReportContent DIV.validationtype {padding-top: 15px;}
+		DIV.uploadReportContent DIV.uploadUpperNotification { padding-bottom: 3px; border-bottom: solid 1px #C2D5E8; padding-left: 0px;}
+		DIV.leftrightindent { width: auto; padding-left: 17px; padding-right: 10px; padding-top: 0px; }
+		BODY { margin: 0; border: 0; font-family: helvetica, verdana, Sans-Serif; padding: 0; height: 100%; color: Black; background-color: #FFF4E2;}
+		A { padding: 0; color: #003399; background-color: Transparent; font-weight: bold; }
+		DIV.heading {font-weight: bold; padding-left: 20px; padding-top: 20px; padding-bottom: 15px;}
+		DIV.moveup DIV.contentHeading {margin-top: 0px; padding-bottom: 5px; padding-top: 12px;}
+		DIV.moveup {background-color: #FFF4E2; padding-top: 15px; margin-top: -23px; z-index: 30; position: absolute;}
+
+		DIV.viewMetadata{ width: 100%; }
+		DIV.viewMetadata TABLE { border-collapse: collapse; }
+		DIV.viewMetadata TABLE TD { padding: 4px; background-color: white;}
+		DIV.viewMetadata TABLE TH { padding: 4px; background-color: #F8F9FE;}
+		DIV.viewMetadata DIV.metadataSection{ border-bottom: solid #C2D5E8 1px;}
+		DIV.viewMetadata DIV.metadataSubHeading{ border: solid #C2D5E8 1px; background-color: #E7EBF6; padding: 5px 2px 1px 6px; font-weight: bold; }
+		DIV.viewMetadata TH { text-align: right; }
+		DIV.viewMetadata TD, DIV.viewMetadata TH { vertical-align: top; }
+		DIV.viewMetadata UL { padding: 0px; margin: 0px; margin-left: 40px; }
+		DIV.viewMetadata TABLE.md TR.contributor TD, DIV.viewMetadata TABLE.md TR.contributor TH {padding-bottom: 10px;}
+		DIV.viewMetadata SPAN.ititle { font-weight: bold; }
+		DIV.viewMetadata TABLE.md { width: 100%; 	border-left: solid #C2D5E8 1px; border-right: solid #C2D5E8 1px; }
+		DIV.viewMetadata TABLE.md TH, DIV.viewMetadata TABLE.md TD { padding: 5px; }
+		DIV.viewMetadata TABLE.md UL LI {margin-left: -25px;}
+		DIV.ititle { font-weight: bold; }
+
+		DIV.metadataSection TABLE.md TR.metacontributor TD {padding-bottom: 0px;}
+		DIV.metadataSection TABLE.md TR.contributor TD {padding-bottom: 5px;}
+		DIV.metadataSection TABLE.md TD TABLE.contributor {width: 100%;}
+		DIV.metadataSection TABLE.md TD TABLE.position, DIV.metadataSection TABLE.md TD TABLE.temporal {width: 100%;}
+		DIV.metadataSection TABLE.md TD TABLE.contributor TD DIV.contrib {margin-left: -5px; margin-top: -4px;}
+
+		DIV.metadataSection TABLE.md TD TABLE.position TD DIV.details {margin-left: -5px; margin-top: -4px; margin-bottom: 10px; }
+		DIV.metadataSection TABLE.md TD TABLE.temporal TD DIV.details {margin-left: -5px; margin-top: -4px;}
+  
+		DIV.banner{ width: 100%; color: white; background-color: #003366; position: relative;}
+		DIV.banner{ height: 25px; padding: 0px 0px 10px 0px;}
+		DIV.banner DIV.heading{ padding: 10px 0 10px 20px; width: 600px;}
+		DIV.banner DIV.heading SPAN{ font-size: medium; font-weight: bold; color: white; background-color: Transparent;}
+		DIV.contentHeading{ color: black; background-color: #FFF4E2; margin-left: 6px; padding-left: 6px; font-size: medium; font-weight: Bold; padding-bottom: 3px; padding-top: 25px;}
+		DIV.contentOuter{ color: #00519A; background-color: #E7EBF6; border: solid 1px #6699CC; width: 100%; margin-left: 6px; margin-right: 6px; padding-bottom: 14px;}
+		TABLE.contentOuter{ width: 100%;}
+		TD.contentBodyCell DIV.contentBody{ width: 100%;}
+	    
+		A,SPAN,LABEL,UL,LI, P, INPUT, BUTTON, DIV, TABLE, TR, TH, TD, SELECT, TEXTAREA{ font-size:x-small; }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="headingSpacer">
+        <div class="heading">
+          <span>The Le@rning Federation</span>
+        </div>
+      </div>
+    </div>
+    <div class="contentHeading">&#xa0;</div>
+    <div class="contentOuter">
+      <table class="contentOuter" cellspacing="0">
+        <tr>
+          <td class="contentTopCell">
+            <div class="mainContentTop">
+              <div class="innerNoSep">
+                <div class="detailsheading">&#xa0;</div>
+                <div class="defaultorgfile">
+                  <div class="defaultorgfilelink">
+                    <a href="index.html" title="Start: Air pressure: particle model" target="_blank">Start: Air pressure: particle model</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="redundantCell">&#xa0;</td>
+        </tr>
+        <tr valign="top">
+          <td class="contentBodyCell" valign="top">
+            <div class="leftrightindent">
+              <div class="contentBody">
+                <div class="paddingOnly">
+                  <div class="viewMetadata">
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr>
+                          <th>Title:</th>
+                          <td>Air pressure: particle model&#xa0;</td>
+                        </tr>
+                        <tr class="description">
+                          <th>Description:</th>
+                          <td>Experiment with some gas trapped in an air chamber. Notice how the gas is made of particles. Investigate the speed and collisions of the air particles. Discover what happens to them as you change the temperature. Observe how this affects the properties of the gas. For example, measure the change in pressure as you heat the gas. This learning object is one in a series of four objects.&#xa0;
+		</td>
+                        </tr>
+                        <tr>
+                          <th>Topics:</th>
+                          <td>Air pressure; Gases; Kinetic theory; Temperature&#xa0;</td>
+                        </tr>
+                        <tr>
+                          <th>Keywords:</th>
+                          <td>Air pressure, Gases, Kinetic theory, Particle model, Temperature&#xa0;
+			</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr>
+                          <th>Learning area:</th>
+                          <td>Science&#xa0;</td>
+                        </tr>
+                        <tr>
+                          <th>Strand:</th>
+                          <td>Energy and change; Natural and processed materials&#xa0;
+		</td>
+                        </tr>
+                        <tr>
+                          <th>Concept:</th>
+                          <td>&#xa0;
+		</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="20%" />
+                          <col width="20%" />
+                          <col width="35%" />
+                        </colgroup>
+                        <tr>
+                          <th style="white-space: nowrap">Audience user level:</th>
+                          <td>5; 6; 7; 8&#xa0;</td>
+                          <th style="white-space: nowrap">Audience type:</th>
+                          <td>Student&#xa0;</td>
+                        </tr>
+                        <tr>
+                          <th>Age range:</th>
+                          <td>9-14&#xa0;</td>
+                          <th style="white-space: nowrap">Audience sector:</th>
+                          <td>School&#xa0;</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr>
+                          <th>Key learning objectives:</th>
+                          <td>
+                            <ul>
+                              <li>Students describe the particle nature of gases, including the characteristics of the particle motion.</li>
+                              <li>Students use a particle model to explain gas pressure.</li>
+                              <li>Students describe the effects of temperature changes on particle motion, and explain how this affects pressure.</li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr>
+                          <th>Educational value:</th>
+                          <td>
+                            <ul>
+                              <li>Presents an interactive particle model of a gas for students to use to investigate particle movement.</li>
+                              <li>Provides opportunities for students to observe how changes in temperature can affect particles trapped in an air chamber.</li>
+                              <li>Contains a series of multiple-choice questions, requiring students to examine aspects of a particle model simulation.</li>
+                              <li>Provides structured feedback to student responses.</li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr>
+                          <th>Student activity:</th>
+                          <td>Analysis; Experiment; Interactives; Modelling; Multiple choice questions&#xa0;</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="metadataSection">
+                      <table class="md" cellspacing="0">
+                        <colgroup>
+                          <col width="25%" />
+                          <col width="75%" />
+                        </colgroup>
+                        <tr class="contributor">
+                          <th>Contributors:</th>
+                          <td>
+                            <table class="contributor" cellspacing="0">
+                              <colgroup>
+                                <col width="50%" />
+                                <col width="50%" />
+                              </colgroup>
+                              <tr>
+                                <td>
+                                  <div class="contrib">
+                                    <div>
+                                      <span class="ititle">Role:</span>Script writer</div>
+                                    <div>
+                                      <span class="ititle">Entity:</span>Penn  Short; Tyger Eye Design</div>
+                                    <div>
+                                      <span class="ititle">Address:</span>Port Macquarie; NSW; 2444; Australia</div>
+                                  </div>
+                                  <div class="spacerdiv" />
+                                  <div class="contrib">
+                                    <div>
+                                      <span class="ititle">Role:</span>Educational validator</div>
+                                    <div>
+                                      <span class="ititle">Entity:</span>Denis  Goodrum; University of Canberra</div>
+                                    <div>
+                                      <span class="ititle">Address:</span>ACT; NSW; 2601; Australia</div>
+                                    <div>
+                                      <span class="ititle">URL:</span>http://www.canberra.edu.au/</div>
+                                  </div>
+                                  <div class="spacerdiv" />
+                                  <div class="spacerdiv" />
+                                  <div class="contrib">
+                                    <div>
+                                      <span class="ititle">Role:</span>Publisher</div>
+                                    <div>
+                                      <span class="ititle">Entity:</span>Curriculum Corporation; The Le@rning Federation</div>
+                                    <div>
+                                      <span class="ititle">Address:</span>Melbourne; VIC; 3000; Australia</div>
+                                    <div>
+                                      <span class="ititle">URL:</span>http://www.thelearningfederation.edu.au</div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div class="contrib">
+                                    <div>
+                                      <span class="ititle">Role:</span>Subject matter expert</div>
+                                    <div>
+                                      <span class="ititle">Entity:</span>Graham  Coghill</div>
+                                    <div>
+                                      <span class="ititle">Address:</span>Marcus Beach; QLD; 4573; Australia</div>
+                                  </div>
+                                  <div class="spacerdiv" />
+                                  <div class="spacerdiv" />
+                                  <div class="contrib">
+                                    <div>
+                                      <span class="ititle">Role:</span>Technical implementer</div>
+                                    <div>
+                                      <span class="ititle">Entity:</span>Global Vision Media</div>
+                                    <div>
+                                      <span class="ititle">Address:</span>Fitzroy; VIC; 3065; Australia</div>
+                                    <div>
+                                      <span class="ititle">URL:</span>http://www.globalvision.com.au</div>
+                                  </div>
+                                  <div class="spacerdiv" />
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+	<div class="metadataSection">
+		<table class="md" cellspacing="0">
+			<colgroup><col width="25%"/><col width="75%"/></colgroup>
+			<tr class="position">
+			<th>Relation:</th>
+			<td>
+				<table class="position" cellspacing="0">
+				<colgroup>
+					<col width="50%"/>
+					<col width="50%"/>
+				</colgroup>
+					<tr>
+						<td>
+<div class="details"><div><span class="ititle">Kind:</span>isversionof</div><div><span class="ititle">Catalogue:</span>TLF-LearningObject</div><div><span class="ititle">Entry:</span>L2531</div></div><div class="spacerdiv" /><div class="details"><div><span class="ititle">Kind:</span>issiblingof</div><div><span class="ititle">Catalogue:</span>TLF-LearningObject</div><div><span class="ititle">Entry:</span>L10382</div></div><div class="spacerdiv" /><div class="spacerdiv" /><div class="details"><div><span class="ititle">Kind:</span>hasformat</div><div><span class="ititle">Catalogue:</span>URI</div><div><span class="ititle">Entry:</span>support_files/main.jpg</div><div><span class="ititle">Description:</span>Large thumbnail version of current resource</div></div>
+						</td>
+						<td>
+<div class="details"><div><span class="ititle">Kind:</span>issiblingof</div><div><span class="ititle">Catalogue:</span>TLF-LearningObject</div><div><span class="ititle">Entry:</span>L10381</div></div><div class="spacerdiv" /><div class="spacerdiv" /><div class="details"><div><span class="ititle">Kind:</span>issiblingof</div><div><span class="ititle">Catalogue:</span>TLF-LearningObject</div><div><span class="ititle">Entry:</span>L10383</div></div><div class="spacerdiv" />
+						</td>
+					</tr>
+				</table>		
+			</td>
+		</tr>
+		</table>
+	</div>
+<div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Access profile:</th><td>Colour independence; Device independence; Generic; Hearing independence&#xa0;
+			</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Learning resource type:</th><td>Interactive resource&#xa0;
+				</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Format:</th><td>application/xhtml+xml; application/x-shockwave-flash; audio/mpeg; image/jpeg; image/png; text/css; text/xml&#xa0;
+			</td></tr><tr><th>Size:</th><td>233812 bytes
+		</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Browsers:</th><td>Microsoft Internet Explorer 6.0 (MS-Windows) -  7.0(MS-Windows); Firefox 2.0 (MS-Windows); Safari 2.0 (MacOS)&#xa0;
+			</td></tr><tr><th>Plug-ins:</th><td>Adobe Flash Player 9.0&#xa0;
+			</td></tr><tr><th>Operating systems:</th><td>MacOS X; MS-Windows 2000 -  XP&#xa0;
+			</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Catalogue entry:</th><td><div><span class="ititle">Catalogue:</span>SCIS; TLF-LearningObject&#xa0;
+				</div><div><span class="ititle">Entry:</span>1413240; L10380&#xa0;
+				</div></td></tr><tr><th>General language:</th><td>ENGLISH&#xa0;
+			</td></tr><tr><th>Aggregation level:</th><td>2&#xa0;</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Meta-metadata language:</th><td>ENGLISH&#xa0;
+			</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Version notes:</th><td>v.1.0 First public release.</td></tr></table></div><div class="metadataSection"><table class="md" cellspacing="0"><colgroup><col width="25%" /><col width="75%" /></colgroup><tr><th>Rights:</th><td>&#xa9; Curriculum Corporation, 2009, except where indicated under Acknowledgements&#xa0;
+		</td></tr></table></div></div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

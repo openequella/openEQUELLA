@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,24 +22,19 @@ import com.tle.web.portal.section.admin.PortletSearchEvent;
 import com.tle.web.search.filter.AbstractFilterByUserSection;
 import com.tle.web.sections.SectionInfo;
 
-public class FilterPortletByOwnerSection extends AbstractFilterByUserSection<PortletSearchEvent>
-{
-	@Override
-	public void prepareSearch(SectionInfo info, PortletSearchEvent event) throws Exception
-	{
-		event.filterByOwner(getSelectedUserId(info));
-	}
+public class FilterPortletByOwnerSection extends AbstractFilterByUserSection<PortletSearchEvent> {
+  @Override
+  public void prepareSearch(SectionInfo info, PortletSearchEvent event) throws Exception {
+    event.filterByOwner(getSelectedUserId(info));
+  }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "owner"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getPublicParam() {
+    return "owner"; //$NON-NLS-1$
+  }
 
-	@Override
-	public String getAjaxDiv()
-	{
-		return "owner"; //$NON-NLS-1$
-	}
-
+  @Override
+  public String getAjaxDiv() {
+    return "owner"; //$NON-NLS-1$
+  }
 }

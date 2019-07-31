@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,28 @@
 
 package com.tle.web.controls.itunesu;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class ITunesUResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new ITunesUViewableResource(resource, attachment);
-	}
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new ITunesUViewableResource(resource, attachment);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return "equella/attachment-itunesu";
-	}
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return "equella/attachment-itunesu";
+  }
 }

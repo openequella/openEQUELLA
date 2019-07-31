@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,46 +18,36 @@
 
 package com.tle.web.htmleditor;
 
+import com.tle.common.htmleditor.HtmlEditorConfiguration;
 import java.io.Serializable;
 
-import com.tle.common.htmleditor.HtmlEditorConfiguration;
+/** @author Aaron */
+public class HtmlEditorConfigurationEditingSession implements Serializable {
+  private String sessionId;
+  private HtmlEditorConfiguration config;
+  private boolean dirty;
 
-/**
- * @author Aaron
- */
-public class HtmlEditorConfigurationEditingSession implements Serializable
-{
-	private String sessionId;
-	private HtmlEditorConfiguration config;
-	private boolean dirty;
+  public String getSessionId() {
+    return sessionId;
+  }
 
-	public String getSessionId()
-	{
-		return sessionId;
-	}
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
 
-	public void setSessionId(String sessionId)
-	{
-		this.sessionId = sessionId;
-	}
+  public HtmlEditorConfiguration getConfig() {
+    return config;
+  }
 
-	public HtmlEditorConfiguration getConfig()
-	{
-		return config;
-	}
+  public void setConfig(HtmlEditorConfiguration config) {
+    this.config = config;
+  }
 
-	public void setConfig(HtmlEditorConfiguration config)
-	{
-		this.config = config;
-	}
+  public boolean isDirty() {
+    return dirty;
+  }
 
-	public boolean isDirty()
-	{
-		return dirty;
-	}
-
-	public void setDirty(boolean dirty)
-	{
-		this.dirty = dirty;
-	}
+  public void setDirty(boolean dirty) {
+    this.dirty = dirty;
+  }
 }

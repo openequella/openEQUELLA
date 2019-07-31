@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,28 @@
 
 package com.tle.core.institution.convert.importhandler;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.thoughtworks.xstream.XStream;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.institution.convert.XmlHelper;
+import java.util.Iterator;
+import java.util.List;
 
-public class SingleFileImportHandler<T> extends AbstractImportHandler<T>
-{
-	private final List<T> nodes;
+public class SingleFileImportHandler<T> extends AbstractImportHandler<T> {
+  private final List<T> nodes;
 
-	public SingleFileImportHandler(SubTemporaryFile folder, String path, XmlHelper xmlHelper, XStream xstream)
-	{
-		super(xmlHelper, xstream);
-		this.nodes = xmlHelper.readXmlFile(folder, path, getXStream());
-	}
+  public SingleFileImportHandler(
+      SubTemporaryFile folder, String path, XmlHelper xmlHelper, XStream xstream) {
+    super(xmlHelper, xstream);
+    this.nodes = xmlHelper.readXmlFile(folder, path, getXStream());
+  }
 
-	@Override
-	public int getNodeCount()
-	{
-		return nodes.size();
-	}
+  @Override
+  public int getNodeCount() {
+    return nodes.size();
+  }
 
-	@Override
-	public Iterator<T> iterateNodes()
-	{
-		return nodes.iterator();
-	}
+  @Override
+  public Iterator<T> iterateNodes() {
+    return nodes.iterator();
+  }
 }

@@ -1,14 +1,14 @@
 {
   "scripts": {
-    "browserify": "yarn install && browserify index.js -o target/bundle.js"
+    "build": "parcel build index.js --out-dir=target --out-file=bundle.js",
+    "clean": "rm -rf target/ node_modules/",
+    "dev": "parcel watch index.js --out-dir=../target/scala-2.12/classes/web/apidocs --out-file=bundle.js"
   },
   "dependencies": {
-    "swagger-ui": "^3.19.3"
+    "swagger-ui": "3.21.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babelify": "^8.0.0",
-    "browserify": "^16.1.0"
+    "parcel-bundler": "1.12.2"
   }
 }

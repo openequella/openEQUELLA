@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,38 +18,30 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = GenericFileBean.class)
-public class GenericFileBean extends AbstractExtendableBean
-{
-	private String filename;
-	private GenericFileBean parent;
+public class GenericFileBean extends AbstractExtendableBean {
+  private String filename;
+  private GenericFileBean parent;
 
-	public String getFilename()
-	{
-		return filename;
-	}
+  public String getFilename() {
+    return filename;
+  }
 
-	public void setFilename(String filename)
-	{
-		this.filename = filename;
-	}
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
 
-	public GenericFileBean getParent()
-	{
-		return parent;
-	}
+  public GenericFileBean getParent() {
+    return parent;
+  }
 
-	public void setParent(GenericFileBean parent)
-	{
-		this.parent = parent;
-	}
+  public void setParent(GenericFileBean parent) {
+    this.parent = parent;
+  }
 }

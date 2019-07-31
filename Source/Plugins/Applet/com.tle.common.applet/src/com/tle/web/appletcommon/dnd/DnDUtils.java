@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -31,159 +33,128 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.swing.JComponent;
 
-public final class DnDUtils
-{
-	private static final String ZERO_CHAR_STRING = "" + (char) 0; //$NON-NLS-1$
+public final class DnDUtils {
+  private static final String ZERO_CHAR_STRING = "" + (char) 0; // $NON-NLS-1$
 
-	public static void registerDropHandler(final JComponent component, final Collection<DropHandler> dropHandlers,
-		final HoverHandler hoverHandler)
-	{
-		new DropTarget(component, DnDConstants.ACTION_COPY, new DropTargetListener()
-		{
-			private DropHandler dropHandler;
+  public static void registerDropHandler(
+      final JComponent component,
+      final Collection<DropHandler> dropHandlers,
+      final HoverHandler hoverHandler) {
+    new DropTarget(
+        component,
+        DnDConstants.ACTION_COPY,
+        new DropTargetListener() {
+          private DropHandler dropHandler;
 
-			private boolean actionSupported(int action)
-			{
-				return (action & DnDConstants.ACTION_COPY_OR_MOVE) != 0;
-			}
+          private boolean actionSupported(int action) {
+            return (action & DnDConstants.ACTION_COPY_OR_MOVE) != 0;
+          }
 
-			private DropHandler getSupportedDropHandler(DropTargetDragEvent e)
-			{
-				for( DropHandler handler : dropHandlers )
-				{
-					if( handler.supportsDrop(e) )
-					{
-						return handler;
-					}
-				}
-				return null;
-			}
+          private DropHandler getSupportedDropHandler(DropTargetDragEvent e) {
+            for (DropHandler handler : dropHandlers) {
+              if (handler.supportsDrop(e)) {
+                return handler;
+              }
+            }
+            return null;
+          }
 
-			@Override
-			public void dragEnter(DropTargetDragEvent e)
-			{
-				dropHandler = getSupportedDropHandler(e);
-				dropActionChanged(e);
-			}
+          @Override
+          public void dragEnter(DropTargetDragEvent e) {
+            dropHandler = getSupportedDropHandler(e);
+            dropActionChanged(e);
+          }
 
-			@Override
-			public void dragOver(DropTargetDragEvent e)
-			{
-				dropActionChanged(e);
-			}
+          @Override
+          public void dragOver(DropTargetDragEvent e) {
+            dropActionChanged(e);
+          }
 
-			@Override
-			public void dragExit(DropTargetEvent e)
-			{
-				// Nothing to do here
-			}
+          @Override
+          public void dragExit(DropTargetEvent e) {
+            // Nothing to do here
+          }
 
-			@Override
-			public void drop(DropTargetDropEvent e)
-			{
-				int dropAction = e.getDropAction();
-				if( dropHandler != null && actionSupported(dropAction) )
-				{
-					try
-					{
-						e.acceptDrop(dropAction);
-						e.dropComplete(dropHandler.handleDrop(e));
-					}
-					catch( Exception ex )
-					{
-						ex.printStackTrace();
-						e.dropComplete(false);
-					}
-				}
-				else
-				{
-					e.rejectDrop();
-				}
-			}
+          @Override
+          public void drop(DropTargetDropEvent e) {
+            int dropAction = e.getDropAction();
+            if (dropHandler != null && actionSupported(dropAction)) {
+              try {
+                e.acceptDrop(dropAction);
+                e.dropComplete(dropHandler.handleDrop(e));
+              } catch (Exception ex) {
+                ex.printStackTrace();
+                e.dropComplete(false);
+              }
+            } else {
+              e.rejectDrop();
+            }
+          }
 
-			@Override
-			public void dropActionChanged(DropTargetDragEvent e)
-			{
-				int dropAction = e.getDropAction();
-				if( dropHandler != null && actionSupported(dropAction) )
-				{
-					if( hoverHandler != null )
-					{
-						hoverHandler.hovering(e);
-					}
-					e.acceptDrag(DnDConstants.ACTION_COPY);
-				}
-				else
-				{
-					e.rejectDrag();
-				}
-			}
-		});
-	}
+          @Override
+          public void dropActionChanged(DropTargetDragEvent e) {
+            int dropAction = e.getDropAction();
+            if (dropHandler != null && actionSupported(dropAction)) {
+              if (hoverHandler != null) {
+                hoverHandler.hovering(e);
+              }
+              e.acceptDrag(DnDConstants.ACTION_COPY);
+            } else {
+              e.rejectDrag();
+            }
+          }
+        });
+  }
 
-	public static boolean supportsNativeFileDrop(DropTargetDragEvent e)
-	{
-		for( DataFlavor flavor : e.getCurrentDataFlavors() )
-		{
-			if( flavor.equals(DataFlavor.javaFileListFlavor) || flavor.isRepresentationClassReader() )
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  public static boolean supportsNativeFileDrop(DropTargetDragEvent e) {
+    for (DataFlavor flavor : e.getCurrentDataFlavors()) {
+      if (flavor.equals(DataFlavor.javaFileListFlavor) || flavor.isRepresentationClassReader()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	@SuppressWarnings("unchecked")
-	public static List<File> getDroppedNativeFiles(Transferable t) throws UnsupportedFlavorException, IOException
-	{
-		// This works for Windows
-		if( t.isDataFlavorSupported(DataFlavor.javaFileListFlavor) )
-		{
-			return (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-		}
+  @SuppressWarnings("unchecked")
+  public static List<File> getDroppedNativeFiles(Transferable t)
+      throws UnsupportedFlavorException, IOException {
+    // This works for Windows
+    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+      return (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+    }
 
-		// This works for Gnome and KDE
-		for( DataFlavor flavor : t.getTransferDataFlavors() )
-		{
-			if( flavor.isRepresentationClassReader() )
-			{
-				try( BufferedReader reader = new BufferedReader(flavor.getReaderForText(t)) )
-				{
-					List<File> list = new ArrayList<File>();
+    // This works for Gnome and KDE
+    for (DataFlavor flavor : t.getTransferDataFlavors()) {
+      if (flavor.isRepresentationClassReader()) {
+        try (BufferedReader reader = new BufferedReader(flavor.getReaderForText(t))) {
+          List<File> list = new ArrayList<File>();
 
-					String line = null;
-					while( (line = reader.readLine()) != null )
-					{
-						try
-						{
-							if( ZERO_CHAR_STRING.equals(line) )
-							{
-								continue;
-							}
+          String line = null;
+          while ((line = reader.readLine()) != null) {
+            try {
+              if (ZERO_CHAR_STRING.equals(line)) {
+                continue;
+              }
 
-							list.add(new File(new java.net.URI(line)));
-						}
-						catch( Exception ex )
-						{
-							ex.printStackTrace();
-						}
-					}
+              list.add(new File(new java.net.URI(line)));
+            } catch (Exception ex) {
+              ex.printStackTrace();
+            }
+          }
 
-					return list;
-				}
-			}
-		}
+          return list;
+        }
+      }
+    }
 
-		throw new UnsupportedFlavorException(null);
-	}
+    throw new UnsupportedFlavorException(null);
+  }
 
-	// Noli me tangere constructor, because Sonar likes it that way for
-	// non-instantiated utility classes
-	private DnDUtils()
-	{
-		throw new Error();
-	}
+  // Noli me tangere constructor, because Sonar likes it that way for
+  // non-instantiated utility classes
+  private DnDUtils() {
+    throw new Error();
+  }
 }

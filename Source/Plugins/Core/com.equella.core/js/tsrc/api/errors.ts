@@ -1,28 +1,53 @@
 import v4 = require("uuid/v4");
-import {AxiosError} from "axios";
+import { AxiosResponse } from "axios";
 
-export interface ErrorResponse
-{
+export interface ErrorResponse {
   id: string;
-  code: number;
-  error: string; 
-  description?: string;
+  error: string;
+  error_description?: string;
+  code?: number;
 }
 
-export const generateNewErrorID = (error:string, code?:number, description?:string) => {
+export const generateNewErrorID = (
+  error: string,
+  code?: number,
+  description?: string
+): ErrorResponse => {
   return {
     id: v4(),
-    code: code||500,
-    description,
+    error_description: description,
+    code,
     error
   };
 };
 
-export const generateFromAxiosError = (error: AxiosError) =>{
-  return{
+export const generateFromError = (error: Error): ErrorResponse => {
+  return {
     id: v4(),
-    code:error.code,
-    error:error.name,
-    description:error.message
-  }
+    error: error.name,
+    error_description: error.message
+  };
 };
+
+export function fromAxiosResponse(
+  response: AxiosResponse<ErrorResponse>
+): ErrorResponse {
+  if (typeof response.data == "object") {
+    return { ...response.data, id: v4() };
+  } else {
+    const [error, error_description] = (function() {
+      switch (response.status) {
+        case 404:
+          return ["Not Found", ""];
+        default:
+          return [response.statusText, ""];
+      }
+    })();
+    return {
+      id: v4(),
+      error,
+      error_description,
+      code: response.status
+    };
+  }
+}

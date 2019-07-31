@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,24 +18,20 @@
 
 package com.tle.web.remotecaching.service;
 
-import java.util.Map;
-
 import com.tle.common.activecache.settings.CacheSettings;
 import com.tle.common.activecache.settings.CacheSettings.Node;
+import java.util.Map;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public interface RemoteCachingWebService
-{
-	String KEY_ROOT = "";
+public interface RemoteCachingWebService {
+  String KEY_ROOT = "";
 
-	void abandonCurrentChanges();
+  void abandonCurrentChanges();
 
-	void save(boolean enabled, Node rootNode);
+  void save(boolean enabled, Node rootNode);
 
-	CacheSettings getCacheSettings();
+  CacheSettings getCacheSettings();
 
-	Map<String, Node> getNodeCache();
+  Map<String, Node> getNodeCache();
 }

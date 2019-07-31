@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.usermanagement.canvas;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -40,87 +37,75 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CanvasLogonLink extends AbstractPrototypeSection<CanvasLogonLink.CanvasLogonModel> implements LoginLink
-{
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ConfigurationService configurationService;
+public class CanvasLogonLink extends AbstractPrototypeSection<CanvasLogonLink.CanvasLogonModel>
+    implements LoginLink {
+  @Inject private InstitutionService institutionService;
+  @Inject private ConfigurationService configurationService;
 
-	@PlugKey("link.login")
-	@Component
-	private Link link;
+  @PlugKey("link.login")
+  @Component
+  private Link link;
 
-	@Override
-	public void setup(RenderEventContext context, LogonModel model)
-	{
-		if( isEnabled(context) )
-		{
-			final String page = model.getPage();
-			String ssoLink = institutionService.institutionalise("canvassso");
-			if( !Strings.isNullOrEmpty(page) )
-			{
-				try
-				{
-					ssoLink = ssoLink + "?page=" + URLEncoder.encode(page, "UTF-8");
-				}
-				catch( UnsupportedEncodingException e )
-				{
-					throw Throwables.propagate(e);
-				}
-			}
-			link.setBookmark(context, new SimpleBookmark(ssoLink));
-		}
-	}
+  @Override
+  public void setup(RenderEventContext context, LogonModel model) {
+    if (isEnabled(context)) {
+      final String page = model.getPage();
+      String ssoLink = institutionService.institutionalise("canvassso");
+      if (!Strings.isNullOrEmpty(page)) {
+        try {
+          ssoLink = ssoLink + "?page=" + URLEncoder.encode(page, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          throw Throwables.propagate(e);
+        }
+      }
+      link.setBookmark(context, new SimpleBookmark(ssoLink));
+    }
+  }
 
-	@Nullable
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( isEnabled(context) )
-		{
-			return new LinkRenderer(link.getState(context));
-		}
-		return null;
-	}
+  @Nullable
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (isEnabled(context)) {
+      return new LinkRenderer(link.getState(context));
+    }
+    return null;
+  }
 
-	private boolean isEnabled(SectionInfo info)
-	{
-		final CanvasLogonModel model = getModel(info);
-		Boolean enabled = model.getEnabled();
+  private boolean isEnabled(SectionInfo info) {
+    final CanvasLogonModel model = getModel(info);
+    Boolean enabled = model.getEnabled();
 
-		if( enabled == null )
-		{
-			CanvasWrapperSettings settings = configurationService.getProperties(new CanvasWrapperSettings());
-			enabled = settings.isEnabled();
-			model.setEnabled(enabled);
-		}
-		return enabled;
-	}
+    if (enabled == null) {
+      CanvasWrapperSettings settings =
+          configurationService.getProperties(new CanvasWrapperSettings());
+      enabled = settings.isEnabled();
+      model.setEnabled(enabled);
+    }
+    return enabled;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new CanvasLogonModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new CanvasLogonModel();
+  }
 
-	@NonNullByDefault(false)
-	public static class CanvasLogonModel
-	{
-		private Boolean enabled;
+  @NonNullByDefault(false)
+  public static class CanvasLogonModel {
+    private Boolean enabled;
 
-		public Boolean getEnabled()
-		{
-			return enabled;
-		}
+    public Boolean getEnabled() {
+      return enabled;
+    }
 
-		public void setEnabled(Boolean enabled)
-		{
-			this.enabled = enabled;
-		}
-	}
+    public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+    }
+  }
 }

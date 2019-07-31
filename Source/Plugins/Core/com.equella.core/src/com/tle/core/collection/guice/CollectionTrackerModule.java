@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,21 +21,15 @@ package com.tle.core.collection.guice;
 import com.tle.core.collection.extension.CollectionSaveExtension;
 import com.tle.core.guice.PluginTrackerModule;
 
-/**
- * @author Aaron
- *
- */
-public class CollectionTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.collection";
-	}
+/** @author Aaron */
+public class CollectionTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.collection";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(CollectionSaveExtension.class, "collectionSave", "bean");
-	}
+  @Override
+  protected void configure() {
+    bindTracker(CollectionSaveExtension.class, "collectionSave", "bean");
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,25 +18,21 @@
 
 package com.tle.core.filesystem.staging.users.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.events.UserSessionLogoutEvent;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.filesystem.staging.users.StagingCleanupService;
 import com.tle.core.guice.Bind;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind(StagingCleanupService.class)
 @Singleton
-public class StagingCleanupServiceImpl implements StagingCleanupService, UserSessionLogoutListener
-{
-	@Inject
-	private StagingService stagingService;
+public class StagingCleanupServiceImpl implements StagingCleanupService, UserSessionLogoutListener {
+  @Inject private StagingService stagingService;
 
-	@Override
-	public void userSessionDestroyedEvent(final UserSessionLogoutEvent event)
-	{
-		stagingService.removeAllStagingAreas(event.getSessionId());
-	}
+  @Override
+  public void userSessionDestroyedEvent(final UserSessionLogoutEvent event) {
+    stagingService.removeAllStagingAreas(event.getSessionId());
+  }
 }

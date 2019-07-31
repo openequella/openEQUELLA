@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,21 @@
 
 package com.tle.common.applet.client;
 
+import com.tle.common.applet.SessionHolder;
 import java.net.URL;
 
-import com.tle.common.applet.SessionHolder;
+public interface ClientService {
+  void showDocument(URL url);
 
-public interface ClientService
-{
-	void showDocument(URL url, String string);
+  void stop();
 
-	void stop();
+  String getParameter(String key);
 
-	String getParameter(String key);
+  URL getServerURL();
 
-	URL getServerURL();
+  SessionHolder getSession();
 
-	SessionHolder getSession();
+  /* SERVICES */
 
-	/* SERVICES */
-
-	<T> T getService(Class<T> clazz);
+  <T> T getService(Class<T> clazz);
 }

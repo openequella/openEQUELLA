@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,63 +21,52 @@ package com.tle.beans.entity.itemdef;
 import java.io.Serializable;
 import java.util.List;
 
-public class SearchDetails implements Serializable
-{
-	private static final long serialVersionUID = 1;
+public class SearchDetails implements Serializable {
+  private static final long serialVersionUID = 1;
 
-	private List<DisplayNode> displayNodes;
-	private String attDisplay;
-	private boolean disableThumbnail;
-	private boolean standardOpen;
-	private boolean integrationOpen;
+  private List<DisplayNode> displayNodes;
+  private String attDisplay;
+  private boolean disableThumbnail;
+  private boolean standardOpen;
+  private boolean integrationOpen;
 
-	public List<DisplayNode> getDisplayNodes()
-	{
-		return displayNodes;
-	}
+  public List<DisplayNode> getDisplayNodes() {
+    return displayNodes;
+  }
 
-	public void setDisplayNodes(List<DisplayNode> nodes)
-	{
-		this.displayNodes = nodes;
-	}
+  public void setDisplayNodes(List<DisplayNode> nodes) {
+    this.displayNodes = nodes;
+  }
 
-	public String getAttDisplay()
-	{
-		return attDisplay;
-	}
+  public String getAttDisplay() {
+    return attDisplay;
+  }
 
-	public void setAttDisplay(String attDisplay)
-	{
-		this.attDisplay = attDisplay;
-	}
+  public void setAttDisplay(String attDisplay) {
+    this.attDisplay = attDisplay;
+  }
 
-	public boolean isDisableThumbnail()
-	{
-		return disableThumbnail;
-	}
+  public boolean isDisableThumbnail() {
+    return disableThumbnail;
+  }
 
-	public void setDisableThumbnail(boolean disableThumbnail)
-	{
-		this.disableThumbnail = disableThumbnail;
-	}
+  public void setDisableThumbnail(boolean disableThumbnail) {
+    this.disableThumbnail = disableThumbnail;
+  }
 
-	public boolean isStandardOpen()
-	{
-		return standardOpen;
-	}
+  public boolean isStandardOpen() {
+    return standardOpen;
+  }
 
-	public void setStandardOpen(boolean standardOpen)
-	{
-		this.standardOpen = standardOpen;
-	}
+  public void setStandardOpen(boolean standardOpen) {
+    this.standardOpen = standardOpen;
+  }
 
-	public boolean isIntegrationOpen()
-	{
-		return integrationOpen;
-	}
+  public boolean isIntegrationOpen() {
+    return integrationOpen;
+  }
 
-	public void setIntegrationOpen(boolean integrationOpen)
-	{
-		this.integrationOpen = integrationOpen;
-	}
+  public void setIntegrationOpen(boolean integrationOpen) {
+    this.integrationOpen = integrationOpen;
+  }
 }

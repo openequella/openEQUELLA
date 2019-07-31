@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,62 +19,52 @@
 package com.tle.core.search;
 
 /**
- * A wrapper class for the HierarchyTopic/DynamicCollection, with extra fields
- * to contain a virtualised value string, and a counter. For dynamicCollections,
- * the counter is not initially set (and may not be set at all). For
- * HierarchyTopic the tally is set, and is displayed when navigating into
- * sub-hierarchies
- * 
+ * A wrapper class for the HierarchyTopic/DynamicCollection, with extra fields to contain a
+ * virtualised value string, and a counter. For dynamicCollections, the counter is not initially set
+ * (and may not be set at all). For HierarchyTopic the tally is set, and is displayed when
+ * navigating into sub-hierarchies
+ *
  * @author larry
  */
-public class VirtualisableAndValue<T>
-{
+public class VirtualisableAndValue<T> {
 
-	private T vt;
+  private T vt;
 
-	private String virtualisedValue;
+  private String virtualisedValue;
 
-	private int count;
+  private int count;
 
-	public VirtualisableAndValue(T ht)
-	{
-		this.vt = ht;
-	}
+  public VirtualisableAndValue(T ht) {
+    this.vt = ht;
+  }
 
-	public VirtualisableAndValue(T ht, String virtualisedValue, int count)
-	{
-		this(ht);
-		this.virtualisedValue = virtualisedValue;
-		this.count = count;
-	}
+  public VirtualisableAndValue(T ht, String virtualisedValue, int count) {
+    this(ht);
+    this.virtualisedValue = virtualisedValue;
+    this.count = count;
+  }
 
-	public T getVt()
-	{
-		return vt;
-	}
+  public T getVt() {
+    return vt;
+  }
 
-	public void setVt(T ht)
-	{
-		this.vt = ht;
-	}
+  public void setVt(T ht) {
+    this.vt = ht;
+  }
 
-	public String getVirtualisedValue()
-	{
-		return virtualisedValue;
-	}
+  public String getVirtualisedValue() {
+    return virtualisedValue;
+  }
 
-	public void setVirtualisedValue(String virtualisedValue)
-	{
-		this.virtualisedValue = virtualisedValue;
-	}
+  public void setVirtualisedValue(String virtualisedValue) {
+    this.virtualisedValue = virtualisedValue;
+  }
 
-	public int getCount()
-	{
-		return count;
-	}
+  public int getCount() {
+    return count;
+  }
 
-	public void setCount(int count)
-	{
-		this.count = count;
-	}
+  public void setCount(int count) {
+    this.count = count;
+  }
 }

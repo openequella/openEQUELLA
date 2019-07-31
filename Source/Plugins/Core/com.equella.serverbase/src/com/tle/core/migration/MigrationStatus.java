@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,63 +18,52 @@
 
 package com.tle.core.migration;
 
+import com.google.common.collect.Maps;
+import com.tle.beans.DatabaseSchema;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-import com.tle.beans.DatabaseSchema;
-
 @SuppressWarnings("nls")
-public class MigrationStatus implements Serializable
-{
-	public static final String KEY_EXECUTION_STATUS = "subtask";
-	public static final String KEY_MIGRATION_INFOS = "migrations";
-	public static final String KEY_STATUS = "status";
+public class MigrationStatus implements Serializable {
+  public static final String KEY_EXECUTION_STATUS = "subtask";
+  public static final String KEY_MIGRATION_INFOS = "migrations";
+  public static final String KEY_STATUS = "status";
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private Map<Long, SchemaInfo> schemas = Maps.newHashMap();
-	private String exception;
-	private boolean needsInstallation;
+  private Map<Long, SchemaInfo> schemas = Maps.newHashMap();
+  private String exception;
+  private boolean needsInstallation;
 
-	public void addSchemaInfo(SchemaInfo schemaInfo)
-	{
-		schemas.put(schemaInfo.getDatabaseSchema().getId(), schemaInfo);
-	}
+  public void addSchemaInfo(SchemaInfo schemaInfo) {
+    schemas.put(schemaInfo.getDatabaseSchema().getId(), schemaInfo);
+  }
 
-	public String getException()
-	{
-		return exception;
-	}
+  public String getException() {
+    return exception;
+  }
 
-	public void setException(String exception)
-	{
-		this.exception = exception;
-	}
+  public void setException(String exception) {
+    this.exception = exception;
+  }
 
-	public Map<Long, SchemaInfo> getSchemas()
-	{
-		return schemas;
-	}
+  public Map<Long, SchemaInfo> getSchemas() {
+    return schemas;
+  }
 
-	public boolean isNeedsInstallation()
-	{
-		return needsInstallation;
-	}
+  public boolean isNeedsInstallation() {
+    return needsInstallation;
+  }
 
-	public void setNeedsInstallation(boolean needsInstallation)
-	{
-		this.needsInstallation = needsInstallation;
-	}
+  public void setNeedsInstallation(boolean needsInstallation) {
+    this.needsInstallation = needsInstallation;
+  }
 
-	public SchemaInfo getSystemSchema()
-	{
-		return schemas.get(DatabaseSchema.SYSTEM_SCHEMA.getId());
-	}
+  public SchemaInfo getSystemSchema() {
+    return schemas.get(DatabaseSchema.SYSTEM_SCHEMA.getId());
+  }
 
-	public void setSchemas(Map<Long, SchemaInfo> newInfos)
-	{
-		this.schemas = newInfos;
-	}
-
+  public void setSchemas(Map<Long, SchemaInfo> newInfos) {
+    this.schemas = newInfos;
+  }
 }

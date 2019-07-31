@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,50 +24,41 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 
-public class FunctionCallStatement implements JSStatements
-{
-	protected FunctionCallExpression expr;
+public class FunctionCallStatement implements JSStatements {
+  protected FunctionCallExpression expr;
 
-	public FunctionCallStatement(FunctionCallExpression expr)
-	{
-		this.expr = expr;
-	}
+  public FunctionCallStatement(FunctionCallExpression expr) {
+    this.expr = expr;
+  }
 
-	public FunctionCallStatement(String name, Object... exprs)
-	{
-		this(new FunctionCallExpression(name, exprs));
-	}
+  public FunctionCallStatement(String name, Object... exprs) {
+    this(new FunctionCallExpression(name, exprs));
+  }
 
-	public FunctionCallStatement(JSCallable func, Object... exprs)
-	{
-		this(new FunctionCallExpression(func, exprs));
-	}
+  public FunctionCallStatement(JSCallable func, Object... exprs) {
+    this(new FunctionCallExpression(func, exprs));
+  }
 
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return expr.getExpression(info) + ';';
-	}
+  @Override
+  public String getStatements(RenderContext info) {
+    return expr.getExpression(info) + ';';
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(expr);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(expr);
+  }
 
-	@Override
-	public String toString()
-	{
-		return expr.toString() + ';';
-	}
+  @Override
+  public String toString() {
+    return expr.toString() + ';';
+  }
 
-	public static FunctionCallStatement jscall(FunctionCallExpression expr)
-	{
-		return new FunctionCallStatement(expr);
-	}
+  public static FunctionCallStatement jscall(FunctionCallExpression expr) {
+    return new FunctionCallStatement(expr);
+  }
 
-	public static FunctionCallStatement jscall(JSCallable func, Object... params)
-	{
-		return new FunctionCallStatement(func, params);
-	}
+  public static FunctionCallStatement jscall(JSCallable func, Object... params) {
+    return new FunctionCallStatement(func, params);
+  }
 }

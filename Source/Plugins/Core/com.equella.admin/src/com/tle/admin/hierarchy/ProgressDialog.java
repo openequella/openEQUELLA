@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,68 +18,59 @@
 
 package com.tle.admin.hierarchy;
 
+import com.dytech.gui.ComponentHelper;
 import java.awt.Component;
-
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
-
 import net.miginfocom.swing.MigLayout;
 
-import com.dytech.gui.ComponentHelper;
+public final class ProgressDialog extends JPanel {
+  private final JProgressBar progress;
+  private final JDialog dialog;
 
-public final class ProgressDialog extends JPanel
-{
-	private final JProgressBar progress;
-	private final JDialog dialog;
+  @SuppressWarnings("nls")
+  private ProgressDialog(JDialog dialog) {
+    this.dialog = dialog;
 
-	@SuppressWarnings("nls")
-	private ProgressDialog(JDialog dialog)
-	{
-		this.dialog = dialog;
+    progress = new JProgressBar();
+    progress.setIndeterminate(true);
 
-		progress = new JProgressBar();
-		progress.setIndeterminate(true);
+    setLayout(new MigLayout("wrap 1, fill", "[200px,grow,fill]"));
+    add(progress);
+  }
 
-		setLayout(new MigLayout("wrap 1, fill", "[200px,grow,fill]"));
-		add(progress);
-	}
+  public void setProgressSafely(final int done, final int total) {
+    SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            progress.setIndeterminate(false);
+            progress.setValue(done);
+            progress.setMaximum(total);
+          }
+        });
+  }
 
-	public void setProgressSafely(final int done, final int total)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				progress.setIndeterminate(false);
-				progress.setValue(done);
-				progress.setMaximum(total);
-			}
-		});
-	}
+  public void closeDialog() {
+    dialog.setVisible(false);
+  }
 
-	public void closeDialog()
-	{
-		dialog.setVisible(false);
-	}
+  public static ProgressDialog showProgress(Component parent, String message) {
+    JDialog d = ComponentHelper.createJDialog(parent);
+    ProgressDialog p = new ProgressDialog(d);
 
-	public static ProgressDialog showProgress(Component parent, String message)
-	{
-		JDialog d = ComponentHelper.createJDialog(parent);
-		ProgressDialog p = new ProgressDialog(d);
+    d.getRootPane().setWindowDecorationStyle(JRootPane.INFORMATION_DIALOG);
+    d.setResizable(false);
+    d.setContentPane(p);
+    d.setTitle(message);
+    d.pack();
 
-		d.getRootPane().setWindowDecorationStyle(JRootPane.INFORMATION_DIALOG);
-		d.setResizable(false);
-		d.setContentPane(p);
-		d.setTitle(message);
-		d.pack();
+    d.setLocationRelativeTo(parent);
+    d.setVisible(true);
 
-		d.setLocationRelativeTo(parent);
-		d.setVisible(true);
-
-		return p;
-	}
+    return p;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,52 +18,43 @@
 
 package com.tle.core.hibernate.event;
 
-import java.util.Collection;
-
 import com.tle.common.Check;
 import com.tle.core.events.ApplicationEvent;
+import java.util.Collection;
 
-public class SchemaEvent extends ApplicationEvent<SchemaListener>
-{
-	private static final long serialVersionUID = 1L;
+public class SchemaEvent extends ApplicationEvent<SchemaListener> {
+  private static final long serialVersionUID = 1L;
 
-	private Collection<Long> availableSchemas;
-	private Collection<Long> unavailableSchemas;
-	private boolean systemUp;
+  private Collection<Long> availableSchemas;
+  private Collection<Long> unavailableSchemas;
+  private boolean systemUp;
 
-	public SchemaEvent(boolean systemUp)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.systemUp = systemUp;
-	}
+  public SchemaEvent(boolean systemUp) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.systemUp = systemUp;
+  }
 
-	public SchemaEvent(Collection<Long> availableSchemas, Collection<Long> unavailableSchemas)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.availableSchemas = availableSchemas;
-		this.unavailableSchemas = unavailableSchemas;
-	}
+  public SchemaEvent(Collection<Long> availableSchemas, Collection<Long> unavailableSchemas) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.availableSchemas = availableSchemas;
+    this.unavailableSchemas = unavailableSchemas;
+  }
 
-	@Override
-	public void postEvent(SchemaListener listener)
-	{
-		if( systemUp )
-		{
-			listener.systemSchemaUp();
-		}
-		if( !Check.isEmpty(availableSchemas) )
-		{
-			listener.schemasAvailable(availableSchemas);
-		}
-		if( !Check.isEmpty(unavailableSchemas) )
-		{
-			listener.schemasUnavailable(unavailableSchemas);
-		}
-	}
+  @Override
+  public void postEvent(SchemaListener listener) {
+    if (systemUp) {
+      listener.systemSchemaUp();
+    }
+    if (!Check.isEmpty(availableSchemas)) {
+      listener.schemasAvailable(availableSchemas);
+    }
+    if (!Check.isEmpty(unavailableSchemas)) {
+      listener.schemasUnavailable(unavailableSchemas);
+    }
+  }
 
-	@Override
-	public Class<SchemaListener> getListener()
-	{
-		return SchemaListener.class;
-	}
+  @Override
+  public Class<SchemaListener> getListener() {
+    return SchemaListener.class;
+  }
 }

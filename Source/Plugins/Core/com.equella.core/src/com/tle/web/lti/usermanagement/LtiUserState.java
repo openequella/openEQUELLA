@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,55 @@
 
 package com.tle.web.lti.usermanagement;
 
-import java.util.Collection;
-
 import com.tle.common.Triple;
 import com.tle.common.usermanagement.user.AbstractUserState;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.lti.LtiData;
+import java.util.Collection;
 
-public class LtiUserState extends AbstractUserState
-{
-	private LtiData data;
-	private final boolean system;
+public class LtiUserState extends AbstractUserState {
+  private LtiData data;
+  private final boolean system;
 
-	public LtiUserState()
-	{
-		// Empty
-		system = false;
-	}
+  public LtiUserState() {
+    // Empty
+    system = false;
+  }
 
-	public LtiUserState(UserState userState)
-	{
-		system = userState.isSystem();
-		setAclExpressions(new Triple<Collection<Long>, Collection<Long>, Collection<Long>>(
-			userState.getCommonAclExpressions(), userState.getOwnerAclExpressions(),
-			userState.getNotOwnerAclExpressions()));
-		setAuditable(userState.isAuditable());
-		setAuthenticated(userState.isAuthenticated());
-		setHostAddress(userState.getHostAddress());
-		setHostReferrer(userState.getHostReferrer());
-		setInstitution(userState.getInstitution());
-		setInternal(userState.isInternal());
-		setIpAddress(userState.getIpAddress());
-		setLoggedInUser(userState.getUserBean());
-		setSessionID(userState.getSessionID());
-		setSharePassEmail(userState.getSharePassEmail());
-		setToken(userState.getToken());
-		setTokenSecretId(userState.getTokenSecretId());
-		setWasAutoLoggedIn(userState.wasAutoLoggedIn());
-		getUsersGroups().addAll(userState.getUsersGroups());
-		getUsersRoles().addAll(userState.getUsersRoles());
-	}
+  public LtiUserState(UserState userState) {
+    system = userState.isSystem();
+    setAclExpressions(
+        new Triple<Collection<Long>, Collection<Long>, Collection<Long>>(
+            userState.getCommonAclExpressions(),
+            userState.getOwnerAclExpressions(),
+            userState.getNotOwnerAclExpressions()));
+    setAuditable(userState.isAuditable());
+    setAuthenticated(userState.isAuthenticated());
+    setHostAddress(userState.getHostAddress());
+    setHostReferrer(userState.getHostReferrer());
+    setInstitution(userState.getInstitution());
+    setInternal(userState.isInternal());
+    setIpAddress(userState.getIpAddress());
+    setLoggedInUser(userState.getUserBean());
+    setSessionID(userState.getSessionID());
+    setSharePassEmail(userState.getSharePassEmail());
+    setToken(userState.getToken());
+    setTokenSecretId(userState.getTokenSecretId());
+    setWasAutoLoggedIn(userState.wasAutoLoggedIn());
+    getUsersGroups().addAll(userState.getUsersGroups());
+    getUsersRoles().addAll(userState.getUsersRoles());
+  }
 
-	public LtiData getData()
-	{
-		return data;
-	}
+  public LtiData getData() {
+    return data;
+  }
 
-	public void setData(LtiData data)
-	{
-		this.data = data;
-	}
+  public void setData(LtiData data) {
+    this.data = data;
+  }
 
-	@Override
-	public boolean isSystem()
-	{
-		return system;
-	}
+  @Override
+  public boolean isSystem() {
+    return system;
+  }
 }

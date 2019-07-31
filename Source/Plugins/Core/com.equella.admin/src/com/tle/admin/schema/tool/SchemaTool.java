@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,34 +27,28 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.core.remoting.RemoteSchemaService;
 
-public class SchemaTool extends BaseEntityTool<Schema>
-{
-	public SchemaTool() throws Exception
-	{
-		super(Schema.class, RemoteSchemaService.ENTITY_TYPE);
-	}
+public class SchemaTool extends BaseEntityTool<Schema> {
+  public SchemaTool() throws Exception {
+    super(Schema.class, RemoteSchemaService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Schema> getService(ClientService client)
-	{
-		return client.getService(RemoteSchemaService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Schema> getService(ClientService client) {
+    return client.getService(RemoteSchemaService.class);
+  }
 
-	@Override
-	protected BaseEntityEditor<Schema> createEditor(boolean readonly)
-	{
-		return new SchemaManager(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Schema> createEditor(boolean readonly) {
+    return new SchemaManager(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.schematool.name");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.schematool.name");
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "schema";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "schema";
+  }
 }

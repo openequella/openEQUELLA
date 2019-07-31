@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,12 +19,6 @@
 package com.tle.core.taxonomy.wizard;
 
 import static com.tle.web.sections.js.generic.statement.FunctionCallStatement.jscall;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -72,374 +68,352 @@ import com.tle.web.sections.standard.js.modules.JSONModule;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlTreeModel;
 import com.tle.web.sections.standard.model.HtmlTreeNode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public abstract class AbstractPopupBrowserDialog<M extends AbstractPopupBrowserModel> extends AbstractOkayableDialog<M>
-{
-	@PlugKey("currentlyselectedstuff.remove")
-	private static Label REMOVE_TERM_LABEL;
-	@PlugKey("wizard.popupbrowser.showallresults")
-	private static String SHOW_ALL_LABEL;
-	@PlugKey("currentlyselectedstuff.nothing")
-	private static Label NO_SELECTIONS_LABEL;
+public abstract class AbstractPopupBrowserDialog<M extends AbstractPopupBrowserModel>
+    extends AbstractOkayableDialog<M> {
+  @PlugKey("currentlyselectedstuff.remove")
+  private static Label REMOVE_TERM_LABEL;
 
-	private static final int MAX_SEARCH_RESULTS = 50;
+  @PlugKey("wizard.popupbrowser.showallresults")
+  private static String SHOW_ALL_LABEL;
 
-	@Inject
-	private TaxonomyService taxonomyService;
+  @PlugKey("currentlyselectedstuff.nothing")
+  private static Label NO_SELECTIONS_LABEL;
 
-	@Component
-	private Tree treeView;
-	@Component
-	private TextField searchQuery;
-	@Component
-	@PlugKey("wizard.popupbrowser.searchbutton")
-	private Button searchButton;
-	@Component
-	private HiddenState selectedTerms;
-	@Component
-	private SelectionsTable selectedTermsTable;
+  private static final int MAX_SEARCH_RESULTS = 50;
 
-	protected String taxonomyUuid;
-	private String taxonomyName;
-	private boolean multiple;
-	private boolean searchEnabled = true;
-	private boolean browseEnabled = true;
-	private TermStorageFormat storageFormat;
-	private SelectionRestriction restriction;
+  @Inject private TaxonomyService taxonomyService;
 
-	protected SimpleFunction selectTermFunc;
-	private JSCallable removeTermFunc;
-	private JSCallable searchFunc;
+  @Component private Tree treeView;
+  @Component private TextField searchQuery;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey("wizard.popupbrowser.searchbutton")
+  private Button searchButton;
 
-		setAjax(true);
+  @Component private HiddenState selectedTerms;
+  @Component private SelectionsTable selectedTermsTable;
 
-		// The following function is used by pretty much every node in the tree
-		// and for each search result. Because it's used so much, we refactor it
-		// out into a function so that we minimise the amount of JS being
-		// output.
-		ScriptVariable selectTermVar = new ScriptVariable("term");
-		selectTermFunc = new SimpleFunction("selectTerm", new FunctionCallStatement(
-			ajaxEvents.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("selectTerm"),
-				ajaxEvents.getEffectFunction(EffectType.FADEOUTIN), "selectedTerms"), selectTermVar), selectTermVar);
+  protected String taxonomyUuid;
+  private String taxonomyName;
+  private boolean multiple;
+  private boolean searchEnabled = true;
+  private boolean browseEnabled = true;
+  private TermStorageFormat storageFormat;
+  private SelectionRestriction restriction;
 
-		removeTermFunc = ajaxEvents.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeTerm"),
-			ajaxEvents.getEffectFunction(EffectType.FADEOUTIN), "selectedTerms");
-		searchFunc = ajaxEvents.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("searchTerms"),
-			ajaxEvents.getEffectFunction(EffectType.FADEOUTIN), "searchResults");
+  protected SimpleFunction selectTermFunc;
+  private JSCallable removeTermFunc;
+  private JSCallable searchFunc;
 
-		searchButton.setClickHandler(new OverrideHandler(searchFunc, false));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		treeView.setModel(new TermSelectorTreeModel());
-		treeView.setLazyLoad(true);
+    setAjax(true);
 
-		final ScriptExpression se = new ScriptExpression(
-			"tabs({fx: {opacity:'toggle', duration: 'fast'}}).tabs('option', 'disabled', false);");
-		se.setPreRenderers(JQueryTabs.PRERENDER);
-		treeView.addReadyStatements(new JQueryStatement(new JQuerySelector("#termChooser"), se));
+    // The following function is used by pretty much every node in the tree
+    // and for each search result. Because it's used so much, we refactor it
+    // out into a function so that we minimise the amount of JS being
+    // output.
+    ScriptVariable selectTermVar = new ScriptVariable("term");
+    selectTermFunc =
+        new SimpleFunction(
+            "selectTerm",
+            new FunctionCallStatement(
+                ajaxEvents.getAjaxUpdateDomFunction(
+                    tree,
+                    this,
+                    events.getEventHandler("selectTerm"),
+                    ajaxEvents.getEffectFunction(EffectType.FADEOUTIN),
+                    "selectedTerms"),
+                selectTermVar),
+            selectTermVar);
 
-		selectedTermsTable.setFilterable(false);
-		selectedTermsTable.setNothingSelectedText(NO_SELECTIONS_LABEL);
-		selectedTermsTable.setSelectionsModel(new DynamicSelectionsTableModel<String>()
-		{
-			@Override
-			protected List<String> getSourceList(SectionInfo info)
-			{
-				return selectedTerms.getValues(info);
-			}
+    removeTermFunc =
+        ajaxEvents.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("removeTerm"),
+            ajaxEvents.getEffectFunction(EffectType.FADEOUTIN),
+            "selectedTerms");
+    searchFunc =
+        ajaxEvents.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("searchTerms"),
+            ajaxEvents.getEffectFunction(EffectType.FADEOUTIN),
+            "searchResults");
 
-			@Override
-			protected void transform(SectionInfo info, SelectionsTableSelection selection, String term,
-				List<SectionRenderable> actions, int index)
-			{
-				selection.setViewAction(new LabelRenderer(new TextLabel(term)));
-				actions.add(makeRemoveAction(REMOVE_TERM_LABEL, new OverrideHandler(removeTermFunc, term)));
-			}
-		});
+    searchButton.setClickHandler(new OverrideHandler(searchFunc, false));
 
-		taxonomyName = CurrentLocale.get(taxonomyService.getByUuid(taxonomyUuid).getName());
-	}
+    treeView.setModel(new TermSelectorTreeModel());
+    treeView.setLazyLoad(true);
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		JSExpression termList = JSONModule.getStringifyExpression(selectedTerms.createGetExpression());
-		return new OverrideHandler(jscall(getOkCallback(), termList), jscall(getCloseFunction()));
-	}
+    final ScriptExpression se =
+        new ScriptExpression(
+            "tabs({fx: {opacity:'toggle', duration: 'fast'}}).tabs('option', 'disabled', false);");
+    se.setPreRenderers(JQueryTabs.PRERENDER);
+    treeView.addReadyStatements(new JQueryStatement(new JQuerySelector("#termChooser"), se));
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return new TextLabel(taxonomyName);
-	}
+    selectedTermsTable.setFilterable(false);
+    selectedTermsTable.setNothingSelectedText(NO_SELECTIONS_LABEL);
+    selectedTermsTable.setSelectionsModel(
+        new DynamicSelectionsTableModel<String>() {
+          @Override
+          protected List<String> getSourceList(SectionInfo info) {
+            return selectedTerms.getValues(info);
+          }
 
-	@EventHandlerMethod
-	public void searchTerms(SectionInfo info, boolean showAllResults)
-	{
-		String query = searchQuery.getValue(info);
-		if( !Check.isEmpty(query) )
-		{
-			final AbstractPopupBrowserModel model = getModel(info);
-			model.setSearchExecuted(true);
+          @Override
+          protected void transform(
+              SectionInfo info,
+              SelectionsTableSelection selection,
+              String term,
+              List<SectionRenderable> actions,
+              int index) {
+            selection.setViewAction(new LabelRenderer(new TextLabel(term)));
+            actions.add(
+                makeRemoveAction(REMOVE_TERM_LABEL, new OverrideHandler(removeTermFunc, term)));
+          }
+        });
 
-			// For this search type, we want to find stuff anywhere in the term,
-			// so always put wild-cards on it.
-			query = '*' + query + '*';
+    taxonomyName = CurrentLocale.get(taxonomyService.getByUuid(taxonomyUuid).getName());
+  }
 
-			Pair<Long, List<TermResult>> results = taxonomyService.searchTerms(taxonomyUuid, query, restriction,
-				showAllResults ? -1 : MAX_SEARCH_RESULTS, true);
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    JSExpression termList = JSONModule.getStringifyExpression(selectedTerms.createGetExpression());
+    return new OverrideHandler(jscall(getOkCallback(), termList), jscall(getCloseFunction()));
+  }
 
-			List<SectionRenderable> srs = new ArrayList<SectionRenderable>();
-			for( TermResult tr : results.getSecond() )
-			{
-				srs.add(getTermClickTarget(tr));
-			}
-			model.setSearchResults(srs);
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return new TextLabel(taxonomyName);
+  }
 
-			final long totalResults = results.getFirst();
-			model.setSearchTotalResults(totalResults);
+  @EventHandlerMethod
+  public void searchTerms(SectionInfo info, boolean showAllResults) {
+    String query = searchQuery.getValue(info);
+    if (!Check.isEmpty(query)) {
+      final AbstractPopupBrowserModel model = getModel(info);
+      model.setSearchExecuted(true);
 
-			if( srs.size() < totalResults )
-			{
-				HtmlComponentState button = new HtmlComponentState(new OverrideHandler(searchFunc, true));
-				button.setLabel(new KeyLabel(SHOW_ALL_LABEL, totalResults));
-				model.setShowAllResults(new ButtonRenderer(button));
-			}
-		}
-	}
+      // For this search type, we want to find stuff anywhere in the term,
+      // so always put wild-cards on it.
+      query = '*' + query + '*';
 
-	protected abstract SectionRenderable getTermClickTarget(TermResult tr);
+      Pair<Long, List<TermResult>> results =
+          taxonomyService.searchTerms(
+              taxonomyUuid, query, restriction, showAllResults ? -1 : MAX_SEARCH_RESULTS, true);
 
-	@EventHandlerMethod
-	public void selectTerm(SectionInfo info, String termFullPath)
-	{
-		if( storageFormat == TermStorageFormat.LEAF_ONLY )
-		{
-			termFullPath = taxonomyService.getTerm(taxonomyUuid, termFullPath).getTerm();
-		}
+      List<SectionRenderable> srs = new ArrayList<SectionRenderable>();
+      for (TermResult tr : results.getSecond()) {
+        srs.add(getTermClickTarget(tr));
+      }
+      model.setSearchResults(srs);
 
-		final Collection<String> terms = selectedTerms.getValues(info);
-		if( !terms.contains(termFullPath) )
-		{
-			if( !isMultiple() )
-			{
-				terms.clear();
-			}
-			terms.add(termFullPath);
-			selectedTerms.setValues(info, terms);
-		}
-	}
+      final long totalResults = results.getFirst();
+      model.setSearchTotalResults(totalResults);
 
-	@EventHandlerMethod
-	public void removeTerm(SectionInfo info, String selectedTermValue)
-	{
-		List<String> values = selectedTerms.getValues(info);
-		if( values.remove(selectedTermValue) )
-		{
-			selectedTerms.setValues(info, values);
-		}
-	}
+      if (srs.size() < totalResults) {
+        HtmlComponentState button = new HtmlComponentState(new OverrideHandler(searchFunc, true));
+        button.setLabel(new KeyLabel(SHOW_ALL_LABEL, totalResults));
+        model.setShowAllResults(new ButtonRenderer(button));
+      }
+    }
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "95%";
-	}
+  protected abstract SectionRenderable getTermClickTarget(TermResult tr);
 
-	protected boolean isSelectable(TermResult term)
-	{
-		switch( restriction )
-		{
-			case UNRESTRICTED:
-				return true;
-			case LEAF_ONLY:
-				return term.isLeaf();
-			case TOP_LEVEL_ONLY:
-				return term.getTerm().equals(term.getFullTerm());
-			default:
-				return false;
-		}
-	}
+  @EventHandlerMethod
+  public void selectTerm(SectionInfo info, String termFullPath) {
+    if (storageFormat == TermStorageFormat.LEAF_ONLY) {
+      termFullPath = taxonomyService.getTerm(taxonomyUuid, termFullPath).getTerm();
+    }
 
-	public boolean isMultiple()
-	{
-		return multiple;
-	}
+    final Collection<String> terms = selectedTerms.getValues(info);
+    if (!terms.contains(termFullPath)) {
+      if (!isMultiple()) {
+        terms.clear();
+      }
+      terms.add(termFullPath);
+      selectedTerms.setValues(info, terms);
+    }
+  }
 
-	public void setMultiple(boolean multiple)
-	{
-		this.multiple = multiple;
-	}
+  @EventHandlerMethod
+  public void removeTerm(SectionInfo info, String selectedTermValue) {
+    List<String> values = selectedTerms.getValues(info);
+    if (values.remove(selectedTermValue)) {
+      selectedTerms.setValues(info, values);
+    }
+  }
 
-	public void setTaxonomyUuid(String taxonomyUuid)
-	{
-		this.taxonomyUuid = taxonomyUuid;
-	}
+  @Override
+  public String getWidth() {
+    return "95%";
+  }
 
-	public void setRestriction(SelectionRestriction restriction)
-	{
-		this.restriction = restriction;
-	}
+  protected boolean isSelectable(TermResult term) {
+    switch (restriction) {
+      case UNRESTRICTED:
+        return true;
+      case LEAF_ONLY:
+        return term.isLeaf();
+      case TOP_LEVEL_ONLY:
+        return term.getTerm().equals(term.getFullTerm());
+      default:
+        return false;
+    }
+  }
 
-	public void setStorageFormat(TermStorageFormat storageFormat)
-	{
-		this.storageFormat = storageFormat;
-	}
+  public boolean isMultiple() {
+    return multiple;
+  }
 
-	public boolean isSearchEnabled()
-	{
-		return searchEnabled;
-	}
+  public void setMultiple(boolean multiple) {
+    this.multiple = multiple;
+  }
 
-	public void setSearchEnabled(boolean searchEnabled)
-	{
-		this.searchEnabled = searchEnabled;
-	}
+  public void setTaxonomyUuid(String taxonomyUuid) {
+    this.taxonomyUuid = taxonomyUuid;
+  }
 
-	public boolean isBrowseEnabled()
-	{
-		return browseEnabled;
-	}
+  public void setRestriction(SelectionRestriction restriction) {
+    this.restriction = restriction;
+  }
 
-	public void setBrowseEnabled(boolean browseEnabled)
-	{
-		this.browseEnabled = browseEnabled;
-	}
+  public void setStorageFormat(TermStorageFormat storageFormat) {
+    this.storageFormat = storageFormat;
+  }
 
-	public Tree getTreeView()
-	{
-		return treeView;
-	}
+  public boolean isSearchEnabled() {
+    return searchEnabled;
+  }
 
-	public TextField getSearchQuery()
-	{
-		return searchQuery;
-	}
+  public void setSearchEnabled(boolean searchEnabled) {
+    this.searchEnabled = searchEnabled;
+  }
 
-	public Button getSearchButton()
-	{
-		return searchButton;
-	}
+  public boolean isBrowseEnabled() {
+    return browseEnabled;
+  }
 
-	public SelectionsTable getSelectedTermsTable()
-	{
-		return selectedTermsTable;
-	}
+  public void setBrowseEnabled(boolean browseEnabled) {
+    this.browseEnabled = browseEnabled;
+  }
 
-	public boolean isShowTabs()
-	{
-		return searchEnabled && browseEnabled;
-	}
+  public Tree getTreeView() {
+    return treeView;
+  }
 
-	public SimpleFunction getSelectTermFunc()
-	{
-		return selectTermFunc;
-	}
+  public TextField getSearchQuery() {
+    return searchQuery;
+  }
 
-	public class TermSelectorTreeModel implements HtmlTreeModel
-	{
-		@Override
-		public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id)
-		{
-			return Lists.transform(taxonomyService.getChildTerms(taxonomyUuid, id),
-				new Function<TermResult, HtmlTreeNode>()
-				{
-					@Override
-					public HtmlTreeNode apply(TermResult tr)
-					{
-						return new TermSelectorTreeNode(tr);
-					}
-				});
-		}
-	}
+  public Button getSearchButton() {
+    return searchButton;
+  }
 
-	public class TermSelectorTreeNode implements HtmlTreeNode
-	{
-		private final TermResult tr;
+  public SelectionsTable getSelectedTermsTable() {
+    return selectedTermsTable;
+  }
 
-		public TermSelectorTreeNode(TermResult tr)
-		{
-			this.tr = tr;
-		}
+  public boolean isShowTabs() {
+    return searchEnabled && browseEnabled;
+  }
 
-		@Override
-		public String getId()
-		{
-			return tr.getFullTerm();
-		}
+  public SimpleFunction getSelectTermFunc() {
+    return selectTermFunc;
+  }
 
-		@Override
-		public boolean isLeaf()
-		{
-			return tr.isLeaf();
-		}
+  public class TermSelectorTreeModel implements HtmlTreeModel {
+    @Override
+    public List<HtmlTreeNode> getChildNodes(SectionInfo info, String id) {
+      return Lists.transform(
+          taxonomyService.getChildTerms(taxonomyUuid, id),
+          new Function<TermResult, HtmlTreeNode>() {
+            @Override
+            public HtmlTreeNode apply(TermResult tr) {
+              return new TermSelectorTreeNode(tr);
+            }
+          });
+    }
+  }
 
-		@Override
-		public SectionRenderable getRenderer()
-		{
-			return getTermClickTarget(tr);
-		}
+  public class TermSelectorTreeNode implements HtmlTreeNode {
+    private final TermResult tr;
 
-		@Override
-		public Label getLabel()
-		{
-			// This method shouldn't be executed if we are returning a
-			// SectionRenderable from getRenderer().
-			throw new RuntimeException("We should not reach here");
-		}
-	}
+    public TermSelectorTreeNode(TermResult tr) {
+      this.tr = tr;
+    }
 
-	public static abstract class AbstractPopupBrowserModel extends DialogModel
-	{
-		private boolean searchExecuted;
-		private long searchTotalResults;
-		private List<SectionRenderable> searchResults;
-		private SectionRenderable showAllResults;
+    @Override
+    public String getId() {
+      return tr.getFullTerm();
+    }
 
-		public boolean isSearchExecuted()
-		{
-			return searchExecuted;
-		}
+    @Override
+    public boolean isLeaf() {
+      return tr.isLeaf();
+    }
 
-		public void setSearchExecuted(boolean searchExecuted)
-		{
-			this.searchExecuted = searchExecuted;
-		}
+    @Override
+    public SectionRenderable getRenderer() {
+      return getTermClickTarget(tr);
+    }
 
-		public long getSearchTotalResults()
-		{
-			return searchTotalResults;
-		}
+    @Override
+    public Label getLabel() {
+      // This method shouldn't be executed if we are returning a
+      // SectionRenderable from getRenderer().
+      throw new RuntimeException("We should not reach here");
+    }
+  }
 
-		public void setSearchTotalResults(long searchTotalResults)
-		{
-			this.searchTotalResults = searchTotalResults;
-		}
+  public abstract static class AbstractPopupBrowserModel extends DialogModel {
+    private boolean searchExecuted;
+    private long searchTotalResults;
+    private List<SectionRenderable> searchResults;
+    private SectionRenderable showAllResults;
 
-		public List<SectionRenderable> getSearchResults()
-		{
-			return searchResults;
-		}
+    public boolean isSearchExecuted() {
+      return searchExecuted;
+    }
 
-		public void setSearchResults(List<SectionRenderable> searchResults)
-		{
-			this.searchResults = searchResults;
-		}
+    public void setSearchExecuted(boolean searchExecuted) {
+      this.searchExecuted = searchExecuted;
+    }
 
-		public SectionRenderable getShowAllResults()
-		{
-			return showAllResults;
-		}
+    public long getSearchTotalResults() {
+      return searchTotalResults;
+    }
 
-		public void setShowAllResults(SectionRenderable showAllResults)
-		{
-			this.showAllResults = showAllResults;
-		}
-	}
+    public void setSearchTotalResults(long searchTotalResults) {
+      this.searchTotalResults = searchTotalResults;
+    }
+
+    public List<SectionRenderable> getSearchResults() {
+      return searchResults;
+    }
+
+    public void setSearchResults(List<SectionRenderable> searchResults) {
+      this.searchResults = searchResults;
+    }
+
+    public SectionRenderable getShowAllResults() {
+      return showAllResults;
+    }
+
+    public void setShowAllResults(SectionRenderable showAllResults) {
+      this.showAllResults = showAllResults;
+    }
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,69 +18,58 @@
 
 package com.tle.beans.usermanagement.standard.wrapper;
 
+import com.tle.beans.ump.UserManagementSettings;
+import com.tle.common.settings.annotation.Property;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.tle.beans.ump.UserManagementSettings;
-import com.tle.common.settings.annotation.Property;
+public class CASConfiguration extends UserManagementSettings {
+  private static final long serialVersionUID = 1L;
 
-public class CASConfiguration extends UserManagementSettings
-{
-	private static final long serialVersionUID = 1L;
+  private static final String DEFAULT_URL =
+      "https://secure.its.yale.edu/cas/servlet/"; //$NON-NLS-1$
 
-	private static final String DEFAULT_URL = "https://secure.its.yale.edu/cas/servlet/"; //$NON-NLS-1$
+  @Property(key = "cas.url")
+  private URL url;
 
-	@Property(key = "cas.url")
-	private URL url;
+  @Property(key = "cas.logout.url")
+  private URL logoutUrl;
 
-	@Property(key = "cas.logout.url")
-	private URL logoutUrl;
+  @Property(key = "wrapper.cas.enabled")
+  private boolean enabled;
 
-	@Property(key = "wrapper.cas.enabled")
-	private boolean enabled;
+  public CASConfiguration() {
+    try {
+      setUrl(new URL(DEFAULT_URL));
+      setLogoutUrl(new URL(new URL(DEFAULT_URL), "logout?url=")); // $NON-NLS-1$
+    } catch (MalformedURLException e) {
+      // NEVER HAPPEN
+    }
+  }
 
-	public CASConfiguration()
-	{
-		try
-		{
-			setUrl(new URL(DEFAULT_URL));
-			setLogoutUrl(new URL(new URL(DEFAULT_URL), "logout?url=")); //$NON-NLS-1$
-		}
-		catch( MalformedURLException e )
-		{
-			// NEVER HAPPEN
-		}
-	}
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public URL getUrl() {
+    return url;
+  }
 
-	public URL getUrl()
-	{
-		return url;
-	}
+  public void setUrl(URL url) {
+    this.url = url;
+  }
 
-	public void setUrl(URL url)
-	{
-		this.url = url;
-	}
+  public URL getLogoutUrl() {
+    return logoutUrl;
+  }
 
-	public URL getLogoutUrl()
-	{
-		return logoutUrl;
-	}
-
-	public void setLogoutUrl(URL logoutUrl)
-	{
-		this.logoutUrl = logoutUrl;
-	}
+  public void setLogoutUrl(URL logoutUrl) {
+    this.logoutUrl = logoutUrl;
+  }
 }

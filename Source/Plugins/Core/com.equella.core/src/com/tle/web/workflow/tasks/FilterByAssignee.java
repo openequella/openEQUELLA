@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -42,132 +44,115 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.annotations.Component;
 
-public class FilterByAssignee extends AbstractFilterByUserSection<FreetextSearchEvent>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class FilterByAssignee extends AbstractFilterByUserSection<FreetextSearchEvent> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Component(parameter = "unan", supported = true)
-	@PlugKey("unassigned.only")
-	private Checkbox unassOnlyCheckbox;
+  @Component(parameter = "unan", supported = true)
+  @PlugKey("unassigned.only")
+  private Checkbox unassOnlyCheckbox;
 
-	@PlugKey("filter.assign.title")
-	private static Label LABEL_TITLE;
+  @PlugKey("filter.assign.title")
+  private static Label LABEL_TITLE;
 
-	@PlugKey("filter.assign.dialog")
-	private static Label LABEL_DIALOG_TITLE;
+  @PlugKey("filter.assign.dialog")
+  private static Label LABEL_DIALOG_TITLE;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		String assigneeUuid = hidden.getValue(context);
-		if( assigneeUuid != null )
-		{
-			getModel(context).setOwner(userLinkSection.createLink(context, assigneeUuid));
-		}
-		return viewFactory.createResult("assigneefilter.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    String assigneeUuid = hidden.getValue(context);
+    if (assigneeUuid != null) {
+      getModel(context).setOwner(userLinkSection.createLink(context, assigneeUuid));
+    }
+    return viewFactory.createResult("assigneefilter.ftl", context);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		if( unassOnlyCheckbox.isChecked(info) )
-		{
-			super.reset(info);
-			if( getModel(info).getOwner() != null )
-			{
-				getModel(info).setOwner(null);
-			}
-			event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
-		}
-		else
-		{
-			String userIds = getSelectedUserId(info);
-			if( !Check.isEmpty(userIds) )
-			{
-				event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, userIds);
-			}
-		}
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    if (unassOnlyCheckbox.isChecked(info)) {
+      super.reset(info);
+      if (getModel(info).getOwner() != null) {
+        getModel(info).setOwner(null);
+      }
+      event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
+    } else {
+      String userIds = getSelectedUserId(info);
+      if (!Check.isEmpty(userIds)) {
+        event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, userIds);
+      }
+    }
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-		JSHandler restarter = new StatementHandler(resultsSection.getRestartSearchHandler(tree));
-		unassOnlyCheckbox.setClickHandler(restarter);
+    JSHandler restarter = new StatementHandler(resultsSection.getRestartSearchHandler(tree));
+    unassOnlyCheckbox.setClickHandler(restarter);
 
-		JSCallable unassignedClicked = ajax.getAjaxUpdateDomFunction(tree, null,
-			events.getEventHandler("unassignedClicked"), ajax.getEffectFunction(EffectType.ACTIVITY), getAjaxDiv());
-		unassOnlyCheckbox.addClickStatements(jscall(unassignedClicked));
+    JSCallable unassignedClicked =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            null,
+            events.getEventHandler("unassignedClicked"),
+            ajax.getEffectFunction(EffectType.ACTIVITY),
+            getAjaxDiv());
+    unassOnlyCheckbox.addClickStatements(jscall(unassignedClicked));
 
-		selOwner.setOkCallback(searchResults.getResultsUpdater(tree, events.getEventHandler("uncheckUnassigned"),
-			getAjaxDiv()));
-	}
+    selOwner.setOkCallback(
+        searchResults.getResultsUpdater(
+            tree, events.getEventHandler("uncheckUnassigned"), getAjaxDiv()));
+  }
 
-	@EventHandlerMethod
-	public void unassignedClicked(SectionInfo info)
-	{
-		if( unassOnlyCheckbox.isChecked(info) )
-		{
-			super.reset(info);
-		}
-	}
+  @EventHandlerMethod
+  public void unassignedClicked(SectionInfo info) {
+    if (unassOnlyCheckbox.isChecked(info)) {
+      super.reset(info);
+    }
+  }
 
-	/**
-	 * Whether the user selector dialogbox has been cancelled, or closed without
-	 * selection, we don't reset the unassigned user checkbox. But if there's
-	 * any selection, we allow that selection to trigger a fresh set of result
-	 * which renders the unassigned filter irrelevant, hence we need to ensure
-	 * the checkbox is cleared.
-	 * 
-	 * @param info
-	 */
-	@EventHandlerMethod
-	public void uncheckUnassigned(SectionInfo info, String user)
-	{
-		super.ownerSelected(info, user);
-		boolean selectionMade = !Check.isEmpty(getSelectedUserId(info));
-		if( selectionMade )
-		{
-			unassOnlyCheckbox.setChecked(info, false);
-		}
-	}
+  /**
+   * Whether the user selector dialogbox has been cancelled, or closed without selection, we don't
+   * reset the unassigned user checkbox. But if there's any selection, we allow that selection to
+   * trigger a fresh set of result which renders the unassigned filter irrelevant, hence we need to
+   * ensure the checkbox is cleared.
+   *
+   * @param info
+   */
+  @EventHandlerMethod
+  public void uncheckUnassigned(SectionInfo info, String user) {
+    super.ownerSelected(info, user);
+    boolean selectionMade = !Check.isEmpty(getSelectedUserId(info));
+    if (selectionMade) {
+      unassOnlyCheckbox.setChecked(info, false);
+    }
+  }
 
-	public Checkbox getUnassOnlyCheckbox()
-	{
-		return unassOnlyCheckbox;
-	}
+  public Checkbox getUnassOnlyCheckbox() {
+    return unassOnlyCheckbox;
+  }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "assign";
-	}
+  @Override
+  protected String getPublicParam() {
+    return "assign";
+  }
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public Label getDialogTitle()
-	{
-		return LABEL_DIALOG_TITLE;
-	}
+  @Override
+  public Label getDialogTitle() {
+    return LABEL_DIALOG_TITLE;
+  }
 
-	@Override
-	public String getAjaxDiv()
-	{
-		return "assigneeflt";
-	}
+  @Override
+  public String getAjaxDiv() {
+    return "assigneeflt";
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,40 +29,34 @@ import com.tle.web.sections.render.Label;
 
 @SuppressWarnings("nls")
 public class SimpleResetFiltersQuerySection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractResetFiltersQuerySection<AbstractResetFiltersQuerySection.AbstractQuerySectionModel, SE>
-{
-	private static final String DIV_QUERY = "searchform";
+    extends AbstractResetFiltersQuerySection<
+        AbstractResetFiltersQuerySection.AbstractQuerySectionModel, SE> {
+  private static final String DIV_QUERY = "searchform";
 
-	@PlugKey("query.search")
-	private static Label SEARCH_LABEL;
+  @PlugKey("query.search")
+  private static Label SEARCH_LABEL;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		searchButton.setLabel(SEARCH_LABEL);
-		searchButton.setClickHandler(searchResults.getResultsUpdater(tree, null, DIV_QUERY));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    searchButton.setLabel(SEARCH_LABEL);
+    searchButton.setClickHandler(searchResults.getResultsUpdater(tree, null, DIV_QUERY));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("filter/simplequery.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("filter/simplequery.ftl", this);
+  }
 
-	@Override
-	public Class<AbstractQuerySectionModel> getModelClass()
-	{
-		return AbstractQuerySectionModel.class;
-	}
+  @Override
+  public Class<AbstractQuerySectionModel> getModelClass() {
+    return AbstractQuerySectionModel.class;
+  }
 
-	@Override
-	protected String getAjaxDiv()
-	{
-		return DIV_QUERY;
-	}
+  @Override
+  protected String getAjaxDiv() {
+    return DIV_QUERY;
+  }
 }

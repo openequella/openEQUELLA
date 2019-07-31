@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,10 @@
 
 package com.tle.common.workflow;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.tle.beans.IdCloneable;
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,118 +30,102 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import com.tle.beans.IdCloneable;
-
 @Entity
 @AccessType("field")
-public class WorkflowMessage implements Serializable, IdCloneable
-{
-	public static final char TYPE_COMMENT = 'c';
-	public static final char TYPE_REJECT = 'r';
-	public static final char TYPE_ACCEPT = 'a';
-	public static final char TYPE_SUBMIT = 's';
+public class WorkflowMessage implements Serializable, IdCloneable {
+  public static final char TYPE_COMMENT = 'c';
+  public static final char TYPE_REJECT = 'r';
+  public static final char TYPE_ACCEPT = 'a';
+  public static final char TYPE_SUBMIT = 's';
 
-	public static boolean isValidMessageType(char c)
-	{
-		return TYPE_COMMENT == c || TYPE_ACCEPT == c || TYPE_SUBMIT == c || TYPE_REJECT == c;
-	}
+  public static boolean isValidMessageType(char c) {
+    return TYPE_COMMENT == c || TYPE_ACCEPT == c || TYPE_SUBMIT == c || TYPE_REJECT == c;
+  }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40, nullable = false)
-	@Index(name = "messageUuidIndex")
-	private String uuid;
-	private char type;
-	@Column(nullable = false)
-	private Date date;
+  @Column(length = 40, nullable = false)
+  @Index(name = "messageUuidIndex")
+  private String uuid;
 
-	@ManyToOne
-	@JoinColumn(insertable = false, updatable = false, nullable = false)
-	@XStreamOmitField
-	@Index(name = "messagenode_idx")
-	private WorkflowNodeStatus node;
-	@Lob
-	@Column(nullable = false)
-	private String message;
-	@Column(length = 255, nullable = false)
-	private String user;
+  private char type;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Column(nullable = false)
+  private Date date;
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @ManyToOne
+  @JoinColumn(insertable = false, updatable = false, nullable = false)
+  @XStreamOmitField
+  @Index(name = "messagenode_idx")
+  private WorkflowNodeStatus node;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @Lob
+  @Column(nullable = false)
+  private String message;
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  @Column(length = 255, nullable = false)
+  private String user;
 
-	public WorkflowNodeStatus getNode()
-	{
-		return node;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setNode(WorkflowNodeStatus node)
-	{
-		this.node = node;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public char getType()
-	{
-		return type;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setType(char type)
-	{
-		this.type = type;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public String getMessage()
-	{
-		return message;
-	}
+  public WorkflowNodeStatus getNode() {
+    return node;
+  }
 
-	public void setMessage(String message)
-	{
-		this.message = message;
-	}
+  public void setNode(WorkflowNodeStatus node) {
+    this.node = node;
+  }
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public char getType() {
+    return type;
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  public void setType(char type) {
+    this.type = type;
+  }
 
-	public String getUser()
-	{
-		return user;
-	}
+  public String getMessage() {
+    return message;
+  }
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public String getUser() {
+    return user;
+  }
+
+  public void setUser(String user) {
+    this.user = user;
+  }
 }

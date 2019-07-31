@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,73 +18,71 @@
 
 package com.tle.common.usermanagement.user;
 
+import com.tle.beans.Institution;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
-import com.tle.beans.Institution;
-import com.tle.common.usermanagement.user.valuebean.UserBean;
+/** @author Nicholas Read */
+public interface UserState extends Cloneable, Serializable {
+  String getSessionID();
 
-/**
- * @author Nicholas Read
- */
-public interface UserState extends Cloneable, Serializable
-{
-	String getSessionID();
+  UserBean getUserBean();
 
-	UserBean getUserBean();
+  Institution getInstitution();
 
-	Institution getInstitution();
+  Set<String> getUsersGroups();
 
-	Set<String> getUsersGroups();
+  Set<String> getUsersRoles();
 
-	Set<String> getUsersRoles();
+  String getIpAddress();
 
-	String getIpAddress();
+  String getHostAddress();
 
-	String getHostAddress();
+  String getHostReferrer();
 
-	String getHostReferrer();
+  String getSharePassEmail();
 
-	String getSharePassEmail();
+  String getToken();
 
-	String getToken();
+  String getTokenSecretId();
 
-	String getTokenSecretId();
+  Collection<Long> getCommonAclExpressions();
 
-	Collection<Long> getCommonAclExpressions();
+  Collection<Long> getOwnerAclExpressions();
 
-	Collection<Long> getOwnerAclExpressions();
+  Collection<Long> getNotOwnerAclExpressions();
 
-	Collection<Long> getNotOwnerAclExpressions();
+  boolean isGuest();
 
-	boolean isGuest();
+  boolean isSystem();
 
-	boolean isSystem();
+  boolean isInternal();
 
-	boolean isInternal();
+  boolean wasAutoLoggedIn();
 
-	boolean wasAutoLoggedIn();
+  void setWasAutoLoggedIn(boolean b);
 
-	void setWasAutoLoggedIn(boolean b);
+  boolean isAuthenticated();
 
-	boolean isAuthenticated();
+  void setAuthenticated(boolean b);
 
-	void setAuthenticated(boolean b);
+  boolean isAuditable();
 
-	boolean isAuditable();
+  void setAuditable(boolean b);
 
-	void setAuditable(boolean b);
+  boolean isNeedsSessionUpdate();
 
-	boolean isNeedsSessionUpdate();
+  UserState clone(); // NOSONAR - instance class attends to exception
 
-	UserState clone(); // NOSONAR - instance class attends to exception
+  void updatedInSession();
 
-	void updatedInSession();
+  <T> T getCachedAttribute(Object key);
 
-	<T> T getCachedAttribute(Object key);
+  void setCachedAttribute(Object key, Object value);
 
-	void setCachedAttribute(Object key, Object value);
+  void removeCachedAttribute(Object key);
 
-	void removeCachedAttribute(Object key);
+  String getImpersonatedBy();
 }

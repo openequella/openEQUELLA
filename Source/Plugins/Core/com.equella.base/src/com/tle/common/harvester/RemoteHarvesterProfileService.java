@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,32 @@
 
 package com.tle.common.harvester;
 
+import com.tle.core.remoting.RemoteAbstractEntityService;
 import java.util.List;
 
-import com.tle.core.remoting.RemoteAbstractEntityService;
+public interface RemoteHarvesterProfileService
+    extends RemoteAbstractEntityService<HarvesterProfile> {
+  String ENTITY_TYPE = "HARVESTER_PROFILE"; // $NON-NLS-1$
 
-public interface RemoteHarvesterProfileService extends RemoteAbstractEntityService<HarvesterProfile>
-{
-	String ENTITY_TYPE = "HARVESTER_PROFILE"; //$NON-NLS-1$
+  /**
+   * List the harvester profiles
+   *
+   * @return
+   */
+  List<HarvesterProfile> enumerateEnabledProfiles();
 
-	/**
-	 * List the harvester profiles
-	 * 
-	 * @return
-	 */
-	List<HarvesterProfile> enumerateEnabledProfiles();
+  /**
+   * Runs a harvester profile
+   *
+   * @param profile The profile
+   * @throws Exception
+   */
+  int testProfile(String profileUuid);
 
-	/**
-	 * Runs a harvester profile
-	 * 
-	 * @param profile The profile
-	 * @throws Exception
-	 */
-	int testProfile(String profileUuid);
-
-	/**
-	 * Runs a harvester profile as a SpringClusteredTask
-	 * 
-	 * @param harvesterProfile The profile
-	 */
-	void startHarvesterTask(String profileUuid, boolean manualKickoff);
-
+  /**
+   * Runs a harvester profile as a SpringClusteredTask
+   *
+   * @param harvesterProfile The profile
+   */
+  void startHarvesterTask(String profileUuid, boolean manualKickoff);
 }

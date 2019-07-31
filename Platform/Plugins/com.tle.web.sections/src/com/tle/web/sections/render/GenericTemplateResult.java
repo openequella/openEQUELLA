@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,59 +18,48 @@
 
 package com.tle.web.sections.render;
 
+import com.tle.web.sections.NamedSectionResult;
+import com.tle.web.sections.events.RenderContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tle.web.sections.NamedSectionResult;
-import com.tle.web.sections.events.RenderContext;
+public class GenericTemplateResult implements TemplateResult {
+  private final Map<String, SectionRenderable> results = new HashMap<String, SectionRenderable>();
 
-public class GenericTemplateResult implements TemplateResult
-{
-	private final Map<String, SectionRenderable> results = new HashMap<String, SectionRenderable>();
+  public GenericTemplateResult() {
+    // nothing
+  }
 
-	public GenericTemplateResult()
-	{
-		// nothing
-	}
+  public GenericTemplateResult(NamedSectionResult... results) {
+    for (NamedSectionResult result : results) {
+      addNamedResult(result);
+    }
+  }
 
-	public GenericTemplateResult(NamedSectionResult... results)
-	{
-		for( NamedSectionResult result : results )
-		{
-			addNamedResult(result);
-		}
-	}
+  public void addNamedResult(NamedSectionResult result) {
+    addNamedResult(result.getName(), result);
+  }
 
-	public void addNamedResult(NamedSectionResult result)
-	{
-		addNamedResult(result.getName(), result);
-	}
+  public GenericTemplateResult addNamedResult(String name, SectionRenderable result) {
+    SectionRenderable current = results.get(name);
+    if (current != null) {
+      result = CombinedRenderer.combineResults(current, result);
+    }
+    results.put(name, result);
+    return this;
+  }
 
-	public GenericTemplateResult addNamedResult(String name, SectionRenderable result)
-	{
-		SectionRenderable current = results.get(name);
-		if( current != null )
-		{
-			result = CombinedRenderer.combineResults(current, result);
-		}
-		results.put(name, result);
-		return this;
-	}
+  @Override
+  public TemplateRenderable getNamedResult(RenderContext info, String name) {
+    SectionRenderable renderable = results.get(name);
+    if (renderable != null) {
+      return new WrappedTemplateRenderable(renderable);
+    }
+    return null;
+  }
 
-	@Override
-	public TemplateRenderable getNamedResult(RenderContext info, String name)
-	{
-		SectionRenderable renderable = results.get(name);
-		if( renderable != null )
-		{
-			return new WrappedTemplateRenderable(renderable);
-		}
-		return null;
-	}
-
-	@Override
-	public String toString()
-	{
-		return results.toString();
-	}
+  @Override
+  public String toString() {
+    return results.toString();
+  }
 }

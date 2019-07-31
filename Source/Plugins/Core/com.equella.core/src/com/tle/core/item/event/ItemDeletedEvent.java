@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,39 +22,31 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.ItemDeletedListener;
 
-/**
- * @author Nicholas Read
- */
-public class ItemDeletedEvent extends ApplicationEvent<ItemDeletedListener>
-{
-	private static final long serialVersionUID = 1L;
-	private final ItemIdKey itemKey;
+/** @author Nicholas Read */
+public class ItemDeletedEvent extends ApplicationEvent<ItemDeletedListener> {
+  private static final long serialVersionUID = 1L;
+  private final ItemIdKey itemKey;
 
-	public ItemDeletedEvent(ItemIdKey key)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.itemKey = key;
-	}
+  public ItemDeletedEvent(ItemIdKey key) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.itemKey = key;
+  }
 
-	public long getKey()
-	{
-		return itemKey.getKey();
-	}
+  public long getKey() {
+    return itemKey.getKey();
+  }
 
-	public ItemIdKey getItemId()
-	{
-		return itemKey;
-	}
+  public ItemIdKey getItemId() {
+    return itemKey;
+  }
 
-	@Override
-	public Class<ItemDeletedListener> getListener()
-	{
-		return ItemDeletedListener.class;
-	}
+  @Override
+  public Class<ItemDeletedListener> getListener() {
+    return ItemDeletedListener.class;
+  }
 
-	@Override
-	public void postEvent(ItemDeletedListener listener)
-	{
-		listener.itemDeletedEvent(this);
-	}
+  @Override
+  public void postEvent(ItemDeletedListener listener) {
+    listener.itemDeletedEvent(this);
+  }
 }

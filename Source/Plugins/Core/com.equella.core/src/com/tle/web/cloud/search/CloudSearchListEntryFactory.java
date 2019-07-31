@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,6 @@
 
 package com.tle.web.cloud.search;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.cloud.beans.converted.CloudAttachment;
@@ -29,36 +26,32 @@ import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class CloudSearchListEntryFactory
-{
-	@Inject
-	private Provider<CloudSearchListEntry> entryProvider;
+public class CloudSearchListEntryFactory {
+  @Inject private Provider<CloudSearchListEntry> entryProvider;
 
-	public CloudSearchListEntry createListEntry(SectionInfo info, CloudItem result)
-	{
-		final CloudSearchListEntry listItem = entryProvider.get();
-		listItem.setInfo(info);
-		listItem.setItem(result);
+  public CloudSearchListEntry createListEntry(SectionInfo info, CloudItem result) {
+    final CloudSearchListEntry listItem = entryProvider.get();
+    listItem.setInfo(info);
+    listItem.setItem(result);
 
-		final List<CloudAttachment> attachments = result.getAttachments();
-		if( attachments != null )
-		{
-			for( CloudAttachment attachment : attachments )
-			{
-				final String thumbUrl = attachment.getThumbnail();
-				if( thumbUrl != null )
-				{
-					listItem.addThumbnail(new ImageRenderer(thumbUrl, new TextLabel(attachment.getDescription())));
-				}
-			}
-		}
-		return listItem;
-	}
+    final List<CloudAttachment> attachments = result.getAttachments();
+    if (attachments != null) {
+      for (CloudAttachment attachment : attachments) {
+        final String thumbUrl = attachment.getThumbnail();
+        if (thumbUrl != null) {
+          listItem.addThumbnail(
+              new ImageRenderer(thumbUrl, new TextLabel(attachment.getDescription())));
+        }
+      }
+    }
+    return listItem;
+  }
 }

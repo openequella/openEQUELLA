@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,25 @@
 
 package com.dytech.installer;
 
-/**
- * @author Nicholas Read
- */
-public interface Progress
-{
-	void addMessage(String msg);
+/** @author Nicholas Read */
+public interface Progress {
+  void addMessage(String msg);
 
-	void setWholeAmount(int i);
+  void setWholeAmount(int i);
 
-	void setCurrentAmount(int i);
+  void setCurrentAmount(int i);
 
-	int getWholeAmount();
+  int getWholeAmount();
 
-	int getCurrentAmount();
+  int getCurrentAmount();
 
-	void setCurrentMaximum(int maximum);
+  void setCurrentMaximum(int maximum);
 
-	int getCurrentMaximum();
+  int getCurrentMaximum();
 
-	int getWholeMaximum();
+  int getWholeMaximum();
 
-	void setup(String title, int total);
+  void setup(String title, int total);
 
-	void popupMessage(String title, String message, boolean error);
+  void popupMessage(String title, String message, boolean error);
 }

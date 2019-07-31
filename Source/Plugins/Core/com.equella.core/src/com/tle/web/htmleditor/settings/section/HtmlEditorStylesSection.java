@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.htmleditor.settings.section;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.Nullable;
 import com.tle.core.guice.Bind;
@@ -43,119 +43,108 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.js.modules.CodeMirrorLibrary.EditorType;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class HtmlEditorStylesSection extends AbstractPrototypeSection<HtmlEditorStylesSection.HtmlEditorStylesModel>
-	implements
-		HtmlRenderer,
-		ModalHtmlEditorSettingsSection
-{
-	@PlugKey("settings.styles.front.link")
-	private static Label LABEL_SETTING_LINK;
-	@PlugKey("settings.styles.front.preamble")
-	private static Label LABEL_SETTING_BLURB;
+public class HtmlEditorStylesSection
+    extends AbstractPrototypeSection<HtmlEditorStylesSection.HtmlEditorStylesModel>
+    implements HtmlRenderer, ModalHtmlEditorSettingsSection {
+  @PlugKey("settings.styles.front.link")
+  private static Label LABEL_SETTING_LINK;
 
-	@PlugKey("settings.styles.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("settings.styles.confirm.navigateaway")
-	private static Label LABEL_CONFIRM_NAVIGATE_AWAY;
+  @PlugKey("settings.styles.front.preamble")
+  private static Label LABEL_SETTING_BLURB;
 
-	@TreeLookup
-	private HtmlEditorSettingsFrontPageSection front;
+  @PlugKey("settings.styles.title")
+  private static Label LABEL_TITLE;
 
-	@Component(name = "css", stateful = false)
-	private CodeMirror editor;
-	@PlugKey("settings.styles.button.save")
-	@Component(name = "s")
-	private Button saveButton;
-	@PlugKey("settings.styles.button.cancel")
-	@Component(name = "c")
-	private Button cancelButton;
+  @PlugKey("settings.styles.confirm.navigateaway")
+  private static Label LABEL_CONFIRM_NAVIGATE_AWAY;
 
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @TreeLookup private HtmlEditorSettingsFrontPageSection front;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context)
-	{
-		editor.setValue(context, htmlEditorService.getStylesheetContents());
-		return view.createResult("setting/styles.ftl", context);
-	}
+  @Component(name = "css", stateful = false)
+  private CodeMirror editor;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		editor.setEditorType(EditorType.CSS_EDITOR);
-		editor.setAllowFullScreen(true);
-		editor.setShowHelp(true);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-		saveButton.addEventStatements(JSHandler.EVENT_BEFOREUNLOAD, new ReturnStatement(LABEL_CONFIRM_NAVIGATE_AWAY));
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
-	}
+  @PlugKey("settings.styles.button.save")
+  @Component(name = "s")
+  private Button saveButton;
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		htmlEditorService.setStylesheetContents(editor.getValue(info));
-		front.returnToFrontPage(info);
-	}
+  @PlugKey("settings.styles.button.cancel")
+  @Component(name = "c")
+  private Button cancelButton;
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		front.returnToFrontPage(info);
-	}
+  @Inject private HtmlEditorService htmlEditorService;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		crumbs.setForcedLastCrumb(LABEL_TITLE);
-		decorations.setTitle(LABEL_TITLE);
-		decorations.setContentBodyClass("htmleditor");
-	}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) {
+    editor.setValue(context, htmlEditorService.getStylesheetContents());
+    return view.createResult("setting/styles.ftl", context);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new HtmlEditorStylesModel();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    editor.setEditorType(EditorType.CSS_EDITOR);
+    editor.setAllowFullScreen(true);
+    editor.setShowHelp(true);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+    saveButton.addEventStatements(
+        JSHandler.EVENT_BEFOREUNLOAD, new ReturnStatement(LABEL_CONFIRM_NAVIGATE_AWAY));
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+  }
 
-	@Override
-	public void startSession(SectionInfo info)
-	{
-		// No. But maybe later.
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    htmlEditorService.setStylesheetContents(editor.getValue(info));
+    front.returnToFrontPage(info);
+  }
 
-	@Override
-	@Nullable
-	public SettingInfo getSettingInfo(SectionInfo info)
-	{
-		return new SettingInfo("styles", LABEL_SETTING_LINK, LABEL_SETTING_BLURB);
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    front.returnToFrontPage(info);
+  }
 
-	public CodeMirror getEditor()
-	{
-		return editor;
-	}
+  @Override
+  public void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    crumbs.setForcedLastCrumb(LABEL_TITLE);
+    decorations.setTitle(LABEL_TITLE);
+    decorations.setContentBodyClass("htmleditor");
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new HtmlEditorStylesModel();
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  @Override
+  public void startSession(SectionInfo info) {
+    // No. But maybe later.
+  }
 
-	public static class HtmlEditorStylesModel
-	{
-		// No
-	}
+  @Override
+  @Nullable
+  public SettingInfo getSettingInfo(SectionInfo info) {
+    return new SettingInfo("styles", LABEL_SETTING_LINK, LABEL_SETTING_BLURB);
+  }
+
+  public CodeMirror getEditor() {
+    return editor;
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
+
+  public Button getCancelButton() {
+    return cancelButton;
+  }
+
+  public static class HtmlEditorStylesModel {
+    // No
+  }
 }

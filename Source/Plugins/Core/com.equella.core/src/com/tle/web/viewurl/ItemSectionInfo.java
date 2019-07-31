@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.viewurl;
-
-import java.util.Set;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.annotation.NonNullByDefault;
@@ -31,41 +31,40 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 import com.tle.web.viewable.ViewableItem;
+import java.util.Set;
 
 @NonNullByDefault
-public interface ItemSectionInfo
-{
-	ItemKey getItemId();
+public interface ItemSectionInfo {
+  ItemKey getItemId();
 
-	String getItemdir();
+  String getItemdir();
 
-	Item getItem();
+  Item getItem();
 
-	PropBagEx getItemxml();
+  PropBagEx getItemxml();
 
-	ItemDefinition getItemdef();
+  ItemDefinition getItemdef();
 
-	@Nullable
-	WorkflowStatus getWorkflowStatus();
+  @Nullable
+  WorkflowStatus getWorkflowStatus();
 
-	Set<String> getPrivileges();
+  Set<String> getPrivileges();
 
-	boolean hasPrivilege(String privilege);
+  boolean hasPrivilege(String privilege);
 
-	Attachments getAttachments();
+  Attachments getAttachments();
 
-	void modify(WorkflowOperation... ops);
+  void modify(WorkflowOperation... ops);
 
-	void refreshItem(boolean modified);
+  void refreshItem(boolean modified);
 
-	@Nullable
-	ViewableItem<Item> getViewableItem();
+  @Nullable
+  ViewableItem<Item> getViewableItem();
 
-	@TreeIndexed
-	interface ItemSectionInfoFactory extends SectionId
-	{
-		ItemSectionInfo getItemSectionInfo(SectionInfo info);
-	}
+  @TreeIndexed
+  interface ItemSectionInfoFactory extends SectionId {
+    ItemSectionInfo getItemSectionInfo(SectionInfo info);
+  }
 
-	boolean isEditing();
+  boolean isEditing();
 }

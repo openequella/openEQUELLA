@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,33 @@
 
 package com.dytech.edge.common.valuebean;
 
+import com.tle.beans.item.ItemIdKey;
 import java.util.Date;
 
-import com.tle.beans.item.ItemIdKey;
+public class ItemIndexDate {
+  private final ItemIdKey key;
+  private final Date lastIndexed;
+  private final long institutionId;
 
-public class ItemIndexDate
-{
-	private final ItemIdKey key;
-	private final Date lastIndexed;
-	private final long institutionId;
+  public ItemIndexDate(long id, String uuid, int version, Date lastIndexed, long institution) {
+    this(new ItemIdKey(id, uuid, version), lastIndexed, institution);
+  }
 
-	public ItemIndexDate(long id, String uuid, int version, Date lastIndexed, long institution)
-	{
-		this(new ItemIdKey(id, uuid, version), lastIndexed, institution);
-	}
+  public ItemIndexDate(ItemIdKey key, Date lastIndexed, long institutionId) {
+    this.key = key;
+    this.lastIndexed = lastIndexed;
+    this.institutionId = institutionId;
+  }
 
-	public ItemIndexDate(ItemIdKey key, Date lastIndexed, long institutionId)
-	{
-		this.key = key;
-		this.lastIndexed = lastIndexed;
-		this.institutionId = institutionId;
-	}
+  public ItemIdKey getKey() {
+    return key;
+  }
 
-	public ItemIdKey getKey()
-	{
-		return key;
-	}
+  public Date getLastIndexed() {
+    return lastIndexed;
+  }
 
-	public Date getLastIndexed()
-	{
-		return lastIndexed;
-	}
-
-	public long getInstitutionId()
-	{
-		return institutionId;
-	}
-
+  public long getInstitutionId() {
+    return institutionId;
+  }
 }

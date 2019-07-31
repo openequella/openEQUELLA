@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,18 +23,16 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.template.Decorations;
 
-public class ModalErrorSection extends DefaultErrorSection
-{
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "moderr"; //$NON-NLS-1$
-	}
+public class ModalErrorSection extends DefaultErrorSection {
+  @Override
+  public String getDefaultPropertyName() {
+    return "moderr"; //$NON-NLS-1$
+  }
 
-	@Override
-	public SectionResult renderErrorHtml(DefaultErrorModel model, RenderEventContext context) throws Exception
-	{
-		Decorations.getDecorations(context).clearAllDecorations();
-		return super.renderErrorHtml(model, context);
-	}
+  @Override
+  public SectionResult renderErrorHtml(DefaultErrorModel model, RenderEventContext context)
+      throws Exception {
+    Decorations.getDecorations(context).clearAllDecorations();
+    return super.renderErrorHtml(model, context);
+  }
 }

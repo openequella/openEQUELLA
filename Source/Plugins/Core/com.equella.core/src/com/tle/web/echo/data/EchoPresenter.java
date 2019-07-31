@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,79 +18,63 @@
 
 package com.tle.web.echo.data;
 
+import com.google.common.collect.Maps;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+public class EchoPresenter implements Serializable {
+  private String firstname;
+  private String lastname;
+  private String email;
+  private String sectionroles;
+  private Map<String, Object> extras = Maps.newHashMap();
 
-public class EchoPresenter implements Serializable
-{
-	private String firstname;
-	private String lastname;
-	private String email;
-	private String sectionroles;
-	private Map<String, Object> extras = Maps.newHashMap();
+  public EchoPresenter() {}
 
-	public EchoPresenter()
-	{
+  public EchoPresenter(String firstname, String lastname, String email, String sectionroles) {
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.email = email;
+    this.sectionroles = sectionroles;
+  }
 
-	}
+  public String getFirstname() {
+    return firstname;
+  }
 
-	public EchoPresenter(String firstname, String lastname, String email, String sectionroles)
-	{
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.email = email;
-		this.sectionroles = sectionroles;
-	}
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
 
-	public String getFirstname()
-	{
-		return firstname;
-	}
+  public String getLastname() {
+    return lastname;
+  }
 
-	public void setFirstname(String firstname)
-	{
-		this.firstname = firstname;
-	}
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
 
-	public String getLastname()
-	{
-		return lastname;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setLastname(String lastname)
-	{
-		this.lastname = lastname;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public String getEmail()
-	{
-		return email;
-	}
+  public String getSectionroles() {
+    return sectionroles;
+  }
 
-	public void setEmail(String email)
-	{
-		this.email = email;
-	}
+  public void setSectionroles(String sectionroles) {
+    this.sectionroles = sectionroles;
+  }
 
-	public String getSectionroles()
-	{
-		return sectionroles;
-	}
+  public Map<String, Object> getExtras() {
+    return extras;
+  }
 
-	public void setSectionroles(String sectionroles)
-	{
-		this.sectionroles = sectionroles;
-	}
-
-	public Map<String, Object> getExtras()
-	{
-		return extras;
-	}
-
-	public void setExtras(Map<String, Object> extras)
-	{
-		this.extras = extras;
-	}
+  public void setExtras(Map<String, Object> extras) {
+    this.extras = extras;
+  }
 }

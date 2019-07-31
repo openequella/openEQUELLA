@@ -3,6 +3,7 @@ module OEQ.Search.OwnerControl where
 import Prelude
 
 import Common.CommonStrings (commonString)
+import Common.Strings (languageStrings)
 import Data.Array (head)
 import Data.Array as Array
 import Data.Lens (set)
@@ -12,7 +13,7 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getProps, modifyState, renderer, saveRef)
+import Dispatcher.React (getProps, modifyState, saveRef)
 import Dispatcher.React as DR
 import Effect (Effect)
 import Effect.Class (liftEffect)
@@ -22,12 +23,11 @@ import MaterialUI.Button (button)
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
-import MaterialUI.Enums (raised)
+import MaterialUI.Enums (contained)
 import MaterialUI.Icon (icon)
 import MaterialUI.Styles (withStyles)
 import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
-import OEQ.Environment (prepLangStrings)
-import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import OEQ.Search.SearchControl (Chip(..), Placement, SearchControl)
 import OEQ.Search.SearchQuery (_params, singleParam)
 import OEQ.UI.Common (unsafeWithRef)
 import OEQ.UI.Icons (userIcon, userIconName)
@@ -46,7 +46,8 @@ ownerControl placement = do
   let 
     _userDetails = prop (SProxy :: SProxy "userDetails")
     _owner = at "owner"
-    eval = case _ of 
+    string = languageStrings.searchpage
+    eval = case _ of
       CloseOwner -> modifyState _{selectOwner=false}
       SelectOwner -> modifyState _{selectOwner=true}
       OwnerSelected o -> do 
@@ -61,7 +62,7 @@ ownerControl placement = do
         d = eval >>> affAction this 
         render {props:{classes,updateQuery}, state:{selectOwner}} = 
           filterSection {name:string.filterOwner.title, icon: userIcon} $ [
-            button {variant: raised, onClick: d SelectOwner } [ 
+            button {variant: contained, onClick: d SelectOwner } [ 
               icon {className: classes.ownerIcon} [text userIconName],
               text commonString.action.select
             ],
@@ -105,27 +106,3 @@ ownerControl placement = do
       height: 600
     } 
   }
-
-rawStrings :: { prefix :: String
-, strings :: { filterOwner :: { title :: String
-                              , chip :: String
-                              , selectTitle :: String
-                              }
-             }
-}
-rawStrings = {prefix: "searchpage", 
-  strings: {
-    filterOwner: {
-      title: "Owner",
-      chip: "Owner: ",
-      selectTitle: "Select user to filter by"
-    }
-  }
-}
-
-string :: { filterOwner :: { title :: String
-                 , chip :: String
-                 , selectTitle :: String
-                 }
-}
-string = prepLangStrings rawStrings

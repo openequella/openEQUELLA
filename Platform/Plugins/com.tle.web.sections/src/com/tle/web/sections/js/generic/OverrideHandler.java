@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,39 +22,30 @@ import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSStatements;
 
-/**
- * A handler which always returns false in order to stop further event handling.
- */
-public class OverrideHandler extends StatementHandler
-{
-	public OverrideHandler()
-	{
-		// nothing
-	}
+/** A handler which always returns false in order to stop further event handling. */
+public class OverrideHandler extends StatementHandler {
+  public OverrideHandler() {
+    // nothing
+  }
 
-	public OverrideHandler(JSStatements... statements)
-	{
-		super(statements);
-	}
+  public OverrideHandler(JSStatements... statements) {
+    super(statements);
+  }
 
-	public OverrideHandler(JSStatements statements)
-	{
-		super(statements);
-	}
+  public OverrideHandler(JSStatements statements) {
+    super(statements);
+  }
 
-	public OverrideHandler(JSCallable callable, Object... args)
-	{
-		super(callable, args);
-	}
+  public OverrideHandler(JSCallable callable, Object... args) {
+    super(callable, args);
+  }
 
-	public OverrideHandler(JSHandler handler, JSStatements statements)
-	{
-		super(handler, statements);
-	}
+  public OverrideHandler(JSHandler handler, JSStatements statements) {
+    super(handler, statements);
+  }
 
-	@Override
-	public boolean isOverrideDefault()
-	{
-		return true;
-	}
+  @Override
+  public boolean isOverrideDefault() {
+    return true;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,33 @@
 
 package com.tle.web.service.oai.legacy;
 
+import ORG.oclc.oai.server.OAIHandler;
+import com.google.inject.MembersInjector;
+import com.tle.core.guice.Bind;
 import java.util.Properties;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import ORG.oclc.oai.server.OAIHandler;
-
-import com.google.inject.MembersInjector;
-import com.tle.core.guice.Bind;
-
 @Deprecated
 @Bind
 @Singleton
-public class OAIServletLegacy extends OAIHandler
-{
-	@Inject
-	private OAIProperties properties;
-	@Inject
-	private MembersInjector<OAICatalog> catalogInjector;
-	@Inject
-	private MembersInjector<XMLRecordFactory> recordInjector;
+public class OAIServletLegacy extends OAIHandler {
+  @Inject private OAIProperties properties;
+  @Inject private MembersInjector<OAICatalog> catalogInjector;
+  @Inject private MembersInjector<XMLRecordFactory> recordInjector;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException
-	{
-		Properties props = properties.getProperties();
-		config.getServletContext().setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, props);
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    Properties props = properties.getProperties();
+    config.getServletContext().setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, props);
 
-		super.init(config);
+    super.init(config);
 
-		OAICatalog catalog = (OAICatalog) getAttributes("").get("OAIHandler.catalog"); //$NON-NLS-1$ //$NON-NLS-2$
-		catalogInjector.injectMembers(catalog);
-		recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
-	}
+    OAICatalog catalog =
+        (OAICatalog) getAttributes("").get("OAIHandler.catalog"); // $NON-NLS-1$ //$NON-NLS-2$
+    catalogInjector.injectMembers(catalog);
+    recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
+  }
 }

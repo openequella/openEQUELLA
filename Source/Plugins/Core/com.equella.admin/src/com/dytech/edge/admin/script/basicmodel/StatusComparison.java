@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,47 +23,43 @@ import com.dytech.edge.admin.script.ifmodel.Equality;
 import com.dytech.edge.admin.script.ifmodel.IfModel;
 import com.tle.common.i18n.CurrentLocale;
 
-public class StatusComparison implements Comparison
-{
-	protected Equality op;
-	protected String value;
+public class StatusComparison implements Comparison {
+  protected Equality op;
+  protected String value;
 
-	public StatusComparison(Equality op, String value)
-	{
-		this.op = op;
-		this.value = value;
-	}
+  public StatusComparison(Equality op, String value) {
+    this.op = op;
+    this.value = value;
+  }
 
-	public Equality getOperation()
-	{
-		return op;
-	}
+  public Equality getOperation() {
+    return op;
+  }
 
-	public void setOp(Equality op)
-	{
-		this.op = op;
-	}
+  public void setOp(Equality op) {
+    this.op = op;
+  }
 
-	public String getValue()
-	{
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-	@Override
-	public String toScript()
-	{
-		return "status " + op.toScript() + " '" + IfModel.encode(value) + "'";
-	}
+  @Override
+  public String toScript() {
+    return "status " + op.toScript() + " '" + IfModel.encode(value) + "'";
+  }
 
-	@Override
-	public String toEasyRead()
-	{
-		return CurrentLocale.get("com.dytech.edge.admin.script.target.status") + " " + op.toEasyRead() + " '" + value
-			+ "'";
-	}
+  @Override
+  public String toEasyRead() {
+    return CurrentLocale.get("com.dytech.edge.admin.script.target.status")
+        + " "
+        + op.toEasyRead()
+        + " '"
+        + value
+        + "'";
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,34 @@
 
 package com.tle.web.viewable.servlet;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.viewable.PreviewableItem;
 import com.tle.web.viewable.ViewableItem;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class PreviewServlet extends ItemServlet
-{
-	private static final long serialVersionUID = 1L;
+public class PreviewServlet extends ItemServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private UserSessionService sessionService;
+  @Inject private UserSessionService sessionService;
 
-	@Override
-	protected ItemUrlParser getItemUrlParser()
-	{
-		return new NewItemUrlParser()
-		{
-			@Override
-			public ViewableItem createViewableItem()
-			{
-				String uuid = itemId.getUuid();
-				PreviewableItem previewableItem = sessionService.getAttribute(uuid);
-				if( previewableItem != null )
-				{
-					ViewableItem viewableItem = previewableItem.getViewableItem();
-					viewableItem.setFromRequest(true);
-					return viewableItem;
-				}
-				return null;
-			}
-		};
-	}
+  @Override
+  protected ItemUrlParser getItemUrlParser() {
+    return new NewItemUrlParser() {
+      @Override
+      public ViewableItem createViewableItem() {
+        String uuid = itemId.getUuid();
+        PreviewableItem previewableItem = sessionService.getAttribute(uuid);
+        if (previewableItem != null) {
+          ViewableItem viewableItem = previewableItem.getViewableItem();
+          viewableItem.setFromRequest(true);
+          return viewableItem;
+        }
+        return null;
+      }
+    };
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,29 +28,24 @@ import com.tle.web.sections.js.JSPropertyExpression;
 import com.tle.web.sections.js.JSUtils;
 
 @NonNullByDefault
-public class ArrayIndexExpression extends AbstractExpression implements JSPropertyExpression
-{
-	private final JSExpression indexExpr;
+public class ArrayIndexExpression extends AbstractExpression implements JSPropertyExpression {
+  private final JSExpression indexExpr;
 
-	public ArrayIndexExpression(Object index)
-	{
-		this.indexExpr = JSUtils.convertExpressions(index)[0];
-	}
+  public ArrayIndexExpression(Object index) {
+    this.indexExpr = JSUtils.convertExpressions(index)[0];
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return '[' + indexExpr.getExpression(info) + ']';
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return '[' + indexExpr.getExpression(info) + ']';
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, indexExpr);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, indexExpr);
+  }
 
-	public static CombinedExpression create(JSExpression base, Object index)
-	{
-		return new CombinedExpression(base, new ArrayIndexExpression(index));
-	}
+  public static CombinedExpression create(JSExpression base, Object index) {
+    return new CombinedExpression(base, new ArrayIndexExpression(index));
+  }
 }

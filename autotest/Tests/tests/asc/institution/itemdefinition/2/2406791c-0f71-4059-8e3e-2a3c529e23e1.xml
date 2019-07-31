@@ -1,0 +1,353 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116190</id>
+  <uuid>2406791c-0f71-4059-8e3e-2a3c529e23e1</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-11-09 10:18:50.35</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-29 14:02:50.541</dateCreated>
+  <name>
+    <id>116191</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116192</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Staging script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116193</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Attachment</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/text1</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>universal</classType>
+              <attributes>
+                <entry>
+                  <string>FILE_NOUNZIP</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AllowMultiple</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_PACKAGEONLY</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AttachmentTypes</string>
+                  <set>
+                    <string>fileHandler</string>
+                  </set>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;doit&apos;) == &apos;Create binary file&apos;)
+{
+	var connection = utils.getConnection(&quot;https://github.com/equella/Equella/blob/cfd7f9027de68635d73b60958079196bab165ead/Installer/resources/images/logo.gif?raw=true&quot;);
+	var response = connection.getResponse(true);
+	staging.writeBinaryFile(&quot;equellaLogo.gif &quot;,response.getAsBinaryData());
+}
+if (request.get(&apos;doit&apos;) == &apos;Create text file&apos;)
+{
+	staging.writeTextFile(&quot;autotest.txt&quot;, &quot;text file created&quot;);	
+}
+if (request.get(&apos;doit&apos;) == &apos;Copy all files&apos;)
+{
+	var files = staging.list(&apos;&apos;,&quot;*&quot;);
+	for(var x = 0; x &lt; files.size(); x++)
+	{
+		staging.copy(files.get(x),&quot;Copy of &quot; + files.get(x));
+	}
+}
+if(request.get(&apos;doit&apos;) == &apos;Delete file&apos;)
+{
+	staging.deleteFile(request.get(&quot;delFilesList&quot;));
+}
+if(request.get(&quot;doit&quot;) == &apos;Get File Details&apos;)
+{
+	if(staging.isAvailable() &amp;&amp; staging.exists(request.get(&apos;fileDetails&apos;)))
+	{
+		var filePath = request.get(&apos;fileDetails&apos;);
+		var length = staging.fileLength(filePath);
+		var modified = staging.lastModified(filePath);
+		var fileHandle = staging.getFileHandle(filePath);
+		var fileHandleString = &quot;Name: &quot; + fileHandle.getName() + &quot;&lt;br/&gt;&quot;;
+		fileHandleString += &quot;File Path: &quot; + fileHandle.getFilepath() + &quot;&lt;br/&gt;&quot;;
+		fileHandleString += &quot;Read Only: &quot; + fileHandle.isReadOnly() + &quot;&lt;br/&gt;&quot;;
+		fileHandleString += &quot;toString: &quot; + fileHandle.toString() + &quot;&lt;br/&gt;&quot;;
+		attributes.set(&quot;details&quot;, &quot;File Length: &quot; + length + &quot;&lt;br/&gt;Last Modified: &quot; + modified + &quot;&lt;br/&gt;&quot; + fileHandleString);
+		
+	}
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create binary file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create binary file&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create text file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create a text file&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Copy all files&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Copy all files in staging&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;select id=&quot;delFileList&quot; name=&quot;${prefix}delFilesList&quot;&gt;
+&lt;#list staging.listFiles(&apos;&apos;,&quot;*&quot;) as files&gt;
+	&lt;option value=&quot;${files}&quot;&gt;${files} &lt;/option&gt;
+&lt;/#list&gt;
+&lt;/select&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Delete file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Delete file&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;select id=&quot;fileDetails&quot; name=&quot;${prefix}fileDetails&quot;&gt;
+&lt;#list staging.listFiles(&apos;&apos;,&quot;*&quot;) as filesDetails&gt;
+	&lt;option value=&quot;${filesDetails}&quot;&gt;${filesDetails} &lt;/option&gt;
+&lt;/#list&gt;
+&lt;/select&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get File Details&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get File Details&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;h1&gt; Files in staging: &lt;/h1&gt;
+&lt;div id=&quot;stagingFiles&quot;&gt;
+&lt;#list staging.list(&apos;&apos;,&quot;*&quot;) as files&gt;
+	${files} &lt;br/&gt;
+&lt;/#list&gt;	
+&lt;/div&gt;&lt;r/&gt;
+&lt;h1&gt; Files Details: &lt;/h1&gt;
+&lt;div id=&quot;details&quot;&gt;
+	${attributes.get(&quot;details&quot;)}
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>bcc0774c-febc-4ea7-8b55-3804d04f7258</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>adcb8a3e-5c28-48f0-aaac-2e3d199f29f4</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>82725a65-709d-4dcf-8f93-a68b19ddbe73</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,87 +20,71 @@ package com.tle.web.api.oauth.interfaces.beans;
 
 import java.util.Date;
 import java.util.Set;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class OAuthTokenBean
-{
-	private String userId;
-	private String username;
-	private String token;
-	private Date created;
-	private Date expiry;
-	private String code;
-	private Set<String> permissions;
+public class OAuthTokenBean {
+  private String userId;
+  private String username;
+  private String token;
+  private Date created;
+  private Date expiry;
+  private String code;
+  private Set<String> permissions;
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public String getUsername()
-	{
-		return username;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public String getToken()
-	{
-		return token;
-	}
+  public String getToken() {
+    return token;
+  }
 
-	public void setToken(String token)
-	{
-		this.token = token;
-	}
+  public void setToken(String token) {
+    this.token = token;
+  }
 
-	public Date getCreated()
-	{
-		return created;
-	}
+  public Date getCreated() {
+    return created;
+  }
 
-	public void setCreated(Date created)
-	{
-		this.created = created;
-	}
+  public void setCreated(Date created) {
+    this.created = created;
+  }
 
-	public Date getExpiry()
-	{
-		return expiry;
-	}
+  public Date getExpiry() {
+    return expiry;
+  }
 
-	public void setExpiry(Date expiry)
-	{
-		this.expiry = expiry;
-	}
+  public void setExpiry(Date expiry) {
+    this.expiry = expiry;
+  }
 
-	public String getCode()
-	{
-		return code;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public Set<String> getPermissions()
-	{
-		return permissions;
-	}
+  public Set<String> getPermissions() {
+    return permissions;
+  }
 
-	public void setPermissions(Set<String> permissions)
-	{
-		this.permissions = permissions;
-	}
+  public void setPermissions(Set<String> permissions) {
+    this.permissions = permissions;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,11 +17,6 @@
  */
 
 package com.tle.web.wizard.standard.controls;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.wizard.controls.HTMLControl;
@@ -52,152 +49,144 @@ import com.tle.web.wizard.controls.Item;
 import com.tle.web.wizard.controls.WebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.page.ControlResult;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
  * @author jmaginnis
  */
 @Bind
-public class GroupCtrl extends GroupWebControl<WebControlModel>
-{
-	private CGroupCtrl cgroup;
-	@Component(stateful = false)
-	private MappedBooleans selected;
-	private final List<GroupRenderedGroup> renderedGroups = new ArrayList<GroupRenderedGroup>();
+public class GroupCtrl extends GroupWebControl<WebControlModel> {
+  private CGroupCtrl cgroup;
 
-	@Override
-	public Class<WebControlModel> getModelClass()
-	{
-		return WebControlModel.class;
-	}
+  @Component(stateful = false)
+  private MappedBooleans selected;
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		cgroup = (CGroupCtrl) control;
-		super.setWrappedControl(control);
-	}
+  private final List<GroupRenderedGroup> renderedGroups = new ArrayList<GroupRenderedGroup>();
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		Set<String> checked = selected.getCheckedSet(info);
-		setValues(checked.toArray(new String[checked.size()]));
-		int i = 0;
-		for( List<WebControl> controls : getWebGroups() )
-		{
-			Item oItem = cgroup.getItem(i);
+  @Override
+  public Class<WebControlModel> getModelClass() {
+    return WebControlModel.class;
+  }
 
-			// only process the values if not disabled
-			if( oItem.isSelected() )
-			{
-				processGroup(controls, info);
-			}
-			i++;
-		}
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    cgroup = (CGroupCtrl) control;
+    super.setWrappedControl(control);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		Set<String> checked = new HashSet<String>();
-		List<Item> items = cgroup.getItems();
-		for( Item item : items )
-		{
-			if( item.isSelected() )
-			{
-				checked.add(item.getValue());
-			}
-		}
-		selected.setCheckedSet(context, checked);
+  @Override
+  public void doEdits(SectionInfo info) {
+    Set<String> checked = selected.getCheckedSet(info);
+    setValues(checked.toArray(new String[checked.size()]));
+    int i = 0;
+    for (List<WebControl> controls : getWebGroups()) {
+      Item oItem = cgroup.getItem(i);
 
-		final ScriptVariable disVar = new ScriptVariable("dis");
-		final StatementBlock disables = new StatementBlock();
+      // only process the values if not disabled
+      if (oItem.isSelected()) {
+        processGroup(controls, info);
+      }
+      i++;
+    }
+  }
 
-		SimpleFunction onClick = new SimpleFunction("click" + getFormName(), StatementBlock.get(
-			new DeclarationStatement(disVar), disables));
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    Set<String> checked = new HashSet<String>();
+    List<Item> items = cgroup.getItems();
+    for (Item item : items) {
+      if (item.isSelected()) {
+        checked.add(item.getValue());
+      }
+    }
+    selected.setCheckedSet(context, checked);
 
-		WebWizardPage webWizardPage = getWebWizardPage();
-		renderedGroups.clear();
-		int index = 0;
-		for( List<WebControl> controls : getWebGroups() )
-		{
-			final Item item = cgroup.getItems().get(index);
-			HtmlBooleanState checkState = selected.getBooleanState(context, item.getValue());
-			if( isEnabled() )
-			{
-				checkState.addReadyStatements(new JQueryStatement(checkState, new FunctionCallExpression("click",
-					new AnonymousFunction(new FunctionCallStatement(onClick)))));
-			}
-			final CheckboxRenderer check = new CheckboxRenderer(checkState, cgroup.getCheckType());
-			check.setNestedRenderable(new LabelRenderer(new TextLabel(item.getName())));
+    final ScriptVariable disVar = new ScriptVariable("dis");
+    final StatementBlock disables = new StatementBlock();
 
-			// set disVar based on state of checkbox
-			disables.addStatements(new AssignStatement(disVar, new NotExpression(check.createGetExpression())));
-			final List<ControlResult> results = webWizardPage.renderChildren(context, controls, getSectionId() + "_"
-				+ index, !checkState.isChecked());
-			for( WebControl webControl : controls )
-			{
-				disables.addStatements(new FunctionCallStatement(webControl.getDisabler(context)
-					.createDisableFunction(), disVar));
-			}
+    SimpleFunction onClick =
+        new SimpleFunction(
+            "click" + getFormName(),
+            StatementBlock.get(new DeclarationStatement(disVar), disables));
 
-			renderedGroups.add(new GroupRenderedGroup(results, check));
-			index++;
+    WebWizardPage webWizardPage = getWebWizardPage();
+    renderedGroups.clear();
+    int index = 0;
+    for (List<WebControl> controls : getWebGroups()) {
+      final Item item = cgroup.getItems().get(index);
+      HtmlBooleanState checkState = selected.getBooleanState(context, item.getValue());
+      if (isEnabled()) {
+        checkState.addReadyStatements(
+            new JQueryStatement(
+                checkState,
+                new FunctionCallExpression(
+                    "click", new AnonymousFunction(new FunctionCallStatement(onClick)))));
+      }
+      final CheckboxRenderer check = new CheckboxRenderer(checkState, cgroup.getCheckType());
+      check.setNestedRenderable(new LabelRenderer(new TextLabel(item.getName())));
 
-		}
-		TagState containerState = new TagState();
-		for( GroupRenderedGroup gp : renderedGroups )
-		{
-			addDisabler(context, gp.check);
-		}
+      // set disVar based on state of checkbox
+      disables.addStatements(
+          new AssignStatement(disVar, new NotExpression(check.createGetExpression())));
+      final List<ControlResult> results =
+          webWizardPage.renderChildren(
+              context, controls, getSectionId() + "_" + index, !checkState.isChecked());
+      for (WebControl webControl : controls) {
+        disables.addStatements(
+            new FunctionCallStatement(
+                webControl.getDisabler(context).createDisableFunction(), disVar));
+      }
 
-		getModel(context).setDivContainer(new DivRenderer(containerState));
-		addDisableablesForControls(context);
-		return viewFactory.createResult("group.ftl", context);
-	}
+      renderedGroups.add(new GroupRenderedGroup(results, check));
+      index++;
+    }
+    TagState containerState = new TagState();
+    for (GroupRenderedGroup gp : renderedGroups) {
+      addDisabler(context, gp.check);
+    }
 
-	@Override
-	public void addNewGroup(ControlGroup group, int index)
-	{
-		super.addNewGroup(group, index);
+    getModel(context).setDivContainer(new DivRenderer(containerState));
+    addDisableablesForControls(context);
+    return viewFactory.createResult("group.ftl", context);
+  }
 
-		List<List<WebControl>> webGroups = getWebGroups();
-		if (index == -1)
-		{
-			index = webGroups.size() - 1;
-		}
-		List<WebControl> newGroup = webGroups.get(index);
-		for( WebControl g : newGroup )
-		{
-			g.setNested(true);
-		}
-	}
+  @Override
+  public void addNewGroup(ControlGroup group, int index) {
+    super.addNewGroup(group, index);
 
-	public static final class GroupRenderedGroup extends RenderedGroup
-	{
-		private final CheckboxRenderer check;
+    List<List<WebControl>> webGroups = getWebGroups();
+    if (index == -1) {
+      index = webGroups.size() - 1;
+    }
+    List<WebControl> newGroup = webGroups.get(index);
+    for (WebControl g : newGroup) {
+      g.setNested(true);
+    }
+  }
 
-		public GroupRenderedGroup(List<ControlResult> resultList, CheckboxRenderer check)
-		{
-			super(resultList);
-			this.check = check;
-		}
+  public static final class GroupRenderedGroup extends RenderedGroup {
+    private final CheckboxRenderer check;
 
-		public CheckboxRenderer getCheck()
-		{
-			return check;
-		}
-	}
+    public GroupRenderedGroup(List<ControlResult> resultList, CheckboxRenderer check) {
+      super(resultList);
+      this.check = check;
+    }
 
-	public List<GroupRenderedGroup> getRenderedGroups()
-	{
-		return renderedGroups;
-	}
+    public CheckboxRenderer getCheck() {
+      return check;
+    }
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  public List<GroupRenderedGroup> getRenderedGroups() {
+    return renderedGroups;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

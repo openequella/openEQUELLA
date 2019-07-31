@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.web.echo.section;
-
-import java.util.Arrays;
-
-import javax.inject.Inject;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.echo.EchoConstants;
@@ -37,62 +35,59 @@ import com.tle.web.settings.SettingsList;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.Arrays;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel>
-{
+public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel> {
 
-	@PlugKey("serverlist.page.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("echo.error.noaccess")
-	private static String ACCESS_ERROR;
+  @PlugKey("serverlist.page.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclService;
+  @PlugKey("echo.error.noaccess")
+  private static String ACCESS_ERROR;
 
-	private boolean canView()
-	{
-		return !aclService.filterNonGrantedPrivileges(
-			Arrays.asList(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO)).isEmpty();
-	}
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView() )
-		{
-			throw new AccessDeniedException(CurrentLocale.get(ACCESS_ERROR));
-		}
+  private boolean canView() {
+    return !aclService
+        .filterNonGrantedPrivileges(
+            Arrays.asList(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO))
+        .isEmpty();
+  }
 
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView()) {
+      throw new AccessDeniedException(CurrentLocale.get(ACCESS_ERROR));
+    }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		OneColumnLayoutModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
+    return super.renderHtml(context);
+  }
 
-		if( modalSection != null )
-		{
-			crumbs.add(SettingsList.asLinkOrNull(SettingsList.echoSettings()));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    OneColumnLayoutModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
 
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof ModalEchoServerSection )
-			{
-				((ModalEchoServerSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-				return;
-			}
-		}
-		decorations.setTitle(TITLE_LABEL);
-		decorations.setContentBodyClass("echos");
-	}
+    if (modalSection != null) {
+      crumbs.add(SettingsList.asLinkOrNull(SettingsList.echoSettings()));
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof ModalEchoServerSection) {
+        ((ModalEchoServerSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
+        return;
+      }
+    }
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setContentBodyClass("echos");
+  }
+
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 }

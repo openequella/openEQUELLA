@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +18,30 @@
 
 package com.tle.core.guice;
 
-import javax.inject.Inject;
-
-import org.java.plugin.registry.PluginDescriptor;
-
 import com.google.inject.Provider;
 import com.tle.core.plugins.PluginService;
+import javax.inject.Inject;
+import org.java.plugin.registry.PluginDescriptor;
 
-public class PluginBeanProvider<T> implements Provider<T>
-{
-	@Inject
-	private PluginService pluginService;
-	private String beanName;
-	private Object pluginObject;
+public class PluginBeanProvider<T> implements Provider<T> {
+  @Inject private PluginService pluginService;
+  private String beanName;
+  private Object pluginObject;
 
-	public PluginBeanProvider(Object pluginObject, String beanName)
-	{
-		this.pluginObject = pluginObject;
-		this.beanName = beanName;
-	}
+  public PluginBeanProvider(Object pluginObject, String beanName) {
+    this.pluginObject = pluginObject;
+    this.beanName = beanName;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T get()
-	{
-		PluginDescriptor descriptor;
-		if( pluginObject instanceof String )
-		{
-			descriptor = pluginService.getPluginDescriptor((String) pluginObject);
-		}
-		else
-		{
-			descriptor = pluginService.getPluginForObject(pluginObject).getDescriptor();
-		}
-		return (T) pluginService.getBean(descriptor, beanName);
-	}
-
+  @SuppressWarnings("unchecked")
+  @Override
+  public T get() {
+    PluginDescriptor descriptor;
+    if (pluginObject instanceof String) {
+      descriptor = pluginService.getPluginDescriptor((String) pluginObject);
+    } else {
+      descriptor = pluginService.getPluginForObject(pluginObject).getDescriptor();
+    }
+    return (T) pluginService.getBean(descriptor, beanName);
+  }
 }

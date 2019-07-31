@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,29 +22,31 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
 // Only used for creation
 @Entity
 @AccessType("field")
-public class TomcatSessions
-{
-	@Id
-	@Column(length = 100)
-	String id;
-	@Column(length = 1, nullable = false)
-	char valid;
-	@Column(nullable = false)
-	int maxinactive;
-	@Column(nullable = false)
-	long lastaccess;
-	@Index(name = "tomcatSessionAppIndex")
-	@Column(length = 255, nullable = false)
-	String app;
+public class TomcatSessions {
+  @Id
+  @Column(length = 100)
+  String id;
 
-	@Lob
-	@Column(nullable = false)
-	byte[] data;
+  @Column(length = 1, nullable = false)
+  char valid;
+
+  @Column(nullable = false)
+  int maxinactive;
+
+  @Column(nullable = false)
+  long lastaccess;
+
+  @Index(name = "tomcatSessionAppIndex")
+  @Column(length = 255, nullable = false)
+  String app;
+
+  @Lob
+  @Column(nullable = false)
+  byte[] data;
 }

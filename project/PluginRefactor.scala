@@ -15,17 +15,18 @@ import scala.collection.mutable
 class ElementFilter(f: Element => Boolean) extends AbstractFilter[Element] {
   override def filter(content: scala.Any): Element = content match {
     case e: Element if f(e) => e
-    case _ => null
+    case _                  => null
   }
 }
 
 case class PluginDeets(bd: File, libs: Classpath) {
-  lazy val rootDoc = Common.saxBuilder.build(bd / "plugin-jpf.xml")
+  lazy val rootDoc  = Common.saxBuilder.build(bd / "plugin-jpf.xml")
   lazy val rootElem = rootDoc.getRootElement
-  lazy val imports = Option(rootElem.getChild("requires")).toSeq.flatMap(_.getChildren("import").asScala)
+  lazy val imports = Option(rootElem.getChild("requires")).toSeq
+    .flatMap(_.getChildren("import").asScala)
     .filter(!_.getAttributeValue("plugin-id").contains(":"))
   lazy val importIds = imports.map(_.getAttributeValue("plugin-id"))
-  lazy val pId = rootElem.getAttributeValue("id")
+  lazy val pId       = rootElem.getAttributeValue("id")
 }
 
 case class LangString(group: String, key: String, pluginId: String, value: String)
@@ -34,19 +35,30 @@ object PluginRefactor {
 
   def getPluginId(e: Element): String = e.getAttributeValue("plugin-id")
 
-
-  val mutualExclusions = Map("com.equella.base" -> Set("com.tle.core.guice"),
-    "com.equella.serverbase" -> Set("com.tle.web.sections")
-  ).withDefaultValue(Set.empty)
+  val mutualExclusions =
+    Map("com.equella.base"       -> Set("com.tle.core.guice"),
+        "com.equella.serverbase" -> Set("com.tle.web.sections")).withDefaultValue(Set.empty)
 
   val mutualKeys = mutualExclusions.keySet
 
-  val platformPlugins = Set("com.tle.platform.common", "com.tle.platform.swing", "com.tle.platform.equella")
+  val platformPlugins =
+    Set("com.tle.platform.common", "com.tle.platform.swing", "com.tle.platform.equella")
 
-  val keepPlugins = Set("com.tle.log4j", "com.tle.webstart.admin", "com.tle.core.application", "com.tle.core.security",
-    "com.tle.web.sections", "com.tle.web.sections.equella", "com.tle.core.guice", "com.tle.web.adminconsole",
-    "com.tle.common.inplaceeditor", "com.tle.core.remoterepo.srw", "com.tle.web.inplaceeditor", "com.tle.applet.filemanager",
-    "com.tle.web.filemanager.applet") ++ platformPlugins
+  val keepPlugins = Set(
+    "com.tle.log4j",
+    "com.tle.webstart.admin",
+    "com.tle.core.application",
+    "com.tle.core.security",
+    "com.tle.web.sections",
+    "com.tle.web.sections.equella",
+    "com.tle.core.guice",
+    "com.tle.web.adminconsole",
+    "com.tle.common.inplaceeditor",
+    "com.tle.core.remoterepo.srw",
+    "com.tle.web.inplaceeditor",
+    "com.tle.applet.filemanager",
+    "com.tle.web.filemanager.applet"
+  ) ++ platformPlugins
 
   sealed trait CycleCheckResult
 
@@ -54,20 +66,25 @@ object PluginRefactor {
 
   case class Success(plugins: Set[String]) extends CycleCheckResult
 
-
   def cycleChecker(allImports: Iterable[PluginDeets]): Set[String] => CycleCheckResult = {
     val deetMap = allImports.map(p => (p.pId, p)).toMap
 
     def wouldCauseCycle(_toCheck: Set[String]): CycleCheckResult = {
 
       val randomCheck = scala.util.Random.shuffle(_toCheck.toList)
-      val (actualCheck, toCheck, withExclusions) = randomCheck.find(mutualKeys).map {
-        firstMutual =>
+      val (actualCheck, toCheck, withExclusions) = randomCheck
+        .find(mutualKeys)
+        .map { firstMutual =>
           val withOutFirst = mutualKeys - firstMutual
-          (randomCheck.filterNot(withOutFirst), _toCheck -- withOutFirst, _toCheck ++ mutualExclusions(firstMutual))
-      }.getOrElse(randomCheck, _toCheck, _toCheck)
+          (randomCheck.filterNot(withOutFirst),
+           _toCheck -- withOutFirst,
+           _toCheck ++ mutualExclusions(firstMutual))
+        }
+        .getOrElse(randomCheck, _toCheck, _toCheck)
 
-      def checkIter(parents: List[String], ids: Iterator[String], state: Set[String]): Either[Set[String], List[String]] = {
+      def checkIter(parents: List[String],
+                    ids: Iterator[String],
+                    state: Set[String]): Either[Set[String], List[String]] = {
 
         @tailrec
         def tailRec(checked: Set[String]): Either[Set[String], List[String]] = {
@@ -78,12 +95,11 @@ object PluginRefactor {
             else {
               if (withExclusions(pId)) {
                 Right(parents)
-              }
-              else {
+              } else {
                 val p = deetMap(pId)
                 checkIter(pId :: parents, p.importIds.iterator, checked + pId) match {
                   case Left(c) => tailRec(c)
-                  case r => r
+                  case r       => r
                 }
               }
             }
@@ -94,20 +110,23 @@ object PluginRefactor {
       }
 
       @tailrec
-      def topLevel(mergeList: List[String], checked: Set[String]): Option[List[String]] = mergeList match {
-        case Nil => None
-        case pId :: mt => checkIter(List(pId), (deetMap(pId).importIds.toSet -- toCheck).toIterator, checked) match {
-          case Left(nextChecked) => topLevel(mt, nextChecked)
-          case Right(failed) => Some(failed)
+      def topLevel(mergeList: List[String], checked: Set[String]): Option[List[String]] =
+        mergeList match {
+          case Nil => None
+          case pId :: mt =>
+            checkIter(List(pId), (deetMap(pId).importIds.toSet -- toCheck).toIterator, checked) match {
+              case Left(nextChecked) => topLevel(mt, nextChecked)
+              case Right(failed)     => Some(failed)
+            }
         }
-      }
 
       actualCheck match {
         case singlePlugin :: Nil => CycleFound(List(singlePlugin))
-        case _ => topLevel(actualCheck, Set.empty) match {
-          case None => Success(actualCheck.toSet)
-          case Some(bad) => CycleFound(bad)
-        }
+        case _ =>
+          topLevel(actualCheck, Set.empty) match {
+            case None      => Success(actualCheck.toSet)
+            case Some(bad) => CycleFound(bad)
+          }
       }
     }
 
@@ -118,30 +137,42 @@ object PluginRefactor {
 
     val initialPlugins = allImports.filter { p =>
       val r = p.rootElem
-      val adminConsole = r.getChildren("attributes").asScala.flatMap(_.getChildren("attribute").asScala).find {
-        _.getAttributeValue("id") == "type"
-      }.exists(_.getAttributeValue("value") == "admin-console")
+      val adminConsole = r
+        .getChildren("attributes")
+        .asScala
+        .flatMap(_.getChildren("attribute").asScala)
+        .find {
+          _.getAttributeValue("id") == "type"
+        }
+        .exists(_.getAttributeValue("value") == "admin-console")
 
       p.libs.isEmpty && (adminConsole == adminPlugins) &&
-        r.getChild("requires") != null && !keepPlugins(p.pId)
+      r.getChild("requires") != null && !keepPlugins(p.pId)
     }
 
-    val onlyAllowed = initialPlugins.map(_.pId)
+    val onlyAllowed     = initialPlugins.map(_.pId)
     val wouldCauseCycle = cycleChecker(allImports)
 
     @tailrec
-    def findSubset(size: Int, baseSet: Set[String], soFar: Int, stats: Map[String, Int]): Either[String, Set[String]] = {
+    def findSubset(size: Int,
+                   baseSet: Set[String],
+                   soFar: Int,
+                   stats: Map[String, Int]): Either[String, Set[String]] = {
       val allSubsets = baseSet.subsets(size)
 
       println(size)
 
       @tailrec
-      def checkSubsets(iter: Iterator[Set[String]], soFar: Int, stats: Map[String, Int]): Either[Either[String, (Int, Map[String, Int])], Set[String]] = {
+      def checkSubsets(
+          iter: Iterator[Set[String]],
+          soFar: Int,
+          stats: Map[String, Int]): Either[Either[String, (Int, Map[String, Int])], Set[String]] = {
         if (soFar > 100000) {
           println(stats)
           Left(Left(stats.toSeq.maxBy(_._2)._1))
         } else {
-          if (!iter.hasNext) Left(Right(soFar, stats)) else {
+          if (!iter.hasNext) Left(Right(soFar, stats))
+          else {
             val nextSet = iter.next()
             wouldCauseCycle(nextSet) match {
               case Success(correct) => Right(correct)
@@ -154,26 +185,30 @@ object PluginRefactor {
       }
 
       checkSubsets(allSubsets, soFar, stats) match {
-        case Left(Left(failed)) => findSubset(Math.min(baseSet.size - 1, 10), baseSet - failed, 0, Map.empty)
+        case Left(Left(failed)) =>
+          findSubset(Math.min(baseSet.size - 1, 10), baseSet - failed, 0, Map.empty)
         case Left(Right((sf, s))) => findSubset(size - 1, baseSet, sf, s)
-        case Right(success) => Right(success)
+        case Right(success)       => Right(success)
       }
     }
 
     findSubset(Math.min(onlyAllowed.size - 1, 10), onlyAllowed.toSet, 0, Map.empty) match {
       case Right(ok) => ok
-      case Left(f) => Seq.empty
+      case Left(f)   => Seq.empty
     }
   }
 
-  def findPluginsToMerge(allBaseDirs: Seq[(File, Classpath)], adminConsole: Boolean): Iterable[String] = {
+  def findPluginsToMerge(allBaseDirs: Seq[(File, Classpath)],
+                         adminConsole: Boolean): Iterable[String] = {
     val allPlugins = allBaseDirs.map(t => PluginDeets(t._1, t._2))
     choosePlugins(allPlugins, adminConsole)
   }
 
-
   def mergePlugins(allBaseDirs: Seq[(File, Classpath)],
-                   baseParentDir: File, pluginId: String, toMerge: Seq[String], adminConsole: Boolean): Unit = {
+                   baseParentDir: File,
+                   pluginId: String,
+                   toMerge: Seq[String],
+                   adminConsole: Boolean): Unit = {
     val allPlugins = allBaseDirs.map(t => PluginDeets(t._1, t._2))
 
     cycleChecker(allPlugins)(toMerge.toSet) match {
@@ -188,12 +223,13 @@ object PluginRefactor {
         val allowedIds = toMerge.toSet
         val imp_exts = allPlugins.collect {
           case p if allowedIds(p.pId) =>
-            val exts = p.rootElem.getChildren("extension").asScala.toList.map(e => (p.bd, p.pId, e.detach()))
+            val exts =
+              p.rootElem.getChildren("extension").asScala.toList.map(e => (p.bd, p.pId, e.detach()))
             (p.imports, exts, p.bd, p.pId)
         }
 
         val imports = imp_exts.map(_._1).reduce(_ ++ _)
-        val exts = imp_exts.map(_._2).reduce(_ ++ _)
+        val exts    = imp_exts.map(_._2).reduce(_ ++ _)
 
         def mkImport(impId: String) = {
           val impElem = new Element("import")
@@ -206,8 +242,10 @@ object PluginRefactor {
           plugElem.setAttribute("id", newId)
           plugElem.setAttribute("version", "1")
           val doc = new Document()
-          doc.setDocType(new DocType("plugin", "-//JPF//Java Plug-in Manifest 1.0",
-            "http://jpf.sourceforge.net/plugin_1_0.dtd"))
+          doc.setDocType(
+            new DocType("plugin",
+                        "-//JPF//Java Plug-in Manifest 1.0",
+                        "http://jpf.sourceforge.net/plugin_1_0.dtd"))
           doc.setRootElement(plugElem)
           (plugElem, doc)
         }
@@ -216,7 +254,7 @@ object PluginRefactor {
 
         if (adminConsole) {
           val attrsElem = new Element("attributes")
-          val attrElem = new Element("attribute")
+          val attrElem  = new Element("attribute")
           attrElem.setAttribute("id", "type")
           attrElem.setAttribute("value", "admin-console")
           attrsElem.addContent(attrElem)
@@ -229,36 +267,47 @@ object PluginRefactor {
         guiceExt.setAttribute("id", "guiceModules")
 
         val guiceModules = exts.flatMap {
-          case (bd, pId, e) => (getPluginId(e), e.getAttributeValue("point-id")) match {
-            case ("com.tle.core.guice", "module") =>
-              e.getChildren("parameter").asScala.map(_.getAttributeValue("value"))
-            case _ => Seq.empty
-          }
+          case (bd, pId, e) =>
+            (getPluginId(e), e.getAttributeValue("point-id")) match {
+              case ("com.tle.core.guice", "module") =>
+                e.getChildren("parameter").asScala.map(_.getAttributeValue("value"))
+              case _ => Seq.empty
+            }
         }
         val langStrings = exts.flatMap {
-          case (bd, pId, e) => (getPluginId(e), e.getAttributeValue("point-id")) match {
-            case ("com.tle.common.i18n", "bundle") =>
-              val params = e.getChildren("parameter").asScala
-              params.find(_.getAttributeValue("id") == "file").map { fileElem =>
-                val filename = fileElem.getAttributeValue("value")
-                val group = params.find(_.getAttributeValue("id") == "group").map(_.getAttributeValue("value")).getOrElse("resource-centre")
-                val propFile = bd / "resources" / filename
-                val langProps = new Properties()
-                Using.fileInputStream(propFile) { inp =>
-                  if (IO.split(filename)._2 == "xml") langProps.loadFromXML(inp) else langProps.load(inp)
-                }
-                langProps.entrySet().asScala.toSeq.map {
-                  e => LangString(group, e.getKey.toString, pId, e.getValue.toString)
-                }
-              }.getOrElse(Seq.empty)
-            case _ => Seq.empty
-          }
+          case (bd, pId, e) =>
+            (getPluginId(e), e.getAttributeValue("point-id")) match {
+              case ("com.tle.common.i18n", "bundle") =>
+                val params = e.getChildren("parameter").asScala
+                params
+                  .find(_.getAttributeValue("id") == "file")
+                  .map { fileElem =>
+                    val filename = fileElem.getAttributeValue("value")
+                    val group = params
+                      .find(_.getAttributeValue("id") == "group")
+                      .map(_.getAttributeValue("value"))
+                      .getOrElse("resource-centre")
+                    val propFile  = bd / "resources" / filename
+                    val langProps = new Properties()
+                    Using.fileInputStream(propFile) { inp =>
+                      if (IO.split(filename)._2 == "xml") langProps.loadFromXML(inp)
+                      else langProps.load(inp)
+                    }
+                    langProps.entrySet().asScala.toSeq.map { e =>
+                      LangString(group, e.getKey.toString, pId, e.getValue.toString)
+                    }
+                  }
+                  .getOrElse(Seq.empty)
+              case _ => Seq.empty
+            }
         }
 
         val bundles = langStrings.groupBy(_.group).map {
           case (g, strings) =>
             val props = new OrderedProperties
-            strings.foreach { ls => props.put(ls.key, ls.value) }
+            strings.foreach { ls =>
+              props.put(ls.key, ls.value)
+            }
             val fname = s"lang/i18n-$g.properties"
             IO.write(props, g, baseRes / fname)
             val bundleExt = new Element("extension")
@@ -277,55 +326,74 @@ object PluginRefactor {
         }
 
         def reprefix(pId: String, e: Element, f: String => Boolean): Element = {
-          e.getChildren("parameter").asScala.filter(p =>
-            Option(p.getAttributeValue("id")).exists(f) &&
-              p.getAttributeValue("value").startsWith(pId)
-          ).foreach {
-            p => p.setAttribute("value", pluginId + p.getAttributeValue("value").substring(pId.length))
-          }
+          e.getChildren("parameter")
+            .asScala
+            .filter(p =>
+              Option(p.getAttributeValue("id")).exists(f) &&
+                p.getAttributeValue("value").startsWith(pId))
+            .foreach { p =>
+              p.setAttribute("value", pluginId + p.getAttributeValue("value").substring(pId.length))
+            }
           e
         }
 
-        def keyParameters(extPlugin: String, ext: String): (Set[String], Set[String]) = (extPlugin, ext) match {
-          case (_, "portletRenderer" | "resourceViewer" | "connectorType" | "portletType") => (Set("nameKey", "linkKey", "descriptionKey"), Set())
-          case ("com.tle.mycontent", "contentHandler") => (Set("nameKey"), Set.empty)
-          case ("com.tle.admin.tools", "tool") => (Set("name"), Set("class"))
-          case ("com.tle.admin.controls", "control") => (Set("name"), Set("wrappedClass", "editorClass", "modelClass"))
-          case ("com.tle.admin.controls.universal", "editor") => (Set("nameKey"), Set("configPanel"))
-          case ("com.tle.admin.fedsearch.tool", "configUI") => (Set.empty, Set("class"))
-          case ("com.tle.admin.usermanagement.tool", "configUI") => (Set("name"), Set("class"))
-          case ("com.tle.common.dynacollection", "usages") => (Set("nameKey"), Set.empty)
-          case ("com.tle.common.wizard.controls.resource", "relationTypes") => (Set("nameKey"), Set.empty)
-          case ("com.tle.admin.collection.tool", "extra") => (Set("name"), Set("configPanel"))
-          case ("com.tle.admin.collection.tool", "summaryDisplay") => (Set("nameKey", "defaultNameKey"), Set("class"))
-          case ("com.tle.admin.controls.universal", "universalvalidator") => (Set.empty, Set("id", "class"))
-          case ("com.tle.admin.search", "searchSetVirtualiserConfigs") => (Set("nameKey"), Set("configPanel"))
-          case ("com.tle.admin.taxonomy.tool", "dataSourceChoice") => (Set("nameKey"), Set("configPanel"))
-          case ("com.tle.admin.taxonomy.tool", "displayType") => (Set("nameKey"), Set())
-          case ("com.tle.admin.taxonomy.tool", "predefinedTermDataKey") => (Set("name", "description"), Set())
-          case ("com.tle.core.migration", "migration") => (Set(), Set("id", "obsoletedby"))
-          case ("com.tle.core.institution.convert", "xmlmigration") => (Set(), Set("id", "obsoletedby"))
-          case ("com.tle.core.scheduler", "scheduledTask") => (Set(), Set("id"))
-          case ("com.tle.web.settings", "settingsGroupingExtension") => (Set("nameKey"), Set())
-          case _ => (Set.empty, Set("class", "listenerClass"))
-        }
+        def keyParameters(extPlugin: String, ext: String): (Set[String], Set[String]) =
+          (extPlugin, ext) match {
+            case (_, "portletRenderer" | "resourceViewer" | "connectorType" | "portletType") =>
+              (Set("nameKey", "linkKey", "descriptionKey"), Set())
+            case ("com.tle.mycontent", "contentHandler") => (Set("nameKey"), Set.empty)
+            case ("com.tle.admin.tools", "tool")         => (Set("name"), Set("class"))
+            case ("com.tle.admin.controls", "control") =>
+              (Set("name"), Set("wrappedClass", "editorClass", "modelClass"))
+            case ("com.tle.admin.controls.universal", "editor") =>
+              (Set("nameKey"), Set("configPanel"))
+            case ("com.tle.admin.fedsearch.tool", "configUI")      => (Set.empty, Set("class"))
+            case ("com.tle.admin.usermanagement.tool", "configUI") => (Set("name"), Set("class"))
+            case ("com.tle.common.dynacollection", "usages")       => (Set("nameKey"), Set.empty)
+            case ("com.tle.common.wizard.controls.resource", "relationTypes") =>
+              (Set("nameKey"), Set.empty)
+            case ("com.tle.admin.collection.tool", "extra") => (Set("name"), Set("configPanel"))
+            case ("com.tle.admin.collection.tool", "summaryDisplay") =>
+              (Set("nameKey", "defaultNameKey"), Set("class"))
+            case ("com.tle.admin.controls.universal", "universalvalidator") =>
+              (Set.empty, Set("id", "class"))
+            case ("com.tle.admin.search", "searchSetVirtualiserConfigs") =>
+              (Set("nameKey"), Set("configPanel"))
+            case ("com.tle.admin.taxonomy.tool", "dataSourceChoice") =>
+              (Set("nameKey"), Set("configPanel"))
+            case ("com.tle.admin.taxonomy.tool", "displayType") => (Set("nameKey"), Set())
+            case ("com.tle.admin.taxonomy.tool", "predefinedTermDataKey") =>
+              (Set("name", "description"), Set())
+            case ("com.tle.core.migration", "migration") => (Set(), Set("id", "obsoletedby"))
+            case ("com.tle.core.institution.convert", "xmlmigration") =>
+              (Set(), Set("id", "obsoletedby"))
+            case ("com.tle.core.scheduler", "scheduledTask")           => (Set(), Set("id"))
+            case ("com.tle.web.settings", "settingsGroupingExtension") => (Set("nameKey"), Set())
+            case _                                                     => (Set.empty, Set("class", "listenerClass"))
+          }
 
         val afterExt = exts.flatMap {
-          case (bd, pId, e) => (getPluginId(e), e.getAttributeValue("point-id")) match {
-            case ("com.tle.core.guice", "module") => Seq.empty
-            case ("com.tle.common.i18n", "bundle") => Seq.empty
-            case (extPlugin, ext) if keyParameters(extPlugin, ext)._1.nonEmpty => Seq(reprefix(pId, e.clone, keyParameters(extPlugin, ext)._1))
-            case _ => Seq(e)
-          }
+          case (bd, pId, e) =>
+            (getPluginId(e), e.getAttributeValue("point-id")) match {
+              case ("com.tle.core.guice", "module")  => Seq.empty
+              case ("com.tle.common.i18n", "bundle") => Seq.empty
+              case (extPlugin, ext) if keyParameters(extPlugin, ext)._1.nonEmpty =>
+                Seq(reprefix(pId, e.clone, keyParameters(extPlugin, ext)._1))
+              case _ => Seq(e)
+            }
         }
 
-        val extIds = afterExt.map(getPluginId)
+        val extIds         = afterExt.map(getPluginId)
         val allowedWithExt = allowedIds -- extIds
-        val extImports = extIds.map(mkImport)
+        val extImports     = extIds.map(mkImport)
 
-        val sortedImports = (imports ++ extImports).map(e => (getPluginId(e), e))
+        val sortedImports = (imports ++ extImports)
+          .map(e => (getPluginId(e), e))
           .filterNot(v => allowedWithExt(v._1))
-          .toMap.values.toSeq.sortBy(getPluginId)
+          .toMap
+          .values
+          .toSeq
+          .sortBy(getPluginId)
         val req = new Element("requires")
         req.addContent(sortedImports.map(_.clone).asJava)
         plugElem.addContent(req)
@@ -343,12 +411,16 @@ object PluginRefactor {
         def containsId(el: List[Element])(e: Element) =
           el.exists(e2 => e2.getAttributeValue("id") == e.getAttributeValue("id"))
 
-        plugElem.addContent(Uniqueify.uniqueSeq[Element]((i, e) =>
-          e.clone().setAttribute("id", e.getAttributeValue("id") + "_" + i), containsId)(afterExt ++ bundles).asJava)
+        plugElem.addContent(
+          Uniqueify
+            .uniqueSeq[Element]((i, e) =>
+                                  e.clone().setAttribute("id", e.getAttributeValue("id") + "_" + i),
+                                containsId)(afterExt ++ bundles)
+            .asJava)
 
         val pathsTo = imp_exts.flatMap {
-          case (_,_,bd,pId) =>
-            val allRes = bd.descendantsExcept("*", "plugin-jpf.xml"|"target") --- (bd / "resources/lang" * "*")
+          case (_, _, bd, pId) =>
+            val allRes = bd.descendantsExcept("*", "plugin-jpf.xml" | "target") --- (bd / "resources/lang" * "*")
             val relative = allRes.pair(rebase(bd, "")).collect {
               case (f, p) if f.isFile => (p, pId, f.length())
             }
@@ -365,28 +437,38 @@ object PluginRefactor {
         }
 
         var dupeKey = false
-        langStrings.groupBy { case LangString(g, k, _, _) => (g, k) }
-          .filter(_._2.map(_.value).distinct.size > 1).toSeq.sortBy(_._1).foreach {
-          case (k, dupes) => println(s"DUPE KEY: $k=${dupes.map(_.pluginId).mkString(",")}")
-            dupeKey = true
-        }
-
-        exts.flatMap {
-          case (bd, pId, e) => e.getChildren("parameter").asScala.collect {
-            case p if Option(p.getAttributeValue("value")).exists(_.startsWith(pId))
-              && Option(p.getAttributeValue("id")).exists {
-              paramId =>
-                val (keys, nonKeys) = keyParameters(getPluginId(e), e.getAttributeValue("point-id"))
-                !(keys(paramId) || nonKeys(paramId))
-            }
-            => s"SUSPICIOUS:${getPluginId(e)} ${e.getAttributeValue("point-id")} ${p.getAttributeValue("id")} ${p.getAttributeValue("value")}"
+        langStrings
+          .groupBy { case LangString(g, k, _, _) => (g, k) }
+          .filter(_._2.map(_.value).distinct.size > 1)
+          .toSeq
+          .sortBy(_._1)
+          .foreach {
+            case (k, dupes) =>
+              println(s"DUPE KEY: $k=${dupes.map(_.pluginId).mkString(",")}")
+              dupeKey = true
           }
-        }.foreach(println)
 
-        val hasOldStyle = new ElementFilter({
-          e => getPluginId(e).contains(":")
+        exts
+          .flatMap {
+            case (bd, pId, e) =>
+              e.getChildren("parameter").asScala.collect {
+                case p
+                    if Option(p.getAttributeValue("value")).exists(_.startsWith(pId))
+                      && Option(p.getAttributeValue("id")).exists { paramId =>
+                        val (keys, nonKeys) =
+                          keyParameters(getPluginId(e), e.getAttributeValue("point-id"))
+                        !(keys(paramId) || nonKeys(paramId))
+                      } =>
+                  s"SUSPICIOUS:${getPluginId(e)} ${e.getAttributeValue("point-id")} ${p
+                    .getAttributeValue("id")} ${p.getAttributeValue("value")}"
+              }
+          }
+          .foreach(println)
+
+        val hasOldStyle = new ElementFilter({ e =>
+          getPluginId(e).contains(":")
         })
-        val canCommit = pluginId != "<ID>" && !dupeKey && !dupeResource
+        val canCommit    = pluginId != "<ID>" && !dupeKey && !dupeResource
         val manifestName = if (canCommit) "plugin-jpf.xml" else "plugin-jpf2.xml"
 
         def writeManifest(fname: File, outDoc: Document): Unit = {
@@ -415,8 +497,8 @@ object PluginRefactor {
               val needsReplacing = new ElementFilter({ e =>
                 val thisId = getPluginId(e)
                 allowedIds(thisId) &&
-                  !(usedMerged && thisId == pluginId) &&
-                  !p.rootElem.getChildren("extension").asScala.exists(getPluginId(_) == thisId)
+                !(usedMerged && thisId == pluginId) &&
+                !p.rootElem.getChildren("extension").asScala.exists(getPluginId(_) == thisId)
               })
               r.removeContent[Element](needsReplacing)
               r.removeContent[Element](hasOldStyle)

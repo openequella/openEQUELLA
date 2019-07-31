@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.web.sections.equella.component;
 
-import java.util.List;
-
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.equella.component.model.NavBarState.NavBarElement;
 import com.tle.web.sections.equella.render.BootstrapDropDownRenderer;
@@ -29,71 +29,69 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import java.util.List;
 
-public class NavBarBuilder
-{
-	private final NavBarElement DIVIDER_ELEMENT = new NavBarElement("divider-vertical", null);
+public class NavBarBuilder {
+  private final NavBarElement DIVIDER_ELEMENT = new NavBarElement("divider-vertical", null);
 
-	private final List<NavBarElement> elems;
-	private final RendererFactory rendererFactory;
+  private final List<NavBarElement> elems;
+  private final RendererFactory rendererFactory;
 
-	public NavBarBuilder(List<NavBarElement> elems, RendererFactory rendererFactory)
-	{
-		this.elems = elems;
-		this.rendererFactory = rendererFactory;
-	}
+  public NavBarBuilder(List<NavBarElement> elems, RendererFactory rendererFactory) {
+    this.elems = elems;
+    this.rendererFactory = rendererFactory;
+  }
 
-	public NavBarBuilder divider()
-	{
-		elems.add(DIVIDER_ELEMENT);
-		return this;
-	}
+  public NavBarBuilder divider() {
+    elems.add(DIVIDER_ELEMENT);
+    return this;
+  }
 
-	public NavBarBuilder text(Label label)
-	{
-		elems.add(new NavBarElement(null, SectionUtils.convertToRenderer(new TextLabel("<p class=\"navbar-text\">",
-			true), label, new TextLabel("</p>", true))));
-		return this;
-	}
+  public NavBarBuilder text(Label label) {
+    elems.add(
+        new NavBarElement(
+            null,
+            SectionUtils.convertToRenderer(
+                new TextLabel("<p class=\"navbar-text\">", true),
+                label,
+                new TextLabel("</p>", true))));
+    return this;
+  }
 
-	public NavBarBuilder content(Object content)
-	{
-		SectionRenderable renderable = rendererFactory.convertToRenderer(content);
-		elems.add(new NavBarElement(null, renderable));
-		return this;
-	}
+  public NavBarBuilder content(Object content) {
+    SectionRenderable renderable = rendererFactory.convertToRenderer(content);
+    elems.add(new NavBarElement(null, renderable));
+    return this;
+  }
 
-	public NavBarBuilder action(Link action)
-	{
-		return action(null, action);
-	}
+  public NavBarBuilder action(Link action) {
+    return action(null, action);
+  }
 
-	public NavBarBuilder action(String clazz, Link action)
-	{
-		elems.add(new NavBarElement(clazz, action));
-		return this;
-	}
+  public NavBarBuilder action(String clazz, Link action) {
+    elems.add(new NavBarElement(clazz, action));
+    return this;
+  }
 
-	public NavBarBuilder action(String clazz, HtmlLinkState action)
-	{
-		elems.add(new NavBarElement(clazz, action));
-		return this;
-	}
+  public NavBarBuilder action(String clazz, HtmlLinkState action) {
+    elems.add(new NavBarElement(clazz, action));
+    return this;
+  }
 
-	public NavBarBuilder dropDown(Label textLabel, SingleSelectionList<?> list, boolean active)
-	{
-		list.setLabel(textLabel);
-		list.setDefaultRenderer(active ? BootstrapDropDownRenderer.ACTIVE_RENDER_CONSTANT
-			: BootstrapDropDownRenderer.RENDER_CONSTANT);
-		elems.add(new NavBarElement("dropdown", list));
-		return this;
-	}
+  public NavBarBuilder dropDown(Label textLabel, SingleSelectionList<?> list, boolean active) {
+    list.setLabel(textLabel);
+    list.setDefaultRenderer(
+        active
+            ? BootstrapDropDownRenderer.ACTIVE_RENDER_CONSTANT
+            : BootstrapDropDownRenderer.RENDER_CONSTANT);
+    elems.add(new NavBarElement("dropdown", list));
+    return this;
+  }
 
-	public NavBarBuilder splitDropDown(Label textLabel, SingleSelectionList<?> list)
-	{
-		list.setLabel(textLabel);
-		list.setDefaultRenderer(BootstrapSplitDropDownRenderer.SPLIT_NAVBAR_RENDER_CONSTANT);
-		elems.add(new NavBarElement("dropdown", list));
-		return this;
-	}
+  public NavBarBuilder splitDropDown(Label textLabel, SingleSelectionList<?> list) {
+    list.setLabel(textLabel);
+    list.setDefaultRenderer(BootstrapSplitDropDownRenderer.SPLIT_NAVBAR_RENDER_CONSTANT);
+    elems.add(new NavBarElement("dropdown", list));
+    return this;
+  }
 }

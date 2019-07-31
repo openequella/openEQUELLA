@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>131424</id>
+  <uuid>3a50bc6f-22c0-4af4-aaa3-31302364f841</uuid>
+  <name>INT - Staff</name>
+  <description></description>
+  <users>
+    <string>ead712b0-8d9a-4aed-8d19-4b48313ef901</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

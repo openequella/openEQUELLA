@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,84 +18,70 @@
 
 package com.tle.web.wizard.section.model;
 
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemKey;
+/** @author Nicholas Read */
+public class DuplicateData implements Serializable {
+  private static final long serialVersionUID = 1;
 
-/**
- * @author Nicholas Read
- */
-public class DuplicateData implements Serializable
-{
-	private static final long serialVersionUID = 1;
+  private final String identifier;
+  private final String value;
+  private final List<ItemId> items;
+  private boolean canAccept;
 
-	private final String identifier;
-	private final String value;
-	private final List<ItemId> items;
-	private boolean canAccept;
+  private boolean visible;
+  private boolean accepted;
 
-	private boolean visible;
-	private boolean accepted;
+  public DuplicateData(
+      String identifier, String value, List<? extends ItemKey> items, boolean canAccept) {
+    this.identifier = identifier;
+    this.value = value;
+    this.items = new ArrayList<ItemId>();
+    for (ItemKey itemKey : items) {
+      this.items.add(new ItemId(itemKey.getUuid(), itemKey.getVersion()));
+    }
+    this.canAccept = canAccept;
 
-	public DuplicateData(String identifier, String value, List<? extends ItemKey> items, boolean canAccept)
-	{
-		this.identifier = identifier;
-		this.value = value;
-		this.items = new ArrayList<ItemId>();
-		for( ItemKey itemKey : items )
-		{
-			this.items.add(new ItemId(itemKey.getUuid(), itemKey.getVersion()));
-		}
-		this.canAccept = canAccept;
+    visible = true;
+  }
 
-		visible = true;
-	}
+  public List<ItemId> getItems() {
+    return items;
+  }
 
-	public List<ItemId> getItems()
-	{
-		return items;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public String getValue()
-	{
-		return value;
-	}
+  public String getIdentifier() {
+    return identifier;
+  }
 
-	public String getIdentifier()
-	{
-		return identifier;
-	}
+  public boolean isAccepted() {
+    return accepted;
+  }
 
-	public boolean isAccepted()
-	{
-		return accepted;
-	}
+  public void setAccepted(boolean accepted) {
+    this.accepted = accepted;
+  }
 
-	public void setAccepted(boolean accepted)
-	{
-		this.accepted = accepted;
-	}
+  public boolean isCanAccept() {
+    return canAccept;
+  }
 
-	public boolean isCanAccept()
-	{
-		return canAccept;
-	}
+  public void setCanAccept(boolean canAccept) {
+    this.canAccept = canAccept;
+  }
 
-	public void setCanAccept(boolean canAccept)
-	{
-		this.canAccept = canAccept;
-	}
+  public boolean isVisible() {
+    return visible;
+  }
 
-	public boolean isVisible()
-	{
-		return visible;
-	}
-
-	public void setVisible(boolean visible)
-	{
-		this.visible = visible;
-	}
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
 }

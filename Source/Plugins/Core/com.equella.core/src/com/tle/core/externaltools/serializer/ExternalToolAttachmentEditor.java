@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,55 +22,44 @@ import com.tle.common.NameValue;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.edit.attachment.AbstractCustomAttachmentEditor;
-
 import java.util.List;
 
 @Bind
-public class ExternalToolAttachmentEditor extends AbstractCustomAttachmentEditor
-{
-	@Override
-	public String getCustomType()
-	{
-		return ExternalToolConstants.CUSTOM_ATTACHMENT_TYPE;
-	}
+public class ExternalToolAttachmentEditor extends AbstractCustomAttachmentEditor {
+  @Override
+  public String getCustomType() {
+    return ExternalToolConstants.CUSTOM_ATTACHMENT_TYPE;
+  }
 
-	public void editExternalToolProviderUuid(String externalToolProviderUuid)
-	{
-		editCustomData(ExternalToolConstants.EXTERNAL_TOOL_PROVIDER_UUID, externalToolProviderUuid);
-	}
+  public void editExternalToolProviderUuid(String externalToolProviderUuid) {
+    editCustomData(ExternalToolConstants.EXTERNAL_TOOL_PROVIDER_UUID, externalToolProviderUuid);
+  }
 
-	public void editLaunchUrl(String launchUrl)
-	{
-		editCustomData(ExternalToolConstants.LAUNCH_URL, launchUrl);
-	}
+  public void editLaunchUrl(String launchUrl) {
+    editCustomData(ExternalToolConstants.LAUNCH_URL, launchUrl);
+  }
 
-	public void editCustomParameters(List<NameValue> customParameters)
-	{
-		editCustomData(ExternalToolConstants.CUSTOM_PARAMS, customParameters);
-	}
+  public void editCustomParameters(List<NameValue> customParameters) {
+    editCustomData(ExternalToolConstants.CUSTOM_PARAMS, customParameters);
+  }
 
-	public void editConsumerKey(String consumerKey)
-	{
-		editCustomData(ExternalToolConstants.CONSUMER_KEY, consumerKey);
-	}
+  public void editConsumerKey(String consumerKey) {
+    editCustomData(ExternalToolConstants.CONSUMER_KEY, consumerKey);
+  }
 
-	public void editConsumerSecret(String consumerSecret)
-	{
-		editCustomData(ExternalToolConstants.SHARED_SECRET, consumerSecret);
-	}
+  public void editConsumerSecret(String consumerSecret) {
+    editCustomData(ExternalToolConstants.SHARED_SECRET, consumerSecret);
+  }
 
-	public void editIconUrl(String iconUrl)
-	{
-		editCustomData(ExternalToolConstants.ICON_URL, iconUrl);
-	}
+  public void editIconUrl(String iconUrl) {
+    editCustomData(ExternalToolConstants.ICON_URL, iconUrl);
+  }
 
-	public void editShareUserNameDetails(boolean shareUserNameDetails)
-	{
-		editCustomData(ExternalToolConstants.SHARE_NAME, shareUserNameDetails);
-	}
+  public void editShareUserNameDetails(boolean shareUserNameDetails) {
+    editCustomData(ExternalToolConstants.SHARE_NAME, shareUserNameDetails);
+  }
 
-	public void editShareUserEmailDetails(boolean shareUserEmailDetails)
-	{
-		editCustomData(ExternalToolConstants.SHARE_EMAIL, shareUserEmailDetails);
-	}
+  public void editShareUserEmailDetails(boolean shareUserEmailDetails) {
+    editCustomData(ExternalToolConstants.SHARE_EMAIL, shareUserEmailDetails);
+  }
 }

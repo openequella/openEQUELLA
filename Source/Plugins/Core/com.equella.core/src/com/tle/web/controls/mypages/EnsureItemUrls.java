@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,41 +18,34 @@
 
 package com.tle.web.controls.mypages;
 
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.mypages.service.MyPagesService;
 import com.tle.web.wizard.WizardState;
+import javax.inject.Inject;
 
-public class EnsureItemUrls extends AbstractWorkflowOperation
-{
-	@Inject
-	private MyPagesService myPagesService;
-	private final WizardState state;
+public class EnsureItemUrls extends AbstractWorkflowOperation {
+  @Inject private MyPagesService myPagesService;
+  private final WizardState state;
 
-	@Inject
-	public EnsureItemUrls(@Assisted WizardState state)
-	{
-		this.state = state;
-	}
+  @Inject
+  public EnsureItemUrls(@Assisted WizardState state) {
+    this.state = state;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		myPagesService.convertPreviewUrlsToItemUrls(state);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    myPagesService.convertPreviewUrlsToItemUrls(state);
+    return false;
+  }
 
-	public void setMyPagesService(MyPagesService myPagesService)
-	{
-		this.myPagesService = myPagesService;
-	}
+  public void setMyPagesService(MyPagesService myPagesService) {
+    this.myPagesService = myPagesService;
+  }
 
-	@BindFactory
-	public interface EnsureFactory
-	{
-		EnsureItemUrls create(WizardState state);
-	}
+  @BindFactory
+  public interface EnsureFactory {
+    EnsureItemUrls create(WizardState state);
+  }
 }

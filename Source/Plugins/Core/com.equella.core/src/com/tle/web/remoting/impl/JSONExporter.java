@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,37 +18,31 @@
 
 package com.tle.web.remoting.impl;
 
+import com.google.gson.Gson;
+import com.tle.web.remoting.JSONService;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.HttpRequestHandler;
 
-import com.google.gson.Gson;
-import com.tle.web.remoting.JSONService;
+public class JSONExporter implements HttpRequestHandler {
+  private final Gson gson;
+  private final JSONService service;
 
-public class JSONExporter implements HttpRequestHandler
-{
-	private final Gson gson;
-	private final JSONService service;
+  public JSONExporter(Gson gson, JSONService service) {
+    this.gson = gson;
+    this.service = service;
+  }
 
-	public JSONExporter(Gson gson, JSONService service)
-	{
-		this.gson = gson;
-		this.service = service;
-	}
-
-	@Override
-	@SuppressWarnings("nls")
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		Object result = service.getResult(request);
-		String json = gson.toJsonTree(result).toString();
-		response.setContentType("text/json");
-		response.setContentLengthLong(json.getBytes().length);
-		response.getWriter().write(json);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void handleRequest(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    Object result = service.getResult(request);
+    String json = gson.toJsonTree(result).toString();
+    response.setContentType("text/json");
+    response.setContentLengthLong(json.getBytes().length);
+    response.getWriter().write(json);
+  }
 }

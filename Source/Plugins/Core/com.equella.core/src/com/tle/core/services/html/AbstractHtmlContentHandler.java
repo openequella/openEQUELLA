@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,43 +19,35 @@
 package com.tle.core.services.html;
 
 import java.io.StringWriter;
-
 import org.ccil.cowan.tagsoup.XMLWriter;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public abstract class AbstractHtmlContentHandler extends XMLWriter implements HtmlContentHandler
-{
-	protected final StringWriter w;
-	protected boolean outputNamespaces;
+public abstract class AbstractHtmlContentHandler extends XMLWriter implements HtmlContentHandler {
+  protected final StringWriter w;
+  protected boolean outputNamespaces;
 
-	protected AbstractHtmlContentHandler(StringWriter w)
-	{
-		super(w);
+  protected AbstractHtmlContentHandler(StringWriter w) {
+    super(w);
 
-		this.w = w;
-		setOutputProperty(XMLWriter.METHOD, "html");
-		setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
-		setOutputProperty(XMLWriter.ENCODING, "UTF-8");
-	}
+    this.w = w;
+    setOutputProperty(XMLWriter.METHOD, "html");
+    setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
+    setOutputProperty(XMLWriter.ENCODING, "UTF-8");
+  }
 
-	@Override
-	public String getOutput()
-	{
-		return w.toString();
-	}
+  @Override
+  public String getOutput() {
+    return w.toString();
+  }
 
-	@Override
-	public boolean isOutputNamespaces()
-	{
-		return outputNamespaces;
-	}
+  @Override
+  public boolean isOutputNamespaces() {
+    return outputNamespaces;
+  }
 
-	@Override
-	public void setOutputNamespaces(boolean outputNamespaces)
-	{
-		this.outputNamespaces = outputNamespaces;
-	}
+  @Override
+  public void setOutputNamespaces(boolean outputNamespaces) {
+    this.outputNamespaces = outputNamespaces;
+  }
 }

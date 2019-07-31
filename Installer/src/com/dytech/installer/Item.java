@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,68 +20,56 @@ package com.dytech.installer;
 
 import javax.swing.AbstractButton;
 
-public class Item
-{
-	protected String name;
-	protected String value;
-	protected boolean selected;
-	protected AbstractButton button;
+public class Item {
+  protected String name;
+  protected String value;
+  protected boolean selected;
+  protected AbstractButton button;
 
-	public Item()
-	{
-		// Nothing to do here
-	}
+  public Item() {
+    // Nothing to do here
+  }
 
-	public Item(String name, String value, boolean selected)
-	{
-		this.name = name;
-		this.value = value;
-		this.selected = selected;
-	}
+  public Item(String name, String value, boolean selected) {
+    this.name = name;
+    this.value = value;
+    this.selected = selected;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getValue()
-	{
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-	public void setSelected(boolean selected)
-	{
-		this.selected = selected;
-	}
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
 
-	public boolean isSelected()
-	{
-		return selected;
-	}
+  public boolean isSelected() {
+    return selected;
+  }
 
-	public void setButton(AbstractButton button)
-	{
-		this.button = button;
-	}
+  public void setButton(AbstractButton button) {
+    this.button = button;
+  }
 
-	public AbstractButton getButton()
-	{
-		return button;
-	}
+  public AbstractButton getButton() {
+    return button;
+  }
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

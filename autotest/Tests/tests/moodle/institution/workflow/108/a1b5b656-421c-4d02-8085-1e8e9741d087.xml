@@ -1,0 +1,85 @@
+<com.tle.common.workflow.Workflow>
+  <id>18214</id>
+  <uuid>a1b5b656-421c-4d02-8085-1e8e9741d087</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-05 16:00:42.124</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-05 15:08:07.27</dateCreated>
+  <name>
+    <id>18215</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18216</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Simple Workflow</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>18217</id>
+      <uuid>62b8c7ee-0982-47d1-b174-204bd9f7e4f9</uuid>
+      <name>
+        <id>18218</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>18219</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Moderate Me</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>18220</id>
+        <uuid>76f07c00-ac5d-45da-8fd0-0e3a84aabd42</uuid>
+        <name>
+          <id>18221</id>
+          <strings>
+            <entry>
+              <string>en_US</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>18222</id>
+                <locale>en_US</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>0</childIndex>
+      <users>
+        <string>aca3959f-8d0c-4046-b1c3-e9592635c4cc</string>
+      </users>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>1</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>1</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.WorkflowItem/parent"/>
+  </nodes>
+</com.tle.common.workflow.Workflow>

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,64 +18,51 @@
 
 package com.tle.core.harvester.oai.data;
 
-/**
- * 
- */
-public class Response
-{
-	private String responseDate;
-	private Request request;
-	private OAIError error;
-	private Object message;
-	private String messageNodeName;
+/** */
+public class Response {
+  private String responseDate;
+  private Request request;
+  private OAIError error;
+  private Object message;
+  private String messageNodeName;
 
-	public String getMessageNodeName()
-	{
-		return messageNodeName;
-	}
+  public String getMessageNodeName() {
+    return messageNodeName;
+  }
 
-	public void setMessageNodeName(String messageNodeName)
-	{
-		this.messageNodeName = messageNodeName;
-	}
+  public void setMessageNodeName(String messageNodeName) {
+    this.messageNodeName = messageNodeName;
+  }
 
-	public OAIError getError()
-	{
-		return error;
-	}
+  public OAIError getError() {
+    return error;
+  }
 
-	public void setError(OAIError error)
-	{
-		this.error = error;
-	}
+  public void setError(OAIError error) {
+    this.error = error;
+  }
 
-	public Object getMessage()
-	{
-		return message;
-	}
+  public Object getMessage() {
+    return message;
+  }
 
-	public void setMessage(Object message)
-	{
-		this.message = message;
-	}
+  public void setMessage(Object message) {
+    this.message = message;
+  }
 
-	public Request getRequest()
-	{
-		return request;
-	}
+  public Request getRequest() {
+    return request;
+  }
 
-	public void setRequest(Request request)
-	{
-		this.request = request;
-	}
+  public void setRequest(Request request) {
+    this.request = request;
+  }
 
-	public String getResponseDate()
-	{
-		return responseDate;
-	}
+  public String getResponseDate() {
+    return responseDate;
+  }
 
-	public void setResponseDate(String responseDate)
-	{
-		this.responseDate = responseDate;
-	}
+  public void setResponseDate(String responseDate) {
+    this.responseDate = responseDate;
+  }
 }

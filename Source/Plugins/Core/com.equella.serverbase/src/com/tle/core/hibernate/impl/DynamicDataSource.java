@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,84 +18,70 @@
 
 package com.tle.core.hibernate.impl;
 
+import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.CurrentDataSource;
+import com.tle.core.hibernate.DataSourceHolder;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import com.tle.core.guice.Bind;
-import com.tle.core.hibernate.CurrentDataSource;
-import com.tle.core.hibernate.DataSourceHolder;
-
 @Bind
 @Singleton
-public class DynamicDataSource implements DataSource
-{
-	@Override
-	public PrintWriter getLogWriter() throws SQLException
-	{
-		return getCurrentDataSource().getLogWriter();
-	}
+public class DynamicDataSource implements DataSource {
+  @Override
+  public PrintWriter getLogWriter() throws SQLException {
+    return getCurrentDataSource().getLogWriter();
+  }
 
-	private DataSource getCurrentDataSource()
-	{
-		DataSourceHolder dataSourceHolder = CurrentDataSource.get();
-		if( dataSourceHolder == null )
-		{
-			throw new NullPointerException("No current data source");
-		}
-		return dataSourceHolder.getDataSource();
-	}
+  private DataSource getCurrentDataSource() {
+    DataSourceHolder dataSourceHolder = CurrentDataSource.get();
+    if (dataSourceHolder == null) {
+      throw new NullPointerException("No current data source");
+    }
+    return dataSourceHolder.getDataSource();
+  }
 
-	@Override
-	public void setLogWriter(PrintWriter out) throws SQLException
-	{
-		getCurrentDataSource().setLogWriter(out);
-	}
+  @Override
+  public void setLogWriter(PrintWriter out) throws SQLException {
+    getCurrentDataSource().setLogWriter(out);
+  }
 
-	@Override
-	public void setLoginTimeout(int seconds) throws SQLException
-	{
-		getCurrentDataSource().setLoginTimeout(seconds);
-	}
+  @Override
+  public void setLoginTimeout(int seconds) throws SQLException {
+    getCurrentDataSource().setLoginTimeout(seconds);
+  }
 
-	@Override
-	public int getLoginTimeout() throws SQLException
-	{
-		return getCurrentDataSource().getLoginTimeout();
-	}
+  @Override
+  public int getLoginTimeout() throws SQLException {
+    return getCurrentDataSource().getLoginTimeout();
+  }
 
-	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException
-	{
-		return null;
-	}
+  @Override
+  public <T> T unwrap(Class<T> iface) throws SQLException {
+    return null;
+  }
 
-	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException
-	{
-		return false;
-	}
+  @Override
+  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    return false;
+  }
 
-	@Override
-	public Connection getConnection() throws SQLException
-	{
-		return getCurrentDataSource().getConnection();
-	}
+  @Override
+  public Connection getConnection() throws SQLException {
+    return getCurrentDataSource().getConnection();
+  }
 
-	@Override
-	public Connection getConnection(String username, String password) throws SQLException
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public Connection getConnection(String username, String password) throws SQLException {
+    throw new UnsupportedOperationException();
+  }
 
-	@SuppressWarnings("all")
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException
-	{
-		throw new SQLFeatureNotSupportedException();
-	}
+  @SuppressWarnings("all")
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    throw new SQLFeatureNotSupportedException();
+  }
 }

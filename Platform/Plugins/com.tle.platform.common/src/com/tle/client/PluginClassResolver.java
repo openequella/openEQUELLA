@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,32 +18,25 @@
 
 package com.tle.client;
 
-public class PluginClassResolver
-{
-	static PluginClassResolver instance;
+public class PluginClassResolver {
+  static PluginClassResolver instance;
 
-	public PluginClassResolver()
-	{
-		instance = this; // NOSONAR
-	}
+  public PluginClassResolver() {
+    instance = this; // NOSONAR
+  }
 
-	public static PluginClassResolver resolver()
-	{
-		if( instance == null )
-		{
-			instance = new PluginClassResolver();
-		}
-		return instance;
-	}
+  public static PluginClassResolver resolver() {
+    if (instance == null) {
+      instance = new PluginClassResolver();
+    }
+    return instance;
+  }
 
-	public ClassLoader getLoaderForPluginId(String pluginId)
-	{
-		return getClass().getClassLoader();
-	}
+  public ClassLoader getLoaderForPluginId(String pluginId) {
+    return getClass().getClassLoader();
+  }
 
-	public String getPluginIdForClass(Class<?> clazz)
-	{
-		return null;
-	}
-
+  public String getPluginIdForClass(Class<?> clazz) {
+    return null;
+  }
 }

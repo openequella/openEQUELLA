@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,59 +19,50 @@
 package com.dytech.gui.adapters;
 
 import java.util.List;
-
 import javax.swing.table.DefaultTableModel;
 
-/**
- * @author Nicholas Read
- */
-class DefaultTableModelAdapter implements TablePasteModel
-{
-	private DefaultTableModel model;
+/** @author Nicholas Read */
+class DefaultTableModelAdapter implements TablePasteModel {
+  private DefaultTableModel model;
 
-	public DefaultTableModelAdapter(DefaultTableModel model)
-	{
-		this.model = model;
-	}
+  public DefaultTableModelAdapter(DefaultTableModel model) {
+    this.model = model;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.adapters.TablePasteModelAdapter#insertRow(int,
-	 * java.util.Vector)
-	 */
-	@Override
-	public void insertRow(int row, List<?> data)
-	{
-		model.insertRow(row, data.toArray());
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.adapters.TablePasteModelAdapter#insertRow(int,
+   * java.util.Vector)
+   */
+  @Override
+  public void insertRow(int row, List<?> data) {
+    model.insertRow(row, data.toArray());
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.adapters.TablePasteModelAdapter#getColumnClass(int)
-	 */
-	@Override
-	public Class<?> getColumnClass(int column)
-	{
-		return model.getColumnClass(column);
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.adapters.TablePasteModelAdapter#getColumnClass(int)
+   */
+  @Override
+  public Class<?> getColumnClass(int column) {
+    return model.getColumnClass(column);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.adapters.TablePasteModelAdapter#getColumnCount()
-	 */
-	@Override
-	public int getColumnCount()
-	{
-		return model.getColumnCount();
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.adapters.TablePasteModelAdapter#getColumnCount()
+   */
+  @Override
+  public int getColumnCount() {
+    return model.getColumnCount();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.gui.adapters.TablePasteModelAdapter#getRowCount()
-	 */
-	@Override
-	public int getRowCount()
-	{
-		return model.getRowCount();
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.gui.adapters.TablePasteModelAdapter#getRowCount()
+   */
+  @Override
+  public int getRowCount() {
+    return model.getRowCount();
+  }
 }

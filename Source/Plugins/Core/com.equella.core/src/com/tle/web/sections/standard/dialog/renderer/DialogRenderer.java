@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,58 +27,56 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 
 /**
  * {@link AbstractDialog} renderer interface.
- * <p>
- * The {@link #setupButton(HtmlComponentState)} method was primarily introduced
- * in order to support ThickBox's automatic dialog opening via attributes. Since
- * the same thing could be achieved by using JavaScript handlers, this might be
- * removed in the future.
- * 
+ *
+ * <p>The {@link #setupButton(HtmlComponentState)} method was primarily introduced in order to
+ * support ThickBox's automatic dialog opening via attributes. Since the same thing could be
+ * achieved by using JavaScript handlers, this might be removed in the future.
+ *
  * @author jmaginnis
  */
-public interface DialogRenderer extends SectionRenderable
-{
-	String AUTO_SIZE = "auto"; //$NON-NLS-1$
+public interface DialogRenderer extends SectionRenderable {
+  String AUTO_SIZE = "auto"; // $NON-NLS-1$
 
-	/**
-	 * The Open function must open the dialog and display it's contents.
-	 * 
-	 * @return The Open function, it has no arguments
-	 */
-	JSCallable createOpenFunction();
+  /**
+   * The Open function must open the dialog and display it's contents.
+   *
+   * @return The Open function, it has no arguments
+   */
+  JSCallable createOpenFunction();
 
-	/**
-	 * The Close function must close the dialog and should be callable in the
-	 * context of the dialog's window.
-	 * 
-	 * @return The close function, it has no arguments
-	 */
-	JSCallable createCloseFunction();
+  /**
+   * The Close function must close the dialog and should be callable in the context of the dialog's
+   * window.
+   *
+   * @return The close function, it has no arguments
+   */
+  JSCallable createCloseFunction();
 
-	/**
-	 * Set the width of the dialog.
-	 * 
-	 * @param width In CSS measurements (px, %)
-	 */
-	void setWidth(String width);
+  /**
+   * Set the width of the dialog.
+   *
+   * @param width In CSS measurements (px, %)
+   */
+  void setWidth(String width);
 
-	/**
-	 * Set the height of the dialog.
-	 * 
-	 * @param height In CSS measurements (px, %)
-	 */
-	void setHeight(String height);
+  /**
+   * Set the height of the dialog.
+   *
+   * @param height In CSS measurements (px, %)
+   */
+  void setHeight(String height);
 
-	void setTitle(String title);
+  void setTitle(String title);
 
-	/**
-	 * Sets up the "opener" link/button.
-	 * <p>
-	 * This will get called when the dialog is rendered, so in order for the
-	 * button to work properly, the dialog MUST be rendered before it.
-	 * 
-	 * @param button Setup the opener button
-	 */
-	void setupOpener(HtmlLinkState opener);
+  /**
+   * Sets up the "opener" link/button.
+   *
+   * <p>This will get called when the dialog is rendered, so in order for the button to work
+   * properly, the dialog MUST be rendered before it.
+   *
+   * @param button Setup the opener button
+   */
+  void setupOpener(HtmlLinkState opener);
 
-	DialogRenderer createNewRenderer(DialogState state);
+  DialogRenderer createNewRenderer(DialogState state);
 }

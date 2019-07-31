@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,198 +18,164 @@
 
 package com.tle.core.reporting.web;
 
-import java.util.List;
-import java.util.Map;
-
 import com.tle.beans.entity.report.Report;
 import com.tle.core.reporting.birttypes.AbstractBirtType;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.generic.CachedData;
 import com.tle.web.wizard.page.ControlResult;
 import com.tle.web.wizard.page.WizardPage;
+import java.util.List;
+import java.util.Map;
 
-public class ReportingForm
-{
-	@Bookmarked
-	private String reportUuid;
-	@Bookmarked
-	private boolean forceParams;
-	@Bookmarked(parameter = "df")
-	private String designFile;
-	@Bookmarked(name = "r")
-	private String generatedReportId;
+public class ReportingForm {
+  @Bookmarked private String reportUuid;
+  @Bookmarked private boolean forceParams;
 
-	private boolean parametersValid;
-	private boolean showReport;
-	private boolean containsParameters;
-	private String reportUrl;
-	private boolean hasGroups;
+  @Bookmarked(parameter = "df")
+  private String designFile;
 
-	private final CachedData<Report> reportCached = new CachedData<Report>();
-	private final CachedData<WizardPage> wizardPage = new CachedData<WizardPage>();
-	private List<ControlResult> wizard;
-	private Map<String, String[]> parameters;
-	private Map<String, String[]> parameterDisplayTexts;
-	private List<AbstractBirtType> paramControls;
-	private boolean reports;
+  @Bookmarked(name = "r")
+  private String generatedReportId;
 
-	public Report getReport()
-	{
-		return reportCached.getCachedValue();
-	}
+  private boolean parametersValid;
+  private boolean showReport;
+  private boolean containsParameters;
+  private String reportUrl;
+  private boolean hasGroups;
 
-	public List<ControlResult> getWizard()
-	{
-		return wizard;
-	}
+  private final CachedData<Report> reportCached = new CachedData<Report>();
+  private final CachedData<WizardPage> wizardPage = new CachedData<WizardPage>();
+  private List<ControlResult> wizard;
+  private Map<String, String[]> parameters;
+  private Map<String, String[]> parameterDisplayTexts;
+  private List<AbstractBirtType> paramControls;
+  private boolean reports;
 
-	public void setWizard(List<ControlResult> wizard)
-	{
-		this.wizard = wizard;
-	}
+  public Report getReport() {
+    return reportCached.getCachedValue();
+  }
 
-	public String getReportUuid()
-	{
-		return reportUuid;
-	}
+  public List<ControlResult> getWizard() {
+    return wizard;
+  }
 
-	public void setReportUuid(String reportUuid)
-	{
-		this.reportUuid = reportUuid;
-	}
+  public void setWizard(List<ControlResult> wizard) {
+    this.wizard = wizard;
+  }
 
-	public Map<String, String[]> getParameters()
-	{
-		return parameters;
-	}
+  public String getReportUuid() {
+    return reportUuid;
+  }
 
-	public Map<String, String[]> getParameterDisplayTexts()
-	{
-		return parameterDisplayTexts;
-	}
+  public void setReportUuid(String reportUuid) {
+    this.reportUuid = reportUuid;
+  }
 
-	public void setParameters(Map<String, String[]> parameters)
-	{
-		this.parameters = parameters;
-	}
+  public Map<String, String[]> getParameters() {
+    return parameters;
+  }
 
-	public void setParameterDisplayTexts(Map<String, String[]> parameterDisplayTexts)
-	{
-		this.parameterDisplayTexts = parameterDisplayTexts;
-	}
+  public Map<String, String[]> getParameterDisplayTexts() {
+    return parameterDisplayTexts;
+  }
 
-	public CachedData<Report> getReportCached()
-	{
-		return reportCached;
-	}
+  public void setParameters(Map<String, String[]> parameters) {
+    this.parameters = parameters;
+  }
 
-	public CachedData<WizardPage> getWizardPage()
-	{
-		return wizardPage;
-	}
+  public void setParameterDisplayTexts(Map<String, String[]> parameterDisplayTexts) {
+    this.parameterDisplayTexts = parameterDisplayTexts;
+  }
 
-	public boolean isForceParams()
-	{
-		return forceParams;
-	}
+  public CachedData<Report> getReportCached() {
+    return reportCached;
+  }
 
-	public void setForceParams(boolean forceParams)
-	{
-		this.forceParams = forceParams;
-	}
+  public CachedData<WizardPage> getWizardPage() {
+    return wizardPage;
+  }
 
-	public String getReportUrl()
-	{
-		return reportUrl;
-	}
+  public boolean isForceParams() {
+    return forceParams;
+  }
 
-	public void setReportUrl(String reportUrl)
-	{
-		this.reportUrl = reportUrl;
-	}
+  public void setForceParams(boolean forceParams) {
+    this.forceParams = forceParams;
+  }
 
-	public boolean isShowReport()
-	{
-		return showReport;
-	}
+  public String getReportUrl() {
+    return reportUrl;
+  }
 
-	public void setShowReport(boolean showReport)
-	{
-		this.showReport = showReport;
-	}
+  public void setReportUrl(String reportUrl) {
+    this.reportUrl = reportUrl;
+  }
 
-	public List<AbstractBirtType> getParamControls()
-	{
-		return paramControls;
-	}
+  public boolean isShowReport() {
+    return showReport;
+  }
 
-	public void setParamControls(List<AbstractBirtType> paramControls)
-	{
-		this.paramControls = paramControls;
-	}
+  public void setShowReport(boolean showReport) {
+    this.showReport = showReport;
+  }
 
-	public boolean isContainsParameters()
-	{
-		return containsParameters;
-	}
+  public List<AbstractBirtType> getParamControls() {
+    return paramControls;
+  }
 
-	public void setContainsParameters(boolean containsParameters)
-	{
-		this.containsParameters = containsParameters;
-	}
+  public void setParamControls(List<AbstractBirtType> paramControls) {
+    this.paramControls = paramControls;
+  }
 
-	public String getGeneratedReportId()
-	{
-		return generatedReportId;
-	}
+  public boolean isContainsParameters() {
+    return containsParameters;
+  }
 
-	public void setGeneratedReportId(String generatedReportId)
-	{
-		this.generatedReportId = generatedReportId;
-	}
+  public void setContainsParameters(boolean containsParameters) {
+    this.containsParameters = containsParameters;
+  }
 
-	public String getDesignFile()
-	{
-		return designFile;
-	}
+  public String getGeneratedReportId() {
+    return generatedReportId;
+  }
 
-	public void setDesignFile(String designFile)
-	{
-		this.designFile = designFile;
-	}
+  public void setGeneratedReportId(String generatedReportId) {
+    this.generatedReportId = generatedReportId;
+  }
 
-	public boolean hasReports()
-	{
-		return reports;
-	}
+  public String getDesignFile() {
+    return designFile;
+  }
 
-	public void setReports(boolean reports)
-	{
-		this.reports = reports;
-	}
+  public void setDesignFile(String designFile) {
+    this.designFile = designFile;
+  }
 
-	public boolean isHasGroups()
-	{
-		return hasGroups;
-	}
+  public boolean hasReports() {
+    return reports;
+  }
 
-	public void setHasGroups(boolean hasGroups)
-	{
-		this.hasGroups = hasGroups;
-	}
+  public void setReports(boolean reports) {
+    this.reports = reports;
+  }
 
-	public boolean isParametersValid()
-	{
-		return parametersValid;
-	}
+  public boolean isHasGroups() {
+    return hasGroups;
+  }
 
-	public void setParametersValid(boolean parametersValid)
-	{
-		this.parametersValid = parametersValid;
-	}
+  public void setHasGroups(boolean hasGroups) {
+    this.hasGroups = hasGroups;
+  }
 
-	public boolean isShowWizard()
-	{
-		return !parametersValid || forceParams;
-	}
+  public boolean isParametersValid() {
+    return parametersValid;
+  }
+
+  public void setParametersValid(boolean parametersValid) {
+    this.parametersValid = parametersValid;
+  }
+
+  public boolean isShowWizard() {
+    return !parametersValid || forceParams;
+  }
 }

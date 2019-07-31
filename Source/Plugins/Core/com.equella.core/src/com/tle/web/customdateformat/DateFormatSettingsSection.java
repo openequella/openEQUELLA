@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.customdateformat;
-
-import javax.inject.Inject;
 
 import com.tle.common.NameValue;
 import com.tle.common.settings.standard.DateFormatSettings;
@@ -43,101 +43,94 @@ import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.userdetails.EditUserSection;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSettingsSection.DateFormatSettingsModel>
-{
-	@PlugKey("dates.settings.page.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("dates.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
-	@PlugKey("settings.dateformat.exact")
-	private static String USE_EXACT;
-	@PlugKey("settings.dateformat.relative")
-	private static String USE_APPROX;
+public class DateFormatSettingsSection
+    extends OneColumnLayout<DateFormatSettingsSection.DateFormatSettingsModel> {
+  @PlugKey("dates.settings.page.title")
+  private static Label TITLE_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("dates.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Component
-	private SingleSelectionList<NameValue> dateFormats;
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @PlugKey("settings.dateformat.exact")
+  private static String USE_EXACT;
 
-	@Inject
-	private DateFormatSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("settings.dateformat.relative")
+  private static String USE_APPROX;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		SimpleHtmlListModel<NameValue> dateFormatOptions = new SimpleHtmlListModel<NameValue>(
-			new BundleNameValue(USE_APPROX, EditUserSection.DATE_FORMAT_APPROX),
-			new BundleNameValue(USE_EXACT, EditUserSection.DATE_FORMAT_EXACT));
-		dateFormats.setListModel(dateFormatOptions);
-		dateFormats.setAlwaysSelect(true);
+  @EventFactory private EventGenerator events;
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Component private SingleSelectionList<NameValue> dateFormats;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
-		final DateFormatSettings settings = getDateFormatSettings();
-		if( settings.getDateFormat() != null )
-		{
-			dateFormats.setSelectedStringValue(info, settings.getDateFormat());
-		}
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "dateformatsettings.ftl", this));
-	}
+  @Inject private DateFormatSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
 
-	private DateFormatSettings getDateFormatSettings()
-	{
-		return configService.getProperties(new DateFormatSettings());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    SimpleHtmlListModel<NameValue> dateFormatOptions =
+        new SimpleHtmlListModel<NameValue>(
+            new BundleNameValue(USE_APPROX, EditUserSection.DATE_FORMAT_APPROX),
+            new BundleNameValue(USE_EXACT, EditUserSection.DATE_FORMAT_EXACT));
+    dateFormats.setListModel(dateFormatOptions);
+    dateFormats.setAlwaysSelect(true);
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final DateFormatSettings settings = getDateFormatSettings();
-		settings.setDateFormat(dateFormats.getSelectedValueAsString(info));
-		configService.setProperties(settings);
-		receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-	}
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
+    final DateFormatSettings settings = getDateFormatSettings();
+    if (settings.getDateFormat() != null) {
+      dateFormats.setSelectedStringValue(info, settings.getDateFormat());
+    }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "dateformatsettings.ftl", this));
+  }
 
-	public SingleSelectionList<NameValue> getDateFormats()
-	{
-		return dateFormats;
-	}
+  private DateFormatSettings getDateFormatSettings() {
+    return configService.getProperties(new DateFormatSettings());
+  }
 
-	@Override
-	public Class<DateFormatSettingsModel> getModelClass()
-	{
-		return DateFormatSettingsModel.class;
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final DateFormatSettings settings = getDateFormatSettings();
+    settings.setDateFormat(dateFormats.getSelectedValueAsString(info));
+    configService.setProperties(settings);
+    receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+  }
 
-	public static class DateFormatSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		// nothing
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
+
+  public SingleSelectionList<NameValue> getDateFormats() {
+    return dateFormats;
+  }
+
+  @Override
+  public Class<DateFormatSettingsModel> getModelClass() {
+    return DateFormatSettingsModel.class;
+  }
+
+  public static class DateFormatSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    // nothing
+  }
 }

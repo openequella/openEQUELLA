@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,13 +18,6 @@
 
 package com.tle.core.workflow.migrate;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.hibernate.ScrollableResults;
-import org.hibernate.classic.Session;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateSchemaMigration;
@@ -31,69 +26,66 @@ import com.tle.core.migration.MigrationResult;
 import com.tle.core.workflow.migrate.AddNotificationSchemaOrig.FakeModerationStatus;
 import com.tle.core.workflow.migrate.AddNotificationSchemaOrig.FakeWorkflowItem;
 import com.tle.core.workflow.migrate.AddNotificationSchemaOrig.FakeWorkflowItemStatus;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.hibernate.ScrollableResults;
+import org.hibernate.classic.Session;
 
 @Bind
 @SuppressWarnings("nls")
-public class AddTaskStartDate extends AbstractHibernateSchemaMigration
-{
-	private static final String QUERY = "from WorkflowNodeStatus where acttype = 'task' and status = 'i'";
+public class AddTaskStartDate extends AbstractHibernateSchemaMigration {
+  private static final String QUERY =
+      "from WorkflowNodeStatus where acttype = 'task' and status = 'i'";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("COMBINED:SHOULD NEVER SEE IN RELEASE");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("COMBINED:SHOULD NEVER SEE IN RELEASE");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		ScrollableResults scroll = session.createQuery(QUERY).scroll();
-		while( scroll.next() )
-		{
-			FakeWorkflowItemStatus item = (FakeWorkflowItemStatus) scroll.get(0);
-			if( item.dateDue != null )
-			{
-				item.started = new Date(item.dateDue.getTime() - TimeUnit.DAYS.toMillis(item.wnode.escalationdays));
-			}
-			else
-			{
-				item.started = new Date();
-			}
-			session.save(item);
-			session.flush();
-			session.clear();
-			result.incrementStatus();
-		}
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    ScrollableResults scroll = session.createQuery(QUERY).scroll();
+    while (scroll.next()) {
+      FakeWorkflowItemStatus item = (FakeWorkflowItemStatus) scroll.get(0);
+      if (item.dateDue != null) {
+        item.started =
+            new Date(item.dateDue.getTime() - TimeUnit.DAYS.toMillis(item.wnode.escalationdays));
+      } else {
+        item.started = new Date();
+      }
+      session.save(item);
+      session.flush();
+      session.clear();
+      result.incrementStatus();
+    }
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, QUERY);
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, QUERY);
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("workflow_node_status", "started");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("workflow_node_status", "started");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeWorkflowItemStatus.class, FakeWorkflowItem.class, FakeModerationStatus.class};
-	}
-
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      FakeWorkflowItemStatus.class, FakeWorkflowItem.class, FakeModerationStatus.class
+    };
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,118 +18,96 @@
 
 package com.tle.beans;
 
+import com.tle.common.Check;
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-
 import org.hibernate.annotations.AccessType;
 
-import com.tle.common.Check;
-
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Entity
 @AccessType("field")
-public class UserPreference
-{
-	@EmbeddedId
-	private UserPrefKey key;
-	@Lob
-	private String data;
+public class UserPreference {
+  @EmbeddedId private UserPrefKey key;
+  @Lob private String data;
 
-	public UserPreference()
-	{
-		super();
-	}
+  public UserPreference() {
+    super();
+  }
 
-	public String getData()
-	{
-		return data;
-	}
+  public String getData() {
+    return data;
+  }
 
-	public void setData(String data)
-	{
-		this.data = data;
-	}
+  public void setData(String data) {
+    this.data = data;
+  }
 
-	public UserPrefKey getKey()
-	{
-		return key;
-	}
+  public UserPrefKey getKey() {
+    return key;
+  }
 
-	public void setKey(UserPrefKey key)
-	{
-		this.key = key;
-	}
+  public void setKey(UserPrefKey key) {
+    this.key = key;
+  }
 
-	@Embeddable
-	@AccessType("field")
-	public static class UserPrefKey implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  @Embeddable
+  @AccessType("field")
+  public static class UserPrefKey implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		private long institution;
-		private String userID;
-		@Column(length = 40)
-		private String preferenceID;
+    private long institution;
+    private String userID;
 
-		public UserPrefKey()
-		{
-			super();
-		}
+    @Column(length = 40)
+    private String preferenceID;
 
-		public String getUserID()
-		{
-			return userID;
-		}
+    public UserPrefKey() {
+      super();
+    }
 
-		public void setUserID(String property)
-		{
-			this.userID = property;
-		}
+    public String getUserID() {
+      return userID;
+    }
 
-		public void setInstitution(Institution institution)
-		{
-			this.institution = institution.getDatabaseId();
-		}
+    public void setUserID(String property) {
+      this.userID = property;
+    }
 
-		public String getPreferenceID()
-		{
-			return preferenceID;
-		}
+    public void setInstitution(Institution institution) {
+      this.institution = institution.getDatabaseId();
+    }
 
-		public void setPreferenceID(String property)
-		{
-			this.preferenceID = property;
-		}
+    public String getPreferenceID() {
+      return preferenceID;
+    }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( this == obj )
-			{
-				return true;
-			}
+    public void setPreferenceID(String property) {
+      this.preferenceID = property;
+    }
 
-			if( !(obj instanceof UserPrefKey) )
-			{
-				return false;
-			}
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
 
-			UserPrefKey pkey = (UserPrefKey) obj;
-			return pkey.institution == institution && userID.equals(pkey.userID)
-				&& preferenceID.equals(pkey.preferenceID);
-		}
+      if (!(obj instanceof UserPrefKey)) {
+        return false;
+      }
 
-		@Override
-		public int hashCode()
-		{
-			return Check.getHashCode(institution, userID, preferenceID);
-		}
-	}
+      UserPrefKey pkey = (UserPrefKey) obj;
+      return pkey.institution == institution
+          && userID.equals(pkey.userID)
+          && preferenceID.equals(pkey.preferenceID);
+    }
+
+    @Override
+    public int hashCode() {
+      return Check.getHashCode(institution, userID, preferenceID);
+    }
+  }
 }

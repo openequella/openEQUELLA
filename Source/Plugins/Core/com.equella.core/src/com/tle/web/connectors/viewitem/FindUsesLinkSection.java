@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,38 +32,31 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class FindUsesLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("link.title")
-	private static Label LINK_LABEL;
+public class FindUsesLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("link.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private FindUsesContentSection findUsesContentSection;
-	@Inject
-	private ConnectorService connectorService;
+  @TreeLookup private FindUsesContentSection findUsesContentSection;
+  @Inject private ConnectorService connectorService;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !connectorService.listForViewing().isEmpty()
-			&& itemInfo.hasPrivilege(ConnectorConstants.PRIV_FIND_USES_ITEM);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !connectorService.listForViewing().isEmpty()
+        && itemInfo.hasPrivilege(ConnectorConstants.PRIV_FIND_USES_ITEM);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return findUsesContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return findUsesContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

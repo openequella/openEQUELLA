@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,49 +24,45 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 
-public class AssignAsFunction implements JSCallable
-{
-	protected final JSExpression var;
-	private JSExpression value;
+public class AssignAsFunction implements JSCallable {
+  protected final JSExpression var;
+  private JSExpression value;
 
-	public AssignAsFunction(JSExpression var)
-	{
-		this.var = var;
-	}
+  public AssignAsFunction(JSExpression var) {
+    this.var = var;
+  }
 
-	public AssignAsFunction(JSExpression var, JSExpression val)
-	{
-		this.var = var;
-		this.value = val;
-	}
+  public AssignAsFunction(JSExpression var, JSExpression val) {
+    this.var = var;
+    this.value = val;
+  }
 
-	@Override
-	public int getNumberOfParams(RenderContext context)
-	{
-		return value == null ? 1 : 0;
-	}
+  @Override
+  public int getNumberOfParams(RenderContext context) {
+    return value == null ? 1 : 0;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getExpressionForCall(RenderContext info, JSExpression... params)
-	{
-		if( params.length != getNumberOfParams(info) )
-		{
-			throw new SectionsRuntimeException("Wrong number of parameters for " + var.getExpression(info)
-				+ ".  Expected " + getNumberOfParams(info) + " but was " + params.length);
-		}
-		JSExpression valexpr = value;
-		if( valexpr == null )
-		{
-			valexpr = params[0];
-		}
-		return var.getExpression(info) + " = " + valexpr.getExpression(info); //$NON-NLS-1$
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    if (params.length != getNumberOfParams(info)) {
+      throw new SectionsRuntimeException(
+          "Wrong number of parameters for "
+              + var.getExpression(info)
+              + ".  Expected "
+              + getNumberOfParams(info)
+              + " but was "
+              + params.length);
+    }
+    JSExpression valexpr = value;
+    if (valexpr == null) {
+      valexpr = params[0];
+    }
+    return var.getExpression(info) + " = " + valexpr.getExpression(info); // $NON-NLS-1$
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(var, value);
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(var, value);
+  }
 }

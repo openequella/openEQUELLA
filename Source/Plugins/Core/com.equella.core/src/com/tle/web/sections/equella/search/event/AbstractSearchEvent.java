@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,136 +24,110 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.events.AbstractTargettedEvent;
 
 public abstract class AbstractSearchEvent<E extends AbstractSearchEvent<E>>
-	extends
-		AbstractTargettedEvent<E, SearchEventListener<E>>
-{
-	protected boolean loggable;
-	protected String query;
-	private int offset;
-	private int count;
-	protected boolean userFiltered;
-	protected boolean keywordFiltered;
-	protected boolean queryFiltered;
-	protected boolean invalid;
-	private boolean excludeKeywords;
+    extends AbstractTargettedEvent<E, SearchEventListener<E>> {
+  protected boolean loggable;
+  protected String query;
+  private int offset;
+  private int count;
+  protected boolean userFiltered;
+  protected boolean keywordFiltered;
+  protected boolean queryFiltered;
+  protected boolean invalid;
+  private boolean excludeKeywords;
 
-	public void setSortFields(boolean reversed, SortField... fields)
-	{
-		throw new UnsupportedOperationException();
-	}
+  public void setSortFields(boolean reversed, SortField... fields) {
+    throw new UnsupportedOperationException();
+  }
 
-	public AbstractSearchEvent(SectionId sectionId)
-	{
-		super(sectionId);
-	}
+  public AbstractSearchEvent(SectionId sectionId) {
+    super(sectionId);
+  }
 
-	public String getQuery()
-	{
-		return query;
-	}
+  public String getQuery() {
+    return query;
+  }
 
-	public void filterByTextQuery(String query, boolean includeUnfiltered)
-	{
-		if( this.query != null )
-		{
-			throw new UnsupportedOperationException("Can't filter twice by keyword"); //$NON-NLS-1$
-		}
-		if( !Check.isEmpty(query) )
-		{
-			keywordFiltered = true;
-		}
-		this.query = query;
-	}
+  public void filterByTextQuery(String query, boolean includeUnfiltered) {
+    if (this.query != null) {
+      throw new UnsupportedOperationException("Can't filter twice by keyword"); // $NON-NLS-1$
+    }
+    if (!Check.isEmpty(query)) {
+      keywordFiltered = true;
+    }
+    this.query = query;
+  }
 
-	public int getOffset()
-	{
-		return offset;
-	}
+  public int getOffset() {
+    return offset;
+  }
 
-	public void setOffset(int offset)
-	{
-		this.offset = offset;
-	}
+  public void setOffset(int offset) {
+    this.offset = offset;
+  }
 
-	public int getCount()
-	{
-		return count;
-	}
+  public int getCount() {
+    return count;
+  }
 
-	public void setCount(int count)
-	{
-		this.count = count;
-	}
+  public void setCount(int count) {
+    this.count = count;
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public final Class<SearchEventListener> getListenerClass()
-	{
-		return SearchEventListener.class;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  public final Class<SearchEventListener> getListenerClass() {
+    return SearchEventListener.class;
+  }
 
-	public boolean isLoggable()
-	{
-		return loggable;
-	}
+  public boolean isLoggable() {
+    return loggable;
+  }
 
-	public void setLoggable(boolean loggable)
-	{
-		this.loggable = loggable;
-	}
+  public void setLoggable(boolean loggable) {
+    this.loggable = loggable;
+  }
 
-	public boolean isFiltered()
-	{
-		return userFiltered || keywordFiltered || queryFiltered;
-	}
+  public boolean isFiltered() {
+    return userFiltered || keywordFiltered || queryFiltered;
+  }
 
-	public boolean isUserFiltered()
-	{
-		return userFiltered;
-	}
+  public boolean isUserFiltered() {
+    return userFiltered;
+  }
 
-	public boolean isKeywordFiltered()
-	{
-		return keywordFiltered;
-	}
+  public boolean isKeywordFiltered() {
+    return keywordFiltered;
+  }
 
-	public boolean isQueryFiltered()
-	{
-		return queryFiltered;
-	}
+  public boolean isQueryFiltered() {
+    return queryFiltered;
+  }
 
-	public void setQueryFiltered(boolean queryFiltered)
-	{
-		this.queryFiltered = queryFiltered;
-	}
+  public void setQueryFiltered(boolean queryFiltered) {
+    this.queryFiltered = queryFiltered;
+  }
 
-	public String getSearchedText()
-	{
-		return query == null ? "" : query;
-	}
+  public String getSearchedText() {
+    return query == null ? "" : query;
+  }
 
-	public void setUserFiltered(boolean userFiltered)
-	{
-		this.userFiltered = userFiltered;
-	}
+  public void setUserFiltered(boolean userFiltered) {
+    this.userFiltered = userFiltered;
+  }
 
-	public boolean isInvalid()
-	{
-		return invalid;
-	}
+  public boolean isInvalid() {
+    return invalid;
+  }
 
-	public void setInvalid(boolean invalid)
-	{
-		this.invalid = invalid;
-	}
+  public void setInvalid(boolean invalid) {
+    this.invalid = invalid;
+  }
 
-	public boolean isExcludeKeywords()
-	{
-		return excludeKeywords;
-	}
+  public boolean isExcludeKeywords() {
+    return excludeKeywords;
+  }
 
-	public void setExcludeKeywords(boolean excludeKeywords)
-	{
-		this.excludeKeywords = excludeKeywords;
-	}
+  public void setExcludeKeywords(boolean excludeKeywords) {
+    this.excludeKeywords = excludeKeywords;
+  }
 }

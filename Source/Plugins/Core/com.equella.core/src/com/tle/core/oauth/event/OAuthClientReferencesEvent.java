@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,24 +22,21 @@ import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.core.entity.event.BaseEntityReferencesEvent;
 import com.tle.core.oauth.event.listener.OAuthClientReferencesListener;
 
-public class OAuthClientReferencesEvent extends BaseEntityReferencesEvent<OAuthClient, OAuthClientReferencesListener>
-{
-	private static final long serialVersionUID = 1L;
+public class OAuthClientReferencesEvent
+    extends BaseEntityReferencesEvent<OAuthClient, OAuthClientReferencesListener> {
+  private static final long serialVersionUID = 1L;
 
-	public OAuthClientReferencesEvent(OAuthClient client)
-	{
-		super(client);
-	}
+  public OAuthClientReferencesEvent(OAuthClient client) {
+    super(client);
+  }
 
-	@Override
-	public Class<OAuthClientReferencesListener> getListener()
-	{
-		return OAuthClientReferencesListener.class;
-	}
+  @Override
+  public Class<OAuthClientReferencesListener> getListener() {
+    return OAuthClientReferencesListener.class;
+  }
 
-	@Override
-	public void postEvent(OAuthClientReferencesListener listener)
-	{
-		listener.addOAuthClientReferencingClasses(entity, referencingClasses);
-	}
+  @Override
+  public void postEvent(OAuthClientReferencesListener listener) {
+    listener.addOAuthClientReferencingClasses(entity, referencingClasses);
+  }
 }

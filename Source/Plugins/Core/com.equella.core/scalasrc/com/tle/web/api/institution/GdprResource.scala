@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -43,33 +45,41 @@ import javax.ws.rs.core.{Response, StreamingOutput}
 class GdprResource {
 
   val tleUserDao = LegacyGuice.tleUserDao
-  val queries = DBSchema.queries.auditLogQueries
+  val queries    = DBSchema.queries.auditLogQueries
 
-  case class AuditEntry(category: String, `type`: String, timestamp: String, sessionId: String, data: Map[String, Json])
+  case class AuditEntry(category: String,
+                        `type`: String,
+                        timestamp: String,
+                        sessionId: String,
+                        data: Map[String, Json])
 
   object AuditEntry {
     def apply(ale: AuditLogEntry): AuditEntry = {
       val data = Map("1" -> ale.data1.map(_.value.asJson),
-        "2" -> ale.data2.map(_.value.asJson),
-        "3" -> ale.data3.map(_.value.asJson),
-        "4" -> ale.data4.map(_.asJson)
-      ).collect {
+                     "2" -> ale.data2.map(_.value.asJson),
+                     "3" -> ale.data3.map(_.value.asJson),
+                     "4" -> ale.data4.map(_.asJson)).collect {
         case (k, Some(v)) => (k, v)
       } ++ ale.meta.asJson.asObject.map(_.toMap).getOrElse(Map.empty).collect {
         case (k, j) if !j.isNull => (k, j)
       }
-      AuditEntry(ale.event_category.value, ale.event_type.value, StdDateFormat.instance.clone().format(ale.timestamp.toEpochMilli),
-        ale.session_id.value, data)
+      AuditEntry(ale.event_category.value,
+                 ale.event_type.value,
+                 StdDateFormat.instance.clone().format(ale.timestamp.toEpochMilli),
+                 ale.session_id.value,
+                 data)
     }
   }
 
   def checkPriv(): Unit = {
-    if (!CurrentUser.getUserState.isSystem) throw new AccessDeniedException("Only TLE_ADMINISTRATOR can call this")
+    if (!CurrentUser.getUserState.isSystem)
+      throw new AccessDeniedException("Only TLE_ADMINISTRATOR can call this")
   }
 
   @DELETE
   @Path("{user}")
-  def delete(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user", required = true) user: String): Response = {
+  def delete(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user",
+                                          required = true) user: String): Response = {
     checkPriv()
     RunWithDB.execute(Kleisli { uc =>
       queries.deleteForUser((UserId(user), uc.inst)).flush.compile.drain
@@ -80,44 +90,49 @@ class GdprResource {
   @GET
   @Path("{user}")
   @Produces(Array("application/zip"))
-  def retrieve(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user", required = true) user: String): Response = {
+  def retrieve(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user",
+                                            required = true) user: String): Response = {
     checkPriv()
-    Response.ok(
-      new StreamingOutput {
+    Response
+      .ok(
+        new StreamingOutput {
 
-        override def write(output: OutputStream): Unit = {
+          override def write(output: OutputStream): Unit = {
 
-          val zip = new ZipOutputStream(output)
-          zip.putNextEntry(new ZipEntry("data.json"))
-          val print = new PrintStream(zip, true, "UTF8")
+            val zip = new ZipOutputStream(output)
+            zip.putNextEntry(new ZipEntry("data.json"))
+            val print = new PrintStream(zip, true, "UTF8")
 
-          print.println("{")
-          def writeUser() = Option(tleUserDao.findByUuid(user)).foreach {
-            tleUser =>
+            print.println("{")
+            def writeUser() = Option(tleUserDao.findByUuid(user)).foreach { tleUser =>
               print.print("\"user\": ")
               print.print(UserDetails.apply(tleUser).asJson.spaces2)
               print.println("\n, ")
-          }
-          def writeLogs() = {
-            print.println("\"auditlog\": [")
-            var first = true
-            RunWithDB.execute( Kleisli { uc =>
-              queries.listForUser((UserId(user), uc.inst)).map { ale =>
-                if (!first) print.print(", ")
-                print.print(AuditEntry(ale).asJson.spaces2)
-                first = false
-              }.compile.drain
             }
-            )
-            print.print("]")
+            def writeLogs() = {
+              print.println("\"auditlog\": [")
+              var first = true
+              RunWithDB.execute(Kleisli { uc =>
+                queries
+                  .listForUser((UserId(user), uc.inst))
+                  .map { ale =>
+                    if (!first) print.print(", ")
+                    print.print(AuditEntry(ale).asJson.spaces2)
+                    first = false
+                  }
+                  .compile
+                  .drain
+              })
+              print.print("]")
+            }
+            writeUser()
+            writeLogs()
+            print.println("}")
+            zip.closeEntry()
+            zip.close()
           }
-          writeUser()
-          writeLogs()
-          print.println("}")
-          zip.closeEntry()
-          zip.close()
         }
-      }
-    ).build()
+      )
+      .build()
   }
 }

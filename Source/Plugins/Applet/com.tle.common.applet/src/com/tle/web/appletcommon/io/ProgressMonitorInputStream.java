@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,35 +22,29 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ProgressMonitorInputStream extends FilterInputStream
-{
-	private final ProgressMonitorCallback callback;
+public class ProgressMonitorInputStream extends FilterInputStream {
+  private final ProgressMonitorCallback callback;
 
-	public ProgressMonitorInputStream(InputStream delegate, ProgressMonitorCallback callback)
-	{
-		super(delegate);
-		this.callback = callback;
-	}
+  public ProgressMonitorInputStream(InputStream delegate, ProgressMonitorCallback callback) {
+    super(delegate);
+    this.callback = callback;
+  }
 
-	@Override
-	public int read() throws IOException
-	{
-		int result = super.read();
-		if( result != -1 )
-		{
-			callback.addToProgress(1);
-		}
-		return result;
-	}
+  @Override
+  public int read() throws IOException {
+    int result = super.read();
+    if (result != -1) {
+      callback.addToProgress(1);
+    }
+    return result;
+  }
 
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException
-	{
-		int result = super.read(b, off, len);
-		if( result > 0 )
-		{
-			callback.addToProgress(result);
-		}
-		return result;
-	}
+  @Override
+  public int read(byte[] b, int off, int len) throws IOException {
+    int result = super.read(b, off, len);
+    if (result > 0) {
+      callback.addToProgress(result);
+    }
+    return result;
+  }
 }

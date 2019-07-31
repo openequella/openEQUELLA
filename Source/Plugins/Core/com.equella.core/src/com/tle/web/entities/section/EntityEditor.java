@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,25 +26,24 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-public interface EntityEditor<B extends EntityEditingBean, E extends BaseEntity>
-{
-	B getEditedEntity(SectionInfo info);
+public interface EntityEditor<B extends EntityEditingBean, E extends BaseEntity> {
+  B getEditedEntity(SectionInfo info);
 
-	void create(SectionInfo info);
+  void create(SectionInfo info);
 
-	void edit(SectionInfo info, String entUuid, boolean clone);
+  void edit(SectionInfo info, String entUuid, boolean clone);
 
-	SectionRenderable renderEditor(RenderContext context);
+  SectionRenderable renderEditor(RenderContext context);
 
-	SectionRenderable renderHelp(RenderContext context);
+  SectionRenderable renderHelp(RenderContext context);
 
-	boolean save(SectionInfo info);
+  boolean save(SectionInfo info);
 
-	void cancel(SectionInfo info);
+  void cancel(SectionInfo info);
 
-	<S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info);
+  <S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info);
 
-	<S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info);
+  <S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info);
 
-	void register(SectionTree tree, String parentId);
+  void register(SectionTree tree, String parentId);
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,30 +19,25 @@
 package com.tle.common.harvester;
 
 @SuppressWarnings("nls")
-public class LORAXHarvesterSettings extends AbstractTLFHarvesterSettings
-{
-	private static final String LORAX_HARVESTER_TYPE = "LORAXHarvesterSettings";
-	public static final String LORAX_SERVER_URL = "http://lex.thelearningfederation.edu.au";
+public class LORAXHarvesterSettings extends AbstractTLFHarvesterSettings {
+  private static final String LORAX_HARVESTER_TYPE = "LORAXHarvesterSettings";
+  public static final String LORAX_SERVER_URL = "http://lex.thelearningfederation.edu.au";
 
-	public LORAXHarvesterSettings()
-	{
-		super();
-	}
+  public LORAXHarvesterSettings() {
+    super();
+  }
 
-	public LORAXHarvesterSettings(HarvesterProfile gateway)
-	{
-		super(gateway);
-	}
+  public LORAXHarvesterSettings(HarvesterProfile gateway) {
+    super(gateway);
+  }
 
-	@Override
-	protected String getType()
-	{
-		return LORAX_HARVESTER_TYPE;
-	}
+  @Override
+  protected String getType() {
+    return LORAX_HARVESTER_TYPE;
+  }
 
-	@Override
-	public String getServer()
-	{
-		return LORAX_SERVER_URL;
-	}
+  @Override
+  public String getServer() {
+    return LORAX_SERVER_URL;
+  }
 }

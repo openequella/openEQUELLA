@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,47 +20,38 @@ package com.tle.core.events;
 
 import com.tle.core.events.listeners.UMPChangedListener;
 
-/**
- * @author Nicholas Read
- */
-public class UMPChangedEvent extends ApplicationEvent<UMPChangedListener>
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class UMPChangedEvent extends ApplicationEvent<UMPChangedListener> {
+  private static final long serialVersionUID = 1L;
 
-	private final String purgeIdFromCaches;
-	private final boolean groupPurge;
+  private final String purgeIdFromCaches;
+  private final boolean groupPurge;
 
-	public UMPChangedEvent()
-	{
-		this(null, false);
-	}
+  public UMPChangedEvent() {
+    this(null, false);
+  }
 
-	public UMPChangedEvent(String purgeIdFromCaches, boolean groupPurge)
-	{
-		super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
-		this.purgeIdFromCaches = purgeIdFromCaches;
-		this.groupPurge = groupPurge;
-	}
+  public UMPChangedEvent(String purgeIdFromCaches, boolean groupPurge) {
+    super(PostTo.POST_TO_OTHER_CLUSTER_NODES);
+    this.purgeIdFromCaches = purgeIdFromCaches;
+    this.groupPurge = groupPurge;
+  }
 
-	public String getPurgeIdFromCaches()
-	{
-		return purgeIdFromCaches;
-	}
+  public String getPurgeIdFromCaches() {
+    return purgeIdFromCaches;
+  }
 
-	public boolean isGroupPurge()
-	{
-		return groupPurge;
-	}
-	
-	@Override
-	public Class<UMPChangedListener> getListener()
-	{
-		return UMPChangedListener.class;
-	}
+  public boolean isGroupPurge() {
+    return groupPurge;
+  }
 
-	@Override
-	public void postEvent(UMPChangedListener listener)
-	{
-		listener.umpChangedEvent(this);
-	}
+  @Override
+  public Class<UMPChangedListener> getListener() {
+    return UMPChangedListener.class;
+  }
+
+  @Override
+  public void postEvent(UMPChangedListener listener) {
+    listener.umpChangedEvent(this);
+  }
 }

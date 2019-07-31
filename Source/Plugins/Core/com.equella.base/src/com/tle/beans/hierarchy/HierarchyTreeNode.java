@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,43 +20,34 @@ package com.tle.beans.hierarchy;
 
 import com.tle.common.LazyTreeNode;
 
-/**
- * @author Nicholas Read
- */
-public class HierarchyTreeNode extends LazyTreeNode
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class HierarchyTreeNode extends LazyTreeNode {
+  private static final long serialVersionUID = 1L;
 
-	private long id;
-	private boolean grantedEditTopic;
+  private long id;
+  private boolean grantedEditTopic;
 
-	public HierarchyTreeNode()
-	{
-		super();
-	}
+  public HierarchyTreeNode() {
+    super();
+  }
 
-	public HierarchyTreeNode(long id)
-	{
-		this.id = id;
-	}
+  public HierarchyTreeNode(long id) {
+    this.id = id;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public boolean isGrantedEditTopic()
-	{
-		return grantedEditTopic;
-	}
+  public boolean isGrantedEditTopic() {
+    return grantedEditTopic;
+  }
 
-	public void setGrantedEditTopic(boolean grantedEditTopic)
-	{
-		this.grantedEditTopic = grantedEditTopic;
-	}
+  public void setGrantedEditTopic(boolean grantedEditTopic) {
+    this.grantedEditTopic = grantedEditTopic;
+  }
 }

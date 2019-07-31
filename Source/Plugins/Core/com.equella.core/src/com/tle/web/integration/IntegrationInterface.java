@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,23 +23,21 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.layout.LayoutSelector;
 import com.tle.web.selection.SelectionSession;
 
-public interface IntegrationInterface
-{
-	IntegrationSessionData getData();
+public interface IntegrationInterface {
+  IntegrationSessionData getData();
 
-	String getClose();
+  String getClose();
 
-	String getCourseInfoCode();
+  String getCourseInfoCode();
 
-	NameValue getLocation();
+  NameValue getLocation();
 
-	LayoutSelector createLayoutSelector(SectionInfo info);
+  LayoutSelector createLayoutSelector(SectionInfo info);
 
-	/**
-	 * 
-	 * @param info
-	 * @param session
-	 * @return true if you want to maintain selected resources, otherwise false
-	 */
-	boolean select(SectionInfo info, SelectionSession session);
+  /**
+   * @param info
+   * @param session
+   * @return true if you want to maintain selected resources, otherwise false
+   */
+  boolean select(SectionInfo info, SelectionSession session);
 }

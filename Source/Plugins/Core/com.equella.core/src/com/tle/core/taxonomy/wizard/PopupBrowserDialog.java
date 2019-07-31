@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,10 +17,6 @@
  */
 
 package com.tle.core.taxonomy.wizard;
-
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
@@ -47,152 +45,149 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import java.util.regex.Pattern;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class PopupBrowserDialog extends AbstractPopupBrowserDialog<PopupBrowserDialog.PopupBrowserModel>
-{
-	private static final LabelRenderer SPACER = new LabelRenderer(new TextLabel("&nbsp;&nbsp;&nbsp;", true));
+public class PopupBrowserDialog
+    extends AbstractPopupBrowserDialog<PopupBrowserDialog.PopupBrowserModel> {
+  private static final LabelRenderer SPACER =
+      new LabelRenderer(new TextLabel("&nbsp;&nbsp;&nbsp;", true));
 
-	@PlugKey("wizard.popupbrowser.selectthisterm")
-	private static Label SELECT_VIEWED_TERM_LABEL;
-	@PlugKey("wizard.popupbrowser.selectterm")
-	private static Label SELECT_TERM_LABEL;
-	@PlugKey("wizard.popupbrowser.viewterm")
-	private static Label VIEW_TERM_LABEL;
+  @PlugKey("wizard.popupbrowser.selectthisterm")
+  private static Label SELECT_VIEWED_TERM_LABEL;
 
-	@Inject
-	private TaxonomyService taxonomyService;
+  @PlugKey("wizard.popupbrowser.selectterm")
+  private static Label SELECT_TERM_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("wizard.popupbrowser.viewterm")
+  private static Label VIEW_TERM_LABEL;
 
-	private SimpleFunction showTermFunc;
+  @Inject private TaxonomyService taxonomyService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-		// The following function is used internally by the tree and search
-		// results, but is also a public API for people to invoke:
-		// showTerm('some\full\path')
-		ScriptVariable termVar = new ScriptVariable("term");
-		showTermFunc = new SimpleFunction("showTerm", new FunctionCallStatement(ajaxEvents.getAjaxUpdateDomFunction(
-			tree, this, events.getEventHandler("showTerm"), ajaxEvents.getEffectFunction(EffectType.FADEOUTIN),
-			"termViewer"), termVar), termVar);
-	}
+  private SimpleFunction showTermFunc;
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "popupbrowserdialog";
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("popupbrowser/popup.ftl", this);
-	}
+    // The following function is used internally by the tree and search
+    // results, but is also a public API for people to invoke:
+    // showTerm('some\full\path')
+    ScriptVariable termVar = new ScriptVariable("term");
+    showTermFunc =
+        new SimpleFunction(
+            "showTerm",
+            new FunctionCallStatement(
+                ajaxEvents.getAjaxUpdateDomFunction(
+                    tree,
+                    this,
+                    events.getEventHandler("showTerm"),
+                    ajaxEvents.getEffectFunction(EffectType.FADEOUTIN),
+                    "termViewer"),
+                termVar),
+            termVar);
+  }
 
-	@EventHandlerMethod
-	public void showTerm(SectionInfo info, String termFullPath)
-	{
-		final PopupBrowserModel model = getModel(info);
-		final TermResult term = taxonomyService.getTerm(taxonomyUuid, termFullPath);
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "popupbrowserdialog";
+  }
 
-		model.setShownTerm(term.getTerm());
-		model.setShownFullTerm(term.getFullTerm().replaceFirst("\\\\?" + Pattern.quote(term.getTerm()), ""));
-		model.setShownHtmlData(taxonomyService.getDataForTerm(taxonomyUuid, termFullPath, "LONG_DATA"));
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("popupbrowser/popup.ftl", this);
+  }
 
-		if( isSelectable(term) )
-		{
-			HtmlComponentState select = new HtmlComponentState(new OverrideHandler(selectTermFunc, termFullPath));
-			select.setLabel(SELECT_VIEWED_TERM_LABEL);
-			model.setSelectShownTerm(new ButtonRenderer(select).showAs(ButtonType.SELECT));
-		}
-	}
+  @EventHandlerMethod
+  public void showTerm(SectionInfo info, String termFullPath) {
+    final PopupBrowserModel model = getModel(info);
+    final TermResult term = taxonomyService.getTerm(taxonomyUuid, termFullPath);
 
-	@Override
-	protected SectionRenderable getTermClickTarget(TermResult tr)
-	{
-		SectionRenderable termLabel = SectionUtils.convertToRenderer(tr.getTerm());
+    model.setShownTerm(term.getTerm());
+    model.setShownFullTerm(
+        term.getFullTerm().replaceFirst("\\\\?" + Pattern.quote(term.getTerm()), ""));
+    model.setShownHtmlData(taxonomyService.getDataForTerm(taxonomyUuid, termFullPath, "LONG_DATA"));
 
-		HtmlLinkState view = new HtmlLinkState(new OverrideHandler(showTermFunc, tr.getFullTerm()));
-		view.setLabel(VIEW_TERM_LABEL);
-		view.addClass("viewterm");
+    if (isSelectable(term)) {
+      HtmlComponentState select =
+          new HtmlComponentState(new OverrideHandler(selectTermFunc, termFullPath));
+      select.setLabel(SELECT_VIEWED_TERM_LABEL);
+      model.setSelectShownTerm(new ButtonRenderer(select).showAs(ButtonType.SELECT));
+    }
+  }
 
-		if( !isSelectable(tr) )
-		{
-			return new CombinedRenderer(termLabel, SPACER, new LinkRenderer(view));
-		}
-		else
-		{
-			HtmlComponentState select = new HtmlComponentState(new OverrideHandler(selectTermFunc, tr.getFullTerm()));
-			select.setLabel(SELECT_TERM_LABEL);
-			select.addClass("add");
+  @Override
+  protected SectionRenderable getTermClickTarget(TermResult tr) {
+    SectionRenderable termLabel = SectionUtils.convertToRenderer(tr.getTerm());
 
-			return new CombinedRenderer(termLabel, SPACER, new LinkRenderer(select), SPACER, new LinkRenderer(view));
-		}
-	}
+    HtmlLinkState view = new HtmlLinkState(new OverrideHandler(showTermFunc, tr.getFullTerm()));
+    view.setLabel(VIEW_TERM_LABEL);
+    view.addClass("viewterm");
 
-	public SimpleFunction getShowTermFunc()
-	{
-		return showTermFunc;
-	}
+    if (!isSelectable(tr)) {
+      return new CombinedRenderer(termLabel, SPACER, new LinkRenderer(view));
+    } else {
+      HtmlComponentState select =
+          new HtmlComponentState(new OverrideHandler(selectTermFunc, tr.getFullTerm()));
+      select.setLabel(SELECT_TERM_LABEL);
+      select.addClass("add");
 
-	@Override
-	public PopupBrowserModel instantiateDialogModel(SectionInfo info)
-	{
-		return new PopupBrowserModel();
-	}
+      return new CombinedRenderer(
+          termLabel, SPACER, new LinkRenderer(select), SPACER, new LinkRenderer(view));
+    }
+  }
 
-	public static class PopupBrowserModel extends AbstractPopupBrowserDialog.AbstractPopupBrowserModel
-	{
-		private String shownTerm;
-		private String shownFullTerm;
-		private String shownHtmlData;
-		private SectionRenderable selectShownTerm;
+  public SimpleFunction getShowTermFunc() {
+    return showTermFunc;
+  }
 
-		public String getShownTerm()
-		{
-			return shownTerm;
-		}
+  @Override
+  public PopupBrowserModel instantiateDialogModel(SectionInfo info) {
+    return new PopupBrowserModel();
+  }
 
-		public void setShownTerm(String shownTerm)
-		{
-			this.shownTerm = shownTerm;
-		}
+  public static class PopupBrowserModel
+      extends AbstractPopupBrowserDialog.AbstractPopupBrowserModel {
+    private String shownTerm;
+    private String shownFullTerm;
+    private String shownHtmlData;
+    private SectionRenderable selectShownTerm;
 
-		public String getShownFullTerm()
-		{
-			return shownFullTerm;
-		}
+    public String getShownTerm() {
+      return shownTerm;
+    }
 
-		public void setShownFullTerm(String shownFullTerm)
-		{
-			this.shownFullTerm = shownFullTerm;
-		}
+    public void setShownTerm(String shownTerm) {
+      this.shownTerm = shownTerm;
+    }
 
-		public String getShownHtmlData()
-		{
-			return shownHtmlData;
-		}
+    public String getShownFullTerm() {
+      return shownFullTerm;
+    }
 
-		public void setShownHtmlData(String shownHtmlData)
-		{
-			this.shownHtmlData = shownHtmlData;
-		}
+    public void setShownFullTerm(String shownFullTerm) {
+      this.shownFullTerm = shownFullTerm;
+    }
 
-		public SectionRenderable getSelectShownTerm()
-		{
-			return selectShownTerm;
-		}
+    public String getShownHtmlData() {
+      return shownHtmlData;
+    }
 
-		public void setSelectShownTerm(SectionRenderable selectShownTerm)
-		{
-			this.selectShownTerm = selectShownTerm;
-		}
-	}
+    public void setShownHtmlData(String shownHtmlData) {
+      this.shownHtmlData = shownHtmlData;
+    }
+
+    public SectionRenderable getSelectShownTerm() {
+      return selectShownTerm;
+    }
+
+    public void setSelectShownTerm(SectionRenderable selectShownTerm) {
+      this.selectShownTerm = selectShownTerm;
+    }
+  }
 }

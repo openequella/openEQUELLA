@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,26 +19,20 @@
 package com.tle.client.gui.popup;
 
 import java.awt.event.MouseEvent;
-
 import javax.swing.Action;
 import javax.swing.JTree;
 
-/**
- * @author Nicholas Read
- */
-public class TreeDoubleClickListener extends AbstractDoubleClickListener
-{
-	private final JTree tree;
+/** @author Nicholas Read */
+public class TreeDoubleClickListener extends AbstractDoubleClickListener {
+  private final JTree tree;
 
-	public TreeDoubleClickListener(JTree tree, Action action)
-	{
-		super(action);
-		this.tree = tree;
-	}
+  public TreeDoubleClickListener(JTree tree, Action action) {
+    super(action);
+    this.tree = tree;
+  }
 
-	@Override
-	public void selectItemUnderMouse(MouseEvent e)
-	{
-		tree.setSelectionPath(tree.getPathForLocation(e.getX(), e.getY()));
-	}
+  @Override
+  public void selectItemUnderMouse(MouseEvent e) {
+    tree.setSelectionPath(tree.getPathForLocation(e.getX(), e.getY()));
+  }
 }

@@ -1,0 +1,220 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116640</id>
+  <uuid>9a961a09-0c6a-b24f-b05b-eb21a696528b</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-04-07 13:06:17.79</dateModified>
+  <dateCreated class="sql-timestamp">2011-04-07 12:10:47.903</dateCreated>
+  <name>
+    <id>116641</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116642</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>DRM All Contributor Options</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Wizard</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116643</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Name</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        <com.dytech.edge.wizard.beans.DRMPage>
+          <usages>
+            <string>Use and Adapt</string>
+            <string>Basic Usage</string>
+          </usages>
+          <uuid>8a1d54b7-3f82-42e5-b5ad-1895149fe1a3</uuid>
+          <allowSummary>false</allowSummary>
+          <allowPreview>false</allowPreview>
+          <ownerMustAccept>false</ownerMustAccept>
+          <hideLicencesFromOwner>false</hideLicencesFromOwner>
+          <showLicenceInComposition>true</showLicenceInComposition>
+          <showLicenceCount>false</showLicenceCount>
+          <attributionIsEnforced>true</attributionIsEnforced>
+          <attribution>false</attribution>
+          <container>
+            <networks serialization="custom">
+              <unserializable-parents/>
+              <tree-set>
+                <default/>
+                <com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
+                  <caseInsensitive>true</caseInsensitive>
+                </com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
+                <int>0</int>
+              </tree-set>
+            </networks>
+            <purpose>false</purpose>
+            <count>0</count>
+          </container>
+          <contributor>
+            <users>
+              <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+            </users>
+            <groups>
+              <string>dff74147-98b4-34d3-e193-d3eeada6d836</string>
+            </groups>
+            <networks serialization="custom">
+              <unserializable-parents/>
+              <tree-set>
+                <default/>
+                <com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
+                  <caseInsensitive>true</caseInsensitive>
+                </com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
+                <int>1</int>
+                <com.dytech.edge.wizard.beans.DRMPage_-Network>
+                  <name>localhost</name>
+                  <min>127.0.0.1</min>
+                  <max>127.0.0.1</max>
+                </com.dytech.edge.wizard.beans.DRMPage_-Network>
+              </tree-set>
+            </networks>
+            <count></count>
+            <sector>true</sector>
+            <attribution>true</attribution>
+            <datetime>true</datetime>
+            <terms>true</terms>
+          </contributor>
+          <requireAcceptanceFrom>* </requireAcceptanceFrom>
+        </com.dytech.edge.wizard.beans.DRMPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>81e8d610-ad01-463b-b96d-8204eb994462</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>ad8b4b1b-14a0-45ae-a3e0-3652b2fcbc3f</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>a7e92b1b-ce00-41e6-a6f2-1c6ca1915634</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

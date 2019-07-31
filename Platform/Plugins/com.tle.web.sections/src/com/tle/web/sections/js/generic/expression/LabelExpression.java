@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,37 +27,31 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.render.Label;
 
 @NonNullByDefault
-public class LabelExpression extends AbstractExpression
-{
-	protected final Label label;
-	protected final boolean undefinedIfEmpty;
+public class LabelExpression extends AbstractExpression {
+  protected final Label label;
+  protected final boolean undefinedIfEmpty;
 
-	public LabelExpression(Label label)
-	{
-		this(label, false);
-	}
+  public LabelExpression(Label label) {
+    this(label, false);
+  }
 
-	public LabelExpression(Label label, boolean undefinedIfEmpty)
-	{
-		this.label = label;
-		this.undefinedIfEmpty = undefinedIfEmpty;
-	}
+  public LabelExpression(Label label, boolean undefinedIfEmpty) {
+    this.label = label;
+    this.undefinedIfEmpty = undefinedIfEmpty;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		String text = label.getText();
-		if( undefinedIfEmpty && Check.isEmpty(text) )
-		{
-			return "undefined";
-		}
-		return JSUtils.toJSString(text);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    String text = label.getText();
+    if (undefinedIfEmpty && Check.isEmpty(text)) {
+      return "undefined";
+    }
+    return JSUtils.toJSString(text);
+  }
 }

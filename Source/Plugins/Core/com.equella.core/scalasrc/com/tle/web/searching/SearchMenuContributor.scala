@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -36,16 +38,24 @@ object SearchMenuContributor extends MenuContributor {
   private val ICON_PATH = CoreStrings.lookup.url("images/menu-icon-search.png")
 
   override def getMenuContributions(info: SectionInfo): util.List[MenuContribution] = {
-    if (LegacyGuice.aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty) {
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE)
+          .isEmpty) {
       Collections.emptyList()
-    }
-    else {
-      val uis = RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).getOrElse(UISettings.defaultSettings)
+    } else {
+      val uis = RunWithDB
+        .executeIfInInstitution(UISettings.cachedUISettings)
+        .getOrElse(UISettings.defaultSettings)
       val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
-      val hls = new HtmlLinkState(new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))
+      val hls = new HtmlLinkState(
+        new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))
       hls.setLabel(SearchMenuContributor.LABEL_KEY)
-      val mc = new MenuContributor.MenuContribution(hls, SearchMenuContributor.ICON_PATH, 1, 20, "search",
-        if (useNewSearch) "page/search" else null)
+      val mc = new MenuContributor.MenuContribution(hls,
+                                                    SearchMenuContributor.ICON_PATH,
+                                                    1,
+                                                    20,
+                                                    "search",
+                                                    if (useNewSearch) "/page/search" else null)
       Collections.singletonList(mc)
     }
   }

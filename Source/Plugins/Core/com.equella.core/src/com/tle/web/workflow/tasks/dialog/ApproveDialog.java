@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -31,71 +33,63 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class ApproveDialog extends AbstractTaskActionDialog
-{
-	@PlugKey("command.taskaction.approve")
-	private static Label LABEL_APPROVE_BUTTON;
-	@PlugKey("command.approve.title")
-	private static Label LABEL_APPROVING_TITLE;
-	@PlugKey("comments.acceptmsg")
-	private static Label LABEL_ACCEPTMSG;
-	@PlugKey("comments.entermsg.withfiles")
-	private static Label LABEL_ENTERMSG_WITHFILES;
+public class ApproveDialog extends AbstractTaskActionDialog {
+  @PlugKey("command.taskaction.approve")
+  private static Label LABEL_APPROVE_BUTTON;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "approveDialog";
-	}
+  @PlugKey("command.approve.title")
+  private static Label LABEL_APPROVING_TITLE;
 
-	@Override
-	public ButtonRenderer.ButtonType getButtonType()
-	{
-		return ButtonRenderer.ButtonType.ACCEPT;
-	}
+  @PlugKey("comments.acceptmsg")
+  private static Label LABEL_ACCEPTMSG;
 
-	@Override
-	public Label getButtonLabel()
-	{
-		return LABEL_APPROVE_BUTTON;
-	}
+  @PlugKey("comments.entermsg.withfiles")
+  private static Label LABEL_ENTERMSG_WITHFILES;
 
-	@Override
-	public CurrentTaskSection.CommentType getActionType()
-	{
-		return CurrentTaskSection.CommentType.ACCEPT;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "approveDialog";
+  }
 
-	@Nullable
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_APPROVING_TITLE;
-	}
+  @Override
+  public ButtonRenderer.ButtonType getButtonType() {
+    return ButtonRenderer.ButtonType.ACCEPT;
+  }
 
-	@Override
-	public Label getPostCommentHeading()
-	{
-		return LABEL_ACCEPTMSG;
-	}
+  @Override
+  public Label getButtonLabel() {
+    return LABEL_APPROVE_BUTTON;
+  }
 
-	public Label validate(SectionInfo info)
-	{
-		TaskActionDialogModel model = getModel(info);
-		String stagingUuid = model.stagingFolderUuid();
-		StagingFile stagingFolder = new StagingFile(stagingUuid);
-		long countFiles = fileSystemService().countFiles(stagingFolder, null);
-		if (countFiles > 1 && Check.isEmpty(_commentField().getValue(info).trim()))
-		{
-			return LABEL_ENTERMSG_WITHFILES;
-		}
-		return null;
-	}
+  @Override
+  public CurrentTaskSection.CommentType getActionType() {
+    return CurrentTaskSection.CommentType.ACCEPT;
+  }
 
-	@Override
-	public boolean isMandatoryMessage()
-	{
-		return false;
-	}
+  @Nullable
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_APPROVING_TITLE;
+  }
 
+  @Override
+  public Label getPostCommentHeading() {
+    return LABEL_ACCEPTMSG;
+  }
+
+  public Label validate(SectionInfo info) {
+    TaskActionDialogModel model = getModel(info);
+    String stagingUuid = model.stagingFolderUuid();
+    StagingFile stagingFolder = new StagingFile(stagingUuid);
+    long countFiles = fileSystemService().countFiles(stagingFolder, null);
+    if (countFiles > 1 && Check.isEmpty(_commentField().getValue(info).trim())) {
+      return LABEL_ENTERMSG_WITHFILES;
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMandatoryMessage() {
+    return false;
+  }
 }

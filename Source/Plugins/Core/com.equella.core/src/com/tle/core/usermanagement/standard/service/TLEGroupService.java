@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,26 +18,24 @@
 
 package com.tle.core.usermanagement.standard.service;
 
-import java.util.List;
-
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.remoting.RemoteTLEGroupService;
+import java.util.List;
 
-public interface TLEGroupService extends RemoteTLEGroupService
-{
-	String add(TLEGroup group);
+public interface TLEGroupService extends RemoteTLEGroupService {
+  String add(TLEGroup group);
 
-	TLEGroup createGroup(String groupID, String name);
+  TLEGroup createGroup(String groupID, String name);
 
-	List<String> getUsersInGroup(String parentGroupID, boolean recurse);
+  List<String> getUsersInGroup(String parentGroupID, boolean recurse);
 
-	List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
+  List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
 
-	void addUserToGroup(String groupUuid, String userUuid);
+  void addUserToGroup(String groupUuid, String userUuid);
 
-	void removeUserFromGroup(String groupUuid, String userUuid);
+  void removeUserFromGroup(String groupUuid, String userUuid);
 
-	void removeAllUsersFromGroup(String groupUuid);
+  void removeAllUsersFromGroup(String groupUuid);
 
-	String prepareQuery(String searchString);
+  String prepareQuery(String searchString);
 }

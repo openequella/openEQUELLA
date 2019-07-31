@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,23 +23,23 @@ import java.util.Set;
 
 public interface MigrationExt {
 
-    Date date();
+  Date date();
 
-    String id();
+  String id();
 
-    boolean placeholder();
+  boolean placeholder();
 
-    Migration migration();
+  Migration migration();
 
-    boolean initial();
+  boolean initial();
 
-    boolean system();
+  boolean system();
 
-    Set<String> getObsoletedBy();
+  Set<String> getObsoletedBy();
 
-    Set<String> getFixes();
+  Set<String> getFixes();
 
-    Set<String> getIfSkipped();
+  Set<String> getIfSkipped();
 
-    Set<String> getDepends();
+  Set<String> getDepends();
 }

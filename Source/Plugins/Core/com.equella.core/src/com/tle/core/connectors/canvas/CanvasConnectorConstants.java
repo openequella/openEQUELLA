@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,20 +19,19 @@
 package com.tle.core.connectors.canvas;
 
 @SuppressWarnings("nls")
-public class CanvasConnectorConstants
-{
-	public static final String CONNECTOR_TYPE = "canvas";
-	public static final String FIELD_ACCESS_TOKEN = "canvasToken";
-	public static final String FIELD_TOKEN_OK = "tokenOk";
+public class CanvasConnectorConstants {
+  public static final String CONNECTOR_TYPE = "canvas";
+  public static final String FIELD_ACCESS_TOKEN = "canvasToken";
+  public static final String FIELD_TOKEN_OK = "tokenOk";
 
-	// ModuleItem post request parameters
-	public static final String MODULE_ITEM_TITLE = "module_item[title]";
-	public static final String MODULE_ITEM_TYPE = "module_item[type]";
-	public static final String MODULE_ITEM_EXTERNAL_TOOL = "ExternalTool";
-	public static final String MODULE_ITEM_CONTENT_ID = "module_item[content_id]";
-	public static final String MODULE_ITEM_EXTERNAL_URL = "module_item[external_url]";
-	public static final String MODULE_ITEM_NEW_TAB = "module_item[new_tab]";
+  // ModuleItem post request parameters
+  public static final String MODULE_ITEM_TITLE = "module_item[title]";
+  public static final String MODULE_ITEM_TYPE = "module_item[type]";
+  public static final String MODULE_ITEM_EXTERNAL_TOOL = "ExternalTool";
+  public static final String MODULE_ITEM_CONTENT_ID = "module_item[content_id]";
+  public static final String MODULE_ITEM_EXTERNAL_URL = "module_item[external_url]";
+  public static final String MODULE_ITEM_NEW_TAB = "module_item[new_tab]";
 
-	public static final String COURSE_STATE_UNPUBLISHED = "unpublished";
-	public static final String COURSE_STATE_AVAILABLE = "available";
+  public static final String COURSE_STATE_UNPUBLISHED = "unpublished";
+  public static final String COURSE_STATE_AVAILABLE = "available";
 }

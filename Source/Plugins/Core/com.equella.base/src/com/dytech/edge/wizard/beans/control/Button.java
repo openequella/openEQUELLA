@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,27 +18,23 @@
 
 package com.dytech.edge.wizard.beans.control;
 
-public class Button extends WizardControl
-{
-	private static final long serialVersionUID = 1L;
+public class Button extends WizardControl {
+  private static final long serialVersionUID = 1L;
 
-	public static final String CLASS = "button"; //$NON-NLS-1$
+  public static final String CLASS = "button"; // $NON-NLS-1$
 
-	private String action;
+  private String action;
 
-	@Override
-	public String getClassType()
-	{
-		return CLASS;
-	}
+  @Override
+  public String getClassType() {
+    return CLASS;
+  }
 
-	public String getAction()
-	{
-		return action;
-	}
+  public String getAction() {
+    return action;
+  }
 
-	public void setAction(String actionScript)
-	{
-		this.action = actionScript;
-	}
+  public void setAction(String actionScript) {
+    this.action = actionScript;
+  }
 }

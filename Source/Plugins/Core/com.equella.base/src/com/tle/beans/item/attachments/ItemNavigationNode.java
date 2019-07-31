@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +18,15 @@
 
 package com.tle.beans.item.attachments;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.tle.beans.IdCloneable;
+import com.tle.beans.item.ForeignItemKey;
+import com.tle.beans.item.Item;
+import com.tle.common.DoNotSimplify;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,182 +38,149 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import com.tle.beans.IdCloneable;
-import com.tle.beans.item.ForeignItemKey;
-import com.tle.beans.item.Item;
-import com.tle.common.DoNotSimplify;
-
 @Entity
 @AccessType("field")
-public class ItemNavigationNode implements Serializable, Cloneable, IdCloneable, ForeignItemKey, IItemNavigationNode
-{
-	private static final long serialVersionUID = 1L;
+public class ItemNavigationNode
+    implements Serializable, Cloneable, IdCloneable, ForeignItemKey, IItemNavigationNode {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_id", insertable = false, updatable = false, nullable = false)
-	@XStreamOmitField
-	@Index(name = "itemNavNodeItem")
-	private Item item;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "item_id", insertable = false, updatable = false, nullable = false)
+  @XStreamOmitField
+  @Index(name = "itemNavNodeItem")
+  private Item item;
 
-	@Column(length = 40)
-	private String uuid;
+  @Column(length = 40)
+  private String uuid;
 
-	@Lob
-	private String name;
+  @Lob private String name;
 
-	@Column(length = 100)
-	private String icon;
+  @Column(length = 100)
+  private String icon;
 
-	@ManyToOne
-	@DoNotSimplify
-	@Index(name = "itemNavNodeParent")
-	private ItemNavigationNode parent;
+  @ManyToOne
+  @DoNotSimplify
+  @Index(name = "itemNavNodeParent")
+  private ItemNavigationNode parent;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@IndexColumn(name = "tabindex", nullable = false)
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinColumn(name = "node_id", nullable = false)
-	private List<ItemNavigationTab> tabs;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @IndexColumn(name = "tabindex", nullable = false)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @JoinColumn(name = "node_id", nullable = false)
+  private List<ItemNavigationTab> tabs;
 
-	@Column(length = 200)
-	private String identifier;
+  @Column(length = 200)
+  private String identifier;
 
-	@Column(name = "`index`")
-	private int index;
+  @Column(name = "`index`")
+  private int index;
 
-	public ItemNavigationNode()
-	{
-		// nothing
-	}
+  public ItemNavigationNode() {
+    // nothing
+  }
 
-	public ItemNavigationNode(Item item)
-	{
-		this.item = item;
-		this.uuid = UUID.randomUUID().toString();
-	}
+  public ItemNavigationNode(Item item) {
+    this.item = item;
+    this.uuid = UUID.randomUUID().toString();
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public ItemNavigationNode getParent()
-	{
-		return parent;
-	}
+  public ItemNavigationNode getParent() {
+    return parent;
+  }
 
-	public void setParent(ItemNavigationNode parent)
-	{
-		this.parent = parent;
-	}
+  public void setParent(ItemNavigationNode parent) {
+    this.parent = parent;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public String getIcon()
-	{
-		return icon;
-	}
+  public String getIcon() {
+    return icon;
+  }
 
-	public void setIcon(String icon)
-	{
-		this.icon = icon;
-	}
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
 
-	public List<ItemNavigationTab> getTabs()
-	{
-		return tabs;
-	}
+  public List<ItemNavigationTab> getTabs() {
+    return tabs;
+  }
 
-	public void setTabs(List<ItemNavigationTab> tabs)
-	{
-		this.tabs = tabs;
-	}
+  public void setTabs(List<ItemNavigationTab> tabs) {
+    this.tabs = tabs;
+  }
 
-	public List<ItemNavigationTab> ensureTabs()
-	{
-		if( tabs == null )
-		{
-			tabs = new ArrayList<ItemNavigationTab>();
-		}
-		return tabs;
-	}
+  public List<ItemNavigationTab> ensureTabs() {
+    if (tabs == null) {
+      tabs = new ArrayList<ItemNavigationTab>();
+    }
+    return tabs;
+  }
 
-	@Override
-	public Object clone() throws CloneNotSupportedException
-	{
-		return super.clone();
-	}
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public int getIndex()
-	{
-		return index;
-	}
+  public int getIndex() {
+    return index;
+  }
 
-	public void setIndex(int index)
-	{
-		this.index = index;
-	}
+  public void setIndex(int index) {
+    this.index = index;
+  }
 
-	public String getIdentifier()
-	{
-		return identifier;
-	}
+  public String getIdentifier() {
+    return identifier;
+  }
 
-	public void setIdentifier(String identifier)
-	{
-		if( identifier != null && identifier.length() > 199 )
-		{
-			identifier = identifier.substring(0, 199);
-		}
-		this.identifier = identifier;
-	}
-
+  public void setIdentifier(String identifier) {
+    if (identifier != null && identifier.length() > 199) {
+      identifier = identifier.substring(0, 199);
+    }
+    this.identifier = identifier;
+  }
 }

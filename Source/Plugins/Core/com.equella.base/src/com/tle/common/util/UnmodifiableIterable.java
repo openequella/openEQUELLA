@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,56 +23,44 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author aholland
- */
-public class UnmodifiableIterable<E> implements Iterable<E>
-{
-	protected final List<E> inner;
+/** @author aholland */
+public class UnmodifiableIterable<E> implements Iterable<E> {
+  protected final List<E> inner;
 
-	public UnmodifiableIterable(Collection<E> source)
-	{
-		inner = new ArrayList<E>();
-		for( E element : source )
-		{
-			inner.add(element);
-		}
-	}
+  public UnmodifiableIterable(Collection<E> source) {
+    inner = new ArrayList<E>();
+    for (E element : source) {
+      inner.add(element);
+    }
+  }
 
-	public int size()
-	{
-		return inner.size();
-	}
+  public int size() {
+    return inner.size();
+  }
 
-	public E get(int index)
-	{
-		return inner.get(index);
-	}
+  public E get(int index) {
+    return inner.get(index);
+  }
 
-	@Override
-	public Iterator<E> iterator()
-	{
-		return new Iterator<E>()
-		{
-			private final Iterator<? extends E> i = inner.iterator();
+  @Override
+  public Iterator<E> iterator() {
+    return new Iterator<E>() {
+      private final Iterator<? extends E> i = inner.iterator();
 
-			@Override
-			public boolean hasNext()
-			{
-				return i.hasNext();
-			}
+      @Override
+      public boolean hasNext() {
+        return i.hasNext();
+      }
 
-			@Override
-			public E next()
-			{
-				return i.next();
-			}
+      @Override
+      public E next() {
+        return i.next();
+      }
 
-			@Override
-			public void remove()
-			{
-				throw new UnsupportedOperationException();
-			}
-		};
-	}
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
 }

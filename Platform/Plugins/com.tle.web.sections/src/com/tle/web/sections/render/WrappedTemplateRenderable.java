@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,35 @@
 
 package com.tle.web.sections.render;
 
-import java.io.IOException;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
+import java.io.IOException;
 
-public class WrappedTemplateRenderable implements TemplateRenderable
-{
-	protected SectionRenderable renderable;
+public class WrappedTemplateRenderable implements TemplateRenderable {
+  protected SectionRenderable renderable;
 
-	public WrappedTemplateRenderable(SectionRenderable renderable)
-	{
-		this.renderable = renderable;
-	}
+  public WrappedTemplateRenderable(SectionRenderable renderable) {
+    this.renderable = renderable;
+  }
 
-	@Override
-	public boolean exists(RenderContext context)
-	{
-		return true;
-	}
+  @Override
+  public boolean exists(RenderContext context) {
+    return true;
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		renderable.realRender(writer);
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    renderable.realRender(writer);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		renderable.preRender(info);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    renderable.preRender(info);
+  }
 
-	@Override
-	public String toString()
-	{
-		return renderable.toString();
-	}
+  @Override
+  public String toString() {
+    return renderable.toString();
+  }
 }

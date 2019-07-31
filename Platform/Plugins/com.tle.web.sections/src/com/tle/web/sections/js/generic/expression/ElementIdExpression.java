@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -21,26 +23,21 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.ElementId;
 import com.tle.web.sections.js.JSUtils;
 
-public class ElementIdExpression extends AbstractExpression
-{
-	private final ElementId id;
+public class ElementIdExpression extends AbstractExpression {
+  private final ElementId id;
 
-	public ElementIdExpression(ElementId id)
-	{
-		this.id = id;
-		id.registerUse();
-	}
+  public ElementIdExpression(ElementId id) {
+    this.id = id;
+    id.registerUse();
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		return JSUtils.toJSString(id.getElementId(info));
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    return JSUtils.toJSString(id.getElementId(info));
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -35,17 +37,16 @@ import org.apache.tika.sax.BodyContentHandler
 
 import scala.util.Try
 
-trait StagingContext
-{
+trait StagingContext {
   def deregisterFilename(id: UUID): Unit
 
   def fileSize(fullpath: String): Long
 
   def setPackageFolder(pkgFolder: String): Unit
 
-  def delete(path: String) : Unit
+  def delete(path: String): Unit
 
-  def listRootFilenames() : Set[String]
+  def listRootFilenames(): Set[String]
 
   def moveFile(from: String, to: String): Unit
 
@@ -53,35 +54,42 @@ trait StagingContext
 
   def gatherAdditionalMetadata(filePath: String): Iterable[(String, AnyRef)]
 
-  def unzip(srcZip: String, target: String) : ZipProgress
+  def unzip(srcZip: String, target: String): ZipProgress
 
   def stgFile: StagingFile
 }
 
 trait ControlContext {
-  def repo : WebRepository = controlState.getRepository
-  def state : FileUploadState
+  def repo: WebRepository = controlState.getRepository
+  def state: FileUploadState
   def mimeTypeForFilename(name: String): String
   def controlSettings: FileUploadSettings
-  def controlState : UniversalControlState
+  def controlState: UniversalControlState
   def stagingContext: StagingContext
 }
 
 object FileStagingContext {
   val tikaMapping = Iterable(
-    MSOffice.AUTHOR -> "author",
-    DublinCore.PUBLISHER -> "publisher",
+    MSOffice.AUTHOR           -> "author",
+    DublinCore.PUBLISHER      -> "publisher",
     HttpHeaders.LAST_MODIFIED -> "lastmodified",
-    MSOffice.PAGE_COUNT -> "pagecount",
-    MSOffice.WORD_COUNT -> "wordcount"
+    MSOffice.PAGE_COUNT       -> "pagecount",
+    MSOffice.WORD_COUNT       -> "wordcount"
   )
 
-  val tikaMimes = Set("application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+  val tikaMimes = Set("application/msword",
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 }
 
-class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemService: FileSystemService, thumbnailService: ThumbnailService,
-                         videoService: VideoService, mimeTypeService: MimeTypeService, repo: WebRepository) extends StagingContext {
-  def unzip(srcZip: String, target: String) : ZipProgress = {
+class FileStagingContext(stgId: Option[String],
+                         itemId: ItemId,
+                         fileSystemService: FileSystemService,
+                         thumbnailService: ThumbnailService,
+                         videoService: VideoService,
+                         mimeTypeService: MimeTypeService,
+                         repo: WebRepository)
+    extends StagingContext {
+  def unzip(srcZip: String, target: String): ZipProgress = {
     fileSystemService.unzipWithProgress(stgFile, srcZip, target)
   }
 
@@ -89,44 +97,50 @@ class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemServic
 
   def moveFile(from: String, to: String): Unit = fileSystemService.move(stgFile, from, to)
 
-  def listRootFilenames(): Set[String] = fileSystemService.enumerate(stgFile, "", null).map(_.getName.toLowerCase()).toSet
+  def listRootFilenames(): Set[String] =
+    fileSystemService.enumerate(stgFile, "", null).map(_.getName.toLowerCase()).toSet
 
   def delete(path: String) = fileSystemService.removeFile(stgFile, path)
 
-  def setPackageFolder(pkgFolder: String): Unit = repo.getState.getWizardMetadataMapper.setPackageExtractedFolder(pkgFolder)
+  def setPackageFolder(pkgFolder: String): Unit =
+    repo.getState.getWizardMetadataMapper.setPackageExtractedFolder(pkgFolder)
 
-  def fileSize(fullPath: String) : Long = fileSystemService.fileLength(stgFile, fullPath)
+  def fileSize(fullPath: String): Long = fileSystemService.fileLength(stgFile, fullPath)
 
   def deregisterFilename(id: UUID): Unit = repo.unregisterFilename(id)
 
   def thumbRequest(filePath: String): String = {
     val thumbnail = thumbnailService.submitThumbnailRequest(itemId, stgFile, filePath, true, false)
-    if (videoService.canConvertVideo(filePath)) videoService.makeGalleryVideoPreviews(stgFile, filePath)
+    if (videoService.canConvertVideo(filePath))
+      videoService.makeGalleryVideoPreviews(stgFile, filePath)
     thumbnail
   }
 
-
   def gatherAdditionalMetadata(filepath: String): Iterable[(String, AnyRef)] = {
-    (if (tikaMimes(mimeTypeService.getMimeTypeForFilename(filepath)) && fileSystemService.fileExists(stgFile, filepath)) {
-      Try(fileSystemService.read(stgFile, filepath)).flatMap { inp =>
-        val tried = Try {
-          val meta = new Metadata
-          meta.set(TikaMetadataKeys.RESOURCE_NAME_KEY, filepath)
-          val bcHandler = new BodyContentHandler
-          val parser = new AutoDetectParser(new TikaConfig(getClass.getClassLoader))
-          parser.parse(inp, bcHandler, meta, new ParseContext)
-          meta
-        }
-        inp.close()
-        tried
-      }.toOption.map { m =>
-        tikaMapping.flatMap {
-          case (HttpHeaders.LAST_MODIFIED, "lastmodified") => Option(m.getDate(HttpHeaders.LAST_MODIFIED)).map(("lastmodified", _))
-          case (f: Property, ef) => Option(m.get(f)).map((ef, _))
-          case (f: String, ef) => Option(m.get(f)).map((ef, _))
-        }
-      }
-    } else None).getOrElse(Iterable.empty)
+    (if (tikaMimes(mimeTypeService.getMimeTypeForFilename(filepath)) && fileSystemService
+           .fileExists(stgFile, filepath)) {
+       Try(fileSystemService.read(stgFile, filepath))
+         .flatMap { inp =>
+           val tried = Try {
+             val meta = new Metadata
+             meta.set(TikaMetadataKeys.RESOURCE_NAME_KEY, filepath)
+             val bcHandler = new BodyContentHandler
+             val parser    = new AutoDetectParser(new TikaConfig(getClass.getClassLoader))
+             parser.parse(inp, bcHandler, meta, new ParseContext)
+             meta
+           }
+           inp.close()
+           tried
+         }
+         .toOption
+         .map { m =>
+           tikaMapping.flatMap {
+             case (HttpHeaders.LAST_MODIFIED, "lastmodified") =>
+               Option(m.getDate(HttpHeaders.LAST_MODIFIED)).map(("lastmodified", _))
+             case (f: Property, ef) => Option(m.get(f)).map((ef, _))
+             case (f: String, ef)   => Option(m.get(f)).map((ef, _))
+           }
+         }
+     } else None).getOrElse(Iterable.empty)
   }
 }
-

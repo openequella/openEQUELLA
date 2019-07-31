@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,85 +22,67 @@ import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.wizard.scripting.objects.ControlScriptObject;
 import com.tle.web.wizard.scripting.objects.PageScriptObject;
 
-/**
- * @author aholland
- */
-public class PageScriptWrapper implements PageScriptObject
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class PageScriptWrapper implements PageScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	private final WizardPage page;
+  private final WizardPage page;
 
-	public PageScriptWrapper(WizardPage page)
-	{
-		this.page = page;
-	}
+  public PageScriptWrapper(WizardPage page) {
+    this.page = page;
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return page.isEnabled();
-	}
+  @Override
+  public boolean isEnabled() {
+    return page.isEnabled();
+  }
 
-	@Override
-	public int getPageNumber()
-	{
-		return page.getPageNumber();
-	}
+  @Override
+  public int getPageNumber() {
+    return page.getPageNumber();
+  }
 
-	@Override
-	public String getPageTitle()
-	{
-		return page.getPageTitle();
-	}
+  @Override
+  public String getPageTitle() {
+    return page.getPageTitle();
+  }
 
-	@Override
-	public boolean isValid()
-	{
-		return page.isValid();
-	}
+  @Override
+  public boolean isValid() {
+    return page.isValid();
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		page.setEnabled(enabled);
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    page.setEnabled(enabled);
+  }
 
-	@Override
-	public void setPageTitle(String title)
-	{
-		page.setPageTitle(title);
-	}
+  @Override
+  public void setPageTitle(String title) {
+    page.setPageTitle(title);
+  }
 
-	@Override
-	public void setValid(boolean valid)
-	{
-		page.setValid(valid);
-	}
+  @Override
+  public void setValid(boolean valid) {
+    page.setValid(valid);
+  }
 
-	@Override
-	public int getControlCount()
-	{
-		return page.getControls().size();
-	}
+  @Override
+  public int getControlCount() {
+    return page.getControls().size();
+  }
 
-	@Override
-	public ControlScriptObject getControlByIndex(int index)
-	{
-		if( index < 0 || index >= page.getControls().size() )
-		{
-			return null;
-		}
-		return new ControlScriptWrapper(page.getControls().get(index), page);
-	}
+  @Override
+  public ControlScriptObject getControlByIndex(int index) {
+    if (index < 0 || index >= page.getControls().size()) {
+      return null;
+    }
+    return new ControlScriptWrapper(page.getControls().get(index), page);
+  }
 
-	@Override
-	public void scriptEnter()
-	{
-	}
+  @Override
+  public void scriptEnter() {}
 
-	@Override
-	public void scriptExit()
-	{
-	}
+  @Override
+  public void scriptExit() {}
 }

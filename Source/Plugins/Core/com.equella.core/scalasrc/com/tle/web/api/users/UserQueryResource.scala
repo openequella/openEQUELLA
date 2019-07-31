@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,23 +29,21 @@ import scala.collection.JavaConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
 
-
 case class GroupQueryResult(id: String, name: String)
 
 case class RoleQueryResult(id: String, name: String)
 
-object GroupQueryResult
-{
+object GroupQueryResult {
   def apply(gb: GroupBean): GroupQueryResult =
     GroupQueryResult(gb.getUniqueID, gb.getName)
 }
 
-object RoleQueryResult
-{
+object RoleQueryResult {
   def apply(rb: RoleBean): RoleQueryResult = RoleQueryResult(rb.getUniqueID, rb.getName)
 }
 
-case class LookupQueryResult(users: Iterable[UserDetails], groups: Iterable[GroupQueryResult],
+case class LookupQueryResult(users: Iterable[UserDetails],
+                             groups: Iterable[GroupQueryResult],
                              roles: Iterable[RoleQueryResult])
 
 @Path("userquery/")
@@ -55,36 +55,40 @@ class UserQueryResource {
   @POST
   @Path("lookup")
   def lookup(queries: LookupQuery): LookupQueryResult = {
-    val us = LegacyGuice.userService
-    val users = us.getInformationForUsers(queries.users.asJava)
+    val us     = LegacyGuice.userService
+    val users  = us.getInformationForUsers(queries.users.asJava)
     val groups = us.getInformationForGroups(queries.groups.asJava)
-    val roles = us.getInformationForRoles(queries.roles.asJava)
+    val roles  = us.getInformationForRoles(queries.roles.asJava)
     LookupQueryResult(users.asScala.values.map(UserDetails.apply),
-      groups.asScala.values.map(GroupQueryResult.apply),
-      roles.asScala.values.map(RoleQueryResult.apply))
+                      groups.asScala.values.map(GroupQueryResult.apply),
+                      roles.asScala.values.map(RoleQueryResult.apply))
   }
 
   @GET
   @Path("search")
-  def search(@QueryParam(value="q") q : String,
-             @QueryParam("users") @DefaultValue("true") @ApiParam("Include users") susers: Boolean,
-             @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
-             @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean) : LookupQueryResult = {
-    val us = LegacyGuice.userService
-    val users = if (susers) us.searchUsers(q).asScala else Iterable.empty
+  def search(
+      @QueryParam(value = "q") q: String,
+      @QueryParam("users") @DefaultValue("true") @ApiParam("Include users") susers: Boolean,
+      @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
+      @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean)
+    : LookupQueryResult = {
+    val us     = LegacyGuice.userService
+    val users  = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
-    val roles = if (sroles) us.searchRoles(q).asScala else Iterable.empty
+    val roles  = if (sroles) us.searchRoles(q).asScala else Iterable.empty
     LookupQueryResult(users.map(UserDetails.apply),
-      groups.map(GroupQueryResult.apply),
-      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
+                      groups.map(GroupQueryResult.apply),
+                      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
   }
 
   @GET
   @Path("tokens")
   def listTokens = {
-    Option(LegacyGuice.userService.getReadOnlyPluginConfig("com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
+    Option(
+      LegacyGuice.userService.getReadOnlyPluginConfig(
+        "com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
       case Some(s: SharedSecretSettings) => s.getSharedSecrets.asScala.map(_.getId)
-      case _ => Iterable()
+      case _                             => Iterable()
     }
   }
 }

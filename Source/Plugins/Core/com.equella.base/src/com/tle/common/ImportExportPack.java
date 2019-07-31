@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,57 +18,47 @@
 
 package com.tle.common;
 
+import com.tle.common.security.TargetList;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.tle.common.security.TargetList;
+public class ImportExportPack<T extends Object> implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-public class ImportExportPack<T extends Object> implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private T entity;
+  private String version;
+  private TargetList targetList;
+  private Map<Object, TargetList> otherTargetLists;
 
-	private T entity;
-	private String version;
-	private TargetList targetList;
-	private Map<Object, TargetList> otherTargetLists;
+  public T getEntity() {
+    return entity;
+  }
 
-	public T getEntity()
-	{
-		return entity;
-	}
+  public void setEntity(T entity) {
+    this.entity = entity;
+  }
 
-	public void setEntity(T entity)
-	{
-		this.entity = entity;
-	}
+  public Map<Object, TargetList> getOtherTargetLists() {
+    return otherTargetLists;
+  }
 
-	public Map<Object, TargetList> getOtherTargetLists()
-	{
-		return otherTargetLists;
-	}
+  public void setOtherTargetLists(Map<Object, TargetList> otherTargetLists) {
+    this.otherTargetLists = otherTargetLists;
+  }
 
-	public void setOtherTargetLists(Map<Object, TargetList> otherTargetLists)
-	{
-		this.otherTargetLists = otherTargetLists;
-	}
+  public TargetList getTargetList() {
+    return targetList;
+  }
 
-	public TargetList getTargetList()
-	{
-		return targetList;
-	}
+  public void setTargetList(TargetList targetList) {
+    this.targetList = targetList;
+  }
 
-	public void setTargetList(TargetList targetList)
-	{
-		this.targetList = targetList;
-	}
+  public String getVersion() {
+    return version;
+  }
 
-	public String getVersion()
-	{
-		return version;
-	}
-
-	public void setVersion(String version)
-	{
-		this.version = version;
-	}
+  public void setVersion(String version) {
+    this.version = version;
+  }
 }

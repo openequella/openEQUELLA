@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.mypages.web.section;
-
-import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.Schema;
@@ -38,83 +38,69 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 public class MyPagesTitleSection extends AbstractMyPagesSection<MyPagesTitleModel>
-	implements
-		HtmlRenderer,
-		SaveItemEventListener,
-		LoadItemEventListener
-{
-	@Component
-	// TODO: it should be stateful = false
-	private TextField titleField;
+    implements HtmlRenderer, SaveItemEventListener, LoadItemEventListener {
+  @Component
+  // TODO: it should be stateful = false
+  private TextField titleField;
 
-	@Inject
-	private ItemHelper itemHelper;
+  @Inject private ItemHelper itemHelper;
 
-	@TreeLookup
-	private MyPagesContributeSection contribSection;
+  @TreeLookup private MyPagesContributeSection contribSection;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		MyPagesContributeModel model = contribSection.getModel(context);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    MyPagesContributeModel model = contribSection.getModel(context);
 
-		if( !model.isModal() )
-		{
-			return viewFactory.createResult("mypagesitemtitle.ftl", context); //$NON-NLS-1$
-		}
-		return null;
-	}
+    if (!model.isModal()) {
+      return viewFactory.createResult("mypagesitemtitle.ftl", context); // $NON-NLS-1$
+    }
+    return null;
+  }
 
-	@Override
-	public Class<MyPagesTitleModel> getModelClass()
-	{
-		return MyPagesTitleModel.class;
-	}
+  @Override
+  public Class<MyPagesTitleModel> getModelClass() {
+    return MyPagesTitleModel.class;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "mypttl"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "mypttl"; //$NON-NLS-1$
+  }
 
-	public TextField getTitleField()
-	{
-		return titleField;
-	}
+  public TextField getTitleField() {
+    return titleField;
+  }
 
-	@Override
-	public void doSaveItemEvent(SectionInfo info, SaveItemEvent event)
-	{
-		// check the description and veto the save if empty
-		String description = titleField.getValue(info);
-		if( Check.isEmpty(description) )
-		{
-			MyPagesTitleModel model = getModel(info);
-			model.setError(true);
-			event.setCommit(false);
-		}
-		else
-		{
-			final ItemPack<Item> itemPack = event.getItemPack();
-			final Item item = itemPack.getItem();
-			final PropBagEx itemXml = itemPack.getXml();
-			final Schema schema = item.getItemDefinition().getSchema();
+  @Override
+  public void doSaveItemEvent(SectionInfo info, SaveItemEvent event) {
+    // check the description and veto the save if empty
+    String description = titleField.getValue(info);
+    if (Check.isEmpty(description)) {
+      MyPagesTitleModel model = getModel(info);
+      model.setError(true);
+      event.setCommit(false);
+    } else {
+      final ItemPack<Item> itemPack = event.getItemPack();
+      final Item item = itemPack.getItem();
+      final PropBagEx itemXml = itemPack.getXml();
+      final Schema schema = item.getItemDefinition().getSchema();
 
-			itemXml.setNode(schema.getItemNamePath(), description);
+      itemXml.setNode(schema.getItemNamePath(), description);
 
-			itemHelper.updateItemFromXml(itemPack);
-		}
-	}
+      itemHelper.updateItemFromXml(itemPack);
+    }
+  }
 
-	@Override
-	public void doLoadItemEvent(SectionInfo info, LoadItemEvent event)
-	{
-		titleField.setValue(info,
-			CurrentLocale.get(event.getItem().getName(), CurrentLocale.get(RESOURCES.key("description.untitled")))); //$NON-NLS-1$
-	}
+  @Override
+  public void doLoadItemEvent(SectionInfo info, LoadItemEvent event) {
+    titleField.setValue(
+        info,
+        CurrentLocale.get(
+            event.getItem().getName(),
+            CurrentLocale.get(RESOURCES.key("description.untitled")))); // $NON-NLS-1$
+  }
 }

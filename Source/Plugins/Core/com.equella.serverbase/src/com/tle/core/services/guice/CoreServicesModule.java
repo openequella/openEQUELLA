@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,47 @@
 
 package com.tle.core.services.guice;
 
-import javax.inject.Singleton;
-
 import com.tle.common.Check;
 import com.tle.core.config.guice.MandatoryConfigModule;
 import com.tle.core.config.guice.OptionalConfigModule;
-import com.tle.core.events.EventExecutor;
-import com.tle.core.events.listeners.ApplicationListener;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.impl.ClusteredTaskServiceImpl;
 import com.tle.core.services.impl.LocalTaskServiceImpl;
+import javax.inject.Singleton;
 
 @SuppressWarnings("nls")
-public class CoreServicesModule extends MandatoryConfigModule
-{
-	@Override
-	protected void configure()
-	{
-		bindURL("admin.url");
-		install(new CoreServicesOptionalModule());
-		install(new CoreServicesTrackerModule());
-	}
+public class CoreServicesModule extends MandatoryConfigModule {
+  @Override
+  protected void configure() {
+    bindURL("admin.url");
+    install(new CoreServicesOptionalModule());
+    install(new CoreServicesTrackerModule());
+  }
 
-	public static class CoreServicesOptionalModule extends OptionalConfigModule
-	{
-		@Override
-		protected void configure()
-		{
-			bindInt("taskService.maxConcurrentTasks", 26);
+  public static class CoreServicesOptionalModule extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindInt("taskService.maxConcurrentTasks", 26);
 
-			if( Check.isEmpty(getProperty("zookeeper.instances")) )
-			{
-				bind(TaskService.class).to(LocalTaskServiceImpl.class).in(Singleton.class);
-			}
-			else
-			{
-				bind(TaskService.class).to(ClusteredTaskServiceImpl.class).in(Singleton.class);
-			}
-		}
-	}
+      if (Check.isEmpty(getProperty("zookeeper.instances"))) {
+        bind(TaskService.class).to(LocalTaskServiceImpl.class).in(Singleton.class);
+      } else {
+        bind(TaskService.class).to(ClusteredTaskServiceImpl.class).in(Singleton.class);
+      }
+    }
+  }
 
-	public static class CoreServicesTrackerModule extends PluginTrackerModule
-	{
+  public static class CoreServicesTrackerModule extends PluginTrackerModule {
 
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.core.services";
-		}
+    @Override
+    protected String getPluginId() {
+      return "com.tle.core.services";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(Object.class, "coreTasks", null).setIdParam("id");
-		}
-	}
+    @Override
+    protected void configure() {
+      bindTracker(Object.class, "coreTasks", null).setIdParam("id");
+    }
+  }
 }

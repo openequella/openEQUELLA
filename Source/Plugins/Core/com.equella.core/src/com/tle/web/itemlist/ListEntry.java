@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.web.itemlist;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.web.itemlist.item.ListSettings;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
@@ -27,44 +26,45 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlBooleanState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.DivRenderer;
+import java.util.Collection;
+import java.util.List;
 
-public interface ListEntry
-{
-	HtmlLinkState getTitle();
+public interface ListEntry {
+  HtmlLinkState getTitle();
 
-	Label getDescription();
+  Label getDescription();
 
-	HtmlBooleanState getCheckbox();
+  HtmlBooleanState getCheckbox();
 
-	boolean isHilighted();
+  boolean isHilighted();
 
-	void setHilighted(boolean highlighted);
+  void setHilighted(boolean highlighted);
 
-	List<MetadataEntry> getMetadata();
+  List<MetadataEntry> getMetadata();
 
-	void addMetadata(MetadataEntry meta);
+  void addMetadata(MetadataEntry meta);
 
-	void addDelimitedMetadata(Label label, Object... data);
+  void addDelimitedMetadata(Label label, Object... data);
 
-	void addDelimitedMetadata(Label label, Collection<?> data);
+  void addDelimitedMetadata(Label label, Collection<?> data);
 
-	void setAttribute(Object key, Object value);
+  void setAttribute(Object key, Object value);
 
-	boolean isFlagSet(String flagKey);
+  boolean isFlagSet(String flagKey);
 
-	void init(RenderContext context, ListSettings<? extends ListEntry> settings);
+  void init(RenderContext context, ListSettings<? extends ListEntry> settings);
 
-	void setInfo(SectionInfo info);
+  void setInfo(SectionInfo info);
 
-	void addRatingAction(int order, Object... ratingData);
+  void addRatingAction(int order, Object... ratingData);
 
-	void addRatingAction(Object... ratingData);
+  void addRatingAction(Object... ratingData);
 
-	void addRatingMetadata(Object... ratingData);
+  void addRatingMetadata(Object... ratingData);
 
-	void addRatingMetadataWithOrder(int order, Object... ratingData);
+  void addRatingMetadataWithOrder(int order, Object... ratingData);
 
-	void setThumbnailCount(DivRenderer count);
+  void setThumbnailCount(DivRenderer count);
 
-	void addThumbnail(SectionRenderable renderable);
+  void addThumbnail(SectionRenderable renderable);
 }

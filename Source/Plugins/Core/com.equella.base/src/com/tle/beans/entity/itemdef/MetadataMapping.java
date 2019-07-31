@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,34 +18,29 @@
 
 package com.tle.beans.entity.itemdef;
 
+import com.tle.beans.entity.itemdef.mapping.HTMLMapping;
+import com.tle.beans.entity.itemdef.mapping.IMSMapping;
+import com.tle.beans.entity.itemdef.mapping.LiteralMapping;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.tle.beans.entity.itemdef.mapping.HTMLMapping;
-import com.tle.beans.entity.itemdef.mapping.IMSMapping;
-import com.tle.beans.entity.itemdef.mapping.LiteralMapping;
+public class MetadataMapping implements Serializable {
+  private static final long serialVersionUID = 1;
 
-public class MetadataMapping implements Serializable
-{
-	private static final long serialVersionUID = 1;
+  private Collection<IMSMapping> imsMapping = new ArrayList<IMSMapping>();
+  private Collection<HTMLMapping> htmlMapping = new ArrayList<HTMLMapping>();
+  private Collection<LiteralMapping> literalMapping = new ArrayList<LiteralMapping>();
 
-	private Collection<IMSMapping> imsMapping = new ArrayList<IMSMapping>();
-	private Collection<HTMLMapping> htmlMapping = new ArrayList<HTMLMapping>();
-	private Collection<LiteralMapping> literalMapping = new ArrayList<LiteralMapping>();
+  public Collection<HTMLMapping> getHtmlMapping() {
+    return htmlMapping;
+  }
 
-	public Collection<HTMLMapping> getHtmlMapping()
-	{
-		return htmlMapping;
-	}
+  public Collection<IMSMapping> getImsMapping() {
+    return imsMapping;
+  }
 
-	public Collection<IMSMapping> getImsMapping()
-	{
-		return imsMapping;
-	}
-
-	public Collection<LiteralMapping> getLiteralMapping()
-	{
-		return literalMapping;
-	}
+  public Collection<LiteralMapping> getLiteralMapping() {
+    return literalMapping;
+  }
 }

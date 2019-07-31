@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,22 +18,19 @@
 
 package com.tle.core.remoting;
 
+import com.tle.beans.usermanagement.standard.LDAPSettings;
 import java.util.List;
-
 import javax.naming.Name;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import com.tle.beans.usermanagement.standard.LDAPSettings;
+public interface RemoteLDAPService {
+  List<? extends Attribute> getAttributes(LDAPSettings settings, String base, String[] attributes);
 
-public interface RemoteLDAPService
-{
-	List<? extends Attribute> getAttributes(LDAPSettings settings, String base, String[] attributes);
+  List<SearchResult> search(LDAPSettings settings, String base, String filter, SearchControls ctls);
 
-	List<SearchResult> search(LDAPSettings settings, String base, String filter, SearchControls ctls);
+  List<Name> getBases(LDAPSettings settings);
 
-	List<Name> getBases(LDAPSettings settings);
-
-	List<String> getDNs(LDAPSettings settings);
+  List<String> getDNs(LDAPSettings settings);
 }

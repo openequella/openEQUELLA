@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,71 +18,61 @@
 
 package com.tle.beans.usermanagement.standard.wrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyList;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class AbstractSharedSecretSettings<S extends AbstractSharedSecretSettings.AbstractSharedSecretValue>
-	extends
-		UserManagementSettings
-{
-	public abstract List<S> getSharedSecrets();
+public abstract class AbstractSharedSecretSettings<
+        S extends AbstractSharedSecretSettings.AbstractSharedSecretValue>
+    extends UserManagementSettings {
+  public abstract List<S> getSharedSecrets();
 
-	public abstract void setSharedSecrets(List<S> sharedSecrets);
+  public abstract void setSharedSecrets(List<S> sharedSecrets);
 
-	public static class AbstractSharedSecretValue implements ConfigurationProperties
-	{
-		private static final long serialVersionUID = 7008004720184372536L;
+  public static class AbstractSharedSecretValue implements ConfigurationProperties {
+    private static final long serialVersionUID = 7008004720184372536L;
 
-		@Property(key = "id")
-		private String id = ""; //$NON-NLS-1$
+    @Property(key = "id")
+    private String id = ""; // $NON-NLS-1$
 
-		@Property(key = "secret")
-		private String secret = ""; //$NON-NLS-1$
+    @Property(key = "secret")
+    private String secret = ""; // $NON-NLS-1$
 
-		@Property(key = "expression")
-		private String expression = "*"; //$NON-NLS-1$
+    @Property(key = "expression")
+    private String expression = "*"; // $NON-NLS-1$
 
-		@PropertyList(key = "groups")
-		private List<String> groups = new ArrayList<String>();
+    @PropertyList(key = "groups")
+    private List<String> groups = new ArrayList<String>();
 
-		public String getId()
-		{
-			return id;
-		}
+    public String getId() {
+      return id;
+    }
 
-		public void setId(String id)
-		{
-			this.id = id;
-		}
+    public void setId(String id) {
+      this.id = id;
+    }
 
-		public String getExpression()
-		{
-			return expression;
-		}
+    public String getExpression() {
+      return expression;
+    }
 
-		public void setExpression(String expression)
-		{
-			this.expression = expression;
-		}
+    public void setExpression(String expression) {
+      this.expression = expression;
+    }
 
-		public String getSecret()
-		{
-			return secret;
-		}
+    public String getSecret() {
+      return secret;
+    }
 
-		public void setSecret(String secret)
-		{
-			this.secret = secret;
-		}
+    public void setSecret(String secret) {
+      this.secret = secret;
+    }
 
-		public List<String> getGroups()
-		{
-			return groups;
-		}
-	}
+    public List<String> getGroups() {
+      return groups;
+    }
+  }
 }

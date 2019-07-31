@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,36 +21,30 @@ package com.tle.common;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public final class ExpiringValue<T> implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+public final class ExpiringValue<T> implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private final long timeout;
-	private final T value;
+  private final long timeout;
+  private final T value;
 
-	public static <U> ExpiringValue<U> expireAt(U value, long exactTime)
-	{
-		return new ExpiringValue<U>(value, exactTime);
-	}
+  public static <U> ExpiringValue<U> expireAt(U value, long exactTime) {
+    return new ExpiringValue<U>(value, exactTime);
+  }
 
-	public static <U> ExpiringValue<U> expireAfter(U value, long duration, TimeUnit unit)
-	{
-		return new ExpiringValue<U>(value, System.currentTimeMillis() + unit.toMillis(duration));
-	}
+  public static <U> ExpiringValue<U> expireAfter(U value, long duration, TimeUnit unit) {
+    return new ExpiringValue<U>(value, System.currentTimeMillis() + unit.toMillis(duration));
+  }
 
-	private ExpiringValue(T value, long expiresAtMillisSinceEpoch)
-	{
-		this.value = value;
-		this.timeout = expiresAtMillisSinceEpoch;
-	}
+  private ExpiringValue(T value, long expiresAtMillisSinceEpoch) {
+    this.value = value;
+    this.timeout = expiresAtMillisSinceEpoch;
+  }
 
-	public boolean isTimedOut()
-	{
-		return System.currentTimeMillis() > timeout;
-	}
+  public boolean isTimedOut() {
+    return System.currentTimeMillis() > timeout;
+  }
 
-	public T getValue()
-	{
-		return isTimedOut() ? null : value;
-	}
+  public T getValue() {
+    return isTimedOut() ? null : value;
+  }
 }

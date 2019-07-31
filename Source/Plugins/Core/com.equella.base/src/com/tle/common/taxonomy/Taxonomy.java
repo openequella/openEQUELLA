@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,39 +18,32 @@
 
 package com.tle.common.taxonomy;
 
+import com.tle.beans.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.entity.BaseEntity;
 
 @Entity
 @AccessType("field")
-public class Taxonomy extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class Taxonomy extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 100)
-	private String dataSourcePluginId;
+  @Column(length = 100)
+  private String dataSourcePluginId;
 
-	public Taxonomy()
-	{
-		super();
-	}
+  public Taxonomy() {
+    super();
+  }
 
-	public Taxonomy(long id)
-	{
-		setId(id);
-	}
+  public Taxonomy(long id) {
+    setId(id);
+  }
 
-	public String getDataSourcePluginId()
-	{
-		return dataSourcePluginId;
-	}
+  public String getDataSourcePluginId() {
+    return dataSourcePluginId;
+  }
 
-	public void setDataSourcePluginId(String dataSourcePluginId)
-	{
-		this.dataSourcePluginId = dataSourcePluginId;
-	}
+  public void setDataSourcePluginId(String dataSourcePluginId) {
+    this.dataSourcePluginId = dataSourcePluginId;
+  }
 }

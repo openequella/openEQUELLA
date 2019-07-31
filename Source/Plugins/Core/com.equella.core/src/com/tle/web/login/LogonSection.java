@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,18 +17,6 @@
  */
 
 package com.tle.web.login;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.inject.Inject;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
@@ -41,6 +31,8 @@ import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
@@ -69,395 +61,362 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.ResultListCollector;
-import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.*;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
-
 import hurl.build.UriBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.inject.Inject;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonModel>
-	implements
-		HtmlRenderer,
-		BeforeEventsListener,
-		BookmarkEventListener
-{
-	public static final String STANDARD_LOGON_PATH = "/logon.do";
+    implements HtmlRenderer, BeforeEventsListener, BookmarkEventListener {
+  public static final String STANDARD_LOGON_PATH = "/logon.do";
 
-	private static final PluginResourceHelper RESOURCE_HELPER = ResourcesService.getResourceHelper(LogonSection.class);
-	private static final ExternallyDefinedFunction LOGON_READY = new ExternallyDefinedFunction("logonReady",
-		new IncludeFile(RESOURCE_HELPER.url("scripts/logon.js")));
+  private static final PluginResourceHelper RESOURCE_HELPER =
+      ResourcesService.getResourceHelper(LogonSection.class);
+  private static final ExternallyDefinedFunction LOGON_READY =
+      new ExternallyDefinedFunction(
+          "logonReady", new IncludeFile(RESOURCE_HELPER.url("scripts/logon.js")));
 
-	@PlugKey("logon.pagetitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("logon.error.usernamenotfound")
-	private static String KEY_ERROR_USERNAME_NOT_FOUND;
+  @PlugKey("logon.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private UserService userService;
-	@Inject
-	private UserSessionService sessionService;
-	@Inject
-	private AuditLogService auditLogService;
-	@Inject
-	private PluginTracker<LoginLink> loginLinkTracker;
+  @PlugKey("logon.error.usernamenotfound")
+  private static String KEY_ERROR_USERNAME_NOT_FOUND;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @Inject private UserService userService;
+  @Inject private UserSessionService sessionService;
+  @Inject private AuditLogService auditLogService;
+  @Inject private PluginTracker<LoginLink> loginLinkTracker;
+  @Inject LoginNoticeService loginNoticeService;
 
-	@Component
-	private TextField username;
-	@Component(stateful = false)
-	private TextField password;
-	@Component
-	@PlugKey("logon.login")
-	private Button logonButton;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Component private TextField username;
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new LogonModel();
-	}
+  @Component(stateful = false)
+  private TextField password;
 
-	@Override
-	public void beforeEvents(SectionInfo info)
-	{
-		AutoLogin autoLogin = userService.getAttribute(AutoLogin.class);
-		HttpServletRequest request = info.getRequest();
-		if( autoLogin != null && request != null && autoLogin.isLoginViaSSL() && !request.isSecure() )
-		{
-			String href = info.getPublicBookmark().getHref();
-			UriBuilder uriBuilder = UriBuilder.create(URI.create(href));
-			uriBuilder.setScheme("https");
-			info.forwardToUrl(uriBuilder.build().toString());
-		}
-	}
+  @Component
+  @PlugKey("logon.login")
+  private Button logonButton;
 
-	/**
-	 * @param info
-	 * @throws IOException
-	 */
-	@DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS)
-	public void checkAutoLogonAndLogout(SectionInfo info) throws IOException
-	{
-		LogonModel model = getModel(info);
-		if( !Check.isEmpty(model.getError()) )
-		{
-			return;
-		}
-		if( model.isLogout() )
-		{
-			model.setLogout(false);
-			URI logoutURI = URI.create(info.getPublicBookmark().getHref());
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-			// Add UM filter params
-			logoutURI = userService.logoutURI(CurrentUser.getUserState(), logoutURI);
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new LogonModel();
+  }
 
-			// Redirect
-			HttpServletRequest request = info.getRequest();
-			userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
-			info.forwardToUrl(userService.logoutRedirect(logoutURI).toString());
-			return;
-		}
-		if( !CurrentUser.isGuest() )
-		{
-			redirectToLogonnotice(info);
-		}
-	}
+  @Override
+  public void beforeEvents(SectionInfo info) {
+    AutoLogin autoLogin = userService.getAttribute(AutoLogin.class);
+    HttpServletRequest request = info.getRequest();
+    if (autoLogin != null && request != null && autoLogin.isLoginViaSSL() && !request.isSecure()) {
+      String href = info.getPublicBookmark().getHref();
+      UriBuilder uriBuilder = UriBuilder.create(URI.create(href));
+      uriBuilder.setScheme("https");
+      info.forwardToUrl(uriBuilder.build().toString());
+    }
+  }
 
-	/**
-	 * @param info
-	 * @return true, always
-	 */
-	private boolean redirectToLogonnotice(SectionInfo info)
-	{
-		sessionService.forceSession();
-		HttpServletRequest request = info.getRequest();
-		// This is a dodgy hack to get around the fact that tomcat
-		// will set a cookie marked as "Secure" if the session was created on
-		// ssl
-		if( request.isSecure() )
-		{
-			Cookie k = new Cookie("JSESSIONID", request.getSession().getId());
-			info.getResponse().addCookie(k);
-		}
-		LogonModel model = getModel(info);
-		// Save the page parameter for redirection fun later - see
-		// LogonNoticeAction class
-		if( model.getPage() != null )
-		{
-			sessionService.setAttribute(WebConstants.PAGE_AFTER_LOGON_KEY, model.getPage());
-		}
-		info.forwardAsBookmark(info.createForward("logonnotice.do"));
-		return true;
-	}
+  /**
+   * @param info
+   * @throws IOException
+   */
+  @DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS)
+  public void checkAutoLogonAndLogout(SectionInfo info) throws IOException {
+    LogonModel model = getModel(info);
+    if (!Check.isEmpty(model.getError())) {
+      return;
+    }
+    if (model.isLogout()) {
+      model.setLogout(false);
+      URI logoutURI = URI.create(info.getPublicBookmark().getHref());
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void authenticate(SectionInfo info)
-	{
-		LogonModel model = getModel(info);
+      // Add UM filter params
+      logoutURI = userService.logoutURI(CurrentUser.getUserState(), logoutURI);
 
-		String usernameText = username.getValue(info);
-		String passwordText = password.getValue(info);
-		WebAuthenticationDetails wad = getDetails(info);
+      // Redirect
+      HttpServletRequest request = info.getRequest();
+      userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
+      info.forwardToUrl(userService.logoutRedirect(logoutURI).toString());
+      return;
+    }
+    if (!CurrentUser.isGuest()) {
+      redirectToLogonnotice(info);
+    }
+  }
 
-		try
-		{
-			userService.login(usernameText, passwordText, wad, true);
-			redirectToLogonnotice(info);
-		}
-		catch( AuthenticationException ex )
-		{
-			String failedMessage;
-			if( ex instanceof BadCredentialsException )
-			{
-				failedMessage = RESOURCE_HELPER.key("logon.invalid");
-			}
-			else if( ex instanceof AccountExpiredException )
-			{
-				failedMessage = ex.getMessage();
-			}
-			else
-			{
-				failedMessage = RESOURCE_HELPER.key("logon.problems");
-			}
-			auditLogService.logUserFailedAuthentication(usernameText, wad);
-			model.setFailed(failedMessage);
-			info.preventGET();
-		}
-	}
+  /**
+   * @param info
+   * @return true, always
+   */
+  private boolean redirectToLogonnotice(SectionInfo info) {
+    sessionService.forceSession();
+    HttpServletRequest request = info.getRequest();
+    // This is a dodgy hack to get around the fact that tomcat
+    // will set a cookie marked as "Secure" if the session was created on
+    // ssl
+    if (request.isSecure()) {
+      Cookie k = new Cookie("JSESSIONID", request.getSession().getId());
+      info.getResponse().addCookie(k);
+    }
+    LogonModel model = getModel(info);
+    // Save the page parameter for redirection fun later - see
+    // LogonNoticeAction class
+    if (model.getPage() != null) {
+      sessionService.setAttribute(WebConstants.PAGE_AFTER_LOGON_KEY, model.getPage());
+    }
+    info.forwardAsBookmark(info.createForward("logonnotice.do"));
+    return true;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		LogonModel model = getModel(context);
-		password.setValue(context, "");
-		context.getBody().addReadyStatements(LOGON_READY);
-		Decorations decorations = Decorations.getDecorations(context);
-		decorations.setTitle(TITLE_LABEL);
-		decorations.setMenuMode(MenuMode.HIDDEN);
+  @EventHandlerMethod(preventXsrf = false)
+  public void authenticate(SectionInfo info) {
+    LogonModel model = getModel(info);
 
-		model.setChildSections(renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
-		final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
-		for( LoginLink link : loginLinkTracker.getBeanList() )
-		{
-			link.setup(context, model);
-			final SectionRenderable linkRenderer = renderSection(context, link);
-			if( linkRenderer != null )
-			{
-				loginLinksRenderables.add(linkRenderer);
-			}
-		}
-		model.setLoginLinks(loginLinksRenderables);
+    String usernameText = username.getValue(info);
+    String passwordText = password.getValue(info);
+    WebAuthenticationDetails wad = getDetails(info);
 
-		return viewFactory.createResult("logon/logon.ftl", context);
-	}
+    try {
+      userService.login(usernameText, passwordText, wad, true);
+      redirectToLogonnotice(info);
+    } catch (AuthenticationException ex) {
+      String failedMessage;
+      if (ex instanceof BadCredentialsException) {
+        failedMessage = RESOURCE_HELPER.key("logon.invalid");
+      } else if (ex instanceof AccountExpiredException) {
+        failedMessage = ex.getMessage();
+      } else {
+        failedMessage = RESOURCE_HELPER.key("logon.problems");
+      }
+      auditLogService.logUserFailedAuthentication(usernameText, wad);
+      model.setFailed(failedMessage);
+      info.preventGET();
+    }
+  }
 
-	private WebAuthenticationDetails getDetails(SectionInfo info)
-	{
-		LogonModel model = getModel(info);
-		WebAuthenticationDetails details = model.getDetails();
-		if( details == null )
-		{
-			// We want to clone the details from the existing user state so that
-			// the referrer is where we came from to get to the EQUELLA URL we
-			// needed authentication for, rather than the EQUELLA URL that we
-			// needed authentication for which is useless.
-			details = new WebAuthenticationDetails(CurrentUser.getUserState());
-			model.setDetails(details);
-		}
-		return details;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    LogonModel model = getModel(context);
+    password.setValue(context, "");
+    context.getBody().addReadyStatements(LOGON_READY);
+    Decorations decorations = Decorations.getDecorations(context);
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setMenuMode(MenuMode.HIDDEN);
+    PreLoginNotice preLoginNotice = new PreLoginNotice();
+    try {
+      preLoginNotice = loginNoticeService.getPreLoginNotice();
+    } catch (IOException e) {
+      model.setFailed(e.getMessage());
+    }
+    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
+      model.setLoginNotice(preLoginNotice.getNotice());
+    }
+    model.setChildSections(
+        renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
+    final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
+    for (LoginLink link : loginLinkTracker.getBeanList()) {
+      link.setup(context, model);
+      final SectionRenderable linkRenderer = renderSection(context, link);
+      if (linkRenderer != null) {
+        loginLinksRenderables.add(linkRenderer);
+      }
+    }
+    model.setLoginLinks(loginLinksRenderables);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		logonButton.setClickHandler(events.getNamedHandler("authenticate"));
-		for( LoginLink link : loginLinkTracker.getBeanList() )
-		{
-			tree.registerInnerSection(link, id);
-		}
-	}
+    return viewFactory.createResult("logon/logon.ftl", context);
+  }
 
-	public TextField getUsername()
-	{
-		return username;
-	}
+  private WebAuthenticationDetails getDetails(SectionInfo info) {
+    LogonModel model = getModel(info);
+    WebAuthenticationDetails details = model.getDetails();
+    if (details == null) {
+      // We want to clone the details from the existing user state so that
+      // the referrer is where we came from to get to the EQUELLA URL we
+      // needed authentication for, rather than the EQUELLA URL that we
+      // needed authentication for which is useless.
+      details = new WebAuthenticationDetails(CurrentUser.getUserState());
+      model.setDetails(details);
+    }
+    return details;
+  }
 
-	public TextField getPassword()
-	{
-		return password;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    logonButton.setClickHandler(events.getNamedHandler("authenticate"));
+    for (LoginLink link : loginLinkTracker.getBeanList()) {
+      tree.registerInnerSection(link, id);
+    }
+  }
 
-	public Button getLogonButton()
-	{
-		return logonButton;
-	}
+  public TextField getUsername() {
+    return username;
+  }
 
-	public static void forwardToLogon(SectionInfo info, @Nullable String relativeUrl, String loginPath)
-	{
-		SectionInfo forward = info.createForward(loginPath);
-		setupForward(forward, relativeUrl);
-		info.forwardAsBookmark(forward);
-	}
+  public TextField getPassword() {
+    return password;
+  }
 
-	public static void forwardToLogon(SectionsController controller, HttpServletRequest request,
-		HttpServletResponse response, @Nullable String relativeUrl, String loginPath)
-	{
-		SectionInfo forward = controller.createInfo(loginPath, request, response, null, null, null);
-		setupForward(forward, relativeUrl);
-		forward.forceRedirect();
-		controller.execute(forward);
-	}
+  public Button getLogonButton() {
+    return logonButton;
+  }
 
-	public static Bookmark forwardToLogonBookmark(SectionInfo info, @Nullable String relativeUrl, String loginPath)
-	{
-		SectionInfo forward = info.createForward(loginPath);
-		setupForward(forward, relativeUrl);
-		return forward.getPublicBookmark();
-	}
+  public static void forwardToLogon(
+      SectionInfo info, @Nullable String relativeUrl, String loginPath) {
+    SectionInfo forward = info.createForward(loginPath);
+    setupForward(forward, relativeUrl);
+    info.forwardAsBookmark(forward);
+  }
 
-	private static void setupForward(SectionInfo forward, @Nullable String relativeUrl)
-	{
-		LogonSection logonSection = forward.lookupSection(LogonSection.class);
-		LogonModel model = logonSection.getModel(forward);
-		model.setPage(relativeUrl);
+  public static void forwardToLogon(
+      SectionsController controller,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      @Nullable String relativeUrl,
+      String loginPath) {
+    SectionInfo forward = controller.createInfo(loginPath, request, response, null, null, null);
+    setupForward(forward, relativeUrl);
+    forward.forceRedirect();
+    controller.execute(forward);
+  }
 
-		Exception exception = (Exception) forward.getRequest().getAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
-		if( exception != null )
-		{
-			if( exception instanceof UsernameNotFoundException )
-			{
-				UsernameNotFoundException unnfe = (UsernameNotFoundException) exception;
-				model.setError(CurrentLocale.get(KEY_ERROR_USERNAME_NOT_FOUND, unnfe.getUsername()));
-			}
-			else
-			{
-				model.setError(exception.getLocalizedMessage());
-			}
-		}
-	}
+  public static Bookmark forwardToLogonBookmark(
+      SectionInfo info, @Nullable String relativeUrl, String loginPath) {
+    SectionInfo forward = info.createForward(loginPath);
+    setupForward(forward, relativeUrl);
+    return forward.getPublicBookmark();
+  }
 
-	@NonNullByDefault(false)
-	public static class LogonModel
-	{
-		@Bookmarked
-		private boolean logout;
-		@Bookmarked
-		private String page;
-		@Bookmarked
-		private String error;
+  private static void setupForward(SectionInfo forward, @Nullable String relativeUrl) {
+    LogonSection logonSection = forward.lookupSection(LogonSection.class);
+    LogonModel model = logonSection.getModel(forward);
+    model.setPage(relativeUrl);
 
-		private String failed;
-		private WebAuthenticationDetails details;
-		private SectionRenderable childSections;
-		private List<SectionRenderable> loginLinks;
+    Exception exception =
+        (Exception) forward.getRequest().getAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
+    if (exception != null) {
+      if (exception instanceof UsernameNotFoundException) {
+        UsernameNotFoundException unnfe = (UsernameNotFoundException) exception;
+        model.setError(CurrentLocale.get(KEY_ERROR_USERNAME_NOT_FOUND, unnfe.getUsername()));
+      } else {
+        model.setError(exception.getLocalizedMessage());
+      }
+    }
+  }
 
-		public String getFailed()
-		{
-			return failed;
-		}
+  @NonNullByDefault(false)
+  public static class LogonModel {
+    @Bookmarked private boolean logout;
+    @Bookmarked private String page;
+    @Bookmarked private String error;
 
-		public void setFailed(String failed)
-		{
-			this.failed = failed;
-		}
+    private String loginNotice;
 
-		public String getPage()
-		{
-			return page;
-		}
+    private String failed;
+    private WebAuthenticationDetails details;
+    private SectionRenderable childSections;
+    private List<SectionRenderable> loginLinks;
 
-		public void setPage(String page)
-		{
-			this.page = page;
-		}
+    public String getFailed() {
+      return failed;
+    }
 
-		public boolean isLogout()
-		{
-			return logout;
-		}
+    public void setFailed(String failed) {
+      this.failed = failed;
+    }
 
-		public void setLogout(boolean logout)
-		{
-			this.logout = logout;
-		}
+    public String getPage() {
+      return page;
+    }
 
-		public String getError()
-		{
-			return error;
-		}
+    public void setPage(String page) {
+      this.page = page;
+    }
 
-		public void setError(String error)
-		{
-			this.error = error;
-		}
+    public boolean isLogout() {
+      return logout;
+    }
 
-		public WebAuthenticationDetails getDetails()
-		{
-			return details;
-		}
+    public void setLogout(boolean logout) {
+      this.logout = logout;
+    }
 
-		public void setDetails(WebAuthenticationDetails details)
-		{
-			this.details = details;
-		}
+    public String getError() {
+      return error;
+    }
 
-		public SectionRenderable getChildSections()
-		{
-			return childSections;
-		}
+    public void setError(String error) {
+      this.error = error;
+    }
 
-		public void setChildSections(SectionRenderable childSections)
-		{
-			this.childSections = childSections;
-		}
+    public WebAuthenticationDetails getDetails() {
+      return details;
+    }
 
-		public List<SectionRenderable> getLoginLinks()
-		{
-			return loginLinks;
-		}
+    public void setDetails(WebAuthenticationDetails details) {
+      this.details = details;
+    }
 
-		public void setLoginLinks(List<SectionRenderable> loginLinks)
-		{
-			this.loginLinks = loginLinks;
-		}
-	}
+    public SectionRenderable getChildSections() {
+      return childSections;
+    }
 
-	@Override
-	public void bookmark(SectionInfo info, BookmarkEvent event)
-	{
-		HttpServletRequest request = info.getRequest();
-		if( request != null )
-		{
-			Map<String, String[]> state = userService.getAdditionalLogonState(request);
-			for( Entry<String, String[]> entry : state.entrySet() )
-			{
-				event.setParams(entry.getKey(), entry.getValue());
-			}
-		}
-	}
+    public void setChildSections(SectionRenderable childSections) {
+      this.childSections = childSections;
+    }
 
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		// nothing
-	}
+    public List<SectionRenderable> getLoginLinks() {
+      return loginLinks;
+    }
+
+    public void setLoginLinks(List<SectionRenderable> loginLinks) {
+      this.loginLinks = loginLinks;
+    }
+
+    public String getLoginNotice() {
+      return loginNotice;
+    }
+
+    public void setLoginNotice(String loginNotice) {
+      this.loginNotice = loginNotice;
+    }
+  }
+
+  @Override
+  public void bookmark(SectionInfo info, BookmarkEvent event) {
+    HttpServletRequest request = info.getRequest();
+    if (request != null) {
+      Map<String, String[]> state = userService.getAdditionalLogonState(request);
+      for (Entry<String, String[]> entry : state.entrySet()) {
+        event.setParams(entry.getKey(), entry.getValue());
+      }
+    }
+  }
+
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    // nothing
+  }
 }

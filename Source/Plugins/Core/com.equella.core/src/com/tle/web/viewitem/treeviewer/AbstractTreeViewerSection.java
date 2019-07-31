@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,14 +17,6 @@
  */
 
 package com.tle.web.viewitem.treeviewer;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
@@ -77,396 +71,352 @@ import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 import net.sf.json.JSONArray;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerModel> extends AbstractPrototypeSection<M>
-	implements
-		ViewItemViewer
-{
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private IntegrationService integrationService;
-	@Inject
-	private URLCheckerService urlCheckerService;
+public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerModel>
+    extends AbstractPrototypeSection<M> implements ViewItemViewer {
+  @Inject private AttachmentResourceService attachmentResourceService;
+  @Inject private BundleCache bundleCache;
+  @Inject private IntegrationService integrationService;
+  @Inject private URLCheckerService urlCheckerService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@TreeLookup
-	private RootItemFileSection rootSection;
+  @TreeLookup private RootItemFileSection rootSection;
 
-	@Inject
-	@Component
-	private NavBar navBar;
-	@Component
-	private Link title;
-	@Component
-	private Link split;
+  @Inject @Component private NavBar navBar;
+  @Component private Link title;
+  @Component private Link split;
 
-	@Component
-	@PlugKey(value = "navbar.first", icon = Icon.JUMP_TO_FIRST)
-	private Button first;
-	@Component
-	@PlugKey(value = "navbar.prev", icon = Icon.PREV)
-	private Button prev;
-	@Component
-	@PlugKey(value = "navbar.next", icon = Icon.NEXT)
-	private Button next;
-	@Component
-	@PlugKey(value = "navbar.last", icon = Icon.JUMP_TO_LAST)
-	private Button last;
+  @Component
+  @PlugKey(value = "navbar.first", icon = Icon.JUMP_TO_FIRST)
+  private Button first;
 
-	protected interface NodeUrlGenerator
-	{
-		@Nullable
-		String getUrlForNode(ItemNavigationNode node);
-	}
+  @Component
+  @PlugKey(value = "navbar.prev", icon = Icon.PREV)
+  private Button prev;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey(value = "navbar.next", icon = Icon.NEXT)
+  private Button next;
 
-		split.setStyleClass("splitview");
+  @Component
+  @PlugKey(value = "navbar.last", icon = Icon.JUMP_TO_LAST)
+  private Button last;
 
-		navBar.setTitle(title);
-		navBar.buildRight().divider().action(split);
-	}
+  protected interface NodeUrlGenerator {
+    @Nullable
+    String getUrlForNode(ItemNavigationNode node);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		registerPathMappings(rootSection);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	protected abstract void registerPathMappings(RootItemFileSection rootSection);
+    split.setStyleClass("splitview");
 
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
-	}
+    navBar.setTitle(title);
+    navBar.buildRight().divider().action(split);
+  }
 
-	@Nullable
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource)
-	{
-		SectionUtils.preRender(info, TreeLibrary.INCLUDE);
-		AbstractTreeViewerModel model = getModel(info);
-		model.setResource(resource);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    registerPathMappings(rootSection);
+  }
 
-		// dispatch to view
-		String method = model.getMethod();
-		if( method != null )
-		{
-			return (SectionResult) SectionUtils.dispatchToMethod(method, this, info);
-		}
+  protected abstract void registerPathMappings(RootItemFileSection rootSection);
 
-		Decorations decorations = Decorations.getDecorations(info);
-		decorations.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
-		decorations.clearAllDecorations();
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
+  }
 
-		final ViewableItem<Item> vitem = resource.getViewableItem();
-		final Item item = vitem.getItem();
-		final BundleLabel itemName = new ItemNameLabel(item, bundleCache);
-		decorations.setTitle(itemName);
-		prepareTitle(info, title, itemName, resource);
+  @Nullable
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) {
+    SectionUtils.preRender(info, TreeLibrary.INCLUDE);
+    AbstractTreeViewerModel model = getModel(info);
+    model.setResource(resource);
 
-		// Redmine #5519 - we don't want any navigation back to EQUELLA summary
-		// if we're looking at a resource from an external LMS
-		if( integrationService.isInIntegrationSession(info) )
-		{
-			model.setHideNavBar(true);
-			decorations.setFullscreen(FullScreen.YES);
-		}
+    // dispatch to view
+    String method = model.getMethod();
+    if (method != null) {
+      return (SectionResult) SectionUtils.dispatchToMethod(method, this, info);
+    }
 
-		split.setDisplayed(info, item.getNavigationSettings().isShowSplitOption());
+    Decorations decorations = Decorations.getDecorations(info);
+    decorations.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
+    decorations.clearAllDecorations();
 
-		ItemNavigationTree tree = getNavigationTree(info);
-		boolean oneAttachment = !moreThanOneNodeWithAttachment(tree.getNavigationMap().values());
-		// hide tree if only one attachment
-		model.setHideTree(oneAttachment);
-		model.setHideNavControls(oneAttachment);
-		model.setDefinition(getTreeDef(info, tree, new HashSet<String>()));
-		return viewFactory.createTemplateResult("treeviewer.ftl", this);
-	}
+    final ViewableItem<Item> vitem = resource.getViewableItem();
+    final Item item = vitem.getItem();
+    final BundleLabel itemName = new ItemNameLabel(item, bundleCache);
+    decorations.setTitle(itemName);
+    prepareTitle(info, title, itemName, resource);
 
-	protected abstract void prepareTitle(SectionInfo info, Link title, BundleLabel itemName, ViewItemResource resource);
+    // Redmine #5519 - we don't want any navigation back to EQUELLA summary
+    // if we're looking at a resource from an external LMS
+    if (integrationService.isInIntegrationSession(info)) {
+      model.setHideNavBar(true);
+      decorations.setFullscreen(FullScreen.YES);
+    }
 
-	private boolean moreThanOneNodeWithAttachment(@Nullable Collection<ItemNavigationNode> treeNodes)
-	{
-		boolean foundFirst = false;
-		if( treeNodes != null )
-		{
-			for( ItemNavigationNode node : treeNodes )
-			{
-				if( nodeHasAttachment(node) )
-				{
-					if( foundFirst )
-					{
-						return true;
-					}
-					else
-					{
-						foundFirst = true;
-					}
-				}
-			}
-		}
-		return false;
-	}
+    split.setDisplayed(info, item.getNavigationSettings().isShowSplitOption());
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void viewNode(SectionContext context, String node)
-	{
-		AbstractTreeViewerModel model = getModel(context);
-		model.setMethod("view");
-		model.setNode(node);
-	}
+    ItemNavigationTree tree = getNavigationTree(info);
+    boolean oneAttachment = !moreThanOneNodeWithAttachment(tree.getNavigationMap().values());
+    // hide tree if only one attachment
+    model.setHideTree(oneAttachment);
+    model.setHideNavControls(oneAttachment);
+    model.setDefinition(getTreeDef(info, tree, new HashSet<String>()));
+    return viewFactory.createTemplateResult("treeviewer.ftl", this);
+  }
 
-	private ItemNavigationNode getNodeToView(SectionInfo info)
-	{
-		AbstractTreeViewerModel model = getModel(info);
-		ItemNavigationTree tree = getNavigationTree(info);
-		ItemNavigationNode node = tree.getNavigationMap().get(model.getNode());
-		if( node == null && tree.getRootNodes().size() > 0 )
-		{
-			node = tree.getRootNodes().get(0);
-		}
-		return node;
-	}
+  protected abstract void prepareTitle(
+      SectionInfo info, Link title, BundleLabel itemName, ViewItemResource resource);
 
-	@Nullable
-	public SectionResult view(RenderContext info) throws Exception
-	{
-		ItemNavigationNode node = getNodeToView(info);
-		viewingNode(node);
+  private boolean moreThanOneNodeWithAttachment(
+      @Nullable Collection<ItemNavigationNode> treeNodes) {
+    boolean foundFirst = false;
+    if (treeNodes != null) {
+      for (ItemNavigationNode node : treeNodes) {
+        if (nodeHasAttachment(node)) {
+          if (foundFirst) {
+            return true;
+          } else {
+            foundFirst = true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 
-		Object result = getRendererForNode(info, node);
-		if( result instanceof Bookmark )
-		{
-			info.forwardToUrl(((Bookmark) result).getHref());
-			return null;
-		}
-		return (SectionResult) result;
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void viewNode(SectionContext context, String node) {
+    AbstractTreeViewerModel model = getModel(context);
+    model.setMethod("view");
+    model.setNode(node);
+  }
 
-	protected void viewingNode(ItemNavigationNode node)
-	{
-		// nothing - extend for scorm
-	}
+  private ItemNavigationNode getNodeToView(SectionInfo info) {
+    AbstractTreeViewerModel model = getModel(info);
+    ItemNavigationTree tree = getNavigationTree(info);
+    ItemNavigationNode node = tree.getNavigationMap().get(model.getNode());
+    if (node == null && tree.getRootNodes().size() > 0) {
+      node = tree.getRootNodes().get(0);
+    }
+    return node;
+  }
 
-	public NavBar getNavBar()
-	{
-		return navBar;
-	}
+  @Nullable
+  public SectionResult view(RenderContext info) throws Exception {
+    ItemNavigationNode node = getNodeToView(info);
+    viewingNode(node);
 
-	public Button getFirst()
-	{
-		return first;
-	}
+    Object result = getRendererForNode(info, node);
+    if (result instanceof Bookmark) {
+      info.forwardToUrl(((Bookmark) result).getHref());
+      return null;
+    }
+    return (SectionResult) result;
+  }
 
-	public Button getPrev()
-	{
-		return prev;
-	}
+  protected void viewingNode(ItemNavigationNode node) {
+    // nothing - extend for scorm
+  }
 
-	public Button getNext()
-	{
-		return next;
-	}
+  public NavBar getNavBar() {
+    return navBar;
+  }
 
-	public Button getLast()
-	{
-		return last;
-	}
+  public Button getFirst() {
+    return first;
+  }
 
-	public ItemNavigationTree getNavigationTree(SectionInfo info)
-	{
-		return getModel(info).getNavigationTree().get(info, new CacheFiller<ItemNavigationTree>()
-		{
-			@Override
-			public ItemNavigationTree get(SectionInfo ifo)
-			{
-				return new ItemNavigationTree(getTreeNodes(ifo));
-			}
-		});
-	}
+  public Button getPrev() {
+    return prev;
+  }
 
-	protected boolean nodeHasAttachment(ItemNavigationNode node)
-	{
-		if( node.getTabs() != null )
-		{
-			for( ItemNavigationTab tab : node.getTabs() )
-			{
-				Attachment attachment = tab.getAttachment();
-				if( attachment != null )
-				{
-					// if it's a Link, check if it's disabled
-					if( attachment instanceof LinkAttachment
-						&& urlCheckerService.isUrlDisabled(((LinkAttachment) attachment).getUrl()) )
-					{
-						continue;
-					}
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+  public Button getNext() {
+    return next;
+  }
 
-	public static List<TreeNode> addChildNodes(List<ItemNavigationNode> nodes, ItemNavigationTree tree,
-		Set<String> openNodes, @Nullable NodeUrlGenerator urlGen)
-	{
-		List<TreeNode> treeNodes = new ArrayList<TreeNode>();
-		for( final ItemNavigationNode node : nodes )
-		{
-			TreeNode treeNode = new TreeNode();
-			treeNode.setUuid(node.getUuid());
-			treeNode.setName(node.getName());
-			treeNode.setOpen(openNodes.contains(node.getUuid()));
-			treeNode.setIcon(node.getIcon());
-			if( urlGen != null )
-			{
-				treeNode.setUrl(urlGen.getUrlForNode(node));
-			}
-			List<ItemNavigationTab> tabs = node.getTabs();
-			List<TreeTab> tabList = new ArrayList<TreeTab>();
-			for( ItemNavigationTab tab : tabs )
-			{
-				TreeTab treeTab = new TreeTab();
-				treeTab.setIndex(tab.getNode().getIndex());
-				treeTab.setName(tab.getName());
-				treeTab.setViewer(tab.getViewer());
-				if( tab.getAttachment() != null )
-				{
-					treeTab.setAttachment(tab.getAttachment().getUuid());
-				}
-				tabList.add(treeTab);
-			}
-			treeNode.setTabs(tabList);
-			List<ItemNavigationNode> children = tree.getChildMap().get(node);
-			if( !Check.isEmpty(children) )
-			{
-				treeNode.setChildren(addChildNodes(children, tree, openNodes, urlGen));
-			}
-			else
-			{
-				treeNode.setNokids(true);
-			}
-			treeNodes.add(treeNode);
-		}
-		return treeNodes;
-	}
+  public Button getLast() {
+    return last;
+  }
 
-	protected String getTreeDef(final SectionInfo info, ItemNavigationTree tree, Set<String> openNodes)
-	{
-		List<TreeNode> nodes = addChildNodes(tree.getRootNodes(), tree, openNodes, new NodeUrlGenerator()
-		{
-			@Nullable
-			@Override
-			public String getUrlForNode(ItemNavigationNode node)
-			{
-				if( nodeHasAttachment(node) )
-				{
-					return new BookmarkAndModify(info, events.getNamedModifier("viewNode", node.getUuid())).getHref();
-				}
-				return null;
-			}
-		});
-		return JSONArray.fromObject(nodes).toString();
-	}
+  public ItemNavigationTree getNavigationTree(SectionInfo info) {
+    return getModel(info)
+        .getNavigationTree()
+        .get(
+            info,
+            new CacheFiller<ItemNavigationTree>() {
+              @Override
+              public ItemNavigationTree get(SectionInfo ifo) {
+                return new ItemNavigationTree(getTreeNodes(ifo));
+              }
+            });
+  }
 
-	@Nullable
-	protected Object getRendererForNode(final RenderContext info, ItemNavigationNode node) throws Exception
-	{
-		List<ItemNavigationTab> tabs = node.getTabs();
-		if( tabs == null || tabs.size() == 0 )
-		{
-			throw new RuntimeException(CurrentLocale.get("com.tle.web.viewitem.treeviewer.error.notabs"));
-		}
+  protected boolean nodeHasAttachment(ItemNavigationNode node) {
+    if (node.getTabs() != null) {
+      for (ItemNavigationTab tab : node.getTabs()) {
+        Attachment attachment = tab.getAttachment();
+        if (attachment != null) {
+          // if it's a Link, check if it's disabled
+          if (attachment instanceof LinkAttachment
+              && urlCheckerService.isUrlDisabled(((LinkAttachment) attachment).getUrl())) {
+            continue;
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
-		final int count = tabs.size();
-		if( count == 1 )
-		{
-			return getRealUrlForTab(info, tabs.get(0));
-		}
-		else
-		{
-			AbstractTreeViewerModel model = getModel(info);
-			model.setTabs(Lists.transform(tabs, new Function<ItemNavigationTab, NameValue>()
-			{
-				@NonNullByDefault(false)
-				@Override
-				public NameValue apply(ItemNavigationTab tab)
-				{
-					Bookmark tabUrl = getRealUrlForTab(info, tab);
-					String href = Constants.BLANK;
-					if( tabUrl != null )
-					{
-						href = tabUrl.getHref();
-					}
-					return new NameValue(tab.getName(), href);
-				}
-			}));
+  public static List<TreeNode> addChildNodes(
+      List<ItemNavigationNode> nodes,
+      ItemNavigationTree tree,
+      Set<String> openNodes,
+      @Nullable NodeUrlGenerator urlGen) {
+    List<TreeNode> treeNodes = new ArrayList<TreeNode>();
+    for (final ItemNavigationNode node : nodes) {
+      TreeNode treeNode = new TreeNode();
+      treeNode.setUuid(node.getUuid());
+      treeNode.setName(node.getName());
+      treeNode.setOpen(openNodes.contains(node.getUuid()));
+      treeNode.setIcon(node.getIcon());
+      if (urlGen != null) {
+        treeNode.setUrl(urlGen.getUrlForNode(node));
+      }
+      List<ItemNavigationTab> tabs = node.getTabs();
+      List<TreeTab> tabList = new ArrayList<TreeTab>();
+      for (ItemNavigationTab tab : tabs) {
+        TreeTab treeTab = new TreeTab();
+        treeTab.setIndex(tab.getNode().getIndex());
+        treeTab.setName(tab.getName());
+        treeTab.setViewer(tab.getViewer());
+        if (tab.getAttachment() != null) {
+          treeTab.setAttachment(tab.getAttachment().getUuid());
+        }
+        tabList.add(treeTab);
+      }
+      treeNode.setTabs(tabList);
+      List<ItemNavigationNode> children = tree.getChildMap().get(node);
+      if (!Check.isEmpty(children)) {
+        treeNode.setChildren(addChildNodes(children, tree, openNodes, urlGen));
+      } else {
+        treeNode.setNokids(true);
+      }
+      treeNodes.add(treeNode);
+    }
+    return treeNodes;
+  }
 
-			Decorations decorations = Decorations.getDecorations(info);
-			decorations.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
-			decorations.clearAllDecorations();
+  protected String getTreeDef(
+      final SectionInfo info, ItemNavigationTree tree, Set<String> openNodes) {
+    List<TreeNode> nodes =
+        addChildNodes(
+            tree.getRootNodes(),
+            tree,
+            openNodes,
+            new NodeUrlGenerator() {
+              @Nullable
+              @Override
+              public String getUrlForNode(ItemNavigationNode node) {
+                if (nodeHasAttachment(node)) {
+                  return new BookmarkAndModify(
+                          info, events.getNamedModifier("viewNode", node.getUuid()))
+                      .getHref();
+                }
+                return null;
+              }
+            });
+    return JSONArray.fromObject(nodes).toString();
+  }
 
-			info.preRender(JQueryTabs.PRERENDER);
+  @Nullable
+  protected Object getRendererForNode(final RenderContext info, ItemNavigationNode node)
+      throws Exception {
+    List<ItemNavigationTab> tabs = node.getTabs();
+    if (tabs == null || tabs.size() == 0) {
+      throw new RuntimeException(CurrentLocale.get("com.tle.web.viewitem.treeviewer.error.notabs"));
+    }
 
-			return viewFactory.createTemplateResult("viewtabs.ftl", this);
-		}
-	}
+    final int count = tabs.size();
+    if (count == 1) {
+      return getRealUrlForTab(info, tabs.get(0));
+    } else {
+      AbstractTreeViewerModel model = getModel(info);
+      model.setTabs(
+          Lists.transform(
+              tabs,
+              new Function<ItemNavigationTab, NameValue>() {
+                @NonNullByDefault(false)
+                @Override
+                public NameValue apply(ItemNavigationTab tab) {
+                  Bookmark tabUrl = getRealUrlForTab(info, tab);
+                  String href = Constants.BLANK;
+                  if (tabUrl != null) {
+                    href = tabUrl.getHref();
+                  }
+                  return new NameValue(tab.getName(), href);
+                }
+              }));
 
-	@Nullable
-	public Bookmark getRealUrlForTab(SectionInfo info, ItemNavigationTab tab)
-	{
-		Attachment attachment = tab.getAttachment();
-		if( attachment != null )
-		{
-			AbstractTreeViewerModel model = getModel(info);
-			ViewItemResource resource = model.getResource();
-			ViewableItem viewableItem = resource.getViewableItem();
+      Decorations decorations = Decorations.getDecorations(info);
+      decorations.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
+      decorations.clearAllDecorations();
 
-			ViewableResource viewableResource = attachmentResourceService.getViewableResource(info, viewableItem,
-				attachment);
-			ViewItemUrl viewItemUrl = viewableResource.createDefaultViewerUrl();
-			if( !Check.isEmpty(tab.getViewer()) )
-			{
-				viewItemUrl.setViewer(tab.getViewer());
-			}
-			else if( !Check.isEmpty(attachment.getViewer()) )
-			{
-				viewItemUrl.setViewer(attachment.getViewer());
-			}
-			viewItemUrl.addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_PRESERVE_PARAMS);
-			viewItemUrl.setShowNav(false);
-			viewItemUrl.add(new SimpleBookmarkModifier("hideNavBar", "true"));
-			return viewItemUrl;
-		}
-		return null;
-	}
+      info.preRender(JQueryTabs.PRERENDER);
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "tree";
-	}
+      return viewFactory.createTemplateResult("viewtabs.ftl", this);
+    }
+  }
 
-	protected List<ItemNavigationNode> getTreeNodes(SectionInfo info)
-	{
-		// Default implementation. Subclasses to override.
-		return getModel(info).getResource().getViewableItem().getItem().getTreeNodes();
-	}
+  @Nullable
+  public Bookmark getRealUrlForTab(SectionInfo info, ItemNavigationTab tab) {
+    Attachment attachment = tab.getAttachment();
+    if (attachment != null) {
+      AbstractTreeViewerModel model = getModel(info);
+      ViewItemResource resource = model.getResource();
+      ViewableItem viewableItem = resource.getViewableItem();
+
+      ViewableResource viewableResource =
+          attachmentResourceService.getViewableResource(info, viewableItem, attachment);
+      ViewItemUrl viewItemUrl = viewableResource.createDefaultViewerUrl();
+      if (!Check.isEmpty(tab.getViewer())) {
+        viewItemUrl.setViewer(tab.getViewer());
+      } else if (!Check.isEmpty(attachment.getViewer())) {
+        viewItemUrl.setViewer(attachment.getViewer());
+      }
+      viewItemUrl.addFlag(ViewItemUrl.FLAG_FULL_URL | ViewItemUrl.FLAG_PRESERVE_PARAMS);
+      viewItemUrl.setShowNav(false);
+      viewItemUrl.add(new SimpleBookmarkModifier("hideNavBar", "true"));
+      return viewItemUrl;
+    }
+    return null;
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "tree";
+  }
+
+  protected List<ItemNavigationNode> getTreeNodes(SectionInfo info) {
+    // Default implementation. Subclasses to override.
+    return getModel(info).getResource().getViewableItem().getItem().getTreeNodes();
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,34 +27,28 @@ import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public class WorkflowTool extends BaseEntityTool<Workflow>
-{
-	public WorkflowTool() throws Exception
-	{
-		super(Workflow.class, RemoteWorkflowService.ENTITY_TYPE);
-	}
+public class WorkflowTool extends BaseEntityTool<Workflow> {
+  public WorkflowTool() throws Exception {
+    super(Workflow.class, RemoteWorkflowService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Workflow> getService(ClientService client)
-	{
-		return client.getService(RemoteWorkflowService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Workflow> getService(ClientService client) {
+    return client.getService(RemoteWorkflowService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "workflow";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "workflow";
+  }
 
-	@Override
-	protected BaseEntityEditor<Workflow> createEditor(boolean readonly)
-	{
-		return new WorkflowEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Workflow> createEditor(boolean readonly) {
+    return new WorkflowEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.workflowtool.name");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.workflowtool.name");
+  }
 }

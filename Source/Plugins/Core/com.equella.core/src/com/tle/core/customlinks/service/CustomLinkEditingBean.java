@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,52 +20,43 @@ package com.tle.core.customlinks.service;
 
 import com.tle.core.entity.EntityEditingBean;
 
-public class CustomLinkEditingBean extends EntityEditingBean
-{
-	private static final long serialVersionUID = 1L;
+public class CustomLinkEditingBean extends EntityEditingBean {
+  private static final long serialVersionUID = 1L;
 
-	private String url;
-	private int order;
-	private String targetExpression;
-	private String fileName;
+  private String url;
+  private int order;
+  private String targetExpression;
+  private String fileName;
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public int getOrder()
-	{
-		return order;
-	}
+  public int getOrder() {
+    return order;
+  }
 
-	public void setOrder(int order)
-	{
-		this.order = order;
-	}
+  public void setOrder(int order) {
+    this.order = order;
+  }
 
-	public String getTargetExpression()
-	{
-		return targetExpression;
-	}
+  public String getTargetExpression() {
+    return targetExpression;
+  }
 
-	public void setTargetExpression(String targetExpression)
-	{
-		this.targetExpression = targetExpression;
-	}
+  public void setTargetExpression(String targetExpression) {
+    this.targetExpression = targetExpression;
+  }
 
-	public String getFileName()
-	{
-		return fileName;
-	}
+  public String getFileName() {
+    return fileName;
+  }
 
-	public void setFileName(String fileName)
-	{
-		this.fileName = fileName;
-	}
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 }

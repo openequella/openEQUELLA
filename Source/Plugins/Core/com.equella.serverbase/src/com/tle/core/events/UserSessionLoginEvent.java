@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,37 @@
 
 package com.tle.core.events;
 
-import com.tle.core.events.listeners.UserSessionLoginListener;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.events.listeners.UserSessionLoginListener;
 
-public class UserSessionLoginEvent extends ApplicationEvent<UserSessionLoginListener> implements UserSessionEvent
-{
-	private static final long serialVersionUID = 1L;
+public class UserSessionLoginEvent extends ApplicationEvent<UserSessionLoginListener>
+    implements UserSessionEvent {
+  private static final long serialVersionUID = 1L;
 
-	private final UserState userState;
+  private final UserState userState;
 
-	public UserSessionLoginEvent(UserState userState)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.userState = userState;
-	}
+  public UserSessionLoginEvent(UserState userState) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.userState = userState;
+  }
 
-	@Override
-	public String getSessionId()
-	{
-		return userState.getSessionID();
-	}
+  @Override
+  public String getSessionId() {
+    return userState.getSessionID();
+  }
 
-	@Override
-	public Class<UserSessionLoginListener> getListener()
-	{
-		return UserSessionLoginListener.class;
-	}
+  @Override
+  public Class<UserSessionLoginListener> getListener() {
+    return UserSessionLoginListener.class;
+  }
 
-	@Override
-	public void postEvent(UserSessionLoginListener listener)
-	{
-		listener.userSessionCreatedEvent(this);
-	}
+  @Override
+  public void postEvent(UserSessionLoginListener listener) {
+    listener.userSessionCreatedEvent(this);
+  }
 
-	@Override
-	public UserState getUserState()
-	{
-		return userState;
-	}
+  @Override
+  public UserState getUserState() {
+    return userState;
+  }
 }

@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,21 +18,20 @@
 
 package com.tle.core.echo.service;
 
-import com.tle.common.beans.exception.InvalidDataException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.core.echo.entity.EchoServer;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 
-public interface EchoService extends AbstractEntityService<EntityEditingBean, EchoServer>
-{
-	EchoServer getForEdit(String uuid);
+public interface EchoService extends AbstractEntityService<EntityEditingBean, EchoServer> {
+  EchoServer getForEdit(String uuid);
 
-	String addEchoServer(EchoServer es) throws InvalidDataException;
+  String addEchoServer(EchoServer es) throws InvalidDataException;
 
-	void editEchoServer(String uuid, EchoServer es) throws InvalidDataException;
+  void editEchoServer(String uuid, EchoServer es) throws InvalidDataException;
 
-	String getAuthenticatedUrl(String esn, String redirectUrl);
+  String getAuthenticatedUrl(String esn, String redirectUrl);
 
-	ObjectMapper getMapper();
+  ObjectMapper getMapper();
 }

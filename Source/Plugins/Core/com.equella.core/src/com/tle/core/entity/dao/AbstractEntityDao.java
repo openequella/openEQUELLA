@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,47 +18,45 @@
 
 package com.tle.core.entity.dao;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitutionalDao<T, Long>
-{
-	List<BaseEntityLabel> listAll(String resolveVirtualTo);
+public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitutionalDao<T, Long> {
+  List<BaseEntityLabel> listAll(String resolveVirtualTo);
 
-	List<BaseEntityLabel> listEnabled(final String resolveVirtualTo);
+  List<BaseEntityLabel> listEnabled(final String resolveVirtualTo);
 
-	List<BaseEntityLabel> listAllIncludingSystem(final String resolveVirtualTo);
+  List<BaseEntityLabel> listAllIncludingSystem(final String resolveVirtualTo);
 
-	List<T> enumerateAll(EnumerateOptions options);
+  List<T> enumerateAll(EnumerateOptions options);
 
-	long countAll(EnumerateOptions options);
+  long countAll(EnumerateOptions options);
 
-	List<T> enumerateEnabled();
+  List<T> enumerateEnabled();
 
-	List<Long> enumerateAllIdsIncludingSystem();
+  List<Long> enumerateAllIdsIncludingSystem();
 
-	List<T> getByIds(Collection<Long> ids);
+  List<T> getByIds(Collection<Long> ids);
 
-	List<T> getByUuids(Collection<String> ids);
+  List<T> getByUuids(Collection<String> ids);
 
-	T getByUuid(String uuid);
+  T getByUuid(String uuid);
 
-	@Override
-	Class<T> getPersistentClass();
+  @Override
+  Class<T> getPersistentClass();
 
-	Set<String> getReferencedUsers();
+  Set<String> getReferencedUsers();
 
-	String getUuidForId(long id);
+  String getUuidForId(long id);
 
-	List<T> search(String freetext, boolean archived, int offset, int perPage);
+  List<T> search(String freetext, boolean archived, int offset, int perPage);
 
-	void removeOrphanedOwners(String owner);
+  void removeOrphanedOwners(String owner);
 
-	void changeOwnerId(final String fromOwnerId, final String toOwnerId);
+  void changeOwnerId(final String fromOwnerId, final String toOwnerId);
 }

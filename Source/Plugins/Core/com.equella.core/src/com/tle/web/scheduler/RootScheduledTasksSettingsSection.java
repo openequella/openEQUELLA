@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.scheduler;
-
-import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.SchedulerService.Schedules;
@@ -47,135 +47,118 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class RootScheduledTasksSettingsSection extends OneColumnLayout<OneColumnLayoutModel>
-{
-	@PlugKey("scheduler.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
-	@PlugKey("hour.")
-	private static String HOUR_KEY_PREFIX;
-	@PlugKey("day.")
-	private static String DAY_KEY_PREFIX;
+public class RootScheduledTasksSettingsSection extends OneColumnLayout<OneColumnLayoutModel> {
+  @PlugKey("scheduler.title")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Inject
-	private ScheduledTasksPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private ConfigurationService configService;
+  @PlugKey("hour.")
+  private static String HOUR_KEY_PREFIX;
 
-	@Component
-	private SingleSelectionList<Integer> dailyTaskHour;
-	@Component
-	private SingleSelectionList<Integer> weeklyTaskDay;
-	@Component
-	private SingleSelectionList<Integer> weeklyTaskHour;
+  @PlugKey("day.")
+  private static String DAY_KEY_PREFIX;
 
-	@Component
-	@PlugKey("save")
-	private Button saveButton;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Inject private ScheduledTasksPrivilegeTreeProvider securityProvider;
+  @Inject private ReceiptService receiptService;
+  @Inject private ConfigurationService configService;
 
-		dailyTaskHour.setListModel(new RangeWithKeyPrefixListModel(0, 23, HOUR_KEY_PREFIX));
-		weeklyTaskDay.setListModel(new RangeWithKeyPrefixListModel(0, 6, DAY_KEY_PREFIX));
-		weeklyTaskHour.setListModel(new RangeWithKeyPrefixListModel(0, 23, HOUR_KEY_PREFIX));
+  @Component private SingleSelectionList<Integer> dailyTaskHour;
+  @Component private SingleSelectionList<Integer> weeklyTaskDay;
+  @Component private SingleSelectionList<Integer> weeklyTaskHour;
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Component
+  @PlugKey("save")
+  private Button saveButton;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void checkAuthorised(SectionInfo info)
-	{
-		securityProvider.checkAuthorised();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
-	}
+    dailyTaskHour.setListModel(new RangeWithKeyPrefixListModel(0, 23, HOUR_KEY_PREFIX));
+    weeklyTaskDay.setListModel(new RangeWithKeyPrefixListModel(0, 6, DAY_KEY_PREFIX));
+    weeklyTaskHour.setListModel(new RangeWithKeyPrefixListModel(0, 23, HOUR_KEY_PREFIX));
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		Schedules s = configService.getProperties(new Schedules());
-		dailyTaskHour.setSelectedValue(info, s.getDailyTaskHour());
-		weeklyTaskDay.setSelectedValue(info, s.getWeeklyTaskDay());
-		weeklyTaskHour.setSelectedValue(info, s.getWeeklyTaskHour());
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "scheduler-settings.ftl", this));
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void checkAuthorised(SectionInfo info) {
+    securityProvider.checkAuthorised();
+  }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		Schedules s = new Schedules();
-		s.setDailyTaskHour(dailyTaskHour.getSelectedValue(info));
-		s.setWeeklyTaskDay(weeklyTaskDay.getSelectedValue(info));
-		s.setWeeklyTaskHour(weeklyTaskHour.getSelectedValue(info));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
+  }
 
-		configService.setProperties(s);
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    Schedules s = configService.getProperties(new Schedules());
+    dailyTaskHour.setSelectedValue(info, s.getDailyTaskHour());
+    weeklyTaskDay.setSelectedValue(info, s.getWeeklyTaskDay());
+    weeklyTaskHour.setSelectedValue(info, s.getWeeklyTaskHour());
 
-		receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-	}
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "scheduler-settings.ftl", this));
+  }
 
-	public SingleSelectionList<Integer> getDailyTaskHour()
-	{
-		return dailyTaskHour;
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    Schedules s = new Schedules();
+    s.setDailyTaskHour(dailyTaskHour.getSelectedValue(info));
+    s.setWeeklyTaskDay(weeklyTaskDay.getSelectedValue(info));
+    s.setWeeklyTaskHour(weeklyTaskHour.getSelectedValue(info));
 
-	public SingleSelectionList<Integer> getWeeklyTaskDay()
-	{
-		return weeklyTaskDay;
-	}
+    configService.setProperties(s);
 
-	public SingleSelectionList<Integer> getWeeklyTaskHour()
-	{
-		return weeklyTaskHour;
-	}
+    receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  public SingleSelectionList<Integer> getDailyTaskHour() {
+    return dailyTaskHour;
+  }
 
-	@Override
-	public Class<OneColumnLayout.OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+  public SingleSelectionList<Integer> getWeeklyTaskDay() {
+    return weeklyTaskDay;
+  }
 
-	private static class RangeWithKeyPrefixListModel extends SimpleHtmlListModel<Integer>
-	{
-		private final String keyPrefix;
+  public SingleSelectionList<Integer> getWeeklyTaskHour() {
+    return weeklyTaskHour;
+  }
 
-		public RangeWithKeyPrefixListModel(int from, int to, String keyPrefix)
-		{
-			this.keyPrefix = keyPrefix;
-			for( int i = from; i <= to; i++ )
-			{
-				add(i);
-			}
-		}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-		@Override
-		protected Option<Integer> convertToOption(Integer day)
-		{
-			return new KeyOption<Integer>(keyPrefix + day.intValue(), day.toString(), day);
-		}
-	}
+  @Override
+  public Class<OneColumnLayout.OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
+
+  private static class RangeWithKeyPrefixListModel extends SimpleHtmlListModel<Integer> {
+    private final String keyPrefix;
+
+    public RangeWithKeyPrefixListModel(int from, int to, String keyPrefix) {
+      this.keyPrefix = keyPrefix;
+      for (int i = from; i <= to; i++) {
+        add(i);
+      }
+    }
+
+    @Override
+    protected Option<Integer> convertToOption(Integer day) {
+      return new KeyOption<Integer>(keyPrefix + day.intValue(), day.toString(), day);
+    }
+  }
 }

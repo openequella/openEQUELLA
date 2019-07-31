@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,61 +18,49 @@
 
 package com.tle.web.contentrestrictions.dialog;
 
+import com.google.common.collect.Maps;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+public class SelectedQuota implements Serializable {
+  private int quotaIndex;
+  private long quota;
+  private String expression;
+  private final Map<String, Object> validationErrors = Maps.newHashMap();
 
-public class SelectedQuota implements Serializable
-{
-	private int quotaIndex;
-	private long quota;
-	private String expression;
-	private final Map<String, Object> validationErrors = Maps.newHashMap();
+  public SelectedQuota() {}
 
-	public SelectedQuota()
-	{
-	}
+  public SelectedQuota(int quotaIndex, long quota, String expression) {
+    this.quotaIndex = quotaIndex;
+    this.quota = quota;
+    this.expression = expression;
+  }
 
-	public SelectedQuota(int quotaIndex, long quota, String expression)
-	{
-		this.quotaIndex = quotaIndex;
-		this.quota = quota;
-		this.expression = expression;
-	}
+  public int getQuotaIndex() {
+    return quotaIndex;
+  }
 
-	public int getQuotaIndex()
-	{
-		return quotaIndex;
-	}
+  public void setQuotaIndex(int quotaIndex) {
+    this.quotaIndex = quotaIndex;
+  }
 
-	public void setQuotaIndex(int quotaIndex)
-	{
-		this.quotaIndex = quotaIndex;
-	}
+  public long getQuota() {
+    return quota;
+  }
 
-	public long getQuota()
-	{
-		return quota;
-	}
+  public void setQuota(long quota) {
+    this.quota = quota;
+  }
 
-	public void setQuota(long quota)
-	{
-		this.quota = quota;
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public String getExpression()
-	{
-		return expression;
-	}
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
 
-	public void setExpression(String expression)
-	{
-		this.expression = expression;
-	}
-
-	public Map<String, Object> getValidationErrors()
-	{
-		return validationErrors;
-	}
+  public Map<String, Object> getValidationErrors() {
+    return validationErrors;
+  }
 }

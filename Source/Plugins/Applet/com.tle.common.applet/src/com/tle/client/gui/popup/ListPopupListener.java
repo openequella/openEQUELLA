@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,40 +20,32 @@ package com.tle.client.gui.popup;
 
 import java.awt.event.MouseEvent;
 import java.util.List;
-
 import javax.swing.Action;
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 
-/**
- * @author Nicholas Read
- */
-public class ListPopupListener extends AbstractPopupListener
-{
-	private final JList list;
+/** @author Nicholas Read */
+public class ListPopupListener extends AbstractPopupListener {
+  private final JList list;
 
-	public ListPopupListener(JList list, Action... actions)
-	{
-		super(actions);
-		this.list = list;
-	}
+  public ListPopupListener(JList list, Action... actions) {
+    super(actions);
+    this.list = list;
+  }
 
-	public ListPopupListener(JList list, List<? extends Action> actions)
-	{
-		super(actions);
-		this.list = list;
-	}
+  public ListPopupListener(JList list, List<? extends Action> actions) {
+    super(actions);
+    this.list = list;
+  }
 
-	public ListPopupListener(JList list, JPopupMenu menu)
-	{
-		super(menu);
-		this.list = list;
-	}
+  public ListPopupListener(JList list, JPopupMenu menu) {
+    super(menu);
+    this.list = list;
+  }
 
-	@Override
-	public void selectItemUnderMouse(MouseEvent e)
-	{
-		int row = list.locationToIndex(e.getPoint());
-		list.getSelectionModel().setSelectionInterval(row, row);
-	}
+  @Override
+  public void selectItemUnderMouse(MouseEvent e) {
+    int row = list.locationToIndex(e.getPoint());
+    list.getSelectionModel().setSelectionInterval(row, row);
+  }
 }

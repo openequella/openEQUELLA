@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.web.workflow.portal;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
@@ -64,277 +60,259 @@ import com.tle.web.workflow.manage.FilterByWorkflowSection;
 import com.tle.web.workflow.manage.RootTaskManagementSection;
 import com.tle.web.workflow.manage.WorkflowListModel;
 import com.tle.web.workflow.tasks.FilterByWorkflowTaskSection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
 public class TaskStatisticsPortletRenderer
-	extends
-		PortletContentRenderer<TaskStatisticsPortletRenderer.TaskStatisticsPortletRendererModel>
-{
-	private static final String KEY_DEFAULT_TREND = "trend";
-	private static final String KEY_DEFAULT_WORKFLOW = "default.workflow";
+    extends PortletContentRenderer<
+        TaskStatisticsPortletRenderer.TaskStatisticsPortletRendererModel> {
+  private static final String KEY_DEFAULT_TREND = "trend";
+  private static final String KEY_DEFAULT_WORKFLOW = "default.workflow";
 
-	@PlugKey("portal.taskstats.trend.")
-	private static String PREFIX;
+  @PlugKey("portal.taskstats.trend.")
+  private static String PREFIX;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Inject
-	private TaskStatisticsService taskStatsService;
-	@Inject
-	private UserPreferenceService userPreferenceService;
-	@Inject
-	private WorkflowService workflowService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private TLEAclManager aclService;
+  @Inject private TaskStatisticsService taskStatsService;
+  @Inject private UserPreferenceService userPreferenceService;
+  @Inject private WorkflowService workflowService;
+  @Inject private BundleCache bundleCache;
+  @Inject private TLEAclManager aclService;
 
-	@Component(stateful = false)
-	private SingleSelectionList<BaseEntityLabel> workflowSelector;
-	@Component(stateful = false)
-	private SingleSelectionList<Trend> trendSelector;
-	@PlugKey("portal.taskstats.itemcount")
-	@Component
-	private Link itemsInWorkflowLink;
+  @Component(stateful = false)
+  private SingleSelectionList<BaseEntityLabel> workflowSelector;
 
-	@Override
-	public void registered(final String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		trendSelector.setListModel(new EnumListModel<Trend>(PREFIX, Trend.values())
-		{
-			@Override
-			public String getDefaultValue(SectionInfo info)
-			{
-				return portlet.getAttribute(KEY_DEFAULT_TREND);
-			}
-		});
-		trendSelector.setAlwaysSelect(true);
-		trendSelector.addChangeEventHandler(new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this, null,
-			ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), id + "taskstatsresults", id + "trendselector")));
+  @Component(stateful = false)
+  private SingleSelectionList<Trend> trendSelector;
 
-		workflowSelector.setListModel(new WorkflowListModel(workflowService, bundleCache)
-		{
-			@Override
-			public String getDefaultValue(SectionInfo info)
-			{
-				return userPreferenceService.getPreference(KEY_DEFAULT_WORKFLOW + '.' + id);
-			}
-		});
-		workflowSelector.setAlwaysSelect(true);
-		workflowSelector.addChangeEventHandler(
-			new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("workflowChanged"),
-				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), id + "taskstatsresults")));
+  @PlugKey("portal.taskstats.itemcount")
+  @Component
+  private Link itemsInWorkflowLink;
 
-		itemsInWorkflowLink.setClickHandler(events.getNamedHandler("showItemsInWorkflow"));
-	}
+  @Override
+  public void registered(final String id, SectionTree tree) {
+    super.registered(id, tree);
+    trendSelector.setListModel(
+        new EnumListModel<Trend>(PREFIX, Trend.values()) {
+          @Override
+          public String getDefaultValue(SectionInfo info) {
+            return portlet.getAttribute(KEY_DEFAULT_TREND);
+          }
+        });
+    trendSelector.setAlwaysSelect(true);
+    trendSelector.addChangeEventHandler(
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                null,
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                id + "taskstatsresults",
+                id + "trendselector")));
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		TaskStatisticsPortletRendererModel model = getModel(context);
-		boolean hasManageable = workflowSelector.getListModel().getOptions(context).size() > 1;
-		model.setShowManageable(hasManageable);
-		if( hasManageable )
-		{
-			String workflow = workflowSelector.getSelectedValueAsString(context);
-			List<TaskStatRow> stats = new ArrayList<TaskStatRow>();
-			List<TaskTrend> waitingTasks;
+    workflowSelector.setListModel(
+        new WorkflowListModel(workflowService, bundleCache) {
+          @Override
+          public String getDefaultValue(SectionInfo info) {
+            return userPreferenceService.getPreference(KEY_DEFAULT_WORKFLOW + '.' + id);
+          }
+        });
+    workflowSelector.setAlwaysSelect(true);
+    workflowSelector.addChangeEventHandler(
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("workflowChanged"),
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                id + "taskstatsresults")));
 
-			if( !Check.isEmpty(workflow) )
-			{
-				waitingTasks = taskStatsService.getWaitingTasksForWorkflow(workflow,
-					trendSelector.getSelectedValue(context));
-				model.setItemCount(workflowService.getItemCountForWorkflow(workflow));
-				model.setShowCount(true);
-			}
-			else
-			{
-				waitingTasks = taskStatsService.getWaitingTasks(trendSelector.getSelectedValue(context));
-				model.setShowCount(false);
-			}
+    itemsInWorkflowLink.setClickHandler(events.getNamedHandler("showItemsInWorkflow"));
+  }
 
-			buildTaskStatisticRows(stats, waitingTasks);
-			model.setTaskstats(stats);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    TaskStatisticsPortletRendererModel model = getModel(context);
+    boolean hasManageable = workflowSelector.getListModel().getOptions(context).size() > 1;
+    model.setShowManageable(hasManageable);
+    if (hasManageable) {
+      String workflow = workflowSelector.getSelectedValueAsString(context);
+      List<TaskStatRow> stats = new ArrayList<TaskStatRow>();
+      List<TaskTrend> waitingTasks;
 
-			model.setShowItemsInWorkflow(!aclService.filterNonGrantedPrivileges(new SettingsTarget("itemadmin"),
-				Collections.singleton("VIEW_MANAGEMENT_PAGE")).isEmpty());
-		}
+      if (!Check.isEmpty(workflow)) {
+        waitingTasks =
+            taskStatsService.getWaitingTasksForWorkflow(
+                workflow, trendSelector.getSelectedValue(context));
+        model.setItemCount(workflowService.getItemCountForWorkflow(workflow));
+        model.setShowCount(true);
+      } else {
+        waitingTasks = taskStatsService.getWaitingTasks(trendSelector.getSelectedValue(context));
+        model.setShowCount(false);
+      }
 
-		return viewFactory.createResult("portal/taskstatistics.ftl", context);
-	}
+      buildTaskStatisticRows(stats, waitingTasks);
+      model.setTaskstats(stats);
 
-	private void buildTaskStatisticRows(List<TaskStatRow> stats, List<TaskTrend> waitingTasks)
-	{
-		for( TaskTrend task : waitingTasks )
-		{
-			stats.add(new TaskStatRow(task.getWorkflowItemId(), task.getNameId(), task.getWaiting(), task.getTrend()));
-		}
-	}
+      model.setShowItemsInWorkflow(
+          !aclService
+              .filterNonGrantedPrivileges(
+                  new SettingsTarget("itemadmin"), Collections.singleton("VIEW_MANAGEMENT_PAGE"))
+              .isEmpty());
+    }
 
-	@EventHandlerMethod
-	public void workflowChanged(SectionInfo info)
-	{
-		String selWorkflow = workflowSelector.getSelectedValueAsString(info);
-		userPreferenceService.setPreference(KEY_DEFAULT_WORKFLOW + '.' + getSectionId(), selWorkflow);
-	}
+    return viewFactory.createResult("portal/taskstatistics.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void showItemsInWorkflow(SectionInfo info)
-	{
-		SectionInfo fwd = info.createForward("/access/itemadmin.do");
+  private void buildTaskStatisticRows(List<TaskStatRow> stats, List<TaskTrend> waitingTasks) {
+    for (TaskTrend task : waitingTasks) {
+      stats.add(
+          new TaskStatRow(
+              task.getWorkflowItemId(), task.getNameId(), task.getWaiting(), task.getTrend()));
+    }
+  }
 
-		ResetFiltersParent resetFilters = fwd.lookupSection(ResetFiltersParent.class);
-		resetFilters.getResetFiltersSection().resetFilters(fwd);
+  @EventHandlerMethod
+  public void workflowChanged(SectionInfo info) {
+    String selWorkflow = workflowSelector.getSelectedValueAsString(info);
+    userPreferenceService.setPreference(KEY_DEFAULT_WORKFLOW + '.' + getSectionId(), selWorkflow);
+  }
 
-		// NB - map lookup requires specifying exact subclass of
-		// FilterByItemStatusSection
-		FilterByItemStatusSection statusSection = fwd.lookupSection(ItemAdminFilterByItemStatusSection.class);
-		statusSection.setOnlyInModeration(fwd, true);
+  @EventHandlerMethod
+  public void showItemsInWorkflow(SectionInfo info) {
+    SectionInfo fwd = info.createForward("/access/itemadmin.do");
 
-		FilterByWorkflowSection workflowSection = fwd.lookupSection(FilterByWorkflowSection.class);
-		workflowSection.setWorkflow(fwd, workflowSelector.getSelectedValueAsString(info));
+    ResetFiltersParent resetFilters = fwd.lookupSection(ResetFiltersParent.class);
+    resetFilters.getResetFiltersSection().resetFilters(fwd);
 
-		info.forward(fwd);
-	}
+    // NB - map lookup requires specifying exact subclass of
+    // FilterByItemStatusSection
+    FilterByItemStatusSection statusSection =
+        fwd.lookupSection(ItemAdminFilterByItemStatusSection.class);
+    statusSection.setOnlyInModeration(fwd, true);
 
-	@EventHandlerMethod
-	public void showTaskFilter(SectionInfo oldInfo, long taskId)
-	{
-		SectionInfo info = RootTaskManagementSection.create(oldInfo);
-		WorkflowItem manageableTask = workflowService.getManageableTask(taskId);
-		FilterByWorkflowTaskSection workflowTaskSection = info.lookupSection(FilterByWorkflowTaskSection.class);
-		workflowTaskSection.setWorkflowTask(info, manageableTask);
-		oldInfo.forwardAsBookmark(info);
-	}
+    FilterByWorkflowSection workflowSection = fwd.lookupSection(FilterByWorkflowSection.class);
+    workflowSection.setWorkflow(fwd, workflowSelector.getSelectedValueAsString(info));
 
-	@Override
-	public Class<TaskStatisticsPortletRendererModel> getModelClass()
-	{
-		return TaskStatisticsPortletRendererModel.class;
-	}
+    info.forward(fwd);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @EventHandlerMethod
+  public void showTaskFilter(SectionInfo oldInfo, long taskId) {
+    SectionInfo info = RootTaskManagementSection.create(oldInfo);
+    WorkflowItem manageableTask = workflowService.getManageableTask(taskId);
+    FilterByWorkflowTaskSection workflowTaskSection =
+        info.lookupSection(FilterByWorkflowTaskSection.class);
+    workflowTaskSection.setWorkflowTask(info, manageableTask);
+    oldInfo.forwardAsBookmark(info);
+  }
 
-	public static class TaskStatisticsPortletRendererModel
-	{
-		private List<TaskStatRow> taskstats = new ArrayList<TaskStatRow>();
-		private boolean showManageable;
-		private boolean showCount;
-		private boolean showItemsInWorkflow;
-		private int itemCount;
+  @Override
+  public Class<TaskStatisticsPortletRendererModel> getModelClass() {
+    return TaskStatisticsPortletRendererModel.class;
+  }
 
-		public List<TaskStatRow> getTaskstats()
-		{
-			return taskstats;
-		}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-		public void setTaskstats(List<TaskStatRow> taskstats)
-		{
-			this.taskstats = taskstats;
-		}
+  public static class TaskStatisticsPortletRendererModel {
+    private List<TaskStatRow> taskstats = new ArrayList<TaskStatRow>();
+    private boolean showManageable;
+    private boolean showCount;
+    private boolean showItemsInWorkflow;
+    private int itemCount;
 
-		public int getItemCount()
-		{
-			return itemCount;
-		}
+    public List<TaskStatRow> getTaskstats() {
+      return taskstats;
+    }
 
-		public void setItemCount(int itemCount)
-		{
-			this.itemCount = itemCount;
-		}
+    public void setTaskstats(List<TaskStatRow> taskstats) {
+      this.taskstats = taskstats;
+    }
 
-		public void setShowCount(boolean showCount)
-		{
-			this.showCount = showCount;
-		}
+    public int getItemCount() {
+      return itemCount;
+    }
 
-		public boolean isShowCount()
-		{
-			return showCount;
-		}
+    public void setItemCount(int itemCount) {
+      this.itemCount = itemCount;
+    }
 
-		public boolean isShowManageable()
-		{
-			return showManageable;
-		}
+    public void setShowCount(boolean showCount) {
+      this.showCount = showCount;
+    }
 
-		public void setShowManageable(boolean showManageable)
-		{
-			this.showManageable = showManageable;
-		}
+    public boolean isShowCount() {
+      return showCount;
+    }
 
-		public boolean isShowItemsInWorkflow()
-		{
-			return showItemsInWorkflow;
-		}
+    public boolean isShowManageable() {
+      return showManageable;
+    }
 
-		public void setShowItemsInWorkflow(boolean showItemsInWorkflow)
-		{
-			this.showItemsInWorkflow = showItemsInWorkflow;
-		}
-	}
+    public void setShowManageable(boolean showManageable) {
+      this.showManageable = showManageable;
+    }
 
-	public SingleSelectionList<BaseEntityLabel> getWorkflowSelector()
-	{
-		return workflowSelector;
-	}
+    public boolean isShowItemsInWorkflow() {
+      return showItemsInWorkflow;
+    }
 
-	public SingleSelectionList<Trend> getTrendSelector()
-	{
-		return trendSelector;
-	}
+    public void setShowItemsInWorkflow(boolean showItemsInWorkflow) {
+      this.showItemsInWorkflow = showItemsInWorkflow;
+    }
+  }
 
-	public Link getItemsInWorkflowLink()
-	{
-		return itemsInWorkflowLink;
-	}
+  public SingleSelectionList<BaseEntityLabel> getWorkflowSelector() {
+    return workflowSelector;
+  }
 
-	public class TaskStatRow
-	{
-		private final Label label;
-		private final int waiting;
-		private final String trend;
-		private final TagRenderer row;
+  public SingleSelectionList<Trend> getTrendSelector() {
+    return trendSelector;
+  }
 
-		public TaskStatRow(long taskId, long nameId, int waiting, int trend)
-		{
-			this.label = new BundleLabel(nameId, bundleCache);
-			this.waiting = waiting;
-			this.trend = trend > 0 ? "+" + trend : Integer.toString(trend);
-			TagState state = new TagState();
-			state.setClickHandler(new OverrideHandler(events.getNamedHandler("showTaskFilter", taskId)));
-			this.row = new TagRenderer("tr", state);
-		}
+  public Link getItemsInWorkflowLink() {
+    return itemsInWorkflowLink;
+  }
 
-		public Label getLabel()
-		{
-			return label;
-		}
+  public class TaskStatRow {
+    private final Label label;
+    private final int waiting;
+    private final String trend;
+    private final TagRenderer row;
 
-		public int getWaiting()
-		{
-			return waiting;
-		}
+    public TaskStatRow(long taskId, long nameId, int waiting, int trend) {
+      this.label = new BundleLabel(nameId, bundleCache);
+      this.waiting = waiting;
+      this.trend = trend > 0 ? "+" + trend : Integer.toString(trend);
+      TagState state = new TagState();
+      state.setClickHandler(new OverrideHandler(events.getNamedHandler("showTaskFilter", taskId)));
+      this.row = new TagRenderer("tr", state);
+    }
 
-		public String getTrend()
-		{
-			return trend;
-		}
+    public Label getLabel() {
+      return label;
+    }
 
-		public TagRenderer getRow()
-		{
-			return row;
-		}
-	}
+    public int getWaiting() {
+      return waiting;
+    }
+
+    public String getTrend() {
+      return trend;
+    }
+
+    public TagRenderer getRow() {
+      return row;
+    }
+  }
 }

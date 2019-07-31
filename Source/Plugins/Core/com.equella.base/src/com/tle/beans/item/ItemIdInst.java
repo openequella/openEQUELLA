@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,26 +20,22 @@ package com.tle.beans.item;
 
 import com.tle.beans.Institution;
 
-public class ItemIdInst extends AbstractItemKey
-{
-	private long instId;
+public class ItemIdInst extends AbstractItemKey {
+  private long instId;
 
-	public ItemIdInst(ItemId itemId, Institution inst)
-	{
-		this.uuid = itemId.getUuid();
-		this.version = itemId.getVersion();
-		this.instId = inst.getUniqueId();
-	}
+  public ItemIdInst(ItemId itemId, Institution inst) {
+    this.uuid = itemId.getUuid();
+    this.version = itemId.getVersion();
+    this.instId = inst.getUniqueId();
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return (int) (super.hashCode() + instId);
-	}
+  @Override
+  public int hashCode() {
+    return (int) (super.hashCode() + instId);
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		return super.equals(obj) && instId == ((ItemIdInst) obj).instId;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj) && instId == ((ItemIdInst) obj).instId;
+  }
 }

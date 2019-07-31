@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,51 +18,49 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tle.web.api.interfaces.beans.UserBean;
+import java.util.Date;
 
-public class ItemNodeStatusMessageBean
-{
-	public enum MessageType
-	{
-		accept, reject, submit, comment
-	}
+public class ItemNodeStatusMessageBean {
+  public enum MessageType {
+    accept,
+    reject,
+    submit,
+    comment
+  }
 
-	private final MessageType type;
-	private final UserBean user;
-	private final String message;
-	private final Date date;
+  private final MessageType type;
+  private final UserBean user;
+  private final String message;
+  private final Date date;
 
-	@JsonCreator
-	public ItemNodeStatusMessageBean(@JsonProperty("type") MessageType type, @JsonProperty("user") UserBean user,
-		@JsonProperty("message") String message, @JsonProperty("date") Date date)
-	{
-		this.type = type;
-		this.user = user;
-		this.message = message;
-		this.date = date;
-	}
+  @JsonCreator
+  public ItemNodeStatusMessageBean(
+      @JsonProperty("type") MessageType type,
+      @JsonProperty("user") UserBean user,
+      @JsonProperty("message") String message,
+      @JsonProperty("date") Date date) {
+    this.type = type;
+    this.user = user;
+    this.message = message;
+    this.date = date;
+  }
 
-	public MessageType getType()
-	{
-		return type;
-	}
+  public MessageType getType() {
+    return type;
+  }
 
-	public UserBean getUser()
-	{
-		return user;
-	}
+  public UserBean getUser() {
+    return user;
+  }
 
-	public String getMessage()
-	{
-		return message;
-	}
+  public String getMessage() {
+    return message;
+  }
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public Date getDate() {
+    return date;
+  }
 }

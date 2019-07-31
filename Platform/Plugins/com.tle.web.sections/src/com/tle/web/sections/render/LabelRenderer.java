@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,60 +18,47 @@
 
 package com.tle.web.sections.render;
 
-import java.io.IOException;
-
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
+import java.io.IOException;
 
-public class LabelRenderer implements SectionRenderable
-{
-	protected final Label label;
+public class LabelRenderer implements SectionRenderable {
+  protected final Label label;
 
-	public Label getLabel()
-	{
-		return label;
-	}
+  public Label getLabel() {
+    return label;
+  }
 
-	public LabelRenderer(Label label)
-	{
-		this.label = label;
-		if( label == null )
-		{
-			throw new NullPointerException();
-		}
-	}
+  public LabelRenderer(Label label) {
+    this.label = label;
+    if (label == null) {
+      throw new NullPointerException();
+    }
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		String text = label.getText();
-		if( text != null )
-		{
-			if( label.isHtml() )
-			{
-				writer.write(text);
-			}
-			else
-			{
-				writer.writeText(text);
-			}
-		}
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    String text = label.getText();
+    if (text != null) {
+      if (label.isHtml()) {
+        writer.write(text);
+      } else {
+        writer.writeText(text);
+      }
+    }
+  }
 
-	@Override
-	public String toString()
-	{
-		if( label.isHtml() )
-		{
-			return label.getText();
-		}
-		return SectionUtils.ent(label.getText());
-	}
+  @Override
+  public String toString() {
+    if (label.isHtml()) {
+      return label.getText();
+    }
+    return SectionUtils.ent(label.getText());
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 }

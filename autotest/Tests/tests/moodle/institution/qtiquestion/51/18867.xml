@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18867</id>
+  <uuid>cdef2df1-f10c-4bd9-bca4-7f17f9c0cd6e</uuid>
+  <identifier>MultipleChoice-choice-polynomials</identifier>
+  <title>Identifying polynomials</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@66fd6a02(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@121298465(xPath=/assessmentItem[@identifier=&quot;MultipleChoice-choice-polynomials&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@29cd4c3c(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=19,columnNumber=9))
+        1 =&gt; &lt;choiceInteraction&gt;@1699220628(xPath=/assessmentItem[@identifier=&quot;MultipleChoice-choice-polynomials&quot;]/itemBody[1]/choiceInteraction[1],location=XmlSourceLocationInformation@5d31fc7e(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=20,columnNumber=82))
+        2 =&gt; &lt;p&gt;@2092426238(xPath=/assessmentItem[@identifier=&quot;MultipleChoice-choice-polynomials&quot;]/itemBody[1]/p[2],location=XmlSourceLocationInformation@cd978aa(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=83,columnNumber=9))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@427878269(xPath=/assessmentItem[@identifier=&quot;MultipleChoice-choice-polynomials&quot;],location=XmlSourceLocationInformation@5dddcc9f(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=6,columnNumber=120))(systemId=_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@ca50ade
+    sourceLocation =&gt; XmlSourceLocationInformation@276c7b4e(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=18,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@427878269(xPath=/assessmentItem[@identifier=&quot;MultipleChoice-choice-polynomials&quot;],location=XmlSourceLocationInformation@5dddcc9f(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml,lineNumber=6,columnNumber=120))(systemId=_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@4313521a
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

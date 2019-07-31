@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,12 +17,6 @@
  */
 
 package com.tle.ims.migration;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
@@ -35,40 +31,39 @@ import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 import com.tle.core.util.ims.IMSNavigationHelper;
 import com.tle.core.util.ims.beans.IMSManifest;
 import com.tle.ims.service.IMSService;
+import java.io.IOException;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class IMSNavigationCreation implements PostReadMigrator<ItemConverterInfo>
-{
-	@Inject
-	private IMSService imsService;
-	@Inject
-	private IMSNavigationHelper navHelper;
+public class IMSNavigationCreation implements PostReadMigrator<ItemConverterInfo> {
+  @Inject private IMSService imsService;
+  @Inject private IMSNavigationHelper navHelper;
 
-	@Override
-	public void migrate(ItemConverterInfo info) throws IOException
-	{
-		Item item = info.getItem();
-		FileHandle attachFiles = info.getFileHandle();
-		Attachments attachments = new UnmodifiableAttachments(item);
-		List<ImsAttachment> imsAttachments = attachments.getList(AttachmentType.IMS);
-		if( imsAttachments.isEmpty() )
-		{
-			return;
-		}
-		ImsAttachment imsAttachment = imsAttachments.get(0);
-		String szPackage = imsAttachment.getUrl();
+  @Override
+  public void migrate(ItemConverterInfo info) throws IOException {
+    Item item = info.getItem();
+    FileHandle attachFiles = info.getFileHandle();
+    Attachments attachments = new UnmodifiableAttachments(item);
+    List<ImsAttachment> imsAttachments = attachments.getList(AttachmentType.IMS);
+    if (imsAttachments.isEmpty()) {
+      return;
+    }
+    ImsAttachment imsAttachment = imsAttachments.get(0);
+    String szPackage = imsAttachment.getUrl();
 
-		// treeBuilder.createTree(fileSystemService, item, attachFiles,
-		// szPackage);
-		IMSManifest manifest = imsService.getImsManifest(attachFiles, szPackage, true);
-		String scormVersion = imsService.getScormVersion(attachFiles, szPackage);
+    // treeBuilder.createTree(fileSystemService, item, attachFiles,
+    // szPackage);
+    IMSManifest manifest = imsService.getImsManifest(attachFiles, szPackage, true);
+    String scormVersion = imsService.getScormVersion(attachFiles, szPackage);
 
-		boolean expand = imsAttachment.isExpand();
+    boolean expand = imsAttachment.isExpand();
 
-		if( manifest != null )
-		{
-			navHelper.createTree(manifest, item, attachFiles, szPackage, !Check.isEmpty(scormVersion), expand);
-		}
-	}
+    if (manifest != null) {
+      navHelper.createTree(
+          manifest, item, attachFiles, szPackage, !Check.isEmpty(scormVersion), expand);
+    }
+  }
 }

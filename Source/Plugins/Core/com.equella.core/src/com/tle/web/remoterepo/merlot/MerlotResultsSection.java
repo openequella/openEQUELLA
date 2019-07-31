@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.web.remoterepo.merlot;
-
-import javax.inject.Inject;
 
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.searching.SearchResults;
@@ -31,55 +31,48 @@ import com.tle.web.remoterepo.section.RemoteRepoResultsSection.RemoteRepoResults
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public class MerlotResultsSection
-	extends
-		RemoteRepoResultsSection<MerlotRemoteRepoSearchEvent, MerlotSearchResult, RemoteRepoResultsModel>
-{
-	@Inject
-	private MerlotService merlotService;
-	@Inject
-	private MerlotListEntryFactory entryFac;
+    extends RemoteRepoResultsSection<
+        MerlotRemoteRepoSearchEvent, MerlotSearchResult, RemoteRepoResultsModel> {
+  @Inject private MerlotService merlotService;
+  @Inject private MerlotListEntryFactory entryFac;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	protected SectionRenderable getFooter(RenderContext context, MerlotRemoteRepoSearchEvent searchEvent,
-		RemoteRepoSearchResultEvent<MerlotSearchResult> resultsEvent)
-	{
-		if( resultsEvent != null && resultsEvent.getCount() > 0 )
-		{
-			return view.createResult("merlotfooter.ftl", this);
-		}
-		return null;
-	}
+  @Override
+  protected SectionRenderable getFooter(
+      RenderContext context,
+      MerlotRemoteRepoSearchEvent searchEvent,
+      RemoteRepoSearchResultEvent<MerlotSearchResult> resultsEvent) {
+    if (resultsEvent != null && resultsEvent.getCount() > 0) {
+      return view.createResult("merlotfooter.ftl", this);
+    }
+    return null;
+  }
 
-	@Override
-	protected SearchResults<MerlotSearchResult> doSearch(SectionInfo info, MerlotRemoteRepoSearchEvent search)
-	{
-		return merlotService.search(search, search.getOffset(), search.getCount());
-	}
+  @Override
+  protected SearchResults<MerlotSearchResult> doSearch(
+      SectionInfo info, MerlotRemoteRepoSearchEvent search) {
+    return merlotService.search(search, search.getOffset(), search.getCount());
+  }
 
-	@Override
-	protected MerlotRemoteRepoSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch)
-	{
-		return new MerlotRemoteRepoSearchEvent(getRootRemoteRepoSection(), fedSearch);
-	}
+  @Override
+  protected MerlotRemoteRepoSearchEvent makeSearchEvent(
+      SectionInfo info, FederatedSearch fedSearch) {
+    return new MerlotRemoteRepoSearchEvent(getRootRemoteRepoSection(), fedSearch);
+  }
 
-	@Override
-	protected RemoteRepoListEntryFactory<MerlotSearchResult> getEntryFactory()
-	{
-		return entryFac;
-	}
+  @Override
+  protected RemoteRepoListEntryFactory<MerlotSearchResult> getEntryFactory() {
+    return entryFac;
+  }
 
-	@Override
-	public Class<RemoteRepoResultsModel> getModelClass()
-	{
-		return RemoteRepoResultsModel.class;
-	}
+  @Override
+  public Class<RemoteRepoResultsModel> getModelClass() {
+    return RemoteRepoResultsModel.class;
+  }
 }

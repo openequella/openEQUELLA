@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,28 +18,24 @@
 
 package com.tle.core.qti.service;
 
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.qti.entity.QtiAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-import com.tle.common.beans.exception.InvalidDataException;
-import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
-import com.tle.common.qti.entity.QtiAssessmentItem;
-
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface QtiAssessmentItemService
-{
-	/**
-	 * @param test
-	 * @param question
-	 * @return null if the question cannot be looked up
-	 */
-	@Nullable
-	QtiAssessmentItem convertItemToEntity(ResolvedAssessmentTest test, ResolvedAssessmentItem question);
+public interface QtiAssessmentItemService {
+  /**
+   * @param test
+   * @param question
+   * @return null if the question cannot be looked up
+   */
+  @Nullable
+  QtiAssessmentItem convertItemToEntity(
+      ResolvedAssessmentTest test, ResolvedAssessmentItem question);
 
-	void save(QtiAssessmentItem item) throws InvalidDataException;
-
+  void save(QtiAssessmentItem item) throws InvalidDataException;
 }

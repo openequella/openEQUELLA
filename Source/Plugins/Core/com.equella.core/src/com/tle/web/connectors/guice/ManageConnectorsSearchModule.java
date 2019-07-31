@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,50 +29,42 @@ import com.tle.web.connectors.manage.RootConnectorManagementSection;
 import com.tle.web.search.guice.AbstractSearchModule;
 
 @SuppressWarnings("nls")
-public class ManageConnectorsSearchModule extends AbstractSearchModule
-{
+public class ManageConnectorsSearchModule extends AbstractSearchModule {
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(RootConnectorManagementSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(RootConnectorManagementSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(ConnectorManagementQuerySection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(ConnectorManagementQuerySection.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(ConnectorManagementResultsSection.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(ConnectorManagementResultsSection.class);
+  }
 
-	@Override
-	protected void addActions(NodeProvider node)
-	{
-		node.child(ConnectorBulkSelectionSection.class);
-	}
+  @Override
+  protected void addActions(NodeProvider node) {
+    node.child(ConnectorBulkSelectionSection.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(ConnectorSortOptionsSection.class);
-		node.child(FilterByArchivedSection.class);
-		node.child(FilterByCourseSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(ConnectorSortOptionsSection.class);
+    node.child(FilterByArchivedSection.class);
+    node.child(FilterByCourseSection.class);
+  }
 
-	@Override
-	protected void addQueryActions(NodeProvider node)
-	{
-		node.child(ConnectorManagementFavouriteSearchAction.class);
-	}
+  @Override
+  protected void addQueryActions(NodeProvider node) {
+    node.child(ConnectorManagementFavouriteSearchAction.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/manageconnectors";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/manageconnectors";
+  }
 }

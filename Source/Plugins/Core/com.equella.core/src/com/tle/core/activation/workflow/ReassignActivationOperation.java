@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,42 +18,36 @@
 
 package com.tle.core.activation.workflow;
 
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.core.activation.ActivateRequestDao;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
+import javax.inject.Inject;
 
-public class ReassignActivationOperation extends AbstractStandardWorkflowOperation
-{
-	@Inject
-	private ActivateRequestDao dao;
+public class ReassignActivationOperation extends AbstractStandardWorkflowOperation {
+  @Inject private ActivateRequestDao dao;
 
-	private final String fromUserId;
-	private final String toUserId;
+  private final String fromUserId;
+  private final String toUserId;
 
-	@AssistedInject
-	public ReassignActivationOperation(@Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId)
-	{
-		this.fromUserId = fromUserId;
-		this.toUserId = toUserId;
-	}
+  @AssistedInject
+  public ReassignActivationOperation(
+      @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId) {
+    this.fromUserId = fromUserId;
+    this.toUserId = toUserId;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		boolean changed = false;
-		for( ActivateRequest ar : dao.getAllRequests(params.getItemPack().getItem()) )
-		{
-			if( ar.getUser().equals(fromUserId) )
-			{
-				ar.setUser(toUserId);
-				dao.update(ar);
-				changed = true;
-			}
-		}
-		return changed;
-	}
+  @Override
+  public boolean execute() {
+    boolean changed = false;
+    for (ActivateRequest ar : dao.getAllRequests(params.getItemPack().getItem())) {
+      if (ar.getUser().equals(fromUserId)) {
+        ar.setUser(toUserId);
+        dao.update(ar);
+        changed = true;
+      }
+    }
+    return changed;
+  }
 }

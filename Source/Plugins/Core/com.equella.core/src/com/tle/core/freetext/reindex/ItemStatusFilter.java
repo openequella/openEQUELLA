@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,37 +21,30 @@ package com.tle.core.freetext.reindex;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemStatus;
 
-/**
- * @author Nicholas Read
- */
-public class ItemStatusFilter extends ReindexFilter
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class ItemStatusFilter extends ReindexFilter {
+  private static final long serialVersionUID = 1L;
 
-	private static final String[] NAMES = {"status", "itemDefinition"};
+  private static final String[] NAMES = {"status", "itemDefinition"};
 
-	private Object[] values;
+  private Object[] values;
 
-	public ItemStatusFilter(ItemStatus itemStatus, ItemDefinition itemDefinition)
-	{
-		values = new Object[]{itemStatus.name(), itemDefinition.getId()};
-	}
+  public ItemStatusFilter(ItemStatus itemStatus, ItemDefinition itemDefinition) {
+    values = new Object[] {itemStatus.name(), itemDefinition.getId()};
+  }
 
-	@Override
-	protected String getWhereClause()
-	{
-		return "where status = :status and itemDefinition.id = :itemDefinition";
-	}
+  @Override
+  protected String getWhereClause() {
+    return "where status = :status and itemDefinition.id = :itemDefinition";
+  }
 
-	@Override
-	protected String[] getNames()
-	{
-		return NAMES;
-	}
+  @Override
+  protected String[] getNames() {
+    return NAMES;
+  }
 
-	@Override
-	protected Object[] getValues()
-	{
-		return values;
-	}
+  @Override
+  protected Object[] getValues() {
+    return values;
+  }
 }

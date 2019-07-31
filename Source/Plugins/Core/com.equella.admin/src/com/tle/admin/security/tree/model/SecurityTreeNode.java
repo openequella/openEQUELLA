@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +18,20 @@
 
 package com.tle.admin.security.tree.model;
 
+import com.tle.common.security.PrivilegeTree.Node;
 import javax.swing.tree.TreeNode;
 
-import com.tle.common.security.PrivilegeTree.Node;
+/** @author Nicholas Read */
+public interface SecurityTreeNode extends TreeNode {
+  /** Name as should appear in the tree. */
+  String getDisplayName();
 
-/**
- * @author Nicholas Read
- */
-public interface SecurityTreeNode extends TreeNode
-{
-	/**
-	 * Name as should appear in the tree.
-	 */
-	String getDisplayName();
+  /** The privilege node for this node type. */
+  Node getPrivilegeNode();
 
-	/**
-	 * The privilege node for this node type.
-	 */
-	Node getPrivilegeNode();
+  /** Return <code>null</code> if this is a virtual group with no real target object. */
+  Object getTargetObject();
 
-	/**
-	 * Return <code>null</code> if this is a virtual group with no real target
-	 * object.
-	 */
-	Object getTargetObject();
-
-	/**
-	 * The parent
-	 */
-	void setParent(SecurityTreeNode node);
+  /** The parent */
+  void setParent(SecurityTreeNode node);
 }

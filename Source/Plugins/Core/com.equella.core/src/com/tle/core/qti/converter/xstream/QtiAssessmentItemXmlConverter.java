@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,40 +26,32 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class QtiAssessmentItemXmlConverter implements Converter
-{
-	private final QtiAssessmentItemDao questionDao;
+public class QtiAssessmentItemXmlConverter implements Converter {
+  private final QtiAssessmentItemDao questionDao;
 
-	public QtiAssessmentItemXmlConverter(QtiAssessmentItemDao questionDao)
-	{
-		this.questionDao = questionDao;
-	}
+  public QtiAssessmentItemXmlConverter(QtiAssessmentItemDao questionDao) {
+    this.questionDao = questionDao;
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean canConvert(Class clazz)
-	{
-		return clazz == QtiAssessmentItem.class;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  public boolean canConvert(Class clazz) {
+    return clazz == QtiAssessmentItem.class;
+  }
 
-	@Override
-	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context)
-	{
-		final QtiAssessmentItem question = (QtiAssessmentItem) obj;
-		if( question != null )
-		{
-			writer.addAttribute("uuid", question.getUuid());
-		}
-	}
+  @Override
+  public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+    final QtiAssessmentItem question = (QtiAssessmentItem) obj;
+    if (question != null) {
+      writer.addAttribute("uuid", question.getUuid());
+    }
+  }
 
-	@Override
-	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-	{
-		final String uuidFromStream = reader.getAttribute("uuid");
-		return questionDao.getByUuid(uuidFromStream);
-	}
+  @Override
+  public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+    final String uuidFromStream = reader.getAttribute("uuid");
+    return questionDao.getByUuid(uuidFromStream);
+  }
 }

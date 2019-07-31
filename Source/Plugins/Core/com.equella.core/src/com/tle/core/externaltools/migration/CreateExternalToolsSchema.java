@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +17,6 @@
  */
 
 package com.tle.core.externaltools.migration;
-
-import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
@@ -30,32 +30,30 @@ import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.ClassDependencies;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.Set;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateExternalToolsSchema extends AbstractCreateMigration
-{
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateExternalToolsSchema.class) + ".";
+public class CreateExternalToolsSchema extends AbstractCreateMigration {
+  private static final String KEY_PFX =
+      PluginServiceImpl.getMyPluginId(CreateExternalToolsSchema.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "migration.createentity");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "migration.createentity");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("external_tool");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("external_tool");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
-		domainClasses.add(Institution.class);
-		domainClasses.add(ExternalTool.class);
-		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+    domainClasses.add(Institution.class);
+    domainClasses.add(ExternalTool.class);
+    return domainClasses.toArray(new Class<?>[domainClasses.size()]);
+  }
 }

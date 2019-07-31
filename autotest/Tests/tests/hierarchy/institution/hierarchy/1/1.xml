@@ -1,0 +1,32 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>29096</id>
+  <uuid>666446e4-542a-4ee3-8668-bca5fabf4f3b</uuid>
+  <listPosition>0</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <freetext></freetext>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <virtualisationId>contributedValuesVirtualiser</virtualisationId>
+  <virtualisationPath>/topics</virtualisationPath>
+  <name>
+    <id>29097</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29098</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>dynamic_%s</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

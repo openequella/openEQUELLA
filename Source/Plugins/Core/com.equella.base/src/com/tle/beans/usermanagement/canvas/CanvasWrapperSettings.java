@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,71 +21,62 @@ package com.tle.beans.usermanagement.canvas;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 
-/**
- * @author aholland
- */
-public class CanvasWrapperSettings extends UserManagementSettings
-{
-	@Property(key = "wrapper.canvas.url")
-	private String canvasUrl;
-	@Property(key = "wrapper.canvas.clientid")
-	private String clientId;
-	@Property(key = "wrapper.canvas.clientsecret")
-	private String clientSecret;
-	@Property(key = "wrapper.canvas.enabled")
-	private boolean enabled;
-	@Property(key = "wrapper.canvas.bypasslogonpage")
-	private boolean bypassLogonPage;
+/** @author aholland */
+public class CanvasWrapperSettings extends UserManagementSettings {
+  @Property(key = "wrapper.canvas.url")
+  private String canvasUrl;
 
-	public String getCanvasUrl()
-	{
-		return canvasUrl;
-	}
+  @Property(key = "wrapper.canvas.clientid")
+  private String clientId;
 
-	public void setCanvasUrl(String canvasUrl)
-	{
-		this.canvasUrl = canvasUrl;
-	}
+  @Property(key = "wrapper.canvas.clientsecret")
+  private String clientSecret;
 
-	public String getClientId()
-	{
-		return clientId;
-	}
+  @Property(key = "wrapper.canvas.enabled")
+  private boolean enabled;
 
-	public void setClientId(String clientId)
-	{
-		this.clientId = clientId;
-	}
+  @Property(key = "wrapper.canvas.bypasslogonpage")
+  private boolean bypassLogonPage;
 
-	public String getClientSecret()
-	{
-		return clientSecret;
-	}
+  public String getCanvasUrl() {
+    return canvasUrl;
+  }
 
-	public void setClientSecret(String clientSecret)
-	{
-		this.clientSecret = clientSecret;
-	}
+  public void setCanvasUrl(String canvasUrl) {
+    this.canvasUrl = canvasUrl;
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  public String getClientId() {
+    return clientId;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-	public boolean isBypassLogonPage()
-	{
-		return bypassLogonPage;
-	}
+  public String getClientSecret() {
+    return clientSecret;
+  }
 
-	public void setBypassLogonPage(boolean bypassLogonPage)
-	{
-		this.bypassLogonPage = bypassLogonPage;
-	}
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public boolean isBypassLogonPage() {
+    return bypassLogonPage;
+  }
+
+  public void setBypassLogonPage(boolean bypassLogonPage) {
+    this.bypassLogonPage = bypassLogonPage;
+  }
 }

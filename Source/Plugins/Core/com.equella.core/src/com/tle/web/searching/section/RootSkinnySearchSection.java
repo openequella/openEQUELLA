@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,19 +21,17 @@ package com.tle.web.searching.section;
 import com.tle.web.sections.SectionInfo;
 
 /**
- * This subclass's sole raison d'etre is to provide a alternative for
- * createForward(..) with a skinny URL rather than a fat URL. Given its only
- * features are static, extending RootSearchSection is for reference only.
- * 
+ * This subclass's sole raison d'etre is to provide a alternative for createForward(..) with a
+ * skinny URL rather than a fat URL. Given its only features are static, extending RootSearchSection
+ * is for reference only.
+ *
  * @author larry
  */
 @SuppressWarnings("nls")
-public class RootSkinnySearchSection extends RootSearchSection
-{
-	public static final String SKINNYSEARCHURL = "/access/skinny/searching.do";
+public class RootSkinnySearchSection extends RootSearchSection {
+  public static final String SKINNYSEARCHURL = "/access/skinny/searching.do";
 
-	public static SectionInfo createForward(SectionInfo from)
-	{
-		return from.createForward(SKINNYSEARCHURL);
-	}
+  public static SectionInfo createForward(SectionInfo from) {
+    return from.createForward(SKINNYSEARCHURL);
+  }
 }

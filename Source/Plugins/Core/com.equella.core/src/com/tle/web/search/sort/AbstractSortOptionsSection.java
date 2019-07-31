@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,9 +17,6 @@
  */
 
 package com.tle.web.search.sort;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -51,174 +50,147 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 import com.tle.web.sections.standard.model.LabelOption;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
+import java.util.ArrayList;
+import java.util.List;
 
 @NonNullByDefault
 @TreeIndexed
 @SuppressWarnings("nls")
 public abstract class AbstractSortOptionsSection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractPrototypeSection<AbstractSortOptionsSection.SortOptionsModel>
-	implements
-		SearchEventListener<SE>,
-		HtmlRenderer,
-		SortOptionsListener
-{
-	@ViewFactory(fixed = true)
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
+    extends AbstractPrototypeSection<AbstractSortOptionsSection.SortOptionsModel>
+    implements SearchEventListener<SE>, HtmlRenderer, SortOptionsListener {
+  @ViewFactory(fixed = true)
+  protected FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @EventFactory protected EventGenerator events;
 
-	@PlugKey("sortsection.results.reverse")
-	private static Label LABEL_REVERSE;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(name = "so", parameter = "sort", supported = true)
-	protected SingleSelectionList<SortOption> sortOptions;
+  @PlugKey("sortsection.results.reverse")
+  private static Label LABEL_REVERSE;
 
-	@Component(name = "r", parameter = "rs", supported = true)
-	protected Checkbox reverse;
-	private ImmutableList<SortOption> staticOptions;
+  @Component(name = "so", parameter = "sort", supported = true)
+  protected SingleSelectionList<SortOption> sortOptions;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		List<SortOption> sorts = new ArrayList<SortOption>();
-		addSortOptions(sorts);
-		staticOptions = ImmutableList.copyOf(sorts);
+  @Component(name = "r", parameter = "rs", supported = true)
+  protected Checkbox reverse;
 
-		sortOptions.setListModel(createListModel());
-		sortOptions.setAlwaysSelect(true);
-		reverse.setLabel(LABEL_REVERSE);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
-	}
+  private ImmutableList<SortOption> staticOptions;
 
-	@Nullable
-	protected abstract String getDefaultSearch(SectionInfo info);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    List<SortOption> sorts = new ArrayList<SortOption>();
+    addSortOptions(sorts);
+    staticOptions = ImmutableList.copyOf(sorts);
 
-	@Override
-	@Nullable
-	public Iterable<SortOption> addSortOptions(SectionInfo info, AbstractSortOptionsSection<?> section)
-	{
-		if( section == this )
-		{
-			return staticOptions;
-		}
-		return null;
-	}
+    sortOptions.setListModel(createListModel());
+    sortOptions.setAlwaysSelect(true);
+    reverse.setLabel(LABEL_REVERSE);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
+  }
 
-	protected HtmlListModel<SortOption> createListModel()
-	{
-		return new DynamicHtmlListModel<SortOption>()
-		{
-			@Override
-			protected Iterable<SortOption> populateModel(SectionInfo info)
-			{
-				SortOptionsEvent event = new SortOptionsEvent(AbstractSortOptionsSection.this);
-				info.processEvent(event);
-				return Iterables.concat(event.getExtraOptions());
-			}
+  @Nullable
+  protected abstract String getDefaultSearch(SectionInfo info);
 
-			@Override
-			protected Option<SortOption> convertToOption(SectionInfo info, SortOption obj)
-			{
-				return new LabelOption<SortOption>(obj.getLabel(), obj.getValue(), obj);
-			}
+  @Override
+  @Nullable
+  public Iterable<SortOption> addSortOptions(
+      SectionInfo info, AbstractSortOptionsSection<?> section) {
+    if (section == this) {
+      return staticOptions;
+    }
+    return null;
+  }
 
-			@Override
-			public String getDefaultValue(SectionInfo info)
-			{
-				String defaultValue = getDefaultSearch(info);
-				if( defaultValue == null || getOption(info, defaultValue) == null )
-				{
-					return super.getDefaultValue(info);
-				}
-				return defaultValue;
-			}
-		};
-	}
+  protected HtmlListModel<SortOption> createListModel() {
+    return new DynamicHtmlListModel<SortOption>() {
+      @Override
+      protected Iterable<SortOption> populateModel(SectionInfo info) {
+        SortOptionsEvent event = new SortOptionsEvent(AbstractSortOptionsSection.this);
+        info.processEvent(event);
+        return Iterables.concat(event.getExtraOptions());
+      }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		sortOptions.addChangeEventHandler(searchResults.getResultsUpdater(tree, null, "reverse"));
-		reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
-	}
+      @Override
+      protected Option<SortOption> convertToOption(SectionInfo info, SortOption obj) {
+        return new LabelOption<SortOption>(obj.getLabel(), obj.getValue(), obj);
+      }
 
-	@Override
-	public void prepareSearch(SectionInfo info, SE event)
-	{
-		if( !getModel(info).isDisabled() )
-		{
-			SortOption selOpt = sortOptions.getSelectedValue(info);
-			if( selOpt != null )
-			{
-				SortField[] fields = createSortFromOption(info, selOpt);
-				event.setSortFields(reverse.isChecked(info), fields);
-			}
-		}
-	}
+      @Override
+      public String getDefaultValue(SectionInfo info) {
+        String defaultValue = getDefaultSearch(info);
+        if (defaultValue == null || getOption(info, defaultValue) == null) {
+          return super.getDefaultValue(info);
+        }
+        return defaultValue;
+      }
+    };
+  }
 
-	protected SortField[] createSortFromOption(SectionInfo info, SortOption selOpt)
-	{
-		return selOpt.createSort();
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    sortOptions.addChangeEventHandler(searchResults.getResultsUpdater(tree, null, "reverse"));
+    reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !getModel(context).isDisabled() )
-		{
-			return viewFactory.createResult("sort/sortoptions.ftl", context); //$NON-NLS-1$
-		}
-		return null;
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, SE event) {
+    if (!getModel(info).isDisabled()) {
+      SortOption selOpt = sortOptions.getSelectedValue(info);
+      if (selOpt != null) {
+        SortField[] fields = createSortFromOption(info, selOpt);
+        event.setSortFields(reverse.isChecked(info), fields);
+      }
+    }
+  }
 
-	public Checkbox getReverse()
-	{
-		return reverse;
-	}
+  protected SortField[] createSortFromOption(SectionInfo info, SortOption selOpt) {
+    return selOpt.createSort();
+  }
 
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		// For sub classes - Override this method to add sort options
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!getModel(context).isDisabled()) {
+      return viewFactory.createResult("sort/sortoptions.ftl", context); // $NON-NLS-1$
+    }
+    return null;
+  }
 
-	public SingleSelectionList<SortOption> getSortOptions()
-	{
-		return sortOptions;
-	}
+  public Checkbox getReverse() {
+    return reverse;
+  }
 
-	public void disable(SectionInfo info)
-	{
-		getModel(info).setDisabled(true);
-	}
+  protected void addSortOptions(List<SortOption> sorts) {
+    // For sub classes - Override this method to add sort options
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new SortOptionsModel();
-	}
+  public SingleSelectionList<SortOption> getSortOptions() {
+    return sortOptions;
+  }
 
-	public static class SortOptionsModel
-	{
-		private boolean disabled;
+  public void disable(SectionInfo info) {
+    getModel(info).setDisabled(true);
+  }
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new SortOptionsModel();
+  }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
-	}
+  public static class SortOptionsModel {
+    private boolean disabled;
 
-	public LabelTagRenderer getLabelTag()
-	{
-		return new LabelTagRenderer(sortOptions, null, null);
-	}
+    public boolean isDisabled() {
+      return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
+  }
+
+  public LabelTagRenderer getLabelTag() {
+    return new LabelTagRenderer(sortOptions, null, null);
+  }
 }

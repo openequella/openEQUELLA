@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,31 +28,26 @@ import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 @Bind
-public class WorkflowFromCollectionSection extends AbstractPrototypeSection<Object> implements WorkflowSelection
-{
-	@TreeLookup
-	private FilterByCollectionSection filterByCollectionSection;
+public class WorkflowFromCollectionSection extends AbstractPrototypeSection<Object>
+    implements WorkflowSelection {
+  @TreeLookup private FilterByCollectionSection filterByCollectionSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+  }
 
-	@Override
-	public Workflow getWorkflow(SectionInfo info)
-	{
-		WhereEntry entry = filterByCollectionSection.getCollectionList().getSelectedValue(info);
-		if( entry == null || filterByCollectionSection.isDisabled(info) )
-		{
-			return null;
-		}
-		return entry.getEntity().getWorkflow();
-	}
+  @Override
+  public Workflow getWorkflow(SectionInfo info) {
+    WhereEntry entry = filterByCollectionSection.getCollectionList().getSelectedValue(info);
+    if (entry == null || filterByCollectionSection.isDisabled(info)) {
+      return null;
+    }
+    return entry.getEntity().getWorkflow();
+  }
 
-	@Override
-	public void setWorkflow(SectionInfo info, Workflow workflow)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void setWorkflow(SectionInfo info, Workflow workflow) {
+    throw new UnsupportedOperationException();
+  }
 }

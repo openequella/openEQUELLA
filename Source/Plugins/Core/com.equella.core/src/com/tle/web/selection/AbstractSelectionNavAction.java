@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,23 +18,17 @@
 
 package com.tle.web.selection;
 
+import com.tle.web.sections.SectionInfo;
 import java.util.Set;
 
-import com.tle.web.sections.SectionInfo;
-
-/**
- * @author Aaron
- */
-public abstract class AbstractSelectionNavAction implements SelectionNavAction
-{
-	@Override
-	public boolean isActionAvailable(SectionInfo info, SelectionSession session)
-	{
-		final Set<String> navActions = session.getAllowedSelectNavActions();
-		if( navActions != null && !navActions.contains(getActionType()) )
-		{
-			return false;
-		}
-		return true;
-	}
+/** @author Aaron */
+public abstract class AbstractSelectionNavAction implements SelectionNavAction {
+  @Override
+  public boolean isActionAvailable(SectionInfo info, SelectionSession session) {
+    final Set<String> navActions = session.getAllowedSelectNavActions();
+    if (navActions != null && !navActions.contains(getActionType())) {
+      return false;
+    }
+    return true;
+  }
 }

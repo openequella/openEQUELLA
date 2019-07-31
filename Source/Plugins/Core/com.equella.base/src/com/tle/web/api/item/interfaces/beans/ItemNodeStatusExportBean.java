@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,103 +18,86 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+public class ItemNodeStatusExportBean {
+  private String uuid;
+  private String status;
+  private Date started;
+  private Date due;
 
-public class ItemNodeStatusExportBean
-{
-	private String uuid;
-	private String status;
-	private Date started;
-	private Date due;
-	@JsonInclude(Include.NON_DEFAULT)
-	private int causeIndex = -1;
-	private String assignedTo;
-	private Set<String> acceptedUsers;
-	private List<ItemNodeStatusMessageBean> comments;
+  @JsonInclude(Include.NON_DEFAULT)
+  private int causeIndex = -1;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  private String assignedTo;
+  private Set<String> acceptedUsers;
+  private List<ItemNodeStatusMessageBean> comments;
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getStatus()
-	{
-		return status;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public Date getStarted()
-	{
-		return started;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public void setStarted(Date started)
-	{
-		this.started = started;
-	}
+  public Date getStarted() {
+    return started;
+  }
 
-	public Date getDue()
-	{
-		return due;
-	}
+  public void setStarted(Date started) {
+    this.started = started;
+  }
 
-	public void setDue(Date due)
-	{
-		this.due = due;
-	}
+  public Date getDue() {
+    return due;
+  }
 
-	public int getCauseIndex()
-	{
-		return causeIndex;
-	}
+  public void setDue(Date due) {
+    this.due = due;
+  }
 
-	public void setCauseIndex(int causeIndex)
-	{
-		this.causeIndex = causeIndex;
-	}
+  public int getCauseIndex() {
+    return causeIndex;
+  }
 
-	public String getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public void setCauseIndex(int causeIndex) {
+    this.causeIndex = causeIndex;
+  }
 
-	public void setAssignedTo(String assignedTo)
-	{
-		this.assignedTo = assignedTo;
-	}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-	public Set<String> getAcceptedUsers()
-	{
-		return acceptedUsers;
-	}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
 
-	public void setAcceptedUsers(Set<String> acceptedUsers)
-	{
-		this.acceptedUsers = acceptedUsers;
-	}
+  public Set<String> getAcceptedUsers() {
+    return acceptedUsers;
+  }
 
-	public List<ItemNodeStatusMessageBean> getComments()
-	{
-		return comments;
-	}
+  public void setAcceptedUsers(Set<String> acceptedUsers) {
+    this.acceptedUsers = acceptedUsers;
+  }
 
-	public void setComments(List<ItemNodeStatusMessageBean> comments)
-	{
-		this.comments = comments;
-	}
+  public List<ItemNodeStatusMessageBean> getComments() {
+    return comments;
+  }
 
+  public void setComments(List<ItemNodeStatusMessageBean> comments) {
+    this.comments = comments;
+  }
 }

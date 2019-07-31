@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,9 +18,6 @@
 
 package com.tle.core.guice;
 
-import java.util.List;
-import java.util.Set;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Module;
@@ -27,73 +26,60 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.tle.core.guice.GuicePlugin.GuiceBeanLocator;
 import com.tle.core.plugins.PluginBeanLocator;
+import java.util.List;
+import java.util.Set;
 
-public class ExternalProviders extends AbstractModule
-{
-	private final Iterable<Module> modules;
-	private final List<PluginBeanLocator> locators;
+public class ExternalProviders extends AbstractModule {
+  private final Iterable<Module> modules;
+  private final List<PluginBeanLocator> locators;
 
-	public ExternalProviders(List<PluginBeanLocator> locators, Iterable<Module> modules)
-	{
-		this.modules = modules;
-		this.locators = locators;
-	}
+  public ExternalProviders(List<PluginBeanLocator> locators, Iterable<Module> modules) {
+    this.modules = modules;
+    this.locators = locators;
+  }
 
-	@Override
-	protected void configure()
-	{
-		binder().requireExplicitBindings();
-		List<Element> elements = Elements.getElements(modules);
-		ElementAnalyzer analyzer = new ElementAnalyzer(binder());
-		for( Element element : elements )
-		{
-			element.acceptVisitor(analyzer);
-		}
-		analyzer.throwErrorIfNeeded();
-		Set<Key<?>> external = analyzer.getExternalDependencies();
-		for( Key<?> key : external )
-		{
-			bindExternal(key);
-		}
-	}
+  @Override
+  protected void configure() {
+    binder().requireExplicitBindings();
+    List<Element> elements = Elements.getElements(modules);
+    ElementAnalyzer analyzer = new ElementAnalyzer(binder());
+    for (Element element : elements) {
+      element.acceptVisitor(analyzer);
+    }
+    analyzer.throwErrorIfNeeded();
+    Set<Key<?>> external = analyzer.getExternalDependencies();
+    for (Key<?> key : external) {
+      bindExternal(key);
+    }
+  }
 
-	private <T> void bindExternal(Key<T> key)
-	{
-		bind(key).toProvider(new ExternalProvider<T>(key));
-	}
+  private <T> void bindExternal(Key<T> key) {
+    bind(key).toProvider(new ExternalProvider<T>(key));
+  }
 
-	public class ExternalProvider<T> implements Provider<T>
-	{
+  public class ExternalProvider<T> implements Provider<T> {
 
-		private Key<T> key;
+    private Key<T> key;
 
-		public ExternalProvider(Key<T> key)
-		{
-			this.key = key;
-		}
+    public ExternalProvider(Key<T> key) {
+      this.key = key;
+    }
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public T get()
-		{
-			for( PluginBeanLocator locator : locators )
-			{
-				T obj;
-				if( locator instanceof GuiceBeanLocator )
-				{
-					obj = ((GuiceBeanLocator) locator).getBeanForKey(key);
-				}
-				else
-				{
-					obj = (T) locator.getBeanForType(key.getTypeLiteral().getRawType());
-				}
-				if( obj != null )
-				{
-					return obj;
-				}
-			}
-			throw new RuntimeException("Couldn't find bean for type:" + key); //$NON-NLS-1$
-		}
-	}
-
+    @SuppressWarnings("unchecked")
+    @Override
+    public T get() {
+      for (PluginBeanLocator locator : locators) {
+        T obj;
+        if (locator instanceof GuiceBeanLocator) {
+          obj = ((GuiceBeanLocator) locator).getBeanForKey(key);
+        } else {
+          obj = (T) locator.getBeanForType(key.getTypeLiteral().getRawType());
+        }
+        if (obj != null) {
+          return obj;
+        }
+      }
+      throw new RuntimeException("Couldn't find bean for type:" + key); // $NON-NLS-1$
+    }
+  }
 }

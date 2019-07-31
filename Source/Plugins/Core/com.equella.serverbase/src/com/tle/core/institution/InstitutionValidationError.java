@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,30 +18,25 @@
 
 package com.tle.core.institution;
 
+import com.tle.common.i18n.InternalI18NString;
 import java.io.Serializable;
 
-import com.tle.common.i18n.InternalI18NString;
+public class InstitutionValidationError implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-public class InstitutionValidationError implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+  private final String id;
+  private final InternalI18NString message;
 
-	private final String id;
-	private final InternalI18NString message;
+  public InstitutionValidationError(String id, InternalI18NString message) {
+    this.id = id;
+    this.message = message;
+  }
 
-	public InstitutionValidationError(String id, InternalI18NString message)
-	{
-		this.id = id;
-		this.message = message;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
-
-	public InternalI18NString getMessage()
-	{
-		return message;
-	}
+  public InternalI18NString getMessage() {
+    return message;
+  }
 }

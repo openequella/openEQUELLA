@@ -1,0 +1,4 @@
+/reportingstream.do
+/apidocs.do
+/access/activationwebservice.do
+/api/

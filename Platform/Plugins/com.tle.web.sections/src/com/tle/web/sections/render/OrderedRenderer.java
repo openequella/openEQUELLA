@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,59 +18,47 @@
 
 package com.tle.web.sections.render;
 
+import com.tle.web.sections.SectionWriter;
+import com.tle.web.sections.events.PreRenderContext;
 import java.io.IOException;
 import java.util.Comparator;
 
-import com.tle.web.sections.SectionWriter;
-import com.tle.web.sections.events.PreRenderContext;
+public class OrderedRenderer implements SectionRenderable {
+  private final int order;
+  private final SectionRenderable renderer;
 
-public class OrderedRenderer implements SectionRenderable
-{
-	private final int order;
-	private final SectionRenderable renderer;
+  public OrderedRenderer(int order, SectionRenderable renderer) {
+    this.order = order;
+    this.renderer = renderer;
+  }
 
-	public OrderedRenderer(int order, SectionRenderable renderer)
-	{
-		this.order = order;
-		this.renderer = renderer;
-	}
+  public OrderedRenderer(int order, PreRenderable prerenderer) {
+    this.order = order;
+    if (prerenderer instanceof SectionRenderable) {
+      this.renderer = (SectionRenderable) prerenderer;
+    } else {
+      this.renderer = new PreRenderOnly(prerenderer);
+    }
+  }
 
-	public OrderedRenderer(int order, PreRenderable prerenderer)
-	{
-		this.order = order;
-		if( prerenderer instanceof SectionRenderable )
-		{
-			this.renderer = (SectionRenderable) prerenderer;
-		}
-		else
-		{
-			this.renderer = new PreRenderOnly(prerenderer);
-		}
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    renderer.preRender(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		renderer.preRender(info);
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    renderer.realRender(writer);
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		renderer.realRender(writer);
-	}
+  public int getOrder() {
+    return order;
+  }
 
-	public int getOrder()
-	{
-		return order;
-	}
-
-	public static class RendererOrder implements Comparator<OrderedRenderer>
-	{
-		@Override
-		public int compare(OrderedRenderer o1, OrderedRenderer o2)
-		{
-			return o1.getOrder() - o2.getOrder();
-		}
-	}
+  public static class RendererOrder implements Comparator<OrderedRenderer> {
+    @Override
+    public int compare(OrderedRenderer o1, OrderedRenderer o2) {
+      return o1.getOrder() - o2.getOrder();
+    }
+  }
 }

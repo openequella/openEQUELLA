@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +17,6 @@
  */
 
 package com.tle.web.workflow.tasks;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.inject.Provider;
 import com.tle.beans.item.Item;
@@ -57,245 +52,235 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.workflow.manage.ViewCommentsDialog;
 import com.tle.web.workflow.tasks.TaskItemList.TaskItemListEntry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
 public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemList.Model>
-	implements
-		SearchResultsListener<FreetextSearchResultEvent>
-{
-	public static final String DIV_PFX = "tl_";
+    implements SearchResultsListener<FreetextSearchResultEvent> {
+  public static final String DIV_PFX = "tl_";
 
-	@Inject
-	private ModerationService taskListService;
-	@PlugKey("tasklist.moderate")
-	private static Label LABEL_MODERATE;
-	@PlugKey("tasklist.comments")
-	private static String KEY_COMMENTS;
-	@PlugKey("tasklist.progress")
-	private static Label LABEL_PROGRESS;
+  @Inject private ModerationService taskListService;
 
-	@PlugKey("mytasklist.selecttask")
-	private static Label LABEL_SELECT;
-	@PlugKey("mytasklist.unselecttask")
-	private static Label LABEL_UNSELECT;
+  @PlugKey("tasklist.moderate")
+  private static Label LABEL_MODERATE;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("tasklist.comments")
+  private static String KEY_COMMENTS;
 
-	@Inject
-	private Provider<TaskItemListEntry> entryFactory;
-	@Inject
-	private ViewCommentsDialog commentsDialog;
-	@Inject
-	private UserSessionService session;
-	@Inject
-	private WorkflowService workflowService;
+  @PlugKey("tasklist.progress")
+  private static Label LABEL_PROGRESS;
 
-	@TreeLookup
-	private ModerateSelectedButton selectionSection;
-	private JSCallable selectCall;
-	private JSCallable removeCall;
+  @PlugKey("mytasklist.selecttask")
+  private static Label LABEL_SELECT;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		tree.registerInnerSection(commentsDialog, id);
-		super.registered(id, tree);
-	}
+  @PlugKey("mytasklist.unselecttask")
+  private static Label LABEL_UNSELECT;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
-		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
-	}
+  @EventFactory private EventGenerator events;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton("task");
-	}
+  @Inject private Provider<TaskItemListEntry> entryFactory;
+  @Inject private ViewCommentsDialog commentsDialog;
+  @Inject private UserSessionService session;
+  @Inject private WorkflowService workflowService;
 
-	@Override
-	protected TaskItemListEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		TaskItemListEntry entry = entryFactory.get();
-		Model model = getModel(info);
-		entry.setItem(item);
-		entry.setInfo(info);
-		entry.setup(this, model.nextEntryOffset());
-		return entry;
-	}
+  @TreeLookup private ModerateSelectedButton selectionSection;
+  private JSCallable selectCall;
+  private JSCallable removeCall;
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void moderate(SectionInfo info, ItemTaskId taskId, int index, int maximumResults, String view)
-	{
-		session.removeAttribute("selectedTasks");
-		taskListService.moderate(info, view, taskId, index, maximumResults);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    tree.registerInnerSection(commentsDialog, id);
+    super.registered(id, tree);
+  }
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void moderateSelectedTask(SectionInfo info, ItemTaskId taskId, int maximumResults)
-	{
-		taskListService.moderate(info, ModerationService.VIEW_METADATA, taskId, 0, maximumResults);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
+    removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
+  }
 
-	@Override
-	public void processResults(SectionInfo info, FreetextSearchResultEvent results)
-	{
-		Model model = getModel(info);
-		model.setMaximum(results.getMaximumResults());
-		model.setOffset(results.getOffset());
+  @SuppressWarnings("nls")
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton("task");
+  }
 
-		List<ItemTaskId> selections = new ArrayList<ItemTaskId>(selectionSection.getSelections(info));
-		if( !selections.isEmpty() )
-		{
-			SubmitValuesHandler handler = events.getSubmitValuesHandler("moderateSelectedTask", selections.get(0),
-				selections.size());
-			selectionSection.setupModerateSelectedHandler(handler);
-			session.setAttribute("selectedTasks", selections);
-		}
-		else
-		{
-			selectionSection.setupModerateSelectedHandler(null);
-			session.removeAttribute("selectedTasks");
-		}
-	}
+  @Override
+  protected TaskItemListEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
+    TaskItemListEntry entry = entryFactory.get();
+    Model model = getModel(info);
+    entry.setItem(item);
+    entry.setInfo(info);
+    entry.setup(this, model.nextEntryOffset());
+    return entry;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void moderate(
+      SectionInfo info, ItemTaskId taskId, int index, int maximumResults, String view) {
+    session.removeAttribute("selectedTasks");
+    taskListService.moderate(info, view, taskId, index, maximumResults);
+  }
 
-	public static class Model extends AbstractItemList.Model<TaskItemListEntry>
-	{
-		private int offset;
-		private int maximum;
-		private int entryOffset;
+  @EventHandlerMethod(preventXsrf = false)
+  public void moderateSelectedTask(SectionInfo info, ItemTaskId taskId, int maximumResults) {
+    taskListService.moderate(info, ModerationService.VIEW_METADATA, taskId, 0, maximumResults);
+  }
 
-		public int getOffset()
-		{
-			return offset;
-		}
+  @Override
+  public void processResults(SectionInfo info, FreetextSearchResultEvent results) {
+    Model model = getModel(info);
+    model.setMaximum(results.getMaximumResults());
+    model.setOffset(results.getOffset());
 
-		public void setOffset(int offset)
-		{
-			this.offset = offset;
-		}
+    List<ItemTaskId> selections = new ArrayList<ItemTaskId>(selectionSection.getSelections(info));
+    if (!selections.isEmpty()) {
+      SubmitValuesHandler handler =
+          events.getSubmitValuesHandler(
+              "moderateSelectedTask", selections.get(0), selections.size());
+      selectionSection.setupModerateSelectedHandler(handler);
+      session.setAttribute("selectedTasks", selections);
+    } else {
+      selectionSection.setupModerateSelectedHandler(null);
+      session.removeAttribute("selectedTasks");
+    }
+  }
 
-		public int getMaximum()
-		{
-			return maximum;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		public void setMaximum(int maximum)
-		{
-			this.maximum = maximum;
-		}
+  public static class Model extends AbstractItemList.Model<TaskItemListEntry> {
+    private int offset;
+    private int maximum;
+    private int entryOffset;
 
-		public int nextEntryOffset()
-		{
-			return entryOffset++;
-		}
-	}
+    public int getOffset() {
+      return offset;
+    }
 
-	@SuppressWarnings("nls")
-	public SubmitValuesHandler getModerateHandler(SectionInfo info, TaskItemListEntry entry, String view)
-	{
-		Model model = getModel(info);
-		int offset = model.getOffset() + entry.getOffset();
-		int totalSize = model.getMaximum();
-		return events.getSubmitValuesHandler("moderate", entry.getItemTaskId(), offset, totalSize, view);
-	}
+    public void setOffset(int offset) {
+      this.offset = offset;
+    }
 
-	public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments)
-	{
-		return new HtmlLinkState(new PluralKeyLabel(KEY_COMMENTS, comments),
-			new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
-	}
+    public int getMaximum() {
+      return maximum;
+    }
 
-	@EventHandlerMethod
-	public void selectTask(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		selectionSection.addSelection(info, itemTaskId);
-		addAjaxDiv(info, itemTaskId);
-	}
+    public void setMaximum(int maximum) {
+      this.maximum = maximum;
+    }
 
-	@EventHandlerMethod
-	public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		selectionSection.removeSelection(info, itemTaskId);
-		addAjaxDiv(info, itemTaskId);
-	}
+    public int nextEntryOffset() {
+      return entryOffset++;
+    }
+  }
 
-	private void addAjaxDiv(SectionInfo info, ItemTaskId itemId)
-	{
-		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
-		if( renderContext != null )
-		{
-			renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
-		}
-	}
+  @SuppressWarnings("nls")
+  public SubmitValuesHandler getModerateHandler(
+      SectionInfo info, TaskItemListEntry entry, String view) {
+    Model model = getModel(info);
+    int offset = model.getOffset() + entry.getOffset();
+    int totalSize = model.getMaximum();
+    return events.getSubmitValuesHandler(
+        "moderate", entry.getItemTaskId(), offset, totalSize, view);
+  }
 
-	@Bind
-	public static class TaskItemListEntry extends AbstractTaskListEntry
-	{
-		private int offset;
-		private TaskItemList taskItemList;
+  public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments) {
+    return new HtmlLinkState(
+        new PluralKeyLabel(KEY_COMMENTS, comments),
+        new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
+  }
 
-		@Override
-		public HtmlLinkState getTitle()
-		{
-			return new HtmlLinkState(getTitleLabel(), new BookmarkAndModify(info,
-				taskItemList.getModerateHandler(info, this, ModerationService.VIEW_SUMMARY).getModifier()));
-		}
+  @EventHandlerMethod
+  public void selectTask(SectionInfo info, ItemTaskId itemTaskId) {
+    selectionSection.addSelection(info, itemTaskId);
+    addAjaxDiv(info, itemTaskId);
+  }
 
-		public void setup(TaskItemList taskItemList, int offset)
-		{
-			this.taskItemList = taskItemList;
-			this.offset = offset;
-		}
+  @EventHandlerMethod
+  public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId) {
+    selectionSection.removeSelection(info, itemTaskId);
+    addAjaxDiv(info, itemTaskId);
+  }
 
-		public int getOffset()
-		{
-			return offset;
-		}
-	}
+  private void addAjaxDiv(SectionInfo info, ItemTaskId itemId) {
+    AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+    if (renderContext != null) {
+      renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
+    }
+  }
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<TaskItemListEntry> entries) {
-		super.customiseListEntries(context, entries);
-		for (TaskItemListEntry entry : entries)
-		{
-			entry.getTag().setElementId(new SimpleElementId(DIV_PFX + entry.getItemTaskId().toString()));
+  @Bind
+  public static class TaskItemListEntry extends AbstractTaskListEntry {
+    private int offset;
+    private TaskItemList taskItemList;
 
-			ItemTaskId itemTaskId = entry.getItemTaskId();
-			entry.addRatingMetadata(new HtmlLinkState(LABEL_PROGRESS, getModerateHandler(context, entry, ModerationService.VIEW_PROGRESS)));
-			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
-			if( !comments.isEmpty() )
-			{
-				entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
-			}
+    @Override
+    public HtmlLinkState getTitle() {
+      return new HtmlLinkState(
+          getTitleLabel(),
+          new BookmarkAndModify(
+              info,
+              taskItemList
+                  .getModerateHandler(info, this, ModerationService.VIEW_SUMMARY)
+                  .getModifier()));
+    }
 
-			ButtonRenderer viewMetadata = new ButtonRenderer(new HtmlLinkState(LABEL_MODERATE, getModerateHandler(context, entry, ModerationService.VIEW_METADATA)))
-					.setTrait(ButtonTrait.SUCCESS).setIcon(Icon.THUMBS_UP);
+    public void setup(TaskItemList taskItemList, int offset) {
+      this.taskItemList = taskItemList;
+      this.offset = offset;
+    }
 
-			ButtonRenderer selectButton;
-			if( selectionSection.isSelected(context, itemTaskId) )
-			{
-				entry.setSelected(true);
-				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemTaskId)))
-						.showAs(ButtonType.UNSELECT);
-			}
-			else
-			{
-				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemTaskId)))
-						.showAs(ButtonType.SELECT);
-			}
-			entry.addRatingAction(selectButton, viewMetadata);
-		}
-	}
+    public int getOffset() {
+      return offset;
+    }
+  }
+
+  @Override
+  protected void customiseListEntries(RenderContext context, List<TaskItemListEntry> entries) {
+    super.customiseListEntries(context, entries);
+    for (TaskItemListEntry entry : entries) {
+      entry.getTag().setElementId(new SimpleElementId(DIV_PFX + entry.getItemTaskId().toString()));
+
+      ItemTaskId itemTaskId = entry.getItemTaskId();
+      entry.addRatingMetadata(
+          new HtmlLinkState(
+              LABEL_PROGRESS, getModerateHandler(context, entry, ModerationService.VIEW_PROGRESS)));
+      List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
+      if (!comments.isEmpty()) {
+        entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
+      }
+
+      ButtonRenderer viewMetadata =
+          new ButtonRenderer(
+                  new HtmlLinkState(
+                      LABEL_MODERATE,
+                      getModerateHandler(context, entry, ModerationService.VIEW_METADATA)))
+              .setTrait(ButtonTrait.SUCCESS)
+              .setIcon(Icon.THUMBS_UP);
+
+      ButtonRenderer selectButton;
+      if (selectionSection.isSelected(context, itemTaskId)) {
+        entry.setSelected(true);
+        selectButton =
+            new ButtonRenderer(
+                    new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemTaskId)))
+                .showAs(ButtonType.UNSELECT);
+      } else {
+        selectButton =
+            new ButtonRenderer(
+                    new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemTaskId)))
+                .showAs(ButtonType.SELECT);
+      }
+      entry.addRatingAction(selectButton, viewMetadata);
+    }
+  }
 }

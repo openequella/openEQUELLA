@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,7 +36,7 @@ object FreemarkerDisplay {
 
   def create(info: SectionInfo, itemInfo: ItemSectionInfo, sectionTitle: String, config: String) = {
 
-    val cxml = new PropBagEx(config)
+    val cxml   = new PropBagEx(config)
     val script = cxml.getNode("script")
     val markup = cxml.getNode("markup")
 
@@ -42,7 +44,9 @@ object FreemarkerDisplay {
     // and Freemarker. No harm but a bit ghetto
 
     val context = new StandardRenderContext(info)
-    val itemPack = new ItemPack(itemInfo.getItem, LegacyGuice.itemXsltService.getXmlForXslt(context, itemInfo), null)
+    val itemPack = new ItemPack(itemInfo.getItem,
+                                LegacyGuice.itemXsltService.getXmlForXslt(context, itemInfo),
+                                null)
     val params = new StandardScriptContextParams(itemPack, null, true, null)
 
     params.getAttributes.put("context", context.getPreRenderContext)
@@ -55,10 +59,14 @@ object FreemarkerDisplay {
     // Uses custom Freemarker Factory (Removes access to internal sections
     // functions) AdvancedWebScriptControl uses similar
     val result = LegacyGuice.basicFreemarkerFactory.createResult("viewItemFreemarker", //$NON-NLS-1$
-      new StringReader(markup), context)
+                                                                 new StringReader(markup),
+                                                                 context)
     for (entry <- scriptContext.getScriptObjects.entrySet.asScala) {
       result.addExtraObject(entry.getKey, entry.getValue)
     }
-    HtmlSummarySection(sectionTitle, false, "freemarker", SectionUtils.renderToString(context, result))
+    HtmlSummarySection(sectionTitle,
+                       false,
+                       "freemarker",
+                       SectionUtils.renderToString(context, result))
   }
 }

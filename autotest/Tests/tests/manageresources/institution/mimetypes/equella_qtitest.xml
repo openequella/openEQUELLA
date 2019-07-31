@@ -1,0 +1,29 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>202691</id>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/qtitest</type>
+  <description>QTI quiz</description>
+  <attributes>
+    <entry>
+      <string>fileViewerDisabled</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;qtiTestViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>qtiTestViewer</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/qti.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

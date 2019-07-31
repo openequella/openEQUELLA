@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,16 +18,6 @@
 
 package com.tle.admin.taxonomy.tool;
 
-import java.awt.Component;
-import java.awt.event.KeyListener;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-import net.miginfocom.swing.MigLayout;
-
-import org.java.plugin.registry.Extension;
-
 import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
@@ -37,161 +29,150 @@ import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
+import java.awt.Component;
+import java.awt.event.KeyListener;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import net.miginfocom.swing.MigLayout;
+import org.java.plugin.registry.Extension;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class DetailsTab extends BaseEntityTab<Taxonomy> implements AbstractDetailsTab<Taxonomy>
-{
-	private JTextField uuid;
-	private I18nTextField name;
-	private I18nTextArea description;
-	private SingleUserSelector owner;
-	private RadioButtonChoiceList<Taxonomy, Extension> choices;
+public class DetailsTab extends BaseEntityTab<Taxonomy> implements AbstractDetailsTab<Taxonomy> {
+  private JTextField uuid;
+  private I18nTextField name;
+  private I18nTextArea description;
+  private SingleUserSelector owner;
+  private RadioButtonChoiceList<Taxonomy, Extension> choices;
 
-	@Override
-	public void init(Component parent)
-	{
-		uuid = new JTextField();
-		uuid.setEditable(false);
+  @Override
+  public void init(Component parent) {
+    uuid = new JTextField();
+    uuid.setEditable(false);
 
-		name = new I18nTextField(BundleCache.getLanguages());
-		description = new I18nTextArea(BundleCache.getLanguages());
-		owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    name = new I18nTextField(BundleCache.getLanguages());
+    description = new I18nTextArea(BundleCache.getLanguages());
+    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
 
-		choices = new RadioButtonChoiceList<Taxonomy, Extension>()
-		{
-			@Override
-			public String getChoiceId(Extension choice)
-			{
-				return choice.getId();
-			}
+    choices =
+        new RadioButtonChoiceList<Taxonomy, Extension>() {
+          @Override
+          public String getChoiceId(Extension choice) {
+            return choice.getId();
+          }
 
-			@Override
-			public DataSourceChoice getChoicePanel(Extension choice)
-			{
-				DataSourceChoice dsc = (DataSourceChoice) pluginService.getBean(choice.getDeclaringPluginDescriptor(),
-					choice.getParameter("configPanel").valueAsString());
-				dsc.setDynamicTabService(dynamicTabService);
-				dsc.setClientService(clientService);
-				dsc.setPluginService(pluginService);
-				dsc.setReadOnly(state.isReadonly());
-				return dsc;
-			}
+          @Override
+          public DataSourceChoice getChoicePanel(Extension choice) {
+            DataSourceChoice dsc =
+                (DataSourceChoice)
+                    pluginService.getBean(
+                        choice.getDeclaringPluginDescriptor(),
+                        choice.getParameter("configPanel").valueAsString());
+            dsc.setDynamicTabService(dynamicTabService);
+            dsc.setClientService(clientService);
+            dsc.setPluginService(pluginService);
+            dsc.setReadOnly(state.isReadonly());
+            return dsc;
+          }
 
-			@Override
-			public String getChoiceTitle(Extension choice)
-			{
-				return CurrentLocale.get(choice.getParameter("nameKey").valueAsString());
-			}
+          @Override
+          public String getChoiceTitle(Extension choice) {
+            return CurrentLocale.get(choice.getParameter("nameKey").valueAsString());
+          }
 
-			@Override
-			public String getSavedChoiceId(Taxonomy taxonomy)
-			{
-				return taxonomy.getDataSourcePluginId();
-			}
+          @Override
+          public String getSavedChoiceId(Taxonomy taxonomy) {
+            return taxonomy.getDataSourcePluginId();
+          }
 
-			@Override
-			public void setSavedChoiceId(Taxonomy taxonomy, String choiceId)
-			{
-				taxonomy.setDataSourcePluginId(choiceId);
-			}
-		};
-		choices.loadChoices(pluginService.getConnectedExtensions("com.tle.admin.taxonomy.tool", "dataSourceChoice"));
+          @Override
+          public void setSavedChoiceId(Taxonomy taxonomy, String choiceId) {
+            taxonomy.setDataSourcePluginId(choiceId);
+          }
+        };
+    choices.loadChoices(
+        pluginService.getConnectedExtensions("com.tle.admin.taxonomy.tool", "dataSourceChoice"));
 
-		setLayout(new MigLayout("wrap 2,fillx", "[align label][fill, grow]25%"));
+    setLayout(new MigLayout("wrap 2,fillx", "[align label][fill, grow]25%"));
 
-		add(new JLabel(s("uuid")));
-		add(uuid);
+    add(new JLabel(s("uuid")));
+    add(uuid);
 
-		add(new JLabel(s("name")));
-		add(name);
+    add(new JLabel(s("name")));
+    add(name);
 
-		add(new JLabel(s("desc")), "top");
-		add(description, "height pref*3");
+    add(new JLabel(s("desc")), "top");
+    add(description, "height pref*3");
 
-		add(new JLabel(s("owner")));
-		add(owner);
+    add(new JLabel(s("owner")));
+    add(owner);
 
-		add(new JLabel(s("whichsource")), "span 2");
-		add(choices, "skip");
+    add(new JLabel(s("whichsource")), "span 2");
+    add(choices, "skip");
 
-		// Make sure things are read-only.
-		if( state.isReadonly() )
-		{
-			name.setEnabled(false);
-			description.setEnabled(false);
-			owner.setEnabled(false);
-			choices.setEnabled(false);
-		}
-	}
+    // Make sure things are read-only.
+    if (state.isReadonly()) {
+      name.setEnabled(false);
+      description.setEnabled(false);
+      owner.setEnabled(false);
+      choices.setEnabled(false);
+    }
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return s("title");
-	}
+  @Override
+  public String getTitle() {
+    return s("title");
+  }
 
-	@Override
-	public void addNameListener(KeyListener listener)
-	{
-		name.addKeyListener(listener);
-	}
+  @Override
+  public void addNameListener(KeyListener listener) {
+    name.addKeyListener(listener);
+  }
 
-	@Override
-	public void load()
-	{
-		final Taxonomy taxonomy = state.getEntity();
-		uuid.setText(taxonomy.getUuid());
+  @Override
+  public void load() {
+    final Taxonomy taxonomy = state.getEntity();
+    uuid.setText(taxonomy.getUuid());
 
-		name.load(taxonomy.getName());
-		description.load(taxonomy.getDescription());
-		owner.setUserId(taxonomy.getOwner());
-		choices.load(taxonomy);
-	}
+    name.load(taxonomy.getName());
+    description.load(taxonomy.getDescription());
+    owner.setUserId(taxonomy.getOwner());
+    choices.load(taxonomy);
+  }
 
-	@Override
-	public void save()
-	{
-		final Taxonomy taxonomy = state.getEntity();
-		taxonomy.setName(name.save());
-		taxonomy.setDescription(description.save());
-		taxonomy.setOwner(owner.getUser().getUniqueID());
-		choices.save(taxonomy);
-	}
+  @Override
+  public void save() {
+    final Taxonomy taxonomy = state.getEntity();
+    taxonomy.setName(name.save());
+    taxonomy.setDescription(description.save());
+    taxonomy.setOwner(owner.getUser().getUniqueID());
+    choices.save(taxonomy);
+  }
 
-	@Override
-	public void afterSave()
-	{
-		DataSourceChoice currentSelection = (DataSourceChoice) choices.getSelectedPanel();
-		if( currentSelection != null )
-		{
-			currentSelection.afterSave();
-		}
-	}
+  @Override
+  public void afterSave() {
+    DataSourceChoice currentSelection = (DataSourceChoice) choices.getSelectedPanel();
+    if (currentSelection != null) {
+      currentSelection.afterSave();
+    }
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		if( name.isCompletelyEmpty() )
-		{
-			throw new EditorException(s("supplyname"));
-		}
+  @Override
+  public void validation() throws EditorException {
+    if (name.isCompletelyEmpty()) {
+      throw new EditorException(s("supplyname"));
+    }
 
-		if( owner.getUser() == null )
-		{
-			throw new EditorException(s("noowner"));
-		}
+    if (owner.getUser() == null) {
+      throw new EditorException(s("noowner"));
+    }
 
-		if( choices.isSelectionEmpty() )
-		{
-			throw new EditorException(s("nodatasource"));
-		}
-	}
+    if (choices.isSelectionEmpty()) {
+      throw new EditorException(s("nodatasource"));
+    }
+  }
 
-	private String s(String keyPart)
-	{
-		return getString("detailstab." + keyPart);
-	}
+  private String s(String keyPart) {
+    return getString("detailstab." + keyPart);
+  }
 }

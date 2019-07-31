@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,38 +22,31 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
 @SuppressWarnings("nls")
-public class FlickrSettings extends UniversalSettings
-{
-	private static final String API_KEY = "FlickrApiKey";
-	private static final String API_SECRET = "FlickrApiSharedSecret";
+public class FlickrSettings extends UniversalSettings {
+  private static final String API_KEY = "FlickrApiKey";
+  private static final String API_SECRET = "FlickrApiSharedSecret";
 
-	public FlickrSettings(CustomControl wrapped)
-	{
-		super(wrapped);
-	}
+  public FlickrSettings(CustomControl wrapped) {
+    super(wrapped);
+  }
 
-	public FlickrSettings(UniversalSettings settings)
-	{
-		super(settings.getWrapped());
-	}
+  public FlickrSettings(UniversalSettings settings) {
+    super(settings.getWrapped());
+  }
 
-	public String getApiKey()
-	{
-		return (String) wrapped.getAttributes().get(API_KEY);
-	}
+  public String getApiKey() {
+    return (String) wrapped.getAttributes().get(API_KEY);
+  }
 
-	public void setApiKey(String apiKey)
-	{
-		wrapped.getAttributes().put(API_KEY, apiKey);
-	}
+  public void setApiKey(String apiKey) {
+    wrapped.getAttributes().put(API_KEY, apiKey);
+  }
 
-	public String getApiSharedSecret()
-	{
-		return (String) wrapped.getAttributes().get(API_SECRET);
-	}
+  public String getApiSharedSecret() {
+    return (String) wrapped.getAttributes().get(API_SECRET);
+  }
 
-	public void setApiSharedSecret(String apiSharedSecret)
-	{
-		wrapped.getAttributes().put(API_SECRET, apiSharedSecret);
-	}
+  public void setApiSharedSecret(String apiSharedSecret) {
+    wrapped.getAttributes().put(API_SECRET, apiSharedSecret);
+  }
 }

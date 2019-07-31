@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,92 +18,75 @@
 
 package com.tle.common.connectors.entity;
 
+import com.tle.beans.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
-
 import org.hibernate.annotations.AccessType;
 
-import com.tle.beans.entity.BaseEntity;
-
-/**
- * @author aholland
- */
+/** @author aholland */
 @Entity
 @AccessType("field")
-public final class Connector extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public final class Connector extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 16, nullable = false)
-	private String lmsType;
-	@Column(length = 1024, nullable = false)
-	private String serverUrl;
-	private boolean useLoggedInUsername;
-	@Lob
-	private String usernameScript;
+  @Column(length = 16, nullable = false)
+  private String lmsType;
 
-	@Transient
-	private Object extraData;
+  @Column(length = 1024, nullable = false)
+  private String serverUrl;
 
-	public Connector()
-	{
-		// for hibernate
-	}
+  private boolean useLoggedInUsername;
+  @Lob private String usernameScript;
 
-	public Connector(String lmsType)
-	{
-		this.lmsType = lmsType;
-	}
+  @Transient private Object extraData;
 
-	public String getLmsType()
-	{
-		return lmsType;
-	}
+  public Connector() {
+    // for hibernate
+  }
 
-	public void setLmsType(String lmsType)
-	{
-		this.lmsType = lmsType;
-	}
+  public Connector(String lmsType) {
+    this.lmsType = lmsType;
+  }
 
-	public String getServerUrl()
-	{
-		return serverUrl;
-	}
+  public String getLmsType() {
+    return lmsType;
+  }
 
-	public void setServerUrl(String serverUrl)
-	{
-		this.serverUrl = serverUrl;
-	}
+  public void setLmsType(String lmsType) {
+    this.lmsType = lmsType;
+  }
 
-	public boolean isUseLoggedInUsername()
-	{
-		return useLoggedInUsername;
-	}
+  public String getServerUrl() {
+    return serverUrl;
+  }
 
-	public void setUseLoggedInUsername(boolean useLoggedInUsername)
-	{
-		this.useLoggedInUsername = useLoggedInUsername;
-	}
+  public void setServerUrl(String serverUrl) {
+    this.serverUrl = serverUrl;
+  }
 
-	public String getUsernameScript()
-	{
-		return usernameScript;
-	}
+  public boolean isUseLoggedInUsername() {
+    return useLoggedInUsername;
+  }
 
-	public void setUsernameScript(String usernameScript)
-	{
-		this.usernameScript = usernameScript;
-	}
+  public void setUseLoggedInUsername(boolean useLoggedInUsername) {
+    this.useLoggedInUsername = useLoggedInUsername;
+  }
 
-	public Object getExtraData()
-	{
-		return extraData;
-	}
+  public String getUsernameScript() {
+    return usernameScript;
+  }
 
-	public void setExtraData(Object extraData)
-	{
-		this.extraData = extraData;
-	}
+  public void setUsernameScript(String usernameScript) {
+    this.usernameScript = usernameScript;
+  }
+
+  public Object getExtraData() {
+    return extraData;
+  }
+
+  public void setExtraData(Object extraData) {
+    this.extraData = extraData;
+  }
 }

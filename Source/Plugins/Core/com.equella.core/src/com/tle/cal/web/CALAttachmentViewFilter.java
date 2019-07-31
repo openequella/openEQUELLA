@@ -1,9 +1,11 @@
 /*
- * Copyright 2017 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +18,6 @@
 
 package com.tle.cal.web;
 
-import javax.inject.Inject;
-
 import com.tle.beans.cal.CALHolding;
 import com.tle.beans.cal.CALPortion;
 import com.tle.beans.cal.CALSection;
@@ -26,24 +26,21 @@ import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightAttachmentFilter;
 import com.tle.web.copyright.service.CopyrightWebService;
+import javax.inject.Inject;
 
 @Bind
-public class CALAttachmentViewFilter extends AbstractCopyrightAttachmentFilter<CALHolding, CALPortion, CALSection>
-{
+public class CALAttachmentViewFilter
+    extends AbstractCopyrightAttachmentFilter<CALHolding, CALPortion, CALSection> {
 
-	@Inject
-	private CALWebServiceImpl calWebService;
+  @Inject private CALWebServiceImpl calWebService;
 
-	@Override
-	protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl()
-	{
-		return calWebService.getCopyrightServiceImpl();
-	}
+  @Override
+  protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl() {
+    return calWebService.getCopyrightServiceImpl();
+  }
 
-	@Override
-	protected CopyrightWebService<CALHolding> getCopyrightWebServiceImpl()
-	{
-		return calWebService;
-	}
-
+  @Override
+  protected CopyrightWebService<CALHolding> getCopyrightWebServiceImpl() {
+    return calWebService;
+  }
 }

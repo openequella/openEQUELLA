@@ -7,7 +7,7 @@
     <import plugin-id="com.tle.platform.swing" />
     <import plugin-id="com.equella.base" exported="true" />
   </requires>
-  <runtime>
+  <runtime>j
     <library type="code" path="classes/" id="core">
       <export prefix="*" />
     </library>

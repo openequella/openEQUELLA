@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>35119</id>
+  <uuid>2859a529-d4d4-ad99-9157-1db457ee2313</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <name>
+    <id>35120</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>35121</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Plan</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;datemodified type=&quot;text&quot;/&gt;&lt;name type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;keywords type=&quot;text&quot;/&gt;&lt;itembody&gt;&lt;event&gt;&lt;startdate field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;enddate field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/event&gt;&lt;text type=&quot;text&quot;/&gt;&lt;agls&gt;&lt;source type=&quot;text&quot;/&gt;&lt;relation type=&quot;text&quot;/&gt;&lt;/agls&gt;&lt;dc&gt;&lt;title type=&quot;text&quot;/&gt;&lt;contributor type=&quot;text&quot;/&gt;&lt;keywords type=&quot;text&quot;/&gt;&lt;creator type=&quot;text&quot;/&gt;&lt;language type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;type field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;subject type=&quot;text&quot;/&gt;&lt;source type=&quot;text&quot;/&gt;&lt;relation type=&quot;text&quot;/&gt;&lt;/dc&gt;&lt;doe&gt;&lt;els&gt;&lt;values type=&quot;text&quot;/&gt;&lt;purposes type=&quot;text&quot;/&gt;&lt;thinking type=&quot;text&quot;/&gt;&lt;communicating type=&quot;text&quot;/&gt;&lt;personal.futures type=&quot;text&quot;/&gt;&lt;social.responsibility type=&quot;text&quot;/&gt;&lt;world.futures type=&quot;text&quot;/&gt;&lt;/els&gt;&lt;alternative.title type=&quot;text&quot;/&gt;&lt;best.practice.suggestion field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;consent.custodian.email type=&quot;text&quot;/&gt;&lt;priority.ranking type=&quot;text&quot;/&gt;&lt;associated.with type=&quot;text&quot;/&gt;&lt;key.learning.area field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;primary.key.learning.area type=&quot;text&quot;/&gt;&lt;secondary.key.learning.area type=&quot;text&quot;/&gt;&lt;export.suggestion type=&quot;text&quot;/&gt;&lt;publisher type=&quot;text&quot;/&gt;&lt;contact.name type=&quot;text&quot;/&gt;&lt;contact.email type=&quot;text&quot;/&gt;&lt;contact.address type=&quot;text&quot;/&gt;&lt;contact.fax type=&quot;text&quot;/&gt;&lt;operatingsystem field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/doe&gt;&lt;edna&gt;&lt;audience field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;userlevel field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/edna&gt;&lt;tle&gt;&lt;metadata.staff.notes type=&quot;text&quot;/&gt;&lt;alternative.title type=&quot;text&quot;/&gt;&lt;fulltopic type=&quot;text&quot;/&gt;&lt;/tle&gt;&lt;/itembody&gt;&lt;wizard&gt;&lt;media field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/wizard&gt;&lt;datecreated search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>
