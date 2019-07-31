@@ -8,7 +8,7 @@ learning, research, media, and library content.
 Builds for each openEQUELLA Release can be found on the [Releases
 page](https://github.com/equella/Equella/releases "EQUELLA Releases"). The latest stable versions
 (with their changelogs) can also be retrieved from the version server at
-<https://version.equella.net/>.
+<https://version.openequella.net/>.
 
 (NOTE: The current stable version - starting from 2019.1 - is built from `master`, where as active
 development is undertaken on the repository's default branch `develop`. Therefore `develop` is
