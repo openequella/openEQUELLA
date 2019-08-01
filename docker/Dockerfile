@@ -60,7 +60,7 @@ ENV EQ_HIBERNATE_CONNECTION_USERNAME $EQ_HIBERNATE_CONNECTION_USERNAME
 ARG EQ_HIBERNATE_CONNECTION_PASSWORD=password
 ENV EQ_HIBERNATE_CONNECTION_PASSWORD $EQ_HIBERNATE_CONNECTION_PASSWORD
 
-COPY --from=installer /home/equella/equella /home/equella/equella
+COPY --chown=equella:equella --from=installer /home/equella/equella /home/equella/equella
 WORKDIR /home/equella/equella
 USER equella
 VOLUME ["/home/equella/equella/filestore/", "/home/equella/equella/freetext/"]
