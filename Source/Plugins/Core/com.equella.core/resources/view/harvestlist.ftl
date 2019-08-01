@@ -19,7 +19,7 @@
 <h1>Items</h1>
 <ul>
 	<#list m.results as result>
-		<li><a href="${result.url?html}"/><@bundle value=result.bundleId default=result.itemId /></a></li>
+		<li><a href="${result.url?html}"><@bundle value=result.bundleId default=result.itemId /></a></li>
 	</#list>
 </ul>
 </div>
