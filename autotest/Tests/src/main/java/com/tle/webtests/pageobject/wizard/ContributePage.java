@@ -39,6 +39,10 @@ public class ContributePage extends AbstractPage<ContributePage> {
     return new WizardPageTab(context, 0).get();
   }
 
+  public boolean usingNewUI() {
+    return isNewUI();
+  }
+
   @SuppressWarnings("unchecked")
   public <T extends AbstractRemoteRepoSearchPage<?, ?, ?>> T openRemoteRepo(
       String remoteRepo, T type) {
