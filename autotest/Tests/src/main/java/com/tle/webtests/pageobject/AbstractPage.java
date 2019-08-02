@@ -137,6 +137,10 @@ public abstract class AbstractPage<T extends PageObject>
     checkLoadedElement();
   }
 
+  public boolean usingNewUI() {
+    return isNewUI();
+  }
+
   protected void checkLoadedElement() {
     loadedElement = findLoadedElement();
     boolean displayed = loadedElement.isDisplayed();
