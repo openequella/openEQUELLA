@@ -3,12 +3,15 @@ version: 0.2
 env:
   variables:
     KALTURA_BRANCH: master
+    # for this build we still need Oracle JDK for JNLP support
+    JAVA_HOME: /opt/oracle-jdk/jdk1.8.0_202
 phases:
   pre_build:
     commands:
       - env
       - yarn global add psc-package@0.3.2
       - psc-package --version
+      - export PATH=$JAVA_HOME/bin:$PATH
       - setupBuild
   build:
     commands:
@@ -19,7 +22,6 @@ phases:
       - echo "Finished"
 cache:
   paths:
-    - '/root/.ivy2/**/*'
-    - '/root/.npm/**/*'
-    - '/root/.sbt/**/*'
-    
+    - "/root/.ivy2/**/*"
+    - "/root/.npm/**/*"
+    - "/root/.sbt/**/*"
