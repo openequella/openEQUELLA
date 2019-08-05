@@ -72,7 +72,10 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
         universalControl.addResource(new ResourceUniversalControlType(universalControl));
     SelectionSession session = resource.getSelectionSession();
     ItemListPage search = session.homeExactSearch(linkToMe);
-    SearchScreenOptions sso = new SearchScreenOptions(search).open();
+    SearchScreenOptions sso = new SearchScreenOptions(search);
+    sso.setupForTest();
+    sso.open();
+    sso.setConnectorTest(true);
     sso.setNonLiveOption(true);
 
     search.setSelectionChecked(linkToMe, true);
@@ -88,7 +91,10 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
     resource = wizard.universalControl(3).addResource(resource);
     session = resource.getSelectionSession();
     search = session.homeExactSearch(linkToMe);
-    sso = new SearchScreenOptions(search).open();
+    sso = new SearchScreenOptions(search);
+    sso.setupForTest();
+    sso.open();
+    sso.setConnectorTest(true);
     sso.setNonLiveOption(true);
 
     search.setSelectionChecked(linkToMe, true);
@@ -113,7 +119,8 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
     ItemListPage listPage = SearchPage.searchExact(context, linkToMeDraft);
     sso = new SearchScreenOptions(listPage).open();
     sso.setNonLiveOption(true);
-
+    // Manually close the screen option to get the test passed
+    sso.closeScreenOption();
     summary = listPage.viewFromTitle(linkToMeDraft);
 
     uses = summary.findUsesPage();

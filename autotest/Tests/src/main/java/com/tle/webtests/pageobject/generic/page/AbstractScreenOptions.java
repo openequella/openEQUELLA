@@ -10,20 +10,27 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     extends AbstractPage<T> {
 
+  private static final String NEW_SCREEN_OPTIONS = "screenOptions";
+  private static final String OLD_SCREEN_OPTIONS = "bluebar_screenoptions";
+  private static final String NEW_SCREEN_OPTIONS_BUTTON = "screenOptionsOpen";
+  private static final String OLD_SCREEN_OPTIONS_BUTTON = "bluebar_screenoptions_button";
+  // property used to help pass EquellaConnectorTest in new UI
+  private boolean isConnectorTest = false;
+
   public AbstractScreenOptions(PageContext context) {
     super(context);
     loadedBy = By.id(getOptionsId());
   }
 
   protected String getOptionsId() {
-    return isNewUI() ? "screenOptions" : "bluebar_screenoptions";
+    return isNewUI() && !isConnectorTest ? NEW_SCREEN_OPTIONS : OLD_SCREEN_OPTIONS;
   }
 
   private By getOpenOptionsBy() {
-    if (!isNewUI()) {
-      return By.id("bluebar_screenoptions_button");
+    if (!isNewUI() || isConnectorTest) {
+      return By.id(OLD_SCREEN_OPTIONS_BUTTON);
     } else {
-      return By.id("screenOptionsOpen");
+      return By.id(NEW_SCREEN_OPTIONS_BUTTON);
     }
   }
 
@@ -45,9 +52,14 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     return get();
   }
 
+  public void setupForTest() {
+    isConnectorTest = true;
+    loadedBy = By.id(getOptionsId());
+  }
+
   public void close() {
     if (isOptionsOpen()) {
-      if (isNewUI()) {
+      if (isNewUI() && !isConnectorTest) {
         WebElement element =
             driver.findElement(
                 By.xpath("//div[div/div[@id = " + quoteXPath(getOptionsId()) + "]]"));
