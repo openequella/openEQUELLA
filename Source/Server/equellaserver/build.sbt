@@ -18,12 +18,11 @@ val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.43"
 val SwaggerVersion   = "1.5.22"
 val RestEasyVersion  = "3.5.0.Final"
-val simpledbaVersion = "0.1.8-SNAPSHOT"
+val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
 val sttpVersion      = "1.6.0"
 val fs2Version       = "1.0.5"
-resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
