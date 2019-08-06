@@ -1,9 +1,5 @@
 language: scala
-cache:
-  directories:
-    - "$HOME/.ivy2"
-    - "$HOME/.cache"
-    - "$HOME/.sbt"
+dist: trusty # So that we can use the chrome addon
 jdk:
   - openjdk8
 env:
@@ -16,12 +12,18 @@ services:
   - postgresql
 addons:
   postgresql: "9.6"
+  chrome: stable
+cache:
+  directories:
+    - "$HOME/.ivy2"
+    - "$HOME/.cache"
+    - "$HOME/.sbt"
 
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - sudo apt-get install -y awscli
-  - curl -OL https://chromedriver.storage.googleapis.com/75.0.3770.90/chromedriver_linux64.zip
+  - curl -OL https://chromedriver.storage.googleapis.com/75.0.3770.140/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
 install:
   - git fetch --unshallow
