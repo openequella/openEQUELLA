@@ -547,7 +547,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     clickAscButton("Create binary attachment", wizard);
 
     final String BINARY_ATTACHMENT_CREATED = "Binary attachment created!";
-    final By pre = By.xpath("//pre[text()='" + BINARY_ATTACHMENT_CREATED + "']");
+    final By pre = By.xpath("//pre[normalize-space(.)='" + BINARY_ATTACHMENT_CREATED + "']");
     // Need to wait in new UI as click() does not wait for ajax request completed,
     // and there are no negative impacts on old UI.
     wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(pre));
@@ -917,7 +917,13 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     control.editResource(fc.fileEditor(), "fireworks.dng").setDisplayName(attName).save();
 
     clickAscButton("Get metadata for attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for attachment");
+    final String METADATA_RETRIEVED = "Successfully retrieved Metadata for attachment";
+    By metaDataReceivedMessage = By.xpath("//pre[normalize-space(.)='" + METADATA_RETRIEVED + "']");
+    wizard
+        .getWaiter()
+        .until(ExpectedConditions.visibilityOfElementLocated(metaDataReceivedMessage));
+
+    assertEquals(getAscMessage().getText(), METADATA_RETRIEVED);
 
     clickAscButton("Get metadata for file", wizard);
     assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for file");
