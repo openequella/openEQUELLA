@@ -30,6 +30,10 @@ install:
 before_script:
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
+  - echo "*** SBT Details ***"
+  - which sbt
+  - sbt about
+  - echo "*******************"
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
   - sbt -mem 2048 "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
