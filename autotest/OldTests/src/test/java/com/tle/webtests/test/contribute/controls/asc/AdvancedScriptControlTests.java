@@ -545,7 +545,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // binary creation (image)
     wizard = item.edit();
     clickAscButton("Create binary attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Binary attachment created!", "ASC Message was wrong");
+
+    final String BINARY_ATTACHMENT_CREATED = "Binary attachment created!";
+    final By pre = By.xpath("//pre[text()='" + BINARY_ATTACHMENT_CREATED + "']");
+    // Need to wait in new UI as click() does not wait for ajax request completed,
+    // and there are no negative impacts on old UI.
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(pre));
+
+    assertEquals(getAscMessage().getText(), BINARY_ATTACHMENT_CREATED, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
 
@@ -673,7 +680,15 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     wizard.editbox(1, itemName);
     // Create binary file
     clickAscButton("Create binary file", wizard);
-    assertEquals(getDivMessageForId("stagingFiles"), "equellaLogo.gif");
+
+    final String EQUELLA_LOGO = "equellaLogo.gif";
+    final String STAGING_FILES = "stagingFiles";
+    By stagingFiles =
+        By.xpath(
+            "//div[@id = '" + STAGING_FILES + "' and normalize-space(.)='" + EQUELLA_LOGO + "']");
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(stagingFiles));
+
+    assertEquals(getDivMessageForId(STAGING_FILES), EQUELLA_LOGO);
     // Create text file
     clickAscButton("Create text file", wizard);
     assertEqualsNoOrder(
