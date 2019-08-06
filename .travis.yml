@@ -30,13 +30,9 @@ install:
 before_script:
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
-  - echo "*** SBT Details ***"
-  - which sbt
-  - sbt about
-  - echo "*******************"
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
-  - sbt -mem 2048 "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
+  - sbt -jvm-opts autotest/.jvmopts "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
   - cd import-export-tool && ./gradlew build && cd ..
 after_success:
   - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
