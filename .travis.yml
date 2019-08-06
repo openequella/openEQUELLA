@@ -6,17 +6,32 @@ cache:
     - "$HOME/.sbt"
 jdk:
   - openjdk8
+env:
+  global:
+    - secure: t1XK7R/R3+gYgJCL+YNFPfpew+QZXl5b7jFkfNOwKDG+gGEApZCrx5NNkA+anPbK4VLnmjGz4EgIItfsSOmEQL6W4jr1MiD6cQV8RV9tYHhPmfPiJy0aDWOgIWIxPtpzAcSvgkZzCheHxY8PGbTi+XStRMfF6/Iat6cN7erHcO9Ur3ri10uas01xPaJJC+naXZGx0JZDTRLmGc8GFzgOwaiIUWOzPZyqsqnBEytvyuJFGe1BUfVEvr4UUb/LBiH0UgpganncFy2WHX+CWT8VFemIoNCM7jAp5oKCTHWyEH72WzGGo6+RCnmJs3Loc+6IUT2M7qNhEm8+PmQwWL9d5ihb6OSnJG9u+Pmq88E+E0eOzZnhQ3XpRjI1CRYYOKi8RBPAjlGDYBMSOo0HRzDJnuU+ZdwdJCZ0x7a/2xCgpxA2YpH+FycGWQo9b+n5JYl++n7gfaJhVcbxrob5TfcgDyj4M3Mkr0bsAwueYG1hY9vFNq9wbgFXA5UPL/khJt9OtR3akEBnrx9lySK0tXtq7zj+KKit92Ty+EfhtEF29IHHHn/pyvFBzWjO1VqsRm+cnOIyY2nLz9D8SZGaaJy7elbXc+PLjd8eHSwX/dY7DyB4MO0td4E40H+Wwxy0pfZXW5x+tdo0UGLBb9i5OoLuKFcRjmj02WcIi6TqJ3EbNdQ=
+    - secure: fao/RBFgwO/kaxMGbAsR2xuQgnXebRSPgIrASx/W7ELrZoHB3Jvz5ES7danGYXfONUKaPCdqe1/JTm34aDrp/sER6CMYlz4LvlzzhxV+ajo1kFqgzaUWquzGtQ3STXu5BiPEITVqm4CYOZ8bB7yr3HnmPRBOPvJIG0xg3Cehwz0Ux8Yc/YFJbfpr9p97U+x+JJfa+g1sRRXTQHUPdTl3uBJOtk5shCWoDSJl0Axe1gJ37gNUnJOZUwL6Ejb2Hlv2CuxBjglIZ7mhJkOiL9ALbNDOsjp+Xx6ieSSEVAEmqtQdzAVO63GmXVBQcyWIrisgLzTRbMM0ZPtraUXgN6b44ijw6kS5miQvd0vDenFVailgyizjqO28n1xhYyX+uEqz+BMFS4VybTKSdZHjDHRHhFXK6oSqcmKN941X+LsGu7rWp5aVyu1hJjaKz3InjheZphILY7sbLEzoOckicH3TikliwxNEbUCFUOtkmutY+B3SVy9SNyoCW2vjhbiP9ZeXW0hxjG0SvJxOXzWJknY4cnpO7ee5UcBDYmlSdOlA192FO4UfyqgHrL5hVRCYKGB2xD+XHy+XYKFUV+VpWiiMQXCxV1FmRHeZlS144/07H+DIlkeUapLn7Cdj/NhDjSn9fXnSNbA/qbs9aIYm1Wx4pRoj0S2iVRe4FE6RFJWMgyk=
+    - NODE_JS_VERSION=8.11.3
+services:
+  - postgresql
+addons:
+  postgresql: "9.6"
+
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - sudo apt-get install -y awscli
+  - curl -OL https://chromedriver.storage.googleapis.com/75.0.3770.90/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
 install:
   - git fetch --unshallow
   - npm install && npm run check
   - sbt headerCheck
   - sbt checkJavaCodeStyle || (aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ ; exit 1)
+before_script:
+  - psql -c "CREATE USER equellatests WITH PASSWORD 'password'; CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
+  - sbt -mem 2048 "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
   - cd import-export-tool && ./gradlew build && cd ..
 after_success:
   - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
@@ -25,8 +40,3 @@ after_success:
   - aws s3 --region us-east-1 cp target/scriptingapi-javadoc-*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 rm --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
   - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
-env:
-  global:
-    - secure: t1XK7R/R3+gYgJCL+YNFPfpew+QZXl5b7jFkfNOwKDG+gGEApZCrx5NNkA+anPbK4VLnmjGz4EgIItfsSOmEQL6W4jr1MiD6cQV8RV9tYHhPmfPiJy0aDWOgIWIxPtpzAcSvgkZzCheHxY8PGbTi+XStRMfF6/Iat6cN7erHcO9Ur3ri10uas01xPaJJC+naXZGx0JZDTRLmGc8GFzgOwaiIUWOzPZyqsqnBEytvyuJFGe1BUfVEvr4UUb/LBiH0UgpganncFy2WHX+CWT8VFemIoNCM7jAp5oKCTHWyEH72WzGGo6+RCnmJs3Loc+6IUT2M7qNhEm8+PmQwWL9d5ihb6OSnJG9u+Pmq88E+E0eOzZnhQ3XpRjI1CRYYOKi8RBPAjlGDYBMSOo0HRzDJnuU+ZdwdJCZ0x7a/2xCgpxA2YpH+FycGWQo9b+n5JYl++n7gfaJhVcbxrob5TfcgDyj4M3Mkr0bsAwueYG1hY9vFNq9wbgFXA5UPL/khJt9OtR3akEBnrx9lySK0tXtq7zj+KKit92Ty+EfhtEF29IHHHn/pyvFBzWjO1VqsRm+cnOIyY2nLz9D8SZGaaJy7elbXc+PLjd8eHSwX/dY7DyB4MO0td4E40H+Wwxy0pfZXW5x+tdo0UGLBb9i5OoLuKFcRjmj02WcIi6TqJ3EbNdQ=
-    - secure: fao/RBFgwO/kaxMGbAsR2xuQgnXebRSPgIrASx/W7ELrZoHB3Jvz5ES7danGYXfONUKaPCdqe1/JTm34aDrp/sER6CMYlz4LvlzzhxV+ajo1kFqgzaUWquzGtQ3STXu5BiPEITVqm4CYOZ8bB7yr3HnmPRBOPvJIG0xg3Cehwz0Ux8Yc/YFJbfpr9p97U+x+JJfa+g1sRRXTQHUPdTl3uBJOtk5shCWoDSJl0Axe1gJ37gNUnJOZUwL6Ejb2Hlv2CuxBjglIZ7mhJkOiL9ALbNDOsjp+Xx6ieSSEVAEmqtQdzAVO63GmXVBQcyWIrisgLzTRbMM0ZPtraUXgN6b44ijw6kS5miQvd0vDenFVailgyizjqO28n1xhYyX+uEqz+BMFS4VybTKSdZHjDHRHhFXK6oSqcmKN941X+LsGu7rWp5aVyu1hJjaKz3InjheZphILY7sbLEzoOckicH3TikliwxNEbUCFUOtkmutY+B3SVy9SNyoCW2vjhbiP9ZeXW0hxjG0SvJxOXzWJknY4cnpO7ee5UcBDYmlSdOlA192FO4UfyqgHrL5hVRCYKGB2xD+XHy+XYKFUV+VpWiiMQXCxV1FmRHeZlS144/07H+DIlkeUapLn7Cdj/NhDjSn9fXnSNbA/qbs9aIYm1Wx4pRoj0S2iVRe4FE6RFJWMgyk=
-    - NODE_JS_VERSION=8.11.3
