@@ -21,6 +21,9 @@ services:
 addons:
   postgresql: "9.6"
   chrome: stable
+  apt:
+    packages:
+      - libav-tools
 cache:
   directories:
     - "$HOME/.ivy2"
