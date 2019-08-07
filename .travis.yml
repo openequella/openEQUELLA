@@ -86,6 +86,15 @@ jobs:
     - script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         OldTests/test
+      name: Old Tests
+      env:
+        - OLD_TEST_SUITE=searching
+        - OLD_TEST_SUITE=contribution
+        - OLD_TEST_SUITE=viewing
+        - OLD_TEST_SUITE=admin
+        - OLD_TEST_SUITE=webservices
+        - OLD_TEST_SUITE=users
+        - OLD_TEST_SUITE=workflow
       after_script:
         - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/            $S3_CP_OPTS
         - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/oldTests/ $S3_CP_OPTS

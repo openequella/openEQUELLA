@@ -1,0 +1,30 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: Admin
+    classes:
+      - com.tle.webtests.test.reporting.RunReportTest
+      - com.tle.webtests.test.admin.CustomLinksTest
+      - com.tle.webtests.test.admin.ServerMessageTest
+      - com.tle.webtests.test.admin.MultiLingualTest
+      - com.tle.webtests.test.accessibility.AccessibilityModeTest
+      - com.tle.webtests.test.acl.ACLTest
+      - com.tle.webtests.test.cal.CALActivationsMetadataTest
+      - com.tle.webtests.test.cal.CALActivationsRolloverTest
+      - com.tle.webtests.test.cal.CALAgreementTest
+      - com.tle.webtests.test.cal.CALBookActivationTest
+      - com.tle.webtests.test.cal.CALBookRulesTest
+      - com.tle.webtests.test.cal.CALExtractTest
+      - com.tle.webtests.test.cal.CALJournalRulesTest
+      - com.tle.webtests.test.cal.CALPrivilegeTest
+      - com.tle.webtests.test.cal.CALSoapInterfaceTest
+      - com.tle.webtests.test.cal.CALViolationTest
+      - com.tle.webtests.test.drm.DRMPrivilegeTest
+      - com.tle.webtests.test.drm.DRMTest
+      - com.tle.webtests.test.drm.DRMTestWithCleanup
+      - com.tle.webtests.test.drm.WizardDRMTest
+      - com.tle.webtests.test.dynamichierarchy.DynamicHierarchyTest
+      - com.tle.webtests.test.importexport.CloneTest
+      - com.tle.webtests.test.importexport.ExportTest
+      - com.tle.webtests.test.importexport.ImportTest

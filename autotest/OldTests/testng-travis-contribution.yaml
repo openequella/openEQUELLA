@@ -1,0 +1,39 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: Contribution
+    classes:
+      - com.tle.webtests.test.contribute.controls.AllControlsTest
+      - com.tle.webtests.test.contribute.controls.BannedExtensionTest
+      - com.tle.webtests.test.contribute.controls.FileSizeRestrictionTest
+      - com.tle.webtests.test.contribute.controls.GroupsAndDisabling
+      - com.tle.webtests.test.contribute.controls.HTMLEditBoxTest
+      - com.tle.webtests.test.contribute.controls.IncorrectMimetypeTest
+      - com.tle.webtests.test.contribute.controls.MaxAttachmentsTest
+      - com.tle.webtests.test.contribute.controls.PackageAndNavigationTest
+      - com.tle.webtests.test.contribute.controls.RepeaterTest
+      - com.tle.webtests.test.contribute.controls.TaxonomyControlsTest
+      - com.tle.webtests.test.contribute.ContributeXmlTest
+      - com.tle.webtests.test.contribute.DiscoverabilityTest
+      - com.tle.webtests.test.contribute.EquellaConnectorTest
+      - com.tle.webtests.test.contribute.ItemUnlock
+      - com.tle.webtests.test.contribute.MetadataMappingTest
+      - com.tle.webtests.test.contribute.QuotaExceedTest
+      - com.tle.webtests.test.contribute.ResumableWizardsTest
+      - com.tle.webtests.test.contribute.SelectAndDisplayThumbnailTest
+      - com.tle.webtests.test.contribute.SelectionSessionTest
+      - com.tle.webtests.test.contribute.StaticMetadataTest
+      - com.tle.webtests.test.contribute.UniquenessTest
+      - com.tle.webtests.test.contribute.VaryingContribPageNmbrSaveTest
+      - com.tle.webtests.test.contribute.WizardBreadcrumbs
+      - com.tle.webtests.test.contribute.WizardConfigTest
+      - com.tle.webtests.test.contribute.controls.attachments.AttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.LTIAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.MultipleAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.RestrictedAttachmentsTest
+      - com.tle.webtests.test.contribute.controls.asc.AdvancedScriptControlTests
+      - com.tle.webtests.test.contribute.controls.asc.PropBagExTest
+      - com.tle.webtests.test.contribute.controls.asc.ScriptedDisplayTemplateTest
+      - com.tle.webtests.test.contribute.controls.asc.ScriptedPortletTests
