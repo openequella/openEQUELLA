@@ -6,6 +6,7 @@ import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /** @author Aaron */
 public abstract class AbstractEditEntityPage<
@@ -82,8 +83,12 @@ public abstract class AbstractEditEntityPage<
   // TODO: use the WebElement
   public boolean isNameInvalid() {
     try {
+      waiter.until(
+          ExpectedConditions.visibilityOfElementLocated(
+              By.xpath(
+                  "//p[@class = 'ctrlinvalidmessage' and text()='There is no script to save']")));
       driver.findElement(
-          By.xpath("//div[@id = '" + getEditorSectionId() + "_t']/following-sibling::p"));
+          By.xpath("//p[@class = 'ctrlinvalidmessage' and text()='There is no script to save']"));
       return true;
     } catch (NoSuchElementException e) {
       return false;
