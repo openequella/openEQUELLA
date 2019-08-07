@@ -10,8 +10,8 @@ env:
     - AUTOTEST_CONFIG=autotest/travis.conf
     - S3_DEST_BUILD=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
     - S3_DEST_LATEST=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
-    - S3_REGION_OPT=--region us-east-1
-    - S3_CP_OPTS=--only-show-errors --recursive
+    - S3_REGION_OPT="--region us-east-1"
+    - S3_CP_OPTS="--only-show-errors --recursive"
 services:
   - postgresql
 addons:
