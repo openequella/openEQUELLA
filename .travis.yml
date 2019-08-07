@@ -34,32 +34,55 @@ before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - pip install --user awscli
-  - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip
 install:
   - git fetch --unshallow
   - npm install && npm run check
-  - sbt headerCheck
-  - sbt checkJavaCodeStyle || (aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD; exit 1)
-before_script:
-  - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
-  - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
-script:
-  - sbt test installerZip writeLanguagePack writeScriptingJavadoc
-  - sbt -jvm-opts autotest/.jvmopts "project autotest" \
-    installEquella startEquella configureInstall setupForTests \
-    Tests/test Tests/Serial/test OldTests/test \
-    coverageReport
-#  - cd import-export-tool && ./gradlew build && cd ..
-after_script:
-  - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/           $S3_CP_OPTS
-  - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
-  - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
-  - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}install-logs/     $S3_CP_OPTS
+
+stages:
+  - static analysis
+  - build
+  - unit test
+  - functional test
+jobs:
+  include:
+    - stage: static analysis
+      script: sbt headerCheck
+    - script: sbt checkJavaCodeStyle || (aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD; exit 1)
+
+    - stage: build
+      script: sbt installerZip writeLanguagePack writeScriptingJavadoc &&
+        cd import-export-tool && ./gradlew build && cd ..
+      after_success:
+        - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
+
+    - stage: unit test
+      script: sbt test
+
+    - stage: functional test
+      install:
+        - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
+        - unzip chromedriver_linux64.zip
+        # Copy down the installer from the build stage
+        - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD} Installer/target/ --recursive --exclude "*" --include "equella-installer*.zip"
+      before_script:
+        - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
+        - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
+        # Setup an oEQ instance to test against
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          installEquella startEquella configureInstall setupForTests
+      script: sbt -jvm-opts autotest/.jvmopts "project autotest" Tests/test
+    - script: sbt -jvm-opts autotest/.jvmopts "project autotest" Tests/Serial/test
+    - script: sbt -jvm-opts autotest/.jvmopts "project autotest" OldTests/test
+      # TODO: Combine results from above and run sbt coverageReport
+      after_script:
+        - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/           $S3_CP_OPTS
+        - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
+        - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
+        - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}install-logs/     $S3_CP_OPTS
+
 after_success:
-  - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
-  - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
-  - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
-  - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
   - aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST
   - aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
