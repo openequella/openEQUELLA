@@ -12,6 +12,8 @@ env:
     - S3_DEST_LATEST=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
     - S3_REGION_OPT="--region us-east-1"
     - S3_CP_OPTS="--only-show-errors --recursive"
+    # include $HOME/.local/bin for `aws`
+    - PATH=$HOME/.local/bin:$PATH
 services:
   - postgresql
 addons:
@@ -26,7 +28,7 @@ cache:
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
-  - sudo apt-get install -y awscli
+  - pip install --user awscli
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
 install:
