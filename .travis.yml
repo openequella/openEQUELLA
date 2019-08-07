@@ -47,10 +47,10 @@ script:
     coverageReport
   - cd import-export-tool && ./gradlew build && cd ..
 after_script:
-  - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/           ${S3_CP_OPTS}
-  - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ ${S3_CP_OPTS}
-  - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  ${S3_CP_OPTS}
-  - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}install-logs/     ${S3_CP_OPTS}
+  - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/           $S3_CP_OPTS
+  - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
+  - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
+  - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}install-logs/     $S3_CP_OPTS
 after_success:
   - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
   - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
