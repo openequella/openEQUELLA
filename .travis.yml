@@ -33,7 +33,7 @@ cache:
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
-  - pip install --user awscli
+  - pip3 install --user awscli
 install:
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
