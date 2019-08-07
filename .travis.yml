@@ -2,6 +2,8 @@ language: scala
 dist: trusty # So that we can use the chrome addon
 jdk:
   - openjdk8
+python:
+  - "3.6" # can't go later than 3.6 on dist trusty
 env:
   global:
     - secure: t1XK7R/R3+gYgJCL+YNFPfpew+QZXl5b7jFkfNOwKDG+gGEApZCrx5NNkA+anPbK4VLnmjGz4EgIItfsSOmEQL6W4jr1MiD6cQV8RV9tYHhPmfPiJy0aDWOgIWIxPtpzAcSvgkZzCheHxY8PGbTi+XStRMfF6/Iat6cN7erHcO9Ur3ri10uas01xPaJJC+naXZGx0JZDTRLmGc8GFzgOwaiIUWOzPZyqsqnBEytvyuJFGe1BUfVEvr4UUb/LBiH0UgpganncFy2WHX+CWT8VFemIoNCM7jAp5oKCTHWyEH72WzGGo6+RCnmJs3Loc+6IUT2M7qNhEm8+PmQwWL9d5ihb6OSnJG9u+Pmq88E+E0eOzZnhQ3XpRjI1CRYYOKi8RBPAjlGDYBMSOo0HRzDJnuU+ZdwdJCZ0x7a/2xCgpxA2YpH+FycGWQo9b+n5JYl++n7gfaJhVcbxrob5TfcgDyj4M3Mkr0bsAwueYG1hY9vFNq9wbgFXA5UPL/khJt9OtR3akEBnrx9lySK0tXtq7zj+KKit92Ty+EfhtEF29IHHHn/pyvFBzWjO1VqsRm+cnOIyY2nLz9D8SZGaaJy7elbXc+PLjd8eHSwX/dY7DyB4MO0td4E40H+Wwxy0pfZXW5x+tdo0UGLBb9i5OoLuKFcRjmj02WcIi6TqJ3EbNdQ=
