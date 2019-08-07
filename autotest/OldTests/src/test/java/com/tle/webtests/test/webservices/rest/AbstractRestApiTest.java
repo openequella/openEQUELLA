@@ -159,7 +159,11 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
 
   protected String getToken() throws IOException {
     if (token == null) {
-      token = requestToken(clients.get(0));
+      if (clients.size() >= 1) {
+        token = requestToken(clients.get(0));
+      } else {
+        token = getToken();
+      }
     }
     return token;
   }
