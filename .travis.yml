@@ -22,7 +22,7 @@ addons:
   apt:
     packages:
       - libav-tools
-      - python3
+      - python3-pip
 cache:
   directories:
     - "$HOME/.ivy2"
