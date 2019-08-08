@@ -45,31 +45,31 @@ before_script:
   - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
 
 stages:
-  - static analysis
-  - build
+  - build and check
   - functional test
   - update s3
 jobs:
   include:
-    - stage: static analysis
+    - stage: build and check
       script:
         - npm install && npm run check
         - sbt headerCheck checkJavaCodeStyle
       name: Check headers, code style and static analysis
       after_failure: aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD
-
-    - stage: build
-      script: sbt installerZip writeLanguagePack writeScriptingJavadoc &&
-        cd import-export-tool && ./gradlew build && cd ..
+    - stage: build and check
+      script: sbt installerZip writeLanguagePack writeScriptingJavadoc
       name: Build primary artefacts
       after_success:
         - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
-    - stage: build
+    - stage: build and check
       script: sbt test
       name: Unit test
+    - stage: build and check
+      script: ci/import-export-tool-build.sh
+      name: Build the Import/Export tool
 
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
