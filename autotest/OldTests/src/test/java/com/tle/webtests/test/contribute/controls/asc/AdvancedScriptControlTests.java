@@ -545,7 +545,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // binary creation (image)
     wizard = item.edit();
     clickAscButton("Create binary attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Binary attachment created!", "ASC Message was wrong");
+
+    final String BINARY_ATTACHMENT_CREATED = "Binary attachment created!";
+    final By pre = By.xpath("//pre[normalize-space(.)='" + BINARY_ATTACHMENT_CREATED + "']");
+    // Need to wait in new UI as click() does not wait for ajax request completed,
+    // and there are no negative impacts on old UI.
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(pre));
+
+    assertEquals(getAscMessage().getText(), BINARY_ATTACHMENT_CREATED, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
 
@@ -673,7 +680,15 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     wizard.editbox(1, itemName);
     // Create binary file
     clickAscButton("Create binary file", wizard);
-    assertEquals(getDivMessageForId("stagingFiles"), "equellaLogo.gif");
+
+    final String EQUELLA_LOGO = "equellaLogo.gif";
+    final String STAGING_FILES = "stagingFiles";
+    By stagingFiles =
+        By.xpath(
+            "//div[@id = '" + STAGING_FILES + "' and normalize-space(.)='" + EQUELLA_LOGO + "']");
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(stagingFiles));
+
+    assertEquals(getDivMessageForId(STAGING_FILES), EQUELLA_LOGO);
     // Create text file
     clickAscButton("Create text file", wizard);
     assertEqualsNoOrder(
@@ -901,27 +916,33 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     fc.uploadFile(Attachments.get("fireworks.dng"));
     control.editResource(fc.fileEditor(), "fireworks.dng").setDisplayName(attName).save();
 
-    clickAscButton("Get metadata for attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for attachment");
+    String expectedString = "Successfully retrieved Metadata for attachment";
+    clickAscButtonAndWait("Get metadata for attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
-    clickAscButton("Get metadata for file", wizard);
-    assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for file");
+    expectedString = "Successfully retrieved Metadata for file";
+    clickAscButtonAndWait("Get metadata for file", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
-    clickAscButton("Get types available", wizard);
-    assertEquals(getAscMessage().getText(), "[MakerNotes, Composite, File, XMP, EXIF]");
+    expectedString = "[MakerNotes, Composite, File, XMP, EXIF]";
+    clickAscButtonAndWait("Get types available", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("alltype")).sendKeys("EXIF");
-    clickAscButton("Get all for type", wizard);
-    assertEquals(getAscMessage().getText(), "124, Artist: Adam Croser");
+    expectedString = "124, Artist: Adam Croser";
+    clickAscButtonAndWait("Get all for type", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("firstkey")).sendKeys("LensID");
-    clickAscButton("Get first for key", wizard);
-    assertEquals(getAscMessage().getText(), "LensID: AF-S Zoom-Nikkor 24-70mm f/2.8G ED");
+    expectedString = "LensID: AF-S Zoom-Nikkor 24-70mm f/2.8G ED";
+    clickAscButtonAndWait("Get first for key", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("spectype")).sendKeys("XMP");
     getAscInput(By.id("speckey")).sendKeys("LensID");
-    clickAscButton("Get specific key", wizard);
-    assertEquals(getAscMessage().getText(), "XMP:LensID: 147");
+    expectedString = "XMP:LensID: 147";
+    clickAscButtonAndWait("Get specific key", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     // Check saved shiznit
     SummaryPage summary = wizard.save().publish();
@@ -963,6 +984,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
   // same as above but for <button> instead of <input>
   private <T extends PageObject> T clickAscButton(String text, WaitingPageObject<T> returnTo) {
     getAscButton(text).click();
+    return returnTo.get();
+  }
+
+  private <T extends PageObject> T clickAscButtonAndWait(
+      String text, WaitingPageObject<T> returnTo, String expectedString) {
+    getAscButton(text).click();
+    By expectedElement = By.xpath("//pre[normalize-space(.)='" + expectedString + "']");
+    returnTo.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
     return returnTo.get();
   }
 
