@@ -67,22 +67,6 @@ jobs:
         - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
 
-    - stage: functional test (old)
-      env:
-        - OLD_TEST_SUITE=searching
-        - OLD_TEST_SUITE=contribution
-        - OLD_TEST_SUITE=viewing
-        - OLD_TEST_SUITE=admin
-        - OLD_TEST_SUITE=webservices
-        - OLD_TEST_SUITE=users
-        - OLD_TEST_SUITE=workflow
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        OldTests/test
-      after_script:
-        - aws s3 cp autotest/OldTests/target/testng    ${S3_DEST_BUILD}testng/            $S3_CP_OPTS
-        - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/oldTests/ $S3_CP_OPTS
-
     - stage: unit test
       script: sbt test
 
@@ -90,15 +74,53 @@ jobs:
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         Tests/test
+      name: Scalacheck
       after_script:
-        - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
-        - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests    $S3_CP_OPTS
-    - script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
+        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests    $S3_CP_OPTS
+    - stage: functional test
+      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         Tests/Serial/test
+      name: Scalacheck Serial
       after_script:
-        - aws s3 cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/     $S3_CP_OPTS
-        - aws s3 cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/     $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial $S3_CP_OPTS
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (searching)
+      env: OLD_TEST_SUITE=searching
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (contribution)
+      env: OLD_TEST_SUITE=contribution
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (viewing)
+      env: OLD_TEST_SUITE=viewing
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (admin)
+      env: OLD_TEST_SUITE=admin
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (webservices)
+      env: OLD_TEST_SUITE=webservices
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (users)
+      env: OLD_TEST_SUITE=users
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (workflow)
+      env: OLD_TEST_SUITE=workflow
+      after_script: ci/oldtests-save-results.sh
 
     - stage: update s3
       script: aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST && \
