@@ -3,13 +3,16 @@ import { WithStyles, Icon, withStyles, Theme } from "@material-ui/core";
 import { fade } from "@material-ui/core/styles/colorManipulator";
 import { createStyles } from "@material-ui/core/styles";
 import { commonString } from "../util/commonstrings";
+import { debounce } from "lodash";
 
 interface AppBarQueryProps {
   onSearch?: (query?: string) => void;
   onChange: (query: string) => void;
   query: string;
 }
-
+interface AppBarQueryState {
+  searchText: string;
+}
 const styles = (theme: Theme) =>
   createStyles({
     queryWrapper: {
@@ -46,17 +49,39 @@ const styles = (theme: Theme) =>
   });
 
 class AppBarQuery extends React.Component<
-  AppBarQueryProps & WithStyles<"queryWrapper" | "queryIcon" | "queryField">
+  AppBarQueryProps & WithStyles<"queryWrapper" | "queryIcon" | "queryField">,
+  AppBarQueryState
 > {
   constructor(
     props: AppBarQueryProps &
       WithStyles<"queryWrapper" | "queryIcon" | "queryField">
   ) {
     super(props);
+    this.state = {
+      searchText: ""
+    };
   }
 
+  // Do a search after user stops typing for 500 milliseconds.
+  // Purescript passes a concrete search function to onChange.
+  debouncedSearch = debounce(() => {
+    this.props.onChange(this.state.searchText);
+  }, 500);
+
+  handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState(
+      {
+        searchText: e.target.value
+      },
+      () => {
+        this.debouncedSearch();
+      }
+    );
+  };
+
   render() {
-    const { classes, onChange, query } = this.props;
+    const { classes } = this.props;
+    const { searchText } = this.state;
     return (
       <div className={classes.queryWrapper}>
         <div className={classes.queryIcon}>
@@ -66,8 +91,8 @@ class AppBarQuery extends React.Component<
           type="text"
           aria-label={commonString.action.search}
           className={classes.queryField}
-          value={query}
-          onChange={e => onChange(e.target.value)}
+          value={searchText}
+          onChange={this.handleTextChange}
         />
       </div>
     );
