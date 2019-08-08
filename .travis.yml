@@ -39,7 +39,6 @@ install:
   # Copy down the installer from the build stage - if available
   - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD} Installer/target/ --recursive --exclude "*" --include "equella-installer*.zip"
   - git fetch --unshallow
-  - npm install && npm run check
 before_script:
   # Setup database for functional tests
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
@@ -54,7 +53,9 @@ stages:
 jobs:
   include:
     - stage: static analysis
-      script: sbt headerCheck checkJavaCodeStyle
+      script:
+        - npm install && npm run check
+        - sbt headerCheck checkJavaCodeStyle
       after_failure: aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD
 
     - stage: build
