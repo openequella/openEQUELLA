@@ -7,7 +7,6 @@ import com.google.common.io.Closeables;
 import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.pageobject.LoginPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -62,6 +61,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
@@ -159,8 +159,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   }
 
   protected String getToken() throws IOException {
-    LoginPage page = new LoginPage(context);
-    page.getWaiter().until((webDriver -> clients.size() >= 1));
+    new WebDriverWait(context.getDriver(), 30).until((webDriver -> clients.size() >= 1));
     if (token == null) {
       token = requestToken(clients.get(0));
     }
