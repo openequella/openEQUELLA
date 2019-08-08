@@ -47,7 +47,6 @@ before_script:
 stages:
   - static analysis
   - build
-  - unit test
   - functional test
   - update s3
 jobs:
@@ -56,19 +55,21 @@ jobs:
       script:
         - npm install && npm run check
         - sbt headerCheck checkJavaCodeStyle
+      name: Check headers, code style and static analysis
       after_failure: aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD
 
     - stage: build
       script: sbt installerZip writeLanguagePack writeScriptingJavadoc &&
         cd import-export-tool && ./gradlew build && cd ..
+      name: Build primary artefacts
       after_success:
         - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
         - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
-
-    - stage: unit test
+    - stage: build
       script: sbt test
+      name: Unit test
 
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
@@ -122,8 +123,9 @@ jobs:
       env: OLD_TEST_SUITE=workflow
       after_script: ci/oldtests-save-results.sh
 
+    # TODO: Combine results from above and run sbt coverageReport
+    #        - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
+
     - stage: update s3
       script: aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST && \
         aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
-      # TODO: Combine results from above and run sbt coverageReport
-#        - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
