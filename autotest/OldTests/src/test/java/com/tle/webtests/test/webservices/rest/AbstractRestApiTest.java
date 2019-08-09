@@ -183,7 +183,9 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   }
 
   protected String requestToken(String id) throws IOException {
+    System.out.println(id);
     for (OAuthClient client : clients) {
+      System.out.println(client.getClientId());
       if (client.getClientId().equals(id)) {
         return requestToken(client);
       }

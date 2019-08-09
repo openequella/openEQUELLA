@@ -105,30 +105,30 @@ tests:
       #      - com.tle.webtests.test.users.TokenLoginTest
       #      - com.tle.webtests.test.users.UserPasswordTest
       #      - com.tle.webtests.test.usersscripts.UserScriptTest
-      #      - com.tle.webtests.test.webservices.rest.ActivationApiTest
-      #      - com.tle.webtests.test.webservices.rest.CollectionApiTest
+      - com.tle.webtests.test.webservices.rest.ActivationApiTest
+      - com.tle.webtests.test.webservices.rest.CollectionApiTest
       - com.tle.webtests.test.webservices.rest.CommentApiTest
-      #      - com.tle.webtests.test.webservices.rest.CourseApiTest
-      #      - com.tle.webtests.test.webservices.rest.DynaCollectionApiTest
-      #      - com.tle.webtests.test.webservices.rest.FileApiTest
+      - com.tle.webtests.test.webservices.rest.CourseApiTest
+      - com.tle.webtests.test.webservices.rest.DynaCollectionApiTest
+      - com.tle.webtests.test.webservices.rest.FileApiTest
       - com.tle.webtests.test.webservices.rest.FileListingApiTest
       - com.tle.webtests.test.webservices.rest.HierarchyApiTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiActionsTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiContributeTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiEditTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiLockTest
+      - com.tle.webtests.test.webservices.rest.ItemApiActionsTest
+      - com.tle.webtests.test.webservices.rest.ItemApiContributeTest
+      - com.tle.webtests.test.webservices.rest.ItemApiEditTest
+      - com.tle.webtests.test.webservices.rest.ItemApiLockTest
       - com.tle.webtests.test.webservices.rest.ItemApiQuickContributeTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiRelationTest
-      #      - com.tle.webtests.test.webservices.rest.ItemApiViewTest
-      #      - com.tle.webtests.test.webservices.rest.MyResourcesApiTest
+      - com.tle.webtests.test.webservices.rest.ItemApiRelationTest
+      - com.tle.webtests.test.webservices.rest.ItemApiViewTest
+      - com.tle.webtests.test.webservices.rest.MyResourcesApiTest
       - com.tle.webtests.test.webservices.rest.NotificationsApiTest
-      #      - com.tle.webtests.test.webservices.rest.OAuthClientEditorTest
+      - com.tle.webtests.test.webservices.rest.OAuthClientEditorTest
       - com.tle.webtests.test.webservices.rest.SchemaApiTest
       - com.tle.webtests.test.webservices.rest.ScrapbookApiTest
-      #      - com.tle.webtests.test.webservices.rest.SearchApiTest
-      #      - com.tle.webtests.test.webservices.rest.TasksApiTest
+      - com.tle.webtests.test.webservices.rest.SearchApiTest
+      - com.tle.webtests.test.webservices.rest.TasksApiTest
       - com.tle.webtests.test.webservices.rest.TaxonomyApiTest
-#      - com.tle.webtests.test.webservices.rest.UserGroupManagementApiTest
+      - com.tle.webtests.test.webservices.rest.UserGroupManagementApiTest
 #      - com.tle.webtests.test.webservices.soap.Soap51Test
 #      - com.tle.webtests.test.webservices.soap.SoapServicesTest
 #      - com.tle.webtests.test.webservices.OAIEndpointTest
