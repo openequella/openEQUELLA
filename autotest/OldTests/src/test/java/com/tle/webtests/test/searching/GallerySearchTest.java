@@ -135,10 +135,21 @@ public class GallerySearchTest extends AbstractCleanupTest {
     wizard.editbox(1, SUPPRESSED_THUMBS);
     wizard.addSingleFile(3, Attachments.get("veronicas_wall1.jpg"));
     wizard.save().publish();
-    SearchPage search = new SearchPage(context).load().setResultType("images");
+    final SearchPage search = new SearchPage(context).load().setResultType("images");
     search.exactQuery(SUPPRESSED_THUMBS);
     assertTrue(search.hasResults());
-    search.setResultType("standard");
+    // Ensure the result type is really changed to "standard"
+    search
+        .getWaiter()
+        .until(
+            webDriver -> {
+              if (!search.isResultType("standard")) {
+                search.setResultType("standard");
+                return false;
+              }
+
+              return true;
+            });
     wizard = SearchPage.searchAndView(context, SUPPRESSED_THUMBS.toString()).edit();
     UniversalControl control = wizard.universalControl(3);
     control
@@ -146,8 +157,15 @@ public class GallerySearchTest extends AbstractCleanupTest {
         .setThubmnailSuppress(true)
         .save();
     wizard.saveNoConfirm();
-    search = new SearchPage(context).load().setResultType("images");
+    search.load().setResultType("images");
     search.exactQuery(SUPPRESSED_THUMBS);
     assertFalse(search.hasResults());
+  }
+
+  private boolean checkResultType(SearchPage search, String type) {
+    if (search.isResultType(type)) {
+      return true;
+    }
+    return false;
   }
 }
