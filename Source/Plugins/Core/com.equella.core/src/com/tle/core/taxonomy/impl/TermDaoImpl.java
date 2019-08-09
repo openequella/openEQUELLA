@@ -549,7 +549,6 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
                   u.executeUpdate();
                 }
               } while (foundInvalid);
-
               return null;
             });
   }

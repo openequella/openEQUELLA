@@ -135,6 +135,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
     final List<String> returnedSortedRootTerms = new ArrayList<>(10);
     final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
+
     for (int i = 0; i < arrayNode.size(); i++) {
       final JsonNode node = arrayNode.get(i);
       final String termName = node.get("term").getTextValue();
@@ -214,7 +215,6 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     // Check test terms children sorted
     final List<String> returnedSortedChildTerms = new ArrayList<>(10);
     final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, testTermPath);
-
     for (int i = 0; i < testTermSortedChildren.size(); i++) {
       final JsonNode node = testTermSortedChildren.get(i);
       final String termName = node.get("term").getTextValue();
@@ -270,7 +270,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   }
 
   private ArrayNode getChildren(String taxonomyUuid, @Nullable String path) throws IOException {
-    Object[] varargs;
+    final Object[] varargs;
     if (path != null) {
       varargs = new Object[] {"path", path};
     } else {
@@ -285,7 +285,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   }
 
   private HttpResponse sortChildren(String taxonomyUuid, @Nullable String path) throws IOException {
-    Object[] varargs;
+    final Object[] varargs;
     if (path != null) {
       varargs = new Object[] {"path", path};
     } else {
@@ -300,12 +300,14 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   }
 
   private void unlock(String taxonomyUuid) throws IOException {
-    String uri = PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "lock");
+    final String uri =
+        PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "lock");
     deleteResource(uri, getToken(), "force", true);
   }
 
   private void lock(String taxonomyUuid) throws IOException, URISyntaxException {
-    String uri = PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "lock");
+    final String uri =
+        PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "lock");
     final HttpPost request = new HttpPost(new URI(uri));
     execute(request, true, getToken());
   }

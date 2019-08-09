@@ -64,7 +64,7 @@ public class TaxonomyResourceImpl
     DELETE
   }
 
-  @Inject private TaxonomyService taxonomyService;
+@Inject private TaxonomyService taxonomyService;
   @Inject private TermService termService;
   @Inject private InstitutionService institutionService;
   @Inject private TaxonomyBeanSerializer taxonomySerializer;
@@ -250,7 +250,7 @@ public class TaxonomyResourceImpl
   @Override
   public Response getTermByUuid(String taxonomyUuid, String termUuid) {
     ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
-    TermResult term = taxonomyService.getTermResultByUuid(taxonomyUuid, termUuid);
+   TermResult term = taxonomyService.getTermResultByUuid(taxonomyUuid, termUuid);
 
     if (term != null) {
       final TermBean bean = beanFromTaxonomyTerm(term, taxonomyUuid);
@@ -273,7 +273,7 @@ public class TaxonomyResourceImpl
   @Override
   public Response getAllTermData(String taxonomyUuid, String termUuid) {
     ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
-    try {
+	try {
       Map<String, String> data = taxonomyService.getAllDataByTermUuid(taxonomyUuid, termUuid);
 
       return Response.ok(data).build();
@@ -375,7 +375,7 @@ public class TaxonomyResourceImpl
   }
 
   /** @return 200 response if successful */
-  @Override
+@Override
   public Response sortChildTerms(String taxonomyUuid, String path) {
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
 
