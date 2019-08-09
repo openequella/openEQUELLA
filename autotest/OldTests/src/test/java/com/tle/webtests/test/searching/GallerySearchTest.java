@@ -138,9 +138,14 @@ public class GallerySearchTest extends AbstractCleanupTest {
     final SearchPage search = new SearchPage(context).load().setResultType("images");
     search.exactQuery(SUPPRESSED_THUMBS);
     assertTrue(search.hasResults());
-    search.setResultType("standard");
     // Ensure the result type is really changed to "standard"
-    search.getWaiter().until(webDriver -> search.isResultType("standard"));
+    search
+        .getWaiter()
+        .until(
+            webDriver -> {
+              search.setResultType("standard");
+              return search.isResultType("standard");
+            });
     wizard = SearchPage.searchAndView(context, SUPPRESSED_THUMBS.toString()).edit();
     UniversalControl control = wizard.universalControl(3);
     control
