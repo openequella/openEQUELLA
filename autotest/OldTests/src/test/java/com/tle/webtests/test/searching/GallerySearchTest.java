@@ -16,6 +16,8 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -138,18 +140,10 @@ public class GallerySearchTest extends AbstractCleanupTest {
     final SearchPage search = new SearchPage(context).load().setResultType("images");
     search.exactQuery(SUPPRESSED_THUMBS);
     assertTrue(search.hasResults());
+    search.setResultType("standard");
     // Ensure the result type is really changed to "standard"
-    search
-        .getWaiter()
-        .until(
-            webDriver -> {
-              if (!search.isResultType("standard")) {
-                search.setResultType("standard");
-                return false;
-              }
-
-              return true;
-            });
+    By resultTypeXpath = By.xpath("id('result-type-select')/input[@value = 'standard']");
+    search.getWaiter().until(ExpectedConditions.presenceOfElementLocated(resultTypeXpath));
     wizard = SearchPage.searchAndView(context, SUPPRESSED_THUMBS.toString()).edit();
     UniversalControl control = wizard.universalControl(3);
     control
@@ -160,12 +154,5 @@ public class GallerySearchTest extends AbstractCleanupTest {
     search.load().setResultType("images");
     search.exactQuery(SUPPRESSED_THUMBS);
     assertFalse(search.hasResults());
-  }
-
-  private boolean checkResultType(SearchPage search, String type) {
-    if (search.isResultType(type)) {
-      return true;
-    }
-    return false;
   }
 }
