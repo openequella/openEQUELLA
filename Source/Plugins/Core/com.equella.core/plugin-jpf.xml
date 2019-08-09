@@ -707,7 +707,7 @@
     <parameter id="class" value="bean:com.tle.web.connectors.equella.editor.EquellaConnectorEditor" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="taxonomyResource">
-    <parameter id="class" value="com.tle.web.api.taxonomy.TaxonomyResource" />
+    <parameter id="class" value="com.tle.web.api.taxonomy.interfaces.TaxonomyResource" />
   </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="resourceViewer" id="flvViewer">
     <parameter id="id" value="flvViewer" />

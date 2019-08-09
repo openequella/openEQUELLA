@@ -18,6 +18,7 @@
 
 package com.tle.core.taxonomy;
 
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.IllegalOperationException;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -73,7 +74,11 @@ public interface TaxonomyService
    * @throws IllegalOperationException If the data source does not support term addition
    */
   TermResult addTerm(
-      String taxonomyUuid, String parentFullTermPath, String termValue, boolean createHierarchy);
+      String taxonomyUuid,
+      String parentFullTermPath,
+      @Nullable String termUuid,
+      String termValue,
+      boolean createHierarchy);
 
   /**
    * @param taxonomyUuid

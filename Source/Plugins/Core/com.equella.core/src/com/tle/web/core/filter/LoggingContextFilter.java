@@ -109,7 +109,11 @@ public class LoggingContextFilter extends AbstractWebFilter {
         Logger.getLogger(LoggingContextFilter.class.getName() + ".RequestLogger");
 
     public void logRequest(HttpServletRequest request) {
-      final StringBuilder params = new StringBuilder(request.getRequestURI() + "\n");
+      final StringBuilder params =
+          new StringBuilder(request.getMethod())
+              .append(" ")
+              .append(request.getRequestURI())
+              .append("\n");
       final Map<String, String[]> parameterMap = request.getParameterMap();
       for (Entry<String, String[]> entry : parameterMap.entrySet()) {
         final String key = entry.getKey();

@@ -51,7 +51,7 @@ public class TaxonomyScriptTypeImpl implements TaxonomyScriptType {
 
   @Override
   public TermScriptType insertTerm(String parentFullPath, String termValue) {
-    service.addTerm(taxonomyUuid, parentFullPath, termValue, true);
+    service.addTerm(taxonomyUuid, parentFullPath, null, termValue, true);
     String newPath = parentFullPath + TaxonomyConstants.TERM_SEPARATOR + termValue;
     return new TermScriptTypeImpl(service, taxonomyUuid, service.getTerm(taxonomyUuid, newPath));
   }
