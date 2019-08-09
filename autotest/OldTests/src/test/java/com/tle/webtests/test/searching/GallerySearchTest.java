@@ -8,7 +8,9 @@ import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.SettingsPage;
+import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
+import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.SelectThumbnailDialog;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
@@ -135,26 +137,29 @@ public class GallerySearchTest extends AbstractCleanupTest {
     wizard.editbox(1, SUPPRESSED_THUMBS);
     wizard.addSingleFile(3, Attachments.get("veronicas_wall1.jpg"));
     wizard.save().publish();
-    final SearchPage search = new SearchPage(context).load().setResultType("images");
-    search.exactQuery(SUPPRESSED_THUMBS);
-    assertTrue(search.hasResults());
+    final SearchPage searchPage = new SearchPage(context).load().setResultType("images");
+    searchPage.exactQuery(SUPPRESSED_THUMBS);
+    assertTrue(searchPage.hasResults());
     // Ensure the result type is really changed to "standard"
-    search
+    searchPage
         .getWaiter()
         .until(
             webDriver -> {
-              search.setResultType("standard");
-              return search.isResultType("standard");
+              searchPage.setResultType("standard");
+              return searchPage.isResultType("standard");
             });
-    wizard = SearchPage.searchAndView(context, SUPPRESSED_THUMBS.toString()).edit();
+    final String ITEM_FULL_NAME = SUPPRESSED_THUMBS.toString();
+    ItemListPage itemListPage = searchPage.search(ITEM_FULL_NAME);
+    SummaryPage summaryPage = itemListPage.viewFromTitle(ITEM_FULL_NAME);
+    summaryPage.edit();
     UniversalControl control = wizard.universalControl(3);
     control
         .editResource(new FileUniversalControlType(control), "veronicas_wall1.jpg")
         .setThubmnailSuppress(true)
         .save();
     wizard.saveNoConfirm();
-    search.load().setResultType("images");
-    search.exactQuery(SUPPRESSED_THUMBS);
-    assertFalse(search.hasResults());
+    searchPage.load().setResultType("images");
+    searchPage.exactQuery(SUPPRESSED_THUMBS);
+    assertFalse(searchPage.hasResults());
   }
 }
