@@ -16,8 +16,6 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -142,8 +140,7 @@ public class GallerySearchTest extends AbstractCleanupTest {
     assertTrue(search.hasResults());
     search.setResultType("standard");
     // Ensure the result type is really changed to "standard"
-    By resultTypeXpath = By.xpath("id('result-type-select')/input[@value = 'standard']");
-    search.getWaiter().until(ExpectedConditions.presenceOfElementLocated(resultTypeXpath));
+    search.getWaiter().until(webDriver -> search.isResultType("standard"));
     wizard = SearchPage.searchAndView(context, SUPPRESSED_THUMBS.toString()).edit();
     UniversalControl control = wizard.universalControl(3);
     control
