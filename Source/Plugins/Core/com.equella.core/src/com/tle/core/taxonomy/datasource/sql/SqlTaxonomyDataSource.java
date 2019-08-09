@@ -37,6 +37,7 @@ import static com.tle.common.taxonomy.datasource.sql.SqlTaxonomyDataSourceConsta
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.tle.annotation.Nullable;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -188,7 +189,8 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
   }
 
   @Override
-  public TermResult addTerm(String parentFullPath, String termValue, boolean createHierarchy) {
+  public TermResult addTerm(
+      String parentFullPath, @Nullable String termUuid, String termValue, boolean createHierarchy) {
     throw new UnsupportedOperationException();
   }
 

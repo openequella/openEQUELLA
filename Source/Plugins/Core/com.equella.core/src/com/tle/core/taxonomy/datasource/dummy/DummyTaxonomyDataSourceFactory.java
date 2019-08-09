@@ -22,6 +22,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.common.Utils;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -234,7 +235,11 @@ public class DummyTaxonomyDataSourceFactory implements TaxonomyDataSourceFactory
     }
 
     @Override
-    public TermResult addTerm(String parentFullPath, String termValue, boolean createHierarchy) {
+    public TermResult addTerm(
+        String parentFullPath,
+        @Nullable String termUuid,
+        String termValue,
+        boolean createHierarchy) {
       // see if it already exists
       final boolean rootTerm = Strings.isNullOrEmpty(parentFullPath);
       final String fullTermPath =

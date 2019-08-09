@@ -18,6 +18,7 @@
 
 package com.tle.core.taxonomy.datasource.internal;
 
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.taxonomy.SelectionRestriction;
@@ -62,9 +63,10 @@ public class InternalTaxonomyDataSource implements TaxonomyDataSource {
   }
 
   @Override
-  public TermResult addTerm(String parentFullPath, String termValue, boolean createHierarchy) {
+  public TermResult addTerm(
+      String parentFullPath, @Nullable String termUuid, String termValue, boolean createHierarchy) {
     if (supportsTermAddition()) {
-      return termService.addTerm(taxonomy, parentFullPath, termValue, createHierarchy);
+      return termService.addTerm(taxonomy, parentFullPath, termUuid, termValue, createHierarchy);
     }
     throw new UnsupportedOperationException();
   }

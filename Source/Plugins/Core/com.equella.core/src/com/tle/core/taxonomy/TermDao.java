@@ -18,6 +18,7 @@
 
 package com.tle.core.taxonomy;
 
+import com.tle.annotation.Nullable;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.terms.Term;
 import com.tle.core.hibernate.dao.GenericDao;
@@ -51,7 +52,8 @@ public interface TermDao extends GenericDao<Term, Long> {
    * @param index
    * @return The new term, so you don't have to load it up again if you want to use it
    */
-  Term insertNewTerm(Taxonomy taxonomy, Term parent, String termValue, int index);
+  Term insertNewTerm(
+      Taxonomy taxonomy, Term parent, @Nullable String termUuid, String termValue, int index);
 
   void move(Term moveThisTerm, Term parent, int index);
 
@@ -60,4 +62,6 @@ public interface TermDao extends GenericDao<Term, Long> {
   void deleteForTaxonomy(Taxonomy taxonomy);
 
   void validateTerm(Taxonomy taxonomy, Term parent, String termValue);
+
+  void sortChildren(Taxonomy taxonomy, Term parentTerm);
 }

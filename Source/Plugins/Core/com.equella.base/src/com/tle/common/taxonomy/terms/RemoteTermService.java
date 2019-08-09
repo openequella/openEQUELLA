@@ -49,7 +49,7 @@ public interface RemoteTermService {
    *     the last sibling.
    * @return The full path of the new term (may have been slightly adjusted/fixed)
    */
-  String insertTerm(Taxonomy taxonomy, String parentFullPath, String termValue, int index);
+  String insertTerm(Taxonomy taxonomy, String parentUuid, String termValue, int index);
 
   /**
    * Moves a term to a (possibly) new parent term and child index. Children of the term are also
@@ -165,4 +165,12 @@ public interface RemoteTermService {
    * @param data
    */
   void setAllDataByTermUuid(Taxonomy taxonomy, String termUuid, Map<String, String> data);
+
+  /**
+   * Alphabetically sort the immediate children of the given term.
+   *
+   * @param taxonomy
+   * @param fullTermPath
+   */
+  void sortChildren(Taxonomy taxonomy, String fullTermPath);
 }

@@ -19,21 +19,36 @@
 package com.tle.admin.taxonomy.tool.internal;
 
 import com.dytech.gui.JValidatingTextField;
+import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.tle.admin.Driver;
 import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
+import com.tle.admin.gui.common.actions.SortChildrenAction;
+import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.common.Check;
+import com.tle.common.LazyTreeNode.ChildrenState;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
 import com.tle.common.taxonomy.terms.RemoteTermService;
 import com.tle.common.taxonomy.terms.Term;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @SuppressWarnings("nls")
 public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
+
+  private static final Log LOGGER = LogFactory.getLog(TermTree.class);
+  public static final String KEY_ERROR_TERMSORT_TITLE =
+      "com.tle.admin.gui.taxonomy.error.termsort.title";
+  public static final String KEY_ERROR_TERMSORT_MESSAGE =
+      "com.tle.admin.gui.taxonomy.error.termsort.message";
+
   private final RemoteTermService termService;
   private final Taxonomy taxonomy;
 
@@ -133,4 +148,59 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
     }
     return true;
   }
+
+  @Override
+  protected void setupAdditionalActions(List<TLEAction> actions) {
+    super.setupAdditionalActions(actions);
+    actions.add(sortChildrenAction);
+  }
+
+  protected void doSortChildren(TermTreeNode node) {
+    termService.sortChildren(taxonomy, (node == root ? null : node.getFullPath()));
+  }
+
+  protected void doSortChildrenGui(TermTreeNode node) {
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<Object>() {
+          @Override
+          public Object construct() {
+            doSortChildren(node);
+            return null;
+          }
+
+          @Override
+          public void finished() {
+            node.setChildrenState(ChildrenState.UNLOADED);
+            loadChildren(node);
+          }
+
+          @Override
+          public void exception() {
+            Exception ex = getException();
+            LOGGER.error("Problem sorting terms", ex);
+            Driver.displayError(
+                TermTree.this, KEY_ERROR_TERMSORT_TITLE, KEY_ERROR_TERMSORT_MESSAGE, ex);
+          }
+        };
+    worker.setComponent(this);
+    worker.start();
+  }
+
+  private final TLEAction sortChildrenAction =
+      new SortChildrenAction() {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+          TermTreeNode node = getSelectedNode();
+          if (node == null) {
+            node = root;
+          }
+          doSortChildrenGui(node);
+        }
+
+        @Override
+        public void update() {
+          setSortRootTerms(tree.getSelectionCount() == 0);
+        }
+      };
 }
