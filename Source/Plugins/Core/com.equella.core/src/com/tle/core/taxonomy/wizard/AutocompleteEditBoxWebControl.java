@@ -164,7 +164,7 @@ public class AutocompleteEditBoxWebControl
 
           TermResult added = null;
           try {
-            added = taxonomyService.addTerm(taxonomyUuid, parentFullPath, termName, true);
+            added = taxonomyService.addTerm(taxonomyUuid, parentFullPath, null, termName, true);
             fullTermPath = added.getFullTerm();
           } catch (InvalidDataException d) {
             for (ValidationError error : d.getErrors()) {
