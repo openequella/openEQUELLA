@@ -22,6 +22,7 @@ addons:
   apt:
     packages:
       - libav-tools
+      - libimage-exiftool-perl
       - python3-pip
 cache:
   directories:
