@@ -91,8 +91,13 @@ jobs:
         - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial $S3_CP_OPTS
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (searching)
-      env: OLD_TEST_SUITE=searching
+      name: TestNG (admin)
+      env: OLD_TEST_SUITE=admin
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (advanced script controls - asc)
+      env: OLD_TEST_SUITE=asc
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
@@ -101,23 +106,28 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (viewing)
-      env: OLD_TEST_SUITE=viewing
+      name: TestNG (controls)
+      env: OLD_TEST_SUITE=controls
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (admin)
-      env: OLD_TEST_SUITE=admin
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      name: TestNG (webservices)
-      env: OLD_TEST_SUITE=webservices
+      name: TestNG (searching)
+      env: OLD_TEST_SUITE=searching
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (users)
       env: OLD_TEST_SUITE=users
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (viewing)
+      env: OLD_TEST_SUITE=viewing
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (webservices)
+      env: OLD_TEST_SUITE=webservices
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
