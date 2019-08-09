@@ -8,6 +8,7 @@ env:
     - secure: fao/RBFgwO/kaxMGbAsR2xuQgnXebRSPgIrASx/W7ELrZoHB3Jvz5ES7danGYXfONUKaPCdqe1/JTm34aDrp/sER6CMYlz4LvlzzhxV+ajo1kFqgzaUWquzGtQ3STXu5BiPEITVqm4CYOZ8bB7yr3HnmPRBOPvJIG0xg3Cehwz0Ux8Yc/YFJbfpr9p97U+x+JJfa+g1sRRXTQHUPdTl3uBJOtk5shCWoDSJl0Axe1gJ37gNUnJOZUwL6Ejb2Hlv2CuxBjglIZ7mhJkOiL9ALbNDOsjp+Xx6ieSSEVAEmqtQdzAVO63GmXVBQcyWIrisgLzTRbMM0ZPtraUXgN6b44ijw6kS5miQvd0vDenFVailgyizjqO28n1xhYyX+uEqz+BMFS4VybTKSdZHjDHRHhFXK6oSqcmKN941X+LsGu7rWp5aVyu1hJjaKz3InjheZphILY7sbLEzoOckicH3TikliwxNEbUCFUOtkmutY+B3SVy9SNyoCW2vjhbiP9ZeXW0hxjG0SvJxOXzWJknY4cnpO7ee5UcBDYmlSdOlA192FO4UfyqgHrL5hVRCYKGB2xD+XHy+XYKFUV+VpWiiMQXCxV1FmRHeZlS144/07H+DIlkeUapLn7Cdj/NhDjSn9fXnSNbA/qbs9aIYm1Wx4pRoj0S2iVRe4FE6RFJWMgyk=
     - NODE_JS_VERSION=8.11.3
     - AUTOTEST_CONFIG=autotest/travis.conf
+    - EQ_EXIFTOOL_PATH=/usr/bin/exiftool
     - S3_DEST_BUILD=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
     - S3_DEST_LATEST=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
     - S3_REGION_OPT="--region us-east-1"
