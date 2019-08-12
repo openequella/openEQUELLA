@@ -19,15 +19,7 @@ public class OAuthSettingsPage extends AbstractPage<OAuthSettingsPage> {
 
   @Override
   protected void loadUrl() {
-    waiter.until(
-        webDriver -> {
-          driver.get(context.getBaseUrl() + "access/oauthadmin.do");
-          return isOauthPageOpen();
-        });
-  }
-
-  private boolean isOauthPageOpen() {
-    return isPresent(By.id("clientsDiv"));
+    driver.get(context.getBaseUrl() + "access/oauthadmin.do");
   }
 
   public OAuthClientEditorPage newClient() {
