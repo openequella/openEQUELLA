@@ -2,4 +2,4 @@
 
 sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
-        OldTests/test
+        OldTests/test dumpCoverage

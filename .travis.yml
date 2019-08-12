@@ -87,19 +87,21 @@ jobs:
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
-        Tests/test
+        Tests/test dumpCoverage
       name: Scalacheck
       after_script:
         - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
         - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests    $S3_CP_OPTS
+        - ci/coverage-save-results.sh
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
-        Tests/Serial/test
+        Tests/Serial/test dumpCoverage
       name: Scalacheck Serial
       after_script:
-        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/     $S3_CP_OPTS
-        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-serial-tests/ $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial    $S3_CP_OPTS
+        - ci/coverage-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (admin)
