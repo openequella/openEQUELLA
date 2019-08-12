@@ -24,6 +24,7 @@ addons:
       - libimage-exiftool-perl
       - openjdk-8-jdk
       - python3-pip
+      - python3-setuptools
 cache:
   directories:
     - "$HOME/.ivy2"
