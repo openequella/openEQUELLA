@@ -13,8 +13,8 @@ env:
     - S3_CP_OPTS="--only-show-errors --recursive"
     # set JAVA_HOME to point to the java 8 APT install
     - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-    # include $HOME/.local/bin for `aws`
-    - PATH=$HOME/.local/bin:$PATH
+    # include $HOME/.local/bin for `aws`, and $JAVA_HOME/bin to try and force APT installed Java 8
+    - PATH=$JAVA_HOME/bin:$HOME/.local/bin:$PATH
 services:
   - postgresql
 addons:
@@ -54,8 +54,10 @@ before_script:
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
   # Diagnostics: Display java version info
+  - which java javac
   - java -version
   - javac -version
+  - echo $JAVA_HOME && echo $PATH
 
 stages:
   - build and check
