@@ -144,6 +144,7 @@ public abstract class AbstractPage<T extends PageObject>
   protected void checkLoadedElement() {
     loadedElement = findLoadedElement();
     boolean displayed = loadedElement.isDisplayed();
+    System.out.println("page is displayed : " + displayed);
     if (mustBeVisible && !displayed) {
       throw new NotFoundException("Found " + loadedElement + " but not visible");
     }

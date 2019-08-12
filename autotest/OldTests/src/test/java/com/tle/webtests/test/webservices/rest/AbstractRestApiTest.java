@@ -146,6 +146,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
     } catch (Exception e) {
       e.printStackTrace();
       // Avoid skipping
+      System.out.println("fail to register clients...");
     }
   }
 
