@@ -36,9 +36,9 @@ before_install:
   - node --version
   - pip3 install --user awscli
   # Setup ffmpeg to act like libav-tools
-  - sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv && \
-    sudo ln -s /usr/bin/ffplay /usr/bin/avplay && \
-    sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+  - sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
+  - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
+  - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
