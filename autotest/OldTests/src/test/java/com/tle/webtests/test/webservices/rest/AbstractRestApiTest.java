@@ -61,7 +61,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
@@ -74,7 +73,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   protected ObjectMapper mapper;
   protected ApiAssertions asserter;
 
-  protected final List<OAuthClient> clients = Lists.newArrayList();
+  protected List<OAuthClient> clients = Lists.newArrayList();
   private String token;
 
   @BeforeClass
@@ -159,8 +158,19 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   }
 
   protected String getToken() throws IOException {
-    new WebDriverWait(context.getDriver(), 30).until((webDriver -> clients.size() >= 1));
     if (token == null) {
+      if (clients.size() == 0) {
+        System.out.println("clients size is 0 so have to register again");
+        final List<OAuthClient> oauthClients = getOAuthClients();
+        logonOnly("AutoTest", "automated");
+        for (OAuthClient clientInfo : oauthClients) {
+          OAuthUtils.deleteClient(context, clientInfo.getClientId());
+          OAuthUtils.createClient(context, clientInfo);
+          clients.add(clientInfo);
+        }
+        logout();
+        System.out.println("now clients size is " + clients.size());
+      }
       token = requestToken(clients.get(0));
     }
     return token;
@@ -204,6 +214,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
       oClient.setUsername(client.getSecond());
       oClients.add(oClient);
     }
+    System.out.println("oClients'children num:" + oClients.size());
     return oClients;
   }
 
