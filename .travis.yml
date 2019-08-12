@@ -19,8 +19,8 @@ addons:
   postgresql: "9.6"
   apt:
     packages:
-      - chromium
-      - libav-tools
+      - chromium-browser
+      - ffmpeg
       - libimage-exiftool-perl
       - openjdk-8-jdk
       - python3-pip
@@ -34,6 +34,10 @@ before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - pip3 install --user awscli
+  # Setup ffmpeg to act like libav-tools
+  - ln -s /usr/bin/ffmpeg /usr/bin/avconv && \
+    ln -s /usr/bin/ffplay /usr/bin/avplay && \
+    ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
