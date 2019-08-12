@@ -7,7 +7,6 @@ import com.tle.webtests.test.webservices.rest.OAuthClient;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /** @author Aaron */
 public class OAuthSettingsPage extends AbstractPage<OAuthSettingsPage> {
@@ -20,8 +19,15 @@ public class OAuthSettingsPage extends AbstractPage<OAuthSettingsPage> {
 
   @Override
   protected void loadUrl() {
-    driver.get(context.getBaseUrl() + "access/oauthadmin.do");
-    waiter.until(ExpectedConditions.visibilityOfElementLocated(By.id("clientsDiv")));
+    waiter.until(
+        webDriver -> {
+          driver.get(context.getBaseUrl() + "access/oauthadmin.do");
+          return isOauthPageOpen();
+        });
+  }
+
+  private boolean isOauthPageOpen() {
+    return isPresent(By.id("clientsDiv"));
   }
 
   public OAuthClientEditorPage newClient() {
