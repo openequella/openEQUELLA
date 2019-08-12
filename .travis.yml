@@ -150,5 +150,6 @@ jobs:
     #        - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
 
     - stage: update s3
-      script: aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST && \
-        aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
+      script:
+        - aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST
+        - aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
