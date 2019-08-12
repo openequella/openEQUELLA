@@ -164,7 +164,10 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
         final List<OAuthClient> oauthClients = getOAuthClients();
         logonOnly("AutoTest", "automated");
         for (OAuthClient clientInfo : oauthClients) {
-          OAuthUtils.deleteClient(context, clientInfo.getClientId());
+          final String clientName = clientInfo.getClientId();
+          if (OAuthUtils.searchClient(context, clientName)) {
+            OAuthUtils.deleteClient(context, clientName);
+          }
           OAuthUtils.createClient(context, clientInfo);
           clients.add(clientInfo);
         }
