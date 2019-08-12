@@ -218,7 +218,6 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
       oClient.setUsername(client.getSecond());
       oClients.add(oClient);
     }
-    System.out.println("oClients'children num:" + oClients.size());
     return oClients;
   }
 
