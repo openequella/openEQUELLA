@@ -60,7 +60,7 @@ before_script:
 stages:
   - build and check
   - functional test
-  - update s3
+  - finalise
 jobs:
   include:
     - stage: build and check
@@ -148,10 +148,15 @@ jobs:
       env: OLD_TEST_SUITE=workflow
       after_script: ci/oldtests-save-results.sh
 
-    # TODO: Combine results from above and run sbt coverageReport
-    #        - aws s3 cp autotest/target/coverage-report    ${S3_DEST_BUILD}coverage-report/  $S3_CP_OPTS
-
-    - stage: update s3
+    - stage: finalise
       script:
         - aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST
         - aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
+      name: Update S3
+    - stage: finalise
+      script:
+        # Copy down previous stored Jacoco coverage exec files
+        - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD}coverage/ autotest/coverage $S3_CP_OPTS
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" coverageReport
+      name: Generate coverage report
+      after_success: aws s3 $S3_REGION_OPT cp autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
