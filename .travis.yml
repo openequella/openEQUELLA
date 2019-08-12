@@ -11,6 +11,8 @@ env:
     - S3_DEST_LATEST=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
     - S3_REGION_OPT="--region us-east-1"
     - S3_CP_OPTS="--only-show-errors --recursive"
+    # set JAVA_HOME to point to the java 8 APT install
+    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     # include $HOME/.local/bin for `aws`
     - PATH=$HOME/.local/bin:$PATH
 services:
@@ -39,6 +41,8 @@ before_install:
   - sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
   - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
   - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+  # Make sure we're using the APT java 8 install
+  - sudo update-alternatives --set javac $JAVA_HOME/bin/javac
 install:
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
