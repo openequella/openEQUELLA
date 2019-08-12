@@ -15,10 +15,5 @@ public class OAuthUtils {
     oauth.deleteClient(name);
   }
 
-  public static boolean searchClient(PageContext context, String name) {
-    OAuthSettingsPage oauth = new OAuthSettingsPage(context).load();
-    return oauth.clientExists(name);
-  }
-
   public static void deleteTokens(PageContext context) {}
 }

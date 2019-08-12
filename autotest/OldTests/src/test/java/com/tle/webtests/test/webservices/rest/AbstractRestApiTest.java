@@ -6,7 +6,6 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.io.BufferedOutputStream;
@@ -147,11 +146,6 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
     } catch (Exception e) {
       e.printStackTrace();
       // Avoid skipping
-      ScreenshotTaker.takeScreenshot(
-          context.getDriver(),
-          context.getTestConfig().getScreenshotFolder(),
-          "registerClients",
-          true);
     }
   }
 
@@ -165,21 +159,6 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
 
   protected String getToken() throws IOException {
     if (token == null) {
-      if (clients.size() == 0) {
-        System.out.println("clients size is 0 so have to register again");
-        final List<OAuthClient> oauthClients = getOAuthClients();
-        logonOnly("AutoTest", "automated");
-        for (OAuthClient clientInfo : oauthClients) {
-          final String clientName = clientInfo.getClientId();
-          if (OAuthUtils.searchClient(context, clientName)) {
-            OAuthUtils.deleteClient(context, clientName);
-          }
-          OAuthUtils.createClient(context, clientInfo);
-          clients.add(clientInfo);
-        }
-        logout();
-        System.out.println("now clients size is " + clients.size());
-      }
       token = requestToken(clients.get(0));
     }
     return token;
@@ -202,9 +181,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   }
 
   protected String requestToken(String id) throws IOException {
-    System.out.println(id);
     for (OAuthClient client : clients) {
-      System.out.println(client.getClientId());
       if (client.getClientId().equals(id)) {
         return requestToken(client);
       }

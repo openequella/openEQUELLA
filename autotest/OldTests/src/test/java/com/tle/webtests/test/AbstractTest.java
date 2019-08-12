@@ -178,16 +178,13 @@ public abstract class AbstractTest implements HasTestConfig {
       String delValue = testConfig.getProperty("test.deleteitems");
       if (alwaysCleanup() || delValue == null || Boolean.parseBoolean(delValue)) {
         cleanupAfterClass();
-        System.out.println("Successfully cleaned up");
       }
     } catch (Throwable t) {
-      System.out.println("Error during cleanup: ");
       t.printStackTrace();
     }
     try {
       context.getDriver().quit();
     } catch (Throwable t) {
-      System.out.println("Error during cleanup: ");
       t.printStackTrace();
     }
 

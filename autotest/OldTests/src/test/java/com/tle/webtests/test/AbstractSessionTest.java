@@ -32,6 +32,7 @@ public class AbstractSessionTest extends AbstractTest {
   public void logonOnly(String username, String password) {
     LoginPage loginPage = new LoginPage(context).load();
     loginPage.loginWithRedirect(username, password);
+    // If using new UI, ensure the home page is completed loaded.
     if (loginPage.usingNewUI()) {
       loginPage.getWaiter().until(ExpectedConditions.presenceOfElementLocated(By.id("eqpageForm")));
     }
