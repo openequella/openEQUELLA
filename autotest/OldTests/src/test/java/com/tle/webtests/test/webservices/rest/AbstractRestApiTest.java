@@ -6,6 +6,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.io.BufferedOutputStream;
@@ -146,7 +147,11 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
     } catch (Exception e) {
       e.printStackTrace();
       // Avoid skipping
-      System.out.println("fail to register clients...");
+      ScreenshotTaker.takeScreenshot(
+          context.getDriver(),
+          context.getTestConfig().getScreenshotFolder(),
+          "registerClients",
+          true);
     }
   }
 
