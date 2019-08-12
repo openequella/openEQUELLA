@@ -53,6 +53,9 @@ before_script:
   # Setup database for functional tests
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
+  # Diagnostics: Display java version info
+  - java -version
+  - javac -version
 
 stages:
   - build and check
