@@ -42,6 +42,13 @@ public class ConfirmationDialog extends AbstractPage<ConfirmationDialog> {
     return page.get();
   }
 
+  public WizardErrorPage publishErrorPage(WizardErrorPage page) {
+    confirm(ConfirmButton.PUBLISH);
+    // Wait for the error page is completed loaded
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error")));
+    return page.get();
+  }
+
   public SummaryPage publish() {
     confirm(ConfirmButton.PUBLISH);
     return new SummaryPage(context).get();
