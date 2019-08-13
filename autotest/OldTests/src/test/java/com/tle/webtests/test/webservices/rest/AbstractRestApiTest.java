@@ -73,7 +73,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   protected ObjectMapper mapper;
   protected ApiAssertions asserter;
 
-  protected List<OAuthClient> clients = Lists.newArrayList();
+  protected final List<OAuthClient> clients = Lists.newArrayList();
   private String token;
 
   @BeforeClass
@@ -151,7 +151,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
 
   @Override
   protected void cleanupAfterClass() throws Exception {
-    logon("AutoTest", "automated");
+    logonOnly("AutoTest", "automated");
     for (OAuthClient client : clients) {
       OAuthUtils.deleteClient(context, client.getClientId());
     }
@@ -405,7 +405,6 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
    * SearchBean class
    */
   protected JsonNode containsInSearchBeanResult(JsonNode json, String lookFor, String lookIn) {
-    System.out.println(json);
     int available = json.get("available").asInt();
     JsonNode results = json.get("results");
 
