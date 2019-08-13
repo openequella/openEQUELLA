@@ -51,9 +51,8 @@ public class DRMTest extends AbstractSessionTest {
             .exactQuery("Link to " + name)
             .getResult(1)
             .viewSummary();
-    if (!item
-        .usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-                         // viewFullScreen in the new UI.
+    if (!item.usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
+      // viewFullScreen in the new UI.
       PackageViewer pack =
           item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
       testItem(pack, name, allowComp);
@@ -83,9 +82,9 @@ public class DRMTest extends AbstractSessionTest {
             .getResult(1)
             .viewSummary(getAgree())
             .preview(new SummaryPage(context));
-    if (!item
-        .usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-                         // viewFullScreen in the new UI.
+    // Remove when #1160 is fixed. Currently a bug exists that prevents
+    // viewFullScreen in the new UI.
+    if (!item.usingNewUI()) {
       PackageViewer pack = item.attachments().viewFullscreen();
 
       testItem(pack, name, allowComp);
@@ -115,9 +114,9 @@ public class DRMTest extends AbstractSessionTest {
             .exactQuery("Link to Summary of " + name)
             .getResult(1)
             .viewSummary();
-    if (!item
-        .usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-                         // viewFullScreen in the new UI.
+    // Remove when #1160 is fixed. Currently a bug exists that prevents
+    // viewFullScreen in the new UI.
+    if (!item.usingNewUI()) {
       PackageViewer pack =
           item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
       pack = pack.clickAttachment(name);
@@ -223,7 +222,7 @@ public class DRMTest extends AbstractSessionTest {
     // Viewing attachments shows acceptance
     if (!summaryPage
         .usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-                         // viewFullScreen in the new UI.
+      // viewFullScreen in the new UI.
       summaryPage
           .attachments()
           .viewAttachment("Start: Biscuit factory: complex ratios", getDialogAgree())
