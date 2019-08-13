@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -47,12 +49,13 @@ public class QuotaExceedTest extends AbstractSessionTest {
     WizardPageTab wizardPage = contributePage.openWizard(GENERIC_TESTING_COLLECTION);
     wizardPage.editbox(1, "Massive file");
     wizardPage.addSingleFile(4, twoMegFile.toURL());
-    Assert.assertTrue(
-        wizardPage
-            .save()
-            .publishInvalid(new WizardErrorPage(context))
-            .getError()
-            .startsWith("Maximum user quota of 1 MB exceeded. "));
+    WizardErrorPage errorPage = wizardPage.save().publishInvalid(new WizardErrorPage(context));
+    // Wait for the error page is completed loaded
+    errorPage
+        .getWaiter()
+        .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error")));
+    String errorText = errorPage.getError();
+    Assert.assertTrue(errorText.startsWith("Maximum user quota of 1 MB exceeded. "));
 
     contributePage = new ContributePage(context).load();
     wizardPage = contributePage.openWizard(GENERIC_TESTING_COLLECTION);
