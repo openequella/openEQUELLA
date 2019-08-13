@@ -157,6 +157,11 @@ jobs:
       script:
         # Copy down previous stored Jacoco coverage exec files
         - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD}coverage/ autotest/coverage $S3_CP_OPTS
-        - sbt -jvm-opts autotest/.jvmopts "project autotest" coverageReport
+        # First we need to installEquella so that it extracts the install zip with all the JARs and
+        # as a result all the class files which Jacoco needs to map against to generate the
+        # coverageReport
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" installEquella coverageReport
       name: Generate coverage report
-      after_success: aws s3 $S3_REGION_OPT cp autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
+      after_success:
+        - aws s3 $S3_REGION_OPT cp autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
+        - echo "Report is available at https://edalexdev.s3.amazonaws.com/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/coverage-report/index.html"
