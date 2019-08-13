@@ -47,12 +47,10 @@ public class QuotaExceedTest extends AbstractSessionTest {
     WizardPageTab wizardPage = contributePage.openWizard(GENERIC_TESTING_COLLECTION);
     wizardPage.editbox(1, "Massive file");
     wizardPage.addSingleFile(4, twoMegFile.toURL());
-    Assert.assertTrue(
-        wizardPage
-            .save()
-            .publishInvalid(new WizardErrorPage(context))
-            .getError()
-            .startsWith("Maximum user quota of 1 MB exceeded. "));
+
+    WizardErrorPage errorPage = wizardPage.save().publishErrorPage(new WizardErrorPage(context));
+    String errorText = errorPage.getError();
+    Assert.assertTrue(errorText.startsWith("Maximum user quota of 1 MB exceeded. "));
 
     contributePage = new ContributePage(context).load();
     wizardPage = contributePage.openWizard(GENERIC_TESTING_COLLECTION);
