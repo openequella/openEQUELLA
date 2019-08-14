@@ -1,0 +1,20 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: Contribution
+    classes:
+      - com.tle.webtests.test.contribute.ContributeXmlTest
+      - com.tle.webtests.test.contribute.DiscoverabilityTest
+      - com.tle.webtests.test.contribute.EquellaConnectorTest
+      - com.tle.webtests.test.contribute.ItemUnlock
+      - com.tle.webtests.test.contribute.MetadataMappingTest
+      - com.tle.webtests.test.contribute.QuotaExceedTest
+      - com.tle.webtests.test.contribute.ResumableWizardsTest
+      - com.tle.webtests.test.contribute.SelectAndDisplayThumbnailTest
+      - com.tle.webtests.test.contribute.SelectionSessionTest
+      - com.tle.webtests.test.contribute.StaticMetadataTest
+      - com.tle.webtests.test.contribute.UniquenessTest
+      - com.tle.webtests.test.contribute.VaryingContribPageNmbrSaveTest
+      - com.tle.webtests.test.contribute.WizardBreadcrumbs
+      - com.tle.webtests.test.contribute.WizardConfigTest

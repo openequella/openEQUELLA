@@ -1,0 +1,26 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: Searching
+    classes:
+      - com.tle.webtests.test.searching.BrowsebyTest
+      - com.tle.webtests.test.searching.CloudSearchingTest
+      - com.tle.webtests.test.searching.GallerySearchTest
+      - com.tle.webtests.test.searching.GuidedSearchingTest
+      - com.tle.webtests.test.searching.PowerSearchTest
+      - com.tle.webtests.test.searching.SearchAutoCompleteTest
+      - com.tle.webtests.test.searching.SearchEnhancementsTest
+      - com.tle.webtests.test.searching.SearchFiltersTest
+      - com.tle.webtests.test.searching.SearchSettingsTest
+      - com.tle.webtests.test.searching.SearchUrlSupportedParamsTest
+      - com.tle.webtests.test.searching.UTF8SearchingTest
+      - com.tle.webtests.test.searching.manage.BulkMetadataEditTest
+      - com.tle.webtests.test.searching.manage.BulkScriptExecutionTest
+      - com.tle.webtests.test.searching.manage.ManageResourcesFavouritesTest
+      - com.tle.webtests.test.searching.manage.ManageResourcesNoScrapbookTest
+      - com.tle.webtests.test.searching.manage.ManageResourcesSearchTest
+      - com.tle.webtests.test.searching.indexing.AutomaticIndexingOfCommentsTest
+      - com.tle.webtests.test.searching.indexing.AutomaticIndexingTest
+      - com.tle.webtests.test.searching.indexing.FileIndexingTest
+      - com.tle.webtests.test.searching.hierarchy.HierarchyTopicTest

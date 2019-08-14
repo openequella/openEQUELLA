@@ -1,32 +1,167 @@
 language: scala
-cache:
-  directories:
-    - "$HOME/.ivy2"
-    - "$HOME/.cache"
-    - "$HOME/.sbt"
-jdk:
-  - openjdk8
-before_install:
-  - nvm install $NODE_JS_VERSION
-  - node --version
-  - sudo apt-get install -y awscli
-install:
-  - git fetch --unshallow
-  - npm install && npm run check
-  - sbt headerCheck
-  - sbt checkJavaCodeStyle || (aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ ; exit 1)
-script:
-  - sbt test installerZip writeLanguagePack writeScriptingJavadoc
-  - cd import-export-tool && ./gradlew build && cd ..
-after_success:
-  - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp target/scriptingapi-javadoc-*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 rm --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
-  - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
+dist: bionic
 env:
   global:
     - secure: t1XK7R/R3+gYgJCL+YNFPfpew+QZXl5b7jFkfNOwKDG+gGEApZCrx5NNkA+anPbK4VLnmjGz4EgIItfsSOmEQL6W4jr1MiD6cQV8RV9tYHhPmfPiJy0aDWOgIWIxPtpzAcSvgkZzCheHxY8PGbTi+XStRMfF6/Iat6cN7erHcO9Ur3ri10uas01xPaJJC+naXZGx0JZDTRLmGc8GFzgOwaiIUWOzPZyqsqnBEytvyuJFGe1BUfVEvr4UUb/LBiH0UgpganncFy2WHX+CWT8VFemIoNCM7jAp5oKCTHWyEH72WzGGo6+RCnmJs3Loc+6IUT2M7qNhEm8+PmQwWL9d5ihb6OSnJG9u+Pmq88E+E0eOzZnhQ3XpRjI1CRYYOKi8RBPAjlGDYBMSOo0HRzDJnuU+ZdwdJCZ0x7a/2xCgpxA2YpH+FycGWQo9b+n5JYl++n7gfaJhVcbxrob5TfcgDyj4M3Mkr0bsAwueYG1hY9vFNq9wbgFXA5UPL/khJt9OtR3akEBnrx9lySK0tXtq7zj+KKit92Ty+EfhtEF29IHHHn/pyvFBzWjO1VqsRm+cnOIyY2nLz9D8SZGaaJy7elbXc+PLjd8eHSwX/dY7DyB4MO0td4E40H+Wwxy0pfZXW5x+tdo0UGLBb9i5OoLuKFcRjmj02WcIi6TqJ3EbNdQ=
     - secure: fao/RBFgwO/kaxMGbAsR2xuQgnXebRSPgIrASx/W7ELrZoHB3Jvz5ES7danGYXfONUKaPCdqe1/JTm34aDrp/sER6CMYlz4LvlzzhxV+ajo1kFqgzaUWquzGtQ3STXu5BiPEITVqm4CYOZ8bB7yr3HnmPRBOPvJIG0xg3Cehwz0Ux8Yc/YFJbfpr9p97U+x+JJfa+g1sRRXTQHUPdTl3uBJOtk5shCWoDSJl0Axe1gJ37gNUnJOZUwL6Ejb2Hlv2CuxBjglIZ7mhJkOiL9ALbNDOsjp+Xx6ieSSEVAEmqtQdzAVO63GmXVBQcyWIrisgLzTRbMM0ZPtraUXgN6b44ijw6kS5miQvd0vDenFVailgyizjqO28n1xhYyX+uEqz+BMFS4VybTKSdZHjDHRHhFXK6oSqcmKN941X+LsGu7rWp5aVyu1hJjaKz3InjheZphILY7sbLEzoOckicH3TikliwxNEbUCFUOtkmutY+B3SVy9SNyoCW2vjhbiP9ZeXW0hxjG0SvJxOXzWJknY4cnpO7ee5UcBDYmlSdOlA192FO4UfyqgHrL5hVRCYKGB2xD+XHy+XYKFUV+VpWiiMQXCxV1FmRHeZlS144/07H+DIlkeUapLn7Cdj/NhDjSn9fXnSNbA/qbs9aIYm1Wx4pRoj0S2iVRe4FE6RFJWMgyk=
     - NODE_JS_VERSION=8.11.3
+    - AUTOTEST_CONFIG=autotest/travis.conf
+    - EQ_EXIFTOOL_PATH=/usr/bin/exiftool
+    - S3_DEST_BUILD=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+    - S3_DEST_LATEST=s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
+    - S3_REGION_OPT="--region us-east-1"
+    - S3_CP_OPTS="--only-show-errors --recursive"
+    # set JAVA_HOME to point to the java 8 APT install
+    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    # include $HOME/.local/bin for `aws`, and $JAVA_HOME/bin to force use of APT installed Java 8
+    - PATH=$JAVA_HOME/bin:$HOME/.local/bin:$PATH
+services:
+  - postgresql
+addons:
+  postgresql: "9.6"
+  apt:
+    packages:
+      - chromium-browser
+      - ffmpeg
+      - libimage-exiftool-perl
+      - openjdk-8-jdk
+      - python3-pip
+      - python3-setuptools
+cache:
+  directories:
+    - "$HOME/.ivy2"
+    - "$HOME/.cache"
+    - "$HOME/.sbt"
+
+before_install:
+  - nvm install $NODE_JS_VERSION
+  - node --version
+  - pip3 install --user awscli
+  # Setup ffmpeg to act like libav-tools
+  - sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
+  - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
+  - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+install:
+  - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
+  # Copy down the installer from the build stage - if available
+  - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD} Installer/target/ --recursive --exclude "*" --include "equella-installer*.zip"
+  # retrieve full git history for automatic versioning
+  - git fetch --unshallow
+before_script:
+  # Setup database for functional tests
+  - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
+  - psql -c "CREATE DATABASE equellatests WITH OWNER = equellatests;" -U postgres
+  # Diagnostics: Display java version info
+  - which java javac
+  - java -version
+  - javac -version
+
+stages:
+  - build and check
+  - functional test
+  - finalise
+jobs:
+  include:
+    - stage: build and check
+      script:
+        - npm install && npm run check
+        - sbt headerCheck checkJavaCodeStyle
+      name: Check headers, code style and static analysis
+      after_failure: aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD
+    - stage: build and check
+      script: sbt installerZip writeLanguagePack writeScriptingJavadoc
+      name: Build primary artefacts
+      after_success:
+        - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
+        - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
+    - stage: build and check
+      script: sbt test
+      name: Unit test
+    - stage: build and check
+      script: ci/import-export-tool-build.sh
+      name: Build the Import/Export tool
+
+    - stage: functional test
+      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
+        installEquella startEquella configureInstall setupForTests \
+        Tests/test dumpCoverage
+      name: Scalacheck
+      after_script:
+        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests    $S3_CP_OPTS
+        - ci/coverage-save-results.sh
+    - stage: functional test
+      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
+        installEquella startEquella configureInstall setupForTests \
+        Tests/Serial/test dumpCoverage
+      name: Scalacheck Serial
+      after_script:
+        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-serial-tests/ $S3_CP_OPTS
+        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial    $S3_CP_OPTS
+        - ci/coverage-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (admin)
+      env: OLD_TEST_SUITE=admin
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (advanced script controls - asc)
+      env: OLD_TEST_SUITE=asc
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (contribution)
+      env: OLD_TEST_SUITE=contribution
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (controls)
+      env: OLD_TEST_SUITE=controls
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (searching)
+      env: OLD_TEST_SUITE=searching
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (users)
+      env: OLD_TEST_SUITE=users
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (viewing)
+      env: OLD_TEST_SUITE=viewing
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (webservices)
+      env: OLD_TEST_SUITE=webservices
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (workflow)
+      env: OLD_TEST_SUITE=workflow
+      after_script: ci/oldtests-save-results.sh
+
+    - stage: finalise
+      script:
+        - aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST
+        - aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
+      name: Update S3
+    - stage: finalise
+      script:
+        # Copy down previous stored Jacoco coverage exec files
+        - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD}coverage/ autotest/coverage $S3_CP_OPTS
+        # First we need to installEquella so that it extracts the install zip with all the JARs and
+        # as a result all the class files which Jacoco needs to map against to generate the
+        # coverageReport
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" installEquella coverageReport
+      name: Generate coverage report
+      after_success:
+        - aws s3 $S3_REGION_OPT cp autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
+        - echo "Report is available at https://edalexdev.s3.amazonaws.com/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/coverage-report/index.html"
