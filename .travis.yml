@@ -105,7 +105,9 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (admin)
-      env: OLD_TEST_SUITE=admin
+      env:
+        - OLD_TEST_SUITE=admin OLD_TEST_NEWUI=false
+        - OLD_TEST_SUITE=admin OLD_TEST_NEWUI=true
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
