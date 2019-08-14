@@ -31,6 +31,7 @@ import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
+import com.tle.web.api.users.interfaces.beans.UsersAndGroupsBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 import io.swagger.annotations.ApiOperation;
@@ -302,5 +303,11 @@ public class GroupManagementResourceImpl implements EquellaGroupResource {
     return urlLinkService
         .getMethodUriBuilder(EquellaGroupResource.class, "getGroup")
         .build(userUuid);
+  }
+
+  @Override
+  public Response assignGroups(UsersAndGroupsBean group, boolean removeOthers) {
+    tleGroupService.assignUsersToGroups(group.getGroups(), group.getUsers(), removeOthers);
+    return Response.noContent().build();
   }
 }

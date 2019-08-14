@@ -20,6 +20,7 @@ package com.tle.core.usermanagement.standard.service;
 
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.remoting.RemoteTLEGroupService;
+import java.util.Collection;
 import java.util.List;
 
 public interface TLEGroupService extends RemoteTLEGroupService {
@@ -38,4 +39,7 @@ public interface TLEGroupService extends RemoteTLEGroupService {
   void removeAllUsersFromGroup(String groupUuid);
 
   String prepareQuery(String searchString);
+
+  void assignUsersToGroups(
+      Collection<String> groups, Collection<String> users, boolean removeExisting);
 }

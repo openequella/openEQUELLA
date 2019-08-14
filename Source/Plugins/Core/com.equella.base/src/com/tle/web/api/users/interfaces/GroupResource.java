@@ -21,6 +21,7 @@ package com.tle.web.api.users.interfaces;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
+import com.tle.web.api.users.interfaces.beans.UsersAndGroupsBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -69,4 +70,12 @@ public interface GroupResource {
   @Path("/")
   @ApiOperation("Add a group")
   public Response addGroup(@ApiParam GroupBean group);
+
+  @POST
+  @Path("/assign")
+  @ApiOperation("Add users to groups")
+  public Response assignGroups(
+      @ApiParam UsersAndGroupsBean group,
+      @ApiParam("Remove the users from their other groups") @QueryParam("removeOthers")
+          boolean removeOthers);
 }

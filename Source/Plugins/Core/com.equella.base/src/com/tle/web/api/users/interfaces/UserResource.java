@@ -76,6 +76,7 @@ public interface UserResource {
       @Context UriInfo uriInfo,
       @ApiParam(required = false) @QueryParam("q") String query,
       @ApiParam(required = false) @QueryParam("group") String parentGroupId,
+      @ApiParam(required = false) @QueryParam("length") Integer length,
       @ApiParam(
               value = "Search the specified group's child groups as well",
               required = false,

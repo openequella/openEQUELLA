@@ -69,7 +69,7 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
   @Override
   @SuppressWarnings("unchecked")
   public List<TLEUser> searchUsersInGroup(
-      String userQuery, final String parentGroupID, boolean recurse) {
+      String userQuery, final String parentGroupID, int max, boolean recurse) {
     // Prep the query by converting all *'s to %'s and lowercase it.
     userQuery = userQuery.replace('*', '%').toLowerCase();
 
@@ -124,6 +124,7 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
                 if (!Check.isEmpty(parentGroupID)) {
                   query.setParameter("groupID", parentGroupID);
                 }
+                query.setMaxResults(max);
 
                 return query.list();
               }

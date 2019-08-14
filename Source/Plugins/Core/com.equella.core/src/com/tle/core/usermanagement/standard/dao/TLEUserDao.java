@@ -29,7 +29,8 @@ public interface TLEUserDao extends GenericDao<TLEUser, Long> {
 
   List<TLEUser> listAllUsers();
 
-  List<TLEUser> searchUsersInGroup(String likeQuery, String parentGroupID, boolean recurse);
+  List<TLEUser> searchUsersInGroup(
+      String likeQuery, String parentGroupID, int max, boolean recurse);
 
   void deleteAll();
 

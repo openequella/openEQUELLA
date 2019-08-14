@@ -419,4 +419,18 @@ public class TLEGroupServiceImpl
 
     return searchString;
   }
+
+  @Override
+  @Transactional
+  @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
+  public void assignUsersToGroups(
+      Collection<String> groups, Collection<String> users, boolean removeOthers) {
+    if (removeOthers) {
+      users.forEach(u -> dao.getGroupsContainingUser(u).forEach(g -> g.getUsers().remove(u)));
+    }
+    List<TLEGroup> groupsToEdit = dao.getInformationForGroups(groups);
+    for (TLEGroup group : groupsToEdit) {
+      group.getUsers().addAll(users);
+    }
+  }
 }

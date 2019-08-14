@@ -16,29 +16,28 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.web.api.users.interfaces.beans;
 
-import com.tle.beans.user.TLEUser;
-import java.util.List;
+import java.util.Set;
 
-public interface RemoteTLEUserService {
-  String add(TLEUser newUser);
+public class UsersAndGroupsBean {
 
-  String add(TLEUser newUser, boolean passwordNotHashed);
+  private Set<String> users;
+  private Set<String> groups;
 
-  String add(TLEUser newUser, List<String> groups);
+  public void setGroups(Set<String> groups) {
+    this.groups = groups;
+  }
 
-  String add(String username, List<String> groups);
+  public void setUsers(Set<String> users) {
+    this.users = users;
+  }
 
-  TLEUser get(String id);
+  public Set<String> getGroups() {
+    return groups;
+  }
 
-  TLEUser getByUsername(String username);
-
-  String edit(TLEUser user, boolean passwordNotHashed);
-
-  void delete(String uuid);
-
-  List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
-
-  List<TLEUser> searchUsers(String query, String parentGroupID, int max, boolean recursive);
+  public Set<String> getUsers() {
+    return users;
+  }
 }

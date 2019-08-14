@@ -18,13 +18,14 @@
 
 package com.tle.web.api.usermanagement;
 
-import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.exceptions.AccessDeniedException;
@@ -62,7 +63,7 @@ public class UserManagementResourceImpl implements EquellaUserResource {
 
   @Override
   public SearchBean<UserBean> list(
-      UriInfo uriInfo, String query, String parentGroupId, boolean recursive) {
+      UriInfo uriInfo, String query, String parentGroupId, Integer length, boolean recursive) {
     ensurePriv();
     SearchBean<UserBean> result = new SearchBean<UserBean>();
 
@@ -70,7 +71,9 @@ public class UserManagementResourceImpl implements EquellaUserResource {
     // wrap it as a wildcard
     String q = (query == null ? "" : tleUserService.prepareQuery(query));
 
-    List<TLEUser> rawResults = tleUserService.searchUsers(q, parentGroupId, recursive);
+    List<TLEUser> rawResults =
+        tleUserService.searchUsers(
+            q, parentGroupId, length != null ? length : Integer.MAX_VALUE, recursive);
     List<UserBean> resultsOfBeans = Lists.newArrayList();
 
     for (TLEUser tleUser : rawResults) {
@@ -86,6 +89,25 @@ public class UserManagementResourceImpl implements EquellaUserResource {
     return result;
   }
 
+  private boolean setPassword(UserBean userBean, TLEUser tleUser, boolean forcePassword) {
+    UserExportBean exportDetails = userBean.getExportDetails();
+    final String newHashedPassword =
+        (exportDetails == null ? null : exportDetails.getPasswordHash());
+    if (newHashedPassword != null) {
+      tleUser.setPassword(newHashedPassword);
+      return false;
+    }
+    Object password = userBean.get("password");
+    if (password != null) {
+      String stringPass = (String) password;
+      tleUser.setPassword(stringPass);
+    } else if (forcePassword) {
+      tleUser.setPassword("");
+    } else return false;
+
+    return true;
+  }
+
   /**
    * generate a new UUID if the caller hasn't provided one.
    *
@@ -99,15 +121,15 @@ public class UserManagementResourceImpl implements EquellaUserResource {
         userBean.setId(UUID.randomUUID().toString());
       }
       TLEUser tleUser = populateTLEUser(userBean);
-      UserExportBean exportDetails = userBean.getExportDetails();
-      if (exportDetails != null) {
-        tleUser.setPassword(exportDetails.getPasswordHash());
-      }
+      boolean passwordNotHashed = setPassword(userBean, tleUser, true);
 
-      String surelythesameuuid = tleUserService.add(tleUser, false);
-      return Response.status(Status.CREATED).location(getSelfLink(surelythesameuuid)).build();
+      String surelythesameuuid = tleUserService.add(tleUser, passwordNotHashed);
+      return Response.status(Status.CREATED)
+          .header("X-UUID", surelythesameuuid)
+          .location(getSelfLink(surelythesameuuid))
+          .build();
     } catch (InvalidDataException ide) {
-      return Response.status(Status.BAD_REQUEST).build();
+      return Response.status(Status.BAD_REQUEST).entity(ide.getErrorsAsMap()).build();
     } catch (Throwable t) {
       LOGGER.error("Error adding user", t);
       throw t;
@@ -118,45 +140,23 @@ public class UserManagementResourceImpl implements EquellaUserResource {
   public Response editUser(String uuid, UserBean userBean) {
     String userId = userBean.getId();
     if (userId != null && !uuid.equals(userId)) {
-      return Response.status(Status.BAD_REQUEST).build();
+      return Response.status(Status.BAD_REQUEST)
+          .entity(ImmutableMap.of("id", CoreStrings.text("userapi.differentid")))
+          .build();
     }
 
     try {
       TLEUser uneditedUser = tleUserService.get(uuid);
-
-      String hashedPassword = uneditedUser.getPassword();
-      // if there's a password value in the userbean, and it's different
-      // from what already exists (which we see as a hashed value), then
-      // we assume the caller intends update the password value with a new
-      // value presented in its unhashed form.
-
-      boolean passwordVaries = false;
-      // if there's no password value in the incoming argument, we ensure
-      // that the existing value is sent into the update
-      UserExportBean exportDetails = userBean.getExportDetails();
-      final String newHashedPassword =
-          (exportDetails == null ? null : exportDetails.getPasswordHash());
-      if (!Check.isEmpty(newHashedPassword)) {
-        passwordVaries = !Objects.equal(hashedPassword, newHashedPassword);
-      }
-
-      // Now impose all the beans values - including password be it old
-      // (hashed) or new (unhashed) - in to a TLEUser entity, and commit
-      // update
       if (userId == null) {
         userBean.setId(uuid);
       }
-
       TLEUser editedUser = populateTLEUser(userBean, uneditedUser);
-      if (passwordVaries) {
-        editedUser.setPassword(newHashedPassword);
-      }
-
-      String postFactoUuid = tleUserService.edit(editedUser, passwordVaries);
+      boolean passwordNotHashed = setPassword(userBean, editedUser, false);
+      String postFactoUuid = tleUserService.edit(editedUser, passwordNotHashed);
 
       return Response.ok(postFactoUuid).build();
     } catch (InvalidDataException ide) {
-      return Response.status(Status.BAD_REQUEST).build();
+      return Response.status(Status.BAD_REQUEST).entity(ide.getErrorsAsMap()).build();
     } catch (Throwable t) {
       LOGGER.error("Error editing user", t);
       throw t;
