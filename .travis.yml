@@ -112,12 +112,12 @@ jobs:
     # Advanced Script Controls
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (advanced script controls - asc)
+      name: TestNG (advanced script controls - ASC)
       env: OLD_TEST_SUITE=asc
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (advanced script controls - asc)
+      name: TestNG (advanced script controls - ASC - new UI)
       env:
         - OLD_TEST_SUITE=asc
         - OLD_TEST_NEWUI=true
@@ -130,7 +130,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (contribution)
+      name: TestNG (contribution - new UI)
       env:
         - OLD_TEST_SUITE=contribution
         - OLD_TEST_NEWUI=true
@@ -143,7 +143,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (controls)
+      name: TestNG (controls - new UI)
       env:
         - OLD_TEST_SUITE=controls
         - OLD_TEST_NEWUI=true
@@ -156,7 +156,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (searching)
+      name: TestNG (searching - new UI)
       env:
         - OLD_TEST_SUITE=searching
         - OLD_TEST_NEWUI=true
@@ -169,7 +169,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (users)
+      name: TestNG (users - new UI)
       env:
         - OLD_TEST_SUITE=users
         - OLD_TEST_NEWUI=true
@@ -182,7 +182,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (viewing)
+      name: TestNG (viewing - new UI)
       env:
         - OLD_TEST_SUITE=viewing
         - OLD_TEST_NEWUI=true
@@ -195,7 +195,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (webservices)
+      name: TestNG (webservices - new UI)
       env:
         - OLD_TEST_SUITE=webservices
         - OLD_TEST_NEWUI=true
@@ -208,7 +208,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
-      name: TestNG (workflow)
+      name: TestNG (workflow - new UI)
       env:
         - OLD_TEST_SUITE=workflow
         - OLD_TEST_NEWUI=true
