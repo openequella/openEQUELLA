@@ -51,8 +51,9 @@ public class DRMTest extends AbstractSessionTest {
             .exactQuery("Link to " + name)
             .getResult(1)
             .viewSummary();
-    if (!item.usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-      // viewFullScreen in the new UI.
+    // Remove when #1160 is fixed. Currently a bug exists that prevents
+    // viewFullScreen in the new UI.
+    if (!item.usingNewUI()) {
       PackageViewer pack =
           item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
       testItem(pack, name, allowComp);

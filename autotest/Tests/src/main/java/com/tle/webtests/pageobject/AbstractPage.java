@@ -524,12 +524,6 @@ public abstract class AbstractPage<T extends PageObject>
     return context.getTestConfig().isNewUI();
   }
 
-  // Modifying isNewUI requires more changes in sub-classes,
-  // so temporarily add this method for DiscoverabilityTest
-  public boolean isNewUiForTest() {
-    return context.getTestConfig().isNewUI();
-  }
-
   protected Object executeSubmit(String args) {
     String submitFunc = isNewUI() ? "EQ.event" : "_subev";
     return ((JavascriptExecutor) driver).executeScript(submitFunc + args);

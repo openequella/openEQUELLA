@@ -28,7 +28,7 @@ public class DiscoverabilityTest extends AbstractCleanupTest {
 
     SummaryPage summary = wizard.save().publish();
     // Skip this check for new UI until Github issue #1148 is fixed
-    if (!summary.isNewUiForTest()) {
+    if (!summary.usingNewUI()) {
       assertTrue(summary.hasMeta("citation_title", fullName));
       assertTrue(summary.hasMeta("citation_description", description));
     }
@@ -49,7 +49,7 @@ public class DiscoverabilityTest extends AbstractCleanupTest {
     // New UI implements the badge and banner very differently,
     // so it's pointless to check these two sections.
     // This is NOT a bug.
-    if (!summary.isNewUiForTest()) {
+    if (!summary.usingNewUI()) {
       assertTrue(summary.badgeIsADiv());
       assertTrue(summary.bannerIsADiv());
     }
@@ -69,7 +69,7 @@ public class DiscoverabilityTest extends AbstractCleanupTest {
 
     HarvestPage harvestPage = new HarvestPage(context).load();
     // Skip this check for new UI until Github issue #1148 is fixed
-    if (!harvestPage.isNewUiForTest()) {
+    if (!harvestPage.usingNewUI()) {
       assertTrue(harvestPage.hasMeta("robots", "noindex, follow"));
     }
 
