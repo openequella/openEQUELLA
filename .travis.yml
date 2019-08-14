@@ -89,26 +89,27 @@ jobs:
         installEquella startEquella configureInstall setupForTests \
         Tests/test dumpCoverage
       name: Scalacheck
-      after_script:
-        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-tests/ $S3_CP_OPTS
-        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests    $S3_CP_OPTS
-        - ci/coverage-save-results.sh
+      after_script: ci/scalacheck-save-results.sh Tests
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         Tests/Serial/test dumpCoverage
       name: Scalacheck Serial
-      after_script:
-        - aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports ${S3_DEST_BUILD}scalacheck-serial-tests/ $S3_CP_OPTS
-        - aws s3 $S3_REGION_OPT cp autotest/equella-install/logs      ${S3_DEST_BUILD}oeq-logs/Tests-Serial    $S3_CP_OPTS
-        - ci/coverage-save-results.sh
+      after_script: ci/scalacheck-save-results.sh Tests-Serial
+    # Admin
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (admin)
-      env:
-        - OLD_TEST_SUITE=admin OLD_TEST_NEWUI=false
-        - OLD_TEST_SUITE=admin OLD_TEST_NEWUI=true
+      env: OLD_TEST_SUITE=admin
       after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (admin - new UI)
+      env:
+        - OLD_TEST_SUITE=admin
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Advanced Script Controls
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (advanced script controls - asc)
@@ -116,9 +117,25 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      name: TestNG (advanced script controls - asc)
+      env:
+        - OLD_TEST_SUITE=asc
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Contribution
+    - stage: functional test
+      script: ci/oldtests-run.sh
       name: TestNG (contribution)
       env: OLD_TEST_SUITE=contribution
       after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (contribution)
+      env:
+        - OLD_TEST_SUITE=contribution
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Controls
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (controls)
@@ -126,9 +143,25 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      name: TestNG (controls)
+      env:
+        - OLD_TEST_SUITE=controls
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Searching
+    - stage: functional test
+      script: ci/oldtests-run.sh
       name: TestNG (searching)
       env: OLD_TEST_SUITE=searching
       after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (searching)
+      env:
+        - OLD_TEST_SUITE=searching
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Users
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (users)
@@ -136,9 +169,25 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      name: TestNG (users)
+      env:
+        - OLD_TEST_SUITE=users
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Viewing
+    - stage: functional test
+      script: ci/oldtests-run.sh
       name: TestNG (viewing)
       env: OLD_TEST_SUITE=viewing
       after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (viewing)
+      env:
+        - OLD_TEST_SUITE=viewing
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Webservices
     - stage: functional test
       script: ci/oldtests-run.sh
       name: TestNG (webservices)
@@ -146,8 +195,23 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      name: TestNG (webservices)
+      env:
+        - OLD_TEST_SUITE=webservices
+        - OLD_TEST_NEWUI=true
+      after_script: ci/oldtests-save-results.sh
+    # Workflow
+    - stage: functional test
+      script: ci/oldtests-run.sh
       name: TestNG (workflow)
       env: OLD_TEST_SUITE=workflow
+      after_script: ci/oldtests-save-results.sh
+    - stage: functional test
+      script: ci/oldtests-run.sh
+      name: TestNG (workflow)
+      env:
+        - OLD_TEST_SUITE=workflow
+        - OLD_TEST_NEWUI=true
       after_script: ci/oldtests-save-results.sh
 
     - stage: finalise

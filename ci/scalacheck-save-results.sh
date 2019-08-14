@@ -1,19 +1,16 @@
 #!/bin/sh
 
 SCRIPTS_DIR=`dirname $0`
-SUFFIX=testng-${OLD_TEST_SUITE}
-if [ ${OLD_TEST_NEWUI} ]; then
-    SUFFIX="${SUFFIX}-new"
-fi
+SUFFIX=scalacheck-$1
 
-echo Copying TestNG results
-aws s3 $S3_REGION_OPT cp autotest/OldTests/target/testng \
+echo Saving Scalacheck results
+aws s3 $S3_REGION_OPT cp autotest/Tests/target/test-reports \
   ${S3_DEST_BUILD}${SUFFIX}/ \
   $S3_CP_OPTS
 
 echo Copying oEQ log
 aws s3 $S3_REGION_OPT cp autotest/equella-install/logs \
-  ${S3_DEST_BUILD}oeq-logs/${SUFFIX}/ \
+  ${S3_DEST_BUILD}oeq-logs/${SUFFIX} \
   $S3_CP_OPTS
 
 echo Saving screenshots
