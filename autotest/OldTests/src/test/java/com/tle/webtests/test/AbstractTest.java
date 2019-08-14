@@ -180,13 +180,11 @@ public abstract class AbstractTest implements HasTestConfig {
         cleanupAfterClass();
       }
     } catch (Throwable t) {
-      System.err.println("Error during cleanup: ");
       t.printStackTrace();
     }
     try {
       context.getDriver().quit();
     } catch (Throwable t) {
-      System.err.println("Error during cleanup: ");
       t.printStackTrace();
     }
 

@@ -42,11 +42,11 @@ public class LinkPage extends AbstractPage<LinkPage> {
     return target.get();
   }
 
-  public PackageViewer clickLink() {
+  public PackageViewer clickLink(PageContext pageContext) {
     driver.switchTo().frame(0);
     driver.findElement(By.xpath("//p/span/a[text()='Music History - The Beatles']")).click();
 
-    return new PackageViewer(context).get();
+    return new PackageViewer(pageContext).get();
   }
 
   public PackageViewer clickLink2() {

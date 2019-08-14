@@ -134,7 +134,9 @@ public abstract class AbstractSearchPage<
     try {
       collapsibleElement = driver.findElement(By.id(inputControlId));
     } catch (NoSuchElementException e) {
-      driver.findElement(By.id(controlName)).click();
+      WebElement opener = driver.findElement(By.id(controlName));
+      scrollToElement(opener);
+      opener.click();
       waiter.until(
           new ExpectedCondition<Boolean>() {
             @Override

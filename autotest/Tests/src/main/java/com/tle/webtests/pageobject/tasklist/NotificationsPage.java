@@ -21,9 +21,6 @@ public class NotificationsPage
   public static final String REASON = "reason";
   public static final String COLLECTION = "in";
 
-  @FindBy(xpath = "id('header-inner')/div[text()='Notifications']")
-  private WebElement mainElem;
-
   @FindBy(id = "bss_clearSelectedButton")
   private WebElement clearSelected;
 
@@ -38,11 +35,12 @@ public class NotificationsPage
 
   public NotificationsPage(PageContext context) {
     super(context);
+    loadedBy = byForPageTitle("Notifications");
   }
 
   @Override
   protected WebElement findLoadedElement() {
-    return mainElem;
+    return driver.findElement(loadedBy);
   }
 
   @Override

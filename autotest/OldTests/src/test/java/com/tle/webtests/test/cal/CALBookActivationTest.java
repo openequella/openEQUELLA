@@ -47,7 +47,7 @@ public class CALBookActivationTest extends AbstractActivationsTest {
 
     com.tle.webtests.pageobject.generic.component.Calendar untilDate = activatePage.getUntilDate();
     untilDate.dateEquals(cal);
-    activatePage.cancel();
+    summary = activatePage.cancel(summary.updateWaiter());
     activatePage = summary.activate(1, ATTACH1_FILENAME);
     activatePage.setCourse("A Simple Course");
     activatePage.setDatesHidden(getInvalidRange());

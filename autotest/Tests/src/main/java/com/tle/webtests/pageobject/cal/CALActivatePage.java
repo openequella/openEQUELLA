@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.cal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.Calendar;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.component.SelectCourseDialog;
@@ -97,8 +98,9 @@ public class CALActivatePage<T extends AbstractPage<T>> extends AbstractPage<CAL
     return fromDate;
   }
 
-  public void cancel() {
+  public T cancel(WaitingPageObject<T> backTo) {
     cancelButton.click();
+    return backTo.get();
   }
 
   public Calendar getUntilDate() {

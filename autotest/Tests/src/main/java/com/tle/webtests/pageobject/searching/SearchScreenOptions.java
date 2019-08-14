@@ -10,10 +10,21 @@ public class SearchScreenOptions extends AbstractSearchPageScreenOptions<SearchS
   private WebElement includeNonLive;
 
   private AbstractResultList<?, ?> resultList;
+  private boolean connectorTest = false;
 
   public SearchScreenOptions(AbstractResultList<?, ?> resultList) {
     super(resultList.getContext());
     this.resultList = resultList;
+  }
+
+  // setConnectorTest and closeScreenOption are temporarily used in EquellaConnectorTest,
+  // to make the test work for new UI
+  public void setConnectorTest(boolean connectorTest) {
+    this.connectorTest = connectorTest;
+  }
+
+  public void closeScreenOption() {
+    close();
   }
 
   public boolean hasNonLiveOption() {
@@ -25,6 +36,10 @@ public class SearchScreenOptions extends AbstractSearchPageScreenOptions<SearchS
       WaitingPageObject<?> waiter = resultList.getUpdateWaiter();
       includeNonLive.click();
       waiter.get();
+    }
+
+    if (!connectorTest) {
+      close();
     }
     return this;
   }

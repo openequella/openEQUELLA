@@ -41,7 +41,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     wizardPage.editbox(3, "Will be forced - Edit Box");
     wizardPage.addToShuffleList(4, "Will be warned - Shuffle List");
     wizardPage.addToShuffleList(6, "Will be forced - Shuffle List");
-    wizardPage.save().finishInvalid(wizardPage);
+    wizardPage.save().finishInvalid(wizardPage.updateWaiter());
     Assert.assertEquals(
         wizardPage.getErrorMessage(3), "The value in this field must be unique across items");
     Assert.assertEquals(

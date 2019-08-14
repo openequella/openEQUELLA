@@ -12,9 +12,6 @@ import org.openqa.selenium.support.FindBy;
 public class TaskListPage
     extends AbstractQueryableSearchPage<
         TaskListPage, ModerateListSearchResults, ModerationSearchResult> {
-  @FindBy(xpath = "id('header-inner')/div[text()='My tasks']")
-  private WebElement mainElem;
-
   @FindBy(id = "unan")
   private WebElement mustMod;
 
@@ -26,11 +23,12 @@ public class TaskListPage
 
   public TaskListPage(PageContext context) {
     super(context);
+    loadedBy = byForPageTitle("My tasks");
   }
 
   @Override
   protected WebElement findLoadedElement() {
-    return mainElem;
+    return driver.findElement(loadedBy);
   }
 
   @Override

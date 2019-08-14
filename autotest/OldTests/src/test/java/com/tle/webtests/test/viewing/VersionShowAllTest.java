@@ -18,7 +18,7 @@ public class VersionShowAllTest extends AbstractCleanupTest {
     final String LIVE = context.getFullName("Live");
     final String DRAFT = context.getFullName("Draft");
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     WizardPageTab wizard = new ContributePage(context).load().openWizard("No Workflow");
     wizard.editbox(1, ARCHIVED);
     wizard = wizard.save().publish().newVersion();

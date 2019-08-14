@@ -15,7 +15,8 @@ public class ReportingPage extends AbstractPage<ReportingPage> {
   private WebElement columnSort;
 
   public ReportingPage(PageContext context) {
-    super(context, By.xpath("id('header-inner')/div[text()='Reports']"));
+    super(context);
+    loadedBy = byForPageTitle("Reports");
   }
 
   @Override

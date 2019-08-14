@@ -373,13 +373,16 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     () => (
       <div className={classes.logo}>
         <img role="presentation" src={logoURL} />
-        {hasMenu &&
-          currentUser.menuGroups.map((group, ind) => (
-            <React.Fragment key={ind}>
-              {ind > 0 && <Divider />}
-              <List component="nav">{group.map(navItem)}</List>
-            </React.Fragment>
-          ))}
+        {hasMenu && (
+          <div id="menulinks">
+            {currentUser.menuGroups.map((group, ind) => (
+              <React.Fragment key={ind}>
+                {ind > 0 && <Divider />}
+                <List component="nav">{group.map(navItem)}</List>
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </div>
     ),
     [currentUser, hasMenu]
@@ -421,7 +424,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         {props.menuExtra}
         {!props.disableNotifications && !currentUser.guest && (
           <React.Fragment>
-            <Hidden mdDown>
+            <Hidden smDown>
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,

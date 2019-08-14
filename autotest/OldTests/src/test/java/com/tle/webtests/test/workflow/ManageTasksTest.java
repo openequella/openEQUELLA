@@ -22,7 +22,7 @@ public class ManageTasksTest extends AbstractCleanupTest {
     String ITEM_2 = context.getFullName("Workflow 2, Step 1");
     String ITEM_3 = context.getFullName("Workflow 2, Step 2");
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     WizardPageTab wizard = new ContributePage(context).load().openWizard("Simple 1 Step");
     wizard.editbox(1, ITEM_1);
     wizard.save().submit();
@@ -46,7 +46,7 @@ public class ManageTasksTest extends AbstractCleanupTest {
         manageTasks.results().doesResultExist(ITEM_2)
             && manageTasks.results().doesResultExist(ITEM_3));
 
-    logon("TLE_ADMINISTRATOR", "tle010"); // tle_admin has all
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword()); // tle_admin has all
     // MANAGE_WORKFLOW permissions
     manageTasks = new ManageTasksPage(context).load();
     manageTasks.search(namePrefix);

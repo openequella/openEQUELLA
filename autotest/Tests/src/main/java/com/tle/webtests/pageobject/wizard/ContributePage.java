@@ -39,6 +39,10 @@ public class ContributePage extends AbstractPage<ContributePage> {
     return new WizardPageTab(context, 0).get();
   }
 
+  public boolean usingNewUI() {
+    return isNewUI();
+  }
+
   @SuppressWarnings("unchecked")
   public <T extends AbstractRemoteRepoSearchPage<?, ?, ?>> T openRemoteRepo(
       String remoteRepo, T type) {
@@ -74,7 +78,7 @@ public class ContributePage extends AbstractPage<ContributePage> {
 
   public WizardPageTab openResumable(String collection) {
     resumableDiv.findElement(By.linkText(collection)).click();
-    return new WizardPageTab(context, 0);
+    return new WizardPageTab(context, 0).get();
   }
 
   public void removeResumable(String collection) {

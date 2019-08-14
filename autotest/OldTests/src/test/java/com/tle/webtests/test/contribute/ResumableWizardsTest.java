@@ -5,7 +5,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.pageobject.portal.MenuSection;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
@@ -29,9 +28,8 @@ public class ResumableWizardsTest extends AbstractSessionTest {
     wizardPage.editbox(1, ITEM_NAME);
     wizardPage.next();
 
-    // navigate away using menu
-    MenuSection menuSection = new MenuSection(context).get();
-    menuSection.clickMenuLink("searching.do", new SearchPage(context));
+    // navigate away
+    new SearchPage(context).load();
     contributePage = new ContributePage(context).load();
 
     // check for resumable open and check data

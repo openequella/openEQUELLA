@@ -121,6 +121,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     if (!Check.isEmpty(method)) {
       model.setMethod(null);
       state = (WizardState) SectionUtils.dispatchToMethod(method, this, info);
+      info.forceRedirect();
     } else {
       final String wizid = model.getWizid();
       if (wizid != null) {

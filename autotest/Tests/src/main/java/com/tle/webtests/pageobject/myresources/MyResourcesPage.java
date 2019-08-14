@@ -105,7 +105,7 @@ public class MyResourcesPage
 
   public MyResourcesUploadFilesPage getUploadPage() {
     uploadFiles.click();
-    return new MyResourcesUploadFilesPage(this);
+    return new MyResourcesUploadFilesPage(this).get();
   }
 
   public MyResourcesPage uploadFile(File file, String description, String tags) {
@@ -134,9 +134,13 @@ public class MyResourcesPage
     // allow for a discrepancy in the array sizes
     for (int i = 0; i < numTitles || i < numBodies; ++i) {
       int aTitleIndex = i;
-      if (numTitles <= i) aTitleIndex = numTitles - 1;
+      if (numTitles <= i) {
+        aTitleIndex = numTitles - 1;
+      }
       int aBodyIndex = i;
-      if (numBodies <= i) aBodyIndex = numBodies - 1;
+      if (numBodies <= i) {
+        aBodyIndex = numBodies - 1;
+      }
       authorPages.addPage(pageTitles[aTitleIndex], pageBodies[aBodyIndex]);
     }
     return authorPages.save();
@@ -247,9 +251,13 @@ public class MyResourcesPage
     boolean hasRelevance = false, hasTitle = false, hasDate = false;
     for (WebElement anOption : selectableOptions) {
       String anOptionsText = anOption.getText();
-      if (anOptionsText.toLowerCase().contains("Date".toLowerCase())) hasDate = true;
-      else if (anOptionsText.toLowerCase().contains("Title".toLowerCase())) hasTitle = true;
-      else if (anOptionsText.toLowerCase().contains("Relevance".toLowerCase())) hasRelevance = true;
+      if (anOptionsText.toLowerCase().contains("Date".toLowerCase())) {
+        hasDate = true;
+      } else if (anOptionsText.toLowerCase().contains("Title".toLowerCase())) {
+        hasTitle = true;
+      } else if (anOptionsText.toLowerCase().contains("Relevance".toLowerCase())) {
+        hasRelevance = true;
+      }
     }
     sortOptions.clickOn();
     assertTrue(

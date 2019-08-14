@@ -74,13 +74,10 @@ trait LogonTestCase {
 
   def createBrowser: Browser = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
-    val driver     = TestChecker.withBrowserDriver[WebDriver](testConfig)(identity)
-    val context    = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
-    Try(createInital(new LoginPage(context).load().login(logon.username, logon.password))).fold({
-      t =>
-        driver.quit()
-        throw t
-    }, identity)
+    TestChecker.withBrowserDriver("opening", testConfig) { driver =>
+      val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
+      createInital(new LoginPage(context).load().login(logon.username, logon.password))
+    }
   }
 
   def destroyBrowser(sut: Browser): Unit = {

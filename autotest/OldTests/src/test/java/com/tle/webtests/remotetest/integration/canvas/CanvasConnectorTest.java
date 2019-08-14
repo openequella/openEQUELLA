@@ -39,7 +39,7 @@ public class CanvasConnectorTest extends AbstractCanvasTest {
 
   @Test(groups = "setupModuleAndConnector")
   public void setupCanvas() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ShowConnectorsPage page = new ShowConnectorsPage(context).load();
     ShowCanvasConnectorsPage.createConnector(page, CONNECTOR, ACCESS_TOKEN);
     EditCanvasConnectorPage editPage =
@@ -81,7 +81,7 @@ public class CanvasConnectorTest extends AbstractCanvasTest {
   @Override
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ShowConnectorsPage page = new ShowConnectorsPage(context).load();
     page.deleteAllNamed(CONNECTOR);
     CanvasModulePage modules = getToCourseModules(COURSE_NAME);

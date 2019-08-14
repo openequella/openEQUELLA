@@ -87,7 +87,7 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
   public WizardPageTab prev(WaitingPageObject<WizardPageTab> expect) {
     prevButton.click();
     pageNum--;
-    return get();
+    return expect.get();
   }
 
   public WizardPageTab prev() {
@@ -151,9 +151,12 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
     return pageList.findElement(By.xpath("li[@class='active']/span")).getText();
   }
 
-  public void clickPage(String text) {
+  public WizardPageTab clickPage(String text, int pageNum) {
     if (hasPage(text, true)) {
       pageList.findElement(By.xpath("li/a[text()=" + quoteXPath(text) + "]")).click();
+      return ExpectWaiter.waiter(
+              new PageCondition(null, pageNum), new WizardPageTab(context, pageNum))
+          .get();
     } else {
       throw new RuntimeException("Page '" + text + "' is not present or is not clickable");
     }

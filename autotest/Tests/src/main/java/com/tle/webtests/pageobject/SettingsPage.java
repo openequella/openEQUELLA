@@ -29,6 +29,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   public static final String SEARCH_SETTINGS_LINK_TITLE = "Searching and content indexing";
   public static final String COURSE_DEFAULTS_LINK_TITLE = "Copyright";
   private static final String SEARCH_SETTING_TITLE = "Searching and content indexing";
+  private static final String GROUP_INTEGRATIONS = "Integrations";
 
   public SettingsPage(PageContext context) {
     super(context);
@@ -53,7 +54,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   protected WebElement openGroup(String group, By untilVisible) {
-    String titlePath = "//p[text() = " + quoteXPath(group) + "]";
+    String titlePath = ".//p[text() = " + quoteXPath(group) + "]";
     WebElement settingGroup =
         getWaiter()
             .until(
@@ -73,8 +74,9 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page) {
-    WebElement groupElem = openGroup(group, By.linkText(title));
-    groupElem.findElement(By.linkText(title)).click();
+    By linkByTitle = By.linkText(title);
+    WebElement groupElem = openGroup(group, linkByTitle);
+    groupElem.findElement(linkByTitle).click();
     return page.get();
   }
 
@@ -95,7 +97,8 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   public CourseDefaultsPage courseDefaultsSettings() {
-    return clickSetting(COURSE_DEFAULTS_LINK_TITLE, new CourseDefaultsPage(context));
+    return clickSetting(
+        GROUP_INTEGRATIONS, COURSE_DEFAULTS_LINK_TITLE, new CourseDefaultsPage(context));
   }
 
   public ContentRestrictionsPage contentRestrictionsSettings() {

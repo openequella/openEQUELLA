@@ -10,6 +10,7 @@ import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -359,42 +360,27 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
             .openWizard("dtec15097 Wizard Control - Advanced Scripting - Prohibited Operations");
     wizard.editbox(1, itemName);
 
-    clickAscButtonExpectError("Class For Name", wizard);
+    ErrorPage errorPage = clickAscButtonExpectError("Class For Name", wizard);
     assertTrue(
-        wizard
-            .errorPage()
-            .getDetail()
-            .contains("Access to Java class \"java.lang.Class\" is prohibited"));
+        errorPage.getDetail().contains("Access to Java class \"java.lang.Class\" is prohibited"));
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("System", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"System\" is not defined"));
 
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("System", wizard);
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Runtime", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"Runtime\" is not defined"));
+
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Propbag", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"Packages\" is not defined"));
+
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Class Loophole", wizard);
     assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"System\" is not defined"));
+        errorPage.getDetail().contains("Access to Java class \"java.lang.Class\" is prohibited"));
 
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Runtime", wizard);
-    assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"Runtime\" is not defined"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Propbag", wizard);
-    assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"Packages\" is not defined"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Class Loophole", wizard);
-    assertTrue(
-        wizard
-            .errorPage()
-            .getDetail()
-            .contains("Access to Java class \"java.lang.Class\" is prohibited"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
+    errorPage.goBack(wizard);
 
     wizard.editbox(1, itemName);
     wizard.save().publish();
@@ -559,7 +545,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // binary creation (image)
     wizard = item.edit();
     clickAscButton("Create binary attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Binary attachment created!", "ASC Message was wrong");
+
+    final String BINARY_ATTACHMENT_CREATED = "Binary attachment created!";
+    final By pre = By.xpath("//pre[normalize-space(.)='" + BINARY_ATTACHMENT_CREATED + "']");
+    // Need to wait in new UI as click() does not wait for ajax request completed,
+    // and there are no negative impacts on old UI.
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(pre));
+
+    assertEquals(getAscMessage().getText(), BINARY_ATTACHMENT_CREATED, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
 
@@ -687,7 +680,15 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     wizard.editbox(1, itemName);
     // Create binary file
     clickAscButton("Create binary file", wizard);
-    assertEquals(getDivMessageForId("stagingFiles"), "equellaLogo.gif");
+
+    final String EQUELLA_LOGO = "equellaLogo.gif";
+    final String STAGING_FILES = "stagingFiles";
+    By stagingFiles =
+        By.xpath(
+            "//div[@id = '" + STAGING_FILES + "' and normalize-space(.)='" + EQUELLA_LOGO + "']");
+    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(stagingFiles));
+
+    assertEquals(getDivMessageForId(STAGING_FILES), EQUELLA_LOGO);
     // Create text file
     clickAscButton("Create text file", wizard);
     assertEqualsNoOrder(
@@ -915,27 +916,33 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     fc.uploadFile(Attachments.get("fireworks.dng"));
     control.editResource(fc.fileEditor(), "fireworks.dng").setDisplayName(attName).save();
 
-    clickAscButton("Get metadata for attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for attachment");
+    String expectedString = "Successfully retrieved Metadata for attachment";
+    clickAscButtonAndWait("Get metadata for attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
-    clickAscButton("Get metadata for file", wizard);
-    assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for file");
+    expectedString = "Successfully retrieved Metadata for file";
+    clickAscButtonAndWait("Get metadata for file", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
-    clickAscButton("Get types available", wizard);
-    assertEquals(getAscMessage().getText(), "[MakerNotes, Composite, File, XMP, EXIF]");
+    expectedString = "[MakerNotes, Composite, File, XMP, EXIF]";
+    clickAscButtonAndWait("Get types available", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("alltype")).sendKeys("EXIF");
-    clickAscButton("Get all for type", wizard);
-    assertEquals(getAscMessage().getText(), "124, Artist: Adam Croser");
+    expectedString = "124, Artist: Adam Croser";
+    clickAscButtonAndWait("Get all for type", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("firstkey")).sendKeys("LensID");
-    clickAscButton("Get first for key", wizard);
-    assertEquals(getAscMessage().getText(), "LensID: AF-S Zoom-Nikkor 24-70mm f/2.8G ED");
+    expectedString = "LensID: AF-S Zoom-Nikkor 24-70mm f/2.8G ED";
+    clickAscButtonAndWait("Get first for key", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("spectype")).sendKeys("XMP");
     getAscInput(By.id("speckey")).sendKeys("LensID");
-    clickAscButton("Get specific key", wizard);
-    assertEquals(getAscMessage().getText(), "XMP:LensID: 147");
+    expectedString = "XMP:LensID: 147";
+    clickAscButtonAndWait("Get specific key", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     // Check saved shiznit
     SummaryPage summary = wizard.save().publish();
@@ -980,8 +987,17 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     return returnTo.get();
   }
 
-  private void clickAscButtonExpectError(String text, WizardPageTab wizard) {
+  private <T extends PageObject> T clickAscButtonAndWait(
+      String text, WaitingPageObject<T> returnTo, String expectedString) {
+    getAscButton(text).click();
+    By expectedElement = By.xpath("//pre[normalize-space(.)='" + expectedString + "']");
+    returnTo.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
+    return returnTo.get();
+  }
+
+  private ErrorPage clickAscButtonExpectError(String text, WizardPageTab wizard) {
     getAscInput(text).click();
+    return new ErrorPage(context).get();
   }
 
   /**
