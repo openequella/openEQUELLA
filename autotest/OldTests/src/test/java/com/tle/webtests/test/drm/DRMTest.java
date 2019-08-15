@@ -282,7 +282,7 @@ public class DRMTest extends AbstractSessionTest {
   public void redirectTest() throws Exception {
     // DTEC 14600
     final String IMS_DOWNLOAD_URL =
-        "items/677a4bbc-defc-4dc1-b68e-4e2473b66a6a/1/viewims.jsp?viewMethod=download+old=true";
+        "items/677a4bbc-defc-4dc1-b68e-4e2473b66a6a/1/viewims.jsp?viewMethod=download";
 
     HomePage loginPage = logon("AutoTest", "automated");
     openUrl(IMS_DOWNLOAD_URL);
