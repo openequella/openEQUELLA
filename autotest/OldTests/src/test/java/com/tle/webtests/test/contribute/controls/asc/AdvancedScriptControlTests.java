@@ -167,7 +167,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     for (int i = 0; i < 4; i++) {
       // press the button to populate XML
       clickAscInput(populateButtons[i], wizard);
-
+      By expectedElement = By.xpath("//pre[normalize-space(.)='" + expectedOriginals[i] + "']");
+      wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
       assertEquals(getAscMessage().getText().trim(), expectedOriginals[i]);
 
       // press the button to kill a subtree
@@ -560,8 +561,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     wizard = item.edit();
     clickAscButton("Get Image Size", wizard);
     assertEquals(getAscMessage().getText(), "Width: 140 | Height: 350", "ASC Message was wrong");
-    clickAscButton("Resize Image", wizard);
-    assertEquals(getAscMessage().getText(), "Width: 70 | Height: 175", "ASC Message was wrong");
+    String expectedString = "Width: 70 | Height: 175";
+    clickAscButtonAndWait("Resize Image", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
 
     // html creation + single attachment deletion
     clickAscButton("Create html attachment", wizard);
