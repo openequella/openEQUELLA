@@ -10,6 +10,8 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import java.util.Arrays;
 import java.util.Collections;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,6 +36,11 @@ public class DRMTestWithCleanup extends AbstractCleanupTest {
     DRMAgreementPage drmPage = wizardPage.save().publishInvalid(new DRMAgreementPage(context));
     SummaryPage summaryPage =
         drmPage.acceptThisIfYouAreVerySureYouNeedToOtherwiseUsePreview(new SummaryPage(context));
+    summaryPage
+        .getWaiter()
+        .until(
+            ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//a[normalize-space(text())='Terms of use']")));
     TermsOfUsePage termsOfUsePage = summaryPage.termsOfUsePage();
 
     // Ensure data
