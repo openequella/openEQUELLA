@@ -173,7 +173,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
       // press the button to kill a subtree
       clickAscInput(deleteButtons[i], wizard);
-
+      expectedElement = By.xpath("//pre[normalize-space(.)='" + expectedModifed[i] + "']");
+      wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
       assertEquals(getAscMessage().getText().trim(), expectedModifed[i]);
     }
 
