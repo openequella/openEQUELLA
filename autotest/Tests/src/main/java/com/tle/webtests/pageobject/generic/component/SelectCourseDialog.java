@@ -38,10 +38,11 @@ public class SelectCourseDialog extends AbstractPage<SelectCourseDialog> {
     baseElement.click();
     WebElement searchField = getWaiter().until(fieldAvailable);
     searchField.sendKeys(course);
-    WebElement entries =
-        waiter.until(
-            ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[contains(text(), " + quoteXPath(course) + ")]")));
+    // sendKeys will result in DOM structure updated
+    // so wait for the updated DOM which has only one 'select2-results__option'
+    By expectedElement = By.className("select2-results__option");
+    waiter.until(ExpectedConditions.numberOfElementsToBe(expectedElement, 1));
+    WebElement entries = waiter.until(ExpectedConditions.elementToBeClickable(expectedElement));
     entries.click();
     return returnTo.get();
   }
