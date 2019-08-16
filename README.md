@@ -14,7 +14,7 @@ page](https://github.com/equella/Equella/releases "EQUELLA Releases"). The lates
 development is undertaken on the repository's default branch `develop`. Therefore `develop` is
 considered the project's 'unstable' branch.)
 
-The project's homepage and documentation can be found at <https://equella.github.io/>.
+The project's homepage and documentation can be found at <https://openequella.github.io/>.
 
 If you would like to contribute to openEQUELLA please review the [Contributor
 Guidelines](CONTRIBUTING.md) - which also include details of how to get in touch. We welcome pull
