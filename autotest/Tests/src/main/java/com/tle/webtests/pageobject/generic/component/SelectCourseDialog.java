@@ -37,14 +37,18 @@ public class SelectCourseDialog extends AbstractPage<SelectCourseDialog> {
     WebElement baseElement = getBaseElement();
     baseElement.click();
     WebElement searchField = getWaiter().until(fieldAvailable);
+    By selectOptions = By.className("select2-results__option");
+    int numberBeforeSearch = driver.findElements(selectOptions).size();
     searchField.sendKeys(course);
-    // sendKeys triggers DOM structure updated, which may result in StaleException
-    // Currently only CALJournalRulesTest is affected by this in Travis
-    By expectedElement = By.className("select2-results__option");
-    if ("A Simple Course".equals(course)) {
-      waiter.until(ExpectedConditions.numberOfElementsToBe(expectedElement, 1));
-    }
-    WebElement entries = waiter.until(ExpectedConditions.elementToBeClickable(expectedElement));
+    // sendKeys triggers an update of DOM structure
+    // So the number of options is expected to be less
+    waiter.until(
+        ExpectedConditions.numberOfElementsToBeLessThan(selectOptions, numberBeforeSearch));
+    WebElement entries =
+        waiter.until(
+            ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(text(), " + quoteXPath(course) + ")]")));
+
     entries.click();
     return returnTo.get();
   }
