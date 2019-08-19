@@ -533,36 +533,32 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     WizardPageTab wizard =
         new ContributePage(context).load().openWizard("Attachment script object collection");
     wizard.editbox(1, itemName);
-    clickAscButton("Create text file", wizard);
-    assertEquals(getAscMessage().getText(), "b.txt", "ASC Message was wrong");
+    String expectedString = "b.txt";
+    clickAscButtonAndWait("Create text file", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     SummaryPage item = wizard.save().publish();
     assertTrue(item.attachments().attachmentExists("autotest text file"));
     wizard = item.edit();
-    clickAscButton("Edit text file", wizard);
-    assertEquals(
-        getAscMessage().getText(), "text file succesfully edited", "ASC Message was wrong");
+    expectedString = "text file succesfully edited";
+    clickAscButtonAndWait("Edit text file", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("autotest text file"));
 
     // binary creation (image)
     wizard = item.edit();
-    clickAscButton("Create binary attachment", wizard);
-
-    final String BINARY_ATTACHMENT_CREATED = "Binary attachment created!";
-    final By pre = By.xpath("//pre[normalize-space(.)='" + BINARY_ATTACHMENT_CREATED + "']");
-    // Need to wait in new UI as click() does not wait for ajax request completed,
-    // and there are no negative impacts on old UI.
-    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(pre));
-
-    assertEquals(getAscMessage().getText(), BINARY_ATTACHMENT_CREATED, "ASC Message was wrong");
+    expectedString = "Binary attachment created!";
+    clickAscButtonAndWait("Create binary attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
 
     // resize image
     wizard = item.edit();
-    clickAscButton("Get Image Size", wizard);
-    assertEquals(getAscMessage().getText(), "Width: 140 | Height: 350", "ASC Message was wrong");
-    String expectedString = "Width: 70 | Height: 175";
+    expectedString = "Width: 140 | Height: 350";
+    clickAscButtonAndWait("Get Image Size", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
+    expectedString = "Width: 70 | Height: 175";
     clickAscButtonAndWait("Resize Image", wizard, expectedString);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
 
@@ -572,22 +568,25 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("html attachment"));
     wizard = item.edit();
-    clickAscButton("Remove html attachment", wizard);
-    assertEquals(getAscMessage().getText(), "html attachment deleted");
+    expectedString = "html attachment deleted";
+    clickAscButtonAndWait("Remove html attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertFalse(item.attachments().attachmentExists("html attachment"));
 
     // equella resource attachment
     wizard = item.edit();
-    clickAscButton("Create resource attachment", wizard);
-    assertEquals(getAscMessage().getText(), "Resource Attachment");
+    expectedString = "Resource Attachment";
+    clickAscButtonAndWait("Create resource attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("Equella resource"));
 
     // custom attachment
     wizard = item.edit();
-    clickAscButton("Create custom attachment", wizard);
-    assertEquals(getAscMessage().getText(), "custom attachment added");
+    expectedString = "custom attachment added";
+    clickAscButtonAndWait("Create custom attachment", wizard, expectedString);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     // custom atachment details
     clickAscButton("Get custom details", wizard);
