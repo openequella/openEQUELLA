@@ -38,6 +38,7 @@ public class SelectCourseDialog extends AbstractPage<SelectCourseDialog> {
     baseElement.click();
     WebElement searchField = getWaiter().until(fieldAvailable);
     By selectOptions = By.className("select2-results__option");
+    waiter.until(webDriver -> driver.findElements(selectOptions).size() > 1);
     int numberBeforeSearch = driver.findElements(selectOptions).size();
     searchField.sendKeys(course);
     // sendKeys triggers an update of DOM structure

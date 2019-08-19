@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -986,6 +987,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
   // same as above but for <button> instead of <input>
   private <T extends PageObject> T clickAscButton(String text, WaitingPageObject<T> returnTo) {
     getAscButton(text).click();
+    getContext().getDriver().manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     return returnTo.get();
   }
 
