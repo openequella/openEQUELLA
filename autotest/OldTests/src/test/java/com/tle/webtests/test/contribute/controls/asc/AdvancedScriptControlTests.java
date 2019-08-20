@@ -629,9 +629,10 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     ascEditbox(3, "date", date);
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
     Date parsedDate = sdf.parse(date);
-    expectedString = parsedDate.toString();
+    expectedString = "Wed Oct 25 00:00:00";
     clickAscButtonAndWait("Parse Date", wizard, expectedString, "dateResult");
-    assertEquals(removeTimeZone(getDivMessageForId("dateResult")), removeTimeZone(expectedString));
+    assertEquals(
+        removeTimeZone(getDivMessageForId("dateResult")), removeTimeZone(parsedDate.toString()));
     // Facet Count
     ascEditbox(3, "facetquery", "Facet");
     expectedString = "Apples : 2\nPears : 1";
