@@ -35,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -46,6 +45,9 @@ import org.testng.annotations.Test;
 public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
   public static final String NAME_PACKAGE = "Zou ba! Visiting China: Is this your first visit?";
+  private String expectedString;
+  private final String ASC_MESSAGE_DIV_ID = "ascMessage";
+  private final String STRUCTURE_DIV_ID = "structure";
 
   @Override
   protected void prepareBrowserSession() {
@@ -534,14 +536,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     WizardPageTab wizard =
         new ContributePage(context).load().openWizard("Attachment script object collection");
     wizard.editbox(1, itemName);
-    String expectedString = "b.txt";
-    clickAscButtonAndWait("Create text file", wizard, expectedString);
+    expectedString = "b.txt";
+    clickAscButtonAndWait("Create text file", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     SummaryPage item = wizard.save().publish();
     assertTrue(item.attachments().attachmentExists("autotest text file"));
     wizard = item.edit();
     expectedString = "text file succesfully edited";
-    clickAscButtonAndWait("Edit text file", wizard, expectedString);
+    clickAscButtonAndWait("Edit text file", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("autotest text file"));
@@ -549,7 +551,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // binary creation (image)
     wizard = item.edit();
     expectedString = "Binary attachment created!";
-    clickAscButtonAndWait("Create binary attachment", wizard, expectedString);
+    clickAscButtonAndWait("Create binary attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
@@ -557,20 +559,21 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // resize image
     wizard = item.edit();
     expectedString = "Width: 140 | Height: 350";
-    clickAscButtonAndWait("Get Image Size", wizard, expectedString);
+    clickAscButtonAndWait("Get Image Size", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
     expectedString = "Width: 70 | Height: 175";
-    clickAscButtonAndWait("Resize Image", wizard, expectedString);
+    clickAscButtonAndWait("Resize Image", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString, "ASC Message was wrong");
 
     // html creation + single attachment deletion
-    clickAscButton("Create html attachment", wizard);
-    assertEquals(getAscMessage().getText(), "I am a\nhtml\nattachment");
+    expectedString = "I am a\nhtml\nattachment";
+    clickAscButtonAndWait("Create html attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("html attachment"));
     wizard = item.edit();
     expectedString = "html attachment deleted";
-    clickAscButtonAndWait("Remove html attachment", wizard, expectedString);
+    clickAscButtonAndWait("Remove html attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertFalse(item.attachments().attachmentExists("html attachment"));
@@ -578,7 +581,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // equella resource attachment
     wizard = item.edit();
     expectedString = "Resource Attachment";
-    clickAscButtonAndWait("Create resource attachment", wizard, expectedString);
+    clickAscButtonAndWait("Create resource attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertTrue(item.attachments().attachmentExists("Equella resource"));
@@ -586,11 +589,11 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // custom attachment
     wizard = item.edit();
     expectedString = "custom attachment added";
-    clickAscButtonAndWait("Create custom attachment", wizard, expectedString);
+    clickAscButtonAndWait("Create custom attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     // custom atachment details
-    clickAscButton("Get custom details", wizard);
+    clickAscButtonAndWait("Get custom details", wizard, "www.google.com", ASC_MESSAGE_DIV_ID);
     String details = getAscMessage().getText();
     assertTrue(details.contains("0")); // size
     assertTrue(details.contains("link")); // Custom Type
@@ -599,14 +602,15 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     assertTrue(details.contains("www.google.com")); // URL
 
     // get Mime details for a jpeg
-    clickAscButton("Get Mime Details", wizard);
-    assertEquals(
-        getAscMessage().getText(),
-        "Type: image/jpeg\nDescription: Image\nFile Extensions: jfif\njif\njpe\njpeg\njpg");
+    expectedString =
+        "Type: image/jpeg\nDescription: Image\nFile Extensions: jfif\njif\njpe\njpeg\njpg";
+    clickAscButtonAndWait("Get Mime Details", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     // delete all attachments
-    clickAscButton("Delete all attachments", wizard);
-    assertEquals(getAscMessage().getText(), "all  attachments deleted");
+    expectedString = "all  attachments deleted";
+    clickAscButtonAndWait("Delete all attachments", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
     assertFalse(item.hasAttachmentsSection());
   }
@@ -625,35 +629,39 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     ascEditbox(3, "date", date);
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
     Date parsedDate = sdf.parse(date);
-    clickAscButton("Parse Date", wizard);
-    assertEquals(
-        removeTimeZone(getDivMessageForId("dateResult")), removeTimeZone(parsedDate.toString()));
+    expectedString = parsedDate.toString();
+    clickAscButtonAndWait("Parse Date", wizard, expectedString, "dateResult");
+    assertEquals(removeTimeZone(getDivMessageForId("dateResult")), removeTimeZone(expectedString));
     // Facet Count
     ascEditbox(3, "facetquery", "Facet");
-    clickAscButton("Facet Count", wizard);
-    assertEquals(getDivMessageForId("facetResults"), "Apples : 2\nPears : 1");
+    expectedString = "Apples : 2\nPears : 1";
+    clickAscButtonAndWait("Facet Count", wizard, expectedString, "facetResults");
+    assertEquals(getDivMessageForId("facetResults"), expectedString);
     // Query Count
     ascEditbox(3, "querycount", "Apples");
-    clickAscButton("Query Count", wizard);
+    clickAscButtonAndWait("Query Count", wizard, "2", "queryCountResult");
     assertEquals(getDivMessageForId("queryCountResult"), "2");
     // URL For item
     ascEditbox(3, "item", "Facet 2");
-    clickAscButton("Get URL", wizard);
+    clickAscButtonAndWait("Get URL", wizard, itemUrl, "itemURLResult");
     assertEquals(getDivMessageForId("itemURLResult"), itemUrl);
     assertEquals(Integer.parseInt(getDivMessageForId("responseCode")), 200);
     assertFalse(Boolean.valueOf(getDivMessageForId("isResponseError")));
     assertEquals(getDivMessageForId("responseContentType"), "text/html;charset=UTF-8");
     // get collection details
-    clickAscButton("Get collection details", wizard);
-    assertEquals(
-        getDivMessageForId("collectionDetails"),
-        "Name: Utils script object collection\nDescription: Collection for testing the util scripting object");
+    expectedString =
+        "Name: Utils script object collection\nDescription: Collection for testing the util scripting object";
+    clickAscButtonAndWait("Get collection details", wizard, expectedString, "collectionDetails");
+    assertEquals(getDivMessageForId("collectionDetails"), expectedString);
     // create xml document
-    clickAscButton("Xml from string", wizard);
-    assertEquals(getDivMessageForId("xml"), "Text field empty");
+    expectedString = "Text field empty";
+    clickAscButtonAndWait("Xml from string", wizard, expectedString, "xml");
+    assertEquals(getDivMessageForId("xml"), expectedString);
     ascEditbox(3, "xmlstring", "<leaf>wooooo</leaf>");
-    clickAscButton("Xml from string", wizard);
-    assertEquals(getDivMessageForId("xml"), "Xml document created from wooooo");
+
+    expectedString = "Xml document created from wooooo";
+    clickAscButtonAndWait("Xml from string", wizard, expectedString, "xml");
+    assertEquals(getDivMessageForId("xml"), expectedString);
 
     wizard.save().publish();
   }
@@ -682,18 +690,12 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
         new ContributePage(context).load().openWizard("Staging script object collection");
     wizard.editbox(1, itemName);
     // Create binary file
-    clickAscButton("Create binary file", wizard);
-
-    final String EQUELLA_LOGO = "equellaLogo.gif";
-    final String STAGING_FILES = "stagingFiles";
-    By stagingFiles =
-        By.xpath(
-            "//div[@id = '" + STAGING_FILES + "' and normalize-space(.)='" + EQUELLA_LOGO + "']");
-    wizard.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(stagingFiles));
-
-    assertEquals(getDivMessageForId(STAGING_FILES), EQUELLA_LOGO);
+    expectedString = "equellaLogo.gif";
+    clickAscButtonAndWait("Create binary file", wizard, expectedString, "stagingFiles");
+    assertEquals(getDivMessageForId("stagingFiles"), expectedString);
     // Create text file
-    clickAscButton("Create text file", wizard);
+    expectedString = "autotest.txt";
+    clickAscButtonAndWait("Create text file", wizard, expectedString, "stagingFiles");
     assertEqualsNoOrder(
         getDivMessageForId("stagingFiles").split("\n"),
         new String[] {"autotest.txt", "equellaLogo.gif"});
@@ -702,7 +704,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     clickAscButton("Get File Details", wizard);
     // TODO: check file details accuracy
     // Copy
-    clickAscButton("Copy all files", wizard);
+    clickAscButtonAndWait("Copy all files", wizard, "autotest.txt", "stagingFiles");
     assertEqualsNoOrder(
         getDivMessageForId("stagingFiles").split("\n"),
         new String[] {
@@ -713,7 +715,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     ascSelectDropdown("delFileList", "Copy of autotest.txt");
     clickAscButton("Delete file", wizard);
     ascSelectDropdown("delFileList", "Copy of equellaLogo.gif");
-    clickAscButton("Delete file", wizard);
+    clickAscButtonAndWait("Delete file", wizard, "autotest.txt", "stagingFiles");
     assertEqualsNoOrder(
         getDivMessageForId("stagingFiles").split("\n"),
         new String[] {"autotest.txt", "equellaLogo.gif"});
@@ -729,7 +731,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
         new ContributePage(context).load().openWizard("User script object collection");
     wizard.editbox(1, itemName);
     // get users details
-    clickAscButton("Get user details", wizard);
+    expectedString = "AutoTest";
+    clickAscButtonAndWait("Get user details", wizard, expectedString, "ascMessage");
     String details = getAscMessage().getText();
     assertTrue(details.contains("AutoTest"));
     assertTrue(details.contains("Auto"));
@@ -747,11 +750,13 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
     // check groups
     ascSelectDropdown("groups", "group 3 child");
-    clickAscButton("in group", wizard);
-    assertEquals(getAscMessage().getText(), "Yes");
+    expectedString = "Yes";
+    clickAscButtonAndWait("in group", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
     ascSelectDropdown("groups", "group 2");
-    clickAscButton("in group", wizard);
-    assertEquals(getAscMessage().getText(), "No");
+    expectedString = "No";
+    clickAscButtonAndWait("in group", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
 
     wizard.save().publish();
   }
@@ -777,7 +782,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
         .editResource(new PackageAttachmentEditPage(universal), NAME_PACKAGE)
         .showStructure()
         .save();
-    assertTrue(getDivMessageForId("structure").contains(NAME_PACKAGE));
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains(NAME_PACKAGE));
     // Delete Children + Root node
     clickAscButton("deleteChildren", wizard);
     // add child to node to be deleted
@@ -785,30 +790,39 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     ascSelectDropdown("addList", NAME_PACKAGE);
     clickAscButton("addNode", wizard);
     clickAscButton("deleteNode", wizard);
-    assertFalse(getDivMessageForId("structure").contains(NAME_PACKAGE));
-    assertFalse(getDivMessageForId("structure").contains("child"));
+    wizard
+        .getWaiter()
+        .until(ExpectedConditions.textToBe(By.id(STRUCTURE_DIV_ID), "Split View Allowed: No"));
+    assertFalse(getDivMessageForId(STRUCTURE_DIV_ID).contains(NAME_PACKAGE));
+    assertFalse(getDivMessageForId(STRUCTURE_DIV_ID).contains("child"));
     // Initialise Structure
-    clickAscButton("initialise", wizard);
-    assertTrue(getDivMessageForId("structure").contains(NAME_PACKAGE));
-    assertTrue(getDivMessageForId("structure").contains("index.html"));
+    clickAscButtonAndWait("initialise", wizard, NAME_PACKAGE, STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains(NAME_PACKAGE));
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("index.html"));
     // Delete all
     clickAscButton("deleteAll", wizard);
-    assertFalse(getDivMessageForId("structure").contains(NAME_PACKAGE));
-    assertFalse(getDivMessageForId("structure").contains("index.html"));
+    wizard
+        .getWaiter()
+        .until(ExpectedConditions.textToBe(By.id(STRUCTURE_DIV_ID), "Split View Allowed: No"));
+    assertFalse(getDivMessageForId(STRUCTURE_DIV_ID).contains(NAME_PACKAGE));
+    assertFalse(getDivMessageForId(STRUCTURE_DIV_ID).contains("index.html"));
     // Add root + child
     ascEditbox(4, "nodeName", "base");
-    clickAscButton("addNode", wizard);
-    assertTrue(getDivMessageForId("structure").contains("base"));
+    expectedString = "base";
+    clickAscButtonAndWait("addNode", wizard, expectedString, STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains(expectedString));
     ascEditbox(4, "nodeName", "child 1");
     ascSelectDropdown("addList", "base");
-    clickAscButton("addNode", wizard);
-    assertTrue(getDivMessageForId("structure").contains("child 1"));
+    expectedString = "child 1";
+    clickAscButtonAndWait("addNode", wizard, expectedString, STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("child 1"));
     ascEditbox(4, "nodeName", "child 2");
     ascSelectDropdown("addList", "base");
-    clickAscButton("addNode", wizard);
-    assertTrue(getDivMessageForId("structure").contains("base"));
-    assertTrue(getDivMessageForId("structure").contains("child 1"));
-    assertTrue(getDivMessageForId("structure").contains("child 2"));
+    expectedString = "child 2";
+    clickAscButtonAndWait("addNode", wizard, expectedString, STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("base"));
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("child 1"));
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("child 2"));
     // Add 2 tabs to child
     ascSelectDropdown("allNodes", "child 1");
     ascSelectDropdown("attachments", NAME_PACKAGE);
@@ -822,13 +836,19 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     // delete created node
     ascSelectDropdown("delNodeList", "child 2");
     clickAscButton("deleteNode", wizard);
-    assertFalse(getDivMessageForId("structure").contains("child 2"));
+    wizard
+        .getWaiter()
+        .until(
+            ExpectedConditions.textToBe(
+                By.id(STRUCTURE_DIV_ID),
+                "Split View Allowed: No\n" + "\n" + "base\n" + "  child 1"));
+    assertFalse(getDivMessageForId(STRUCTURE_DIV_ID).contains("child 2"));
     // Switch split view
-    assertTrue(getDivMessageForId("structure").contains("No"));
-    clickAscButton("splitSwitch", wizard);
-    assertTrue(getDivMessageForId("structure").contains("Yes"));
-    clickAscButton("splitSwitch", wizard);
-    assertTrue(getDivMessageForId("structure").contains("No"));
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("No"));
+    clickAscButtonAndWait("splitSwitch", wizard, "Yes", STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("Yes"));
+    clickAscButtonAndWait("splitSwitch", wizard, "No", STRUCTURE_DIV_ID);
+    assertTrue(getDivMessageForId(STRUCTURE_DIV_ID).contains("No"));
     wizard = wizard.next();
     wizard.save().publish();
   }
@@ -881,35 +901,42 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
         new ContributePage(context).load().openWizard("Item script object collection");
 
     wizard.editbox(1, itemName);
-
-    clickAscButton("Get item", wizard);
-    assertEquals(getAscMessage().getText(), "Resource Attachment");
-    clickAscButton("Get latest version item", wizard);
-    assertEquals(getAscMessage().getText(), "Resource Attachment");
-    clickAscButton("Get live item", wizard);
-    assertEquals(getAscMessage().getText(), "Resource Attachment");
-    clickAscButton("Get item xml", wizard);
+    expectedString = "Resource Attachment";
+    clickAscButtonAndWait("Get item", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    clickAscButtonAndWait("Get latest version item", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    clickAscButtonAndWait("Get live item", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    clickAscButtonAndWait("Get item xml", wizard, "true", ASC_MESSAGE_DIV_ID);
     assertTrue(Boolean.valueOf(getAscMessage().getText()));
-    clickAscButton("Get item status", wizard);
-    assertEquals(getAscMessage().getText(), "live");
-    clickAscButton("Get item collection", wizard);
-    assertEquals(getAscMessage().getText(), "Basic Items");
-    clickAscButton("Get item Description", wizard);
-    assertEquals(getAscMessage().getText(), "Attachment to be added through scripting");
-    clickAscButton("Get owner", wizard);
-    assertEquals(getAscMessage().getText(), "adfcaf58-241b-4eca-9740-6a26d1c3dd58");
-    clickAscButton("Add shared owner", wizard);
-    assertEquals(getAscMessage().getText(), "ad2c30da-2b1c-4427-b21c-45ef5bd09f11");
-    clickAscButton("Remove shared owner", wizard);
+    expectedString = "live";
+    clickAscButtonAndWait("Get item status", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    expectedString = "Basic Items";
+    clickAscButtonAndWait("Get item collection", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    expectedString = "Attachment to be added through scripting";
+    clickAscButtonAndWait("Get item Description", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    expectedString = "adfcaf58-241b-4eca-9740-6a26d1c3dd58";
+    clickAscButtonAndWait("Get owner", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    expectedString = "ad2c30da-2b1c-4427-b21c-45ef5bd09f11";
+    clickAscButtonAndWait("Add shared owner", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
+    clickAscButtonAndWait("Remove shared owner", wizard, "true", ASC_MESSAGE_DIV_ID);
     assertTrue(Boolean.valueOf(getAscMessage().getText()));
-    clickAscButton("Set owner", wizard);
-    assertEquals(getAscMessage().getText(), "ad2c30da-2b1c-4427-b21c-45ef5bd09f11");
+    expectedString = "ad2c30da-2b1c-4427-b21c-45ef5bd09f11";
+    clickAscButtonAndWait("Set owner", wizard, expectedString, ASC_MESSAGE_DIV_ID);
+    assertEquals(getAscMessage().getText(), expectedString);
   }
 
   @Test
   public void metadataScriptObject() {
     final String attName = "derpy";
     final String itemName = context.getFullName("metadata script oject item");
+    final String ASC_MESSAGE_DIV_ID = "ascMessage";
     WizardPageTab wizard =
         new ContributePage(context).load().openWizard("Metadata script object collection");
 
@@ -920,31 +947,32 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     control.editResource(fc.fileEditor(), "fireworks.dng").setDisplayName(attName).save();
 
     String expectedString = "Successfully retrieved Metadata for attachment";
-    clickAscButtonAndWait("Get metadata for attachment", wizard, expectedString);
+    clickAscButtonAndWait(
+        "Get metadata for attachment", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     expectedString = "Successfully retrieved Metadata for file";
-    clickAscButtonAndWait("Get metadata for file", wizard, expectedString);
+    clickAscButtonAndWait("Get metadata for file", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     expectedString = "[MakerNotes, Composite, File, XMP, EXIF]";
-    clickAscButtonAndWait("Get types available", wizard, expectedString);
+    clickAscButtonAndWait("Get types available", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("alltype")).sendKeys("EXIF");
     expectedString = "124, Artist: Adam Croser";
-    clickAscButtonAndWait("Get all for type", wizard, expectedString);
+    clickAscButtonAndWait("Get all for type", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("firstkey")).sendKeys("LensID");
     expectedString = "LensID: AF-S Zoom-Nikkor 24-70mm f/2.8G ED";
-    clickAscButtonAndWait("Get first for key", wizard, expectedString);
+    clickAscButtonAndWait("Get first for key", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     getAscInput(By.id("spectype")).sendKeys("XMP");
     getAscInput(By.id("speckey")).sendKeys("LensID");
     expectedString = "XMP:LensID: 147";
-    clickAscButtonAndWait("Get specific key", wizard, expectedString);
+    clickAscButtonAndWait("Get specific key", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
 
     // Check saved shiznit
@@ -987,15 +1015,16 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
   // same as above but for <button> instead of <input>
   private <T extends PageObject> T clickAscButton(String text, WaitingPageObject<T> returnTo) {
     getAscButton(text).click();
-    getContext().getDriver().manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     return returnTo.get();
   }
 
   private <T extends PageObject> T clickAscButtonAndWait(
-      String text, WaitingPageObject<T> returnTo, String expectedString) {
+      String text, WaitingPageObject<T> returnTo, String expectedString, String divId) {
     getAscButton(text).click();
-    By expectedElement = By.xpath("//pre[normalize-space(.)='" + expectedString + "']");
-    returnTo.getWaiter().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
+    By expectedElement = By.xpath("//div[@id='" + divId + "']");
+    returnTo
+        .getWaiter()
+        .until(ExpectedConditions.textToBePresentInElementLocated(expectedElement, expectedString));
     return returnTo.get();
   }
 
