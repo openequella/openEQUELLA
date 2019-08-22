@@ -13,6 +13,9 @@ services:
       - "traefik.docker.network=oeq-cluster"
       - "traefik.frontend.rule=Host:oeq.localhost"
       - "traefik.port=8080"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.backend.loadbalancer.stickiness.cookieName=JSESSIONNODE"
+      - "traefik.frontend.passHostHeader=true"
     environment:
       - EQ_MESSAGING_BINDPORT=8999
       - EQ_MESSAGING_USEHOSTNAME=true
