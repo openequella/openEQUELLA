@@ -1,0 +1,63 @@
+version: "3.6"
+
+services:
+  oeq:
+    build: .
+    networks:
+      - oeq-cluster
+    links:
+      - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=oeq"
+      - "traefik.docker.network=oeq-cluster"
+      - "traefik.frontend.rule=Host:oeq.localhost"
+      - "traefik.port=8080"
+    environment:
+      - EQ_MESSAGING_BINDPORT=8999
+      - EQ_MESSAGING_USEHOSTNAME=true
+      - EQ_USERSERVICE_USEXFORWARDEDFOR=true
+      - EQ_ZOOKEEPER_INSTANCES=zookeeper
+      - EQ_ZOOKEEPER_PREFIX=eqdev
+    depends_on:
+      - zookeeper
+    volumes:
+      - /home/penghai/Edalex/Equella/Dev/learningedge-config/data/filestore:/home/equella/equella/filestore
+      - /home/penghai/Edalex/Equella/Dev/learningedge-config/hikari.properties:/home/equella/equella/learningedge-config/hikari.properties
+      - /home/penghai/Edalex/Equella/Dev/learningedge-config/learningedge-log4j.properties:/home/equella/equella/learningedge-config/learningedge-log4j.properties
+
+  zookeeper:
+    image: zookeeper:latest
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+      ZOO_LOG4J_PROP: INFO, CONSOLE, ROLLINGFILE
+      ZOO_AUTOPURGE_PURGEINTERVAL: 1
+    volumes:
+      - /zookeeper/zoo1/data:/data
+      - /zookeeper/zoo1/datalog:/datalog
+    networks:
+      - oeq-cluster
+
+  database:
+    image: postgres
+    restart: always
+    networks:
+      - oeq-cluster
+
+  traefik:
+    image: traefik
+    restart: always
+    command: --api --docker
+    ports:
+      - "8080:8080"
+      - "80:80"
+    networks:
+      - oeq-cluster
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.toml:/traefik.toml
+
+networks:
+  oeq-cluster:
+    driver: bridge
