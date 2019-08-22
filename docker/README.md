@@ -118,8 +118,6 @@ sbt installerZip
 
 ```
 For instance, ARG EQ_ADMIN_URL=http://oeq.localhost/admin/
-
-Here database is the service name of Postgres defined in docker-compose.yml
 ```
 
 - Run `docker-compose up -d` from `Equella/docker`
