@@ -144,6 +144,7 @@ public class ReplicatedCacheServiceImpl
     @Override
     public synchronized Optional<V> get(@NonNull String key) {
       checkNotNull(key);
+      cache.refresh(CurrentInstitution.get());
 
       LoadingCache<String, Optional<ExpiringValue<V>>> c =
           cache.getIfPresent(CurrentInstitution.get());
