@@ -344,9 +344,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                     children)
     }
 
-    def getDuplicateInfo: Option[Boolean] = {
-      val duplicateData = repo.getState.getDuplicateData.asScala
-      Option.apply(duplicateData.values.exists(_.isAttachmentDupCheck))
+    def displayDuplicateWarning: Boolean = {
+      val duplicateData = repo.getState.getDuplicateData
+      val attachments   = dialog.getAttachments.asScala
+      attachments.exists(attachment => duplicateData.containsKey(attachment.getUuid))
     }
 
     def processUploadCommand(info: SectionInfo): SectionResult = {
@@ -380,12 +381,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                           repo.unregisterFilename(uploadId)
                           // Validate attachments after uploading through 'Drag and Drop'
                           validate
-                          var wizardBodySection = info
-                            .lookupSection(classOf[WizardBodySection])
-                            .asInstanceOf[WizardBodySection]
-                          wizardBodySection.getTabs(info)
                           UpdateEntry(entryForAttachment(info, a, true, Iterable.empty),
-                                      getDuplicateInfo)
+                                      Option.apply(
+                                        new AttachmentDuplicateInfo(displayDuplicateWarning,
+                                                                    getElementId(info))))
                         }
                     }
                   case IllegalFile(reason) => illegal(reason)
@@ -407,7 +406,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
               stateAction(info) {
                 dialog.deleteAttachment(info, attachmentUuid)
                 validate
-                RemoveEntries(Iterable(attachmentUuid), getDuplicateInfo)
+                RemoveEntries(
+                  Iterable(attachmentUuid),
+                  Option.apply(
+                    new AttachmentDuplicateInfo(displayDuplicateWarning, getElementId(info))))
               }
             case NewUpload(filename, size) =>
               stateAction(info) {

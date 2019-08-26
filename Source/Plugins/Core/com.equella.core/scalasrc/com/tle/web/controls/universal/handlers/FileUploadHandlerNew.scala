@@ -701,7 +701,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               .getOrElse {
                 WebFileUploads.writeStream(uf, this, request.getInputStream) match {
                   case Successful(fileInfo) =>
-                    System.out.println("121212")
                     validateContent(info, this, uf.uploadPath) match {
                       case Left(ifr) =>
                         illegal(ifr)

@@ -5,15 +5,16 @@ exports.updateCtrlErrorText = function(ctrlId, text) {
   contElem.querySelector("P.ctrlinvalidmessage").textContent = text;
 };
 
-exports.updateDuplicateMessage = function(display) {
+exports.updateDuplicateMessage = function(id, display) {
   var duplicateMessageDiv = document.querySelector(
-    ".attachment-duplicate-message"
+    "#" + id + "_duplicateWarningMessage"
   );
-  console.log(display);
-  if (display) {
-    duplicateMessageDiv.setAttribute("style", "color:red; display:inline");
-  } else {
-    duplicateMessageDiv.setAttribute("style", "color:red; display:none");
+  if (duplicateMessageDiv != null) {
+    if (display) {
+      duplicateMessageDiv.setAttribute("style", "color:red; display:inline");
+    } else {
+      duplicateMessageDiv.setAttribute("style", "color:red; display:none");
+    }
   }
 };
 
