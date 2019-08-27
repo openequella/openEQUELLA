@@ -1,5 +1,11 @@
 language: scala
 dist: bionic
+branches:
+  only:
+    - develop
+    - master
+    - /^release\/.+/
+    - /^stable-.+/
 env:
   global:
     ### AWS START ###
