@@ -51,9 +51,12 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Singleton
 @NonNullByDefault
@@ -70,6 +73,8 @@ public class ReplicatedCacheServiceImpl
 
   /** Caches identified by cacheId. */
   private final Cache<String, ReplicatedCacheImpl<?>> caches = CacheBuilder.newBuilder().build();
+
+  private static final Log LOGGER = LogFactory.getLog(ReplicatedCacheServiceImpl.class);
 
   @Override
   public synchronized <V extends Serializable> ReplicatedCache<V> getCache(
@@ -148,14 +153,17 @@ public class ReplicatedCacheServiceImpl
         cache.refresh(CurrentInstitution.get());
       }
 
-      LoadingCache<String, Optional<ExpiringValue<V>>> c =
-          cache.getIfPresent(CurrentInstitution.get());
-      if (c != null) {
+      LoadingCache<String, Optional<ExpiringValue<V>>> c;
+      try {
+        c = cache.get(CurrentInstitution.get());
         Optional<ExpiringValue<V>> op = c.getUnchecked(key);
         if (op.isPresent()) {
           V ev = op.get().getValue();
           return Optional.fromNullable(ev);
         }
+
+      } catch (ExecutionException e) {
+        LOGGER.error("Fail to access cache of institution " + CurrentInstitution.get());
       }
       return Optional.absent();
     }
