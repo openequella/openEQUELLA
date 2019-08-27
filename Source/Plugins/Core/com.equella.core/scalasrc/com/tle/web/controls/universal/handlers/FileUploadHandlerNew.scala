@@ -707,6 +707,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
                       case Right(detected) =>
                         val v = ValidatedUpload(uf.success(fileInfo), detected)
                         (v,
+                         // Normal file uploader doesn't need attachmentDuplicateInfo, so pass None
                          UpdateEntry(AjaxFileEntry(uploadId.toString,
                                                    uf.originalFilename,
                                                    "",

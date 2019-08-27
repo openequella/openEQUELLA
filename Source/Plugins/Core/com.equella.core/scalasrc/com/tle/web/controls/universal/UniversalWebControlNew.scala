@@ -279,8 +279,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       }
 
       def updateDuplicateWarningMessage(): Unit = {
-        if (attachments.exists(
-              attachment => state.getDuplicateData.containsKey(attachment.getUuid))) {
+        if (duplicatesFound) {
           setDuplicateWarning(true)
         } else {
           setDuplicateWarning(false)
@@ -344,7 +343,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                     children)
     }
 
-    def displayDuplicateWarning: Boolean = {
+    // Return if any attachment in this control has duplicate information found
+    def duplicatesFound: Boolean = {
       val duplicateData = repo.getState.getDuplicateData
       val attachments   = dialog.getAttachments.asScala
       attachments.exists(attachment => duplicateData.containsKey(attachment.getUuid))
@@ -381,10 +381,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                           repo.unregisterFilename(uploadId)
                           // Validate attachments after uploading through 'Drag and Drop'
                           validate
-                          UpdateEntry(entryForAttachment(info, a, true, Iterable.empty),
-                                      Option.apply(
-                                        new AttachmentDuplicateInfo(displayDuplicateWarning,
-                                                                    getElementId(info))))
+                          UpdateEntry(
+                            entryForAttachment(info, a, true, Iterable.empty),
+                            Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info)))
+                          )
                         }
                     }
                   case IllegalFile(reason) => illegal(reason)
@@ -405,11 +405,11 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             case Delete(attachmentUuid) =>
               stateAction(info) {
                 dialog.deleteAttachment(info, attachmentUuid)
+                // Validate attachments after removing through 'Drag and Drop'
                 validate
                 RemoveEntries(
                   Iterable(attachmentUuid),
-                  Option.apply(
-                    new AttachmentDuplicateInfo(displayDuplicateWarning, getElementId(info))))
+                  Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info))))
               }
             case NewUpload(filename, size) =>
               stateAction(info) {

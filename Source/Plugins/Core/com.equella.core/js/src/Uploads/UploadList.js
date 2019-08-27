@@ -6,6 +6,8 @@ exports.updateCtrlErrorText = function(ctrlId, text) {
 };
 
 exports.updateDuplicateMessage = function(id, display) {
+  // The div id of all duplicate warning message automatically follow
+  // this format: its parent div id concatenating "_duplicateWarningMessage"
   var duplicateMessageDiv = document.querySelector(
     "#" + id + "_duplicateWarningMessage"
   );

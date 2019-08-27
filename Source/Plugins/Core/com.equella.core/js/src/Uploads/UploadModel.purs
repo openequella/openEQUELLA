@@ -31,8 +31,9 @@ import Web.File.File (File, name, size)
 
 type EntryId = String
 
+-- Create a newtype to store attachment duplicate information
 newtype AttachmentDuplicateInfo =  AttachmentDuplicateInfo{ displayWarningMessage :: Boolean, warningMessageWebId :: String}
-derive instance duplicateInfo :: Newtype AttachmentDuplicateInfo _
+derive instance unwrappedAttachmentDuplicateInfo :: Newtype AttachmentDuplicateInfo _
 defaultDuplicateInfo :: AttachmentDuplicateInfo
 defaultDuplicateInfo = AttachmentDuplicateInfo {displayWarningMessage:false, warningMessageWebId:""}
 
@@ -92,6 +93,7 @@ instance decodeFE :: DecodeJson FileElement where
     preview <- o .? "preview"
     pure $ FileElement {id,name,link,preview,editable,children}
 
+-- decode the attachment duplicate Json data, which is required in line 117 and 121
 instance decodeJsonAttachmentDuplicateInfo :: DecodeJson AttachmentDuplicateInfo where
   decodeJson json = do
     x <- decodeJson json

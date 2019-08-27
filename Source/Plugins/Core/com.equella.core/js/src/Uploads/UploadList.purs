@@ -79,7 +79,10 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
       let oldError = ctrlError oldEntries
           newError = ctrlError entries
       if oldError /= newError then runEffectFn2 updateCtrlErrorText ctrlId newError else pure unit
+      -- Must unwrap the attachmentDuplicateInfo extracted from State
+      -- so that it will become a normal record
       let unwrappedInfo = unwrap attachmentDuplicateInfo
+      -- use runEffectFn2 to execute updateDuplicateMessage because it needs two parameters
       runEffectFn2 updateDuplicateMessage unwrappedInfo.warningMessageWebId unwrappedInfo.displayWarningMessage
 
     ctrlError entries = if compareMax (>) entries 

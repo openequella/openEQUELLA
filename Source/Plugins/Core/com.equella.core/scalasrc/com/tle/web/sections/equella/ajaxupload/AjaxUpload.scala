@@ -72,6 +72,7 @@ case class RemoveEntries(ids: Iterable[String],
                          attachmentDuplicateInfo: Option[AttachmentDuplicateInfo])
     extends AjaxUploadResponse
 
+// This class as part of AjaxResponse includes if duplicates are found and the attachment control's parent id
 case class AttachmentDuplicateInfo(displayWarningMessage: Boolean, warningMessageWebId: String) {}
 
 object AttachmentDuplicateInfo {
