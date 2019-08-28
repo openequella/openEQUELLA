@@ -5,6 +5,7 @@ env:
     KALTURA_BRANCH: master
     # for this build we still need Oracle JDK for JNLP support
     JAVA_HOME: /opt/oracle-jdk/jdk1.8.0_202
+    AUTOTEST_BRANCH: stable-6.6
 phases:
   pre_build:
     commands:
