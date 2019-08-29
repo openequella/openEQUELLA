@@ -1,11 +1,11 @@
-case class EquellaVersion(majorMinor: String, releaseType: String, commits: Int, sha: String) {
-  def fullVersion = s"$majorMinor-$releaseType-r$commits-$sha"
+case class EquellaVersion(majorMinor: String, releaseType: String, sha: String) {
+  def fullVersion = s"$majorMinor-$releaseType-$sha"
 }
 
 object EquellaVersion {
-  val RegEx = """(.*)-(.*)-r(\d*)-(.*)""".r
+  val RegEx = """(.*)-(.*)-(.*)""".r
   def apply(s: String): EquellaVersion = s match {
-    case RegEx(mm, rt, c, sha) => EquellaVersion(mm, rt, c.toInt, sha)
-    case _                     => EquellaVersion("6.5", "Unknown", 0, "00000")
+    case RegEx(mm, rt, sha) => EquellaVersion(mm, rt, sha)
+    case _                  => EquellaVersion("6.5", "Unknown", "00000")
   }
 }

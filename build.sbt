@@ -115,20 +115,9 @@ equellaMajorMinor in ThisBuild := "2019.1.1"
 equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
-git.useGitDescribe := true
-
-val TagRegex = """(.*)-(.*)-(\d*)-(.*)""".r
-git.gitTagToVersionNumber := {
-  val streamName = equellaStream.value
-  val majorMinor = equellaMajorMinor.value
-  val buildName  = equellaBuild.value
-
-  {
-    case TagRegex(_, _, v, sha) =>
-      Some(EquellaVersion(majorMinor, s"$streamName.$buildName", v.toInt, sha).fullVersion)
-    case _ => None
-  }
-}
+version := EquellaVersion(equellaMajorMinor.value,
+                          s"${equellaStream.value}.${equellaBuild.value}",
+                          git.gitHeadCommit.value.orNull).fullVersion
 
 equellaVersion in ThisBuild := EquellaVersion(version.value)
 
@@ -138,7 +127,6 @@ versionProperties in ThisBuild := {
   props.putAll(
     Map(
       "version.mm"      -> eqVersion.majorMinor,
-      "version.mmr"     -> s"${eqVersion.majorMinor}.r${eqVersion.commits}",
       "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
       "version.commit"  -> eqVersion.sha
     ).asJava)
