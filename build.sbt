@@ -115,9 +115,15 @@ equellaMajorMinor in ThisBuild := "2019.1.1"
 equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
-version := EquellaVersion(equellaMajorMinor.value,
-                          s"${equellaStream.value}.${equellaBuild.value}",
-                          git.gitHeadCommit.value.orNull).fullVersion
+version := {
+  val shortCommit = git.gitHeadCommit.value.map { sha =>
+    "g" + sha.take(7)
+  }.get
+
+  EquellaVersion(equellaMajorMinor.value,
+                 s"${equellaStream.value}.${equellaBuild.value}",
+                 shortCommit).fullVersion
+}
 
 equellaVersion in ThisBuild := EquellaVersion(version.value)
 
