@@ -553,40 +553,13 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
               return null;
             });
   }
-  //
-  //  private void shift(
-  //      Session session, final Taxonomy taxonomy, final int from, final int to, final int amount)
-  // {
-  //    if (session != null) {
-  //
-  //      Query q = session.getNamedQuery("shiftLeftIndex");
-  //      q.setInteger("amount", amount);
-  //      q.setInteger("from", from);
-  //      q.setInteger("to", to);
-  //      q.setParameter("taxonomy", taxonomy);
-  //      q.executeUpdate();
-  //
-  //      Query q2 = session.getNamedQuery("shiftRightIndex");
-  //      q2.setInteger("amount", amount);
-  //      q2.setInteger("from", from);
-  //      q2.setInteger("to", to);
-  //      q2.setParameter("taxonomy", taxonomy);
-  //      q2.executeUpdate();
-  //    } else {
-  //      getHibernateTemplate()
-  //          .execute(
-  //              newSession -> {
-  //                shift(newSession, taxonomy, from, to, amount);
-  //                return null;
-  //              });
-  //    }
-  //  }
 
   private void shift(Session session, final Taxonomy taxonomy, final Term term, final int amount) {
     if (session != null) {
       Query q = session.getNamedQuery("shiftByPath");
       q.setInteger("amount", amount);
       q.setString("fullValue", term.getFullValue());
+      q.setString("fullValueWild", term.getFullValue() + "%");
       q.setParameter("taxonomy", taxonomy);
       q.executeUpdate();
     } else {
