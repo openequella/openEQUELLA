@@ -3,6 +3,7 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.Assert.assertEquals;
 
 import com.tle.annotation.Nullable;
+import com.google.common.collect.Lists;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import java.io.IOException;
@@ -107,8 +108,15 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     assertEquals(length, 5);
   }
 
+  private void alphaSort(List<String> terms) {
+    // Sort using same mechanism as server
+    final Collator collator = Collator.getInstance(Locale.getDefault());
+    collator.setStrength(Collator.PRIMARY);
+    terms.sort(collator);
+  }
+
   @Test
-  public void testSortRootTerms() throws IOException, URISyntaxException {
+  public void testSortRootTerms() throws Exception {
     final String taxonomyUuid = UUID.randomUUID().toString();
     // Create a new taxonomy
     createTaxononmy(taxonomyUuid, "Sort Roots Test Taxonomy");
@@ -124,10 +132,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     }
 
     // These are the orders we will expect
-    // Sort using same mechanism as server
-    final Collator collator = Collator.getInstance(Locale.getDefault());
-    collator.setStrength(Collator.PRIMARY);
-    rootTerms.sort(collator);
+    alphaSort(rootTerms);
 
     // Sort root
     final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, null);
@@ -152,7 +157,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   }
 
   @Test
-  public void testSortChildTerms() throws IOException, URISyntaxException {
+  public void testSortChildTerms() throws Exception {
 
     final String taxonomyUuid = UUID.randomUUID().toString();
     // Create a new taxonomy
@@ -189,11 +194,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     }
 
     // These are the orders we will expect
-    // Sort using same mechanism as server
-    final Collator collator = Collator.getInstance(Locale.getDefault());
-    collator.setStrength(Collator.PRIMARY);
-    rootTerms.sort(collator);
-    testTermChildren.sort(collator);
+    alphaSort(rootTerms);
+    alphaSort(testTermChildren);
 
     // Sort root
     final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, null);
@@ -229,6 +231,157 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final String taxonomyUri =
         PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid);
     deleteResource(taxonomyUri, getToken());
+  }
+
+  /**
+   * Creates a 5^4 (625) node taxonomy (ie. 4 levels with each non-leaf node having 5 children) Any
+   * bigger than this and the time taken to run this test gets ridiculous.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSortWholeTaxonomy() throws Exception {
+
+    final int levelCount = 3;
+    final int nodesPerLevel = 5;
+    final String taxonomyUuid = UUID.randomUUID().toString();
+    // Create a new taxonomy
+    createTaxononmy(taxonomyUuid, "Sort Whole Taxonomy Test Taxonomy");
+
+    // Lock
+    lock(taxonomyUuid);
+
+    // Various terms at different levels
+    final List<TermTestData> levelTermData = new ArrayList<>();
+    for (int i = 0; i < levelCount; i++) {
+      levelTermData.add(new TermTestData((int) (Math.random() * nodesPerLevel)));
+    }
+
+    final List<Pair<String, String>> level0Terms =
+        createChildTerms(taxonomyUuid, null, nodesPerLevel, null);
+    final List<String> rootTermNames =
+        new ArrayList<>(Lists.transform(level0Terms, (t) -> t.getSecond()));
+
+    // You could do this recursively, but we want to keep track of certain nodes
+    for (int level0Index = 0; level0Index < level0Terms.size(); level0Index++) {
+      final Pair<String, String> level0Term = level0Terms.get(level0Index);
+
+      final List<Pair<String, String>> level1Terms =
+          createChildTerms(
+              taxonomyUuid, level0Term.getFirst(), nodesPerLevel, level0Term.getSecond());
+      for (int level1Index = 0; level1Index < level1Terms.size(); level1Index++) {
+        final Pair<String, String> level1Term = level1Terms.get(level1Index);
+
+        final List<Pair<String, String>> level2Terms =
+            createChildTerms(
+                taxonomyUuid, level1Term.getFirst(), nodesPerLevel, level1Term.getSecond());
+        for (int level2Index = 0; level2Index < level2Terms.size(); level2Index++) {
+          final Pair<String, String> level2Term = level2Terms.get(level2Index);
+
+          final List<Pair<String, String>> level3Terms =
+              createChildTerms(
+                  taxonomyUuid, level2Term.getFirst(), nodesPerLevel, level2Term.getSecond());
+          initTestData(
+              levelTermData,
+              2,
+              level2Index,
+              level0Term.getSecond() + "\\" + level1Term.getSecond(),
+              level2Term,
+              level3Terms);
+        }
+        initTestData(
+            levelTermData, 1, level1Index, level0Term.getSecond(), level1Term, level2Terms);
+      }
+      initTestData(levelTermData, 0, level0Index, null, level0Term, level1Terms);
+    }
+
+    // We now know the sorted terms to expect at FOUR levels
+    alphaSort(rootTermNames);
+    for (int i = 0; i < levelTermData.size(); i++) {
+      alphaSort(levelTermData.get(i).childrenNames);
+    }
+
+    // Call sort on whole taxonmy
+    final HttpResponse sortResponse =
+        postEntity(
+            null,
+            PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "sort"),
+            getToken(),
+            true);
+    assertResponse(sortResponse, 200, "failed to sort taxonomy");
+
+    // get the children at the FOUR levels, and match them
+    final List<String> returnedSortedRootTerms = new ArrayList<>(nodesPerLevel);
+    final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
+    for (int i = 0; i < arrayNode.size(); i++) {
+      final JsonNode node = arrayNode.get(i);
+      final String termName = node.get("term").getTextValue();
+      returnedSortedRootTerms.add(termName);
+    }
+    assertEquals(rootTermNames, returnedSortedRootTerms);
+
+    for (int i = 0; i < levelTermData.size(); i++) {
+      final List<String> returnedSortedChildTerms = new ArrayList<>(nodesPerLevel);
+      final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, levelTermData.get(i).termPath);
+      for (int j = 0; j < testTermSortedChildren.size(); j++) {
+        final JsonNode node = testTermSortedChildren.get(j);
+        final String termName = node.get("term").getTextValue();
+        returnedSortedChildTerms.add(termName);
+      }
+      assertEquals(levelTermData.get(i).childrenNames, returnedSortedChildTerms);
+    }
+
+    unlock(taxonomyUuid);
+
+    // Delete the taxonomy
+    final String taxonomyUri =
+        PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid);
+    deleteResource(taxonomyUri, getToken());
+  }
+
+  private void initTestData(
+      List<TermTestData> levelTermData,
+      int level,
+      int termIndex,
+      String prefixPath,
+      Pair<String, String> term,
+      List<Pair<String, String>> children) {
+    final TermTestData testData = levelTermData.get(level);
+    if (termIndex == testData.termIndex) {
+      testData.childrenNames = new ArrayList<>(Lists.transform(children, (t) -> t.getSecond()));
+      testData.termUuid = term.getFirst();
+      testData.termName = term.getSecond();
+      testData.termPath =
+          (prefixPath == null ? term.getSecond() : prefixPath + "\\" + term.getSecond());
+    }
+  }
+
+  private static class TermTestData {
+    public final int termIndex;
+    public List<String> childrenNames = new ArrayList<>();
+    public String termUuid = null;
+    public String termName = null;
+    public String termPath = null;
+
+    public TermTestData(int termIndex) {
+      this.termIndex = termIndex;
+    }
+  }
+
+  /** @return A list of term UUID+Names */
+  private List<Pair<String, String>> createChildTerms(
+      String taxonomyUuid, String parentTermUuid, int numTerms, String currentPrefix)
+      throws Exception {
+    final List<Pair<String, String>> result = new ArrayList<>();
+    for (int i = 0; i < numTerms; i++) {
+      final String random = randomString(8);
+      final String termName = (currentPrefix == null ? random : currentPrefix + "-" + random);
+      final String termUuid = UUID.randomUUID().toString();
+
+      createTerm(taxonomyUuid, termUuid, termName, parentTermUuid, -1);
+      result.add(new Pair<String, String>(termUuid, termName));
+    }
+    return result;
   }
 
   private void createTaxononmy(String uuid, String name) throws IOException {

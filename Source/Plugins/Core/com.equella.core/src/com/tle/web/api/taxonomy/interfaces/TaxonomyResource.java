@@ -287,4 +287,12 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   Response sortChildTerms(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
       @ApiParam(value = "Term path", required = false) @QueryParam("path") String path);
+
+	/** @return 200 response if successful */
+  @POST
+  @Path("/{uuid}/sort")
+  @Produces("application/json")
+  @ApiOperation(value = "Sort each level of the whole taxonomy")
+  Response sortTaxonomy(
+      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid);
 }

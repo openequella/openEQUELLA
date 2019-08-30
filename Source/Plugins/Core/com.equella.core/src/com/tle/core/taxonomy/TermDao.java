@@ -71,4 +71,6 @@ public interface TermDao extends GenericDao<Term, Long> {
   void validateTerm(Taxonomy taxonomy, Term parent, String termValue);
 
   void sortChildren(Taxonomy taxonomy, Term parentTerm);
+
+  void sortTaxonomy(Taxonomy taxonomy);
 }
