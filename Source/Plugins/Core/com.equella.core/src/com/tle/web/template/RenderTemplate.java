@@ -181,9 +181,9 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 		}
 
 		PreRenderContext precontext = context.getPreRenderContext();
-		precontext.preRender(STYLES_CSS);
         if (oldLayout) {
 			model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
+			precontext.preRender(STYLES_CSS);
 			precontext.preRender(CUSTOMER_CSS);
 			return selectLayout(context, template);
         }
