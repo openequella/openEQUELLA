@@ -49,6 +49,7 @@ import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.CEditBox;
 import com.tle.web.wizard.controls.SimpleValueControl;
 import com.tle.web.wizard.controls.WebControlModel;
+import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.standard.controls.EditBox.EditBoxModel;
 import java.util.Timer;
 
@@ -93,6 +94,12 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
   public void onFieldValueChanged(SectionInfo info) {
     // No concrete implementation is needed because an event will trigger a Wizard refresh which
     // valuates all fields
+  }
+
+  @EventHandlerMethod
+  public void openDuplicatePage(SectionInfo info) {
+    WizardBodySection bodySection = info.lookupSection(WizardBodySection.class);
+    bodySection.goToDuplicateDataTab(info);
   }
 
   @Override
