@@ -24,8 +24,9 @@ import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public final class Utils {
+  // Modify the pattern to support artifacts that have no 'mmr'
   public static final Pattern VERSION_EXTRACT =
-      Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r\\d+) \\((.+)\\)\\.zip$"); // $NON-NLS-1$
+      Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r?\\d+) \\((.+)\\)\\.zip$"); // $NON-NLS-1$
 
   public static final Comparator<WebVersion> VERSION_COMPARATOR =
       new InverseComparator<WebVersion>(
