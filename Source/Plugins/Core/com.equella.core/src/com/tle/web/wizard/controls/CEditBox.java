@@ -38,6 +38,7 @@ public class CEditBox extends EditableCtrl {
   private final boolean checkDuplication;
   private final boolean forceUnique;
   private final boolean forceNumber;
+  private com.tle.web.wizard.standard.controls.EditBox editBoxSection;
 
   public CEditBox(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean) {
     super(page, controlNumber, nestingLevel, controlBean);
@@ -49,6 +50,12 @@ public class CEditBox extends EditableCtrl {
     checkDuplication = edbox.isCheckDuplication();
     forceUnique = edbox.isForceUnique();
     forceNumber = edbox.isNumber();
+  }
+
+  // An instace of CEditBox is wrapped by an EditBox Section which controls
+  // the UI and event handling
+  public void setEditBoxSection(com.tle.web.wizard.standard.controls.EditBox editBoxSection) {
+    this.editBoxSection = editBoxSection;
   }
 
   @Override
@@ -72,6 +79,8 @@ public class CEditBox extends EditableCtrl {
       setInvalid(
           forceUnique && !isUnique && !isInvalid(),
           new KeyLabel("wizard.controls.editbox.uniqueerror")); // $NON-NLS-1$
+
+      editBoxSection.setDuplicateWarning(!isUnique);
     }
 
     if (forceNumber && !isInvalid()) {

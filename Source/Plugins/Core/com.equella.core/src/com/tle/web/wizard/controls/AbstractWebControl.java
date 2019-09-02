@@ -28,6 +28,7 @@ import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.ParameterizedEvent;
@@ -44,6 +45,7 @@ import com.tle.web.sections.standard.renderers.FieldsetTagRenderer;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.impl.WebRepository;
+import com.tle.web.wizard.section.WizardBodySection;
 
 /** @author jmaginnis */
 @NonNullByDefault
@@ -309,5 +311,11 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
 
   public void setDuplicateWarning(boolean duplicateWarning) {
     this.duplicateWarning = duplicateWarning;
+  }
+
+  @EventHandlerMethod
+  public void openDuplicatePage(SectionInfo info) {
+    WizardBodySection bodySection = info.lookupSection(WizardBodySection.class);
+    bodySection.goToDuplicateDataTab(info);
   }
 }

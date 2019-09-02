@@ -44,15 +44,15 @@ import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
-import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod, TreeLookup}
+import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod}
 import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.equella.render.ZebraTableRenderer
 import com.tle.web.sections.events.RenderEventContext
-import com.tle.web.sections.events.js.{BookmarkAndModify, EventGenerator}
+import com.tle.web.sections.events.js.EventGenerator
 import com.tle.web.sections.jquery.libraries.JQueryProgression
 import com.tle.web.sections.js.ElementId
-import com.tle.web.sections.js.generic.{Js, OverrideHandler, ReloadHandler}
+import com.tle.web.sections.js.generic.ReloadHandler
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.{
   ExternallyDefinedFunction,
@@ -74,7 +74,6 @@ import com.tle.web.wizard.WizardService
 import com.tle.web.wizard.controls.{AbstractWebControl, CCustomControl, WebControlModel}
 import com.tle.web.wizard.impl.WebRepository
 import com.tle.web.wizard.render.WizardFreemarkerFactory
-import com.tle.web.wizard.section.WizardBodySection
 import io.circe.parser._
 import io.circe.syntax._
 import javax.inject.Inject
@@ -134,13 +133,6 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     super.registered(id, tree)
     ctx = new AfterRegister(id, tree, getWrappedControl.asInstanceOf[CCustomControl])
     duplicateWarningMessage.setClickHandler(events.getNamedHandler("openDuplicatePage"))
-  }
-
-  @EventHandlerMethod
-  def openDuplicatePage(info: SectionInfo): Unit = {
-    val wizardBodySection =
-      info.lookupSection(classOf[WizardBodySection]).asInstanceOf[WizardBodySection]
-    wizardBodySection.goToDuplicateDataTab(info)
   }
 
   @EventHandlerMethod def reloaded(info: SectionInfo): Unit = {
