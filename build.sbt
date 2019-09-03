@@ -111,7 +111,9 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
-equellaMajorMinor in ThisBuild := "2019.1.1"
+equellaMajor in ThisBuild := 2019
+equellaMinor in ThisBuild := 1
+equellaPatch in ThisBuild := 1
 equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
@@ -120,7 +122,9 @@ version := {
     "g" + sha.take(7)
   }.get
 
-  EquellaVersion(equellaMajorMinor.value,
+  EquellaVersion(equellaMajor.value,
+                 equellaMinor.value,
+                 equellaPatch.value,
                  s"${equellaStream.value}.${equellaBuild.value}",
                  shortCommit).fullVersion
 }
@@ -132,8 +136,8 @@ versionProperties in ThisBuild := {
   val props     = new Properties
   props.putAll(
     Map(
-      "version.mm"      -> eqVersion.majorMinor,
-      "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
+      "version.mm"      -> s"${eqVersion.major}.${eqVersion.minor}",
+      "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
       "version.commit"  -> eqVersion.sha
     ).asJava)
   val f = target.value / "version.properties"
