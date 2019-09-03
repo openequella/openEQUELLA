@@ -55,7 +55,7 @@ public class ManagerConfig extends EquellaConfig {
     private static final String LOADING_TIME_OUT_DEFAULT = "6000";
     private static final String SERVER_PORT_DEFAULT = "3000";
 
-    private static final String VERSION_MMR = "version.mmr";
+    private static final String VERSION_MM = "version.mm";
     private static final String VERSION_DISPLAY = "version.display";
     private static final String VERSION_COMMIT = "version.commit";
 
@@ -81,7 +81,7 @@ public class ManagerConfig extends EquellaConfig {
         fullVersion =
             MessageFormat.format(
                 "{0} {1} ({2})",
-                vp.getProperty(VERSION_MMR),
+                vp.getProperty(VERSION_MM),
                 vp.getProperty(VERSION_DISPLAY),
                 vp.getProperty(VERSION_COMMIT));
       } else {

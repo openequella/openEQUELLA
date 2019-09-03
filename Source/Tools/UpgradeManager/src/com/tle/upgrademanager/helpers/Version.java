@@ -102,11 +102,11 @@ public class Version {
       Properties p = new Properties();
       p.load(in);
       version.setDisplayName(p.getProperty("version.display"));
-      version.setMmr(p.getProperty("version.mmr"));
+      // As mmr is removed from `version.properties`, replace mmr with mm
+      String mmr = p.getProperty("version.mm");
+      version.setMmr(mmr);
       version.setFilename(
-          MessageFormat.format(
-              "tle-upgrade-{0} ({1}).zip",
-              p.getProperty("version.mmr"), p.getProperty("version.display")));
+          MessageFormat.format("tle-upgrade-{0} ({1}).zip", mmr, p.getProperty("version.display")));
     } catch (IOException ex) {
       version.setDisplayName(Utils.UNKNOWN_VERSION);
     }

@@ -24,7 +24,10 @@ import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public final class Utils {
-  // Modify the pattern to support artifacts that have no 'mmr'
+  // The below pattern supports both the old automatic versioning scheme (`<maj>.<min>.r<commits>` -
+  // `2019.1.r123`)
+  // as well as the newer semver hotfix scheme (<maj>.<min>.<rev> - `2019.1.1`). Hence the optional
+  // `r?`.
   public static final Pattern VERSION_EXTRACT =
       Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r?\\d+) \\((.+)\\)\\.zip$"); // $NON-NLS-1$
 
