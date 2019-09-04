@@ -20,11 +20,15 @@ package com.dytech.edge.admin.script.ifmodel;
 
 import com.dytech.edge.admin.script.Row;
 import com.dytech.edge.admin.script.ScriptModel;
+import com.dytech.edge.admin.script.basicmodel.TypeComparison;
 import com.dytech.edge.admin.script.model.Clause;
 import com.dytech.edge.admin.script.model.Node;
 import com.dytech.edge.admin.script.model.OpTerm;
 import com.dytech.edge.admin.script.model.Operator;
 import com.dytech.edge.admin.script.model.Term;
+import com.tle.admin.Driver;
+import com.tle.common.usermanagement.util.UserBeanUtils;
+import com.tle.core.remoting.RemoteUserService;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +46,13 @@ import javax.swing.DefaultListModel;
  */
 @SuppressWarnings({"nls", "rawtypes"})
 public abstract class IfModel extends DefaultListModel implements ScriptModel {
+  static final RemoteUserService userService =
+      Driver.instance().getClientService().getService(RemoteUserService.class);
+
+  static {
+    TypeComparison.getRoleText = u -> UserBeanUtils.getRole(userService, u).toString();
+  }
+
   protected static final List<String> TYPES =
       Collections.unmodifiableList(Arrays.asList("if", "if (", "and", "and (", "or", "or ("));
 
@@ -586,10 +597,5 @@ public abstract class IfModel extends DefaultListModel implements ScriptModel {
 
       this.addElement(new BracketEnd(n, prefix));
     }
-  }
-
-  public static String encode(String value) {
-    String temp = value.replaceAll("\\\\", "\\\\\\\\"); // $NON-NLS-1$ //$NON-NLS-2$
-    return temp.replaceAll("'", "\\\\'"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 }

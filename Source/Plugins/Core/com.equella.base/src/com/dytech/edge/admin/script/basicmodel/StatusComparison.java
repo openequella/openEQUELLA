@@ -20,50 +20,45 @@ package com.dytech.edge.admin.script.basicmodel;
 
 import com.dytech.edge.admin.script.ifmodel.Comparison;
 import com.dytech.edge.admin.script.ifmodel.Equality;
-import com.dytech.edge.admin.script.ifmodel.IfModel;
+import com.tle.common.i18n.CurrentLocale;
 
-public class XpathComparison implements Comparison {
-  protected String lhs;
-  protected String rhs;
-  protected Equality operator;
+public class StatusComparison implements Comparison {
+  protected Equality op;
+  protected String value;
 
-  public XpathComparison(Equality operator, String lhs, String rhs) {
-    setLHS(lhs);
-    setRHS(rhs);
-    setOperator(operator);
+  public StatusComparison(Equality op, String value) {
+    this.op = op;
+    this.value = value;
   }
 
-  public String getLHS() {
-    return lhs;
+  public Equality getOperation() {
+    return op;
   }
 
-  public void setLHS(String lhs) {
-    this.lhs = lhs;
+  public void setOp(Equality op) {
+    this.op = op;
   }
 
-  public String getRHS() {
-    return rhs;
+  public String getValue() {
+    return value;
   }
 
-  public void setRHS(String rhs) {
-    this.rhs = rhs;
-  }
-
-  public Equality getOperator() {
-    return operator;
-  }
-
-  public void setOperator(Equality operator) {
-    this.operator = operator;
+  public void setValue(String value) {
+    this.value = value;
   }
 
   @Override
   public String toScript() {
-    return "xml.get('" + lhs + "') " + operator.toScript() + " '" + IfModel.encode(rhs) + "'";
+    return "status " + op.toScript() + " '" + BasicParser.encode(value) + "'";
   }
 
   @Override
   public String toEasyRead() {
-    return lhs + " " + operator.toEasyRead() + " '" + rhs + "'";
+    return CurrentLocale.get("com.dytech.edge.admin.script.target.status")
+        + " "
+        + op.toEasyRead()
+        + " '"
+        + value
+        + "'";
   }
 }

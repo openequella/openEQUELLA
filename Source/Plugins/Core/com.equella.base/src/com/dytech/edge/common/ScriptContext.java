@@ -24,6 +24,12 @@ import java.util.Map;
 
 /** @author aholland */
 public interface ScriptContext extends Serializable {
+
+  enum SafeScriptContext {
+    Wizard,
+    Workflow
+  }
+
   PropBagWrapper getXml();
 
   Logger getLogger();
@@ -57,4 +63,6 @@ public interface ScriptContext extends Serializable {
 
   /** @Return A *read-only* map of UserScript objects */
   Map<String, Object> getUserScriptObjects();
+
+  SafeScriptContext getSafeContext();
 }

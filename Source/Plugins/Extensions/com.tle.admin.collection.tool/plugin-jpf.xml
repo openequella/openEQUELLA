@@ -11,5 +11,6 @@
     <parameter-def id="nameKey" type="string" />
     <parameter-def id="defaultNameKey" type="string" />
     <parameter-def id="class" type="string" multiplicity="none-or-one" />
+    <parameter-def id="advancedScripting" type="boolean" multiplicity="none-or-one"/>
   </extension-point>
 </plugin>

@@ -111,6 +111,7 @@
     <parameter id="class" value="com.tle.core.schema.guice.SchemaModule" />
     <parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
     <parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+    <parameter id="class" value="com.tle.core.scripting.guice.ScriptingGuiceModule" />
     <parameter id="class" value="com.tle.core.services.http.HttpConfigModule"/>
     <parameter id="class" value="com.tle.core.services.item.relation.RelationModule" />
     <parameter id="class" value="com.tle.core.services.user.guice.UserManagementModule" />
@@ -679,6 +680,10 @@
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
     <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
     <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
+  </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="scriptingRemoteInvoker">
+    <parameter id="class" value="com.tle.core.remoting.RemoteScriptingService" />
+    <parameter id="bean" value="bean:com.tle.common.scripting.service.ScriptingService" />
   </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemResolver" id="cloud">
     <parameter id="id" value="cloud" />

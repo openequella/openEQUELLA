@@ -20,40 +20,57 @@ package com.dytech.edge.admin.script.basicmodel;
 
 import com.dytech.edge.admin.script.ifmodel.Comparison;
 import com.dytech.edge.admin.script.ifmodel.Equality;
-import com.dytech.edge.admin.script.ifmodel.IfModel;
+import com.dytech.edge.admin.script.ifmodel.Equals;
 import com.tle.common.i18n.CurrentLocale;
+import java.util.function.Function;
 
-public class WorkflowStepComparison implements Comparison {
-  private final Equality op;
-  private final String value;
-  private final String name;
+public class TypeComparison implements Comparison {
+  protected UserMethodMethod op;
+  protected String value;
+  public static Function<String, String> getRoleText;
 
-  public WorkflowStepComparison(Equality op, String value, String name) {
+  public TypeComparison(UserMethodMethod op, String value) {
     this.op = op;
     this.value = value;
-    this.name = name;
   }
 
-  public Equality getOperation() {
+  public TypeComparison(Equality equality, String value2) {
+    if (equality instanceof Equals) {
+      op = new UserMethodMethod.HasRole();
+    } else {
+      op = new UserMethodMethod.DoesntHasRole();
+    }
+    this.value = value2;
+  }
+
+  public UserMethodMethod getOperation() {
     return op;
+  }
+
+  public void setOp(UserMethodMethod op) {
+    this.op = op;
   }
 
   public String getValue() {
     return value;
   }
 
+  public void setValue(String value) {
+    this.value = value;
+  }
+
   @Override
   public String toScript() {
-    return "workflowstep " + op.toScript() + " '" + IfModel.encode(value) + "'";
+    return "user." + op.toScript() + "('" + BasicParser.encode(value) + "')";
   }
 
   @Override
   public String toEasyRead() {
-    return CurrentLocale.get("com.dytech.edge.admin.script.target.workflow")
+    return CurrentLocale.get("com.dytech.edge.admin.script.target.role")
         + " "
         + op.toEasyRead()
         + " '"
-        + name
+        + getRoleText.apply(value)
         + "'";
   }
 }

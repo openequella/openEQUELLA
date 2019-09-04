@@ -16,36 +16,48 @@
  * limitations under the License.
  */
 
-package com.tle.core.item.scripting;
+package com.tle.core.scripting.service;
 
+import com.dytech.edge.admin.script.options.ScriptOptions;
 import com.dytech.edge.common.ScriptContext.SafeScriptContext;
-import com.tle.beans.item.ItemPack;
-import com.tle.common.filesystem.handle.FileHandle;
-import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.core.item.service.ItemService;
-import com.tle.core.scripting.service.StandardScriptContextParams;
-import java.util.Map;
+import com.tle.common.NameValue;
+import java.util.List;
 
-/** @author aholland */
-public class WorkflowScriptContextParams extends StandardScriptContextParams {
-  private final ItemService service;
+public class SafeScriptOptions implements ScriptOptions {
 
-  public WorkflowScriptContextParams(
-      ItemService service,
-      ItemPack itemPack,
-      FileHandle fileHandle,
-      Map<String, Object> attributes) {
-    super(itemPack, fileHandle, true, attributes);
-    this.service = service;
+  private final SafeScriptContext safeContext;
+
+  public SafeScriptOptions(SafeScriptContext safeContext) {
+    this.safeContext = safeContext;
   }
 
   @Override
-  public boolean isAnOwner() {
-    return service.isAnOwner(getItemPack().getItem(), CurrentUser.getDetails().getUniqueID());
+  public boolean hasWorkflow() {
+    return safeContext == SafeScriptContext.Wizard;
   }
 
   @Override
-  public SafeScriptContext getSafeContext() {
-    return SafeScriptContext.Workflow;
+  public boolean hasItemStatus() {
+    return true;
+  }
+
+  @Override
+  public boolean restrictItemStatusForModeration() {
+    return safeContext == SafeScriptContext.Workflow;
+  }
+
+  @Override
+  public List<NameValue> getWorkflowSteps() {
+    return null;
+  }
+
+  @Override
+  public String getWorkflowStepName(String value) {
+    return "";
+  }
+
+  @Override
+  public boolean hasUserIsModerator() {
+    return safeContext != SafeScriptContext.Workflow;
   }
 }

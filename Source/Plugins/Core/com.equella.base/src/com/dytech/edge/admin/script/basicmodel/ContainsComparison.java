@@ -19,7 +19,6 @@
 package com.dytech.edge.admin.script.basicmodel;
 
 import com.dytech.edge.admin.script.ifmodel.Comparison;
-import com.dytech.edge.admin.script.ifmodel.IfModel;
 
 public class ContainsComparison implements Comparison {
   protected String xpath;
@@ -48,7 +47,7 @@ public class ContainsComparison implements Comparison {
 
   @Override
   public String toScript() {
-    return "xml.contains('" + xpath + "', '" + IfModel.encode(value) + "')";
+    return "xml.contains('" + xpath + "', '" + BasicParser.encode(value) + "')";
   }
 
   @Override

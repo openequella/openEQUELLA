@@ -149,4 +149,10 @@ public class PluginControlExtension implements ControlDefinition {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public boolean usesAdvancedScripting() {
+    Parameter param = extension.getParameter("advancedScripting");
+    return param != null && param.valueAsBoolean();
+  }
 }

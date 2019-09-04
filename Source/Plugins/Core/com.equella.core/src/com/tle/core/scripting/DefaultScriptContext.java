@@ -36,16 +36,19 @@ public class DefaultScriptContext implements ScriptContext {
   private final Map<String, Object> scriptObjects;
   private final Map<String, Object> userScriptObjects;
   private final PropBagWrapper xml;
+  private final SafeScriptContext safeContext;
 
   private Logger logger;
 
   public DefaultScriptContext(
       Map<String, Object> scriptObjects,
       Map<String, Object> userScriptObjects,
-      PropBagWrapper xml) {
+      PropBagWrapper xml,
+      SafeScriptContext safeContext) {
     this.scriptObjects = scriptObjects;
     this.userScriptObjects = userScriptObjects;
     this.xml = xml;
+    this.safeContext = safeContext;
   }
 
   @Override
@@ -161,5 +164,10 @@ public class DefaultScriptContext implements ScriptContext {
   @Override
   public Map<String, Object> getUserScriptObjects() {
     return Collections.unmodifiableMap(userScriptObjects);
+  }
+
+  @Override
+  public SafeScriptContext getSafeContext() {
+    return safeContext;
   }
 }

@@ -22,6 +22,7 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.ScriptContext;
+import com.dytech.edge.common.ScriptContext.SafeScriptContext;
 import com.dytech.edge.exceptions.ItemNotFoundException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.edge.exceptions.WorkflowException;
@@ -1125,6 +1126,11 @@ public class WizardServiceImpl
     @Override
     public WizardState getWizardState() {
       return state;
+    }
+
+    @Override
+    public SafeScriptContext getSafeContext() {
+      return SafeScriptContext.Wizard;
     }
   }
 

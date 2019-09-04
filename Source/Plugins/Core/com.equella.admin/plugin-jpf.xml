@@ -178,6 +178,7 @@
     <parameter id="nameKey" value="com.equella.admin.summarysections.freemarker.title" />
     <parameter id="defaultNameKey" value="com.equella.admin.summarysections.freemarker.defaultname" />
     <parameter id="class" value="com.tle.admin.collection.summarydisplay.FreemarkerConfig" />
+    <parameter id="advancedScripting" value="true" />
   </extension>
   <extension plugin-id="com.tle.admin.tools" point-id="tool" id="securitytool">
     <parameter id="displayorder" value="1300" />
@@ -201,6 +202,7 @@
     <parameter id="wrappedClass" value="com.tle.common.wizard.controls.advancedscript.AdvancedScriptControl" />
     <parameter id="editorClass" value="com.tle.admin.controls.advancedscript.AdvancedScriptControlEditor" />
     <parameter id="context" value="page" />
+    <parameter id="advancedScripting" value="true"/>
   </extension>
   <extension plugin-id="com.tle.admin.tools" point-id="tool" id="courseinfotool">
     <parameter id="displayorder" value="1000" />

@@ -16,33 +16,20 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls.repository;
+package com.dytech.edge.admin.script;
 
-import com.dytech.edge.admin.wizard.editor.Editor;
-import com.dytech.edge.admin.wizard.model.Control;
-import com.tle.admin.controls.EditorFactory;
-import com.tle.admin.schema.SchemaModel;
-import java.util.Set;
+import com.tle.admin.Driver;
+import com.tle.core.remoting.RemoteScriptingService;
 
-/** @author Nicholas Read */
-public interface ControlDefinition {
-  EditorFactory editorFactory();
+public class SafeScripting {
 
-  Set<String> getContexts();
+  private static boolean safeScripting =
+      Driver.instance()
+          .getClientService()
+          .getService(RemoteScriptingService.class)
+          .isSafeScripting();
 
-  String getName();
-
-  String getId();
-
-  boolean hasContext(String context);
-
-  Editor createEditor(Control control, int type, SchemaModel schema);
-
-  String getIcon();
-
-  Control createControlModel();
-
-  Object createWrappedObject();
-
-  boolean usesAdvancedScripting();
+  public static boolean isSafeScripting() {
+    return safeScripting;
+  }
 }

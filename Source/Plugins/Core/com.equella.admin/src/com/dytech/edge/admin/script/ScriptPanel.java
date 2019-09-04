@@ -152,9 +152,11 @@ public class ScriptPanel extends JTabbedPane
     addTab(
         CurrentLocale.get("com.dytech.edge.admin.script.scriptpanel.basic"),
         createBasic()); //$NON-NLS-1$
-    addTab(
-        CurrentLocale.get("com.dytech.edge.admin.script.scriptpanel.advanced"), // $NON-NLS-1$
-        createAdvanced());
+    if (!SafeScripting.isSafeScripting()) {
+      addTab(
+          CurrentLocale.get("com.dytech.edge.admin.script.scriptpanel.advanced"), // $NON-NLS-1$
+          createAdvanced());
+    }
 
     addChangeListener(this);
   }

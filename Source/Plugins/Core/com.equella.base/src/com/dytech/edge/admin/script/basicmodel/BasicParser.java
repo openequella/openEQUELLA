@@ -176,4 +176,9 @@ public class BasicParser extends IfParser {
 
     return s.toString();
   }
+
+  public static String encode(String value) {
+    String temp = value.replaceAll("\\\\", "\\\\\\\\"); // $NON-NLS-1$ //$NON-NLS-2$
+    return temp.replaceAll("'", "\\\\'"); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 }

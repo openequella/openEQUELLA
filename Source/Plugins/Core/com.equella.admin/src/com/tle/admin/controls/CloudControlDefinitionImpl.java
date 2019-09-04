@@ -95,4 +95,9 @@ public class CloudControlDefinitionImpl implements ControlDefinition {
     cloudControl.setClassType(getId());
     return cloudControl;
   }
+
+  @Override
+  public boolean usesAdvancedScripting() {
+    return false;
+  }
 }

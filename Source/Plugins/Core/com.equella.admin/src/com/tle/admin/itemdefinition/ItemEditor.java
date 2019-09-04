@@ -18,6 +18,7 @@
 
 package com.tle.admin.itemdefinition;
 
+import com.dytech.edge.admin.script.SafeScripting;
 import com.dytech.edge.admin.script.options.ItemdefScriptOptions;
 import com.dytech.edge.admin.wizard.WizardHelper;
 import com.dytech.edge.admin.wizard.WizardTree;
@@ -78,7 +79,9 @@ public class ItemEditor extends BaseEntityEditor<ItemDefinition> {
     itemdefTabs.add(display);
 
     itemdefTabs.add(new MapperTab());
-    itemdefTabs.add(new ExpertScriptingTab(this));
+    if (!SafeScripting.isSafeScripting()) {
+      itemdefTabs.add(new ExpertScriptingTab(this));
+    }
     itemdefTabs.add(new ExtensionsTab());
 
     return itemdefTabs;

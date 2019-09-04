@@ -16,33 +16,14 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls.repository;
+package com.tle.core.scripting.guice;
 
-import com.dytech.edge.admin.wizard.editor.Editor;
-import com.dytech.edge.admin.wizard.model.Control;
-import com.tle.admin.controls.EditorFactory;
-import com.tle.admin.schema.SchemaModel;
-import java.util.Set;
+import com.tle.core.config.guice.OptionalConfigModule;
 
-/** @author Nicholas Read */
-public interface ControlDefinition {
-  EditorFactory editorFactory();
+public class ScriptingGuiceModule extends OptionalConfigModule {
 
-  Set<String> getContexts();
-
-  String getName();
-
-  String getId();
-
-  boolean hasContext(String context);
-
-  Editor createEditor(Control control, int type, SchemaModel schema);
-
-  String getIcon();
-
-  Control createControlModel();
-
-  Object createWrappedObject();
-
-  boolean usesAdvancedScripting();
+  @Override
+  protected void configure() {
+    bindBoolean("scripting.safe", false);
+  }
 }

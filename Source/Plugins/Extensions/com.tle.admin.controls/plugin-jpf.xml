@@ -10,5 +10,6 @@
     <parameter-def id="editorClass" type="string" multiplicity="none-or-one" />
     <parameter-def id="factoryClass" type="string" multiplicity="none-or-one" />
     <parameter-def id="context" type="fixed" multiplicity="any" custom-data="pages|metadata|multi|page|powersearch|group|ROOT" />
+    <parameter-def id="advancedScripting" type="boolean" multiplicity="none-or-one" />
   </extension-point>
 </plugin>

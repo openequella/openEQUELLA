@@ -19,6 +19,7 @@
 package com.tle.admin.controls;
 
 import com.dytech.common.text.NumberStringComparator;
+import com.dytech.edge.admin.script.SafeScripting;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.beans.FixedMetadata;
 import com.dytech.edge.wizard.beans.WizardPage;
@@ -89,6 +90,9 @@ public class ControlRepositoryImpl implements ControlRepository {
   }
 
   private void registerDefinition(ControlDefinition definition) {
+    if (SafeScripting.isSafeScripting() && definition.usesAdvancedScripting()) {
+      return;
+    }
     for (String context : definition.getContexts()) // $NON-NLS-1$
     {
       List<ControlDefinition> defs = contextMap.get(context);

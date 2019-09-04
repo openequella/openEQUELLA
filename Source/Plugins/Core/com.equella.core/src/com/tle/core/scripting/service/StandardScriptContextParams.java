@@ -18,6 +18,7 @@
 
 package com.tle.core.scripting.service;
 
+import com.dytech.edge.common.ScriptContext.SafeScriptContext;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.filesystem.handle.FileHandle;
@@ -80,6 +81,11 @@ public class StandardScriptContextParams implements ScriptContextCreationParams 
   @Override
   public boolean isAllowSystemCalls() {
     return allowSystemCalls;
+  }
+
+  @Override
+  public SafeScriptContext getSafeContext() {
+    return null;
   }
 
   protected void setAttributes(Map<String, Object> attributes) {

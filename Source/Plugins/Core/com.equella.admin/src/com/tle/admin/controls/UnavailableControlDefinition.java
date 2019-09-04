@@ -77,4 +77,9 @@ public class UnavailableControlDefinition implements ControlDefinition {
   public Object createWrappedObject() {
     return null;
   }
+
+  @Override
+  public boolean usesAdvancedScripting() {
+    return false;
+  }
 }
