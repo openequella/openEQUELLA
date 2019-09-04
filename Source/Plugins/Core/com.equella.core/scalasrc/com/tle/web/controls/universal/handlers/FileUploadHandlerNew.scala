@@ -707,13 +707,14 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
                       case Right(detected) =>
                         val v = ValidatedUpload(uf.success(fileInfo), detected)
                         (v,
-                         UpdateEntry(
-                           AjaxFileEntry(uploadId.toString,
-                                         uf.originalFilename,
-                                         "",
-                                         true,
-                                         false,
-                                         Iterable.empty)))
+                         // Normal file uploader doesn't need attachmentDuplicateInfo, so pass None
+                         UpdateEntry(AjaxFileEntry(uploadId.toString,
+                                                   uf.originalFilename,
+                                                   "",
+                                                   true,
+                                                   false,
+                                                   Iterable.empty),
+                                     None))
                     }
                   case IllegalFile(reason) => illegal(reason)
                   case e @ Errored(t) =>
@@ -737,7 +738,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
           decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
             case Delete(uploadId) =>
               stopOrCancel(info, UUID.fromString(uploadId))
-              RemoveEntries(Iterable(uploadId))
+              RemoveEntries(Iterable(uploadId), None)
             case NewUpload(filename, size) =>
               val uploadId   = UUID.randomUUID()
               val uniqueName = WebFileUploads.uniqueName(filename, replaceFilename, uploadId, this)

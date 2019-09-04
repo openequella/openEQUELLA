@@ -6,7 +6,7 @@ import Control.MonadZero (guard)
 import Data.Array (catMaybes, concat, intercalate, length, mapWithIndex)
 import Data.Either (Either(..), either)
 import Data.Int (floor)
-import Data.Maybe (Maybe(Just, Nothing), maybe)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
@@ -25,10 +25,11 @@ import ReactDOM (render) as RD
 import Unsafe.Coerce (unsafeCoerce)
 import Uploads.FileDrop (fileDrop, invisibleFile, customFile)
 import Uploads.ProgressBar (progressBar)
-import Uploads.UploadModel (Command(..), FileElement(..), State, commandEval, fileToEntry)
+import Uploads.UploadModel (Command(..), FileElement(..), State, commandEval, fileToEntry, AttachmentDuplicateInfo(..), defaultDuplicateInfo)
 import Web.DOM (Element)
 import Web.HTML (window)
 import Web.HTML.Window (confirm)
+import Data.Newtype (class Newtype, unwrap)
 
 type ControlStrings = { 
   edit :: String, replace :: String, delete :: String, deleteConfirm :: String,
@@ -48,10 +49,10 @@ jsVoid = href "javascript:void(0);"
 renderError :: String -> ReactElement
 renderError msg = div [ className "ctrlinvalid" ] [ p [ className "ctrlinvalidmessage" ] [ text msg ] ]
 
-foreign import register :: forall a. EffectFn1 a Unit 
-
+foreign import register :: forall a. EffectFn1 a Unit
 foreign import updateCtrlErrorText :: EffectFn2 String String Unit
-foreign import simpleFormat :: String -> Array String -> String 
+foreign import simpleFormat :: String -> Array String -> String
+foreign import updateDuplicateMessage ::  EffectFn2 String Boolean Unit
 
 type InlineProps = (
     ctrlId :: String,
@@ -74,10 +75,15 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
     maxAttach = toMaybe props.maxAttachments
 
     componentDidUpdate _ {entries:oldEntries} _ = do
-      {entries} <- getState this
+      {entries, attachmentDuplicateInfo} <- getState this
       let oldError = ctrlError oldEntries
           newError = ctrlError entries
       if oldError /= newError then runEffectFn2 updateCtrlErrorText ctrlId newError else pure unit
+      -- Must unwrap the attachmentDuplicateInfo extracted from State
+      -- so that it will become a normal record
+      let unwrappedInfo = unwrap attachmentDuplicateInfo
+      -- use runEffectFn2 to execute updateDuplicateMessage because it needs two parameters
+      runEffectFn2 updateDuplicateMessage unwrappedInfo.warningMessageWebId unwrappedInfo.displayWarningMessage
 
     ctrlError entries = if compareMax (>) entries 
       then maybe "" (\ma -> simpleFormat strings.toomany [show ma, show (length entries - ma)]) maxAttach
@@ -85,7 +91,7 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
     compareMax f entries = maybe false (f $ length entries) maxAttach
 
     initialState :: State
-    initialState = {entries: fileToEntry <$> props.entries, error:Nothing}
+    initialState = {entries: fileToEntry <$> props.entries, error:Nothing, attachmentDuplicateInfo:defaultDuplicateInfo}
 
     render {error, entries} = 
       div [_id $ ctrlId <> "universalresources", className "universalresources"] $ concat [
@@ -152,7 +158,7 @@ universalUpload {elem:renderElem,ctrlId,commandUrl,updateFooter, scrapBookOnClic
   void $ flip RD.render renderElem $ flip unsafeCreateLeafElement {} $ component "UniversalUpload" $ \this -> do
     let  
       d = commandEval {commandUrl,updateUI:Just $ updateFooter} >>> affAction this
-      render {entries, error} = div [_id "uploads"] $ [ 
+      render {entries, error, attachmentDuplicateInfo} = div [_id "uploads"] $ [
         div [ className "uploadsprogress" ] $ renderEntry <$> entries,
         fileDrop { fileInput: customFile $ ctrlId <> "_fileUpload", 
             dropText: strings.drop, onFiles: d <<< UploadFiles }
@@ -181,4 +187,4 @@ universalUpload {elem:renderElem,ctrlId,commandUrl,updateFooter, scrapBookOnClic
         renderScrap clicked = div [ className "addLink" ] [
           a [ _id $ ctrlId <> "_filesFromScrapbookLink", className "add", jsVoid, onClick \_ -> clicked] [text strings.scrapbook]
         ]
-    pure {render: stateRenderer render this, state: {entries:[], error:Nothing}}
+    pure {render: stateRenderer render this, state: {entries:[], error:Nothing, attachmentDuplicateInfo:defaultDuplicateInfo }}

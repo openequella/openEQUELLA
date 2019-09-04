@@ -65,8 +65,20 @@ sealed trait AjaxUploadResponse
 case class NewUploadResponse(uploadUrl: String, id: String, name: String) extends AjaxUploadResponse
 case class UploadFailed(reason: String)                                   extends AjaxUploadResponse
 case class AddEntries(entries: Iterable[AjaxFileEntry])                   extends AjaxUploadResponse
-case class UpdateEntry(entry: AjaxFileEntry)                              extends AjaxUploadResponse
-case class RemoveEntries(ids: Iterable[String])                           extends AjaxUploadResponse
+case class UpdateEntry(entry: AjaxFileEntry,
+                       attachmentDuplicateInfo: Option[AttachmentDuplicateInfo])
+    extends AjaxUploadResponse
+case class RemoveEntries(ids: Iterable[String],
+                         attachmentDuplicateInfo: Option[AttachmentDuplicateInfo])
+    extends AjaxUploadResponse
+
+// This class as part of AjaxResponse includes if duplicates are found and the attachment control's parent id
+case class AttachmentDuplicateInfo(displayWarningMessage: Boolean, warningMessageWebId: String) {}
+
+object AttachmentDuplicateInfo {
+  implicit val config                                                       = Configuration.default
+  implicit val attachmentDuplicateEncoder: Encoder[AttachmentDuplicateInfo] = deriveEncoder
+}
 
 object AjaxUploadCommand {
   implicit val config = Configuration.default
