@@ -84,7 +84,9 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
                 events.getEventHandler("onFieldValueChanged"),
                 ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
                 id + "_editbox_duplicate_warning"));
-    field.setEventHandler(JSHandler.EVENT_CHANGE, fieldValueChangedHandler);
+    if (box.isCheckDuplication() || box.isForceUnique()) {
+      field.setEventHandler(JSHandler.EVENT_CHANGE, fieldValueChangedHandler);
+    }
     tree.registerInnerSection(field, id);
     duplicateMessageLink.setClickHandler(events.getNamedHandler("openDuplicatePage"));
     super.registered(id, tree);
@@ -92,8 +94,7 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
 
   @EventHandlerMethod
   public void onFieldValueChanged(SectionInfo info) {
-    // No concrete implementation is needed because an event will trigger a Wizard refresh which
-    // valuates all fields
+    box.checkDuplicate(field.getValue(info));
   }
 
   @EventHandlerMethod
