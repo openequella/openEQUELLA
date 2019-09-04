@@ -175,7 +175,7 @@ libraryDependencies ++= Seq(
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
   "org.codehaus.woodstox"  % "stax2-api"         % "3.1.4",
   "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.4.1",
-  "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.1",
+  "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.6",
   "org.dspace"             % "cql-java"          % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
