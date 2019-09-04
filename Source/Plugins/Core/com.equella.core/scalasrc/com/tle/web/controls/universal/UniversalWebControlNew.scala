@@ -343,7 +343,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                     children)
     }
 
-    // Return if any attachment in this control has duplicate information found
+    // Returns true if any attachment in this control has duplicate information found
     def duplicatesFound: Boolean = {
       val duplicateData = repo.getState.getDuplicateData
       val attachments   = dialog.getAttachments.asScala
