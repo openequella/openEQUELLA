@@ -57,6 +57,11 @@ public class Version {
     return versions;
   }
 
+  private static String getSemanticVersion(String displayName) {
+    // semanticVersion is part of displayName, e.g. 2019.1.1-Stable.OSE
+    return displayName.substring(0, displayName.indexOf("-"));
+  }
+
   private WebVersion getWebVersionFromFile(String fn) {
     return new WebVersion(
         DISPLAY_NAME_ONLY.apply(fn), VERSION_NUMBER_ONLY.apply(fn), FULL_FILENAME.apply(fn));
@@ -78,7 +83,7 @@ public class Version {
           Matcher m1 = Utils.VERSION_EXTRACT.matcher(filename);
           if (m1.matches()) {
             String displayName = m1.group(2);
-            return displayName.substring(0, displayName.indexOf("-"));
+            return getSemanticVersion(displayName);
           }
           return null;
         }
@@ -104,7 +109,7 @@ public class Version {
       p.load(in);
 
       String displayName = p.getProperty("version.display");
-      String semanticVersion = displayName.substring(0, displayName.indexOf("-"));
+      String semanticVersion = getSemanticVersion(displayName);
 
       version.setDisplayName(displayName);
       version.setSemanticVersion(semanticVersion);
