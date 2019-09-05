@@ -38,7 +38,7 @@ public final class Utils {
 
             @Override
             public String convertToString(WebVersion wv) {
-              return wv.getMmr();
+              return wv.getSemanticVersion();
             }
           });
 

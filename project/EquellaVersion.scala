@@ -4,7 +4,7 @@ case class EquellaVersion(major: Int, minor: Int, patch: Int, releaseType: Strin
 }
 
 object EquellaVersion {
-  val RegEx = """(\d+).(\d+).(\d+)-(.*)-(.*)""".r
+  val RegEx = """(\d+).(\d+).(\d+)-(.+)-(.+)""".r
   def apply(s: String): EquellaVersion = s match {
     case RegEx(major, minor, patch, rt, sha) =>
       EquellaVersion(major.toInt, minor.toInt, patch.toInt, rt, sha)

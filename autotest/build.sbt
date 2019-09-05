@@ -69,14 +69,14 @@ installOptions := {
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
 
 autotestInstallerZip := {
-  val bc                     = autotestBuildConfig.value
-  val equellaFullVersion     = equellaVersion.value
-  val installerFileName      = s"equella-installer-${equellaFullVersion.semanticVersion}.zip"
-  val installerDirectory     = (target in LocalProject("Installer")).value
-  val installerAbsoloutePath = installerDirectory / installerFileName
+  val bc                    = autotestBuildConfig.value
+  val equellaFullVersion    = equellaVersion.value
+  val installerFileName     = s"equella-installer-${equellaFullVersion.semanticVersion}.zip"
+  val installerDirectory    = (target in LocalProject("Installer")).value
+  val installerAbsolutePath = installerDirectory / installerFileName
   // If the Installer named as installerFileName exists then return it, otherwise returns the default Installer
-  if (installerAbsoloutePath.exists) {
-    Some(installerAbsoloutePath)
+  if (installerAbsolutePath.exists) {
+    Some(installerAbsolutePath)
   } else {
     optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
       (d * "equella-installer-*.zip").get.head))

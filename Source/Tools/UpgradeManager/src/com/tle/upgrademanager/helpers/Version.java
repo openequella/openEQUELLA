@@ -77,7 +77,8 @@ public class Version {
         public String apply(String filename) {
           Matcher m1 = Utils.VERSION_EXTRACT.matcher(filename);
           if (m1.matches()) {
-            return m1.group(1);
+            String displayName = m1.group(2);
+            return displayName.substring(0, displayName.indexOf("-"));
           }
           return null;
         }
@@ -101,12 +102,15 @@ public class Version {
     try (FileInputStream in = new FileInputStream(versionFile)) {
       Properties p = new Properties();
       p.load(in);
-      version.setDisplayName(p.getProperty("version.display"));
-      // As mmr is removed from `version.properties`, replace mmr with mm
-      String mmr = p.getProperty("version.mm");
-      version.setMmr(mmr);
+
+      String displayName = p.getProperty("version.display");
+      String semanticVersion = displayName.substring(0, displayName.indexOf("-"));
+
+      version.setDisplayName(displayName);
+      version.setSemanticVersion(semanticVersion);
       version.setFilename(
-          MessageFormat.format("tle-upgrade-{0} ({1}).zip", mmr, p.getProperty("version.display")));
+          MessageFormat.format(
+              "tle-upgrade-{0} ({1}).zip", semanticVersion, p.getProperty("version.display")));
     } catch (IOException ex) {
       version.setDisplayName(Utils.UNKNOWN_VERSION);
     }
