@@ -6,8 +6,8 @@
 
 <@a.div id="${id}_editbox_duplicate_warning">
 <#if m.displayDuplicateWarning>
-  <span style="color:red">An exact text match has been detected in other items. View duplicate details </span>
-  <@link section=s.duplicateMessageLink/>
+  <p style="color:red">${m.duplicateWarningMessage}</p>
+  <@link section=s.duplicateWarningLink/>
 </#if>
 </@a.div>
 <div class="input text">

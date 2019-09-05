@@ -19,6 +19,7 @@
 package com.tle.web.wizard.standard.controls;
 
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -51,7 +52,6 @@ import com.tle.web.wizard.controls.SimpleValueControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.standard.controls.EditBox.EditBoxModel;
-import java.util.Timer;
 
 /** @author jmaginnis */
 @Bind
@@ -63,12 +63,10 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
   private TextField field;
 
   @Component
-  @PlugKey("textboxduplicatelink")
-  private Link duplicateMessageLink;
+  @PlugKey("duplicatewarning.linktext")
+  private Link duplicateWarningLink;
 
   private CEditBox box;
-
-  private Timer timer;
 
   @EventFactory private EventGenerator events;
   @AjaxFactory private AjaxGenerator ajax;
@@ -88,7 +86,7 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
       field.setEventHandler(JSHandler.EVENT_CHANGE, fieldValueChangedHandler);
     }
     tree.registerInnerSection(field, id);
-    duplicateMessageLink.setClickHandler(events.getNamedHandler("openDuplicatePage"));
+    duplicateWarningLink.setClickHandler(events.getNamedHandler("openDuplicatePage"));
     super.registered(id, tree);
   }
 
@@ -144,8 +142,8 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
     return field;
   }
 
-  public Link getDuplicateMessageLink() {
-    return duplicateMessageLink;
+  public Link getDuplicateWarningLink() {
+    return duplicateWarningLink;
   }
 
   @Override
@@ -184,6 +182,11 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
   }
 
   public class EditBoxModel extends WebControlModel {
+
+    public String getDuplicateWarningMessage() {
+      return CoreStrings.text("duplicatewarning.message");
+    }
+
     public boolean isDisplayDuplicateWarning() {
       return isDuplicateWarning();
     }

@@ -93,7 +93,7 @@ public class CEditBox extends EditableCtrl {
 
     setInvalid(
         forceUnique && !isUnique && !isInvalid(),
-        new KeyLabel("wizard.controls.editbox.uniqueerror")); // $NON-NLS-1$
+        new KeyLabel("wizard.controls.editbox.uniqueerror"));
     editBoxSection.setDuplicateWarning(!isUnique);
   }
 
