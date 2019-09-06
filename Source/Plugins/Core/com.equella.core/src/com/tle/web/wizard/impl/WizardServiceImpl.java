@@ -699,9 +699,13 @@ public class WizardServiceImpl
       WizardState state, String xpath, Collection<String> values, boolean canAccept) {
     final String prefix = xpath + '$';
     clearDuplicatesWithPrefix(state, prefix);
-
     final String uuid = state.getItem().getUuid();
-
+    // Extract the title of an Editbox from a specific xpath of an item's XML
+    PropBagEx wizardControlXmlNode = state.getItemxml().getSubtree(xpath);
+    String wizardControlTitle = "";
+    if (wizardControlXmlNode != null) {
+      wizardControlTitle = wizardControlXmlNode.getNodeName();
+    }
     boolean isUnique = true;
     for (String value : values) {
       if (!Check.isEmpty(value)) {
@@ -713,7 +717,8 @@ public class WizardServiceImpl
                 value,
                 freeTextService.getKeysForNodeValue(uuid, state.getItemDefinition(), xpath, value),
                 canAccept,
-                false);
+                false,
+                wizardControlTitle);
       }
     }
     return isUnique;
@@ -739,7 +744,8 @@ public class WizardServiceImpl
           url,
           itemService.getItemsWithUrl(url, itemdef, ignoreItem),
           true,
-          false);
+          false,
+          "");
     }
   }
 
@@ -749,7 +755,7 @@ public class WizardServiceImpl
     final ItemDefinition itemdef = state.getItemDefinition();
     List<ItemId> duplicateLinkAttachments = itemService.getItemsWithUrl(url, itemdef, ignoreItem);
     if (duplicateLinkAttachments.size() > 0) {
-      setDuplicates(state, linkUuid, url, duplicateLinkAttachments, true, true);
+      setDuplicates(state, linkUuid, url, duplicateLinkAttachments, true, true, "");
     }
   }
 
@@ -764,7 +770,7 @@ public class WizardServiceImpl
             duplicateFileAttachments.stream()
                 .map(attachment -> attachment.getItem().getItemId())
                 .collect(Collectors.toList());
-        setDuplicates(state, fileUuid, fileName, list, true, true);
+        setDuplicates(state, fileUuid, fileName, list, true, true, "");
       }
     } catch (IOException e) {
       LOGGER.error("Failed to check duplicates of " + fileName, e);
@@ -786,7 +792,8 @@ public class WizardServiceImpl
       String value,
       List<? extends ItemKey> list,
       boolean canAccept,
-      boolean isAttachmentDuplicate) {
+      boolean isAttachmentDuplicate,
+      String wizardControlLabel) {
     Map<String, DuplicateData> duplicatesMap = state.getDuplicateData();
 
     boolean isUnique = Check.isEmpty(list);
@@ -794,7 +801,9 @@ public class WizardServiceImpl
       duplicatesMap.remove(identifier);
     } else {
       duplicatesMap.put(
-          identifier, new DuplicateData(identifier, value, list, canAccept, isAttachmentDuplicate));
+          identifier,
+          new DuplicateData(
+              identifier, value, list, canAccept, isAttachmentDuplicate, wizardControlLabel));
     }
     return isUnique;
   }

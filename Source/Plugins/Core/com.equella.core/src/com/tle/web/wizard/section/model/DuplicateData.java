@@ -35,15 +35,19 @@ public class DuplicateData implements Serializable {
 
   private boolean visible;
   private boolean accepted;
-  // Add a new property to indicate this instance includes attachment duplicate information
+  // A property indicating this instance includes attachment duplicate information
   private boolean attachmentDupCheck;
+
+  // A property indicating which Wizard control produces this duplicate data
+  private String wizardControlTitle;
 
   public DuplicateData(
       String identifier,
       String value,
       List<? extends ItemKey> items,
       boolean canAccept,
-      boolean attachmentDupCheck) {
+      boolean attachmentDupCheck,
+      String wizardControlTitle) {
     this.identifier = identifier;
     this.value = value;
     this.items = new ArrayList<ItemId>();
@@ -53,11 +57,13 @@ public class DuplicateData implements Serializable {
     this.canAccept = canAccept;
 
     this.attachmentDupCheck = attachmentDupCheck;
-    // Duplicate checks coming from attachments don't require users to accept or not
-    if (attachmentDupCheck) {
+    // Duplicate checks doesn't require users to accept or not
+    // so `accepted` is true as long as `canAccept` is true
+    if (canAccept) {
       this.accepted = true;
     }
     visible = true;
+    this.wizardControlTitle = wizardControlTitle;
   }
 
   public List<ItemId> getItems() {
@@ -98,5 +104,9 @@ public class DuplicateData implements Serializable {
 
   public void setVisible(boolean visible) {
     this.visible = visible;
+  }
+
+  public String getWizardControlTitle() {
+    return wizardControlTitle;
   }
 }

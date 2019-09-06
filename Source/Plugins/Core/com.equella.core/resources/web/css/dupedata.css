@@ -1,4 +1,11 @@
-.mandatory
-{
-	color: red;
+.mandatory {
+  color: red;
+}
+
+.duplicate_editbox_section {
+  padding-top: 15px;
+}
+
+.duplicate_attachment_section {
+  padding-top: 5px;
 }
