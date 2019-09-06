@@ -52,8 +52,6 @@ before_install:
 install:
   - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
-  # Copy down the installer from the build stage - if available
-  - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD} Installer/target/ --recursive --exclude "*" --include "equella-installer*.zip"
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
@@ -66,9 +64,11 @@ before_script:
   - javac -version
 
 stages:
-  - build and check
-  - functional test
-  - finalise
+  - name: build and check
+  - name: functional test
+  - name: finalise
+    if: fork = false # No access to S3, so skip for forks
+
 jobs:
   include:
     - stage: build and check
@@ -76,15 +76,20 @@ jobs:
         - npm install && npm run check
         - sbt headerCheck checkJavaCodeStyle
       name: Check headers, code style and static analysis
-      after_failure: aws s3 $S3_REGION_OPT cp target/checkstyle-report.html $S3_DEST_BUILD
+      after_failure: ci/s3cp.sh target/checkstyle-report.html $S3_DEST_BUILD
     - stage: build and check
       script: sbt installerZip writeLanguagePack writeScriptingJavadoc
+      workspaces:
+        create:
+          name: oeq-installer
+          paths:
+            - Installer/target/equella-installer*.zip
       name: Build primary artefacts
       after_success:
-        - aws s3 $S3_REGION_OPT cp Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
-        - aws s3 $S3_REGION_OPT cp Installer/target/equella-installer*.zip             $S3_DEST_BUILD
-        - aws s3 $S3_REGION_OPT cp target/reference-language-pack.zip                  $S3_DEST_BUILD
-        - aws s3 $S3_REGION_OPT cp target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
+        - ci/s3cp.sh Source/Server/equellaserver/target/tle-upgrade*.zip $S3_DEST_BUILD
+        - ci/s3cp.sh Installer/target/equella-installer*.zip             $S3_DEST_BUILD
+        - ci/s3cp.sh target/reference-language-pack.zip                  $S3_DEST_BUILD
+        - ci/s3cp.sh target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
     - stage: build and check
       script: sbt test
       name: Unit test
@@ -96,22 +101,30 @@ jobs:
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         Tests/test dumpCoverage
+      workspaces:
+        use: oeq-installer
       name: Scalacheck
       after_script: ci/scalacheck-save-results.sh Tests
     - stage: functional test
       script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
         installEquella startEquella configureInstall setupForTests \
         Tests/Serial/test dumpCoverage
+      workspaces:
+        use: oeq-installer
       name: Scalacheck Serial
       after_script: ci/scalacheck-save-results.sh Tests-Serial
     # Admin
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (admin)
       env: OLD_TEST_SUITE=admin
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (admin - new UI)
       env:
         - OLD_TEST_SUITE=admin
@@ -120,11 +133,15 @@ jobs:
     # Advanced Script Controls
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (advanced script controls - ASC)
       env: OLD_TEST_SUITE=asc
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (advanced script controls - ASC - new UI)
       env:
         - OLD_TEST_SUITE=asc
@@ -133,11 +150,15 @@ jobs:
     # Contribution
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (contribution)
       env: OLD_TEST_SUITE=contribution
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (contribution - new UI)
       env:
         - OLD_TEST_SUITE=contribution
@@ -146,11 +167,15 @@ jobs:
     # Controls
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (controls)
       env: OLD_TEST_SUITE=controls
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (controls - new UI)
       env:
         - OLD_TEST_SUITE=controls
@@ -159,11 +184,15 @@ jobs:
     # Searching
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (searching)
       env: OLD_TEST_SUITE=searching
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (searching - new UI)
       env:
         - OLD_TEST_SUITE=searching
@@ -172,11 +201,15 @@ jobs:
     # Users
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (users)
       env: OLD_TEST_SUITE=users
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (users - new UI)
       env:
         - OLD_TEST_SUITE=users
@@ -185,11 +218,15 @@ jobs:
     # Viewing
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (viewing)
       env: OLD_TEST_SUITE=viewing
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (viewing - new UI)
       env:
         - OLD_TEST_SUITE=viewing
@@ -198,11 +235,15 @@ jobs:
     # Webservices
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (webservices)
       env: OLD_TEST_SUITE=webservices
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (webservices - new UI)
       env:
         - OLD_TEST_SUITE=webservices
@@ -211,11 +252,15 @@ jobs:
     # Workflow
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (workflow)
       env: OLD_TEST_SUITE=workflow
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
+      workspaces:
+        use: oeq-installer
       name: TestNG (workflow - new UI)
       env:
         - OLD_TEST_SUITE=workflow
@@ -225,17 +270,17 @@ jobs:
     - stage: finalise
       script:
         - aws s3 $S3_REGION_OPT rm --recursive $S3_DEST_LATEST
-        - aws s3 $S3_REGION_OPT cp --recursive $S3_DEST_LATEST $S3_DEST_BUILD
+        - ci/s3cp.sh --recursive $S3_DEST_LATEST $S3_DEST_BUILD
       name: Update S3
     - stage: finalise
       script:
         # Copy down previous stored Jacoco coverage exec files
-        - aws s3 $S3_REGION_OPT cp ${S3_DEST_BUILD}coverage/ autotest/coverage $S3_CP_OPTS
+        - ci/s3cp.sh ${S3_DEST_BUILD}coverage/ autotest/coverage $S3_CP_OPTS
         # First we need to installEquella so that it extracts the install zip with all the JARs and
         # as a result all the class files which Jacoco needs to map against to generate the
         # coverageReport
         - sbt -jvm-opts autotest/.jvmopts "project autotest" installEquella coverageReport
       name: Generate coverage report
       after_success:
-        - aws s3 $S3_REGION_OPT cp autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
+        - ci/s3cp.sh autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
         - echo "Report is available at https://edalexdev.s3.amazonaws.com/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/coverage-report/index.html"

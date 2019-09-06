@@ -7,12 +7,12 @@ if [ ${OLD_TEST_NEWUI} ]; then
 fi
 
 echo Copying TestNG results
-aws s3 $S3_REGION_OPT cp autotest/OldTests/target/testng \
+${SCRIPTS_DIR}/s3cp.sh autotest/OldTests/target/testng \
   ${S3_DEST_BUILD}${SUFFIX}/ \
   $S3_CP_OPTS
 
 echo Copying oEQ log
-aws s3 $S3_REGION_OPT cp autotest/equella-install/logs \
+${SCRIPTS_DIR}/s3cp.sh autotest/equella-install/logs \
   ${S3_DEST_BUILD}oeq-logs/${SUFFIX}/ \
   $S3_CP_OPTS
 
