@@ -140,7 +140,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @GET
   @Path("/{uuid}/search")
-  @Produces("application/json")
   @ApiOperation(value = "Search terms")
   Response searchTaxonomyTerms(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String uuid,
@@ -166,7 +165,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @GET
   @Path("/{uuid}/term")
-  @Produces("application/json")
   @ApiOperation(value = "Get taxonomy terms")
   Response getTaxonomyTerms(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
@@ -181,7 +179,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @POST
   @Path("/{uuid}/term")
-  @Produces("application/json")
   @ApiOperation(value = "Create taxonomy term")
   Response createTaxonomyTerm(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
@@ -197,7 +194,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @PUT
   @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
   @ApiOperation(value = "Update term")
   Response updateTaxonomyTerm(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
@@ -213,7 +209,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @DELETE
   @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
   @ApiOperation(value = "Remove term")
   Response rmTaxonomyTerm(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
@@ -226,7 +221,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @GET
   @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
   @ApiOperation(value = "Get term by UUID")
   Response getTermByUuid(
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
@@ -241,7 +235,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @GET
   @Path("/{uuid}/term/{termUuid}/data")
-  @Produces("application/json")
   @ApiOperation(value = "Data")
   Response getAllTermData(
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
@@ -257,7 +250,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @GET
   @Path("/{uuid}/term/{termUuid}/data/{datakey}")
-  @Produces("application/json")
   @ApiOperation(value = "Get term data")
   Response getTermDataByKey(
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
@@ -274,7 +266,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @PUT
   @Path("/{uuid}/term/{termUuid}/data/{datakey}/{datavalue}")
-  @Produces("application/json")
   @ApiOperation(value = "Set term data")
   Response setTermData(
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
@@ -292,7 +283,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @DELETE
   @Path("/{uuid}/term/{termUuid}/data/{datakey}")
-  @Produces("application/json")
   @ApiOperation(value = "Delete term data")
   Response deleteTermData(
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
@@ -306,7 +296,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    */
   @POST
   @Path("/{uuid}/sortchildren")
-  @Produces("application/json")
   @ApiOperation(value = "Sort child terms")
   Response sortChildTerms(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
