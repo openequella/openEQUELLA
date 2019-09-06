@@ -280,6 +280,8 @@ jobs:
         # as a result all the class files which Jacoco needs to map against to generate the
         # coverageReport
         - sbt -jvm-opts autotest/.jvmopts "project autotest" installEquella coverageReport
+      workspaces:
+        use: oeq-installer
       name: Generate coverage report
       after_success:
         - ci/s3cp.sh autotest/target/coverage-report ${S3_DEST_BUILD}coverage-report/ $S3_CP_OPTS
