@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
+import org.jboss.resteasy.annotations.cache.NoCache
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits
@@ -82,6 +83,7 @@ class WizardApi {
   }
 
   @GET
+  @NoCache
   @Path("state")
   def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
     withWizardState(wizid, req, false) { wsi =>
