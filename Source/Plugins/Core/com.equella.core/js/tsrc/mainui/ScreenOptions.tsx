@@ -10,12 +10,15 @@ const useStyles = makeStyles(t => ({
   }
 }));
 
-export default React.memo(function ScreenOptions(props: {
+interface ScreenOptionsProps {
   optionsHtml: string;
   contentId: string;
-}) {
+}
+
+export default React.memo(function ScreenOptions({
+  optionsHtml
+}: ScreenOptionsProps) {
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
-  const { optionsHtml } = props;
   const classes = useStyles();
   return (
     <React.Fragment>

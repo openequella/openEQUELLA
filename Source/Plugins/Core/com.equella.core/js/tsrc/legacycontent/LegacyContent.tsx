@@ -90,11 +90,17 @@ export function submitRequest(
   ).then(res => res.data);
 }
 
-export const LegacyContent = React.memo(function LegacyContent(
-  props: LegacyContentProps
-) {
+export const LegacyContent = React.memo(function LegacyContent({
+  enabled,
+  locationKey,
+  onError,
+  pathname,
+  redirected,
+  render,
+  search,
+  userUpdated
+}: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
-  const { enabled } = props;
   const baseUrl = (document.getElementsByTagName("base")[0] as HTMLBaseElement)
     .href;
 
@@ -117,7 +123,7 @@ export const LegacyContent = React.memo(function LegacyContent(
         }
       } as PageContent;
       if (content.userUpdated) {
-        props.userUpdated();
+        userUpdated();
       }
       setContent(pageContent);
     });
@@ -130,7 +136,7 @@ export const LegacyContent = React.memo(function LegacyContent(
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
-    submitRequest(toRelativeUrl(formAction || props.pathname), submitValues)
+    submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then(content => {
         if (callback) {
           callback(content);
@@ -138,15 +144,15 @@ export const LegacyContent = React.memo(function LegacyContent(
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
-            props.userUpdated();
+            userUpdated();
           }
-          props.redirected({ href: content.route, external: false });
+          redirected({ href: content.route, external: false });
         } else {
-          props.redirected({ href: content.href, external: true });
+          redirected({ href: content.href, external: true });
         }
       })
       .catch(error => {
-        props.onError({ error: fromAxiosResponse(error.response), fullScreen });
+        onError({ error: fromAxiosResponse(error.response), fullScreen });
       });
   }
 
@@ -207,11 +213,11 @@ export const LegacyContent = React.memo(function LegacyContent(
         });
       }
     };
-  }, [props.pathname]);
+  }, [pathname]);
 
   React.useEffect(() => {
     if (enabled) {
-      let params = new URLSearchParams(props.search);
+      let params = new URLSearchParams(search);
       let urlValues = {};
       params.forEach((val, key) => {
         let exVal = urlValues[key];
@@ -224,9 +230,9 @@ export const LegacyContent = React.memo(function LegacyContent(
       setContent(undefined);
       updateStylesheets([]).then(deleteElements);
     }
-  }, [enabled, props.pathname, props.search, props.locationKey]);
+  }, [enabled, pathname, search, locationKey]);
 
-  return props.render(enabled ? content : undefined);
+  return render(enabled ? content : undefined);
 });
 
 function resolveUrl(url: string) {
