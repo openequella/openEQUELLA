@@ -8,7 +8,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import SearchResult from "../components/SearchResult";
 import { courseService } from "../services";
 import { formatSize, languageStrings } from "../util/langstrings";
-import VisibilitySensor = require("react-visibility-sensor");
+import VisibilitySensor from "react-visibility-sensor";
 import EntityList from "../components/EntityList";
 import { sprintf } from "sprintf-js";
 import { TemplateProps, templateDefaults } from "../mainui/Template";
