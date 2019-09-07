@@ -7,6 +7,7 @@
     <parameter-def id="descriptionKey" multiplicity="one" type="string" />
     <parameter-def id="node" multiplicity="one" type="string" />
     <parameter-def id="serviceClass" multiplicity="none-or-one" type="string" />
+    <parameter-def id="advancedScripting" type="boolean" multiplicity="none-or-one" />
   </extension-point>
   <extension-point id="portletSchema">
     <parameter-def id="table" multiplicity="one-or-more" type="string" />
