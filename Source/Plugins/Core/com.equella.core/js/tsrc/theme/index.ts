@@ -48,7 +48,7 @@ const standardThemeSettings: ThemeOptions = {
   }
 } as ThemeOptions;
 
-export const autotTestOptions: ThemeOptions =
+export const autoTestOptions: ThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {
         transitions: {
@@ -59,5 +59,5 @@ export const autotTestOptions: ThemeOptions =
 
 export const oeqTheme = createMuiTheme({
   ...standardThemeSettings,
-  ...autotTestOptions
+  ...autoTestOptions
 });
