@@ -23,6 +23,7 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.common.Check;
+import com.tle.common.scripting.service.ScriptingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.item.service.ItemService;
@@ -56,6 +57,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import org.java.plugin.registry.Extension;
 
 @Bind
 @NonNullByDefault
@@ -71,6 +73,7 @@ public class ItemAdminResultsDialog extends AbstractBulkResultsDialog<ItemIdKey>
   @Inject private BulkChangeOwnerDialog changeOwnerOp;
   @Inject private BulkAddCollaboratorsDialog addCollabsOp;
   @Inject private BundleCache bundleCache;
+  @Inject private ScriptingService scriptingService;
 
   @TreeLookup private AbstractBulkSelectionSection<ItemIdKey> selectionSection;
   @TreeLookup private ItemAdminQuerySection querySection;
@@ -98,7 +101,9 @@ public class ItemAdminResultsDialog extends AbstractBulkResultsDialog<ItemIdKey>
       bulkOps.add(standardOps);
       bulkOps.add(changeOwnerOp);
       bulkOps.add(addCollabsOp);
-      bulkOps.addAll(tracker.getNewBeanList());
+      for (Extension ext : scriptingService.filterUnsafe(tracker.getExtensions())) {
+        bulkOps.add(tracker.getBeanByExtension(ext));
+      }
       for (BulkOperationExtension op : bulkOps) {
         op.register(tree, parentId);
       }

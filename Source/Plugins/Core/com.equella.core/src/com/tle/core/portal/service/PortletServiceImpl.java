@@ -36,6 +36,7 @@ import com.tle.common.portal.PortletTypeDescriptor;
 import com.tle.common.portal.PortletTypeTarget;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
+import com.tle.common.scripting.service.ScriptingService;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.TargetList;
@@ -94,6 +95,7 @@ public class PortletServiceImpl
       ResourcesService.getResourceHelper(PortletServiceImpl.class);
 
   @Inject private DefaultPortletExtensionService defaultExtension;
+  @Inject private ScriptingService scriptingService;
 
   private PluginTracker<PortletServiceExtension> typesTracker;
   private Map<String, PortletTypeDescriptor> typeDescriptorMap;
@@ -134,12 +136,11 @@ public class PortletServiceImpl
       Map<String, PortletTypeDescriptor> tempTypeDescriptors =
           new HashMap<String, PortletTypeDescriptor>();
 
-      for (Extension ext : typesTracker.getExtensions()) {
+      for (Extension ext : scriptingService.filterUnsafe(typesTracker.getExtensions())) {
         final String type = ext.getParameter("id").valueAsString();
         final String nameKey = ext.getParameter("nameKey").valueAsString();
         final String descriptionKey = ext.getParameter("descriptionKey").valueAsString();
         final String node = ext.getParameter("node").valueAsString();
-
         tempTypeDescriptors.put(
             type,
             new PortletTypeDescriptor(

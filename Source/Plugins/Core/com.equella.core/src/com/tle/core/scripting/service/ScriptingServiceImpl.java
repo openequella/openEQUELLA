@@ -41,12 +41,14 @@ import com.tle.web.resources.ResourcesService;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.java.plugin.registry.Extension;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
@@ -235,6 +237,14 @@ public class ScriptingServiceImpl implements ScriptingService, RemoteScriptingSe
   @Override
   public boolean isSafeScripting() {
     return safeScripting;
+  }
+
+  @Override
+  public Collection<Extension> filterUnsafe(Collection<Extension> extensions) {
+    if (!safeScripting) {
+      return extensions;
+    }
+    return RemoteScriptingService.filterUnsafe(extensions);
   }
 
   public static final class ScriptErrorReporter implements ErrorReporter {

@@ -20,6 +20,8 @@ package com.dytech.edge.admin.script;
 
 import com.tle.admin.Driver;
 import com.tle.core.remoting.RemoteScriptingService;
+import java.util.Collection;
+import org.java.plugin.registry.Extension;
 
 public class SafeScripting {
 
@@ -31,5 +33,12 @@ public class SafeScripting {
 
   public static boolean isSafeScripting() {
     return safeScripting;
+  }
+
+  public static Collection<Extension> filterUnsafe(Collection<Extension> extensions) {
+    if (!safeScripting) {
+      return extensions;
+    }
+    return RemoteScriptingService.filterUnsafe(extensions);
   }
 }

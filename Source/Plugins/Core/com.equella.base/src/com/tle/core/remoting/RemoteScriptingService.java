@@ -18,7 +18,22 @@
 
 package com.tle.core.remoting;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+import org.java.plugin.registry.Extension;
+import org.java.plugin.registry.Extension.Parameter;
+
 public interface RemoteScriptingService {
 
   boolean isSafeScripting();
+
+  static Collection<Extension> filterUnsafe(Collection<Extension> extensions) {
+    return extensions.stream()
+        .filter(
+            ext -> {
+              Parameter p = ext.getParameter("advancedScripting");
+              return p == null || !p.valueAsBoolean();
+            })
+        .collect(Collectors.toList());
+  }
 }

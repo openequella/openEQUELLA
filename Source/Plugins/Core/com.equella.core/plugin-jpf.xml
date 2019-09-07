@@ -1811,6 +1811,7 @@
   </extension>
   <extension plugin-id="com.tle.web.itemadmin" point-id="bulkExtension" id="bulkOp_2">
     <parameter id="bean" value="bean:com.tle.web.bulk.executescript.BulkExecuteScriptOperation" />
+    <parameter id="advancedScripting" value="true" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.soap" point-id="endpoint-interface" id="usermanagementMethods">
     <parameter id="path" value="/SoapService50" />
@@ -3168,6 +3169,7 @@
     <parameter id="nameKey" value="com.equella.core.type.freemarker.name" />
     <parameter id="descriptionKey" value="com.equella.core.type.freemarker.description" />
     <parameter id="node" value="PORTLET_FREEMARKER" />
+    <parameter id="advancedScripting" value="true" />
   </extension>
   <extension plugin-id="com.tle.core.portal" point-id="portletType" id="search_2">
     <parameter id="id" value="search" />

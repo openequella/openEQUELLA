@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.java.plugin.registry.Extension;
-import org.java.plugin.registry.Extension.Parameter;
 
 @SuppressWarnings("nls")
 public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig> {
@@ -52,12 +51,10 @@ public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<Summary
         getString("summarysections.adddialog.title"));
 
     for (Extension ext :
-        pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay")) {
+        SafeScripting.filterUnsafe(
+            pluginService.getConnectedExtensions(
+                "com.tle.admin.collection.tool", "summaryDisplay"))) {
       final String id = ext.getParameter("id").valueAsString();
-      Parameter param = ext.getParameter("advancedScripting");
-      if (SafeScripting.isSafeScripting() && param != null && param.valueAsBoolean()) {
-        continue;
-      }
       addChoice(id, CurrentLocale.get(ext.getParameter("nameKey").valueAsString()));
       defaultNames.put(id, ext.getParameter("defaultNameKey").valueAsString());
     }

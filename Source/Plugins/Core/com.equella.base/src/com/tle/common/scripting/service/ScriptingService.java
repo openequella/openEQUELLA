@@ -20,7 +20,12 @@ package com.tle.common.scripting.service;
 
 import com.dytech.edge.common.ScriptContext;
 import com.tle.common.scripting.ScriptEvaluator;
+import com.tle.core.remoting.RemoteScriptingService;
+import java.util.Collection;
+import org.java.plugin.registry.Extension;
 
-public interface ScriptingService extends ScriptEvaluator {
+public interface ScriptingService extends ScriptEvaluator, RemoteScriptingService {
   ScriptContext createScriptContext(ScriptContextCreationParams params);
+
+  Collection<Extension> filterUnsafe(Collection<Extension> extensions);
 }

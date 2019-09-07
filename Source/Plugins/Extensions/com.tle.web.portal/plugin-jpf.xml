@@ -10,6 +10,7 @@
     </parameter-def>
     <parameter-def id="nameKey" multiplicity="one" type="string" />
     <parameter-def id="descriptionKey" multiplicity="one" type="string" />
+    <parameter-def id="advancedScripting" type="boolean" multiplicity="none-or-one" />
   </extension-point>
   <extension-point id="portletEditor">
     <parameter-def id="id" multiplicity="one" type="string" />
