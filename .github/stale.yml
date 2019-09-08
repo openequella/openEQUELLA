@@ -6,6 +6,12 @@ daysUntilClose: 7
 exemptLabels:
   - pinned
   - security
+  - Tech debt
+  - roadmap
+  - Edelex
+  - Edelex RDA
+  - Unicon SE
+
 # Label to use when marking an issue as stale
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
