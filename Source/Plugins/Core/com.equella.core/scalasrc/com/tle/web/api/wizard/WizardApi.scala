@@ -184,6 +184,7 @@ class WizardApi {
 
   }
 
+  @NoCache
   @GET
   @Path("provider/{providerId}/{serviceId}")
   def proxyGET(@PathParam("wizid") wizid: String,
