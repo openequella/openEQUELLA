@@ -7,10 +7,7 @@ export { default as Loader } from "./Loader";
 export { default as AppBarQuery } from "./AppBarQuery";
 export { default as SearchResult } from "./SearchResult";
 
-export function handleUnexpectedApiError<P extends TemplateUpdateProps>(
-  t: React.Component<P>
-): (err: any) => void {
-  return function(err) {
-    t.props.updateTemplate(templateError(generateFromError(err)));
-  };
-}
+export const handleUnexpectedApiError = <P extends TemplateUpdateProps>({
+  props: { updateTemplate }
+}: React.Component<P>) => (err: Error) =>
+  updateTemplate(templateError(generateFromError(err)));

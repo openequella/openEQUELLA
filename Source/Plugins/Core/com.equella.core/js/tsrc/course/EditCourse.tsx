@@ -230,18 +230,16 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     }
   };
 
-  handleChange(
-    stateFieldName: string
-  ): (event: React.ChangeEvent<any>) => void {
-    return (event: React.ChangeEvent<any>) => {
+  handleChange(stateFieldName: string) {
+    return (
+      event: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
       this.modifyEntity({ [stateFieldName]: event.target.value });
     };
   }
 
-  handleIntChange(
-    stateFieldName: string
-  ): (event: React.ChangeEvent<any>) => void {
-    return (event: React.ChangeEvent<any>) => {
+  handleIntChange(stateFieldName: string) {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
       let val = event.target.value;
       let intVal: number | undefined = parseInt(val);
       if (!Number.isInteger(intVal)) {
@@ -251,10 +249,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     };
   }
 
-  handleCheckboxChange(
-    stateFieldName: string
-  ): (event: React.ChangeEvent<any>) => void {
-    return (event: React.ChangeEvent<any>) => {
+  handleCheckboxChange(stateFieldName: string) {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
       this.modifyEntity({ [stateFieldName]: event.target.checked });
     };
   }
@@ -286,7 +282,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     this.props.updateTemplate(tp => ({ ...tp, footer: this.footer() }));
   }
 
-  handleTabChange = (event: any, value: number) => {
+  handleTabChange = (event: React.ChangeEvent<{}>, value: number) => {
     this.setState({ activeTab: value }, this.updateTabs);
   };
 

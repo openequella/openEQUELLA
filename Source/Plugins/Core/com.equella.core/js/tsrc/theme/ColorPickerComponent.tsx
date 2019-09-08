@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SketchPicker } from "react-color";
+import { SketchPicker, ColorResult } from "react-color";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 
@@ -49,7 +49,9 @@ class ColorPickerComponent extends React.Component<
     colorState: this.props.color
   };
 
-  componentWillReceiveProps = (nextProps: any) => {
+  componentWillReceiveProps = (
+    nextProps: ColorProps & WithStyles<typeof styles>
+  ) => {
     if (nextProps.color !== this.props.color) {
       this.setState({ colorState: nextProps.color });
     }
@@ -63,11 +65,11 @@ class ColorPickerComponent extends React.Component<
     this.setState({ displayColorPicker: false });
   };
 
-  handleChange = (color: any) => {
+  handleChange = (color: ColorResult) => {
     this.setState({ colorState: color.hex });
   };
 
-  handleComplete = (color: any) => {
+  handleComplete = (color: ColorResult) => {
     this.props.changeColor(color.hex);
   };
 

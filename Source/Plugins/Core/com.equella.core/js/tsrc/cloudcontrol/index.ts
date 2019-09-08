@@ -53,7 +53,7 @@ interface ItemCommandResponses {
 interface CommandsPromise {
   commands: ItemCommand[];
   resolved: (response: ItemCommandResponse[]) => void;
-  rejected: (err: any) => void;
+  rejected: (err: Error) => void;
 }
 
 interface Registration {
