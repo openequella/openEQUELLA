@@ -22,9 +22,12 @@ import com.dytech.edge.common.Constants;
 import com.dytech.edge.wizard.beans.control.EditBox;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.dytech.edge.wizard.beans.control.WizardControlItem;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.tle.common.Check;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.result.util.KeyLabel;
+import java.util.ArrayList;
 
 /**
  * Provides a data model for edit box controls.
@@ -38,6 +41,8 @@ public class CEditBox extends EditableCtrl {
   private final boolean checkDuplication;
   private final boolean forceUnique;
   private final boolean forceNumber;
+  private boolean isUnique = true;
+  private com.tle.web.wizard.standard.controls.EditBox editBoxSection;
 
   public CEditBox(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean) {
     super(page, controlNumber, nestingLevel, controlBean);
@@ -51,6 +56,20 @@ public class CEditBox extends EditableCtrl {
     forceNumber = edbox.isNumber();
   }
 
+  public boolean isCheckDuplication() {
+    return checkDuplication;
+  }
+
+  public boolean isForceUnique() {
+    return forceUnique;
+  }
+
+  // An instace of CEditBox is wrapped by an EditBox Section which controls
+  // the UI and event handling
+  public void setEditBoxSection(com.tle.web.wizard.standard.controls.EditBox editBoxSection) {
+    this.editBoxSection = editBoxSection;
+  }
+
   @Override
   public void resetToDefaults() {
     if (Check.isEmpty(defaultValue)) {
@@ -60,20 +79,29 @@ public class CEditBox extends EditableCtrl {
     }
   }
 
+  public void checkDuplicate(String value) {
+    ArrayList<String> singleValue = new ArrayList<>();
+    singleValue.add(value);
+    checkDuplicate(ImmutableList.copyOf(singleValue));
+  }
+
+  private void checkDuplicate(ImmutableCollection<String> list) {
+    // We need to inform the wizard to check for uniqueness every time,
+    // no matter what
+    isUnique =
+        getRepository().checkDataUniqueness(getFirstTarget().getXoqlPath(), list, !forceUnique);
+
+    setInvalid(
+        forceUnique && !isUnique && !isInvalid(),
+        new KeyLabel("wizard.controls.editbox.uniqueerror"));
+    editBoxSection.setDuplicateWarning(!isUnique);
+  }
+
   @Override
   public void validate() {
     if (checkDuplication || forceUnique) {
-      // We need to inform the wizard to check for uniqueness every time,
-      // no matter what
-      final boolean isUnique =
-          getRepository()
-              .checkDataUniqueness(getFirstTarget().getXoqlPath(), getValues(), !forceUnique);
-
-      setInvalid(
-          forceUnique && !isUnique && !isInvalid(),
-          new KeyLabel("wizard.controls.editbox.uniqueerror")); // $NON-NLS-1$
+      checkDuplicate(getValues());
     }
-
     if (forceNumber && !isInvalid()) {
       String val = getValue();
       boolean invalid = false;
