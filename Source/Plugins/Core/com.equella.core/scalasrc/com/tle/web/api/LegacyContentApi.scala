@@ -478,11 +478,9 @@ class LegacyContentApi {
             JQueryCore.JQUERY,
             new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
 
-      val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
-      val jsFiles = context.getJsFiles.asScala
-      val cssFiles = context.getCssFiles.asScala.collect {
-        case css: CssInclude => css.getHref(context)
-      }
+      val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
+      val jsFiles  = context.getJsFiles.asScala
+      val cssFiles = Iterable(RenderTemplate.LEGACY_CSS.getHref(context))
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
@@ -608,6 +606,7 @@ class LegacyContentApi {
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
     info.setRendered()
+    arc.clearCss()
     Response.ok(responseCallback.getResponseObject(arc))
   }
 }
