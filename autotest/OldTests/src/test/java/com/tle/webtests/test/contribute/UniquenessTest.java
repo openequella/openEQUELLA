@@ -2,7 +2,6 @@ package com.tle.webtests.test.contribute;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.wizard.ContributePage;
-import com.tle.webtests.pageobject.wizard.DuplicatesTab;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.controls.AbstractWizardControlsTest;
 import com.tle.webtests.pageobject.wizard.controls.ShuffleListControl;
@@ -50,9 +49,6 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     ShuffleListControl shuf = wizardPage.shuffleList(6);
     shuf.remove("Will be forced - Shuffle List");
     wizardPage.addToShuffleList(6, "No longer the same - Shuffle List");
-    DuplicatesTab dupes = wizardPage.save().finishInvalid(new DuplicatesTab(context));
-    dupes.checkWarning("Will be warned - Edit Box");
-    dupes.checkWarning("Will be warned - Shuffle List");
     wizardPage.save().publish();
   }
 }

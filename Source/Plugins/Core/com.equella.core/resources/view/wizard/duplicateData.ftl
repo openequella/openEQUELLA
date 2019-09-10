@@ -4,22 +4,18 @@
 
 <div class="area">
 	<h2>${b.key('duplicatedatasection.pagename')}</h2>
+  <#if m.mustChangeAny>
+    <p style="margin-bottom: 0">${b.key("duplicatedatasection.mustchange")}</p>
+  </#if>
 
+  <div class="duplicate_editbox_section">
   <#if m.textfieldDuplicateData?size gt 0>
-    <h4>${b.key("duplicatedatasection.preamble")}</h4>
-    <#if m.canAcceptAny>
-      <p>${b.key("duplicatedatasection.checktheboxes")}</p>
-    </#if>
-    <#if m.mustChangeAny>
-      <p>${b.key("duplicatedatasection.mustchange")}</p>
-    </#if>
     <#list m.textfieldDuplicateData as duplicateData>
       <#if duplicateData.visible>
-        <div class="input checkbox">
+        <h4>${b.key("duplicatedatasection.editboxtext",[duplicateData.wizardControlTitle])}</h4>
+        <div class="input">
           <label>
-            <#if duplicateData.canAccept>
-              <@render s.getCheckbox(_info, duplicateData.identifier)/>
-            <#else>
+            <#if !duplicateData.canAccept>
               <span class="mandatory">${b.key("duplicatedatasection.mustchangesymbol")}</span>
             </#if>
             <span>${b.key("duplicatedatasection.usedby", [duplicateData.value])}</span>
@@ -33,10 +29,11 @@
       </#if>
     </#list>
   </#if>
+  </div>
 
+  <div class="duplicate_attachment_section">
   <#if m.attachmentDuplicateData?size gt 0>
-    <br/>
-    <h4>${b.key("duplicatedatasection.preambleforattachment")}</h4>
+    <h4>${b.key("duplicatedatasection.attachmenttext")}</h4>
     <#list m.attachmentDuplicateData as duplicateData>
         <label>${b.key("duplicatedatasection.usedby", [duplicateData.value])}</label>
         <ul class="blue">
@@ -46,5 +43,6 @@
         </ul>
     </#list>
   </#if>
+  </div>
 
 </div>
