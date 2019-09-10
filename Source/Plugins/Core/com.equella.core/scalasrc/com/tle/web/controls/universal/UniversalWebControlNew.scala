@@ -27,6 +27,7 @@ import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.guice.Bind
+import com.tle.core.i18n.CoreStrings
 import com.tle.core.item.dao.AttachmentDao
 import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
@@ -36,10 +37,7 @@ import com.tle.core.workflow.video.VideoService
 import com.tle.web.cloudproviders.CloudWizardControl
 import com.tle.web.controls.universal.UniversalWebControlNew._
 import com.tle.web.controls.universal.handlers.FileUploadHandlerNew
-import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{
-  attachmentCreatorForUpload,
-  validateContent
-}
+import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{attachmentCreatorForUpload, validateContent}
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
@@ -55,22 +53,14 @@ import com.tle.web.sections.jquery.libraries.JQueryProgression
 import com.tle.web.sections.js.ElementId
 import com.tle.web.sections.js.generic.{Js, OverrideHandler, ReloadHandler}
 import com.tle.web.sections.js.generic.expression.ObjectExpression
-import com.tle.web.sections.js.generic.function.{
-  ExternallyDefinedFunction,
-  IncludeFile,
-  PartiallyApply
-}
+import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile, PartiallyApply}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.Button
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer}
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree, SimpleBookmarkModifier}
-import com.tle.web.viewurl.attachments.{
-  AttachmentNode,
-  AttachmentResourceService,
-  AttachmentTreeService
-}
+import com.tle.web.viewurl.attachments.{AttachmentNode, AttachmentResourceService, AttachmentTreeService}
 import com.tle.web.wizard.{WizardService, WizardState}
 import com.tle.web.wizard.controls.{AbstractWebControl, CCustomControl, WebControlModel}
 import com.tle.web.wizard.impl.WebRepository
@@ -121,7 +111,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var attachmentDao: AttachmentDao                         = _
 
   @Component
-  @PlugKey("duplicatewarningmessage")
+  @PlugKey("duplicatewarning.linktext")
   var duplicateWarningMessage: Button = _
 
   var ctx: AfterRegister = _
@@ -192,7 +182,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       // These two methods are called in universalattachmentlist.ftl
       def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
-      def getDuplicateWarningMessage         = duplicateWarningMessage
+      def getDuplicateWarningLink         = duplicateWarningMessage
+      def getDuplicateWarningMessage = CoreStrings.text("duplicatewarning.message")
 
       def getDivTag = {
         def entries(attachments: Iterable[AttachmentNode],
