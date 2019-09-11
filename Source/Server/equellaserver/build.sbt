@@ -201,9 +201,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.0.3",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.26",
-  "org.slf4j"           % "slf4j-api"              % "1.7.26",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.26",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.28",
+  "org.slf4j"           % "slf4j-api"              % "1.7.28",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.28",
   "org.springframework" % "spring-aop"             % "2.5.5",
   "org.springframework" % "spring-context"         % "2.5.5",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (

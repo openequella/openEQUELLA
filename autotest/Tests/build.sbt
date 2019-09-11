@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.3.4",
-  "org.slf4j"        % "slf4j-simple"              % "1.7.26",
+  "org.slf4j"        % "slf4j-simple"              % "1.7.28",
   "org.scalacheck"   %% "scalacheck"               % "1.13.5" % "test,serial",
   "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
