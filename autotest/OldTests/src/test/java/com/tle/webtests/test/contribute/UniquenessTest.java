@@ -215,7 +215,6 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     // Add one file having duplicates and one link not having duplicate
     wizardPage.addFile(3, FIRST_FILE_NAME);
     wizardPage.addUrl(3, SECOND_LINK_NAME, SECOND_LINK_NAME);
-    // CHANGE TEXT!!!
     boolean warningDisplayed = findWarningLink(wizardPage, controlDivId, true);
     assertTrue(warningDisplayed);
     checkDuplicateItem(false, FIRST_FILE_NAME);
@@ -232,7 +231,6 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     // Add one file not having duplicates and one link having duplicate
     wizardPage.addFile(3, SECOND_FILE_NAME);
     wizardPage.addUrl(3, FIRST_LINK_NAME, FIRST_LINK_NAME);
-    // CHANGE TEXT!!!
     warningDisplayed = findWarningLink(wizardPage, controlDivId, true);
     assertTrue(warningDisplayed);
     checkDuplicateItem(false, FIRST_LINK_NAME);
@@ -249,7 +247,6 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     // Add one file having duplicate and one link having too
     wizardPage.addFile(3, FIRST_FILE_NAME);
     wizardPage.addUrl(3, FIRST_LINK_NAME, FIRST_LINK_NAME);
-    // CHANGE TEXT!!!
     warningDisplayed = findWarningLink(wizardPage, controlDivId, true);
     assertTrue(warningDisplayed);
     checkDuplicateItem(false, FIRST_FILE_NAME, FIRST_LINK_NAME);
