@@ -29,7 +29,10 @@ public final class Utils {
   // as well as the newer semver hotfix scheme (<maj>.<min>.<rev> - `2019.1.1`). Hence the optional
   // `r?`.
   public static final Pattern VERSION_EXTRACT =
-      Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r?\\d+) \\((.+)\\)\\.zip$"); // $NON-NLS-1$
+      Pattern.compile("^tle-upgrade-(\\d+\\.\\d+\\.r?\\d+) \\((.+)\\)\\.zip$");
+
+  /** Support display versions such as 2019.1.1-Stable.OSE or 6.6-Stable.OSE. */
+  public static final Pattern VERSION_DISPLAY = Pattern.compile("^[\\d.]+-[\\w.]+$");
 
   public static final Comparator<WebVersion> VERSION_COMPARATOR =
       new InverseComparator<WebVersion>(

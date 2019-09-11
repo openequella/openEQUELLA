@@ -161,9 +161,9 @@ public class PagesHandler extends PostDispatchHandler {
     private String semanticVersion;
     private String filename;
 
-    public WebVersion(String dn, String semanticVersion, String fn) {
-      this.displayName = dn;
-      this.filename = fn;
+    public WebVersion(String displayName, String semanticVersion, String filename) {
+      this.displayName = displayName;
+      this.filename = filename;
       this.semanticVersion = semanticVersion;
     }
 
