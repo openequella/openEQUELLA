@@ -22,34 +22,33 @@ services:
       - EQ_USERSERVICE_USEXFORWARDEDFOR=true
       - EQ_ZOOKEEPER_INSTANCES=zookeeper
       - EQ_ZOOKEEPER_PREFIX=eqdev
+      - EQ_ADMIN_URL=http://oeq.localhost/admin/
+      - EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://database:5432/equella
     depends_on:
       - zookeeper
     volumes:
-      - /home/penghai/Edalex/Equella/Dev/learningedge-config/data/filestore:/home/equella/equella/filestore
-      - /home/penghai/Edalex/Equella/Dev/learningedge-config/hikari.properties:/home/equella/equella/learningedge-config/hikari.properties
-      - /home/penghai/Edalex/Equella/Dev/learningedge-config/learningedge-log4j.properties:/home/equella/equella/learningedge-config/learningedge-log4j.properties
+      - ./filestore:/home/equella/equella/filestore
+      - ./hikari.properties:/home/equella/equella/learningedge-config/hikari.properties
+      - ./learningedge-log4j.properties:/home/equella/equella/learningedge-config/learningedge-log4j.properties
 
   zookeeper:
-    image: zookeeper:latest
+    image: zookeeper:3.5.5
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
       ZOO_LOG4J_PROP: INFO, CONSOLE, ROLLINGFILE
       ZOO_AUTOPURGE_PURGEINTERVAL: 1
-    volumes:
-      - /zookeeper/zoo1/data:/data
-      - /zookeeper/zoo1/datalog:/datalog
     networks:
       - oeq-cluster
 
   database:
-    image: postgres
+    image: postgres:9.6
     restart: always
     networks:
       - oeq-cluster
 
   traefik:
-    image: traefik
+    image: traefik:1.7.14
     restart: always
     command: --api --docker
     ports:

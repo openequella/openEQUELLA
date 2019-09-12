@@ -113,15 +113,9 @@ For ideas on how to enhance docker with openEQUELLA, please review the (GitHub i
 sbt installerZip
 ```
 
-- Copy the installer zip from `Equella/Installer/target` to the docker folder `Equella/docker`; then
-- Open Dockerfile and change values of oEQ environment variables according to how you configure the docker-compose.yml
-
-```
-For instance, ARG EQ_ADMIN_URL=http://oeq.localhost/admin/
-```
-
+- Copy the installer zip from `Equella/Installer/target` to the docker folder `Equella/docker`
 - Run `docker-compose up -d` from `Equella/docker`
-- Check logs of docker containers which run oEQ instances, you should expect to see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
-- Open `oeq.localhost/admin/` from a browser, go the oEQ Administer server page() and then open Health check, you should expect to see a table which lists all node IDs
+- Run docker-compose logs | grep 'ClusterMessagingServiceImpl' and you should expect to see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
+- Open `oeq.localhost/admin/` from a browser, go the oEQ Administer server page and then open Health check, you should expect to see a table which lists all node IDs
 - If you have a new oEQ installer, you can run `docker-compose up -d --force-recreate --build`
 - You can also specify the number of oEQ instance by running 'docker-compose up -d --scale oeq=3', here `oeq` is the service name defined in the yml file
