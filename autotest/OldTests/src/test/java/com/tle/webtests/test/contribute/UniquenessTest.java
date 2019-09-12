@@ -16,6 +16,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
@@ -39,6 +40,12 @@ public class UniquenessTest extends AbstractWizardControlsTest {
   @Override
   protected void prepareBrowserSession() {
     logon();
+  }
+
+  @BeforeClass
+  public void setUp() throws Exception {
+    super.setUp();
+    createDuplicateCheckTestData();
   }
 
   @Test
@@ -75,22 +82,11 @@ public class UniquenessTest extends AbstractWizardControlsTest {
   }
 
   @Test
-  public void createDuplicateCheckTestData() {
-    ContributePage contributePage = new ContributePage(context).load();
-    WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
-    wizardPage.editbox(1, DUPLICATE_CHECK_ITEM_NAME);
-    wizardPage.editbox(2, DUPLICATE_CHECK_ITEM_ID);
-    wizardPage.addFile(3, FIRST_FILE_NAME);
-    wizardPage.addUrl(3, FIRST_LINK_NAME, FIRST_LINK_NAME);
-    wizardPage.save().publish();
-  }
-
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
-  public void editboxDuplicateCheck() {
+  public void editboxDuplicateAllowedCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
 
-    // Test an editbox which gives warning when duplicates found and allows duplicates
+    // Test an editbox which allows duplicates and gives warning when duplicates found
     String controlDivId = "p0c1";
     wizardPage.editbox(1, DUPLICATE_CHECK_ITEM_NAME);
     ConfirmationDialog confirmationDialog = wizardPage.save();
@@ -104,14 +100,20 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     wizardPage.save().cancel(wizardPage);
     warningDisplayed = findWarningLink(wizardPage, controlDivId, false);
     assertFalse(warningDisplayed);
+  }
+
+  @Test
+  public void editboxDuplicateNotAllowedCheck() {
+    ContributePage contributePage = new ContributePage(context).load();
+    WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
 
     // Test an editbox which doesn't allow duplicates
-    controlDivId = "p0c2";
+    String controlDivId = "p0c2";
     wizardPage.editbox(2, DUPLICATE_CHECK_ITEM_ID);
-    confirmationDialog = wizardPage.save();
+    ConfirmationDialog confirmationDialog = wizardPage.save();
     assertTrue(confirmationDialog.containsButton(ConfirmButton.COMPLETE));
     confirmationDialog.cancel(wizardPage);
-    warningDisplayed = findWarningLink(wizardPage, controlDivId, true);
+    boolean warningDisplayed = findWarningLink(wizardPage, controlDivId, true);
     assertTrue(warningDisplayed);
     checkDuplicateItem(true, DUPLICATE_CHECK_ITEM_ID);
     wizardPage.get();
@@ -121,7 +123,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
+  @Test
   public void singleFileDuplicateCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
@@ -137,7 +139,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
+  @Test
   public void multipleFilesDuplicateCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
@@ -163,7 +165,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
+  @Test
   public void singleLinkDuplicateCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
@@ -179,7 +181,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
+  @Test
   public void multipleLinksDuplicateCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
@@ -206,7 +208,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
-  @Test(dependsOnMethods = "createDuplicateCheckTestData")
+  @Test
   public void mixedAttchmentsDuplicateCheck() {
     ContributePage contributePage = new ContributePage(context).load();
     WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
@@ -261,6 +263,16 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     assertFalse(warningDisplayed);
   }
 
+  private void createDuplicateCheckTestData() {
+    ContributePage contributePage = new ContributePage(context).load();
+    WizardPageTab wizardPage = contributePage.openWizard(DUPLICATE_CHECK_COLLECTION);
+    wizardPage.editbox(1, DUPLICATE_CHECK_ITEM_NAME);
+    wizardPage.editbox(2, DUPLICATE_CHECK_ITEM_ID);
+    wizardPage.addFile(3, FIRST_FILE_NAME);
+    wizardPage.addUrl(3, FIRST_LINK_NAME, FIRST_LINK_NAME);
+    wizardPage.save().publish();
+  }
+
   private boolean findWarningLink(
       WizardPageTab wizardPage, String controlDivId, boolean isWarningDisplayed) {
     By linkTextXpath =
@@ -307,7 +319,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
             .getWaiter()
             .until(ExpectedConditions.visibilityOfElementLocated(duplicatesFoundXpath));
     // Check if the correct duplicate item is found
-    Assert.assertEquals(duplicateItem.getText(), "uniquenessTest - Duplicate Check");
+    Assert.assertEquals(duplicateItem.getText(), DUPLICATE_CHECK_ITEM_NAME);
 
     if (isUniqueEnforced) {
       By uniquenessMarkXpath = By.className("mandatory");
