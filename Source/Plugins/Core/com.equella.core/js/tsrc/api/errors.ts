@@ -1,4 +1,4 @@
-import v4 = require("uuid/v4");
+import * as v4 from "uuid/v4";
 import { AxiosResponse } from "axios";
 
 export interface ErrorResponse {
