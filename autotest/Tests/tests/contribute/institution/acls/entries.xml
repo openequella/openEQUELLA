@@ -1066,6 +1066,19 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
+    <id>900000</id>
+    <expression>
+      <id>1040</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>VIEW_VIEWCOUNT</privilege>
+    <aggregateOrdering>0100 0081 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>81</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
     <id>217389</id>
     <expression>
       <id>1736</id>
