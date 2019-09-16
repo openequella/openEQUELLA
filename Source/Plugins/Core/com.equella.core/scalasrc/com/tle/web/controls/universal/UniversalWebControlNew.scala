@@ -27,6 +27,7 @@ import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.guice.Bind
+import com.tle.core.i18n.CoreStrings
 import com.tle.core.item.dao.AttachmentDao
 import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
@@ -121,7 +122,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var attachmentDao: AttachmentDao                         = _
 
   @Component
-  @PlugKey("duplicatewarningmessage")
+  @PlugKey("duplicatewarning.linktext")
   var duplicateWarningMessage: Button = _
 
   var ctx: AfterRegister = _
@@ -192,7 +193,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       // These two methods are called in universalattachmentlist.ftl
       def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
-      def getDuplicateWarningMessage         = duplicateWarningMessage
+      def getDuplicateWarningLink            = duplicateWarningMessage
+      def getDuplicateWarningMessage         = CoreStrings.text("duplicatewarning.message")
 
       def getDivTag = {
         def entries(attachments: Iterable[AttachmentNode],
