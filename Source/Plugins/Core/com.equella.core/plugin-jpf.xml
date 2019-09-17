@@ -5132,6 +5132,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v63.AddThumbColumnMigration" />
     <parameter id="date" value="2014-05-23" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddLastOwnerMigration">
+    <parameter id="id" value="com.tle.core.institution.migration.v65.AddLastOwnerMigration" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v65.AddLastOwnerMigration" />
+    <parameter id="date" value="2019-09-17" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="increaseThumbnailColumnMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v64.IncreaseThumbnailLength" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v64.IncreaseThumbnailLength" />

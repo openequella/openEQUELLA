@@ -347,7 +347,8 @@ public class HistoryContentSection
               .setSortData(label, "", eventDate);
         } else {
           final HtmlLinkState userLink =
-              userLinkSection.createLink(info, event.getUserid(), event.getImpersonatedBy());
+              userLinkSection.createLink(
+                  info, event.getUserid(), event.getImpersonatedBy(), event.getUserid());
           allEvents
               .addRow(cell1, userLink, dateRendererFactory.createDateRenderer(eventDate))
               .setSortData(label, userLink.getLabel(), eventDate);

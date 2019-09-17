@@ -124,6 +124,11 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
   }
 
   public HtmlLinkState createLink(SectionInfo info, String userId, String impersonatedBy) {
+    return createLink(info, userId, impersonatedBy, null);
+  }
+
+  public HtmlLinkState createLink(
+      SectionInfo info, String userId, String impersonatedBy, String itemLastOwner) {
     Model model = getModel(info);
     if ("system".equals(userId)) {
       HtmlLinkState userLink = new HtmlLinkState(LABEL_SYSTEMUSER);
@@ -133,7 +138,7 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     if (!model.foundUsers.containsKey(userId)) {
       model.usersToFind.add(userId);
     }
-    return new UserLinkState(userId, info, impersonatedBy);
+    return new UserLinkState(userId, info, impersonatedBy, itemLastOwner);
   }
 
   public Label createLabel(SectionInfo info, String userId) {
@@ -248,11 +253,18 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     private final String userId;
     private final String impersonatedBy;
     private boolean lookedUp;
+    private String itemLastOwner;
 
     public UserLinkState(String userId, SectionInfo info, String impersonatedBy) {
       this.userId = userId;
       this.info = info;
       this.impersonatedBy = impersonatedBy;
+    }
+
+    public UserLinkState(
+        String userId, SectionInfo info, String impersonatedBy, String itemLastOwner) {
+      this(userId, info, impersonatedBy);
+      this.itemLastOwner = itemLastOwner;
     }
 
     @SuppressWarnings("unchecked")
@@ -285,8 +297,15 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
       if (!lookedUp) {
         UserBean userBean = ensureUserLookup(info, userId);
         if (userBean == null) {
-          setLabel(UNKNOWN_USER_LABEL);
-          setTitle(new TextLabel(userId));
+          if (itemLastOwner != null) {
+            TextLabel lastOwnerLabel = new TextLabel(itemLastOwner + " (removed)");
+            setLabel(lastOwnerLabel);
+            setTitle(lastOwnerLabel);
+          } else {
+            setLabel(UNKNOWN_USER_LABEL);
+            setTitle(new TextLabel(userId));
+          }
+
         } else {
           // TODO: oh dear, not i18n friendly :)
           TextLabel firstLastLabel =

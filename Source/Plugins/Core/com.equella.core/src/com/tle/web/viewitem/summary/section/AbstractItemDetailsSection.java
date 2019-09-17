@@ -93,7 +93,8 @@ public abstract class AbstractItemDetailsSection<
     final ItemDetailsModel model = getModel(context);
 
     if (!summaryConfig.isHideOwner()) {
-      model.setOwnerLink(userLinkSection.createLink(context, item.getOwner()));
+      model.setOwnerLink(
+          userLinkSection.createLink(context, item.getOwner(), null, item.getLastOwner()));
     }
 
     if (!summaryConfig.isHideCollaborators()) {
