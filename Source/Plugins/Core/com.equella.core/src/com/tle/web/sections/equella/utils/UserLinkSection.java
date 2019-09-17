@@ -73,7 +73,8 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
 
   private SubmitValuesFunction userClickedFunc;
 
-  private final String LAST_OWNER_SUFFIX = " (removed)";
+  @PlugKey("userlabel.lastownersuffix")
+  private static Label LAST_OWNER_SUFFIX;
 
   @Override
   public void registered(String id, SectionTree tree) {
@@ -300,7 +301,7 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
         UserBean userBean = ensureUserLookup(info, userId);
         if (userBean == null) {
           if (itemLastOwner != null) {
-            TextLabel lastOwnerLabel = new TextLabel(itemLastOwner + LAST_OWNER_SUFFIX);
+            TextLabel lastOwnerLabel = new TextLabel(itemLastOwner + LAST_OWNER_SUFFIX.getText());
             setLabel(lastOwnerLabel);
             setTitle(lastOwnerLabel);
           } else {
