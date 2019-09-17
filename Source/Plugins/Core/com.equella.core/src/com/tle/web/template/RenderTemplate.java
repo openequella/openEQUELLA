@@ -114,8 +114,6 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
           .hasRtl()
           .priority(Priority.LOWEST)
           .make();
-  public static final CssInclude LEGACY_CSS =
-      include("css/saas/out/legacy.css").priority(Priority.LOWEST).make();
   public static final CssInclude CUSTOMER_CSS =
       include("css/customer.css").priority(Priority.HIGHEST).make();
 

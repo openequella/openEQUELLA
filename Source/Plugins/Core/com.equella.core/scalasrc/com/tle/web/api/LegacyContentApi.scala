@@ -480,7 +480,7 @@ class LegacyContentApi {
 
       val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
       val jsFiles  = context.getJsFiles.asScala
-      val cssFiles = Iterable(RenderTemplate.LEGACY_CSS.getHref(context))
+      val cssFiles = Iterable()
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
