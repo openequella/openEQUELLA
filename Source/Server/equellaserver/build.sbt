@@ -1,4 +1,6 @@
 import Path.rebase
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 javacOptions ++= Seq("-source", "1.8")
 
@@ -327,8 +329,6 @@ additionalPlugins := {
   }
 }
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 upgradeZip := {
   val log         = streams.value.log
   val ver         = equellaVersion.value
