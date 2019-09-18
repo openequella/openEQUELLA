@@ -69,7 +69,7 @@
     "@types/jest": "22.2.3",
     "@types/luxon": "1.15.1",
     "@types/lodash": "4.14.138",
-    "@types/tinymce": "4.5.22",
+    "@types/tinymce": "4.5.23",
     "@types/node": "9.6.52",
     "@types/react": "16.9.2",
     "@types/react-autosuggest": "9.3.11",
