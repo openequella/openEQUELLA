@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-circe"        % Http4sVersion,
   "org.slf4j"     % "slf4j-simple"         % "1.7.28",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
-  "com.nulab-inc" %% "scala-oauth2-core"   % "1.3.0"
+  "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )
 
 resourceGenerators in Compile += Def.task {
