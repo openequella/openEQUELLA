@@ -197,9 +197,10 @@ public class UpgradeToEmbeddedTomcat extends AbstractUpgrader {
 
   private File getUpgradeZip(Path installPath, File versionProps) throws ConfigurationException {
     final PropertiesConfiguration props = new PropertiesConfiguration(versionProps);
-    final String mmr = (String) props.getProperty("version.mmr");
-    final String display = (String) props.getProperty("version.display");
-    String filename = MessageFormat.format("tle-upgrade-{0} ({1}).zip", mmr, display);
+    final String displayName = (String) props.getProperty("version.display");
+    final String semanticVersion = displayName.substring(0, displayName.indexOf("-"));
+    String filename =
+        MessageFormat.format("tle-upgrade-{0} ({1}).zip", semanticVersion, displayName);
     return installPath.resolve("manager/updates/" + filename).toFile();
   }
 
