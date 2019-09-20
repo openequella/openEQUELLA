@@ -1,37 +1,37 @@
 <list>
   <com.tle.beans.security.AccessExpression>
-    <id>756240</id>
+    <id>273</id>
     <dynamic>false</dynamic>
-    <expression>G:503 </expression>
+    <expression>*</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>172</id>
+    <id>489469</id>
     <dynamic>true</dynamic>
     <expression>$OWNER </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>562854</id>
+    <id>490693</id>
     <dynamic>false</dynamic>
-    <expression>* </expression>
+    <expression>G:1002 </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756241</id>
+    <id>490690</id>
     <dynamic>false</dynamic>
-    <expression>G:502 </expression>
+    <expression>G:1001 </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756239</id>
+    <id>490696</id>
     <dynamic>false</dynamic>
-    <expression>R:0096aa87-3da2-47e2-9ef3-983d2e38acb8 </expression>
+    <expression>G:1003 </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756242</id>
+    <id>4172</id>
     <dynamic>false</dynamic>
-    <expression>G:501 </expression>
+    <expression>R:0096aa87-3da2-47e2-9ef3-983d2e38acb8</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>491</id>
+    <id>264</id>
     <dynamic>false</dynamic>
-    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE</expression>
   </com.tle.beans.security.AccessExpression>
 </list>

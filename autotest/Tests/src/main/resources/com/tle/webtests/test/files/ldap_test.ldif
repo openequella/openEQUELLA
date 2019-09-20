@@ -1,0 +1,109 @@
+dn: dc=edalex,dc=com
+dc: edalex
+description: oEQ Ldap Test
+objectClass: posixGroup
+objectClass: top
+o: edalex.com
+
+
+dn: ou=dev,dc=edalex,dc=com
+objectclass: groupofnames
+objectClass: posixGroup
+cn: dev
+ou: dev
+gidNumber: 1001
+
+dn: ou=sale,dc=edalex,dc=com
+objectclass: groupofnames
+objectClass: posixGroup
+cn: sale
+ou: sale
+gidNumber: 1002
+
+dn: ou=hr,dc=edalex,dc=com
+objectclass: groupofnames
+objectClass: posixGroup
+cn: hr
+ou: hr
+gidNumber: 1003
+
+dn: ou=support,ou=dev, dc=edalex,dc=com
+objectclass: groupofnames
+objectClass: posixGroup
+cn: support
+ou: support
+gidNumber: 1004
+
+dn: cn=andrew.gibb,ou=dev,dc=edalex,dc=com
+objectclass: person
+cn: andrew.gibb
+sn: Gibb
+givenName: Andrew
+mail: test@equella.net
+uid: andrew.gibb
+userpassword: Tle160cst
+ou: dev
+gidNumber: 1001
+memberof: ou=dev,dc=edalex,dc=com
+
+
+dn: cn=aaron.holland,ou=sale,dc=edalex,dc=com
+objectclass: person
+cn: aaron.holland
+sn: Holland
+givenName: Aaron
+mail: ldapholland@equella.net
+uid: aaron.holland
+userpassword: Tle160cst
+ou: sale
+gidNumber: 1002
+memberof: ou=sale,dc=edalex,dc=com
+
+
+dn: cn=nicholas.read,ou=hr,dc=edalex,dc=com
+objectclass: person
+cn: nicholas.read
+sn: Read
+givenName: Nicholas
+mail: ldapread@equella.net
+uid: nicholas.read
+userpassword: Tle160cst
+ou: hr
+gidNumber:1003
+memberof: ou=hr,dc=edalex,dc=com
+
+dn: cn=test.user,ou=hr,dc=edalex,dc=com
+objectclass: person
+cn: test.user
+sn: User
+givenName: Test
+mail: ldaptest@equella.net
+uid: test.user
+userpassword: Tle160cst
+ou: hr
+gidNumber:1003
+memberof: ou=hr,dc=edalex,dc=com
+
+dn: cn=william.bowling,ou=hr,dc=edalex,dc=com
+objectclass: person
+cn: william.bowling
+sn: Bowling
+givenName: William
+mail: ldaptest@equella.net
+uid: william.bowling
+userpassword: Tle160cst
+ou: hr
+gidNumber:1003
+memberof: ou=hr,dc=edalex,dc=com
+
+dn: cn=nick.charles,ou=support,ou=dev,dc=edalex,dc=com
+objectclass: person
+cn: nick.charles
+sn: Charles
+givenName: Nick
+mail: test@equella.net
+uid: nick.charles
+userpassword: Tle160cst
+ou: support
+gidNumber: 1004
+memberof: ou=support,ou=dev,dc=edalex,dc=com
