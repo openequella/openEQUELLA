@@ -11,8 +11,7 @@ import scala.collection.JavaConverters._
 
 name := "equella-autotests"
 
-libraryDependencies ++= Seq("org.jacoco"    % "org.jacoco.agent"  % "0.7.9" classifier "runtime",
-                            "com.unboundid" % "unboundid-ldapsdk" % "4.0.11")
+libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
 lazy val config = (project in file("config"))
   .settings(resourceDirectory in Compile := baseDirectory.value / "resources")
