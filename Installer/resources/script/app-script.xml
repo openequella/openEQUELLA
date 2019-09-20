@@ -354,16 +354,13 @@
         </control>
         <control class="radiogroup">
           <title>Content viewing</title>
-          <description>Track when content is viewed based on the following options:
-            (None) = Do not track content views
-            Normal = Track every instance a user views a piece of content
-            Smart = Track a single instance for each user session and piece of content
+          <description>Track when content is viewed based on the following options. Tracking viewing of content attracts a small performance penalty.
           </description>
           <target>auditing/audit.level</target>
           <items>
-            <item name="(None)" value="NONE"/>
-            <item name="Normal" value="NORMAL"/>
-            <item name="Smart" value="SMART"/>
+            <item name="Do not track when content is viewed" value="NONE" default="true" />
+            <item name="Track every time each user views a piece of content" value="NORMAL"/>
+            <item name="Track every time each user views a piece of content in a different session" value="SMART"/>
           </items>
         </control>
       </controls>
