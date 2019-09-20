@@ -1,4 +1,6 @@
 import Path.rebase
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 javacOptions ++= Seq("-source", "1.8")
 
@@ -322,10 +324,11 @@ additionalPlugins := {
 }
 
 upgradeZip := {
-  val log = streams.value.log
-  val ver = equellaVersion.value
+  val log         = streams.value.log
+  val ver         = equellaVersion.value
+  var releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip
-    : File    = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
+    : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
     assembly.value                                          -> "equella-server.jar",

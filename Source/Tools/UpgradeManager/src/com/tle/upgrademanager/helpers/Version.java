@@ -18,7 +18,6 @@
 
 package com.tle.upgrademanager.helpers;
 
-import com.google.common.base.Function;
 import com.tle.upgrademanager.ManagerConfig;
 import com.tle.upgrademanager.Utils;
 import com.tle.upgrademanager.handlers.PagesHandler.WebVersion;
@@ -44,7 +43,7 @@ public class Version {
     final SortedSet<WebVersion> versions = new TreeSet<WebVersion>(Utils.VERSION_COMPARATOR);
 
     final File upgradeFolder = config.getUpdatesDir();
-    if (upgradeFolder.exists()) {
+    if (upgradeFolder.isDirectory()) {
       for (String file : upgradeFolder.list()) {
         if (file != null && Utils.VERSION_EXTRACT.matcher(file).matches()) {
           versions.add(getWebVersionFromFile(file));
@@ -57,64 +56,24 @@ public class Version {
     return versions;
   }
 
-  private WebVersion getWebVersionFromFile(String fn) {
-    return new WebVersion(
-        DISPLAY_NAME_ONLY.apply(fn), VERSION_NUMBER_ONLY.apply(fn), FULL_FILENAME.apply(fn));
-  }
-
-  public static final Function<String, String> FULL_FILENAME =
-      new Function<String, String>() {
-        @Override
-        public String apply(String filename) {
-          Matcher m1 = Utils.VERSION_EXTRACT.matcher(filename);
-          return m1.matches() ? filename : null;
-        }
-      };
-
-  public static final Function<String, String> VERSION_NUMBER_ONLY =
-      new Function<String, String>() {
-        @Override
-        public String apply(String filename) {
-          Matcher m1 = Utils.VERSION_EXTRACT.matcher(filename);
-          if (m1.matches()) {
-            return m1.group(1);
-          }
-          return null;
-        }
-      };
-
-  public static final Function<String, String> DISPLAY_NAME_ONLY =
-      new Function<String, String>() {
-        @Override
-        public String apply(String filename) {
-          Matcher m = Utils.VERSION_EXTRACT.matcher(filename);
-          if (m.matches()) {
-            return m.group(2);
-          }
-          return null;
-        }
-      };
-
   public WebVersion getDeployedVersion() {
     WebVersion version = new WebVersion();
     File versionFile = new File(getVersionPropertiesDirectory(), "version.properties");
     try (FileInputStream in = new FileInputStream(versionFile)) {
       Properties p = new Properties();
       p.load(in);
-      version.setDisplayName(p.getProperty("version.display"));
-      version.setMmr(p.getProperty("version.mmr"));
+
+      String displayName = p.getProperty("version.display");
+      String semanticVersion = getSemanticVersion(displayName);
+
+      version.setDisplayName(displayName);
+      version.setSemanticVersion(semanticVersion);
       version.setFilename(
-          MessageFormat.format(
-              "tle-upgrade-{0} ({1}).zip",
-              p.getProperty("version.mmr"), p.getProperty("version.display")));
+          MessageFormat.format("tle-upgrade-{0} ({1}).zip", semanticVersion, displayName));
     } catch (IOException ex) {
       version.setDisplayName(Utils.UNKNOWN_VERSION);
     }
     return version;
-  }
-
-  private File getVersionPropertiesDirectory() {
-    return new File(config.getInstallDir(), Utils.EQUELLASERVER_DIR);
   }
 
   public File getUpgradeFile(String filename) {
@@ -127,5 +86,30 @@ public class Version {
     }
 
     return null;
+  }
+
+  private File getVersionPropertiesDirectory() {
+    return new File(config.getInstallDir(), Utils.EQUELLASERVER_DIR);
+  }
+
+  private static String getSemanticVersion(String displayName) {
+    // semanticVersion is part of displayName, e.g. 2019.1.1-Stable.OSE
+    Matcher matcher = Utils.VERSION_DISPLAY.matcher(displayName);
+    if (!matcher.matches()) {
+      throw new IllegalArgumentException("Provided display name (" + displayName + ") is invalid.");
+    }
+
+    return displayName.substring(0, displayName.indexOf("-"));
+  }
+
+  private WebVersion getWebVersionFromFile(String filename) {
+    Matcher matcher = Utils.VERSION_EXTRACT.matcher(filename);
+
+    if (!matcher.matches()) {
+      throw new IllegalArgumentException("Unrecognised filename format for: " + filename);
+    }
+
+    final String displayName = matcher.group(2);
+    return new WebVersion(displayName, getSemanticVersion(displayName), filename);
   }
 }

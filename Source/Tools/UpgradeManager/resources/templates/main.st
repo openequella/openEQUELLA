@@ -44,7 +44,7 @@ $("templates/page")(script={
 	<form id="mainform" action="$buttonAction$" method="get">
 		<dl id="statusversion">
 			<dt>Deployed Version:</dt>
-			<dd>$version.displayName$ <span style="color: #AAAAAA;"> ($version.mmr$) </span></dd>
+			<dd>$version.displayName$ <span style="color: #AAAAAA;"> ($version.semanticVersion$) </span></dd>
 			<dt>Server Status:</dt>
 			<dd id="ajaxstatus">...</dd>
 		</dl>

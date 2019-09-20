@@ -130,7 +130,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
     if (version.isDevelopment()) {
       prefix = "tasksdev/";
     } else {
-      prefix = "tasks-" + version.getMmr() + '/';
+      prefix = "tasks-" + version.getSemanticVersion() + '/';
     }
     ZK_TASKPATH = prefix + ZK_TASKPATH;
     ZK_GLOBALTASKPATH = prefix + ZK_GLOBALTASKPATH;
