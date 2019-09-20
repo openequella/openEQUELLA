@@ -185,7 +185,7 @@ public class LDAPTest extends AbstractSessionTest {
       ldapServer.importFromLDIF(true, Attachments.get("ldap_test.ldif").getPath());
       ldapServer.startListening();
     } catch (LDAPException e) {
-      e.printStackTrace();
+      throw new RuntimeException("Failed to start LDAP server");
     }
   }
 
