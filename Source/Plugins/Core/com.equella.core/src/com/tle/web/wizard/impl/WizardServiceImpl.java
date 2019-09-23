@@ -697,15 +697,19 @@ public class WizardServiceImpl
   @Override
   public boolean checkDuplicateXpathValue(
       WizardState state, String xpath, Collection<String> values, boolean canAccept) {
+    return checkEditboxDuplicate(state, xpath, values, canAccept, null);
+  }
+
+  @Override
+  public boolean checkEditboxDuplicate(
+      WizardState state,
+      String xpath,
+      Collection<String> values,
+      boolean canAccept,
+      String fieldName) {
     final String prefix = xpath + '$';
     clearDuplicatesWithPrefix(state, prefix);
     final String uuid = state.getItem().getUuid();
-    // Extract the title of an Editbox from a specific xpath of an item's XML
-    PropBagEx wizardControlXmlNode = state.getItemxml().getSubtree(xpath);
-    String wizardControlTitle = "";
-    if (wizardControlXmlNode != null) {
-      wizardControlTitle = wizardControlXmlNode.getNodeName();
-    }
     boolean isUnique = true;
     for (String value : values) {
       if (!Check.isEmpty(value)) {
@@ -718,7 +722,7 @@ public class WizardServiceImpl
                 freeTextService.getKeysForNodeValue(uuid, state.getItemDefinition(), xpath, value),
                 canAccept,
                 false,
-                wizardControlTitle);
+                fieldName);
       }
     }
     return isUnique;
