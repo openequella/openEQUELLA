@@ -52,7 +52,7 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
   }
 
   public void waitForCheck() {
-    waiter.until(
+    longWaiter.until(
         new Function<WebDriver, Boolean>() {
           @Override
           public Boolean apply(WebDriver driver) {
