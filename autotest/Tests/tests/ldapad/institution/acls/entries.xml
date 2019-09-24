@@ -1,8 +1,60 @@
 <list>
   <com.tle.beans.security.AccessEntry>
-    <id>770203</id>
+    <id>492880</id>
     <expression>
-      <id>491</id>
+      <id>273</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>INTEGRATION_SELECTION_SESSION</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492881</id>
+    <expression>
+      <id>264</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>SEARCH_PAGE</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492882</id>
+    <expression>
+      <id>264</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>DASHBOARD_PAGE</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492883</id>
+    <expression>
+      <id>264</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>HIERARCHY_PAGE</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492884</id>
+    <expression>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -13,9 +65,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770204</id>
+    <id>492885</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -26,9 +78,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770205</id>
+    <id>492886</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -39,9 +91,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770206</id>
+    <id>492887</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -52,9 +104,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770207</id>
+    <id>492888</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -65,9 +117,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770208</id>
+    <id>492889</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -78,9 +130,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770209</id>
+    <id>492890</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -91,9 +143,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770210</id>
+    <id>492891</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -104,9 +156,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770211</id>
+    <id>492892</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -117,9 +169,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770212</id>
+    <id>492893</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -130,9 +182,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770213</id>
+    <id>492894</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -143,9 +195,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770214</id>
+    <id>492895</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -156,9 +208,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770215</id>
+    <id>492896</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -169,9 +221,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770216</id>
+    <id>492897</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -182,9 +234,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770217</id>
+    <id>492898</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -195,9 +247,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770218</id>
+    <id>492899</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -208,9 +260,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770219</id>
+    <id>492900</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -221,9 +273,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770220</id>
+    <id>492901</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -234,9 +286,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770221</id>
+    <id>492902</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -247,9 +299,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770222</id>
+    <id>492903</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -260,9 +312,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770223</id>
+    <id>492904</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -273,9 +325,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770224</id>
+    <id>492905</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -286,9 +338,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770225</id>
+    <id>492906</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -299,9 +351,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770226</id>
+    <id>492907</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -312,9 +364,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770227</id>
+    <id>492908</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -325,9 +377,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770228</id>
+    <id>492909</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -338,9 +390,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770229</id>
+    <id>492910</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -351,9 +403,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770230</id>
+    <id>492911</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -364,9 +416,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770231</id>
+    <id>492912</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -377,9 +429,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770232</id>
+    <id>492913</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -390,9 +442,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770233</id>
+    <id>492914</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -403,9 +455,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770234</id>
+    <id>492915</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -416,9 +468,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770235</id>
+    <id>492916</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -429,9 +481,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770236</id>
+    <id>492917</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -442,9 +494,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770237</id>
+    <id>492918</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -455,9 +507,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770238</id>
+    <id>492919</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -468,9 +520,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770239</id>
+    <id>492920</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -481,9 +533,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770240</id>
+    <id>492921</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -494,9 +546,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770241</id>
+    <id>492922</id>
     <expression>
-      <id>172</id>
+      <id>272</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -507,9 +559,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770242</id>
+    <id>492923</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -520,9 +572,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770243</id>
+    <id>492924</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -533,9 +585,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770244</id>
+    <id>492925</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -546,9 +598,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770245</id>
+    <id>492926</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -559,9 +611,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770246</id>
+    <id>492927</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -572,9 +624,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770247</id>
+    <id>492928</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -585,9 +637,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770248</id>
+    <id>492929</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -598,9 +650,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770249</id>
+    <id>492930</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -611,9 +663,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770250</id>
+    <id>492931</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -624,9 +676,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770251</id>
+    <id>492932</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -637,9 +689,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770252</id>
+    <id>492933</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -650,9 +702,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770253</id>
+    <id>492934</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -663,9 +715,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770254</id>
+    <id>492935</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -676,9 +728,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770255</id>
+    <id>492936</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -689,9 +741,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770256</id>
+    <id>492937</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -702,9 +754,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770257</id>
+    <id>492938</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -715,9 +767,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770258</id>
+    <id>492939</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -728,9 +780,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770259</id>
+    <id>492940</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -741,9 +793,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770260</id>
+    <id>492941</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -754,9 +806,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770261</id>
+    <id>492942</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -767,9 +819,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770262</id>
+    <id>492943</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -780,9 +832,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770263</id>
+    <id>492944</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -793,9 +845,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770264</id>
+    <id>492945</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -806,9 +858,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770265</id>
+    <id>492946</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -819,9 +871,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770266</id>
+    <id>492947</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -832,9 +884,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770267</id>
+    <id>492948</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -845,9 +897,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770268</id>
+    <id>492949</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -858,9 +910,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770269</id>
+    <id>492950</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -871,9 +923,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770270</id>
+    <id>492951</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -884,9 +936,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770271</id>
+    <id>492952</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -897,9 +949,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770272</id>
+    <id>492953</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -910,9 +962,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770273</id>
+    <id>492954</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -923,9 +975,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770274</id>
+    <id>492955</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -936,9 +988,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770275</id>
+    <id>492956</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -949,9 +1001,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770276</id>
+    <id>492957</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -962,9 +1014,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770277</id>
+    <id>492958</id>
     <expression>
-      <id>172</id>
+      <id>272</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -975,9 +1027,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770278</id>
+    <id>492959</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -988,9 +1040,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770279</id>
+    <id>492960</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1001,9 +1053,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>770280</id>
+    <id>492961</id>
     <expression>
-      <id>491</id>
+      <id>264</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1014,9 +1066,9 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769637</id>
+    <id>492962</id>
     <expression>
-      <id>756632</id>
+      <id>4175</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>I:769587</targetObject>
@@ -1027,9 +1079,9 @@
     <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769638</id>
+    <id>492963</id>
     <expression>
-      <id>756632</id>
+      <id>4175</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>I:769587</targetObject>
@@ -1040,9 +1092,9 @@
     <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769639</id>
+    <id>492964</id>
     <expression>
-      <id>756634</id>
+      <id>4174</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>I:769609</targetObject>
@@ -1053,9 +1105,9 @@
     <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769640</id>
+    <id>492965</id>
     <expression>
-      <id>756634</id>
+      <id>4174</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>I:769609</targetObject>
@@ -1066,139 +1118,9 @@
     <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769641</id>
+    <id>492976</id>
     <expression>
-      <id>756635</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769622</targetObject>
-    <privilege>VIEW_ITEM</privilege>
-    <aggregateOrdering>2000 0000 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>0</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769642</id>
-    <expression>
-      <id>756635</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769622</targetObject>
-    <privilege>DISCOVER_ITEM</privilege>
-    <aggregateOrdering>2000 0001 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>1</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769643</id>
-    <expression>
-      <id>756636</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769598</targetObject>
-    <privilege>DISCOVER_ITEM</privilege>
-    <aggregateOrdering>2000 0000 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>0</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769644</id>
-    <expression>
-      <id>756636</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769598</targetObject>
-    <privilege>VIEW_ITEM</privilege>
-    <aggregateOrdering>2000 0001 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>1</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769645</id>
-    <expression>
-      <id>756638</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769598</targetObject>
-    <privilege>VIEW_ITEM</privilege>
-    <aggregateOrdering>2000 0002 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>2</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769646</id>
-    <expression>
-      <id>756638</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769598</targetObject>
-    <privilege>DISCOVER_ITEM</privilege>
-    <aggregateOrdering>2000 0003 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>3</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769647</id>
-    <expression>
-      <id>756633</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769580</targetObject>
-    <privilege>VIEW_ITEM</privilege>
-    <aggregateOrdering>2000 0000 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>0</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769648</id>
-    <expression>
-      <id>756633</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769580</targetObject>
-    <privilege>DISCOVER_ITEM</privilege>
-    <aggregateOrdering>2000 0001 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>1</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769649</id>
-    <expression>
-      <id>756637</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769617</targetObject>
-    <privilege>VIEW_ITEM</privilege>
-    <aggregateOrdering>2000 0000 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>0</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769650</id>
-    <expression>
-      <id>756637</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>I:769617</targetObject>
-    <privilege>DISCOVER_ITEM</privilege>
-    <aggregateOrdering>2000 0001 G</aggregateOrdering>
-    <grantRevoke>G</grantRevoke>
-    <aclOrder>1</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
-    <id>769651</id>
-    <expression>
-      <id>562854</id>
+      <id>273</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1209,9 +1131,9 @@
     <aclPriority>-325</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>769652</id>
+    <id>492977</id>
     <expression>
-      <id>756239</id>
+      <id>4172</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1220,5 +1142,161 @@
     <grantRevoke>G</grantRevoke>
     <aclOrder>1</aclOrder>
     <aclPriority>-325</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492978</id>
+    <expression>
+      <id>273</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>EXPORT_TO_LMS_ITEM</privilege>
+    <aggregateOrdering>0575 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1425</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492979</id>
+    <expression>
+      <id>273</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>VIEW_LINKED_PORTIONS</privilege>
+    <aggregateOrdering>3425 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>1425</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492984</id>
+    <expression>
+      <id>490696</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769598</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>2000 0003 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>3</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492985</id>
+    <expression>
+      <id>490696</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769598</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>2000 0002 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>2</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492986</id>
+    <expression>
+      <id>4176</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769598</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492987</id>
+    <expression>
+      <id>4176</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769598</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492988</id>
+    <expression>
+      <id>490690</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769617</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492989</id>
+    <expression>
+      <id>490690</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769617</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492992</id>
+    <expression>
+      <id>490693</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769580</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492993</id>
+    <expression>
+      <id>490693</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769580</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492990</id>
+    <expression>
+      <id>490824</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769622</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>492991</id>
+    <expression>
+      <id>490824</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>I:769622</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
 </list>

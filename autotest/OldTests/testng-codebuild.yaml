@@ -104,6 +104,7 @@ tests:
       - com.tle.webtests.test.users.LoginSettingsTest
       - com.tle.webtests.test.users.TokenLoginTest
       - com.tle.webtests.test.users.UserPasswordTest
+      - com.tle.webtests.test.users.LDAPTest
       - com.tle.webtests.test.usersscripts.UserScriptTest
       - com.tle.webtests.test.webservices.rest.ActivationApiTest
       - com.tle.webtests.test.webservices.rest.CollectionApiTest
