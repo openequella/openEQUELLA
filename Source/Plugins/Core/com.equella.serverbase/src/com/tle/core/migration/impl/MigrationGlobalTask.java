@@ -447,6 +447,9 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
             hibernateMigrationService.checkSchemaForMigrations(dataSource, false);
         String uniqueId = hibernateMigrationService.getUniqueId(dataSource);
         return new CheckResult(toRun, uniqueId);
+      } catch (RuntimeException e) {
+        LOGGER.error("MigrationGlobalTask error: " + e.getMessage());
+        return null;
       } finally {
         migDataSource.close();
         postMessage(new SimpleMessage(null, new SchemaMessage(Type.CHECKED, schemaId)));
