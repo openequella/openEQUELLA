@@ -146,6 +146,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
       }
     } catch (Exception t) {
       response.setError(t);
+      LOGGER.error("MigrationGlobalTask - runTask: " + t.getMessage());
     }
 
     if (publishStatus) {
@@ -206,6 +207,8 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
           }
         }
       } catch (InterruptedException e) {
+        LOGGER.error(
+            "Error checking for migrations on due to InterruptedException " + e.getMessage());
         throw new RuntimeException(e);
       } catch (ExecutionException e) {
         schemaInfo.setAvailable(false);
@@ -447,6 +450,9 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
             hibernateMigrationService.checkSchemaForMigrations(dataSource, false);
         String uniqueId = hibernateMigrationService.getUniqueId(dataSource);
         return new CheckResult(toRun, uniqueId);
+      } catch (RuntimeException e) {
+        LOGGER.error("MigrationGlobalTask - call: " + e.getMessage());
+        return null;
       } finally {
         migDataSource.close();
         postMessage(new SimpleMessage(null, new SchemaMessage(Type.CHECKED, schemaId)));
