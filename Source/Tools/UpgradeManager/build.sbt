@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   "commons-io"           % "commons-io"         % "2.6",
   "log4j"                % "log4j"              % "1.2.17",
   "org.slf4j"            % "slf4j-log4j12"      % "1.7.28",
-  "commons-daemon"       % "commons-daemon"     % "1.1.0",
+  "commons-daemon"       % "commons-daemon"     % "1.2.1",
   "commons-codec"        % "commons-codec"      % "1.13"
 )
 
