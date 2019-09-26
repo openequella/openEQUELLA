@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/react": "16.9.3",
-    "@types/react-dom": "16.9.0",
+    "@types/react-dom": "16.9.1",
     "mkdirp": "0.5.1",
     "parcel-bundler": "1.12.2",
     "psc-package": "3.0.1",
