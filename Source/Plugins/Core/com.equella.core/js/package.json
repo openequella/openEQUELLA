@@ -84,7 +84,7 @@
     "@types/uuid": "3.4.4",
     "argparse": "1.0.10",
     "combined-stream2": "1.1.2",
-    "cross-env": "5.2.0",
+    "cross-env": "5.2.1",
     "cross-spawn": "6.0.5",
     "css-vars-ponyfill": "1.17.2",
     "envify": "4.1.0",
