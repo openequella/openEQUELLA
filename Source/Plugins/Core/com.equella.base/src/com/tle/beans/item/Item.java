@@ -92,6 +92,10 @@ public class Item implements Serializable, IdCloneable, FieldEquality<Item>, IIt
   @Column(length = 255, nullable = false)
   private String owner;
 
+  @Type(type = "blankable")
+  @Column(length = 255, nullable = true, name = "last_owner")
+  private String lastOwner;
+
   @XStreamOmitField
   @SuppressWarnings("unused")
   private transient Set<String> usersNotified;
@@ -262,6 +266,14 @@ public class Item implements Serializable, IdCloneable, FieldEquality<Item>, IIt
 
   public void setOwner(String owner) {
     this.owner = owner;
+  }
+
+  public String getLastOwner() {
+    return lastOwner;
+  }
+
+  public void setLastOwner(String lastOwner) {
+    this.lastOwner = lastOwner;
   }
 
   public List<Pair<LanguageBundle, LanguageBundle>> getSearchDetails() {

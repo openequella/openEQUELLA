@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.ump.UserManagementSettings;
+import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.Check;
 import com.tle.common.Triple;
 import com.tle.common.institution.CurrentInstitution;
@@ -65,6 +66,7 @@ import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.TokenException;
@@ -122,9 +124,31 @@ public class UserServiceImpl
   @Inject private PluginTracker<UserDirectory> umpTracker;
   @Inject private PluginTracker<UserManagementLogonFilter> logonFilterTracker;
 
+  @Inject private UserInfoBackupDao userInfoBackupDao;
+
   @Inject(optional = true)
   @Named("userService.useXForwardedFor")
   private boolean useXForwardedFor;
+
+  @Override
+  public UserInfoBackup findUserInfoBackup(String username) {
+    return userInfoBackupDao.findUserInfoBackup(username);
+  }
+
+  @Override
+  public void saveUserInfoBackup(UserBean userBean) {
+    String username = userBean.getUsername();
+    UserInfoBackup userInfoBackup = findUserInfoBackup(username);
+    if (userInfoBackup == null) {
+      userInfoBackup = new UserInfoBackup();
+      userInfoBackup.setUsername(username);
+      userInfoBackup.setInstitution_id(CurrentInstitution.get().getUniqueId());
+    }
+    userInfoBackup.setLastName(userBean.getLastName());
+    userInfoBackup.setFirstName(userBean.getFirstName());
+    userInfoBackup.setEmailAddress(userBean.getEmailAddress());
+    userInfoBackupDao.saveOrUpdate(userInfoBackup);
+  }
 
   @Override
   public UserState login(
@@ -456,6 +480,11 @@ public class UserServiceImpl
     eventService.publishApplicationEvent(new UserSessionLoginEvent(userState));
     if (forceSession) {
       userSessionService.forceSession();
+    }
+
+    // Also record or update user's details in the backup table
+    if (!userState.isGuest()) {
+      saveUserInfoBackup(userState.getUserBean());
     }
   }
 

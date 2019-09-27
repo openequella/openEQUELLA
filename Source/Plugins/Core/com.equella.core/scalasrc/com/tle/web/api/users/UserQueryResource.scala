@@ -91,4 +91,11 @@ class UserQueryResource {
       case _                             => Iterable()
     }
   }
+
+  @GET
+  @Path("userinfobackup")
+  def getUserInfoBackup(@QueryParam("username") username: String) = {
+    val userService = LegacyGuice.userService
+    userService.findUserInfoBackup(username)
+  }
 }
