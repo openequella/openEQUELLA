@@ -94,8 +94,8 @@ class UserQueryResource {
 
   @GET
   @Path("userinfobackup")
-  def getUserInfoBackup(@QueryParam("username") username: String) = {
+  def getUserInfoBackup(@QueryParam("uniqueId") uniqueId: String) = {
     val userService = LegacyGuice.userService
-    userService.findUserInfoBackup(username)
+    userService.findUserInfoBackup(uniqueId)
   }
 }

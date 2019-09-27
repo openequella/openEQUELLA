@@ -12,7 +12,7 @@ import org.hibernate.annotations.AccessType;
 
 @Entity
 @AccessType("field")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "institution_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "institutionId"})})
 public class UserInfoBackup implements UserBean {
   private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,10 @@ public class UserInfoBackup implements UserBean {
   @Column private String emailAddress;
 
   @Column(nullable = false)
-  private long institution_id;
+  private long institutionId;
+
+  @Column(nullable = false)
+  private String uniqueId;
 
   public void setUsername(String username) {
     this.username = username;
@@ -48,8 +51,12 @@ public class UserInfoBackup implements UserBean {
     this.emailAddress = emailAddress;
   }
 
-  public void setInstitution_id(long institution_id) {
-    this.institution_id = institution_id;
+  public void setInstitution_id(long institutionId) {
+    this.institutionId = institutionId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
   @Override
@@ -74,6 +81,6 @@ public class UserInfoBackup implements UserBean {
 
   @Override
   public String getUniqueID() {
-    return String.valueOf(id);
+    return uniqueId;
   }
 }

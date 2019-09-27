@@ -137,11 +137,12 @@ public class UserServiceImpl
 
   @Override
   public void saveUserInfoBackup(UserBean userBean) {
-    String username = userBean.getUsername();
-    UserInfoBackup userInfoBackup = findUserInfoBackup(username);
+    String userUniqueId = userBean.getUniqueID();
+    UserInfoBackup userInfoBackup = findUserInfoBackup(userUniqueId);
     if (userInfoBackup == null) {
       userInfoBackup = new UserInfoBackup();
-      userInfoBackup.setUsername(username);
+      userInfoBackup.setUniqueId(userBean.getUniqueID());
+      userInfoBackup.setUsername(userBean.getUsername());
       userInfoBackup.setInstitution_id(CurrentInstitution.get().getUniqueId());
     }
     userInfoBackup.setLastName(userBean.getLastName());

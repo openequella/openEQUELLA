@@ -20,7 +20,7 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
   }
 
   @Override
-  public UserInfoBackup findUserInfoBackup(String username) {
+  public UserInfoBackup findUserInfoBackup(String uniqueId) {
     return (UserInfoBackup)
         getHibernateTemplate()
             .execute(
@@ -29,9 +29,9 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "FROM UserInfoBackup WHERE LOWER(username) = :username AND institution_id = :institution_id");
-                    query.setParameter("username", username.toLowerCase());
-                    query.setParameter("institution_id", CurrentInstitution.get().getUniqueId());
+                            "FROM UserInfoBackup WHERE LOWER(uniqueId) = :uniqueId AND institution_id = :institutionId");
+                    query.setParameter("uniqueId", uniqueId.toLowerCase());
+                    query.setParameter("institutionId", CurrentInstitution.get().getUniqueId());
                     return query.uniqueResult();
                   }
                 });

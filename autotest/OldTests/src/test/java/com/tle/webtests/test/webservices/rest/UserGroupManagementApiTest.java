@@ -42,6 +42,7 @@ public class UserGroupManagementApiTest extends AbstractRestApiTest {
   private static final String AUTOTEST_EMAIL = "auto@test.com";
   private static final String AUTOTEST_USER_UUID = "adfcaf58-241b-4eca-9740-6a26d1c3dd58";
   private static final String TOKENUSER_LOGON = "tokenuser";
+  private static final String UNIQUE_ID = "uniqueId";
   private static final String USER_NAME = "username";
   private static final String LAST_NAME = "lastName";
   private static final String FIRST_NAME = "firstName";
@@ -62,7 +63,7 @@ public class UserGroupManagementApiTest extends AbstractRestApiTest {
   public void userInfoBackupTest() throws IOException {
     JsonNode userResult =
         getEntity(
-            context.getBaseUrl() + API_PATH_USER_INFO_BACKUP, null, USER_NAME, AUTOTEST_LOGON);
+            context.getBaseUrl() + API_PATH_USER_INFO_BACKUP, null, UNIQUE_ID, AUTOTEST_USER_UUID);
     String username = userResult.get(USER_NAME).asText();
     assertEquals(username, AUTOTEST_LOGON);
     String lastName = userResult.get(LAST_NAME).asText();
