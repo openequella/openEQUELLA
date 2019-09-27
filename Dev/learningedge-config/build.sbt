@@ -45,10 +45,11 @@ prepareDevConfig := {
   imc.setProperty("imageMagick.path", imPath)
   imc.save(baseDir / "plugins/com.tle.core.imagemagick/config.properties")
 
-  val vic = new PropertiesConfiguration()
-  vic.load(installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties.unresolved")
-  vic.setProperty("audit.level", auditLevel)
-  vic.save(baseDir / "plugins/com.tle.web.viewitem/mandatory.properties")
+  val viewItemConfiguration = new PropertiesConfiguration()
+  viewItemConfiguration.load(
+    installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties.unresolved")
+  viewItemConfiguration.setProperty("audit.level", auditLevel)
+  viewItemConfiguration.save(baseDir / "plugins/com.tle.web.viewitem/mandatory.properties")
 
   val log = streams.value.log
   log.info(s"Dev configuration with admin url of '$adminurl'")
