@@ -325,7 +325,7 @@ public class HibernateMigrationService {
     try {
       return ((SchemaId) session.createQuery("from SchemaId").uniqueResult()).getUuid();
     } catch (Exception e) {
-      return null;
+      throw new RuntimeException("getUniqueId failed");
     } finally {
       session.close();
     }

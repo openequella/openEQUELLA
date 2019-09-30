@@ -451,7 +451,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
         String uniqueId = hibernateMigrationService.getUniqueId(dataSource);
         return new CheckResult(toRun, uniqueId);
       } catch (RuntimeException e) {
-        LOGGER.error("MigrationGlobalTask - call: " + e.getMessage());
+        LOGGER.error("MigrationGlobalTask - call: " + e.getMessage() + ", " + e.getCause(), e);
         return null;
       } finally {
         migDataSource.close();
