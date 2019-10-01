@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MigrationDataSource implements DataSource {
   private Future<Connection> futureConnection;
@@ -40,6 +42,7 @@ public class MigrationDataSource implements DataSource {
   private String url;
   private String username;
   private String password;
+  private static final Log LOGGER = LogFactory.getLog(MigrationDataSource.class);
 
   public MigrationDataSource(String url, String username, String password) {
     this.url = url;
@@ -93,10 +96,13 @@ public class MigrationDataSource implements DataSource {
       try {
         connection = new MigrationConnection(futureConnection.get(15, TimeUnit.SECONDS));
       } catch (InterruptedException e) {
+        LOGGER.error("database InterruptedException error: ", e);
         throw new RuntimeException(e);
       } catch (ExecutionException e) {
+        LOGGER.error("database ExecutionException error: ", e);
         throw (SQLException) e.getCause();
       } catch (TimeoutException e) {
+        LOGGER.error("database TimeoutException error: ", e);
         throw new SQLException(e);
       }
     }
