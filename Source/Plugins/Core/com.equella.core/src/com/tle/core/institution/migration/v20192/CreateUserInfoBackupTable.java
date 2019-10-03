@@ -30,6 +30,8 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class CreateUserInfoBackupTable extends AbstractCreateMigration {
+  private final String Table_NAME = "user_info_backup";
+
   @Override
   public MigrationInfo createMigrationInfo() {
     return new MigrationInfo("com.tle.core.entity.services.migration.v20192.unknownuser.alluser");
@@ -37,7 +39,7 @@ public class CreateUserInfoBackupTable extends AbstractCreateMigration {
 
   @Override
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
-    return new TablesOnlyFilter("user_info_backup");
+    return new TablesOnlyFilter(Table_NAME);
   }
 
   @Override

@@ -86,10 +86,10 @@ public interface UserService extends RemoteUserService {
   // Only for autologin settings
   void refreshSettings();
 
-  /** This really is just for debugging. */
-  String convertUserStateToString(UserState us);
-
   UserInfoBackup findUserInfoBackup(String username);
 
   void saveUserInfoBackup(UserBean userBean);
+
+  /** This really is just for debugging. */
+  String convertUserStateToString(UserState us);
 }
