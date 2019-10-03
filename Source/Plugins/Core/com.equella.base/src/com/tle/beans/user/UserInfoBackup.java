@@ -28,6 +28,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.AccessType;
 
+/**
+ * The background of adding this class is the feature of 'last known user'. This class maps the
+ * table 'user_info_backup' which stores details of users who at least have login once, such as
+ * their unique IDs, given names and surnames.
+ */
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "institutionId"})})

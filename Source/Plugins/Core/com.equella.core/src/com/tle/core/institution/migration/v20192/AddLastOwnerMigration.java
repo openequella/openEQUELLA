@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution.migration.v65;
+package com.tle.core.institution.migration.v20192;
 
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
@@ -39,7 +39,7 @@ import org.hibernate.classic.Session;
 public class AddLastOwnerMigration extends AbstractHibernateSchemaMigration {
   @Override
   public MigrationInfo createMigrationInfo() {
-    return new MigrationInfo("com.tle.core.entity.services.migration.v65.unknownuser.lastowner");
+    return new MigrationInfo("com.tle.core.entity.services.migration.v20192.unknownuser.lastowner");
   }
 
   @Override

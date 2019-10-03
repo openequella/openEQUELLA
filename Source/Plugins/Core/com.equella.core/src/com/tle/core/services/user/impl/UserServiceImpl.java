@@ -55,6 +55,7 @@ import com.tle.core.events.UserSessionLogoutEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UMPChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.events.listeners.UserSessionLoginListener;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
@@ -105,7 +106,8 @@ public class UserServiceImpl
         UMPChangedListener,
         UserChangeListener,
         GroupChangedListener,
-        UserSessionLogoutListener {
+        UserSessionLogoutListener,
+        UserSessionLoginListener {
   private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class);
 
   /** Retrieves the last IP address in a possibly comma-separated list of them. */
@@ -482,8 +484,12 @@ public class UserServiceImpl
     if (forceSession) {
       userSessionService.forceSession();
     }
+  }
 
-    // Also record or update user's details in the backup table
+  // Let UserService listen to UserSessionLoginEvent and record user's details in here
+  @Override
+  public void userSessionCreatedEvent(UserSessionLoginEvent event) {
+    UserState userState = event.getUserState();
     if (!userState.isGuest()) {
       saveUserInfoBackup(userState.getUserBean());
     }

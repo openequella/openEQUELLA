@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution.migration.v65;
+package com.tle.core.institution.migration.v20192;
 
 import com.tle.beans.user.UserInfoBackup;
 import com.tle.core.guice.Bind;
@@ -32,7 +32,7 @@ import javax.inject.Singleton;
 public class CreateUserInfoBackupTable extends AbstractCreateMigration {
   @Override
   public MigrationInfo createMigrationInfo() {
-    return new MigrationInfo("com.tle.core.entity.services.migration.v65.unknownuser.alluser");
+    return new MigrationInfo("com.tle.core.entity.services.migration.v20192.unknownuser.alluser");
   }
 
   @Override
