@@ -8,6 +8,7 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
+import com.tle.webtests.pageobject.viewitem.ItemDetailsPage;
 import com.tle.webtests.pageobject.viewitem.PackageViewer;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
@@ -84,5 +85,24 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     summary = session.homeExactSearch(fullName).viewFromTitle(fullName);
     pv = summary.attachments().viewFullscreen();
     assertFalse(pv.hasTitle());
+  }
+
+  @Test
+  public void testViewCount() {
+    logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
+
+    WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION2);
+    String fullName = context.getFullName("view count");
+    wizard.editbox(1, fullName);
+    wizard = wizard.next();
+    SummaryPage summary = wizard.save().publish();
+
+    ItemDetailsPage details = summary.itemDetails();
+    assertEquals(details.getViewCount(), 1, "Incorrect view count");
+
+    // reload page...
+    context.getDriver().navigate().refresh();
+    details = new SummaryPage(context).get().itemDetails();
+    assertEquals(details.getViewCount(), 2, "Incorrect view count");
   }
 }
