@@ -21,9 +21,10 @@ prepareDevConfig := {
 
   IO.copy(fromInstaller ++ fromDefaults, CopyOptions().withOverwrite(false))
 
-  val port     = bc.getInt("port")
-  val hostname = bc.getString("hostname")
-  val imPath   = bc.getString("imagemagick")
+  val port       = bc.getInt("port")
+  val hostname   = bc.getString("hostname")
+  val imPath     = bc.getString("imagemagick")
+  var auditLevel = if (bc.hasPath("audit.level")) bc.getString("audit.level") else "NONE"
   val adminurl =
     if (bc.hasPath("adminurl")) bc.getString("adminurl") else s"http://$hostname:$port/"
   val mc = new PropertiesConfiguration()
@@ -43,6 +44,12 @@ prepareDevConfig := {
   imc.load(installerConfig / "plugins/com.tle.core.imagemagick/config.properties.unresolved")
   imc.setProperty("imageMagick.path", imPath)
   imc.save(baseDir / "plugins/com.tle.core.imagemagick/config.properties")
+
+  val viewItemConfiguration = new PropertiesConfiguration()
+  viewItemConfiguration.load(
+    installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties.unresolved")
+  viewItemConfiguration.setProperty("audit.level", auditLevel)
+  viewItemConfiguration.save(baseDir / "plugins/com.tle.web.viewitem/mandatory.properties")
 
   val log = streams.value.log
   log.info(s"Dev configuration with admin url of '$adminurl'")
