@@ -62,7 +62,8 @@ installOptions := {
     dbport = db.getInt("port"),
     dbhost = db.getString("host"),
     dbuser = db.getString("user"),
-    dbpassword = db.getString("password")
+    dbpassword = db.getString("password"),
+    auditLevel = ic.getString("auditLevel")
   )
 }
 

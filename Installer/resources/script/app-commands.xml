@@ -162,6 +162,13 @@
 	<command class="delete">
 		<source uri="${install.path}/learningedge-config/plugins/com.tle.core.imagemagick/config.properties.unresolved" />
 	</command>
+  <command class="resolver">
+    <source uri="${install.path}/learningedge-config/plugins/com.tle.web.viewitem/mandatory.properties.unresolved" />
+    <destination uri="${install.path}/learningedge-config/plugins/com.tle.web.viewitem/mandatory.properties" />
+  </command>
+  <command class="delete">
+    <source uri="${install.path}/learningedge-config/plugins/com.tle.web.viewitem/mandatory.properties.unresolved" />
+  </command>
 
 	<!-- Copy over the conversion service ${installer/local} -->
 	<command class="copy" platform="win32">
