@@ -31,6 +31,7 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ViewAuditEntry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,15 +60,21 @@ public class ViewItemAuditor {
     }
   }
 
-  public void audit(ViewAuditEntry auditEntry, ItemKey itemId, Attachment attachment) {
-    audit(auditEntry, itemId, () -> logViewed(itemId, attachment, auditEntry));
+  public void audit(
+      HttpServletRequest request,
+      ViewAuditEntry auditEntry,
+      ItemKey itemId,
+      Attachment attachment) {
+    audit(request, auditEntry, itemId, () -> logViewed(itemId, attachment, auditEntry));
   }
 
-  public void audit(ViewAuditEntry auditEntry, ViewableItem<Item> vitem) {
-    audit(auditEntry, vitem.getItemId(), () -> logViewed(vitem, auditEntry));
+  public void audit(
+      HttpServletRequest request, ViewAuditEntry auditEntry, ViewableItem<Item> vitem) {
+    audit(request, auditEntry, vitem.getItemId(), () -> logViewed(vitem, auditEntry));
   }
 
-  public void audit(ViewAuditEntry auditEntry, ItemKey itemId, AuditCall doAudit) {
+  public void audit(
+      HttpServletRequest request, ViewAuditEntry auditEntry, ItemKey itemId, AuditCall doAudit) {
     if (auditLevel != AuditLevel.NONE && auditEntry != null) {
       try {
         if (auditLevel == AuditLevel.NORMAL) {
@@ -76,7 +83,13 @@ public class ViewItemAuditor {
           // log it if it hasn't been already
           if (!isAlreadyViewed(itemId, auditEntry)) {
             doAudit.call();
-            registerViewed(itemId, auditEntry);
+            // For HEAD and OPTION requests, don't record that we have already viewed.
+            // That way, if a follow up GET request is issued, we will record that too, along with
+            // the referrer header.
+            final String method = request.getMethod();
+            if (!"OPTIONS".equals(method) && !"HEAD".equals(method)) {
+              registerViewed(itemId, auditEntry);
+            }
           }
         }
       } catch (Exception e) {
