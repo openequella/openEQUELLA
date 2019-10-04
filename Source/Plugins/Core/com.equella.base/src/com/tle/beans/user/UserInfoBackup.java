@@ -35,7 +35,11 @@ import org.hibernate.annotations.AccessType;
  */
 @Entity
 @AccessType("field")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "institutionId"})})
+@Table(
+    uniqueConstraints = {
+      @UniqueConstraint(columnNames = {"username", "institutionId"}),
+      @UniqueConstraint(columnNames = {"uniqueId", "institutionId"})
+    })
 public class UserInfoBackup implements UserBean {
   private static final long serialVersionUID = 1L;
 

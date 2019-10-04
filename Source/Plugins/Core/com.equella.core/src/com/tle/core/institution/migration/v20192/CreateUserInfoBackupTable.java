@@ -30,7 +30,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class CreateUserInfoBackupTable extends AbstractCreateMigration {
-  private final String Table_NAME = "user_info_backup";
+  private final String TABLE_NAME = "user_info_backup";
 
   @Override
   public MigrationInfo createMigrationInfo() {
@@ -39,7 +39,7 @@ public class CreateUserInfoBackupTable extends AbstractCreateMigration {
 
   @Override
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
-    return new TablesOnlyFilter(Table_NAME);
+    return new TablesOnlyFilter(TABLE_NAME);
   }
 
   @Override
