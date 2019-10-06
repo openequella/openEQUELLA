@@ -4734,7 +4734,9 @@
     <parameter id="bean" value="bean:com.tle.core.freetext.SecurityExtension" />
   </extension>
   <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners_2_2_3">
+    <parameter id="listener" value="bean:com.tle.core.services.user.UserService" />
     <parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
+    <parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLoginListener" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webFilter" id="threadLocalFilter">
     <parameter id="bean" value="bean:com.tle.web.core.filter.ThreadLocalFilter" />
@@ -5131,6 +5133,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v63.AddThumbColumnMigration" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v63.AddThumbColumnMigration" />
     <parameter id="date" value="2014-05-23" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddLastOwnerMigration">
+    <parameter id="id" value="com.tle.core.institution.migration.v20192.AddLastOwnerMigration" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.AddLastOwnerMigration" />
+    <parameter id="date" value="2019-09-17" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="increaseThumbnailColumnMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v64.IncreaseThumbnailLength" />
@@ -5876,6 +5883,7 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
     <parameter id="class" value="com.tle.beans.user.TLEUser" />
     <parameter id="class" value="com.tle.beans.user.TLEGroup" />
+    <parameter id="class" value="com.tle.beans.user.UserInfoBackup" />
   </extension>
   <extension plugin-id="com.tle.core.usermanagement" point-id="userManager" id="ldap">
     <parameter id="class" value="bean:com.tle.core.usermanagement.standard.LDAPUserPlugin" />
@@ -6003,6 +6011,11 @@
     <parameter id="id" value="com.tle.core.integration.migration.CreateLogTable" />
     <parameter id="bean" value="bean:com.tle.core.integration.migration.CreateLogTable" />
     <parameter id="date" value="2010-12-08" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateUserInfoBackupTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20192.CreateUserInfoBackupTable" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.CreateUserInfoBackupTable" />
+    <parameter id="date" value="2019-09-25" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

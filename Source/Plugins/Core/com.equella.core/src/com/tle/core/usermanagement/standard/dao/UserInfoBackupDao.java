@@ -16,30 +16,11 @@
  * limitations under the License.
  */
 
-package com.tle.core.item.standard.operations;
+package com.tle.core.usermanagement.standard.dao;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.tle.beans.user.UserInfoBackup;
+import com.tle.core.hibernate.dao.GenericDao;
 
-/** @author jmaginnis */
-// Sonar maintains that 'Class cannot be instantiated and does not provide any
-// static methods or fields', but methinks thats bunkum
-public class UserDeletedOperation extends AbstractStandardWorkflowOperation // NOSONAR
-{
-  private final String user;
-
-  @AssistedInject
-  private UserDeletedOperation(@Assisted String user) {
-    this.user = user;
-  }
-
-  @Override
-  public boolean execute() {
-    if (isOwner(user)) {
-      setOwner("");
-      setLastOwner(user);
-    }
-    getItem().getCollaborators().remove(user);
-    return true;
-  }
+public interface UserInfoBackupDao extends GenericDao<UserInfoBackup, Long> {
+  UserInfoBackup findUserInfoBackup(String uniqueId);
 }

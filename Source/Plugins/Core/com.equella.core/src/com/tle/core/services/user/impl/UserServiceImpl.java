@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.ump.UserManagementSettings;
+import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.Check;
 import com.tle.common.Triple;
 import com.tle.common.institution.CurrentInstitution;
@@ -54,6 +55,7 @@ import com.tle.core.events.UserSessionLogoutEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UMPChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.events.listeners.UserSessionLoginListener;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
@@ -65,6 +67,7 @@ import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.TokenException;
@@ -103,7 +106,8 @@ public class UserServiceImpl
         UMPChangedListener,
         UserChangeListener,
         GroupChangedListener,
-        UserSessionLogoutListener {
+        UserSessionLogoutListener,
+        UserSessionLoginListener {
   private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class);
 
   /** Retrieves the last IP address in a possibly comma-separated list of them. */
@@ -122,9 +126,32 @@ public class UserServiceImpl
   @Inject private PluginTracker<UserDirectory> umpTracker;
   @Inject private PluginTracker<UserManagementLogonFilter> logonFilterTracker;
 
+  @Inject private UserInfoBackupDao userInfoBackupDao;
+
   @Inject(optional = true)
   @Named("userService.useXForwardedFor")
   private boolean useXForwardedFor;
+
+  @Override
+  public UserInfoBackup findUserInfoBackup(String username) {
+    return userInfoBackupDao.findUserInfoBackup(username);
+  }
+
+  @Override
+  public void saveUserInfoBackup(UserBean userBean) {
+    String userUniqueId = userBean.getUniqueID();
+    UserInfoBackup userInfoBackup = findUserInfoBackup(userUniqueId);
+    if (userInfoBackup == null) {
+      userInfoBackup = new UserInfoBackup();
+      userInfoBackup.setUniqueId(userBean.getUniqueID());
+      userInfoBackup.setUsername(userBean.getUsername());
+      userInfoBackup.setInstitution_id(CurrentInstitution.get().getUniqueId());
+    }
+    userInfoBackup.setLastName(userBean.getLastName());
+    userInfoBackup.setFirstName(userBean.getFirstName());
+    userInfoBackup.setEmailAddress(userBean.getEmailAddress());
+    userInfoBackupDao.saveOrUpdate(userInfoBackup);
+  }
 
   @Override
   public UserState login(
@@ -456,6 +483,15 @@ public class UserServiceImpl
     eventService.publishApplicationEvent(new UserSessionLoginEvent(userState));
     if (forceSession) {
       userSessionService.forceSession();
+    }
+  }
+
+  // Let UserService listen to UserSessionLoginEvent and record user's details in here
+  @Override
+  public void userSessionCreatedEvent(UserSessionLoginEvent event) {
+    UserState userState = event.getUserState();
+    if (!userState.isGuest()) {
+      saveUserInfoBackup(userState.getUserBean());
     }
   }
 

@@ -18,8 +18,10 @@
 
 package com.tle.core.services.user;
 
+import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
@@ -83,6 +85,10 @@ public interface UserService extends RemoteUserService {
 
   // Only for autologin settings
   void refreshSettings();
+
+  UserInfoBackup findUserInfoBackup(String username);
+
+  void saveUserInfoBackup(UserBean userBean);
 
   /** This really is just for debugging. */
   String convertUserStateToString(UserState us);
