@@ -18,6 +18,7 @@
 
 package com.tle.web.viewitem.summary.section;
 
+import com.rometools.utils.Strings;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.item.Item;
@@ -93,7 +94,12 @@ public abstract class AbstractItemDetailsSection<
     final ItemDetailsModel model = getModel(context);
 
     if (!summaryConfig.isHideOwner()) {
-      model.setOwnerLink(userLinkSection.createLink(context, item.getOwner()));
+      String owner = item.getOwner();
+      String lastOwner = item.getLastOwner();
+      if (Strings.isEmpty(owner) && !Strings.isEmpty(lastOwner)) {
+        owner = lastOwner;
+      }
+      model.setOwnerLink(userLinkSection.createLink(context, owner, null, true));
     }
 
     if (!summaryConfig.isHideCollaborators()) {
