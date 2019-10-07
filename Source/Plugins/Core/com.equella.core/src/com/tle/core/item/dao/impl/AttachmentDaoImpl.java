@@ -29,6 +29,8 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.item.dao.AttachmentDao;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 
@@ -43,20 +45,32 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
   @Override
   @SuppressWarnings("unchecked")
   public List<Attachment> findByMd5Sum(
-      final String md5Sum, ItemDefinition collection, boolean ignoreDeletedRejectedSuspenedItems) {
-    String hql =
-        "SELECT a FROM Item i LEFT JOIN i.attachments a WHERE a.md5sum = :md5sum"
-            + " AND i.itemDefinition = :collection AND i.institution = :institution";
-    if (ignoreDeletedRejectedSuspenedItems) {
-      hql += " AND i.status NOT IN ('REJECTED', 'SUSPENDED', 'DELETED')";
-    }
+      final String md5Sum,
+      ItemDefinition collection,
+      boolean ignoreDeletedRejectedSuspenedItems,
+      String excludedItemUuid) {
+    String[] names = new String[] {"md5sum", "collection", "institution"};
+    Object[] values = new Object[] {md5Sum, collection, CurrentInstitution.get()};
+    List<String> nameList = new ArrayList<String>(Arrays.asList(names));
+    List<Object> valueList = new ArrayList<Object>(Arrays.asList(values));
 
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT a FROM Item i LEFT JOIN i.attachments a WHERE a.md5sum = :md5sum");
+    query.append(" AND i.itemDefinition = :collection AND i.institution = :institution");
+    if (ignoreDeletedRejectedSuspenedItems) {
+      query.append(" AND i.status NOT IN ('REJECTED', 'SUSPENDED', 'DELETED')");
+    }
+    if (excludedItemUuid != null) {
+      query.append(" AND i.uuid != :excludedItemUuid");
+      nameList.add("excludedItemUuid");
+      valueList.add(excludedItemUuid);
+    }
     List<Attachment> attachments =
         getHibernateTemplate()
             .findByNamedParam(
-                hql,
-                new String[] {"md5sum", "collection", "institution"},
-                new Object[] {md5Sum, collection, CurrentInstitution.get()});
+                query.toString(),
+                nameList.toArray(new String[nameList.size()]),
+                valueList.toArray());
 
     return attachments;
   }

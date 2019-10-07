@@ -102,7 +102,7 @@ public class QuickUploadServiceImpl implements QuickUploadService {
       try {
         FileInfo fileInfo = fileSystemService.write(staging, filename, inputStream, false, true);
         List<Attachment> attachs =
-            attachmentDao.findByMd5Sum(fileInfo.getMd5CheckSum(), collection, true);
+            attachmentDao.findByMd5Sum(fileInfo.getMd5CheckSum(), collection, true, null);
         Pair<ItemId, Attachment> attInfo;
 
         if (!attachs.isEmpty()) {

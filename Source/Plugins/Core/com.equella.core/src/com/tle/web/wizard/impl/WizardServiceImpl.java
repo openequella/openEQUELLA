@@ -766,11 +766,10 @@ public class WizardServiceImpl
   @Override
   public void checkFileAttachmentDuplicate(WizardState state, String fileName, String fileUuid) {
     try {
-      String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      final String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      final String excludeItemUuid = state.getItemId().getUuid();
       List<Attachment> duplicateFileAttachments =
-          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true);
-      // Exclude the file itself if it has been published.
-      duplicateFileAttachments.removeIf(attachment -> attachment.getUuid().equals(fileUuid));
+          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true, excludeItemUuid);
       if (duplicateFileAttachments.size() > 0) {
         List<ItemId> list =
             duplicateFileAttachments.stream()
