@@ -66,7 +66,7 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
   @PlugKey("userlink.systemuser")
   private static Label LABEL_SYSTEMUSER;
 
-  @PlugKey("userlabel.lastownersuffix")
+  @PlugKey("userlink.lastownersuffix")
   private static Label LAST_OWNER_SUFFIX;
 
   private static String KEY_IMPERSONATEDBY = "userlink.impersonatedby";

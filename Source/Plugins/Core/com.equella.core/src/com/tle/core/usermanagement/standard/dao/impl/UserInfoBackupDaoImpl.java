@@ -24,6 +24,7 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
+import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -58,5 +59,26 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
   @Override
   public void saveOrUpdate(UserInfoBackup entity) {
     super.saveOrUpdate(entity);
+  }
+
+  @Override
+  public List<UserInfoBackup> getAllInfo() {
+    return getHibernateTemplate()
+        .find(
+            "from UserInfoBackup where institution_id = ?", CurrentInstitution.get().getUniqueId());
+  }
+
+  @Override
+  public void deleteAllInfo() {
+    getHibernateTemplate()
+        .execute(
+            session -> {
+              Query query =
+                  session.createQuery(
+                      "delete from UserInfoBackup where institution_id = :institutionId");
+              query.setParameter("institutionId", CurrentInstitution.get().getUniqueId());
+              query.executeUpdate();
+              return null;
+            });
   }
 }
