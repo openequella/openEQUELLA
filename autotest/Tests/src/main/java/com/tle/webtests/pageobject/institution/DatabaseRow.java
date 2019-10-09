@@ -6,6 +6,7 @@ import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -52,13 +53,18 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
   }
 
   public void waitForCheck() {
-    waiter.until(
-        new Function<WebDriver, Boolean>() {
-          @Override
-          public Boolean apply(WebDriver driver) {
-            return !isChecking();
-          }
-        });
+    try {
+      waiter.until(
+          new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+              return !isChecking();
+            }
+          });
+    } catch (TimeoutException timeoutException) {
+      rowElement.findElement(EBy.buttonText("Reload database state")).click();
+      System.err.println("try to reload database due to : " + timeoutException.getMessage());
+    }
   }
 
   public void waitForMigrate() {

@@ -118,6 +118,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
       MigrationMessage migMessage = msg.getContents();
       switch (migMessage.getType()) {
         case CHECKED:
+          LOGGER.info("processChecked :" + migMessage);
           processChecked((SchemaMessage) migMessage);
           break;
         case ERRORREPORT:
@@ -168,6 +169,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
       Future<CheckResult> future = callable.getFuture();
       if (future == null) {
         callable.submit(checkExecutor);
+        LOGGER.error("not future is found.");
         return;
       }
       schemaInfo.setChecking(false);
@@ -217,6 +219,8 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
         schemaInfo.setErrorMessage(getStackTrace(cause));
         LOGGER.error("Error checking for migrations on schema " + dbSchema, cause);
       }
+    } else {
+      LOGGER.error("not callable is found.");
     }
   }
 
