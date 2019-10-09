@@ -23,6 +23,7 @@ val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
 val sttpVersion      = "1.6.4"
 val fs2Version       = "1.0.5"
+val jsassVersion     = "5.3.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -47,6 +48,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core"     % "jackson-databind"               % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
+  "io.bit3"                        % "jsass"                          % jsassVersion,
   "com.flickr4java"                % "flickr4java"                    % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
@@ -229,7 +231,8 @@ libraryDependencies ++= Seq(
   "org.mozilla"            % "rhino"                     % "1.7R4",
   "io.lemonlabs"           %% "scala-uri"                % "1.4.9",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-  "io.github.classgraph"   % "classgraph"                % "4.8.41"
+  "io.github.classgraph"   % "classgraph"                % "4.8.41",
+  "io.bit3"                % "jsass"                     % "5.3.0"
 )
 
 dependencyOverrides += "javax.mail" % "mail" % "1.4.7"

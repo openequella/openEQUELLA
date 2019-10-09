@@ -23,6 +23,7 @@ import com.tle.web.api.newuitheme.impl.NewUITheme;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 
 public interface ThemeSettingsService {
 
@@ -30,11 +31,15 @@ public interface ThemeSettingsService {
 
   InputStream getCustomLogo() throws IOException;
 
-  void setTheme(NewUITheme theme) throws JsonProcessingException;
+  void setTheme(NewUITheme theme) throws JsonProcessingException, IOException;
 
   void setLogo(File logoFile) throws IOException;
 
   boolean isCustomLogo();
 
   void deleteLogo();
+
+  InputStream compileSass() throws IOException, URISyntaxException;
+
+  InputStream getLegacyCss() throws IOException;
 }

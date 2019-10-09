@@ -21,7 +21,9 @@ package com.tle.core.settings.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.CustomisationFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
@@ -30,11 +32,15 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.settings.service.ThemeSettingsService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
+import io.bit3.jsass.Compiler;
+import io.bit3.jsass.Options;
+import io.bit3.jsass.Output;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Collections;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +52,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   @Inject TLEAclManager tleAclManager;
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
+  @Inject private StagingService stagingService;
 
   @Inject
   protected void setObjectMapperService(ObjectMapperService objectMapperService) {
@@ -57,6 +64,9 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
   private static final String LOGO_FILENAME = "newLogo.png";
   private static final String THEME_KEY = "Theme";
+  private static final String SASS_VARS_FILENAME = "variables.scss";
+  private static final String SASS_LEGACY_CSS_FILENAME = "legacy.scss";
+  private static final String LEGACY_CSS_FILENAME = "legacy.css";
 
   @Override
   public NewUITheme getTheme() throws IOException {
@@ -83,8 +93,9 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   }
 
   @Override
-  public void setTheme(NewUITheme theme) throws JsonProcessingException {
+  public void setTheme(NewUITheme theme) throws JsonProcessingException, IOException {
     checkPermissions();
+    compileSass();
     String themeString = themeToJSONString(theme);
     configurationService.setProperty(THEME_KEY, themeString);
   }
@@ -145,5 +156,64 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
     String themeToString = "";
     themeToString = objectMapper.writeValueAsString(theme);
     return themeToString;
+  }
+
+  public String newUIToSass(NewUITheme theme) throws IOException {
+    Map<String, ?> themeVars = objectMapper.readValue(themeToJSONString(theme), Map.class);
+    StringBuilder sassTheme = new StringBuilder();
+
+    themeVars.forEach(
+        (key, value) -> {
+          sassTheme.append("$" + key + " : " + value + ";");
+        });
+
+    return sassTheme.toString();
+  }
+
+  public InputStream getLegacyCss() throws IOException {
+    File baseLegacySass =
+        new File(getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).getFile());
+    File baseLegacyOutput;
+    CustomisationFile customisationFile = new CustomisationFile();
+
+    if (fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME)) {
+      if (baseLegacySass.lastModified()
+          > fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME)) {
+        compileSass();
+      }
+    } else {
+      compileSass();
+    }
+    return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
+  }
+
+  public InputStream compileSass() throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    StagingFile staging = stagingService.createStagingArea();
+
+    InputStream legacyScss =
+        getClass().getResourceAsStream("/web/sass/" + SASS_LEGACY_CSS_FILENAME);
+
+    Compiler compiler = new Compiler();
+    Options options = new Options();
+
+    fileSystemService.write(staging, SASS_LEGACY_CSS_FILENAME, legacyScss, false);
+    fileSystemService.write(
+        staging, SASS_VARS_FILENAME, new StringReader(newUIToSass(getTheme())), false);
+
+    final File dstFile = fileSystemService.getExternalFile(staging, LEGACY_CSS_FILENAME);
+
+    try {
+      Output output =
+          compiler.compileFile(
+              fileSystemService.getExternalFile(staging, SASS_LEGACY_CSS_FILENAME).toURI(),
+              dstFile.toURI(),
+              options);
+      fileSystemService.write(
+          customisationFile, LEGACY_CSS_FILENAME, new StringReader(output.getCss()), false);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return legacyScss;
   }
 }

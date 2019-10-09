@@ -2,6 +2,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
+import { Config } from "../config";
 
 declare global {
   interface Window {
@@ -251,6 +252,15 @@ function updateStylesheets(
   const head = doc.getElementsByTagName("head")[0];
   let current = insertPoint.previousElementSibling;
   const existingSheets = {};
+
+  Axios.get(`${Config.baseUrl}api/theme/legacy.css`, {
+    responseType: "text"
+  }).then(response => {
+    var css = document.createElement("style");
+    css.append(response.data);
+    head.insertBefore(css, insertPoint);
+  });
+
   while (current != null && current.tagName == "LINK") {
     existingSheets[(current as HTMLLinkElement).href] = current;
     current = current.previousElementSibling;
