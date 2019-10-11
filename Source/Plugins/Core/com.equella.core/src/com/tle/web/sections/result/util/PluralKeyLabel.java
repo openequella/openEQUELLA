@@ -20,8 +20,18 @@ package com.tle.web.sections.result.util;
 
 public class PluralKeyLabel extends KeyLabel {
 
-  @SuppressWarnings("nls")
   public PluralKeyLabel(String key, long count) {
     super(key + ((count == 1) ? ".1" : ""), count);
+  }
+
+  public PluralKeyLabel(String key, long count, Object... args) {
+    super(key + ((count == 1) ? ".1" : ""), combineArgs(count, args));
+  }
+
+  private static Object[] combineArgs(long count, Object[] args) {
+    final Object[] newArgs = new Object[1 + args.length];
+    newArgs[0] = count;
+    System.arraycopy(args, 0, newArgs, 1, args.length);
+    return newArgs;
   }
 }
