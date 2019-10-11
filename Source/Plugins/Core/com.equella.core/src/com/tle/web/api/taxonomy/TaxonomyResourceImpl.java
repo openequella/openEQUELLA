@@ -291,17 +291,9 @@ public class TaxonomyResourceImpl
       index = 0;
     }
 
-    try {
-      TermResult termResult =
-          termService.insertTerm(
-              taxonomy, parentTerm, termBean.getUuid(), termBean.getTerm(), index);
-      return Response.created(getTermUrl(taxonomyUuid, termResult.getUuid())).build();
-    } catch (Exception e) {
-      throw new WebException(
-          Status.NOT_ACCEPTABLE.getStatusCode(),
-          Status.NOT_ACCEPTABLE.getReasonPhrase(),
-          e.getMessage());
-    }
+    TermResult termResult =
+        termService.insertTerm(taxonomy, parentTerm, termBean.getUuid(), termBean.getTerm(), index);
+    return Response.created(getTermUrl(taxonomyUuid, termResult.getUuid())).build();
   }
 
   /**
