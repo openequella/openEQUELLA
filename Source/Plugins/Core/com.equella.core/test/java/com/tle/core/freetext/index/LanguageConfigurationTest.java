@@ -11,7 +11,6 @@ public class LanguageConfigurationTest {
   private static final String GERMAN_ANALYSER_PACKAGE =
       "org.apache.lucene.analysis.de.GermanAnalyzer";
   private static final String DEFAULT_ANALYSER_PACKAGE = "com.tle.freetext.TLEAnalyzer";
-  private static final String SEARCH_FIELD = "name_vectored";
 
   @Test
   public void languageConfigurationTest() {
