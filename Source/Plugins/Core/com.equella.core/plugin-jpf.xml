@@ -6046,6 +6046,15 @@
       <parameter id="nameKey" value="institutions.tasks.preferences" />
     </parameter>
   </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="UserInfoBackupConverter">
+    <parameter id="id" value="USERINFOBACKUP" />
+    <parameter id="class" value="bean:com.tle.core.usermanagement.standard.convert.UserInfoBackupConverter" />
+    <parameter id="order" value="660" />
+    <parameter id="selections">
+      <parameter id="id" value="USERINFOBACKUP" />
+      <parameter id="nameKey" value="institutions.tasks.userinfobackup" />
+    </parameter>
+  </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="userConverter">
     <parameter id="id" value="USERS" />
     <parameter id="class" value="bean:com.tle.core.usermanagement.standard.convert.UserConverter" />

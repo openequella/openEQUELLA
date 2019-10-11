@@ -6,6 +6,7 @@ import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
+import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.ItemDetailsPage;
@@ -17,6 +18,7 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
+import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
@@ -30,6 +32,8 @@ public class ItemSummaryTest extends AbstractCleanupTest {
   private static String SHAREDID = "contribute";
   private static String SECRET = "contribute";
   private static String ACTION = "selectOrAdd";
+  private static String LAST_KNOWN_OWNER_NAME = "LastKnown Owner (removed)";
+  private static String LAST_KNOWN_OWNER_ITEM_NAME = "LastKnownOwner Test";
 
   public ItemSummaryTest() {
     setDeleteCredentials(AUTOTEST_LOGON, AUTOTEST_PASSWD);
@@ -55,6 +59,24 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     assertEquals(search.getSelectedWithin(), COLLECTION);
     assertFalse(search.exactQuery(dontFindItem).isResultsAvailable());
     assertTrue(search.exactQuery(summaryItem).isResultsAvailable());
+  }
+
+  @Test
+  public void lastOwnerTest() {
+    logon();
+    SearchPage searchPage = new SearchPage(context).load();
+    ItemListPage itemList = searchPage.resultsPageObject();
+    SummaryPage summaryPage = itemList.getResultForTitle(LAST_KNOWN_OWNER_ITEM_NAME).viewSummary();
+
+    // Check if LAST_KNOWN_OWNER_ITEM_NAME is displayed instead of 'unknown user'
+    By lastKnownOwnerLabel = By.xpath("//span[@title='LastKnownOwner']");
+    String lastOwnerName = context.getDriver().findElement(lastKnownOwnerLabel).getText();
+    assertEquals(lastOwnerName, LAST_KNOWN_OWNER_NAME);
+
+    // Open Moderation History page and check if the user of each event is LAST_KNOWN_OWNER_NAME
+    summaryPage.viewItemModerationHistory();
+    int numberOfLastKnownOwnerLabel = context.getDriver().findElements(lastKnownOwnerLabel).size();
+    assertEquals(numberOfLastKnownOwnerLabel, 3);
   }
 
   @Test
