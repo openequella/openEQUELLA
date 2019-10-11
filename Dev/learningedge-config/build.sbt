@@ -10,8 +10,7 @@ prepareDevConfig := {
   val installerConfig = (baseDirectory in LocalProject("Installer")).value / "data/server/learningedge-config"
   val defaultsDir     = baseDirectory.value / "defaults"
   val fromInstaller = Seq(
-    installerConfig / "hikari.properties",
-    installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties"
+    installerConfig / "hikari.properties"
   ).pair(rebase(installerConfig, baseDir))
   val fromDefaults = Seq(
     "learningedge-log4j.properties",
