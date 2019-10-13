@@ -90,148 +90,148 @@ jobs:
         - ci/s3cp.sh Installer/target/equella-installer*.zip             $S3_DEST_BUILD
         - ci/s3cp.sh target/reference-language-pack.zip                  $S3_DEST_BUILD
         - ci/s3cp.sh target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
-    - stage: build and check
-      script: sbt test
-      name: Unit test
-    - stage: build and check
-      script: ci/import-export-tool-build.sh
-      name: Build the Import/Export tool
+    #    - stage: build and check
+    #      script: sbt test
+    #      name: Unit test
+    #    - stage: build and check
+    #      script: ci/import-export-tool-build.sh
+    #      name: Build the Import/Export tool
 
-    - stage: functional test
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        Tests/test dumpCoverage
-      workspaces:
-        use: oeq-installer
-      name: Scalacheck
-      after_script: ci/scalacheck-save-results.sh Tests
-    - stage: functional test
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        Tests/Serial/test dumpCoverage
-      workspaces:
-        use: oeq-installer
-      name: Scalacheck Serial
-      after_script: ci/scalacheck-save-results.sh Tests-Serial
+    #    - stage: functional test
+    #      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
+    #        installEquella startEquella configureInstall setupForTests \
+    #        Tests/test dumpCoverage
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: Scalacheck
+    #      after_script: ci/scalacheck-save-results.sh Tests
+    #    - stage: functional test
+    #      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
+    #        installEquella startEquella configureInstall setupForTests \
+    #        Tests/Serial/test dumpCoverage
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: Scalacheck Serial
+    #      after_script: ci/scalacheck-save-results.sh Tests-Serial
     # Admin
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (admin)
-      env: OLD_TEST_SUITE=admin
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (admin - new UI)
-      env:
-        - OLD_TEST_SUITE=admin
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (admin)
+    #      env: OLD_TEST_SUITE=admin
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (admin - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=admin
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Advanced Script Controls
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (advanced script controls - ASC)
-      env: OLD_TEST_SUITE=asc
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (advanced script controls - ASC - new UI)
-      env:
-        - OLD_TEST_SUITE=asc
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (advanced script controls - ASC)
+    #      env: OLD_TEST_SUITE=asc
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (advanced script controls - ASC - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=asc
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Contribution
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (contribution)
-      env: OLD_TEST_SUITE=contribution
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (contribution - new UI)
-      env:
-        - OLD_TEST_SUITE=contribution
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (contribution)
+    #      env: OLD_TEST_SUITE=contribution
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (contribution - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=contribution
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Controls
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (controls)
-      env: OLD_TEST_SUITE=controls
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (controls - new UI)
-      env:
-        - OLD_TEST_SUITE=controls
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (controls)
+    #      env: OLD_TEST_SUITE=controls
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (controls - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=controls
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Searching
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (searching)
-      env: OLD_TEST_SUITE=searching
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (searching - new UI)
-      env:
-        - OLD_TEST_SUITE=searching
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (searching)
+    #      env: OLD_TEST_SUITE=searching
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (searching - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=searching
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Users
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (users)
-      env: OLD_TEST_SUITE=users
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (users - new UI)
-      env:
-        - OLD_TEST_SUITE=users
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (users)
+    #      env: OLD_TEST_SUITE=users
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (users - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=users
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Viewing
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (viewing)
-      env: OLD_TEST_SUITE=viewing
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (viewing - new UI)
-      env:
-        - OLD_TEST_SUITE=viewing
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (viewing)
+    #      env: OLD_TEST_SUITE=viewing
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (viewing - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=viewing
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
     # Webservices
     - stage: functional test
       script: ci/oldtests-run.sh
@@ -239,7 +239,9 @@ jobs:
         use: oeq-installer
       name: TestNG (webservices)
       env: OLD_TEST_SUITE=webservices
-      after_script: ci/oldtests-save-results.sh
+      after_script:
+        - ci/oldtests-save-results.sh
+        - df -h
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
@@ -248,24 +250,26 @@ jobs:
       env:
         - OLD_TEST_SUITE=webservices
         - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+      after_script:
+        - ci/oldtests-save-results.sh
+        - df -h
     # Workflow
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (workflow)
-      env: OLD_TEST_SUITE=workflow
-      after_script: ci/oldtests-save-results.sh
-    - stage: functional test
-      script: ci/oldtests-run.sh
-      workspaces:
-        use: oeq-installer
-      name: TestNG (workflow - new UI)
-      env:
-        - OLD_TEST_SUITE=workflow
-        - OLD_TEST_NEWUI=true
-      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (workflow)
+    #      env: OLD_TEST_SUITE=workflow
+    #      after_script: ci/oldtests-save-results.sh
+    #    - stage: functional test
+    #      script: ci/oldtests-run.sh
+    #      workspaces:
+    #        use: oeq-installer
+    #      name: TestNG (workflow - new UI)
+    #      env:
+    #        - OLD_TEST_SUITE=workflow
+    #        - OLD_TEST_NEWUI=true
+    #      after_script: ci/oldtests-save-results.sh
 
     - stage: finalise
       script:
