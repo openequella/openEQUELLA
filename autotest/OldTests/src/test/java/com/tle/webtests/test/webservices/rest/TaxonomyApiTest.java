@@ -137,7 +137,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     lock();
 
     final List<String> rootTerms = new ArrayList<>();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       final String termName = randomString(8);
       rootTerms.add(termName);
       createTerm(taxonomyUuid, null, termName, null);
