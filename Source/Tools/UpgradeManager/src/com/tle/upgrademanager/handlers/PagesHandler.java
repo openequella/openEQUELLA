@@ -158,17 +158,25 @@ public class PagesHandler extends PostDispatchHandler {
 
   public static class WebVersion {
     private String displayName;
-    private String mmr;
+    private String semanticVersion;
     private String filename;
 
-    public WebVersion(String dn, String mmr, String fn) {
-      this.displayName = dn;
-      this.mmr = mmr;
-      this.filename = fn;
+    public WebVersion(String displayName, String semanticVersion, String filename) {
+      this.displayName = displayName;
+      this.filename = filename;
+      this.semanticVersion = semanticVersion;
     }
 
     public WebVersion() {
       // Nothing
+    }
+
+    public void setSemanticVersion(String semanticVersion) {
+      this.semanticVersion = semanticVersion;
+    }
+
+    public String getSemanticVersion() {
+      return semanticVersion;
     }
 
     public String getDisplayName() {
@@ -177,14 +185,6 @@ public class PagesHandler extends PostDispatchHandler {
 
     public void setDisplayName(String displayName) {
       this.displayName = displayName;
-    }
-
-    public String getMmr() {
-      return mmr;
-    }
-
-    public void setMmr(String mmr) {
-      this.mmr = mmr;
     }
 
     public String getFilename() {

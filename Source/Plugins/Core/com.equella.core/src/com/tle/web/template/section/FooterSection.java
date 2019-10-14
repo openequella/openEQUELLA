@@ -65,7 +65,8 @@ public class FooterSection extends AbstractPrototypeSection<FooterSection.Footer
     if (!guest) {
       Version version = ApplicationVersion.get();
       model.setDisplayVersion(version.getDisplay());
-      model.setFullVersion(MessageFormat.format("{0} {1}", version.getMmr(), version.getCommit()));
+      model.setFullVersion(
+          MessageFormat.format("{0} {1}", version.getSemanticVersion(), version.getCommit()));
     }
     model.setDisplayLinks(!guest);
 

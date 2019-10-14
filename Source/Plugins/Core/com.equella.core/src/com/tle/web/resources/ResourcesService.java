@@ -26,7 +26,7 @@ import java.util.Map;
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class ResourcesService {
-  private static String baseUrl = "p/r/" + ApplicationVersion.get().getMmr() + '/';
+  private static String baseUrl = "p/r/" + ApplicationVersion.get().getSemanticVersion() + '/';
 
   private static Map<String, String> renamed =
       ImmutableMap.<String, String>builder()

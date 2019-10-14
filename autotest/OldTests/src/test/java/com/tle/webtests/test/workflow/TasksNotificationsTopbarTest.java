@@ -1,7 +1,5 @@
 package com.tle.webtests.test.workflow;
 
-import static org.testng.Assert.assertTrue;
-
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.portal.TopbarMenuSection;
 import com.tle.webtests.pageobject.tasklist.NotificationsPage;
@@ -10,6 +8,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @TestInstitution("workflow")
@@ -20,16 +19,16 @@ public class TasksNotificationsTopbarTest extends AbstractCleanupTest {
     String itemFullName = context.getFullName("item");
     logon("SidebarUser", "``````");
 
-    assertTrue(checkTasks());
-    assertTrue(checkNotifications());
+    checkTasks();
+    checkNotifications();
 
     for (int i = 0; i < REPS; i++) {
       WizardPageTab wizard = new ContributePage(context).load().openWizard("Sidebar Collection");
       wizard.editbox(1, itemFullName);
       wizard.save().submit();
 
-      assertTrue(checkTasks());
-      assertTrue(checkNotifications());
+      checkTasks();
+      checkNotifications();
     }
 
     for (int i = 0; i < REPS; i++) {
@@ -41,8 +40,8 @@ public class TasksNotificationsTopbarTest extends AbstractCleanupTest {
           .rejectWithMessage("Reject", null);
       taskList.search("");
 
-      assertTrue(checkTasks());
-      assertTrue(checkNotifications());
+      checkTasks();
+      checkNotifications();
     }
 
     for (int i = 0; i < REPS; i++) {
@@ -53,20 +52,20 @@ public class TasksNotificationsTopbarTest extends AbstractCleanupTest {
       np = new NotificationsPage(context).load();
       np.search("");
 
-      assertTrue(checkTasks());
-      assertTrue(checkNotifications());
+      checkTasks();
+      checkNotifications();
     }
   }
 
-  private boolean checkNotifications() {
-    TopbarMenuSection tbs = new TopbarMenuSection(context).get();
+  private void checkNotifications() {
     NotificationsPage np = new NotificationsPage(context).load();
-    return (tbs.getNumberOfNotifications() == np.getNumberOfResults());
+    TopbarMenuSection tbs = new TopbarMenuSection(context).get();
+    Assert.assertEquals(tbs.getNumberOfNotifications(), np.getNumberOfResults());
   }
 
-  private boolean checkTasks() {
-    TopbarMenuSection tbs = new TopbarMenuSection(context).get();
+  private void checkTasks() {
     TaskListPage taskList = new TaskListPage(context).load();
-    return (tbs.getNumberOfTasks() == taskList.getNumberOfResults());
+    TopbarMenuSection tbs = new TopbarMenuSection(context).get();
+    Assert.assertEquals(tbs.getNumberOfTasks(), taskList.getNumberOfResults());
   }
 }

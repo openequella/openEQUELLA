@@ -1,0 +1,21 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: ContributionControls
+    classes:
+      - com.tle.webtests.test.contribute.controls.AllControlsTest
+      - com.tle.webtests.test.contribute.controls.BannedExtensionTest
+      - com.tle.webtests.test.contribute.controls.FileSizeRestrictionTest
+      - com.tle.webtests.test.contribute.controls.GroupsAndDisabling
+      - com.tle.webtests.test.contribute.controls.HTMLEditBoxTest
+      - com.tle.webtests.test.contribute.controls.IncorrectMimetypeTest
+      - com.tle.webtests.test.contribute.controls.MaxAttachmentsTest
+      - com.tle.webtests.test.contribute.controls.PackageAndNavigationTest
+      - com.tle.webtests.test.contribute.controls.RepeaterTest
+      - com.tle.webtests.test.contribute.controls.TaxonomyControlsTest
+      - com.tle.webtests.test.contribute.controls.attachments.AttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.LTIAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.MultipleAttachmentControlTest
+      - com.tle.webtests.test.contribute.controls.attachments.RestrictedAttachmentsTest

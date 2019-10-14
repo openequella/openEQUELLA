@@ -165,6 +165,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>>
         ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
             driver, By.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")));
 
+    waitForElement(fileName);
     fileName.clear();
     fileName.sendKeys(description);
     waitForHiddenElement(fileUpload);

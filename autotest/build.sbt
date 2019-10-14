@@ -62,16 +62,26 @@ installOptions := {
     dbport = db.getInt("port"),
     dbhost = db.getString("host"),
     dbuser = db.getString("user"),
-    dbpassword = db.getString("password")
+    dbpassword = db.getString("password"),
+    auditLevel = ic.getString("auditLevel")
   )
 }
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
 
 autotestInstallerZip := {
-  val bc = autotestBuildConfig.value
-  optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
-    (d * "equella-installer-*.zip").get.head))
+  val bc                    = autotestBuildConfig.value
+  val equellaFullVersion    = equellaVersion.value
+  val installerFileName     = s"equella-installer-${equellaFullVersion.semanticVersion}.zip"
+  val installerDirectory    = (target in LocalProject("Installer")).value
+  val installerAbsolutePath = installerDirectory / installerFileName
+  // If the Installer named as installerFileName exists then return it, otherwise returns the default Installer
+  if (installerAbsolutePath.exists) {
+    Some(installerAbsolutePath)
+  } else {
+    optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
+      (d * "equella-installer-*.zip").get.head))
+  }
 }
 
 sourceZip := optPath(autotestBuildConfig.value, "install.sourcezip")
@@ -108,14 +118,22 @@ coverageLoader := {
   val l   = new ExecFileLoader()
   optPath(cc, "file").filter(_.canRead).foreach { f =>
     log.info(s"Loading coverage data from ${f.absolutePath}")
-    l.load(f)
+    if (f.isDirectory)
+      f.listFiles().foreach(ef => l.load(ef))
+    else
+      l.load(f)
   }
   cc.getStringList("hosts").asScala.foreach { h =>
     val ind = h.indexOf(':')
     val (hname, port) =
       if (ind == -1) (h, 6300) else (h.substring(0, ind), h.substring(ind + 1).toInt)
     log.info(s"Collecting coverage from $h")
-    CoverageReporter.dumpCoverage(l, hname, port)
+    try {
+      CoverageReporter.dumpCoverage(l, hname, port)
+    } catch {
+      case ex: Exception =>
+        log.warn(s"Failed to retrieve coverage from $h. Message: ${ex.getMessage}")
+    }
   }
   l
 }

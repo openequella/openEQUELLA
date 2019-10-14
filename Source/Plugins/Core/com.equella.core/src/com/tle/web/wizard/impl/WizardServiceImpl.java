@@ -697,11 +697,19 @@ public class WizardServiceImpl
   @Override
   public boolean checkDuplicateXpathValue(
       WizardState state, String xpath, Collection<String> values, boolean canAccept) {
+    return checkEditboxDuplicate(state, xpath, values, canAccept, null);
+  }
+
+  @Override
+  public boolean checkEditboxDuplicate(
+      WizardState state,
+      String xpath,
+      Collection<String> values,
+      boolean canAccept,
+      String fieldName) {
     final String prefix = xpath + '$';
     clearDuplicatesWithPrefix(state, prefix);
-
     final String uuid = state.getItem().getUuid();
-
     boolean isUnique = true;
     for (String value : values) {
       if (!Check.isEmpty(value)) {
@@ -713,7 +721,8 @@ public class WizardServiceImpl
                 value,
                 freeTextService.getKeysForNodeValue(uuid, state.getItemDefinition(), xpath, value),
                 canAccept,
-                false);
+                false,
+                fieldName);
       }
     }
     return isUnique;
@@ -739,7 +748,8 @@ public class WizardServiceImpl
           url,
           itemService.getItemsWithUrl(url, itemdef, ignoreItem),
           true,
-          false);
+          false,
+          "");
     }
   }
 
@@ -749,22 +759,23 @@ public class WizardServiceImpl
     final ItemDefinition itemdef = state.getItemDefinition();
     List<ItemId> duplicateLinkAttachments = itemService.getItemsWithUrl(url, itemdef, ignoreItem);
     if (duplicateLinkAttachments.size() > 0) {
-      setDuplicates(state, linkUuid, url, duplicateLinkAttachments, true, true);
+      setDuplicates(state, linkUuid, url, duplicateLinkAttachments, true, true, "");
     }
   }
 
   @Override
   public void checkFileAttachmentDuplicate(WizardState state, String fileName, String fileUuid) {
     try {
-      String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      final String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      final String excludeItemUuid = state.getItemId().getUuid();
       List<Attachment> duplicateFileAttachments =
-          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true);
+          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true, excludeItemUuid);
       if (duplicateFileAttachments.size() > 0) {
         List<ItemId> list =
             duplicateFileAttachments.stream()
                 .map(attachment -> attachment.getItem().getItemId())
                 .collect(Collectors.toList());
-        setDuplicates(state, fileUuid, fileName, list, true, true);
+        setDuplicates(state, fileUuid, fileName, list, true, true, "");
       }
     } catch (IOException e) {
       LOGGER.error("Failed to check duplicates of " + fileName, e);
@@ -786,7 +797,8 @@ public class WizardServiceImpl
       String value,
       List<? extends ItemKey> list,
       boolean canAccept,
-      boolean isAttachmentDuplicate) {
+      boolean isAttachmentDuplicate,
+      String wizardControlLabel) {
     Map<String, DuplicateData> duplicatesMap = state.getDuplicateData();
 
     boolean isUnique = Check.isEmpty(list);
@@ -794,7 +806,9 @@ public class WizardServiceImpl
       duplicatesMap.remove(identifier);
     } else {
       duplicatesMap.put(
-          identifier, new DuplicateData(identifier, value, list, canAccept, isAttachmentDuplicate));
+          identifier,
+          new DuplicateData(
+              identifier, value, list, canAccept, isAttachmentDuplicate, wizardControlLabel));
     }
     return isUnique;
   }

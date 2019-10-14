@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>772322</id>
+  <id>489745</id>
   <uuid>b28f1ffe-2008-4f5e-d559-83c8acd79316</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
-  <dateModified class="sql-timestamp">2012-11-15 11:52:51.587</dateModified>
+  <dateModified class="sql-timestamp">2019-09-19 16:10:46.381</dateModified>
   <dateCreated class="sql-timestamp">2011-03-17 15:52:05.142</dateCreated>
   <name>
-    <id>772323</id>
+    <id>489746</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>772324</id>
+          <id>489747</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Basic Items</text>
@@ -26,8 +26,9 @@
   <wizardcategory>Basic</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>772325</id>
+    <id>489748</id>
     <itemMetadataRules/>
+    <dynamicMetadataRules/>
     <wizard>
       <pages>
         <com.dytech.edge.wizard.beans.DefaultWizardPage>
@@ -150,14 +151,14 @@
                   <boolean>true</boolean>
                 </entry>
                 <entry>
-                  <string>RestrictToGroups</string>
-                  <set>
-                    <string>503</string>
-                  </set>
-                </entry>
-                <entry>
                   <string>IsSelectMultiple</string>
                   <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set>
+                    <string>1001</string>
+                  </set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -196,14 +197,14 @@
                   <boolean>true</boolean>
                 </entry>
                 <entry>
-                  <string>RestrictToGroups</string>
-                  <set>
-                    <string>501</string>
-                  </set>
-                </entry>
-                <entry>
                   <string>IsSelectMultiple</string>
                   <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set>
+                    <string>1002</string>
+                  </set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -242,12 +243,12 @@
                   <boolean>false</boolean>
                 </entry>
                 <entry>
-                  <string>RestrictToGroups</string>
-                  <set/>
-                </entry>
-                <entry>
                   <string>IsSelectMultiple</string>
                   <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set/>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -256,7 +257,7 @@
       </pages>
       <redraftScript></redraftScript>
       <saveScript>//search groups by group name
-var searchedGroup = user.searchGroups(&apos;Alpha&apos;).get(0);
+var searchedGroup = user.searchGroups(&apos;dev&apos;).get(0);
 xml.set(&apos;item/searchedGroup&apos;,searchedGroup);
 
 //get the first group logged in user belongs to
@@ -266,6 +267,7 @@ xml.set(&apos;item/isMemberOfGroup&apos;,user.isMemberOfGroup(userGroup.getUniqu
 
 //get all user for searched group recursive 
 var usersInAlpha = user.searchUsersInGroups(&quot;*&quot;, searchedGroup.getUniqueID(), true);
+
 var userIn = &quot;&quot;;
 for(var i = 0; i &lt; usersInAlpha.size(); i++)
 {
@@ -281,6 +283,7 @@ xml.set(&apos;item/otherUsersInGroup&apos;, usersInAlpha);
 
 //all of the user groups
 var groups = user.getGroupsContainingUser(user.getID());
+
 var gs = &quot;&quot;;
 
 for(var i = 0; i &lt; groups.size(); i++)
@@ -299,6 +302,12 @@ var allUsers = user.searchUser</saveScript>
       <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
       <additionalCssClass></additionalCssClass>
     </wizard>
+    <searchDetails>
+      <attDisplay>STRUCTURED</attDisplay>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
     <metadataMapping>
       <imsMapping class="list"/>
       <htmlMapping class="list"/>
@@ -307,8 +316,23 @@ var allUsers = user.searchUser</saveScript>
     <itemSummarySections>
       <configList>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>98a00e30-e0d5-4000-b0bf-013f16cde4c5</uuid>
           <value>basicSection</value>
-          <title>Basic Information</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
           <configuration>&lt;map&gt;
   &lt;entry&gt;
     &lt;string&gt;owner&lt;/string&gt;
@@ -317,17 +341,62 @@ var allUsers = user.searchUser</saveScript>
 &lt;/map&gt;</configuration>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7bc1d02e-32d1-4117-9ea0-1bcaba9e8890</uuid>
           <value>attachmentsSection</value>
-          <title>Attachments</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
           <configuration>&lt;xml&gt;&lt;SHOW_FULLSCREEN_LINK_KEY&gt;true&lt;/SHOW_FULLSCREEN_LINK_KEY&gt;&lt;SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;false&lt;/SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;&lt;/xml&gt;</configuration>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>99a6f709-f06f-4d20-a9b3-df9a142730be</uuid>
           <value>commentsSection</value>
-          <title>Comments</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>141bb4a7-a244-4357-ad3a-868352adc852</uuid>
           <value>displayNodes</value>
-          <title>Extra Metadata</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Extra Metadata</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
           <configuration>&lt;list&gt;
   &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
     &lt;mode&gt;single&lt;/mode&gt;

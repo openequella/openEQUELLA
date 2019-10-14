@@ -131,7 +131,7 @@ public class NotificationsApiTest extends AbstractItemApiTest {
 
     logout();
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ScheduledTasksPage stp = new ScheduledTasksPage(context).load();
     stp.runCheckModeration();
     stp.runNotifyNewTasks();

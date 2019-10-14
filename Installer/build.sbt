@@ -2,8 +2,8 @@ import Path.relativeTo
 
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"         % "18.0",
-  "org.slf4j"        % "slf4j-simple"  % "1.7.26",
-  "commons-codec"    % "commons-codec" % "1.12",
+  "org.slf4j"        % "slf4j-simple"  % "1.7.28",
+  "commons-codec"    % "commons-codec" % "1.13",
   postgresDep,
   sqlServerDep
 )
@@ -27,7 +27,7 @@ lazy val upgradeManager = LocalProject("UpgradeManager")
 installerZip := {
   val log            = streams.value.log
   val ver            = equellaVersion.value
-  val dirname        = s"equella-installer-${ver.majorMinor}"
+  val dirname        = s"equella-installer-${ver.semanticVersion}"
   val outZip         = target.value / s"$dirname.zip"
   val serverData     = baseDirectory.value / "data/server"
   val allServerFiles = serverData ** "*" pair (relativeTo(serverData), false)

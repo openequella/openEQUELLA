@@ -5,11 +5,29 @@ import org.openqa.selenium.By;
 
 /** @author Aaron */
 public class ErrorPage extends AbstractPage<ErrorPage> {
+  private final boolean forceOld;
+
   public ErrorPage(PageContext context) {
-    super(
-        context,
-        By.xpath(
-            "//div[@class='area error']")); //  /h2[normalize-space(text())='An error occurred']
+    this(context, false);
+  }
+
+  public ErrorPage(PageContext context, boolean forceOld) {
+    super(context); //  /h2[normalize-space(text())='An error occurred']
+    this.forceOld = forceOld;
+    loadedBy = getErrorBy(isNewUI());
+  }
+
+  protected boolean isNewUI() {
+    return !forceOld && super.isNewUI();
+  }
+
+  @Override
+  protected void isError() {
+    // don't blow up when we expect an error
+  }
+
+  public static By getErrorBy(boolean newUi) {
+    return newUi ? By.id("errorPage") : By.xpath("//div[@class='area error']");
   }
 
   public String getMainErrorMessage() {
@@ -21,9 +39,20 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
   }
 
   public String getDetail() {
-    return context
-        .getDriver()
-        .findElement(By.xpath("//div[@class='area error']/p[@id='description']"))
+    return driver
+        .findElement(
+            isNewUI()
+                ? By.xpath("id('errorPage')//h5")
+                : By.xpath("//div[@class='area error']/p[@id='description']"))
         .getText();
+  }
+
+  public <T extends PageObject> T goBack(WaitingPageObject<T> backTo) {
+    if (isNewUI()) {
+      driver.navigate().refresh();
+    } else {
+      context.getDriver().navigate().back();
+    }
+    return backTo.get();
   }
 }

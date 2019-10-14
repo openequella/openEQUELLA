@@ -65,7 +65,7 @@ import uk.ac.ed.ph.jqtiplus.value.SingleValue;
 @Singleton
 public class QtiAssessmentResultServiceImpl implements QtiAssessmentResultService {
   private static final URI URI_SOURCE =
-      URI.create("uri://equella/" + ApplicationVersion.get().getMmr());
+      URI.create("uri://equella/" + ApplicationVersion.get().getSemanticVersion());
 
   @Inject private QtiAssessmentResultDao dao;
 

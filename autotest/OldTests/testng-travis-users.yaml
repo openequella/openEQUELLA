@@ -1,0 +1,18 @@
+name: SingleSuite
+threadCount: 1
+
+tests:
+  - name: Users
+    classes:
+      - com.tle.webtests.test.dashboard.PortalsTest
+      - com.tle.webtests.test.myresources.favourites.FavouriteItemsTest
+      - com.tle.webtests.test.myresources.favourites.FavouritesInIntegrationTest
+      - com.tle.webtests.test.myresources.favourites.ResourceSelectorFavouritesTest
+      - com.tle.webtests.test.myresources.MyResourcesTest
+      - com.tle.webtests.test.myresources.MyResourcesWebPageTest
+      - com.tle.webtests.test.users.DisplayDateFormatTest
+      - com.tle.webtests.test.users.LoginSettingsTest
+      - com.tle.webtests.test.users.TokenLoginTest
+      - com.tle.webtests.test.users.UserPasswordTest
+      - com.tle.webtests.test.usersscripts.UserScriptTest
+      - com.tle.webtests.test.users.LDAPTest

@@ -43,6 +43,7 @@ import com.tle.beans.security.AccessExpression;
 import com.tle.beans.security.SharePass;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
+import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowItemStatus;
@@ -132,6 +133,7 @@ public class InitialSchema extends AbstractCreateMigration {
         SharePass.class,
         TLEUser.class,
         TLEGroup.class,
+        UserInfoBackup.class,
         Relation.class,
         Bookmark.class,
         MimeEntry.class,

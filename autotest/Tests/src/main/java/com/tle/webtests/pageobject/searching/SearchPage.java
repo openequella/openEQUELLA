@@ -274,7 +274,7 @@ public class SearchPage
     return searchResults.split("\\s+")[4];
   }
 
-  private boolean isResultType(String type) {
+  public boolean isResultType(String type) {
     return isPresent(By.xpath("id('result-type-select')/input[@value = '" + type + "']"));
   }
 

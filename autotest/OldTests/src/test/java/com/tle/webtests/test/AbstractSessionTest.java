@@ -3,6 +3,8 @@ package com.tle.webtests.test;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.LoginPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AbstractSessionTest extends AbstractTest {
   public static String GENERIC_TESTING_COLLECTION = "Generic Testing Collection";
@@ -28,7 +30,10 @@ public class AbstractSessionTest extends AbstractTest {
   }
 
   public void logonOnly(String username, String password) {
-    new LoginPage(context).load().loginWithRedirect(username, password);
+    LoginPage loginPage = new LoginPage(context).load();
+    loginPage.loginWithRedirect(username, password);
+    // If using new UI, ensure the home page is completed loaded.
+    loginPage.getWaiter().until(ExpectedConditions.presenceOfElementLocated(By.id("eqpageForm")));
   }
 
   public void logonWithNotice(String username, String password) {

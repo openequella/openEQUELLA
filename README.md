@@ -1,6 +1,6 @@
 # openEQUELLA
 
-[![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)](https://travis-ci.org/equella/Equella)
+[![Travis build](https://travis-ci.com/openequella/openEQUELLA.svg?branch=develop)](https://travis-ci.com/openequella/openEQUELLA)
 
 openEQUELLA is a digital repository that provides a single platform to house your teaching and
 learning, research, media, and library content.
@@ -8,13 +8,13 @@ learning, research, media, and library content.
 Builds for each openEQUELLA Release can be found on the [Releases
 page](https://github.com/equella/Equella/releases "EQUELLA Releases"). The latest stable versions
 (with their changelogs) can also be retrieved from the version server at
-<https://version.equella.net/>.
+<https://version.openequella.net/>.
 
 (NOTE: The current stable version - starting from 2019.1 - is built from `master`, where as active
 development is undertaken on the repository's default branch `develop`. Therefore `develop` is
 considered the project's 'unstable' branch.)
 
-The project's homepage and documentation can be found at <https://equella.github.io/>.
+The project's homepage and documentation can be found at <https://openequella.github.io/>.
 
 If you would like to contribute to openEQUELLA please review the [Contributor
 Guidelines](CONTRIBUTING.md) - which also include details of how to get in touch. We welcome pull

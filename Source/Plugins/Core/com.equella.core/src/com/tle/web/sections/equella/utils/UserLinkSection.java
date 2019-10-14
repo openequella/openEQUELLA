@@ -18,6 +18,7 @@
 
 package com.tle.web.sections.equella.utils;
 
+import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
@@ -64,6 +65,9 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
 
   @PlugKey("userlink.systemuser")
   private static Label LABEL_SYSTEMUSER;
+
+  @PlugKey("userlink.lastownersuffix")
+  private static Label LAST_OWNER_SUFFIX;
 
   private static String KEY_IMPERSONATEDBY = "userlink.impersonatedby";
 
@@ -120,10 +124,11 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
   }
 
   public HtmlLinkState createLink(SectionInfo info, String userId) {
-    return createLink(info, userId, null);
+    return createLink(info, userId, null, false);
   }
 
-  public HtmlLinkState createLink(SectionInfo info, String userId, String impersonatedBy) {
+  public HtmlLinkState createLink(
+      SectionInfo info, String userId, String impersonatedBy, boolean useLastOwnerDetails) {
     Model model = getModel(info);
     if ("system".equals(userId)) {
       HtmlLinkState userLink = new HtmlLinkState(LABEL_SYSTEMUSER);
@@ -133,7 +138,7 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     if (!model.foundUsers.containsKey(userId)) {
       model.usersToFind.add(userId);
     }
-    return new UserLinkState(userId, info, impersonatedBy);
+    return new UserLinkState(userId, info, impersonatedBy, useLastOwnerDetails);
   }
 
   public Label createLabel(SectionInfo info, String userId) {
@@ -154,7 +159,11 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     return createLink(info, userId);
   }
 
-  public UserBean ensureUserLookup(SectionInfo info, String userId) {
+  private UserBean ensureUserLookup(SectionInfo info, String userId) {
+    return ensureUserLookup(info, userId, false);
+  }
+
+  private UserBean ensureUserLookup(SectionInfo info, String userId, boolean useLastOwnerDetails) {
     try {
       Model model = getModel(info);
       Map<String, UserBean> foundUsers = model.foundUsers;
@@ -170,7 +179,11 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
         }
         usersToFind.clear();
       }
-      return foundUsers.get(userId);
+      UserBean userDetails = foundUsers.get(userId);
+      if (userDetails == null && useLastOwnerDetails) {
+        userDetails = userService.findUserInfoBackup(userId);
+      }
+      return userDetails;
     } catch (Exception t) {
       LOGGER.error("Error getting user details for display", t);
       return null;
@@ -248,11 +261,14 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     private final String userId;
     private final String impersonatedBy;
     private boolean lookedUp;
+    private boolean useLastOwnerDetails;
 
-    public UserLinkState(String userId, SectionInfo info, String impersonatedBy) {
+    public UserLinkState(
+        String userId, SectionInfo info, String impersonatedBy, boolean useLastOwnerDetails) {
       this.userId = userId;
       this.info = info;
       this.impersonatedBy = impersonatedBy;
+      this.useLastOwnerDetails = useLastOwnerDetails;
     }
 
     @SuppressWarnings("unchecked")
@@ -263,13 +279,13 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
 
     @Override
     public Label getLabel() {
-      ensureLookup();
+      ensureLookup(useLastOwnerDetails);
       return super.getLabel();
     }
 
     @Override
     public Label getTitle() {
-      ensureLookup();
+      ensureLookup(useLastOwnerDetails);
       return super.getTitle();
     }
 
@@ -281,24 +297,26 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
       return true;
     }
 
-    private void ensureLookup() {
+    private void ensureLookup(boolean useLastOwnerDetails) {
       if (!lookedUp) {
-        UserBean userBean = ensureUserLookup(info, userId);
+        UserBean userBean = ensureUserLookup(info, userId, useLastOwnerDetails);
         if (userBean == null) {
           setLabel(UNKNOWN_USER_LABEL);
           setTitle(new TextLabel(userId));
         } else {
-          // TODO: oh dear, not i18n friendly :)
-          TextLabel firstLastLabel =
-              new TextLabel(userBean.getFirstName() + " " + userBean.getLastName());
+          String userFullName = userBean.getFirstName() + " " + userBean.getLastName();
+          if (userBean instanceof UserInfoBackup) {
+            userFullName = userFullName + LAST_OWNER_SUFFIX.getText();
+          }
+          TextLabel userFullNameLabel = new TextLabel(userFullName);
           Label impersonateLabel =
               impersonatedBy == null
                   ? null
                   : new KeyLabel(
                       CoreStrings.lookup().key(KEY_IMPERSONATEDBY),
                       new TextLabel(impersonatedBy),
-                      firstLastLabel);
-          setLabel(impersonateLabel != null ? impersonateLabel : firstLastLabel);
+                      userFullNameLabel);
+          setLabel(impersonateLabel != null ? impersonateLabel : userFullNameLabel);
           setTitle(new TextLabel(userBean.getUsername()));
           setClickHandler(new OverrideHandler(userClickedFunc, userBean.getUniqueID()));
         }

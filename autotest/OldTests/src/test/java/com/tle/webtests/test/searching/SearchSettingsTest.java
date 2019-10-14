@@ -119,12 +119,13 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     ssp.setOrder(SearchSettingsPage.Order.RANK);
     ssp.includeNonLive(true).save();
 
-    SearchScreenOptions sso = new SearchPage(context).load().openScreenOptions();
-
+    SearchPage searchPage = new SearchPage(context).load();
+    SearchScreenOptions sso = searchPage.openScreenOptions();
     assertTrue(sso.hasNonLiveOption());
     sso.setNonLiveOption(true);
-    ItemListPage results = SearchPage.searchExact(context, "SearchSettings - Draft Item");
-    assertTrue(results.doesResultExist("SearchSettings - Draft Item", 1));
+    final String ITEM_NAME = "SearchSettings - Draft Item";
+    ItemListPage results = searchPage.search('"' + ITEM_NAME + '"');
+    assertTrue(results.doesResultExist(ITEM_NAME, 1));
 
     ssp = new SettingsPage(context).load().searchSettings();
     ssp.includeNonLive(false).save();

@@ -8,22 +8,51 @@ import com.tle.webtests.pageobject.UndeterminedPage;
 import com.tle.webtests.pageobject.hierarchy.TopicPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class MenuSection extends AbstractPage<MenuSection> {
+
   public MenuSection(PageContext context) {
-    super(context, By.id("menu"));
+    super(context);
+    loadedBy = isNewUI() ? By.id("menulinks") : By.id("menu");
+  }
+
+  private By linkByText(String text) {
+    return linkByTextAndHref(text, null);
+  }
+
+  private By linkByTextAndHref(String text, String href) {
+    String quotedText = quoteXPath(text);
+    String hrefXPath = "";
+    if (href != null) {
+      hrefXPath = " and @href=" + quoteXPath(href);
+    }
+    if (isNewUI()) {
+      return By.xpath("id('menulinks')//a[./div/div[text()=" + quotedText + "]" + hrefXPath + "]");
+    }
+    return By.xpath("id('menu')//a[text()=" + quotedText + hrefXPath + "]");
+  }
+
+  private By linkByHref(String href) {
+    return new ByChained(loadedBy, By.xpath(".//a[@href=" + quoteXPath(href) + "]"));
+  }
+
+  private WebElement findLink(String title) {
+    return driver.findElement(linkByText(title));
   }
 
   public <T extends AbstractPage<T>> T clickMenu(String title, T page) {
-    driver.findElement(By.xpath("id('menu')//a[text()=" + quoteXPath(title) + "]")).click();
+    findLink(title).click();
     return page.get();
   }
 
   // Handles the case of a single wizard...
   public WizardPageTab clickContribute(String wizardName) {
-    driver.findElement(By.xpath("id('menu')//a[text()=" + quoteXPath("Contribute") + "]")).click();
+    findLink("Contribute").click();
     WizardPageTab wpt = new WizardPageTab(context, 0);
     ContributePage cp = new ContributePage(context);
     UndeterminedPage<PageObject> unknown = new UndeterminedPage<PageObject>(context, cp, wpt);
@@ -37,14 +66,14 @@ public class MenuSection extends AbstractPage<MenuSection> {
     return wpt;
   }
 
-  public <T extends AbstractPage<T>> T clickMenuLink(String title, T page) {
-    driver.findElement(By.xpath("id('menu')//a[@href=" + quoteXPath(title) + "]")).click();
+  public <T extends AbstractPage<T>> T clickMenuLink(String href, T page) {
+    driver.findElement(linkByHref(href)).click();
     return page.get();
   }
 
   public TopicPage clickTopic(String title) {
     if (hasMenuOption(title)) {
-      driver.findElement(By.xpath("id('menu')//a[text()=" + quoteXPath(title) + "]")).click();
+      findLink(title).click();
       return new TopicPage(context, title).get();
     } else {
       return new TopicPage(context, "Browse").load().clickSubTopic(title);
@@ -56,21 +85,35 @@ public class MenuSection extends AbstractPage<MenuSection> {
   }
 
   public boolean hasMenuOption(String title) {
-    return isPresent(By.xpath("id('menu')//a[text()=" + quoteXPath(title) + "]"));
+    return isPresent(linkByText(title));
   }
 
   public boolean hasHierarchyTopic(String title, int position) {
-    return isPresent(
-        By.xpath("id('menu')/ul[2]/li[" + position + "]/a[text()=" + quoteXPath(title) + "]"));
+    return isPresent(linkByText(title));
   }
 
-  public int getNumberOfTasks() {
-    WebElement span = driver.findElement(By.xpath("id('menu')//a[text()='My tasks']//span"));
-    return Integer.parseInt(span.getText());
+  public boolean waitForCustomIconByNameAndHref(String name, String url) {
+    return hasCustomIcon(
+        waiter.until(ExpectedConditions.visibilityOfElementLocated(linkByTextAndHref(name, url))));
   }
 
-  public int getNumberOfNotifications() {
-    WebElement span = driver.findElement(By.xpath("id('menu')//a[text()='Notifications']//span"));
-    return Integer.parseInt(span.getText());
+  public boolean linkExists(String name, String url) {
+    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url));
+    return !elems.isEmpty();
+  }
+
+  public boolean linkExistsWithIcon(String name, String url, boolean customIcon) {
+    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url));
+
+    if (elems.isEmpty()) {
+      return false;
+    }
+    return hasCustomIcon(elems.get(0)) == customIcon;
+  }
+
+  private boolean hasCustomIcon(WebElement menuItem) {
+    return isNewUI()
+        ? !menuItem.findElements(By.xpath("./div/img")).isEmpty()
+        : menuItem.getAttribute("style").startsWith("background-image");
   }
 }

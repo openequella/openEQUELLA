@@ -111,23 +111,22 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
-equellaMajorMinor in ThisBuild := "2019.2"
+equellaMajor in ThisBuild := 2019
+equellaMinor in ThisBuild := 2
+equellaPatch in ThisBuild := 0
 equellaStream in ThisBuild := "Alpha"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
-git.useGitDescribe := true
+version := {
+  val shortCommit = git.gitHeadCommit.value.map { sha =>
+    "g" + sha.take(7)
+  }.get
 
-val TagRegex = """(.*)-(.*)-(\d*)-(.*)""".r
-git.gitTagToVersionNumber := {
-  val streamName = equellaStream.value
-  val majorMinor = equellaMajorMinor.value
-  val buildName  = equellaBuild.value
-
-  {
-    case TagRegex(_, _, v, sha) =>
-      Some(EquellaVersion(majorMinor, s"$streamName.$buildName", v.toInt, sha).fullVersion)
-    case _ => None
-  }
+  EquellaVersion(equellaMajor.value,
+                 equellaMinor.value,
+                 equellaPatch.value,
+                 s"${equellaStream.value}.${equellaBuild.value}",
+                 shortCommit).fullVersion
 }
 
 equellaVersion in ThisBuild := EquellaVersion(version.value)
@@ -137,9 +136,7 @@ versionProperties in ThisBuild := {
   val props     = new Properties
   props.putAll(
     Map(
-      "version.mm"      -> eqVersion.majorMinor,
-      "version.mmr"     -> s"${eqVersion.majorMinor}.r${eqVersion.commits}",
-      "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
+      "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
       "version.commit"  -> eqVersion.sha
     ).asJava)
   val f = target.value / "version.properties"

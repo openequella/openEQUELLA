@@ -23,6 +23,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class AbstractPage<T extends PageObject>
     implements PageObject, WaitingPageObject<T> {
+
   protected PageContext context;
   protected WebDriver driver;
   protected SearchContext relativeTo;
@@ -134,6 +135,10 @@ public abstract class AbstractPage<T extends PageObject>
   @Override
   public void checkLoaded() throws NotFoundException {
     checkLoadedElement();
+  }
+
+  public boolean usingNewUI() {
+    return isNewUI();
   }
 
   protected void checkLoadedElement() {
@@ -461,6 +466,12 @@ public abstract class AbstractPage<T extends PageObject>
     }
   }
 
+  protected By byForPageTitle(String title) {
+    if (context.getTestConfig().isNewUI())
+      return By.xpath("//header/div/div/h5[text()=" + quoteXPath(title) + "]");
+    else return By.xpath("id('header-inner')/div[text()=" + quoteXPath(title) + "]");
+  }
+
   public ErrorPage errorPage() {
     return new ErrorPage(context).get();
   }
@@ -496,7 +507,8 @@ public abstract class AbstractPage<T extends PageObject>
 
   protected void scrollToElement(WebElement el) {
     if (driver instanceof JavascriptExecutor) {
-      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", el);
+      ((JavascriptExecutor) driver)
+          .executeScript("arguments[0].scrollIntoView({block:'center'});", el);
     }
   }
 
@@ -506,5 +518,14 @@ public abstract class AbstractPage<T extends PageObject>
 
   protected WebElement findWithId(String prefix, String postfix) {
     return driver.findElement(byPrefixId(prefix, postfix));
+  }
+
+  protected boolean isNewUI() {
+    return context.getTestConfig().isNewUI();
+  }
+
+  protected Object executeSubmit(String args) {
+    String submitFunc = isNewUI() ? "EQ.event" : "_subev";
+    return ((JavascriptExecutor) driver).executeScript(submitFunc + args);
   }
 }

@@ -46,6 +46,7 @@ import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import com.tle.web.selection.SelectionService;
 import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarConstants;
 import com.tle.web.template.section.event.BlueBarRenderable;
@@ -55,6 +56,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class HelpAndScreenOptionsSection
@@ -73,13 +75,17 @@ public class HelpAndScreenOptionsSection
   @AjaxFactory private AjaxGenerator ajax;
   @EventFactory private EventGenerator events;
   @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private SelectionService selectionService;
 
   private JSCallable showFunc;
   private JSCallable hideFunc;
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    if (RenderNewTemplate.isNewLayout(context)) {
+    // The old screen option was removed for some reasons,
+    // but we need it back as the new UI still uses it and EquellaConnectorTest needs it
+    if (RenderNewTemplate.isNewLayout(context)
+        && selectionService.getCurrentSession(context) == null) {
       return null;
     }
     return new GenericNamedResult(

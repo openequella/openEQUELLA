@@ -10,6 +10,8 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import java.util.Arrays;
 import java.util.Collections;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,6 +36,7 @@ public class DRMTestWithCleanup extends AbstractCleanupTest {
     DRMAgreementPage drmPage = wizardPage.save().publishInvalid(new DRMAgreementPage(context));
     SummaryPage summaryPage =
         drmPage.acceptThisIfYouAreVerySureYouNeedToOtherwiseUsePreview(new SummaryPage(context));
+    waitForTermsOfUse(summaryPage);
     TermsOfUsePage termsOfUsePage = summaryPage.termsOfUsePage();
 
     // Ensure data
@@ -55,11 +58,20 @@ public class DRMTestWithCleanup extends AbstractCleanupTest {
     searchPage.results().getResult(1).clickTitle();
     drmPage = new DRMAgreementPage(context).get();
     summaryPage = drmPage.acceptThisIfYouAreVerySureYouNeedToOtherwiseUsePreview(summaryPage);
+    waitForTermsOfUse(summaryPage);
     termsOfUsePage = summaryPage.termsOfUsePage();
 
     // Ensure data
     Assert.assertTrue(termsOfUsePage.hasTerms(terms));
     Assert.assertEquals(termsOfUsePage.getNumberOfAcceptances(), 2);
     Assert.assertEquals(termsOfUsePage.getUsersAccepted(), Arrays.asList("DRM Test", "Auto Test"));
+  }
+
+  private void waitForTermsOfUse(SummaryPage summaryPage) {
+    summaryPage
+        .getWaiter()
+        .until(
+            ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//a[normalize-space(text())='Terms of use']")));
   }
 }

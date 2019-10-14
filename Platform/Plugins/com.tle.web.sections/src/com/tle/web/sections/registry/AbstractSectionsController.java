@@ -21,8 +21,10 @@ package com.tle.web.sections.registry;
 import com.google.common.base.Throwables;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.*;
+import com.tle.web.sections.errors.SectionsExceptionHandler;
 import com.tle.web.sections.events.*;
 import com.tle.web.sections.generic.DefaultSectionInfo;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -207,6 +209,39 @@ public abstract class AbstractSectionsController implements SectionsController {
     forward(original, forward);
   }
 
-  public abstract void handleException(
-      SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event);
+  protected abstract Collection<ExceptionHandlerMatch> getExceptionHandlers();
+
+  public void handleException(
+      SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event) {
+    if (exception instanceof SectionsRuntimeException) {
+      if (exception.getCause() != null) {
+        exception = exception.getCause();
+      }
+    }
+    Collection<ExceptionHandlerMatch> handlers = getExceptionHandlers();
+    for (ExceptionHandlerMatch handlerMatch : handlers) {
+      boolean handle;
+      SectionsExceptionHandler handler = null;
+      String classMatch = handlerMatch.getClassMatch();
+      if (classMatch != null) {
+        handle = exception.getClass().getName().equals(classMatch);
+      } else {
+        handler = handlerMatch.getHandler();
+        handle = handler.canHandle(info, exception, event);
+      }
+      if (handle) {
+        if (handler == null) {
+          handler = handlerMatch.getHandler();
+        }
+        // we don't expect to have a non-null handler, but to be sure ..
+        if (handler != null) {
+          handler.handle(exception, info, this, event);
+          return;
+        }
+        // else continue until we either find a non-null handler, or
+        // exit loop and call SectionUtils.throwRuntime
+      }
+    }
+    SectionUtils.throwRuntime(exception);
+  }
 }

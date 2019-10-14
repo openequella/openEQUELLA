@@ -1,4 +1,6 @@
 import Path.rebase
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 javacOptions ++= Seq("-source", "1.8")
 
@@ -15,15 +17,14 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.9.9"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.43"
-val SwaggerVersion   = "1.5.22"
+val TomcatVersion    = "8.5.47"
+val SwaggerVersion   = "1.5.23"
 val RestEasyVersion  = "3.5.0.Final"
-val simpledbaVersion = "0.1.8-SNAPSHOT"
+val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
-val sttpVersion      = "1.6.0"
+val sttpVersion      = "1.6.4"
 val fs2Version       = "1.0.5"
-resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -52,9 +53,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.1",
+  "com.google.api-client"        % "google-api-client"           % "1.30.4",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20181212-1.30.1",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20190513-1.30.1",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20190827-1.30.1",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "1.7.2",
   "com.google.gdata"             % "core"                        % "1.47.1",
@@ -66,17 +67,17 @@ libraryDependencies ++= Seq(
   sqlServerDep,
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.12.1",
+  "com.rometools"             % "rome"                  % "1.12.2",
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
   "io.swagger"                %% "swagger-scala-module" % "1.0.5",
   "com.zaxxer"                % "HikariCP"              % "2.7.9",
-  "commons-beanutils"         % "commons-beanutils"     % "1.9.3",
-  "commons-codec"             % "commons-codec"         % "1.12",
+  "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
+  "commons-codec"             % "commons-codec"         % "1.13",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.1.0",
+  "commons-daemon"            % "commons-daemon"        % "1.2.2",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.6",
@@ -129,8 +130,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.5.9",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.11",
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.10",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.12",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
@@ -174,9 +175,9 @@ libraryDependencies ++= Seq(
                   name = "slf4j-log4j12")
   ),
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
-  "org.codehaus.woodstox"  % "stax2-api"         % "3.1.3",
-  "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.2.0",
-  "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.1",
+  "org.codehaus.woodstox"  % "stax2-api"         % "3.1.4",
+  "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.4.1",
+  "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.6",
   "org.dspace"             % "cql-java"          % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
@@ -202,9 +203,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.0.3",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.26",
-  "org.slf4j"           % "slf4j-api"              % "1.7.26",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.26",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.28",
+  "org.slf4j"           % "slf4j-api"              % "1.7.28",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.28",
   "org.springframework" % "spring-aop"             % "2.5.5",
   "org.springframework" % "spring-context"         % "2.5.5",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
@@ -323,10 +324,11 @@ additionalPlugins := {
 }
 
 upgradeZip := {
-  val log = streams.value.log
-  val ver = equellaVersion.value
+  val log         = streams.value.log
+  val ver         = equellaVersion.value
+  var releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip
-    : File    = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
+    : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
     assembly.value                                          -> "equella-server.jar",

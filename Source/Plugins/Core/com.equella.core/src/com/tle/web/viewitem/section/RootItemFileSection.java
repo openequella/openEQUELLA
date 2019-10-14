@@ -22,7 +22,6 @@ import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -242,10 +241,7 @@ public class RootItemFileSection
       }
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
-        auditor.audit(
-            viewer.getAuditEntry(info, resource),
-            viewableItem.getItemId(),
-            (Attachment) viewableItem.getAttachmentByUuid(viewableItem.getItemId().getUuid()));
+        auditor.audit(viewer.getAuditEntry(info, resource), (ViewableItem<Item>) viewableItem);
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {

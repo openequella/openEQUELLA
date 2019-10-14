@@ -273,7 +273,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
         .getBody()
         .addReadyStatements(
             CHECK_VERSION,
-            version.getMmr(),
+            version.getSemanticVersion(),
             version.getCommit(),
             version.getDisplay(),
             VERSION_SERVER_URL,

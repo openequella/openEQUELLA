@@ -27,6 +27,8 @@ import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.guice.Bind
+import com.tle.core.i18n.CoreStrings
+import com.tle.core.item.dao.AttachmentDao
 import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
 import com.tle.core.services.FileSystemService
@@ -70,7 +72,7 @@ import com.tle.web.viewurl.attachments.{
   AttachmentResourceService,
   AttachmentTreeService
 }
-import com.tle.web.wizard.WizardService
+import com.tle.web.wizard.{WizardService, WizardState}
 import com.tle.web.wizard.controls.{AbstractWebControl, CCustomControl, WebControlModel}
 import com.tle.web.wizard.impl.WebRepository
 import com.tle.web.wizard.render.WizardFreemarkerFactory
@@ -117,9 +119,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var thumbnailService: ThumbnailService                   = _
   @Inject var videoService: VideoService                           = _
   @Inject var wizardService: WizardService                         = _
+  @Inject var attachmentDao: AttachmentDao                         = _
 
   @Component
-  @PlugKey("duplicatewarningmessage")
+  @PlugKey("duplicatewarning.linktext")
   var duplicateWarningMessage: Button = _
 
   var ctx: AfterRegister = _
@@ -190,7 +193,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       // These two methods are called in universalattachmentlist.ftl
       def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
-      def getDuplicateWarningMessage         = duplicateWarningMessage
+      def getDuplicateWarningLink            = duplicateWarningMessage
+      def getDuplicateWarningMessage         = CoreStrings.text("duplicatewarning.message")
 
       def getDivTag = {
         def entries(attachments: Iterable[AttachmentNode],
@@ -277,8 +281,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       }
 
       def updateDuplicateWarningMessage(): Unit = {
-        if (attachments.exists(
-              attachment => state.getDuplicateData.containsKey(attachment.getUuid))) {
+        if (duplicatesFound) {
           setDuplicateWarning(true)
         } else {
           setDuplicateWarning(false)
@@ -304,7 +307,6 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             linkDuplicateCheck(linkAttachment)
         }
       }
-
       updateDuplicateWarningMessage
     }
 
@@ -343,9 +345,15 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                     children)
     }
 
+    // Returns true if any attachment in this control has duplicate information found
+    def duplicatesFound: Boolean = {
+      val duplicateData = repo.getState.getDuplicateData
+      val attachments   = dialog.getAttachments.asScala
+      attachments.exists(attachment => duplicateData.containsKey(attachment.getUuid))
+    }
+
     def processUploadCommand(info: SectionInfo): SectionResult = {
       val request = info.getRequest
-
       def uploadStream(uploadId: UUID): AjaxUploadResponse = {
         state.uploadForId(uploadId) match {
           case Some(uf: UploadingFile) =>
@@ -373,7 +381,12 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                           controlState.addMetadataUuid(info, uuid)
                           create.commit(a, stagingContext)
                           repo.unregisterFilename(uploadId)
-                          UpdateEntry(entryForAttachment(info, a, true, Iterable.empty))
+                          // Validate attachments after uploading through 'Drag and Drop'
+                          validate
+                          UpdateEntry(
+                            entryForAttachment(info, a, true, Iterable.empty),
+                            Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info)))
+                          )
                         }
                     }
                   case IllegalFile(reason) => illegal(reason)
@@ -389,11 +402,16 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         Option(request.getParameter("uploadId")).map(UUID.fromString).map(uploadStream).getOrElse {
           val maxStream  = ByteStreams.limit(request.getInputStream, 32 * 1024)
           val jsonSource = Source.fromInputStream(maxStream, "UTF-8").mkString
+
           decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
             case Delete(attachmentUuid) =>
               stateAction(info) {
                 dialog.deleteAttachment(info, attachmentUuid)
-                RemoveEntries(Iterable(attachmentUuid))
+                // Validate attachments after removing through 'Drag and Drop'
+                validate
+                RemoveEntries(
+                  Iterable(attachmentUuid),
+                  Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info))))
               }
             case NewUpload(filename, size) =>
               stateAction(info) {
@@ -416,6 +434,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
               }
           }
         }
+
       new SimpleSectionResult(response.asJson.noSpaces, "application/json")
     }
   }

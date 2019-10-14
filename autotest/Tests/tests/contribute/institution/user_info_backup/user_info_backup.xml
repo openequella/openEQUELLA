@@ -1,0 +1,11 @@
+<list>
+  <com.tle.beans.user.UserInfoBackup>
+    <id>501272</id>
+    <username>LastKnownOwner</username>
+    <firstName>LastKnown</firstName>
+    <lastName>Owner</lastName>
+    <emailAddress></emailAddress>
+    <institutionId>502867</institutionId>
+    <uniqueId>e48a42a0-7d82-445e-9064-3dbe87c25b2b</uniqueId>
+  </com.tle.beans.user.UserInfoBackup>
+</list>

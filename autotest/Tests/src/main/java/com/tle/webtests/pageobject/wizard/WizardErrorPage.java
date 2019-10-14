@@ -7,7 +7,8 @@ import org.openqa.selenium.By;
 public class WizardErrorPage extends AbstractPage<WizardErrorPage> {
 
   public WizardErrorPage(PageContext context) {
-    super(context, By.xpath("//h2[text()='An error occurred in the wizard']"));
+    super(context);
+    loadedBy = By.xpath("//h2[text()='An error occurred in the wizard']");
   }
 
   public String getError() {
