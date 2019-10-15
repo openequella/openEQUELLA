@@ -1,5 +1,7 @@
 #!/bin/sh
 
+df -h
+
 SCRIPTS_DIR=`dirname $0`
 SUFFIX=scalacheck-$1
 

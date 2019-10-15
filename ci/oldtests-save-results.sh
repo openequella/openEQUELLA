@@ -1,5 +1,7 @@
 #!/bin/sh
 
+df -h
+
 SCRIPTS_DIR=`dirname $0`
 SUFFIX=testng-${OLD_TEST_SUITE}
 if [ ${OLD_TEST_NEWUI} ]; then

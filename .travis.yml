@@ -98,17 +98,22 @@ jobs:
       name: Build the Import/Export tool
 
     - stage: functional test
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        Tests/test dumpCoverage
+      script:
+        - df -h
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          installEquella startEquella configureInstall setupForTests \
+          Tests/test dumpCoverage
       workspaces:
         use: oeq-installer
       name: Scalacheck
-      after_script: ci/scalacheck-save-results.sh Tests
+      after_script:
+        - ci/scalacheck-save-results.sh Tests
     - stage: functional test
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        Tests/Serial/test dumpCoverage
+      script:
+        - df -h
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          installEquella startEquella configureInstall setupForTests \
+          Tests/Serial/test dumpCoverage
       workspaces:
         use: oeq-installer
       name: Scalacheck Serial
