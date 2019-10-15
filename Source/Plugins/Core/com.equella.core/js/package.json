@@ -21,8 +21,7 @@
     "bundleps:main": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Bridge --main Bridge -o entrybuild/target/main.js\"",
     "bundleps:selection": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m OEQ.SelectionUI.Main --main OEQ.SelectionUI.Main -o entrybuild/target/selection.js\"",
     "bundleps:uploadlist": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Uploads.UploadList --main Uploads.UploadList -o entrybuild/target/uploadlist.js\"",
-    "bundleps:langbundle": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Tools.GenLangStrings --main Tools.GenLangStrings -o target/genlang.js\"",
-    "scss": "sass ../resources/web/css/saas/legacy.scss ../resources/web/css/saas/output/legacy.css"
+    "bundleps:langbundle": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Tools.GenLangStrings --main Tools.GenLangStrings -o target/genlang.js\""
   },
   "dependencies": {
     "@date-io/luxon": "1.3.9",

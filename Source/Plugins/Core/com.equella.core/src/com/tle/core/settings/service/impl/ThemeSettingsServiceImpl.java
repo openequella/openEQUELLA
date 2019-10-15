@@ -40,10 +40,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Collections;
-import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 @SuppressWarnings("nls")
@@ -53,6 +54,8 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
   @Inject private StagingService stagingService;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThemeSettingsServiceImpl.class);
 
   @Inject
   protected void setObjectMapperService(ObjectMapperService objectMapperService) {
@@ -95,9 +98,9 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   @Override
   public void setTheme(NewUITheme theme) throws JsonProcessingException, IOException {
     checkPermissions();
-    compileSass();
     String themeString = themeToJSONString(theme);
     configurationService.setProperty(THEME_KEY, themeString);
+    compileSass();
   }
 
   @Override
@@ -158,36 +161,22 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
     return themeToString;
   }
 
-  public String newUIToSass(NewUITheme theme) throws IOException {
-    Map<String, ?> themeVars = objectMapper.readValue(themeToJSONString(theme), Map.class);
-    StringBuilder sassTheme = new StringBuilder();
-
-    themeVars.forEach(
-        (key, value) -> {
-          sassTheme.append("$" + key + " : " + value + ";");
-        });
-
-    return sassTheme.toString();
-  }
-
   public InputStream getLegacyCss() throws IOException {
     File baseLegacySass =
         new File(getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).getFile());
-    File baseLegacyOutput;
     CustomisationFile customisationFile = new CustomisationFile();
+    boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
+    boolean baseSassUpdated =
+        baseLegacySass.lastModified()
+            > fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
 
-    if (fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME)) {
-      if (baseLegacySass.lastModified()
-          > fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME)) {
-        compileSass();
-      }
-    } else {
+    if (!legacyCssExists || baseSassUpdated) {
       compileSass();
     }
     return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
   }
 
-  public InputStream compileSass() throws IOException {
+  private InputStream compileSass() throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
     StagingFile staging = stagingService.createStagingArea();
 
@@ -199,7 +188,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 
     fileSystemService.write(staging, SASS_LEGACY_CSS_FILENAME, legacyScss, false);
     fileSystemService.write(
-        staging, SASS_VARS_FILENAME, new StringReader(newUIToSass(getTheme())), false);
+        staging, SASS_VARS_FILENAME, new StringReader(getTheme().toSassVars()), false);
 
     final File dstFile = fileSystemService.getExternalFile(staging, LEGACY_CSS_FILENAME);
 
@@ -212,7 +201,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
       fileSystemService.write(
           customisationFile, LEGACY_CSS_FILENAME, new StringReader(output.getCss()), false);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOGGER.error("Failed to compile Sass to css " + e);
     }
     return legacyScss;
   }

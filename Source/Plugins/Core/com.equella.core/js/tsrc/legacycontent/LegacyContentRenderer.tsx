@@ -2,7 +2,6 @@ import * as React from "react";
 import JQueryDiv from "./JQueryDiv";
 import { makeStyles } from "@material-ui/styles";
 import { PageContent } from "./LegacyContent";
-import "./legacy.scss";
 
 const useStyles = makeStyles(t => ({
   withPadding: {
