@@ -109,6 +109,15 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   import LegacyGuice.urlService
 
+  def isClientPath(relUrl: RelativeUrl): Boolean = relUrl.path.parts match {
+    case Vector("logon.do") => false
+    case p                  => p.last.endsWith(".do")
+  }
+
+  def internalRoute(uri: String): Option[String] = {
+    relativeURI(uri).filter(isClientPath).map(r => "/" + r.toString())
+  }
+
   override lazy val getExceptionHandlers: util.Collection[ExceptionHandlerMatch] = {
     val disableHandlers = Set("ajaxExceptionHandler", "defaultEquellaErrorHandler")
     val tracker         = SectionsControllerImpl.createExceptionTracker(AbstractPluginService.get())
@@ -228,6 +237,7 @@ class LegacyContentApi {
         info
       })
     }
+
     path match {
       case ""                          => ("/home.do", identity)
       case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
@@ -324,15 +334,13 @@ class LegacyContentApi {
                   new BookmarkAndModify(context,
                                         menuLink.getHandlerMap.getHandler("click").getModifier))
                 .getHref
-              val relativized =
-                LegacyContentController.relativeURI(href).filter(_.path.parts.last.endsWith(".do"))
-              val route   = Option(mc.getRoute)
+              val route   = Option(mc.getRoute).orElse(LegacyContentController.internalRoute(href))
               val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
               MenuItem(
                 menuLink.getLabelText,
-                if (relativized.isEmpty && route.isEmpty) Some(href) else None,
+                if (route.isEmpty) Some(href) else None,
                 Option(mc.getSystemIcon),
-                route.orElse(relativized.map(r => "/" + r.toString)),
+                route,
                 iconUrl,
                 "_blank" == menuLink.getTarget
               )
@@ -436,9 +444,9 @@ class LegacyContentApi {
     Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map {
       url =>
         Response.ok {
-          LegacyContentController.relativeURI(url) match {
-            case None           => ExternalRedirect(url)
-            case Some(relative) => InternalRedirect(relative.toString, userChanged(req))
+          LegacyContentController.internalRoute(url) match {
+            case Some(relative) => InternalRedirect(relative.substring(1), userChanged(req))
+            case _              => ExternalRedirect(url)
           }
         }
     }
