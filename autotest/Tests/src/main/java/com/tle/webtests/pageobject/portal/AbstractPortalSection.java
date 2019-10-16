@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     extends AbstractPage<T> {
@@ -74,7 +75,10 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    getBoxHead().findElement(By.className("box_edit")).click();
+    By boxEditButtonBy = By.className("box_edit");
+    waiter.until(ExpectedConditions.elementToBeClickable(boxEditButtonBy));
+    WebElement boxEditButton = getBoxHead().findElement(boxEditButtonBy);
+    boxEditButton.click();
     return portal.get();
   }
 
