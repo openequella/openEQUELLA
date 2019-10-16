@@ -14,6 +14,7 @@ Contributors guide: https://github.com/openequella/openEQUELLA/blob/develop/CONT
 - [ ] the [contributor license agreement][] is signed
 - [ ] commit message follows [commit guidelines][]
 - [ ] tests are included
+- [ ] screenshots are included showing significant UI changes
 - [ ] documentation is changed or added
 
 ##### Description of change
