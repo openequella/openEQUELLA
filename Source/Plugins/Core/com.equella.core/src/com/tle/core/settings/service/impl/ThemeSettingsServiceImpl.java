@@ -186,6 +186,8 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
     Compiler compiler = new Compiler();
     Options options = new Options();
 
+    options.getIncludePaths().add(new File(getClass().getResource("/web/css/").getFile()));
+
     fileSystemService.write(staging, SASS_LEGACY_CSS_FILENAME, legacyScss, false);
     fileSystemService.write(
         staging, SASS_VARS_FILENAME, new StringReader(getTheme().toSassVars()), false);

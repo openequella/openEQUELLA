@@ -1,5 +1,11 @@
 @import "variables.scss";
 
+@import "itemlist";
+@import "search";
+@import "autocompleteeditbox";
+@import "layouts/onecolumn";
+@import "resultactions";
+
 /*****************************************************************************
  CSS Reset (excluding img since width and height style override image attributes)
 *****************************************************************************/
@@ -534,7 +540,7 @@ div.tooltip {
  Generic area box - used for the main column and full page work
 *****************************************************************************/
 .area {
-  border: 1px solid #8f8b7e;
+  border: 1px solid $secondaryColor;
   background: $backgroundColor;
   padding: 25px 33px 33px;
 }
