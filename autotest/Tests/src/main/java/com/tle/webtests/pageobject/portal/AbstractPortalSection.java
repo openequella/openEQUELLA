@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     extends AbstractPage<T> {
@@ -74,9 +73,14 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
   }
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
-    showButtons();
     WebElement boxEditButton = getBoxHead().findElement(By.className("box_edit"));
-    waiter.until(ExpectedConditions.elementToBeClickable(boxEditButton));
+    // 'showButtons' not working very well on Travis when the New UI is enable
+    // So retry three times at most
+    int retry = 3;
+    while (!boxEditButton.isDisplayed() && retry > 0) {
+      showButtons();
+      retry--;
+    }
     boxEditButton.click();
     return portal.get();
   }
