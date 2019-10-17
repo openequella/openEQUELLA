@@ -75,9 +75,8 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    By boxEditButtonBy = By.className("box_edit");
-    waiter.until(ExpectedConditions.elementToBeClickable(boxEditButtonBy));
-    WebElement boxEditButton = getBoxHead().findElement(boxEditButtonBy);
+    WebElement boxEditButton = getBoxHead().findElement(By.className("box_edit"));
+    waiter.until(ExpectedConditions.elementToBeClickable(boxEditButton));
     boxEditButton.click();
     return portal.get();
   }
