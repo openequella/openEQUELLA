@@ -91,7 +91,8 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   Response create(
       @Context UriInfo uriInfo,
       @ApiParam(value = "Taxonomy") TaxonomyBean bean,
-      @ApiParam(required = false) @QueryParam(value = "file") String stagingUuid);
+      @ApiParam(required = false, value = "Staging area UUID") @QueryParam(value = "file")
+          String stagingUuid);
 
   @PUT
   @Path("/{uuid}")
@@ -128,16 +129,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   Response unlock(
       @Context UriInfo uriInfo, @ApiParam(value = "Taxonomy UUID") @PathParam("uuid") String uuid);
 
-  /**
-   * Search terms
-   *
-   * @param uuid
-   * @param query
-   * @param restriction
-   * @param limit
-   * @param searchfullterm
-   * @return Response
-   */
   @GET
   @Path("/{uuid}/search")
   @ApiOperation(value = "Search terms")

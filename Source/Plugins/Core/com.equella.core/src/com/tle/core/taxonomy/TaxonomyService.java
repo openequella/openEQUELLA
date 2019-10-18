@@ -66,9 +66,10 @@ public interface TaxonomyService
   String getDataForTerm(String taxonomyUuid, String fullTermPath, String key);
 
   /**
-   * @param taxonomyUuid
-   * @param parentFullTermPath
-   * @param termValue
+   * @param taxonomyUuid The UUID of the taxonomy to add the term into
+   * @param parentFullTermPath The full part of the parent term, e.g. A\B\C
+   * @param termUuid The UUID of the new term
+   * @param termValue The value of the new term (ie the part contained in the term path)
    * @param createHierarchy Create as many terms as required to ensure each part of
    *     parentFullTermPath exists
    * @throws IllegalOperationException If the data source does not support term addition
@@ -101,7 +102,7 @@ public interface TaxonomyService
   /**
    * Get TermResult by term uuid
    *
-   * @param taxonomy
+   * @param taxonomyUuid
    * @param termUuid
    * @return
    */
@@ -110,7 +111,7 @@ public interface TaxonomyService
   /**
    * Get a data value for a key against a term
    *
-   * @param taxonomy
+   * @param taxonomyUuid
    * @param termUuid
    * @param dataKey
    * @return String

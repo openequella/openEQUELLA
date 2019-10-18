@@ -680,12 +680,9 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
     } else {
       getHibernateTemplate()
           .execute(
-              new HibernateCallback() {
-                @Override
-                public Object doInHibernate(Session session) {
-                  shiftLeftAndRightIndexes(session, taxonomy, from, to, amount);
-                  return null;
-                }
+              newSession -> {
+                shiftLeftAndRightIndexes(newSession, taxonomy, from, to, amount);
+                return null;
               });
     }
   }

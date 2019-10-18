@@ -50,6 +50,13 @@ public interface TermDao extends GenericDao<Term, Long> {
    * @param parent
    * @param termValue
    * @param index
+   */
+  /**
+   * @param taxonomy The taxonomy to add the term into
+   * @param parent The parent term to add a new child to
+   * @param termUuid The UUID of the new term
+   * @param termValue The value of the new term (ie the part contained in the term path)
+   * @param index The insert position, or -1 for appending as the last child
    * @return The new term, so you don't have to load it up again if you want to use it
    */
   Term insertNewTerm(
