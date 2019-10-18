@@ -280,11 +280,7 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
       @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
       @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey);
 
-  /**
-   * Returns terms
-   *
-   * @return OK
-   */
+  /** @return 200 response if successful */
   @POST
   @Path("/{uuid}/sortchildren")
   @ApiOperation(value = "Sort child terms")

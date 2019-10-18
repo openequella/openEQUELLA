@@ -374,11 +374,7 @@ public class TaxonomyResourceImpl
     return Response.ok().build();
   }
 
-  /**
-   * Returns terms
-   *
-   * @return OK
-   */
+  /** @return 200 response if successful */
   @Override
   public Response sortChildTerms(String taxonomyUuid, String path) {
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
