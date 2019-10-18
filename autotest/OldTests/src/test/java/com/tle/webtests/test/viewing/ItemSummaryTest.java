@@ -9,6 +9,7 @@ import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
+import com.tle.webtests.pageobject.viewitem.AttachmentsPage;
 import com.tle.webtests.pageobject.viewitem.ItemDetailsPage;
 import com.tle.webtests.pageobject.viewitem.PackageViewer;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
@@ -19,6 +20,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalContro
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
@@ -113,7 +115,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
   public void testViewCount() {
     logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
 
-    WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION2);
+    WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION3);
     String fullName = context.getFullName("view count");
     wizard.editbox(1, fullName);
     wizard = wizard.next();
@@ -126,5 +128,59 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     context.getDriver().navigate().refresh();
     details = new SummaryPage(context).get().itemDetails();
     assertEquals(details.getViewCount(), 2, "Incorrect view count");
+  }
+
+  @Test
+  public void testAttachmentViewCount() {
+    final String linkAttachment =
+        "https://web.archive.org/web/19990125084553/http://alpha.google.com/";
+
+    logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
+
+    final WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION3);
+    final String fullName = context.getFullName("attachment view count");
+    wizard.editbox(1, fullName);
+    wizard.addUrl(3, linkAttachment);
+    SummaryPage summary = wizard.save().publish();
+    checkViews(summary, 1, linkAttachment, 0);
+
+    // view the attachment and go back
+    summary
+        .attachments()
+        .viewLinkAttachment(linkAttachment, By.cssSelector("img[alt=\"Google!\"]"));
+    final WebDriver.Navigation navigate = context.getDriver().navigate();
+    navigate.back();
+    // navigate.refresh();
+
+    // assert view count +1 (only!) on item, and +1 on attachment
+    summary = new SummaryPage(context).get();
+    checkViews(summary, 2, linkAttachment, 1);
+
+    // view the attachment again and go back
+    summary
+        .attachments()
+        .viewLinkAttachment(linkAttachment, By.cssSelector("img[alt=\"Google!\"]"));
+    navigate.back();
+    // navigate.refresh();
+
+    // assert view count +1 (only!) on item, and +1 on attachment
+    summary = new SummaryPage(context).get();
+    checkViews(summary, 3, linkAttachment, 2);
+  }
+
+  private void checkViews(
+      SummaryPage summary,
+      int expectedItemViews,
+      String attachmentDescription,
+      int expectedAttachmentViews) {
+    final ItemDetailsPage details = summary.itemDetails();
+    assertEquals(details.getViewCount(), expectedItemViews, "Incorrect view count");
+
+    if (attachmentDescription != null) {
+      // assert view count on attachment
+      final AttachmentsPage attachments = summary.attachments();
+      final String attachmentDetails = attachments.attachmentDetails(attachmentDescription);
+      assertTrue(attachmentDetails.contains("Views: " + expectedAttachmentViews));
+    }
   }
 }
