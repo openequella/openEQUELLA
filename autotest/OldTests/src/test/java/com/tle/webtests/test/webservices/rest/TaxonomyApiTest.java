@@ -215,6 +215,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     // Check test terms children sorted
     final List<String> returnedSortedChildTerms = new ArrayList<>(10);
     final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, testTermPath);
+
     for (int i = 0; i < testTermSortedChildren.size(); i++) {
       final JsonNode node = testTermSortedChildren.get(i);
       final String termName = node.get("term").getTextValue();

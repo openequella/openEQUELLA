@@ -94,7 +94,6 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
       @ApiParam(required = false, value = "Staging area UUID") @QueryParam(value = "file")
           String stagingUuid);
 
-
   @PUT
   @Path("/{uuid}")
   @ApiOperation("Edit a taxonomy")
