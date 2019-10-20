@@ -203,7 +203,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
       fileSystemService.write(
           customisationFile, LEGACY_CSS_FILENAME, new StringReader(output.getCss()), false);
     } catch (Exception e) {
-      LOGGER.error("Failed to compile Sass to css " + e);
+      LOGGER.error("Failed to compile Sass to css ", e);
     }
     return legacyScss;
   }
