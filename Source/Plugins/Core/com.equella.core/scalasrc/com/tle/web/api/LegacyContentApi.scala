@@ -80,7 +80,6 @@ case class MenuItem(title: String,
                     newWindow: Boolean)
 
 case class LegacyContent(html: Map[String, String],
-                         css: Iterable[String],
                          js: Iterable[String],
                          script: String,
                          state: Map[String, Array[String]],
@@ -480,9 +479,6 @@ class LegacyContentApi {
 
       val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
       val jsFiles = context.getJsFiles.asScala
-      val cssFiles = context.getCssFiles.asScala.collect {
-        case css: CssInclude => css.getHref(context)
-      }
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
@@ -493,7 +489,6 @@ class LegacyContentApi {
         LegacyContentKey,
         LegacyContent(
           html,
-          cssFiles,
           jsFiles,
           scripts.mkString("\n"),
           getBookmarkState(info, new BookmarkEvent(null, true, info)),
@@ -608,6 +603,8 @@ class LegacyContentApi {
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
     info.setRendered()
+    //removes old ui css that gets included when a sections ajax request is made
+    arc.clearCss()
     Response.ok(responseCallback.getResponseObject(arc))
   }
 }

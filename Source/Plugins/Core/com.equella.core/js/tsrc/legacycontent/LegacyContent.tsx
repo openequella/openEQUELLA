@@ -2,6 +2,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
+import { Config } from "../config";
 
 declare global {
   interface Window {
@@ -32,7 +33,6 @@ type FormUpdate = {
 type LegacyContent = {
   html: { [key: string]: string };
   state: StateData;
-  css: string[];
   js: string[];
   script: string;
   noForm: boolean;
@@ -105,7 +105,7 @@ export const LegacyContent = React.memo(function LegacyContent(
   }
 
   function updatePageContent(content: LegacyContent, scrollTop: boolean) {
-    updateIncludes(content.css, content.js).then(extraCss => {
+    updateIncludes(content.js).then(extraCss => {
       const pageContent = {
         ...content,
         contentId: v4(),
@@ -188,10 +188,10 @@ export const LegacyContent = React.memo(function LegacyContent(
         return false;
       },
       updateIncludes(
-        includes: { css: string[]; js: string[]; script: string },
+        includes: { js: string[]; script: string },
         cb: () => void
       ) {
-        updateIncludes(includes.css, includes.js).then(_ => {
+        updateIncludes(includes.js).then(_ => {
           window.eval(includes.script);
           cb();
         });
@@ -222,7 +222,7 @@ export const LegacyContent = React.memo(function LegacyContent(
     }
     if (!enabled) {
       setContent(undefined);
-      updateStylesheets([]).then(deleteElements);
+      updateStylesheets().then(deleteElements);
     }
   }, [enabled, props.pathname, props.search, props.locationKey]);
 
@@ -234,23 +234,21 @@ function resolveUrl(url: string) {
 }
 
 async function updateIncludes(
-  css: string[],
   js: string[]
 ): Promise<{ [url: string]: HTMLLinkElement }> {
-  let extraCss = await updateStylesheets(css);
+  let extraCss = await updateStylesheets();
   await loadMissingScripts(js);
   return extraCss;
 }
 
-function updateStylesheets(
-  _sheets: string[]
-): Promise<{ [url: string]: HTMLLinkElement }> {
-  const sheets = _sheets.map(resolveUrl);
+function updateStylesheets(): Promise<{ [url: string]: HTMLLinkElement }> {
+  const sheets = [resolveUrl(`${Config.baseUrl}api/theme/legacy.css`)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert")!;
   const head = doc.getElementsByTagName("head")[0];
   let current = insertPoint.previousElementSibling;
   const existingSheets = {};
+
   while (current != null && current.tagName == "LINK") {
     existingSheets[(current as HTMLLinkElement).href] = current;
     current = current.previousElementSibling;

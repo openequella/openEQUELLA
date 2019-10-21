@@ -1,0 +1,1750 @@
+@import "variables.scss";
+
+@import "itemlist";
+@import "search";
+@import "autocompleteeditbox";
+@import "layouts/onecolumn";
+@import "resultactions";
+
+/*****************************************************************************
+ CSS Reset (excluding img since width and height style override image attributes)
+*****************************************************************************/
+html,
+body,
+div,
+span,
+applet,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+font,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+input,
+textarea,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+select {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+}
+
+img {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  vertical-align: baseline;
+  background: transparent;
+}
+
+html {
+  overflow-y: scroll; /* Always show a scrollbar for consistency */
+}
+
+html.newui {
+  overflow-y: auto;
+}
+
+body {
+  color: #4b4842;
+  font-size: 11px;
+  line-height: 1;
+  background: #043b4e;
+}
+
+.wrapped {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+ul {
+  list-style: none;
+}
+
+ul.checklist li {
+  margin: 0 7px 5px 7px;
+}
+
+.topblock ul {
+  list-style: disc;
+}
+
+.topblock ul li {
+  margin: 5px 30px;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  outline: auto;
+}
+
+ins {
+  text-decoration: none;
+}
+
+del {
+  text-decoration: line-through;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+kbd {
+  display: inline;
+  display: inline-block;
+  min-width: 1em;
+  margin: 0 0.5em;
+  padding: 0.2em 0.3em 0.3em 0.3em;
+  font: normal 0.85em/1em Monaco, "Bitstream Vera Sans Mono", "andale mono",
+    "lucida console", "courier new", monospace;
+  text-align: center;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  user-select: none;
+  background: #e6e6e6;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#e6e6e6),
+    to(whiteSmoke)
+  );
+  background: -moz-linear-gradient(top, #e6e6e6, whiteSmoke);
+  background: -ms-linear-gradient(top, #e6e6e6, whiteSmoke);
+  color: #222;
+  border: 1px solid #ccc;
+  border-right: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  -webkit-box-shadow: 0 2px 3px rgba(220, 220, 220, 0.8);
+  -moz-box-shadow: 0 2px 3px rgba(220, 220, 220, 0.8);
+  box-shadow: 0 2px 3px rgba(220, 220, 220, 0.8);
+}
+
+/*****************************************************************************
+ Generic CSS classes
+*****************************************************************************/
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.clear {
+  clear: both;
+}
+
+/*****************************************************************************
+ Overall layout stuff
+*****************************************************************************/
+#wrapper {
+  min-width: 980px;
+}
+
+/*****************************************************************************
+ Body and main content area styling
+*****************************************************************************/
+#body {
+  width: 100%;
+  float: left;
+  background: url(../images/body-bg-top.gif) 0 0 repeat-x;
+  background-color: #0a84ac;
+}
+
+#body-wrap1 {
+  width: 100%;
+  float: left;
+  background: url(../images/body-bg-bottom.gif) left bottom repeat-x;
+}
+
+#body-wrap2 {
+  width: 100%;
+  float: left;
+  background: url(../images/body-bg.ltr.gif) center top no-repeat;
+  padding: 14px 0 24px 0;
+}
+
+#body-wrap3 {
+  position: relative;
+  width: 980px;
+  min-height: 500px;
+  margin: 0 auto;
+}
+
+#body-inner {
+  width: 953px;
+  padding: 0 0 0 27px;
+  min-height: 500px;
+  float: left;
+}
+
+/*****************************************************************************
+ Page bar with Help and Screen Options
+*****************************************************************************/
+#button-bar {
+  width: 400px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 17px;
+  text-align: right;
+  z-index: 10;
+  /* Needs to show above #content but below pop-up windows */
+}
+
+#button-bar button {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: none;
+}
+
+.topblock {
+  border: 1px solid;
+  border-bottom: none;
+  padding: 20px 15px;
+  color: #fbfbfb;
+}
+
+.topblock h3 {
+  color: #f6a03d;
+  font-size: 17px;
+  font-weight: normal;
+  margin: 0 0 10px 0;
+}
+
+.topblock p,
+.topblock ul {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 10px 0 10px 10px;
+}
+
+.topblock a {
+  text-decoration: none;
+}
+
+.topblock a:hover,
+.topblock a:focus {
+  text-decoration: underline;
+}
+
+.topblock {
+  background: #1276af;
+  border-color: #429cc5;
+}
+
+.topblock a,
+.topblock a,
+.topblock a:hover,
+.topblock a:focus {
+  color: #8cf;
+}
+
+.screen-option {
+  padding: 0 30px 0 0;
+  margin: 5px 0;
+}
+
+.screen-option.settingRow .settingLabel {
+  width: 200px;
+}
+
+#servermessage {
+  background: #e66;
+  border-color: #f99;
+}
+
+#servermessage p {
+  text-align: center;
+  font-weight: bold;
+}
+
+/*****************************************************************************
+ Content area which includes the menu and main page area
+*****************************************************************************/
+#content {
+  width: 953px;
+  float: right;
+  background: url(../images/box-beige-middle.gif) 0 0 repeat-y;
+  position: relative;
+}
+
+#content-bottom {
+  width: 953px;
+  float: left;
+  background: url(../images/box-beige-bottom.gif) left bottom no-repeat;
+}
+
+#content-inner {
+  width: 953px;
+  min-height: 250px;
+  float: left;
+  background: url(../images/box-beige-top.gif) 0 0 no-repeat;
+}
+
+.content a,
+.modal a {
+  color: #0c96c4;
+  text-decoration: none;
+}
+
+.content a:hover,
+.modal a:hover,
+.content a:focus {
+  color: #0c96c4;
+  text-decoration: underline;
+}
+
+.content a.disabled,
+.modal a.disabled {
+  color: #4b4842;
+  text-decoration: none;
+  cursor: default;
+  opacity: 0.4;
+}
+
+/*****************************************************************************
+ Menu
+*****************************************************************************/
+#menu {
+  float: left;
+  margin: 32px 0 0 -30px;
+  padding: 0 0 22px 0;
+}
+
+.page-layout-menu-full #menu {
+  width: 195px;
+}
+
+.page-layout-menu-collapsed #menu {
+  width: 46px;
+}
+
+#menu ul {
+  border-top: 1px solid #98927c;
+  border-left: 1px solid #98927c;
+  border-right: 1px solid #98927c;
+  float: left;
+  margin: 0 0 10px 0;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+}
+
+.page-layout-menu-full #menu ul {
+  width: 193px;
+}
+
+.page-layout-menu-full #menu ul li {
+  overflow: hidden;
+}
+
+.page-layout-menu-collapsed #menu ul {
+  width: 44px;
+}
+
+#menu ul li {
+  border-bottom: 1px solid #98927c;
+}
+
+#menu ul li a {
+  background-color: #ecebea;
+  background-repeat: no-repeat;
+  border-top: 1px solid #f7f7f7;
+  background-position: 10px center;
+  color: #646052;
+  padding: 11px 10px 12px 45px;
+  text-decoration: none;
+  display: block;
+  font-size: 12px;
+  text-shadow: 0 1px 0 #fff;
+  -moz-text-shadow: 0 1px 0 #fff;
+  -webkit-text-shadow: 0 1px 0 #fff;
+}
+
+.page-layout-menu-collapsed #menu ul li a {
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  background-position: 11px center;
+  text-indent: -9999px;
+}
+
+#menu ul li a:hover {
+  text-decoration: none;
+  background-color: #fff;
+}
+
+#menu ul li a.active,
+#menu ul li a:focus,
+#menu ul li a:active {
+  background-color: #fff;
+}
+
+div.tooltip {
+  display: none;
+  position: absolute;
+  padding: 4px;
+  background-color: #efefef;
+  z-index: 9999999;
+  border: solid 1px #646052;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+/*****************************************************************************
+ Breadcrumbs
+*****************************************************************************/
+
+#breadcrumbs {
+  position: absolute;
+  top: 11px;
+  width: 513px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  height: 15px;
+  line-height: 13px;
+}
+
+#breadcrumb-inner {
+  unicode-bidi: embed;
+  direction: ltr;
+}
+
+#breadcrumbs a {
+  color: #045f7f;
+}
+
+.page-layout-menu-full #breadcrumbs {
+  left: 184px;
+}
+
+.page-layout-menu-collapsed #breadcrumbs {
+  left: 36px;
+}
+
+/*****************************************************************************
+ Container for the actual page content
+*****************************************************************************/
+
+#content-body {
+  float: right;
+  padding: 32px 18px 32px 0;
+}
+
+.page-layout-menu-full #content-body {
+  width: 750px;
+}
+
+.page-layout-menu-collapsed #content-body {
+  width: 899px;
+}
+
+.page-layout-menu-hidden #content-body {
+  width: 917px;
+}
+
+#col1 {
+  float: left;
+}
+
+#col2 {
+  float: right;
+}
+
+/*****************************************************************************
+ Generic area box - used for the main column and full page work
+*****************************************************************************/
+.area {
+  border: 1px solid $secondaryColor;
+  background: $backgroundColor;
+  padding: 25px 33px 33px;
+}
+
+.area + .area {
+  margin-top: 15px;
+}
+
+.area h2 {
+  color: #8d897e;
+  font-size: 22px;
+  font-weight: normal;
+  margin-bottom: 10px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.area h2 + table {
+  margin-top: 20px;
+}
+
+.area .indent {
+  padding: 0 0 0 16px;
+}
+
+.area .indent p {
+  margin: 10px 0;
+  line-height: 1.3;
+}
+
+.area div.spacer {
+  height: 30px;
+}
+
+.area p,
+.area ol,
+.area ul.standard {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 20px 0;
+}
+
+.area ol li,
+.area ul.standard li {
+  margin: 5px 0 5px 30px;
+}
+
+.area ol li ol {
+  list-style: lower-alpha;
+  margin: 5px 0;
+}
+
+.area ul.standard {
+  list-style: disc;
+}
+
+.area h3 {
+  font-size: 17px;
+  font-weight: normal;
+  margin: 20px 0 5px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.area h4 {
+  font-size: 12px;
+  margin: 10px 0;
+}
+
+.area h3 + p {
+  margin-top: 4px;
+  word-wrap: break-word;
+}
+
+.area fieldset h3,
+.area .control h3 {
+  color: #f38c00;
+  font-size: 14px;
+  margin: 0 0 7px 0;
+}
+
+.area fieldset p,
+.area .control p {
+  margin-bottom: 10px;
+}
+
+/*****************************************************************************
+ Generic form styling
+*****************************************************************************/
+hr {
+  height: 0;
+  border: none;
+  border-top: 1px solid #98927c;
+  border-bottom: 1px solid #fdfdfd;
+  clear: both;
+  margin: 15px 0;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select[multiple="multiple"] {
+  border: 1px solid #cfcbbe;
+  border-right: 1px solid #c3beae;
+  border-top: 1px solid #7e765e;
+  background: #fff;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+select,
+select option {
+  background-color: #ffffff;
+}
+
+#settingsPage input[disabled] {
+  opacity: 0;
+}
+
+input[disabled],
+input[disabled="disabled"],
+textarea[disabled],
+textarea[disabled="disabled"],
+select[disabled] + .newListSelected,
+select[disabled="disabled"] + .newListSelected {
+  opacity: 0.6;
+  zoom: 1;
+}
+
+div.input {
+  margin: 8px 0;
+}
+
+div.input.checkbox,
+div.input.radio {
+  margin: 3px 0;
+}
+
+div.input.checkbox label,
+div.input.radio label {
+  margin: 0 6px 0 20px;
+  display: block;
+  vertical-align: middle;
+  padding-top: 2px;
+}
+
+div.input.checkbox input,
+div.input.radio input {
+  float: left;
+  vertical-align: middle;
+}
+
+div.calendar img {
+  cursor: pointer;
+  position: absolute;
+  margin: -1px 0 0 5px;
+}
+
+fieldset.float {
+  float: left;
+  margin: 0 50px 20px 0;
+}
+
+/*****************************************************************************
+ Bootstrap button overrides
+*****************************************************************************/
+.btn {
+  margin-top: 0;
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: 2px;
+  padding: 2px 10px;
+  color: $primaryTextColor;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  line-height: 18px;
+  /* hacky, but needed to make things align with our existing stuff */
+  vertical-align: baseline;
+  background-image: none !important;
+}
+
+.btn.btn-equella {
+  background-color: $primaryColor;
+  /* gradients are dead?
+	background-image: -moz-linear-gradient(top, #BBB, #999);
+	background-image: -ms-linear-gradient(top, #BBB, #999);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#BBB),
+		to(#999) );
+	background-image: -webkit-linear-gradient(top, #BBB, #999);
+	background-image: -o-linear-gradient(top, #BBB, #999);
+	background-image: linear-gradient(to bottom, #BBB, #999);
+	background-repeat: repeat-x;
+*/
+  border-color: #999 #999 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+
+.btn:focus {
+  text-decoration: none;
+  background-position: 0 -22px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+
+.btn.btn-equella:hover,
+.btn.btn-equella.active,
+.btn.btn-equella:focus,
+.btn.btn-equella.disabled,
+.btn.btn-equella[disabled] {
+  color: white;
+  background-image: none;
+  background-color: #999;
+}
+
+.btn.btn-equella:active,
+.btn.btn-equella.active {
+  background-color: #439bc6;
+  background-image: none;
+}
+
+.btn.btn-equella.active:focus,
+.btn.btn-equella.active:hover {
+  background-color: #2377be;
+  background-image: none;
+}
+
+.btn.btn-equella .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.btn.btn-primary {
+  background-color: #3786cc;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:focus {
+  background-color: #1676cc;
+}
+
+.btn-group button.btn-mini span.caret {
+  margin-top: 8px;
+}
+
+.btn-group.open .btn.dropdown-toggle {
+  background-color: #439bc6;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn.btn-mini {
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.btn.btn-mini [class^="icon-"],
+.btn.btn-mini [class*="icon-"] {
+  vertical-align: text-bottom;
+}
+
+.btn-group > .btn + .btn {
+  margin-left: -3px;
+}
+
+.majorActions {
+  display: flex;
+  flex-direction: column;
+}
+
+.majorActions > :not(:first-child) {
+  margin-top: 10px;
+}
+
+.action-button {
+  width: 100%;
+  height: 28px;
+  padding: 0 0 0 30px;
+  border: none;
+  color: #4b4842;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: left;
+  background-repeat: no-repeat;
+  text-shadow: 0 1px 1px #fff;
+  -moz-text-shadow: 0 1px 1px #fff;
+  -webkit-text-shadow: 0 1px 1px #fff;
+  background-image: url("../images/action-button.ltr.png");
+  box-sizing: border-box;
+}
+
+.action-button:hover,
+.action-button:focus {
+  background-position: 0 -28px;
+  cursor: pointer;
+}
+
+.action-button + .action-button {
+  margin: 10px 0 0 0;
+}
+
+.button-strip {
+  background: #eeeeec none repeat scroll 0 0;
+  width: 100%;
+  text-align: right;
+  margin-top: 10px;
+  -moz-background-clip: border;
+  -moz-background-inline-policy: continuous;
+  -moz-background-origin: padding;
+}
+
+.area .button-strip {
+  background: #e8e8e8;
+}
+
+.btn-group .dropdown-menu {
+  font-size: 12px;
+}
+
+/*****************************************************************************
+ Footer
+*****************************************************************************/
+#footer {
+  width: 100%;
+  float: left;
+  background: url(../images/footer-bg.gif) 0 0 repeat-x;
+  font-size: 11px;
+  color: #9de8ff;
+}
+
+#footer-wrap {
+  width: 980px;
+  height: 162px;
+  margin: 0 auto;
+}
+
+#footer-inner {
+  width: 980px;
+  height: 162px;
+  float: left;
+  margin: 0 auto;
+  background: url(../images/footer-equella.gif) right top no-repeat;
+  padding: 43px 0 0 0;
+}
+
+#footer-links {
+  float: left;
+  line-height: 15px;
+}
+
+#footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+#footer a:hover,
+#footer a:focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
+#socialmedia {
+  margin: 35px 0 0 0;
+  float: left;
+  clear: both;
+}
+
+#socialmedia a.twitter {
+  background: url("../images/twitter.png") no-repeat;
+}
+
+#socialmedia a.rss {
+  background: url("../images/rss-fb-twitter.png") no-repeat;
+}
+
+#socialmedia a.icon {
+  text-indent: -9999px;
+  height: 22px;
+  width: 30px;
+  display: inline-block;
+  position: relative;
+  top: -6px;
+}
+
+#wcag-compliance {
+  float: left;
+  padding: 26px 0 0 15px;
+}
+
+/*****************************************************************************
+ Generic Dialog Styling
+*****************************************************************************/
+.modal-content-inner h3 {
+  color: #f7ab42;
+  font-size: 17px;
+  margin: 20px 0 10px;
+}
+
+.modal-content-inner h3:first-child,
+.modal-content-inner p:first-child {
+  margin-top: 0;
+}
+
+.modal-content-inner p {
+  font-size: 11px;
+  line-height: 14px;
+  margin: 10px 0;
+}
+
+.modal-content {
+  -moz-background-clip: border;
+  -moz-background-inline-policy: continuous;
+  -moz-background-origin: padding;
+  background: #fdfdfd url(../images/component/box_content_top.gif) repeat-x
+    scroll 0 0;
+  padding: 15px 0 0;
+  overflow-y: auto;
+  /* See #6290 for why this is here */
+  min-height: 0%;
+}
+
+.modal-content-background {
+  -moz-background-clip: border;
+  -moz-background-inline-policy: continuous;
+  -moz-background-origin: padding;
+  background: transparent url(../images/component/box_content_bottom.gif)
+    repeat-x scroll 0 bottom;
+  border-bottom: 1px solid #ffffff;
+  position: relative;
+}
+
+.modal-content-inner {
+  padding: 0 18px 15px;
+}
+
+.modal-title h3 {
+  -moz-background-clip: border;
+  -moz-background-inline-policy: continuous;
+  -moz-background-origin: padding;
+  background: #c3bfac none repeat scroll 0 0;
+  border-top: 1px solid #e5e3d9;
+  color: #4b4842;
+  /* cursor:move; Dialog cannot be moved */
+  display: block;
+  font-size: 13px;
+  font-weight: normal;
+  padding: 7px 14px 8px;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.modal {
+  -moz-background-clip: border;
+  -moz-background-inline-policy: continuous;
+  -moz-background-origin: padding;
+  background: #787467 none repeat scroll 0 0;
+  border: solid 1px #98927c;
+}
+
+.modal-footer {
+  background: #c3bfac;
+  border-top: solid 1px #e5e3d9;
+  clear: both;
+  width: 100%;
+  height: 30px;
+}
+
+.modal-footer-inner {
+  padding-top: 3px;
+  padding-right: 3px;
+  text-align: right;
+}
+
+.modal-footer-inner input {
+  margin-left: 5px;
+}
+
+.modal img.modal_close {
+  position: absolute;
+  right: 12px;
+  top: 7px;
+  cursor: pointer;
+}
+
+a.feedlink {
+  background: url(../images/rss.png) 0 0 no-repeat;
+  padding: 5px 0 5px 30px;
+  display: inline-block;
+}
+
+.paging {
+  clear: both;
+  text-align: center;
+}
+
+.paging ul li {
+  display: inline;
+  margin: 0 2px;
+}
+
+.action-link {
+  padding: 0 0 0 12px;
+  background: url(../images/icons/blue-arrow.ltr.png) 0 3px no-repeat;
+}
+
+.action-link-extra,
+.action-link {
+  font-size: 10px;
+}
+
+/*****************************************************************************
+ Toolbar for use in fullscreen views like the Large Image and External Link viewers
+*****************************************************************************/
+html.fullscreen,
+html.fullscreen-toolbar {
+  overflow-y: hidden;
+  /* Yes - hidden, not auto.  If your content is too big, fix it or allow scrolling */
+}
+
+html.fullscreen-toolbar body {
+  padding-top: 40px;
+}
+
+/* bootstrap changes these to zero when we use fixed-top, so change them back */
+html.fullscreen-toolbar .navbar.navbar-fixed-top .navbar-inner {
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+.navbar .nav > li > a {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.navbar .nav .dropdown-active-link {
+  padding-right: 0px;
+}
+
+.navbar .nav > li > button {
+  font-size: 14px;
+}
+
+.navbar a {
+  text-decoration: none;
+}
+
+.navbar .brand i {
+  vertical-align: middle;
+  line-height: 20px;
+}
+
+/*****************************************************************************
+ Selection session nav bar overrides
+*****************************************************************************/
+#selection-header .logo {
+  margin-left: 10px;
+}
+
+#selection-header .navbar-equella-selection .navbar-inverse .brand,
+.navbar-inverse .nav > li > a:hover {
+  color: white;
+}
+
+#selection-header .navbar-equella-selection .navbar-inverse .divider-vertical {
+  border-left-color: #7c786c;
+  border-right-color: #dddddd;
+  margin: 0px;
+}
+
+#selection-header
+  div.no-dividers
+  .navbar-equella-selection
+  .navbar-inverse
+  .divider-vertical {
+  display: none;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown.open
+  > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle {
+  background-color: #cbc7b9;
+}
+
+#selection-header .navbar-equella-selection .navbar .nav li.home:hover {
+  background-color: #cbc7b9;
+}
+
+#selection-header .navbar-equella-selection .navbar .nav li.home:hover a.home {
+  background-color: #cbc7b9;
+  color: #eeeeee;
+  text-shadow: none;
+}
+
+#selection-header .navbar-equella-selection .navbar .nav a.home {
+  color: #4b4842;
+  margin: 0;
+  text-shadow: 0 1px 0 #eeeeee;
+}
+
+#selection-header ul.nav li.dropdown button.dropdown-toggle {
+  background: none;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 11px 5px;
+}
+
+#selection-header-content .dropdown-menu {
+  position: absolute;
+  top: 35px;
+  left: -135px;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown
+  > .dropdown-toggle
+  .caret {
+  border-bottom-color: #4b4842;
+  border-top-color: #4b4842;
+  margin-left: 0px;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown.open
+  > .dropdown-toggle
+  .caret {
+  border-bottom-color: #ffffff;
+  border-top-color: #ffffff;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown
+  > .dropdown-toggle:hover {
+  background-color: #cbc7b9;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown
+  > .dropdown-toggle:hover
+  .caret,
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .nav
+  li.dropdown
+  .open
+  > .caret {
+  border-bottom-color: #ffffff;
+  border-top-color: #ffffff;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner {
+  background: none repeat scroll 0 0 #c3bfac;
+  border-bottom: 1px solid #7c786c;
+  filter: none;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
+  margin: auto;
+}
+
+#selection-header .close {
+  opacity: 1;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills {
+  text-align: center;
+  width: 100%;
+  float: left;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills {
+  display: inline-block;
+  float: none;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills
+  li {
+  display: inline;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills
+  li
+  a {
+  color: #07556d;
+  font-size: 15px;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills
+  li.selected
+  a {
+  color: black;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar.navbar-fixed-top.navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills
+  li
+  a:hover {
+  text-decoration: underline;
+}
+
+#selection-header
+  .navbar-equella-selection
+  .navbar-inverse
+  .centered-pills
+  ul.nav.nav-pills
+  .divider-vertical {
+  height: 20px;
+  margin-top: 10px;
+}
+/*****************************************************************************
+ Blue arrowed list
+*****************************************************************************/
+ul.blue {
+  margin: 10px 0;
+}
+
+ul.blue li {
+  background: url(../images/icons/blue-arrow.ltr.png) 0 2px no-repeat;
+  margin: 6px 0;
+  padding: 0 0 0 12px;
+  position: relative;
+}
+
+/*****************************************************************************
+ Generic links
+*****************************************************************************/
+a.add {
+  background: url(../images/add.png) no-repeat 0 1px;
+  cursor: pointer;
+  padding: 2px 0 2px 20px;
+}
+
+a.add.disabled,
+span.add.disabled {
+  background: url(../images/add-disabled.png) no-repeat 0 1px;
+  cursor: default;
+  padding: 2px 0 2px 20px;
+  opacity: 0.6;
+}
+
+a.unselect {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url("../images/remove.png") 0 0 no-repeat;
+}
+
+a.unselect:hover,
+a.unselect:focus {
+  background-image: url("../images/remove-hover.png");
+}
+
+a.error {
+  background: url(../images/error.png) no-repeat 0 1px;
+  cursor: pointer;
+  padding: 2px 0 2px 20px;
+}
+
+.selections td.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.selections td.name {
+  vertical-align: middle;
+}
+
+body.waitcursor,
+body.waitcursor * {
+  cursor: wait;
+}
+
+div.help {
+  background-color: #d0d0ff;
+  border-color: #4040ff;
+  border-style: solid;
+  border-width: 1px;
+  background-image: url(../images/help.png);
+  background-repeat: no-repeat;
+  background-position: 5px 5px;
+  padding-left: 25px;
+}
+
+ul.ui-autocomplete.ui-menu {
+  box-shadow: 3px 3px 5px #888888;
+}
+
+input.blur {
+  color: #aaa;
+}
+
+.prop {
+  clear: both;
+}
+
+/*****************************************************************************
+ Screen-reader only elements
+*****************************************************************************/
+.screen-reader {
+  position: absolute !important;
+  clip: rect(1px, 1px, 1px, 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0 !important;
+  border: 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden;
+}
+/*highlights the stars on search results in acc. mode */
+html.accessibility span.screen-reader:focus + div.itemresult-stars {
+  outline: thin solid rgba(299, 151, 0, 1);
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+/*****************************************************************************
+Bootstrap overrides
+*****************************************************************************/
+.alert {
+  border-width: 3px;
+}
+
+.alert button.close {
+  top: -4px;
+}
+
+/* this rule is from a later version of bootstrap.css - delete after upgrade */
+#mainDiv #affix-div {
+  position: fixed;
+  top: auto;
+}
+
+.affix {
+  position: fixed;
+}
+
+.ui-effects-transfer {
+  border: 1px dotted black;
+  z-index: 10000;
+}
+
+ul.dropdown-menu {
+  right: 0px;
+  left: auto;
+}
+
+.icon-disabled {
+  background-image: url("../images/icons/glyphicons-halflings-disabled.png");
+}
+
+/*****************************************************************************
+Accessiblity mode
+*****************************************************************************/
+html.accessibility div.area a:focus,
+html.accessibility div.modal-content a:focus,
+html.accessibility .box a:focus,
+html.accessibility div.area input:focus,
+html.accessibility div.modal-content input:focus,
+html.accessibility .box input:focus,
+html.accessibility div.area button:focus,
+html.accessibility div.modal-content button:focus,
+html.accessibility .box button:focus,
+html.accessibility div.area select:focus,
+html.accessibility div.modal-content select:focus,
+html.accessibility .box select:focus,
+html.accessibility td:focus {
+  outline: thin solid rgba(299, 151, 0, 255);
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+html.accessibility #header-inner .badge a:focus {
+  box-shadow: 0px 0px 5px 1px #ff7f09;
+}
+
+html.accessibility select {
+  border: 1px solid #cbc7b9;
+}
+
+/*****************************************************************************
+Expandable button
+*****************************************************************************/
+
+.button-expandable {
+  width: 28px;
+  height: 26px;
+  overflow: hidden;
+  white-space: nowrap;
+
+  /* Transition */
+  -webkit-transition: All 0.5s ease;
+  -moz-transition: All 0.5s ease;
+  -o-transition: All 0.5s ease;
+  -ms-transition: All 0.5s ease;
+  transition: All 0.5s ease;
+}
+
+.button-expandable i {
+  margin-left: 1px;
+  margin-right: 3px;
+}
+
+/* Firefox3-specific CSS property for expandable button icon position*/
+@-moz-document url-prefix() {
+  .button-expandable i {
+    margin-left: 6px;
+  }
+}
+
+.button-expandable:hover {
+  width: auto;
+  /* Transition */
+  -webkit-transition: All 0.5s ease;
+  -moz-transition: All 0.5s ease;
+  -o-transition: All 0.5s ease;
+  -ms-transition: All 0.5s ease;
+  transition: All 0.5s ease;
+}
+.button-expandable:hover i {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#mainDiv .dashboard #topwide {
+  width: auto;
+}
+
+#mainDiv .dashboard #col2 {
+  width: 50%;
+  flex-grow: 1;
+}
+
+#mainDiv .dashboard #col1 {
+  width: 50%;
+}
+
+#mainDiv #moderate {
+  float: none;
+  width: auto;
+}
+
+#mainDiv #selection-content-inner {
+  padding: 16px 17px 0;
+}
+
+#mainDiv #selection-content #breadcrumbs {
+  margin-top: 10px;
+}
+
+#mainDiv #breadcrumbs {
+  position: initial;
+  width: auto;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  height: auto;
+}
+
+#mainDiv #content-inner {
+  min-height: 250px;
+  background: none;
+  float: none;
+  width: 100%;
+}
+
+#mainDiv .content {
+  box-sizing: content-box;
+}
+
+#mainDiv button,
+#fancybox-inner button {
+  box-sizing: border-box;
+}
+
+#mainDiv #content-body {
+  float: none;
+  width: auto;
+  padding: 8px 0 32px 0;
+}
+
+#mainDiv .mainCols {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+#mainDiv .selectiondashboard #col1 {
+  width: 368px;
+}
+
+#mainDiv #col1,
+#mainDiv #col {
+  flex-grow: 1;
+  width: auto;
+  float: none;
+}
+
+#fancybox-wrap,
+#fancybox-overlay,
+#fancybox-outer,
+#fancybox-inner,
+#fancybox-tmp {
+  box-sizing: content-box;
+}
+
+#mainDiv #col2 {
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+#mainDiv #selection-content-inner {
+  display: flex;
+}
+
+/* Autocomplete dropdown */
+.equella-dropdown-list {
+  z-index: 999999 !important;
+}
+
+/*****************************************************************************
+Login Notice Formatting
+*****************************************************************************/
+#loginNotice p {
+  font-family: "Arial", "georgia", "impact", "Tahoma", "Times", "Verdana",
+    monospace;
+}
+#loginNotice ins {
+  text-decoration: underline;
+}
+
+#loginNotice code {
+  font-family: "Courier New", monospace;
+  line-height: 100%;
+  background-color: #d1d1d0;
+  word-break: normal;
+}
+
+#loginNotice pre {
+  background-color: #d1d1d0;
+  overflow: auto;
+  font-family: "Courier New", monospace;
+  padding: 1em 1em;
+}
+
+#loginNotice sup {
+  position: relative;
+  top: -0.5em;
+  font-size: 80%;
+}
+
+#loginNotice sub {
+  position: relative;
+  bottom: -0.5em;
+  font-size: 80%;
+}
+
+#loginNotice h1 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 39px;
+  font-weight: bold;
+}
+
+#loginNotice h2 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 29px;
+  font-weight: bold;
+}
+
+#loginNotice h3 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+#loginNotice h4 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#loginNotice h5 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+#loginNotice h6 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#loginNotice blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  font-style: italic;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+#loginNotice blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+#loginNotice blockquote p {
+  display: inline;
+}
+
+#loginNotice ol {
+  list-style: decimal outside;
+  margin-left: 10px;
+  margin-bottom: unset;
+  margin-right: unset;
+  margin-top: unset;
+}
+
+#loginNotice ul {
+  list-style: disc;
+  margin-left: 5px;
+  padding: unset;
+}
+
+#loginNotice iframe {
+  width: 560px;
+  height: 314px;
+}
+
+#loginNotice li {
+  font-size: 12px;
+  line-height: 2;
+}
+
+#loginNotice ol li {
+  margin: unset;
+}

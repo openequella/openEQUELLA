@@ -125,6 +125,10 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo
     return innerContext.getSemiModalId();
   }
 
+  public void clearCss() {
+    cssFiles.clear();
+  }
+
   @Override
   public void preRender(Collection<? extends PreRenderable> preRenderers) {
     innerContext.preRender(preRenderers);

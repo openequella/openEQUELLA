@@ -18,7 +18,11 @@
 
 package com.tle.web.api.newuitheme.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+
 public class NewUITheme {
+
   private String primaryColor = "#2196f3";
   private String secondaryColor = "#ff9800";
   private String backgroundColor = "#fafafa";
@@ -99,5 +103,18 @@ public class NewUITheme {
 
   public void setMenuTextColor(String menuTextColor) {
     this.menuTextColor = menuTextColor;
+  }
+
+  public String toSassVars() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, ?> themeVars = objectMapper.convertValue(this, Map.class);
+    StringBuilder sassTheme = new StringBuilder();
+
+    themeVars.forEach(
+        (key, value) -> {
+          sassTheme.append("$" + key + " : " + value + ";");
+        });
+
+    return sassTheme.toString();
   }
 }
