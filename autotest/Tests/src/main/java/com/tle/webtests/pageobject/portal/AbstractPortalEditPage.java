@@ -56,6 +56,7 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
     WebElement saveButton = getSave();
     waiter.until(ExpectedConditions.elementToBeClickable(saveButton));
     saveButton.click();
+    waiter.until(ExpectedConditions.visibilityOf(page.getLoadedElement()));
     return page.get();
   }
 
