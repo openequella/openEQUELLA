@@ -59,6 +59,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     assertEquals(search.getSelectedWithin(), COLLECTION);
     assertFalse(search.exactQuery(dontFindItem).isResultsAvailable());
     assertTrue(search.exactQuery(summaryItem).isResultsAvailable());
+    logout(context);
   }
 
   @Test
