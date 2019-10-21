@@ -29,6 +29,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 public abstract class AbstractTest implements HasTestConfig {
+
+  private static final String RANDOM_STRING_CHARS =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   private static final String KEY_DRIVERPOOL = "DriverPool";
   protected static final String KEY_LISTENEREADDED = "ListenerAdded";
   protected static final String KEY_SETUPLISTENEREADDED = "SetupListenerAdded";
@@ -288,5 +291,14 @@ public abstract class AbstractTest implements HasTestConfig {
     } catch (InterruptedException e) {
       Throwables.propagate(e);
     }
+  }
+
+  public static String randomString(int length) {
+    final StringBuilder sb = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+      final int charIndex = (int) (Math.random() * RANDOM_STRING_CHARS.length());
+      sb.append(RANDOM_STRING_CHARS.charAt(charIndex));
+    }
+    return sb.toString();
   }
 }

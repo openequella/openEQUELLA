@@ -40,8 +40,7 @@ public interface RemoteTermService {
    * <p>This method requires an editing lock to have been aquired for the taxonomy.
    *
    * @param taxonomy The taxonomy the terms are being edited for.
-   * @param parentFullPath The full path of the parent term the new term will be added to, eg,
-   *     Mammalia/Felidae/Panthera.
+   * @param parentUuid The UUID of the parent term the new term will be added to
    * @param termValue The term to be added, eg, Tiger.
    * @param index The index the term should be inserted into in relation to its siblings. Zero
    *     inserts it as the first sibling, one as the second sibling, and so on. If the index is less
@@ -49,7 +48,7 @@ public interface RemoteTermService {
    *     the last sibling.
    * @return The full path of the new term (may have been slightly adjusted/fixed)
    */
-  String insertTerm(Taxonomy taxonomy, String parentFullPath, String termValue, int index);
+  String insertTerm(Taxonomy taxonomy, String parentUuid, String termValue, int index);
 
   /**
    * Moves a term to a (possibly) new parent term and child index. Children of the term are also
@@ -165,4 +164,12 @@ public interface RemoteTermService {
    * @param data
    */
   void setAllDataByTermUuid(Taxonomy taxonomy, String termUuid, Map<String, String> data);
+
+  /**
+   * Alphabetically sort the immediate children of the given term.
+   *
+   * @param taxonomy The taxonomy containng the terms to sort
+   * @param fullTermPath The term to sort the children of
+   */
+  void sortChildren(Taxonomy taxonomy, String fullTermPath);
 }

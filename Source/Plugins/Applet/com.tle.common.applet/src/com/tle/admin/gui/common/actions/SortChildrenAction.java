@@ -16,29 +16,31 @@
  * limitations under the License.
  */
 
-package com.tle.beans.taxonomy;
+package com.tle.admin.gui.common.actions;
 
-import com.tle.web.api.interfaces.beans.BaseEntityBean;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.tle.common.i18n.CurrentLocale;
+import javax.swing.Action;
 
-@XmlRootElement
-public class TaxonomyBean extends BaseEntityBean {
-  private String dataSource = "internal";
-  private boolean readonly;
-
-  public boolean isReadonly() {
-    return readonly;
+public abstract class SortChildrenAction extends TLEAction {
+  public SortChildrenAction() {
+    setIcon(SortChildrenAction.class, "sortasc.png");
+    setSortRootTerms(true);
+    putValue(
+        Action.SHORT_DESCRIPTION,
+        CurrentLocale.get("com.tle.admin.gui.common.actions.sortchildrenaction.desc"));
   }
 
-  public void setReadonly(boolean readonly) {
-    this.readonly = readonly;
-  }
+  protected void setSortRootTerms(boolean sortRoots) {
+    if (sortRoots) {
+      putValue(
+          Action.NAME,
+          CurrentLocale.get("com.tle.admin.gui.common.actions.sortchildrenaction.sortroot.name"));
 
-  public String getDataSource() {
-    return dataSource;
-  }
-
-  public void setDataSource(String dataSource) {
-    this.dataSource = dataSource;
+    } else {
+      putValue(
+          Action.NAME,
+          CurrentLocale.get(
+              "com.tle.admin.gui.common.actions.sortchildrenaction.sortchildren.name"));
+    }
   }
 }
