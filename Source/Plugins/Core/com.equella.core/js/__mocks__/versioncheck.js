@@ -1,41 +1,42 @@
-const releaseCheckUrl =
+"use strict";
+
+var releaseCheckUrl =
   "https://api.github.com/repos/openequella/openEQUELLA/releases";
-const semanticVersionPattern = new RegExp(/^(\d+?)\.(\d+?)\.(\d+?)$/);
+var semanticVersionPattern = new RegExp(/^(\d+?)\.(\d+?)\.(\d+?)$/);
 
 function checkVersion(currentVersion, callback) {
   $.ajax(releaseCheckUrl).done(function(data) {
-    const checkResult = createCheckResult(currentVersion, data);
+    console.log(data);
+    var checkResult = createCheckResult(currentVersion, data);
     callback(checkResult.newer, JSON.stringify(checkResult.newerReleases));
   });
 }
 
 function createCheckResult(currentVersion, data) {
-  let newerReleaseFound = false;
-  let newerReleases = null;
-  const currentVersionMatched = currentVersion.match(semanticVersionPattern);
+  var newerReleaseFound = false;
+  var newerReleases = null;
+  var currentVersionMatched = currentVersion.match(semanticVersionPattern);
+
   if (currentVersionMatched) {
-    const currentVersionMajor = currentVersionMatched[1];
-    const currentVersionMinor = currentVersionMatched[2];
-    const currentVersionPatch = currentVersionMatched[3];
-
-    const releaseList = getReleaseList(data);
-
-    const latestMajorRelease = getLatestMajorRelease(
+    var currentVersionMajor = currentVersionMatched[1];
+    var currentVersionMinor = currentVersionMatched[2];
+    var currentVersionPatch = currentVersionMatched[3];
+    var releaseList = getReleaseList(data);
+    var latestMajorRelease = getLatestMajorRelease(
       releaseList,
       currentVersionMajor
     );
-    const latestMinorRelease = getLatestMinorRelease(
+    var latestMinorRelease = getLatestMinorRelease(
       releaseList,
       currentVersionMajor,
       currentVersionMinor
     );
-    const latestPatchRelease = getLatestPatchRelease(
+    var latestPatchRelease = getLatestPatchRelease(
       releaseList,
       currentVersionMajor,
       currentVersionMinor,
       currentVersionPatch
     );
-
     newerReleaseFound =
       latestMajorRelease != null ||
       latestMinorRelease != null ||
@@ -46,20 +47,24 @@ function createCheckResult(currentVersion, data) {
       patchUpdate: latestPatchRelease
     };
   }
-  return { newer: newerReleaseFound, newerReleases: newerReleases };
+
+  return {
+    newer: newerReleaseFound,
+    newerReleases: newerReleases
+  };
 }
 
 function getReleaseList(data) {
-  const releaseList = [];
+  var releaseList = [];
   data.forEach(function(value) {
-    const releaseVersion = value.name;
-    const releaseUrl = value.html_url;
-    const releaseVersionMatched = releaseVersion.match(semanticVersionPattern);
-    // We only want releases which support the semantic version
+    var releaseVersion = value.name;
+    var releaseUrl = value.html_url;
+    var releaseVersionMatched = releaseVersion.match(semanticVersionPattern); // We only want releases which support the semantic version
+
     if (releaseVersionMatched) {
-      const releaseVersionMajor = releaseVersionMatched[1];
-      const releaseVersionMinor = releaseVersionMatched[2];
-      const releaseVersionPatch = releaseVersionMatched[3];
+      var releaseVersionMajor = releaseVersionMatched[1];
+      var releaseVersionMinor = releaseVersionMatched[2];
+      var releaseVersionPatch = releaseVersionMatched[3];
       releaseList.push({
         major: releaseVersionMajor,
         minor: releaseVersionMinor,
@@ -68,43 +73,31 @@ function getReleaseList(data) {
       });
     }
   });
-  releaseList.push({
-    major: "2019",
-    minor: "2",
-    patch: "1",
-    url: "a"
-  });
-  releaseList.push({
-    major: "2020",
-    minor: "2",
-    patch: "1",
-    url: "a"
-  });
   return releaseList;
 }
 
 function getLatestMajorRelease(releaseList, currentVersionMajor) {
   // Find out all major releases published after current version
-  console.log(releaseList);
-  const majorReleaseList = releaseList.filter(function(release) {
+  var majorReleaseList = releaseList.filter(function(release) {
     return release.major > currentVersionMajor;
   });
 
   if (majorReleaseList.length > 0) {
     // Find out the latest major release
-    const latestMajorRelease = majorReleaseList.reduce((release1, release2) => {
-      const release1Major = release1.major;
-      const release1Minor = release1.minor;
-      const release1Patch = release1.patch;
-
-      const release2Major = release2.major;
-      const release2Minor = release2.minor;
-      const release2Patch = release2.patch;
-
-      const newerMajorFound = release1Major < release2Major;
-      const newerMinorFound =
+    var latestMajorRelease = majorReleaseList.reduce(function(
+      release1,
+      release2
+    ) {
+      var release1Major = release1.major;
+      var release1Minor = release1.minor;
+      var release1Patch = release1.patch;
+      var release2Major = release2.major;
+      var release2Minor = release2.minor;
+      var release2Patch = release2.patch;
+      var newerMajorFound = release1Major < release2Major;
+      var newerMinorFound =
         release1Major === release2Major && release1Minor < release2Minor;
-      const newerPatchUpFound =
+      var newerPatchUpFound =
         release1Major === release2Major &&
         release1Minor === release2Minor &&
         release1Patch < release2Patch;
@@ -115,9 +108,9 @@ function getLatestMajorRelease(releaseList, currentVersionMajor) {
 
       return release1;
     });
-
     return latestMajorRelease;
   }
+
   return null;
 }
 
@@ -127,7 +120,7 @@ function getLatestMinorRelease(
   currentVersionMinor
 ) {
   // Find out all minor releases published after current version
-  const minorReleaseList = releaseList.filter(function(release) {
+  var minorReleaseList = releaseList.filter(function(release) {
     return (
       release.major === currentVersionMajor &&
       release.minor > currentVersionMinor
@@ -136,15 +129,16 @@ function getLatestMinorRelease(
 
   if (minorReleaseList.length > 0) {
     // Find out the latest minor release
-    const latestMinorRelease = minorReleaseList.reduce((release1, release2) => {
-      const release1Minor = release1.minor;
-      const release1Patch = release1.patch;
-
-      const release2Minor = release2.minor;
-      const release2Patch = release2.patch;
-
-      const newerMinorFound = release1Minor < release2Minor;
-      const newerPatchUpFound =
+    var latestMinorRelease = minorReleaseList.reduce(function(
+      release1,
+      release2
+    ) {
+      var release1Minor = release1.minor;
+      var release1Patch = release1.patch;
+      var release2Minor = release2.minor;
+      var release2Patch = release2.patch;
+      var newerMinorFound = release1Minor < release2Minor;
+      var newerPatchUpFound =
         release1Minor === release2Minor && release1Patch < release2Patch;
 
       if (newerMinorFound || newerPatchUpFound) {
@@ -155,6 +149,7 @@ function getLatestMinorRelease(
     });
     return latestMinorRelease;
   }
+
   return null;
 }
 
@@ -165,7 +160,7 @@ function getLatestPatchRelease(
   currentVersionPatch
 ) {
   // Find out all patch releases published after current version
-  const patchReleaseList = releaseList.filter(function(release) {
+  var patchReleaseList = releaseList.filter(function(release) {
     return (
       release.major === currentVersionMajor &&
       release.minor === currentVersionMinor &&
@@ -175,9 +170,12 @@ function getLatestPatchRelease(
 
   if (patchReleaseList.length > 0) {
     // Find out the latest patch release
-    const latestPatchRelease = patchReleaseList.reduce((release1, release2) => {
-      const release1Patch = release1.patch;
-      const release2Patch = release2.patch;
+    var latestPatchRelease = patchReleaseList.reduce(function(
+      release1,
+      release2
+    ) {
+      var release1Patch = release1.patch;
+      var release2Patch = release2.patch;
 
       if (release1Patch < release2Patch) {
         return release2;
@@ -187,5 +185,8 @@ function getLatestPatchRelease(
     });
     return latestPatchRelease;
   }
+
   return null;
 }
+
+exports.createCheckResult = createCheckResult;

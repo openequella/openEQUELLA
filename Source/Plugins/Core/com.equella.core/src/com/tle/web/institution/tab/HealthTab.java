@@ -356,25 +356,28 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
   public void versionResponse(
       SectionInfo info, boolean newer, Map<String, NewerRelease> newReleases) {
     ClusterModel model = getModel(info);
-    NewerRelease newerMajorRelease = newReleases.get(MAJOR_UPDATE);
-    if (newer && newerMajorRelease != null) {
-      model.setMajorUpdateUrl(newerMajorRelease.url);
-    } else {
-      model.setOnLatestMajorVersion(true);
-    }
+    if (newer) {
+      model.setNewerVersionFound(true);
+      NewerRelease newerMajorRelease = newReleases.get(MAJOR_UPDATE);
+      if (newerMajorRelease != null) {
+        model.setMajorUpdateUrl(newerMajorRelease.url);
+      } else {
+        model.setOnLatestMajorVersion(true);
+      }
 
-    NewerRelease newerMinorRelease = newReleases.get(MINOR_UPDATE);
-    if (newer && newerMinorRelease != null) {
-      model.setMinorUpdateUrl(newerMinorRelease.url);
-    } else {
-      model.setOnLatestMinorVersion(true);
-    }
+      NewerRelease newerMinorRelease = newReleases.get(MINOR_UPDATE);
+      if (newerMinorRelease != null) {
+        model.setMinorUpdateUrl(newerMinorRelease.url);
+      } else {
+        model.setOnLatestMinorVersion(true);
+      }
 
-    NewerRelease newerPatchRelease = newReleases.get(PATCH_UPDATE);
-    if (newer && newerPatchRelease != null) {
-      model.setPatchUpdateUrl(newerPatchRelease.url);
-    } else {
-      model.setOnLatestPacthVersion(true);
+      NewerRelease newerPatchRelease = newReleases.get(PATCH_UPDATE);
+      if (newerPatchRelease != null) {
+        model.setPatchUpdateUrl(newerPatchRelease.url);
+      } else {
+        model.setOnLatestPacthVersion(true);
+      }
     }
   }
 
@@ -435,6 +438,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
 
   public static class ClusterModel {
     private boolean isCluster;
+    private boolean newerVersionFound;
     private String majorUpdateUrl;
     private boolean onLatestMajorVersion;
     private String minorUpdateUrl;
@@ -488,6 +492,14 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
 
     public void setOnLatestPacthVersion(boolean onLatestPacthVersion) {
       this.onLatestPacthVersion = onLatestPacthVersion;
+    }
+
+    public boolean isNewerVersionFound() {
+      return newerVersionFound;
+    }
+
+    public void setNewerVersionFound(boolean newerVersionFound) {
+      this.newerVersionFound = newerVersionFound;
     }
 
     private Map<String, String> quotas = Maps.newHashMap();

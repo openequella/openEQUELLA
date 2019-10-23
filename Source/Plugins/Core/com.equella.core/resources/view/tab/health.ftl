@@ -3,33 +3,45 @@
 
 <div class="area">
 	<h2>${b.key("version.checklatest")}</h2>
-    <@a.div id="latestVersion">
-      <div style="line-height: 20px">
-        <#if m.onLatestMajorVersion>
-          ${b.key("version.major.latest")}
-        <#elseif m.majorUpdateUrl??>
-          ${b.key("version.major.new", [m.majorUpdateUrl])}
-        <#else>
-          ${b.key("version.checking")}
+        <@a.div id="latestVersion">
+        <#if m.newerVersionFound>
+          <div style="line-height: 20px">
+
+            <#if m.onLatestMajorVersion>
+              ${b.key("version.major.latest")}
+            <#elseif m.majorUpdateUrl??>
+              ${b.key("version.major.new", [m.majorUpdateUrl])}
+            <#else>
+              ${b.key("version.checking")}
+            </#if>
+
+            <br/>
+
+            <#if m.onLatestMinorVersion>
+              ${b.key("version.minor.latest")}
+            <#elseif m.minorUpdateUrl??>
+              ${b.key("version.minor.new", [m.minorUpdateUrl])}
+            <#else>
+              ${b.key("version.checking")}
+            </#if>
+
+            <br/>
+
+            <#if m.onLatestPacthVersion>
+              ${b.key("version.patch.latest")}
+            <#elseif m.patchUpdateUrl??>
+              ${b.key("version.patch.new", [m.patchUpdateUrl])}
+            <#else>
+              ${b.key("version.checking")}
+            </#if>
+          </div>
+        <#else >
+          ${b.key("version.no.newer.version.found")}
+          <br/>
         </#if>
-      <br/>
-        <#if m.onLatestMinorVersion>
-          ${b.key("version.minor.latest")}
-        <#elseif m.minorUpdateUrl??>
-          ${b.key("version.minor.new", [m.minorUpdateUrl])}
-        <#else>
-          ${b.key("version.checking")}
-        </#if>
-      <br/>
-        <#if m.onLatestPacthVersion>
-          ${b.key("version.patch.latest")}
-        <#elseif m.patchUpdateUrl??>
-          ${b.key("version.patch.new", [m.patchUpdateUrl])}
-        <#else>
-          ${b.key("version.checking")}
-        </#if>
-      </div>
-    </@a.div>
+        </@a.div>
+
+
   <br>
 	<h2>${b.key("clusternodes.health")}</h2>
 	<#if m.cluster>
