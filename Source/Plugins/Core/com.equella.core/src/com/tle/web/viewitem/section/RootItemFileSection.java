@@ -246,7 +246,10 @@ public class RootItemFileSection
       }
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
-        auditor.audit(info.getRequest(), viewer.getAuditEntry(info, resource), (ViewableItem<Item>) viewableItem);
+        auditor.audit(
+            info.getRequest(),
+            viewer.getAuditEntry(info, resource),
+            (ViewableItem<Item>) viewableItem);
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {
