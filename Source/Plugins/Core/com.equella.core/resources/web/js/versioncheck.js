@@ -68,24 +68,11 @@ function getReleaseList(data) {
       });
     }
   });
-  releaseList.push({
-    major: "2019",
-    minor: "2",
-    patch: "1",
-    url: "a"
-  });
-  releaseList.push({
-    major: "2020",
-    minor: "2",
-    patch: "1",
-    url: "a"
-  });
   return releaseList;
 }
 
 function getLatestMajorRelease(releaseList, currentVersionMajor) {
   // Find out all major releases published after current version
-  console.log(releaseList);
   const majorReleaseList = releaseList.filter(function(release) {
     return release.major > currentVersionMajor;
   });
