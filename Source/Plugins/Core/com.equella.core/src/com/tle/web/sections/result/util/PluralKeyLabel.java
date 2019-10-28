@@ -30,8 +30,12 @@ public class PluralKeyLabel extends KeyLabel {
 
   private static Object[] combineArgs(long count, Object[] args) {
     final Object[] newArgs = new Object[1 + args.length];
-    newArgs[0] = count;
-    System.arraycopy(args, 0, newArgs, 1, args.length);
+    if (count > 1) {
+      newArgs[0] = count;
+      System.arraycopy(args, 0, newArgs, 1, args.length);
+    } else {
+      newArgs[0] = args[0];
+    }
     return newArgs;
   }
 }
