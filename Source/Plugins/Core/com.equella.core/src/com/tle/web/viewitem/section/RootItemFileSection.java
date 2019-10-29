@@ -238,7 +238,7 @@ public class RootItemFileSection
         if (viewableItem.isItemForReal()
             && vae != null
             && viewableItem.getItemExtensionType() == null) {
-          auditor.audit(vae, ((ViewableItem<Item>) viewableItem));
+          auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
         }
         info.forwardToUrl(
             modifyHref(info, resource.createCanonicalURL().getHref()), resource.getForwardCode());
@@ -246,7 +246,10 @@ public class RootItemFileSection
       }
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
-        auditor.audit(viewer.getAuditEntry(info, resource), (ViewableItem<Item>) viewableItem);
+        auditor.audit(
+            info.getRequest(),
+            viewer.getAuditEntry(info, resource),
+            (ViewableItem<Item>) viewableItem);
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {
