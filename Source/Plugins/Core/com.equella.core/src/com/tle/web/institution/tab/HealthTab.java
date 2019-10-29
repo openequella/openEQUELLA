@@ -376,7 +376,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
       if (newerPatchRelease != null) {
         model.setPatchUpdateUrl(newerPatchRelease.url);
       } else {
-        model.setOnLatestPacthVersion(true);
+        model.setOnLatestPatchVersion(true);
       }
     }
   }
@@ -444,7 +444,9 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
     private String minorUpdateUrl;
     private boolean onLatestMinorVersion;
     private String patchUpdateUrl;
-    private boolean onLatestPacthVersion;
+    private boolean onLatestPatchVersion;
+    private Map<String, String> quotas = Maps.newHashMap();
+    private boolean displayQuotas;
 
     public String getMajorUpdateUrl() {
       return majorUpdateUrl;
@@ -487,11 +489,11 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
     }
 
     public boolean isOnLatestPacthVersion() {
-      return onLatestPacthVersion;
+      return onLatestPatchVersion;
     }
 
-    public void setOnLatestPacthVersion(boolean onLatestPacthVersion) {
-      this.onLatestPacthVersion = onLatestPacthVersion;
+    public void setOnLatestPatchVersion(boolean onLatestPatchVersion) {
+      this.onLatestPatchVersion = onLatestPatchVersion;
     }
 
     public boolean isNewerVersionFound() {
@@ -501,9 +503,6 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
     public void setNewerVersionFound(boolean newerVersionFound) {
       this.newerVersionFound = newerVersionFound;
     }
-
-    private Map<String, String> quotas = Maps.newHashMap();
-    private boolean displayQuotas;
 
     public Map<String, String> getQuotas() {
       return quotas;

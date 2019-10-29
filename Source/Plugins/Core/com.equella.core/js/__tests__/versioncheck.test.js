@@ -1,14 +1,12 @@
 // versioncheck.js is not processed by Parcel and it only serves to the browser.
 // So here need to read the file and then evaluate its content
+const mockData = require("../__mocks__/versioncheck_mock_data");
 const fs = require("fs");
 const version_check_js_file = fs.readFileSync(
   "../resources/web/js/versioncheck.js",
   "utf8"
 );
 eval(version_check_js_file);
-
-const mockData = require("../__mocks__/versioncheck_mock_data");
-global.$ = require("jquery");
 
 test("Test major updates", () => {
   const checkResult = createCheckResult("2018.1.0", mockData.mockReleases);
