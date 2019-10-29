@@ -20,7 +20,6 @@ import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
@@ -237,7 +236,7 @@ public class RootItemFileSection
         if (viewableItem.isItemForReal()
             && vae != null
             && viewableItem.getItemExtensionType() == null) {
-          auditor.audit(vae, ((ViewableItem<Item>) viewableItem));
+          auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
         }
         info.forwardToUrl(
             modifyHref(info, resource.createCanonicalURL().getHref()), resource.getForwardCode());
@@ -246,9 +245,9 @@ public class RootItemFileSection
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
         auditor.audit(
+            info.getRequest(),
             viewer.getAuditEntry(info, resource),
-            viewableItem.getItemId(),
-            (Attachment) viewableItem.getAttachmentByUuid(viewableItem.getItemId().getUuid()));
+            (ViewableItem<Item>) viewableItem);
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {

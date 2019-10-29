@@ -25,6 +25,7 @@ import com.tle.web.sections.equella.SectionAuditable.AuditLevel;
 import com.tle.web.viewurl.ViewAuditEntry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,7 @@ public class CloudViewItemAuditor {
     }
   }
 
-  public void audit(ViewAuditEntry auditEntry, ItemKey itemId) {
+  public void audit(HttpServletRequest request, ViewAuditEntry auditEntry, ItemKey itemId) {
     if (auditLevel != AuditLevel.NONE && auditEntry != null) {
       try {
         if (auditLevel == AuditLevel.NORMAL) {

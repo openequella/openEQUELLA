@@ -86,14 +86,15 @@ public class RootCloudViewItemSection
     if (viewer == null) {
       ViewAuditEntry vae = resource.getViewAuditEntry();
       if (viewableItem.isItemForReal() && vae != null) {
-        auditor.audit(vae, viewableItem.getItemId());
+        auditor.audit(context.getRequest(), vae, viewableItem.getItemId());
       }
       context.forwardToUrl(resource.createCanonicalURL().getHref(), resource.getForwardCode());
       return null;
     }
 
     if (viewableItem.isItemForReal()) {
-      auditor.audit(viewer.getAuditEntry(context, resource), viewableItem.getItemId());
+      auditor.audit(
+          context.getRequest(), viewer.getAuditEntry(context, resource), viewableItem.getItemId());
     }
     try {
       return viewer.view(context, resource);

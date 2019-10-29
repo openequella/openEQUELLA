@@ -137,7 +137,7 @@ public class ItemFilestoreServlet extends HttpServlet {
         }
       }
       if (itemId != null) {
-        auditor.audit(new ViewAuditEntry("file:" + mimeType, path), itemId, attachment);
+        auditor.audit(request, new ViewAuditEntry("file:" + mimeType, path), itemId, attachment);
       }
       contentStreamWriter.outputStream(request, response, filteredStream);
     } catch (AccessDeniedException ade) {
