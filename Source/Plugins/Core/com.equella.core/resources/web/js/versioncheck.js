@@ -1,12 +1,6 @@
-const releaseCheckUrl =
-  "https://api.github.com/repos/openequella/openEQUELLA/releases";
-
-// This regex checks if a version number matches the rule of semantic version.
-// For example, an expected input is '2019.1.1' (not including single quotes).
-// And the expected output is an array: [ '2019.1.1', '2019', '1', '1'].
-const semanticVersionPattern = new RegExp(/^(\d+)\.(\d+)\.(\d+)$/);
-
 function checkVersion(currentVersion, callback) {
+  const releaseCheckUrl =
+    "https://api.github.com/repos/openequella/openEQUELLA/releases";
   $.ajax(releaseCheckUrl).done(function(data) {
     const checkResult = createCheckResult(currentVersion, data);
     callback(checkResult.newer, JSON.stringify(checkResult.newerReleases));
@@ -94,8 +88,6 @@ function getLatestMajorRelease(releaseList, parsedVersion) {
     });
 
     return latestMajorRelease;
-  } else {
-    console.log(`NO major updates available for ${parsedVersion.major}`);
   }
   return null;
 }
@@ -122,12 +114,6 @@ function getLatestMinorRelease(releaseList, parsedVersion) {
       return release1;
     });
     return latestMinorRelease;
-  } else {
-    console.log(
-      `No minor updates available for ${parsedVersion.major}.${
-        parsedVersion.minor
-      }`
-    );
   }
   return null;
 }
@@ -152,17 +138,16 @@ function getLatestPatchRelease(releaseList, parsedVersion) {
     });
 
     return latestPatchRelease;
-  } else {
-    console.log(
-      `No patch updates available for ${parsedVersion.major}.${
-        parsedVersion.minor
-      }.${parsedVersion.patch}`
-    );
   }
   return null;
 }
 
 function parseVersion(version) {
+  // This regex checks if a version number matches the rule of semantic version.
+  // For example, an expected input is '2019.1.1' (not including single quotes).
+  // And the expected output is an array: [ '2019.1.1', '2019', '1', '1'].
+  const semanticVersionPattern = new RegExp(/^(\d+)\.(\d+)\.(\d+)$/);
+
   const parsedVersion = version.match(semanticVersionPattern);
   let result = null;
   if (parsedVersion) {
