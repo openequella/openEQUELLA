@@ -111,11 +111,21 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   def isClientPath(relUrl: RelativeUrl): Boolean = relUrl.path.parts match {
     case Vector("logon.do") => false
-    case p                  => p.last.endsWith(".do")
+    case p                  => p.last.endsWith(".do") || isItemSummaryUrl(relUrl.toString())
   }
 
   def internalRoute(uri: String): Option[String] = {
     relativeURI(uri).filter(isClientPath).map(r => "/" + r.toString())
+  }
+
+  def isItemSummaryUrl(path: String): Boolean = {
+    // This regex matches the relative Url of the Item Summary page
+    // For example, items/2f2b2b72-8a71-465d-bdcd-107de3ec8696/1/
+    val itemSummaryUrlPattern = "items\\/.+-.+-.+-.+-.+\\/\\d+\\/".r
+    path match {
+      case itemSummaryUrlPattern() => true
+      case _                       => false
+    }
   }
 
   override lazy val getExceptionHandlers: util.Collection[ExceptionHandlerMatch] = {
