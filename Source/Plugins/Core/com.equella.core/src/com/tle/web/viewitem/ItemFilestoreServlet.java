@@ -185,16 +185,7 @@ public class ItemFilestoreServlet extends HttpServlet {
     @SuppressWarnings("nls")
     @Override
     public String getCacheControl() {
-      // Before changing anything, read http://www.mnot.net/cache_docs/
-      //
-      // The following settings mean that all caches will be able to keep
-      // a copy of the resource - the age values only specify how long
-      // before the cache must *revalidate* their copy. With these
-      // settings, browser caches can serve their copy for a whole day
-      // without needing to talk to the server. Shared caches (eg, a Squid
-      // proxy cache) must always revalidate before releasing their copy
-      // to ensure we're not returning a resource to a user who doesn't
-      // have access.
+      // this is to ensure that the etag is checked when attempting to pull down attachments
       return "must-revalidate";
     }
 
