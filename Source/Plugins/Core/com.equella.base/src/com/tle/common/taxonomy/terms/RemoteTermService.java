@@ -120,7 +120,7 @@ public interface RemoteTermService {
    * @param dataKey The key that the data should be stored for.
    * @param dataValue The arbitrary data to store.
    */
-  void setData(Taxonomy taxonomy, String fullTermPath, String dataKey, String dataValue);
+  boolean setData(Taxonomy taxonomy, String fullTermPath, String dataKey, String dataValue);
 
   Map<String, String> getAllData(Taxonomy taxonomy, String fullTermPath);
 
@@ -145,7 +145,7 @@ public interface RemoteTermService {
    * @param dataKey
    * @param dataValue
    */
-  void setDataByTermUuid(Taxonomy taxonomy, String termUuid, String dataKey, String dataValue);
+  boolean setDataByTermUuid(Taxonomy taxonomy, String termUuid, String dataKey, String dataValue);
 
   /**
    * Get all data against a term

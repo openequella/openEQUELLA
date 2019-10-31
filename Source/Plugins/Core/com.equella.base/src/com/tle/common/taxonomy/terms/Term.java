@@ -282,9 +282,12 @@ public class Term implements Serializable {
     return null;
   }
 
-  public void setAttribute(String key, String value) {
+  /** @return true if the attribute did not previously exist */
+  public boolean setAttribute(String key, String value) {
     ensureAttributes();
+    final boolean created = (attributes.get(key) == null);
     attributes.put(key, new TermAttribute(key, value));
+    return created;
   }
 
   public void removeAttribute(String key) {

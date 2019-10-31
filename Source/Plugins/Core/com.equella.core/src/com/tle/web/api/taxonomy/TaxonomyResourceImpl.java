@@ -25,6 +25,8 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.taxonomy.TaxonomyBean;
 import com.tle.beans.taxonomy.TermBean;
 import com.tle.common.Pair;
+import com.tle.common.PathUtils;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
@@ -39,8 +41,10 @@ import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.taxonomy.interfaces.TaxonomyResource;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -333,16 +337,20 @@ public class TaxonomyResourceImpl
           "Taxonomy is readonly");
     }
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
+    final boolean created;
     try {
-      termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
-    } catch (IllegalArgumentException ex) {
+      created = termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
+    } catch (NotFoundException ex) {
       throw new WebException(
           Status.NOT_FOUND.getStatusCode(),
           Status.NOT_FOUND.getReasonPhrase(),
           "termUuid given is not valid");
     }
-
-    return Response.ok().build();
+    final URI location = getTermDataUrl(taxonomyUuid, termUuid, dataKey);
+    if (created) {
+      return Response.created(location).build();
+    }
+    return Response.ok().location(location).build();
   }
 
   /**
@@ -364,7 +372,7 @@ public class TaxonomyResourceImpl
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
     try {
       termService.setDataByTermUuid(taxonomy, termUuid, dataKey, null);
-    } catch (IllegalArgumentException ex) {
+    } catch (NotFoundException ex) {
       throw new WebException(
           Status.NOT_FOUND.getStatusCode(),
           Status.NOT_FOUND.getReasonPhrase(),
@@ -396,9 +404,27 @@ public class TaxonomyResourceImpl
   private URI getTermUrl(String taxonomyUuid, String termUuid) {
     try {
       String url =
-          institutionService.institutionalise("api/taxonomy/" + taxonomyUuid + "/term/" + termUuid);
+          institutionService.institutionalise(
+              PathUtils.urlPath("api/taxonomy", taxonomyUuid, "term", termUuid));
       return new URI(url);
     } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private URI getTermDataUrl(String taxonomyUuid, String termUuid, String key) {
+    try {
+      String url =
+          institutionService.institutionalise(
+              PathUtils.urlPath(
+                  "api/taxonomy",
+                  taxonomyUuid,
+                  "term",
+                  termUuid,
+                  "data",
+                  URLEncoder.encode(key, "utf-8").replace("+", "%20")));
+      return new URI(url);
+    } catch (URISyntaxException | UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
   }

@@ -349,16 +349,18 @@ public class TermServiceImpl implements TermService {
   @Override
   @SecureOnCall(priv = "EDIT_TAXONOMY")
   @Transactional(propagation = Propagation.REQUIRED)
-  public void setData(Taxonomy taxonomy, String termFullPath, String dataKey, String dataValue) {
+  public boolean setData(Taxonomy taxonomy, String termFullPath, String dataKey, String dataValue) {
     ensureLocked(taxonomy);
 
     Term term = getTerm(taxonomy, termFullPath);
+    boolean created = false;
     if (Check.isEmpty(dataValue)) {
       term.removeAttribute(dataKey);
     } else {
-      term.setAttribute(dataKey, dataValue);
+      created = term.setAttribute(dataKey, dataValue);
     }
     termDao.update(term);
+    return created;
   }
 
   @Override
@@ -386,19 +388,25 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  public void setDataByTermUuid(
+  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @Transactional(propagation = Propagation.REQUIRED)
+  public boolean setDataByTermUuid(
       Taxonomy taxonomy, String termUuid, String dataKey, String dataValue) {
     ensureLocked(taxonomy);
     Term term = termDao.getTermByUuid(taxonomy, termUuid);
+    boolean created = false;
     if (Check.isEmpty(dataValue)) {
       term.removeAttribute(dataKey);
     } else {
-      term.setAttribute(dataKey, dataValue);
+      created = term.setAttribute(dataKey, dataValue);
     }
     termDao.update(term);
+    return created;
   }
 
   @Override
+  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @Transactional(propagation = Propagation.REQUIRED)
   public void setAllDataByTermUuid(Taxonomy taxonomy, String termUuid, Map<String, String> data) {
     ensureLocked(taxonomy);
     Term term = getTermByUuid(taxonomy, termUuid);
@@ -448,6 +456,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
+  @SecureOnCall(priv = "EDIT_TAXONOMY")
   @Transactional(propagation = Propagation.REQUIRED)
   public void deleteForTaxonomy(Taxonomy taxonomy) {
     termDao.deleteForTaxonomy(taxonomy);
