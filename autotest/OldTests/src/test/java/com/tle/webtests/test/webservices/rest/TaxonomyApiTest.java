@@ -2,8 +2,8 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
 
-import com.tle.annotation.Nullable;
 import com.google.common.collect.Lists;
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import java.io.IOException;
@@ -322,7 +322,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
     for (int i = 0; i < levelTermData.size(); i++) {
       final List<String> returnedSortedChildTerms = new ArrayList<>(nodesPerLevel);
-      final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, levelTermData.get(i).termPath);
+      final ArrayNode testTermSortedChildren =
+          getChildren(taxonomyUuid, levelTermData.get(i).termPath);
       for (int j = 0; j < testTermSortedChildren.size(); j++) {
         final JsonNode node = testTermSortedChildren.get(j);
         final String termName = node.get("term").getTextValue();
