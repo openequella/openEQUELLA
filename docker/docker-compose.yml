@@ -2,7 +2,10 @@ version: "3.6"
 
 services:
   oeq:
-    build: .
+    build:
+      context: .
+      args:
+        - OEQ_INSTALL_FILE=equella-installer-2019.2.0.zip
     networks:
       - oeq-cluster
     links:
