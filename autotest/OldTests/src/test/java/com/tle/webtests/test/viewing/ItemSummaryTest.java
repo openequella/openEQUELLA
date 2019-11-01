@@ -118,7 +118,6 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION3);
     String fullName = context.getFullName("view count");
     wizard.editbox(1, fullName);
-    wizard = wizard.next();
     SummaryPage summary = wizard.save().publish();
 
     ItemDetailsPage details = summary.itemDetails();
