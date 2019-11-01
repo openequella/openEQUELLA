@@ -37,8 +37,6 @@ public interface WizardPage {
 
   void createPage() throws WizardPageException;
 
-  void ensureTreeAdded(SectionInfo info, boolean submitWizard);
-
   void loadFromDocument(SectionInfo info);
 
   void saveToDocument(SectionInfo info) throws Exception;
@@ -63,6 +61,8 @@ public interface WizardPage {
   void init();
 
   void ensureTreeAdded(SectionInfo info);
+
+  void ensureTreeAdded(SectionInfo info, boolean processParams);
 
   void setSubmitted(boolean submitted);
 
