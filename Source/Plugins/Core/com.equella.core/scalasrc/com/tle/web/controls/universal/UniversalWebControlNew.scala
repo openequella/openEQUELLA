@@ -62,7 +62,7 @@ import com.tle.web.sections.js.generic.function.{
   PartiallyApply
 }
 import com.tle.web.sections.render._
-import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
 import com.tle.web.sections.standard.Button
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer}
@@ -245,7 +245,9 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "preview",
             PREVIEW.getText,
             "toomany",
-            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments")
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments"),
+            "toomany_1",
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments.1")
           ),
           "reloadState",
           CloudWizardControl.reloadState,
@@ -288,13 +290,16 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         }
       }
 
-      if (definition.isMaxFilesEnabled && uploadedAttachments > definition.getMaxFiles) {
+      val maxFiles = if (definition.isMaxFilesEnabled) definition.getMaxFiles else 1
+
+      if ((!definition.isMultipleSelection && uploadedAttachments > 1) ||
+          (definition.isMaxFilesEnabled && uploadedAttachments > maxFiles)) {
         setInvalid(
           true,
-          new KeyLabel(
+          new PluralKeyLabel(
             "wizard.controls.file.toomanyattachments",
-            definition.getMaxFiles.asInstanceOf[Object],
-            (uploadedAttachments - definition.getMaxFiles).asInstanceOf[Object]
+            maxFiles,
+            (uploadedAttachments - maxFiles).asInstanceOf[Object]
           )
         )
       }
