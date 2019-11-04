@@ -234,8 +234,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   }
 
   /**
-   * Creates a 5^4 (625) node taxonomy (ie. 4 levels with each non-leaf node having 5 children) Any
-   * bigger than this and the time taken to run this test gets ridiculous.
+   * Creates a 3^4 (81) node taxonomy (ie. 4 levels with each non-leaf node having 3 children)
    *
    * @throws Exception
    */
@@ -243,7 +242,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   public void testSortWholeTaxonomy() throws Exception {
 
     final int levelCount = 3;
-    final int nodesPerLevel = 5;
+    final int nodesPerLevel = 3;
     final String taxonomyUuid = UUID.randomUUID().toString();
     // Create a new taxonomy
     createTaxononmy(taxonomyUuid, "Sort Whole Taxonomy Test Taxonomy");
