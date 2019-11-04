@@ -195,7 +195,7 @@ public class ItemFilestoreServlet extends HttpServlet {
       // proxy cache) must always revalidate before releasing their copy
       // to ensure we're not returning a resource to a user who doesn't
       // have access.
-      return "max-age=86400, s-maxage=0, must-revalidate";
+      return "max-age=0, s-maxage=0, must-revalidate";
     }
 
     @Override
