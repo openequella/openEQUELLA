@@ -28,6 +28,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
+import com.tle.core.services.UrlService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.settings.service.ThemeSettingsService;
 import com.tle.exceptions.PrivilegeRequiredException;
@@ -35,6 +36,7 @@ import com.tle.web.api.newuitheme.impl.NewUITheme;
 import io.bit3.jsass.Compiler;
 import io.bit3.jsass.Options;
 import io.bit3.jsass.Output;
+import io.bit3.jsass.context.StringContext;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -43,6 +45,7 @@ import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
   @Inject private StagingService stagingService;
+  @Inject UrlService url;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThemeSettingsServiceImpl.class);
 
@@ -67,7 +71,6 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
   private static final String LOGO_FILENAME = "newLogo.png";
   private static final String THEME_KEY = "Theme";
-  private static final String SASS_VARS_FILENAME = "variables.scss";
   private static final String SASS_LEGACY_CSS_FILENAME = "legacy.scss";
   private static final String LEGACY_CSS_FILENAME = "legacy.css";
 
@@ -179,31 +182,24 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   private InputStream compileSass() throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
     StagingFile staging = stagingService.createStagingArea();
-
     InputStream legacyScss =
         getClass().getResourceAsStream("/web/sass/" + SASS_LEGACY_CSS_FILENAME);
-
     Compiler compiler = new Compiler();
     Options options = new Options();
-
-    options.getIncludePaths().add(new File(getClass().getResource("/web/css/").getFile()));
-
-    fileSystemService.write(staging, SASS_LEGACY_CSS_FILENAME, legacyScss, false);
-    fileSystemService.write(
-        staging, SASS_VARS_FILENAME, new StringReader(getTheme().toSassVars()), false);
-
     final File dstFile = fileSystemService.getExternalFile(staging, LEGACY_CSS_FILENAME);
 
+    options.getImporters().add(new LegacyCssImporter());
+
+    StringContext fileContext =
+        new StringContext(
+            getTheme().toSassVars() + IOUtils.toString(legacyScss), null, dstFile.toURI(), options);
+
     try {
-      Output output =
-          compiler.compileFile(
-              fileSystemService.getExternalFile(staging, SASS_LEGACY_CSS_FILENAME).toURI(),
-              dstFile.toURI(),
-              options);
+      Output output = compiler.compile(fileContext);
       fileSystemService.write(
           customisationFile, LEGACY_CSS_FILENAME, new StringReader(output.getCss()), false);
     } catch (Exception e) {
-      LOGGER.error("Failed to compile Sass to css ", e);
+      LOGGER.debug("Failed to compile Sass to css ", e);
     }
     return legacyScss;
   }
