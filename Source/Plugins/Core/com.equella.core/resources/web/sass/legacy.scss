@@ -1,16 +1,21 @@
-@import "variables.scss";
 
-@import "itemlist";
-@import "search";
-@import "autocompleteeditbox";
-@import "layouts/onecolumn";
-@import "resultactions";
+
+@import "styles.css";
+@import "itemlist.css";
+@import "resultactions.css";
+@import "search.css";
+@import "searchresults.css";
+@import "jquerylib/fancybox/jquery.fancybox.css";
+@import "jquerylib/jquery.stylish-select.css";
+@import "themes/equella/jquery-ui.css";
+@import "themes/equella/jquery-ui.css";
+@import "component/autocomplete.css";
+@import "component/richdropdown.css";
 
 /*****************************************************************************
  CSS Reset (excluding img since width and height style override image attributes)
 *****************************************************************************/
 html,
-body,
 div,
 span,
 applet,
