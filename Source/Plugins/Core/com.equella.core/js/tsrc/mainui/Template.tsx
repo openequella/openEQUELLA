@@ -60,6 +60,8 @@ export interface TemplateProps {
   menuMode?: MenuMode;
   disableNotifications?: boolean;
   currentUser?: UserData;
+  /* Extra meta tags */
+  metaTags?: string;
 }
 
 export interface TemplateUpdateProps {
@@ -85,6 +87,7 @@ export type TemplateUpdate = (
  * No footer content
  * Show the menu
  * Allow notifications links
+ * No extra meta tags
  */
 export function templateDefaults(title: string): TemplateUpdate {
   return tp =>
@@ -100,7 +103,8 @@ export function templateDefaults(title: string): TemplateUpdate {
       hideAppBar: undefined,
       fullscreenMode: undefined,
       menuMode: undefined,
-      disableNotifications: undefined
+      disableNotifications: undefined,
+      metaTags: undefined
     } as TemplateProps);
 }
 
@@ -116,6 +120,8 @@ export const strings = languageStrings.template;
 export const coreStrings = languageStrings["com.equella.core"];
 
 const topBarString = coreStrings.topbar.link;
+
+const specialMetaTagNames = languageStrings.metatags;
 
 declare const logoURL: string;
 
@@ -281,6 +287,29 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   React.useEffect(() => {
     window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
   }, [props.title]);
+
+  React.useEffect(() => {
+    updateMetaTags(props.metaTags);
+  }, [props.metaTags]);
+
+  function updateMetaTags(tags: string | undefined) {
+    const head = document.head;
+    if (tags) {
+      // The meta tags generated on Server side separates each other by a newline symbol
+      const newMetaTags = tags.split("\n");
+      newMetaTags.forEach(tag => {
+        head.appendChild(document.createRange().createContextualFragment(tag));
+      });
+    } else {
+      const existingMetaTags = document.querySelectorAll("meta");
+      // Remove those specific meta tags
+      existingMetaTags.forEach(tag => {
+        if (specialMetaTagNames.includes(tag.name)) {
+          head.removeChild(tag);
+        }
+      });
+    }
+  }
 
   function linkItem(
     link: LocationDescriptor,
