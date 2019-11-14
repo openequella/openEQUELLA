@@ -296,7 +296,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   function updateMetaTags(tags: string | undefined) {
     const head = document.head;
     if (tags) {
-      // The meta tags generated on Server side separates each other by a newline symbol
+      // The meta tags generated on the server side, separated by new line symbols
       const newMetaTags = tags.split("\n");
       newMetaTags.forEach(newMetaTag => {
         head.appendChild(
