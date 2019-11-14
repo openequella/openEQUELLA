@@ -21,14 +21,12 @@ import com.tle.annotation.Nullable;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.ajax.JSONResponseCallback;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.events.RenderContext;
-import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlTreeModel;
@@ -45,32 +43,17 @@ public class Tree extends AbstractDisablerComponent<Tree.TreeModel> implements H
   private boolean allowMultipleOpenBranches;
 
   @AjaxFactory private AjaxGenerator ajaxMethods;
-  private JSCallable ajaxFunction;
 
   public Tree() {
     super(RendererConstants.TREE);
   }
 
-  @Override
-  public void registered(String id, SectionTree tree) {
-    super.registered(id, tree);
-    if (lazyLoad) {
-      ajaxFunction = ajaxMethods.getAjaxFunction("getTreeNodes"); // $NON-NLS-1$	
-    }
-  }
-
-  @Override
-  public JSCallable getAjaxFunctionForNode(SectionInfo info, String nodeId) {
-    return ajaxFunction;
-  }
-
-  @Override
   public Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId) {
-    return ajaxMethods.getAjaxUrl(info, "getTreeNodes", nodeId); // $NON-NLS-1$
+    return ajaxMethods.getAjaxUrl(info, "getTreeNodes");
   }
 
   @AjaxMethod
-  public JSONResponseCallback getTreeNodes(AjaxRenderContext context, String nodeId) {
+  public JSONResponseCallback getTreeNodes(AjaxRenderContext context) {
     context.setModalId(displayTree.getSectionId());
     return getTreeRenderer(context).getJSONResponse();
   }

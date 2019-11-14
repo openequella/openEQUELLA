@@ -757,7 +757,7 @@ public class SearchQuerySection
       } catch (Exception e) {
         Throwables.propagate(e);
       }
-      powerPage.ensureTreeAdded(info, isSubmitWizard());
+      powerPage.ensureTreeAdded(info, isEditQuery() || isSubmitWizard());
 
       if (isSubmitWizard()) {
         info.queueEvent(
@@ -884,8 +884,8 @@ public class SearchQuerySection
   @DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS)
   public void ensurePowerPage(SectionInfo info) {
     SearchQueryModel model = getModel(info);
-    if (model.isSubmitWizard()) {
-      model.loadPowerPage();
+    if (model.isSubmitWizard() || model.isEditQuery()) {
+      model.ensurePowerPage();
     }
   }
 
