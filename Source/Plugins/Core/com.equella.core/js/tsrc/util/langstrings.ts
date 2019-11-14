@@ -370,6 +370,5 @@ export const languageStrings = {
       notor: "None match"
     },
     convertGroup: "Convert to group"
-  },
-  metatags: ["citation_title", "citation_description"]
+  }
 };

@@ -121,8 +121,6 @@ export const coreStrings = languageStrings["com.equella.core"];
 
 const topBarString = coreStrings.topbar.link;
 
-const specialMetaTagNames = languageStrings.metatags;
-
 declare const logoURL: string;
 
 interface ExtTheme {
@@ -259,6 +257,9 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
 
+  // Record what customised meta tags have been added into <head>
+  const [metaTags, setMetaTags] = React.useState<Array<string>>([]);
+
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -297,15 +298,22 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     if (tags) {
       // The meta tags generated on Server side separates each other by a newline symbol
       const newMetaTags = tags.split("\n");
-      newMetaTags.forEach(tag => {
-        head.appendChild(document.createRange().createContextualFragment(tag));
+      newMetaTags.forEach(newMetaTag => {
+        head.appendChild(
+          document.createRange().createContextualFragment(newMetaTag)
+        );
       });
+      setMetaTags(newMetaTags);
     } else {
+      // While there are no new meta tags to display, also remove old customised meta tags
       const existingMetaTags = document.querySelectorAll("meta");
-      // Remove those specific meta tags
-      existingMetaTags.forEach(tag => {
-        if (specialMetaTagNames.includes(tag.name)) {
-          head.removeChild(tag);
+      existingMetaTags.forEach(existingMetaTag => {
+        if (
+          metaTags.some(tag => {
+            return tag === existingMetaTag.outerHTML;
+          })
+        ) {
+          head.removeChild(existingMetaTag);
         }
       });
     }
