@@ -48,7 +48,7 @@ import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod}
 import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.render.ZebraTableRenderer
 import com.tle.web.sections.events.RenderEventContext
-import com.tle.web.sections.events.js.{BookmarkAndModify, EventGenerator}
+import com.tle.web.sections.events.js.EventGenerator
 import com.tle.web.sections.jquery.libraries.JQueryProgression
 import com.tle.web.sections.js.ElementId
 import com.tle.web.sections.js.generic.ReloadHandler
@@ -59,7 +59,7 @@ import com.tle.web.sections.js.generic.function.{
   PartiallyApply
 }
 import com.tle.web.sections.render._
-import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer}
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree, SimpleBookmarkModifier}
 import com.tle.web.viewurl.attachments.{
@@ -217,7 +217,9 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "preview",
             PREVIEW.getText,
             "toomany",
-            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments")
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments"),
+            "toomany_1",
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments.1")
           ),
           "reloadState",
           CloudWizardControl.reloadState,
@@ -233,13 +235,17 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
     def validate(): Unit = {
       val uploadedAttachments = dialog.getAttachments.size
-      if (definition.isMaxFilesEnabled && uploadedAttachments > definition.getMaxFiles) {
+
+      val maxFiles = if (definition.isMaxFilesEnabled) definition.getMaxFiles else 1
+
+      if ((!definition.isMultipleSelection && uploadedAttachments > 1) ||
+          (definition.isMaxFilesEnabled && uploadedAttachments > maxFiles)) {
         setInvalid(
           true,
-          new KeyLabel(
+          new PluralKeyLabel(
             "wizard.controls.file.toomanyattachments",
-            definition.getMaxFiles.asInstanceOf[Object],
-            (uploadedAttachments - definition.getMaxFiles).asInstanceOf[Object]
+            maxFiles,
+            (uploadedAttachments - maxFiles).asInstanceOf[Object]
           )
         )
       }

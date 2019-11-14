@@ -33,7 +33,7 @@ import Web.HTML.Window (confirm)
 type ControlStrings = { 
   edit :: String, replace :: String, delete :: String, deleteConfirm :: String,
   cancel :: String, add :: String, drop :: String, 
-  none :: String, preview :: String, toomany :: String}
+  none :: String, preview :: String, toomany :: String, toomany_1 :: String}
 
 type DialogStrings = {
   scrapbook :: String,
@@ -79,8 +79,15 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
           newError = ctrlError entries
       if oldError /= newError then runEffectFn2 updateCtrlErrorText ctrlId newError else pure unit
 
-    ctrlError entries = if compareMax (>) entries 
-      then maybe "" (\ma -> simpleFormat strings.toomany [show ma, show (length entries - ma)]) maxAttach
+    ctrlError entries = if compareMax (>) entries
+      then
+        case maxAttach of
+          Just maxAttachAmount | maxAttachAmount > 1 ->
+            maybe "" (\ma -> simpleFormat strings.toomany [show ma, show (length entries - ma)]) maxAttach
+                               | maxAttachAmount == 1 ->
+            maybe "" (\ma -> simpleFormat strings.toomany_1 [show (length entries - ma)]) maxAttach
+                               | otherwise -> "" --in theory maxAttach could be 0
+          _ -> "" --when maxAttach is Nothing
       else ""
     compareMax f entries = maybe false (f $ length entries) maxAttach
 
