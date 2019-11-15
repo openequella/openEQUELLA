@@ -109,9 +109,27 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   import LegacyGuice.urlService
 
-  def isClientPath(relUrl: RelativeUrl): Boolean = relUrl.path.parts match {
-    case Vector("logon.do") => false
-    case p                  => p.last.endsWith(".do")
+  def isClientPath(relUrl: RelativeUrl): Boolean = {
+    // This regex matches the relative url of Item Summary page
+    // For example 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/'
+    // The last forward slash does not exist in some cases
+    val itemSummaryUrlPattern =
+      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?".r
+
+    // This regex explicitly matches the relative Url of logon
+    // For example, 'logon.do' or 'logon.do?.page=home.do'
+    val logonUrlPattern = "logon\\.do\\??.*".r
+
+    // This regex matches the relative Urls of other pages
+    // For example, 'home.do' or 'access/runwizard.do?.wizid...'
+    val otherUrlPattern = ".+\\.do\\??.*".r
+
+    relUrl.toString() match {
+      case logonUrlPattern()       => false
+      case itemSummaryUrlPattern() => true
+      case otherUrlPattern()       => true
+      case _                       => false
+    }
   }
 
   def internalRoute(uri: String): Option[String] = {
