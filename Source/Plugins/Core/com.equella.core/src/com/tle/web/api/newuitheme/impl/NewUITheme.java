@@ -112,7 +112,7 @@ public class NewUITheme {
 
     themeVars.forEach(
         (key, value) -> {
-          sassTheme.append("$" + key + " : " + value + ";");
+          sassTheme.append("$" + key + " : " + value + ";\r\n");
         });
 
     return sassTheme.toString();
