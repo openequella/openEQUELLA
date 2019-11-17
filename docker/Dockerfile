@@ -17,7 +17,7 @@ RUN useradd -ms /bin/bash equella \
 # Install openEQUELLA
 FROM baseequella as installer
 
-ARG OEQ_INSTALL_FILE=equella-installer-2019.1.zip
+ARG OEQ_INSTALL_FILE=equella-installer-2019.2.0.zip
 
 COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
