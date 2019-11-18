@@ -7,16 +7,17 @@ import sbt.plugins.JvmPlugin
 
 object CommonSettings extends AutoPlugin {
   object autoImport {
-    lazy val versionProperties     = taskKey[File]("Version property file")
-    lazy val upgradeZip            = taskKey[File]("Create upgrade zip")
-    lazy val installerZip          = taskKey[File]("Create the installer zip")
-    lazy val equellaMajor          = settingKey[Int]("The major equella version")
-    lazy val equellaMinor          = settingKey[Int]("The minor equella version")
-    lazy val equellaPatch          = settingKey[Int]("The patch equella version")
-    lazy val equellaStream         = settingKey[String]("The equella stream name")
-    lazy val equellaBuild          = settingKey[String]("The equella build version")
-    lazy val equellaVersion        = settingKey[EquellaVersion]("The full equella version")
-    lazy val oracleDriverJar       = settingKey[Option[File]]("The oracle driver jar")
+    lazy val versionProperties = taskKey[File]("Version property file")
+    lazy val upgradeZip        = taskKey[File]("Create upgrade zip")
+    lazy val installerZip      = taskKey[File]("Create the installer zip")
+    lazy val equellaMajor      = settingKey[Int]("The major equella version")
+    lazy val equellaMinor      = settingKey[Int]("The minor equella version")
+    lazy val equellaPatch      = settingKey[Int]("The patch equella version")
+    lazy val equellaStream     = settingKey[String]("The equella stream name")
+    lazy val equellaBuild      = settingKey[String]("The equella build version")
+    lazy val equellaVersion    = settingKey[EquellaVersion]("The full equella version")
+    lazy val bundleOracleDriver =
+      settingKey[Boolean]("The flag used to indicate if oracle driver is needed or not")
     lazy val buildConfig           = settingKey[Config]("The build configuration settings")
     lazy val prepareDevConfig      = taskKey[Unit]("Prepare the dev learningedge-config folder")
     lazy val writeSourceZip        = taskKey[File]("Write out a zip containing all sources")

@@ -102,13 +102,6 @@ checkJavaCodeStyle := {
 
 buildConfig in ThisBuild := Common.buildConfig
 
-oracleDriverJar in ThisBuild := {
-  val c = buildConfig.value
-  if (c.hasPath("build.oraclejar")) {
-    Some(file(c.getString("build.oraclejar")))
-  } else None
-}
-
 name := "Equella"
 
 equellaMajor in ThisBuild := 2019
