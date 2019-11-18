@@ -234,6 +234,22 @@ libraryDependencies ++= Seq(
   "io.github.classgraph"   % "classgraph"                % "4.8.52"
 )
 
+bundleOracleDriver := {
+  val path = "build.bundleOracleDriver"
+  if (buildConfig.value.hasPath(path)) {
+    buildConfig.value.getBoolean(path)
+  } else {
+    false
+  }
+}
+
+libraryDependencies ++= {
+  if (bundleOracleDriver.value) {
+    Seq("com.oracle.ojdbc" % "ojdbc8" % "19.3.0.0")
+  } else {
+    Seq.empty
+  }
+}
 dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
 
 excludeDependencies ++= Seq(
@@ -265,8 +281,6 @@ excludeDependencies ++= Seq(
   "org.apache.geronimo.specs"    % "geronimo-stax-api_1.0_spec",
   "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec"
 )
-
-unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
 run := {
   val cp = (fullClasspath in Runtime).value

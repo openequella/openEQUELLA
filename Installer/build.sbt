@@ -15,8 +15,6 @@ excludeDependencies ++= Seq(
   "stax"            % "stax-api"
 )
 
-unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
-
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
 mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
