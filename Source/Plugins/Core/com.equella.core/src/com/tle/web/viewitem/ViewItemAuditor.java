@@ -20,6 +20,7 @@ import com.google.inject.name.Named;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
@@ -62,7 +63,7 @@ public class ViewItemAuditor {
       HttpServletRequest request,
       ViewAuditEntry auditEntry,
       ItemKey itemId,
-      Attachment attachment) {
+      IAttachment attachment) {
     audit(request, auditEntry, itemId, () -> logViewed(itemId, attachment, auditEntry));
   }
 
@@ -113,15 +114,16 @@ public class ViewItemAuditor {
         + itemId;
   }
 
-  private void logViewed(ItemKey itemId, Attachment attachment, ViewAuditEntry entry) {
+  private void logViewed(ItemKey itemId, IAttachment attachment, ViewAuditEntry entry) {
     auditService.logItemContentViewed(
         itemId,
         entry.getContentType(),
         entry.getPath(),
         attachment,
         sessionService.getAssociatedRequest());
-    if (attachment != null) {
-      itemService.incrementViews(attachment);
+    // This only applies to local items (and hence local attachments), not cloud ones
+    if (attachment != null && attachment instanceof Attachment) {
+      itemService.incrementViews((Attachment) attachment);
     }
   }
 

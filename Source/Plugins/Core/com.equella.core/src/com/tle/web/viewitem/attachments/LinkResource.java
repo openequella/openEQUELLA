@@ -20,6 +20,7 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
@@ -32,12 +33,13 @@ import javax.inject.Singleton;
 public class LinkResource
     implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment> {
   @Inject private URLCheckerService urlCheckerService;
+  @Inject private TLEAclManager aclService;
 
   @Override
   public ViewableResource process(
       SectionInfo info, ViewableResource resource, Attachment attachment) {
     return new DetailUrlResource(
-        resource, attachment.getUrl(), attachment.getDescription(), urlCheckerService);
+        resource, attachment.getUrl(), attachment.getDescription(), urlCheckerService, aclService);
   }
 
   @Override

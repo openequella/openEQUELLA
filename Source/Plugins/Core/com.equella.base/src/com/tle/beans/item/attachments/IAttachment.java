@@ -16,6 +16,7 @@
 
 package com.tle.beans.item.attachments;
 
+import com.tle.beans.item.IItem;
 import java.util.Map;
 
 public interface IAttachment {
@@ -62,4 +63,6 @@ public interface IAttachment {
   void setRestricted(boolean restricted);
 
   boolean isRestricted();
+
+  IItem<?> getItem();
 }

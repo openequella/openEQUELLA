@@ -257,6 +257,12 @@ public class RootCloudViewItemSection
       return SectionUtils.getFilenameFromFilepath(topLevel.getFilepath());
     }
 
+    @Nullable
+    @Override
+    public IAttachment getAttachment() {
+      return null;
+    }
+
     @Override
     public final int getForwardCode() {
       return 302;
@@ -342,6 +348,12 @@ public class RootCloudViewItemSection
     @Override
     public String getFilepath() {
       return viewableResource.getFilepath();
+    }
+
+    @Nullable
+    @Override
+    public IAttachment getAttachment() {
+      return viewableResource.getAttachment();
     }
 
     @Override

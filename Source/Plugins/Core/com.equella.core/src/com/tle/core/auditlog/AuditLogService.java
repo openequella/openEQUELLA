@@ -19,7 +19,7 @@ package com.tle.core.auditlog;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import java.util.Collection;
@@ -72,13 +72,11 @@ public interface AuditLogService {
   void logContentViewed(
       String category, ItemKey itemId, String contentType, String path, HttpServletRequest request);
 
-  // void logItemContentViewed(ItemKey itemId, String contentType, String path);
-
   void logItemContentViewed(
       ItemKey itemId,
       String contentType,
       String path,
-      Attachment attachment,
+      IAttachment attachment,
       HttpServletRequest request);
 
   void logItemPurged(Item item);

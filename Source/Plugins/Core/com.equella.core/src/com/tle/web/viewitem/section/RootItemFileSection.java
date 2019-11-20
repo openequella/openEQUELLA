@@ -236,7 +236,12 @@ public class RootItemFileSection
         if (viewableItem.isItemForReal()
             && vae != null
             && viewableItem.getItemExtensionType() == null) {
-          auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
+          IAttachment attachment = resource.getAttachment();
+          if (attachment == null) {
+            auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
+          } else {
+            auditor.audit(info.getRequest(), vae, viewableItem.getItemId(), attachment);
+          }
         }
         info.forwardToUrl(
             modifyHref(info, resource.createCanonicalURL().getHref()), resource.getForwardCode());
@@ -571,6 +576,12 @@ public class RootItemFileSection
     @Override
     public String getFilenameWithoutPath() {
       return SectionUtils.getFilenameFromFilepath(topLevel.getFilepath());
+    }
+
+    @Nullable
+    @Override
+    public IAttachment getAttachment() {
+      return null;
     }
 
     @Override
