@@ -567,7 +567,7 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension {
                 new Function<CloudAttachmentBean, CloudAttachment>() {
                   @Override
                   public CloudAttachment apply(CloudAttachmentBean cab) {
-                    return convertCloudAttachmentBean(cab);
+                    return convertCloudAttachmentBean(cab, cloudItem);
                   }
                 })));
 
@@ -581,8 +581,9 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension {
     return cloudItem;
   }
 
-  private CloudAttachment convertCloudAttachmentBean(CloudAttachmentBean cab) {
+  private CloudAttachment convertCloudAttachmentBean(CloudAttachmentBean cab, CloudItem cloudItem) {
     final CloudAttachment cloudAttachment = new CloudAttachment();
+    cloudAttachment.setItem(cloudItem);
     cloudAttachment.setType(cab.getType());
     cloudAttachment.setUuid(cab.getUuid());
     cloudAttachment.setDescription(cab.getDescription());
