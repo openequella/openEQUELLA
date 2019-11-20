@@ -426,29 +426,33 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     File from = getFile(staging, folder);
     File to = getFile(destination);
 
-    LOGGER.info("commitFiles: from " + from.getAbsolutePath());
-    LOGGER.info("commitFiles: to " + to.getAbsolutePath());
+    final String fromStr = from.getAbsolutePath();
+    final String toStr = to.getAbsolutePath();
+    LOGGER.info("commitFiles: from [" + fromStr + "] to [" + toStr + "]");
 
     File trash = null;
     if (FileSystemHelper.exists(to)) {
-      LOGGER.debug("Destination exists renaming");
+      LOGGER.debug("Destination [" + to + "] exists.  Moving to a staging 'trash' folder");
       trash = getFile(new TrashFile(staging));
-      LOGGER.debug("Moving current to trash");
+      LOGGER.debug("Moving current [" + to + "] to trash [" + trash + "]");
       if (!FileSystemHelper.rename(to, trash, false)) {
         FileSystemHelper.rename(trash, to, true);
-        throw new FileSystemException("Couldn't move to Trash.");
+        throw new FileSystemException("Couldn't move [" + to + "] to trash [" + trash + "].");
       }
     }
 
-    LOGGER.debug("About to rename staging to real item");
+    LOGGER.debug("About to rename staging [" + from + "] to real item [" + to + "].");
     if (!FileSystemHelper.exists(from)) {
-      LOGGER.debug("no files to commit - making blank dir");
+      LOGGER.debug("no files to commit - making blank dir [" + to + "]");
       FileSystemHelper.mkdir(to);
     } else {
-      LOGGER.debug("Renaming staging to real item");
+      LOGGER.debug("Renaming staging [" + from + "] to real item [" + to + "]");
       if (!FileSystemHelper.rename(from, to, false)) {
-        if (trash != null) {
-          FileSystemHelper.rename(trash, to, true);
+		  LOGGER.debug("The rename of staging [" + from + "] to real item [" + to + "] didn't work.  Trying rename of trash to real item.");
+		if (trash != null) {
+          if(!FileSystemHelper.rename(trash, to, true)) {
+			  LOGGER.debug("The rename of trash [" + trash + "] to real item [" + to + "] didn't work.  Silently proceeding.");
+		  }
         }
         throw new FileSystemException(
             "Failed to commit to staging: "
@@ -459,10 +463,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     if (trash != null) {
-      LOGGER.debug("Deleting trash");
+      LOGGER.debug("Deleting trash [" + trash + "]");
       FileUtils.delete(trash.toPath(), null);
     }
-    LOGGER.debug("Done");
+    LOGGER.debug("Done committing files from [" + staging + "] to [" + to + "]");
   }
 
   @Override
