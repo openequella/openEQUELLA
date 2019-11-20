@@ -626,7 +626,7 @@ Alerts
 *****************************************************************************/
 
 .alert {
-  padding: 8px 35px 8px 14px;
+  padding: 14px 35px 8px 35px;
   background-color: #fcf8e3;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -639,6 +639,7 @@ Alerts
   z-index: 2000;
   height: 40px;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   button {
     background-color: transparent;
@@ -652,6 +653,13 @@ Alerts
   }
   &.alert-success {
     background-color: #43a047;
+    &:after {
+      content: "\e86c";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: white;
+      padding-right: 8px;
+    }
   }
 }
 
