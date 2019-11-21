@@ -244,6 +244,39 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final int levelCount = 3;
     final int nodesPerLevel = 3;
     final String taxonomyUuid = UUID.randomUUID().toString();
+    final List<TermTestData> levelTermData = new ArrayList<>();
+    final List<String> rootTermNames = new ArrayList<>();
+
+    createNestedTermsTaxonomy(
+        taxonomyUuid, rootTermNames, levelTermData, levelCount, nodesPerLevel);
+
+    // Call sort on whole taxonomy
+    final HttpResponse sortResponse =
+        postEntity(
+            null,
+            PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "sort"),
+            getToken(),
+            true);
+    assertResponse(sortResponse, 200, "failed to sort taxonomy");
+
+    // Validate the ordering against what we have sorted ourselves
+    validateTaxonomyOrdering(taxonomyUuid, rootTermNames, levelTermData, nodesPerLevel);
+
+    unlock(taxonomyUuid);
+
+    // Delete the taxonomy
+    final String taxonomyUri =
+        PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid);
+    deleteResource(taxonomyUri, getToken());
+  }
+
+  private void createNestedTermsTaxonomy(
+      String taxonomyUuid,
+      List<String> rootTermNames,
+      List<TermTestData> levelTermData,
+      int levelCount,
+      int nodesPerLevel)
+      throws Exception {
     // Create a new taxonomy
     createTaxononmy(taxonomyUuid, "Sort Whole Taxonomy Test Taxonomy");
 
@@ -251,15 +284,13 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     lock(taxonomyUuid);
 
     // Various terms at different levels
-    final List<TermTestData> levelTermData = new ArrayList<>();
     for (int i = 0; i < levelCount; i++) {
       levelTermData.add(new TermTestData((int) (Math.random() * nodesPerLevel)));
     }
 
     final List<Pair<String, String>> level0Terms =
         createChildTerms(taxonomyUuid, null, nodesPerLevel, null);
-    final List<String> rootTermNames =
-        new ArrayList<>(Lists.transform(level0Terms, (t) -> t.getSecond()));
+    rootTermNames.addAll(Lists.transform(level0Terms, (t) -> t.getSecond()));
 
     // You could do this recursively, but we want to keep track of certain nodes
     for (int level0Index = 0; level0Index < level0Terms.size(); level0Index++) {
@@ -299,16 +330,14 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     for (int i = 0; i < levelTermData.size(); i++) {
       alphaSort(levelTermData.get(i).childrenNames);
     }
+  }
 
-    // Call sort on whole taxonmy
-    final HttpResponse sortResponse =
-        postEntity(
-            null,
-            PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "sort"),
-            getToken(),
-            true);
-    assertResponse(sortResponse, 200, "failed to sort taxonomy");
-
+  private void validateTaxonomyOrdering(
+      String taxonomyUuid,
+      List<String> rootTermNames,
+      List<TermTestData> levelTermData,
+      int nodesPerLevel)
+      throws Exception {
     // get the children at the FOUR levels, and match them
     final List<String> returnedSortedRootTerms = new ArrayList<>(nodesPerLevel);
     final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
@@ -330,13 +359,6 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       }
       assertEquals(levelTermData.get(i).childrenNames, returnedSortedChildTerms);
     }
-
-    unlock(taxonomyUuid);
-
-    // Delete the taxonomy
-    final String taxonomyUri =
-        PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid);
-    deleteResource(taxonomyUri, getToken());
   }
 
   private void initTestData(
