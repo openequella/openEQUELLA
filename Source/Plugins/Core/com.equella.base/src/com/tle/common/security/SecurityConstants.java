@@ -47,6 +47,8 @@ public final class SecurityConstants {
   public static final String ARCHIVE_ITEM = "ARCHIVE_ITEM";
   public static final String VIEW_VIEWCOUNT = "VIEW_VIEWCOUNT";
 
+  public static final String EDIT_TAXONOMY = "EDIT_TAXONOMY";
+
   public static final String CREATE_VIRTUAL_BASE =
       "CREATE_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
   public static final String EDIT_VIRTUAL_BASE = "EDIT_" + SecurityConstants.VIRTUAL_BASE_ENTITY;

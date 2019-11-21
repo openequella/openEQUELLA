@@ -33,6 +33,7 @@ import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.security.SecurityConstants;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
@@ -167,14 +168,14 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public String insertTerm(Taxonomy taxonomy, String parentFullPath, String term, int index) {
     return insertTermImpl(taxonomy, parentFullPath, null, term, index, false);
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public TermResult insertTerm(
       Taxonomy taxonomy,
@@ -304,7 +305,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void move(Taxonomy taxonomy, String termToMove, String moveToParent, int index) {
     ensureLocked(taxonomy);
@@ -312,7 +313,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void move(Taxonomy taxonomy, TermResult termToMove, TermResult parentTerm, int index) {
     ensureLocked(taxonomy);
@@ -323,7 +324,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void updateTerm(
       Taxonomy taxonomy, String termUuid, String moveToParent, int index, String newValue) {
@@ -331,7 +332,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void renameTermValue(Taxonomy taxonomy, String termToRename, String newValue) {
     ensureLocked(taxonomy);
@@ -339,7 +340,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void deleteTerm(Taxonomy taxonomy, String termFullPath) {
     ensureLocked(taxonomy);
@@ -347,7 +348,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public boolean setData(Taxonomy taxonomy, String termFullPath, String dataKey, String dataValue) {
     ensureLocked(taxonomy);
@@ -369,7 +370,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void setAllData(Taxonomy taxonomy, String termFullPath, Map<String, String> data) {
     ensureLocked(taxonomy);
@@ -388,7 +389,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public boolean setDataByTermUuid(
       Taxonomy taxonomy, String termUuid, String dataKey, String dataValue) {
@@ -405,7 +406,7 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void setAllDataByTermUuid(Taxonomy taxonomy, String termUuid, Map<String, String> data) {
     ensureLocked(taxonomy);
@@ -456,14 +457,14 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void deleteForTaxonomy(Taxonomy taxonomy) {
     termDao.deleteForTaxonomy(taxonomy);
   }
 
   @Override
-  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @SecureOnCall(priv = SecurityConstants.EDIT_TAXONOMY)
   @Transactional(propagation = Propagation.REQUIRED)
   public void sortChildren(Taxonomy taxonomy, String fullTermPath) {
     ensureLocked(taxonomy);
