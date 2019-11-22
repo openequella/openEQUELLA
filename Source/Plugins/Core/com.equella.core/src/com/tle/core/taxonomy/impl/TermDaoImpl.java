@@ -617,7 +617,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
                 if (shiftAmount != 0) {
                   // we need to use the term path for hierarchical identification, as the
                   // left+right indexes will get messed up during this process
-                  shift(session, taxonomy, tsd.term, shiftAmount);
+					shift(session, taxonomy, tsd.term, shiftAmount);
                 }
               }
               return null;
