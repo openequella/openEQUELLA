@@ -76,6 +76,10 @@ public class SummaryPage extends ItemPage<SummaryPage> {
     return new AdminTabPage(context).get();
   }
 
+  public ItemDetailsPage itemDetails() {
+    return new ItemDetailsPage(context).get();
+  }
+
   public void clickSummaryLink(String title) {
     driver.findElement(summaryLinkBy(title)).click();
   }

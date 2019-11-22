@@ -18,6 +18,7 @@
 
 package com.tle.web.viewitem;
 
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.stream.ContentStream;
@@ -79,6 +80,11 @@ public abstract class AbstractAttachmentViewItemResource extends WrappedViewItem
 
   @Override
   public boolean isRestrictedResource() {
-    return viewableResource.getAttachment().isRestricted();
+    return getAttachment().isRestricted();
+  }
+
+  @Override
+  public IAttachment getAttachment() {
+    return viewableResource.getAttachment();
   }
 }

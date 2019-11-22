@@ -22,13 +22,14 @@ import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
+import com.tle.core.services.UrlService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.integration.Integration;
 import com.tle.web.integration.IntegrationSessionData;
@@ -43,6 +44,7 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.events.BeforeEventsListener;
+import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.ForwardEventListener;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.SectionEvent;
@@ -100,6 +102,7 @@ public class RootItemFileSection
   @Inject private FileSystemService fileSystemService;
   @Inject private InstitutionService institutionService;
   @Inject private Provider<DefaultItemFileInfo> itemInfoProvider;
+  @Inject private UrlService urlService;
 
   private final PathMapper<ViewItemViewer> pathMappedViewers = new PathMapper<ViewItemViewer>();
   private final List<ViewItemFilter> filterViewers = new ArrayList<ViewItemFilter>();
@@ -145,7 +148,7 @@ public class RootItemFileSection
       mimeType = mimeService.getMimeTypeForFilename(filename);
     }
     resource =
-        new BaseViewItemResource(getViewableItem(info), filename, mimeType, model.getViewer());
+        getBaseViewItemResource(getViewableItem(info), filename, mimeType, model.getViewer());
 
     for (ViewItemFilter filter : filterViewers) {
       resource = filter.filter(info, resource);
@@ -235,17 +238,23 @@ public class RootItemFileSection
         if (viewableItem.isItemForReal()
             && vae != null
             && viewableItem.getItemExtensionType() == null) {
-          auditor.audit(vae, ((ViewableItem<Item>) viewableItem));
+          IAttachment attachment = resource.getAttachment();
+          if (attachment == null) {
+            auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
+          } else {
+            auditor.audit(info.getRequest(), vae, viewableItem.getItemId(), attachment);
+          }
         }
-        info.forwardToUrl(resource.createCanonicalURL().getHref(), resource.getForwardCode());
+        info.forwardToUrl(
+            modifyHref(info, resource.createCanonicalURL().getHref()), resource.getForwardCode());
         return null;
       }
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
         auditor.audit(
+            info.getRequest(),
             viewer.getAuditEntry(info, resource),
-            viewableItem.getItemId(),
-            (Attachment) viewableItem.getAttachmentByUuid(viewableItem.getItemId().getUuid()));
+            (ViewableItem<Item>) viewableItem);
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {
@@ -258,6 +267,20 @@ public class RootItemFileSection
       }
       throw ade;
     }
+  }
+
+  // Appalling hack to hide navigation when an error screen shows up...
+  private String modifyHref(SectionInfo info, String href) {
+    if (urlService.isRelativeUrl(href)) {
+      BookmarkEvent ev = new BookmarkEvent(info.lookupSection(RenderTemplate.class), false, info);
+      info.processEvent(ev);
+      String paramString =
+          SectionUtils.getParameterString(
+              SectionUtils.getParameterNameValues(ev.getBookmarkState(), true));
+
+      return URLUtils.appendQueryString(href, paramString);
+    }
+    return href;
   }
 
   private void checkRestrictedResource(
@@ -555,6 +578,12 @@ public class RootItemFileSection
     @Override
     public String getFilenameWithoutPath() {
       return SectionUtils.getFilenameFromFilepath(topLevel.getFilepath());
+    }
+
+    @Nullable
+    @Override
+    public IAttachment getAttachment() {
+      return null;
     }
 
     @Override

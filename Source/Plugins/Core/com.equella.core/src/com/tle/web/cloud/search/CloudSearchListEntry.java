@@ -19,10 +19,7 @@
 package com.tle.web.cloud.search;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
-import com.tle.beans.item.attachments.AttachmentType;
-import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.core.guice.Bind;
@@ -43,8 +40,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewable.ViewableItem;
-import java.util.Collections;
-import java.util.Map;
 import javax.inject.Inject;
 
 /** @author Aaron */
@@ -122,129 +117,6 @@ public class CloudSearchListEntry extends AbstractItemlikeListEntry<CloudItem> {
     if (item.getDateModified() != null) {
       addMetadata(
           new StdMetadataEntry(LABEL_MODIFIED, JQueryTimeAgo.timeAgoTag(item.getDateModified())));
-    }
-  }
-
-  @NonNullByDefault(false)
-  public static class CloudAttachmentDisplay implements IAttachment {
-    private String uuid;
-    private String url;
-    private String description;
-    private String thumbnail;
-    private Map<String, Object> data = Maps.newHashMap();
-    private String md5sum;
-    private String viewer;
-    private boolean preview;
-    private boolean restricted;
-
-    @Override
-    public String getUuid() {
-      return uuid;
-    }
-
-    @Override
-    public void setUuid(String uuid) {
-      this.uuid = uuid;
-    }
-
-    @Override
-    public String getUrl() {
-      return url;
-    }
-
-    @Override
-    public void setUrl(String url) {
-      this.url = url;
-    }
-
-    @Override
-    public String getDescription() {
-      return description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-      this.description = description;
-    }
-
-    @Override
-    public String getThumbnail() {
-      return thumbnail;
-    }
-
-    @Override
-    public void setThumbnail(String thumbnail) {
-      this.thumbnail = thumbnail;
-    }
-
-    @Override
-    public String getMd5sum() {
-      return md5sum;
-    }
-
-    @Override
-    public void setMd5sum(String md5sum) {
-      this.md5sum = md5sum;
-    }
-
-    @Override
-    public String getViewer() {
-      return viewer;
-    }
-
-    @Override
-    public void setViewer(String viewer) {
-      this.viewer = viewer;
-    }
-
-    @Override
-    public boolean isPreview() {
-      return preview;
-    }
-
-    @Override
-    public void setPreview(boolean preview) {
-      this.preview = preview;
-    }
-
-    @Override
-    public void setData(String name, Object value) {
-      data.put(name, value);
-    }
-
-    @Override
-    public Object getData(String name) {
-      return data.get(name);
-    }
-
-    @Override
-    public Map<String, Object> getDataAttributesReadOnly() {
-      return Collections.unmodifiableMap(data);
-    }
-
-    @Override
-    public Map<String, Object> getDataAttributes() {
-      return data;
-    }
-
-    @Override
-    public void setDataAttributes(Map<String, Object> data) {
-      this.data = data;
-    }
-
-    @Override
-    public AttachmentType getAttachmentType() {
-      return AttachmentType.CUSTOM;
-    }
-
-    @Override
-    public void setRestricted(boolean restricted) {
-      this.restricted = restricted;
-    }
-
-    @Override
-    public boolean isRestricted() {
-      return restricted;
     }
   }
 }

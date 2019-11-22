@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WrapsElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AttachmentsPage extends AbstractPage<AttachmentsPage> {
   @FindBy(id = "sc_attachments_browse")
@@ -76,6 +79,16 @@ public class AttachmentsPage extends AbstractPage<AttachmentsPage> {
     return page.get();
   }
 
+  /**
+   * @param description The text of the link attachment to click on
+   * @param elementToFind The element to find on the external page
+   */
+  public void viewLinkAttachment(String description, By elementToFind) {
+    attachmentRow(description).findElement(By.tagName("a")).click();
+    ExpectWaiter.waiter(
+        ExpectedConditions.visibilityOf(elementToFind.findElement(context.getDriver())), this);
+  }
+
   public int attachmentCount() {
     return attachmentsList.findElements(By.xpath("//li[contains(@class,'attachmentrow')]")).size();
   }
@@ -123,7 +136,15 @@ public class AttachmentsPage extends AbstractPage<AttachmentsPage> {
   public String attachmentDetails(String description) {
     WebElement row = attachmentRow(description);
     if (row.getAttribute("class").contains("inactive")) {
-      row.click();
+      // You cannot just call click on the row, as it may be clicking on the actual attachment link
+      // instead.
+      // Note the yOffset is negative, as despite their javadoc saying the coord are top-left based,
+      // it's actually a bald-faced lie, and the position is relative to the center of the element.
+      new Actions(driver)
+          .moveToElement(((WrapsElement) row).getWrappedElement(), 0, -13)
+          .click()
+          .build()
+          .perform();
       waiter.until(
           ExpectedConditions2.visibilityOfElementLocated(
               attachmentsList, activeAttachmentBy(description)));

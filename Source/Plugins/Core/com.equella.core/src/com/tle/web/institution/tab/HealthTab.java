@@ -164,6 +164,10 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
   @PlugKey("institutionusage.name")
   private static Label INST_NAME;
 
+  private final String MAJOR_UPDATE = "majorUpdate";
+  private final String MINOR_UPDATE = "minorUpdate";
+  private final String PATCH_UPDATE = "patchUpdate";
+
   private static IncludeFile SERVICES_INCLUDE =
       new IncludeFile(SERVICES_JS_URL, JQueryTimer.PRERENDER);
   private static JSCallAndReference REFRESH_FUNC =
@@ -271,14 +275,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
     context.getBody().addReadyStatements(refreshHandler, usageRefreshHandler);
     context
         .getBody()
-        .addReadyStatements(
-            CHECK_VERSION,
-            version.getSemanticVersion(),
-            version.getCommit(),
-            version.getDisplay(),
-            VERSION_SERVER_URL,
-            urlService.getAdminUrl().toString(),
-            updateVersionCheck);
+        .addReadyStatements(CHECK_VERSION, version.getSemanticVersion(), updateVersionCheck);
     return viewFactory.createResult("tab/health.ftl", context);
   }
 
@@ -356,12 +353,31 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
   }
 
   @EventHandlerMethod
-  public void versionResponse(SectionInfo info, boolean newer, String infoUrl) {
+  public void versionResponse(
+      SectionInfo info, boolean newer, Map<String, NewerRelease> newReleases) {
     ClusterModel model = getModel(info);
     if (newer) {
-      model.setVersionInfoUrl(infoUrl);
-    } else {
-      model.setOnLatestVersion(true);
+      model.setNewerVersionFound(true);
+      NewerRelease newerMajorRelease = newReleases.get(MAJOR_UPDATE);
+      if (newerMajorRelease != null) {
+        model.setMajorUpdateUrl(newerMajorRelease.url);
+      } else {
+        model.setOnLatestMajorVersion(true);
+      }
+
+      NewerRelease newerMinorRelease = newReleases.get(MINOR_UPDATE);
+      if (newerMinorRelease != null) {
+        model.setMinorUpdateUrl(newerMinorRelease.url);
+      } else {
+        model.setOnLatestMinorVersion(true);
+      }
+
+      NewerRelease newerPatchRelease = newReleases.get(PATCH_UPDATE);
+      if (newerPatchRelease != null) {
+        model.setPatchUpdateUrl(newerPatchRelease.url);
+      } else {
+        model.setOnLatestPatchVersion(true);
+      }
     }
   }
 
@@ -422,11 +438,71 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
 
   public static class ClusterModel {
     private boolean isCluster;
-    private String versionInfoUrl;
-    private boolean onLatestVersion;
-
+    private boolean newerVersionFound;
+    private String majorUpdateUrl;
+    private boolean onLatestMajorVersion;
+    private String minorUpdateUrl;
+    private boolean onLatestMinorVersion;
+    private String patchUpdateUrl;
+    private boolean onLatestPatchVersion;
     private Map<String, String> quotas = Maps.newHashMap();
     private boolean displayQuotas;
+
+    public String getMajorUpdateUrl() {
+      return majorUpdateUrl;
+    }
+
+    public void setMajorUpdateUrl(String majorUpdateUrl) {
+      this.majorUpdateUrl = majorUpdateUrl;
+    }
+
+    public boolean isOnLatestMajorVersion() {
+      return onLatestMajorVersion;
+    }
+
+    public void setOnLatestMajorVersion(boolean onLatestMajorVersion) {
+      this.onLatestMajorVersion = onLatestMajorVersion;
+    }
+
+    public String getMinorUpdateUrl() {
+      return minorUpdateUrl;
+    }
+
+    public void setMinorUpdateUrl(String minorUpdateUrl) {
+      this.minorUpdateUrl = minorUpdateUrl;
+    }
+
+    public boolean isOnLatestMinorVersion() {
+      return onLatestMinorVersion;
+    }
+
+    public void setOnLatestMinorVersion(boolean onLatestMinorVersion) {
+      this.onLatestMinorVersion = onLatestMinorVersion;
+    }
+
+    public String getPatchUpdateUrl() {
+      return patchUpdateUrl;
+    }
+
+    public void setPatchUpdateUrl(String patchUpdateUrl) {
+      this.patchUpdateUrl = patchUpdateUrl;
+    }
+
+    public boolean isOnLatestPacthVersion() {
+      return onLatestPatchVersion;
+    }
+
+    public void setOnLatestPatchVersion(boolean onLatestPatchVersion) {
+      this.onLatestPatchVersion = onLatestPatchVersion;
+    }
+
+    public boolean isNewerVersionFound() {
+      return newerVersionFound;
+    }
+
+    public void setNewerVersionFound(boolean newerVersionFound) {
+      this.newerVersionFound = newerVersionFound;
+    }
 
     public Map<String, String> getQuotas() {
       return quotas;
@@ -451,21 +527,19 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel> {
     public void setDisplayQuotas(boolean displayQuotas) {
       this.displayQuotas = displayQuotas;
     }
+  }
 
-    public String getVersionInfoUrl() {
-      return versionInfoUrl;
-    }
+  class NewerRelease {
+    private String major;
+    private String minor;
+    private String patch;
+    private String url;
 
-    public void setVersionInfoUrl(String versionInfoUrl) {
-      this.versionInfoUrl = versionInfoUrl;
-    }
-
-    public boolean isOnLatestVersion() {
-      return onLatestVersion;
-    }
-
-    public void setOnLatestVersion(boolean onLatestVersion) {
-      this.onLatestVersion = onLatestVersion;
+    public NewerRelease(String major, String minor, String patch, String url) {
+      this.major = major;
+      this.minor = minor;
+      this.patch = patch;
+      this.url = url;
     }
   }
 }

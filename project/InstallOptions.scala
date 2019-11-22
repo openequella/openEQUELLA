@@ -17,7 +17,8 @@ case class InstallOptions(installDir: File,
                           dbport: Int,
                           dbname: String,
                           dbuser: String,
-                          dbpassword: String) {
+                          dbpassword: String,
+                          auditLevel: String) {
   def writeXML(xmlFile: File, baseInstall: File) = {
     val optXml = <commands>
       <installer>
@@ -70,6 +71,9 @@ case class InstallOptions(installDir: File,
       <libav>
         <path>/usr/bin</path>
       </libav>
+      <auditing>
+        <audit.level>{auditLevel}</audit.level>
+      </auditing>
       <hashed.admin.password>SHA256:2a0fd3498c35eced0663c523a80125cbfd3fb8d1634ce87c2ccc020b924ac2d9</hashed.admin.password>
       <datastore>
         <initialise>true</initialise>

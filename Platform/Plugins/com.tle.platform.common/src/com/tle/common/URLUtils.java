@@ -170,6 +170,9 @@ public class URLUtils {
   }
 
   public static String appendQueryString(String url, String qs) {
+    if (qs == null || qs.length() == 0) {
+      return url;
+    }
     if (url.indexOf('?') > 0) {
       return url + '&' + qs;
     }

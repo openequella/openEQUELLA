@@ -20,8 +20,8 @@
 					<description>Please ensure you have reviewed the openEQUELLA Installation and Administration Guide available from</description>
 				</control>
 				<control class="link">
-					<title>https://equella.github.io/</title>
-					<href>https://equella.github.io/</href>
+					<title>https://openequella.github.io/</title>
+					<href>https://openequella.github.io/</href>
 				</control>
 			</controls>
 			<buttons>
@@ -344,6 +344,32 @@
 				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
 			</buttons>
 		</page>
+    <page>
+      <controls>
+        <control class="heading">
+          <title>Auditing</title>
+        </control>
+        <control class="paragraph">
+          <description>Configure auditing options</description>
+        </control>
+        <control class="radiogroup">
+          <title>Content viewing</title>
+          <description>Track when content is viewed based on the following options. Tracking viewing of content attracts a small performance penalty.
+          </description>
+          <target>auditing/audit.level</target>
+          <items>
+            <item name="Do not track when content is viewed" value="NONE" default="true" />
+            <item name="Track every time each user views a piece of content" value="NORMAL"/>
+            <item name="Track every time each user views a piece of content in a different session" value="SMART"/>
+          </items>
+        </control>
+      </controls>
+      <buttons>
+        <button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+        <button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+        <button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+      </buttons>
+    </page>
 		<page>
 			<controls>
 				<control class="heading">
