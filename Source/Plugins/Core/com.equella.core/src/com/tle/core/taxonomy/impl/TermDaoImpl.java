@@ -549,7 +549,6 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
                   u.executeUpdate();
                 }
               } while (foundInvalid);
-
               return null;
             });
   }
@@ -623,6 +622,22 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
               }
               return null;
             });
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void sortTaxonomy(final Taxonomy taxonomy) {
+    // Depth first traversal
+    processChildTerms(taxonomy, null);
+  }
+
+  private void processChildTerms(Taxonomy taxonomy, Term parentTerm) {
+    final List<Term> children =
+        (parentTerm == null ? getRootTerms(taxonomy) : getChildTerms(parentTerm));
+    for (Term term : children) {
+      processChildTerms(taxonomy, term);
+    }
+    sortChildren(taxonomy, parentTerm);
   }
 
   private void checkTermValue(String termValue, Taxonomy taxonomy, Term parentTerm) {

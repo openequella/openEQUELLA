@@ -462,6 +462,14 @@ public class TermServiceImpl implements TermService {
   }
 
   @Override
+  @SecureOnCall(priv = "EDIT_TAXONOMY")
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void sortTaxonomy(Taxonomy taxonomy) {
+    ensureLocked(taxonomy);
+    termDao.sortTaxonomy(taxonomy);
+  }
+
+  @Override
   public void doExport(
       Taxonomy taxonomy,
       SubTemporaryFile termFolder,
