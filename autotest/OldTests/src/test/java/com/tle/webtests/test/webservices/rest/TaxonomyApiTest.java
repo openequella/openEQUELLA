@@ -325,7 +325,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       initTestData(levelTermData, 0, level0Index, null, level0Term, level1Terms);
     }
 
-    // We now know the sorted terms to expect at FOUR levels
+    // We now know the sorted terms to expect at each level
     alphaSort(rootTermNames);
     for (int i = 0; i < levelTermData.size(); i++) {
       alphaSort(levelTermData.get(i).childrenNames);
@@ -338,7 +338,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       List<TermTestData> levelTermData,
       int nodesPerLevel)
       throws Exception {
-    // get the children at the FOUR levels, and match them
+    // get the children at each level, and match them
     final List<String> returnedSortedRootTerms = new ArrayList<>(nodesPerLevel);
     final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
     for (int i = 0; i < arrayNode.size(); i++) {
