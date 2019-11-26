@@ -22,16 +22,29 @@ import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.ScheduledTask;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 
 /** @author Nicholas Read */
 @Bind
 @Singleton
 public class RemoveStagingAreas implements ScheduledTask {
+  private static final Logger LOGGER = Logger.getLogger(RemoveStagingAreas.class);
+
   @Inject private StagingService stagingService;
+
+  @com.google.inject.Inject(optional = true)
+  @Named("com.tle.core.tasks.RemoveStagingAreas.enable")
+  // Can be overrode by the optional-config.properties
+  private boolean enableTask = true;
 
   @Override
   public void execute() {
-    stagingService.removeUnusedStagingAreas();
+    if (enableTask) {
+      stagingService.removeUnusedStagingAreas();
+    } else {
+      LOGGER.info("RemoveStagingAreas is disabled.  Not running task.");
+    }
   }
 }
