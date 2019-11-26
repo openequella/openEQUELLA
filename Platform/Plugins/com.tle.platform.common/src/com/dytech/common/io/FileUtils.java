@@ -82,10 +82,11 @@ public final class FileUtils {
 
   public static boolean delete(Path f, @Nullable FileCallback callback, boolean failOnError)
       throws IOException {
-  	if(LOGGER.isTraceEnabled()) {
-  	  Exception tracer = new Exception("Debug stack trace - about to delete - " + f.toString());
-	  LOGGER.trace(tracer.getMessage(), tracer);
-	}
+    if (LOGGER.isTraceEnabled()) {
+      // Exposes the code flows that delete files
+      Exception tracer = new Exception("Debug stack trace - about to delete - " + f.toString());
+      LOGGER.trace(tracer.getMessage(), tracer);
+    }
     if (!Files.exists(f, LinkOption.NOFOLLOW_LINKS)) {
       LOGGER.debug("File does not exist.  Could not delete [" + f.toString() + "]");
       return true;
