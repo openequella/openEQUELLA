@@ -283,7 +283,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     } catch (AccessDeniedException ex) {
       String serviceUser = System.getProperty("user.name");
       throw new IOException(
-          "Couldn't create directories on file store. Are you sure that EQUELLA running as '"
+          "Couldn't create directories on file store. Are you sure that openEQUELLA running as '"
               + serviceUser
               + "' user has the correct permissions?",
           ex);
@@ -435,6 +435,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       LOGGER.debug("Destination [" + to + "] exists.  Moving to a staging 'trash' folder");
       trash = getFile(new TrashFile(staging));
       LOGGER.debug("Moving current [" + to + "] to trash [" + trash + "]");
+
       if (!FileSystemHelper.rename(to, trash, false)) {
         FileSystemHelper.rename(trash, to, true);
         throw new FileSystemException("Couldn't move [" + to + "] to trash [" + trash + "].");
@@ -448,11 +449,21 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     } else {
       LOGGER.debug("Renaming staging [" + from + "] to real item [" + to + "]");
       if (!FileSystemHelper.rename(from, to, false)) {
-		  LOGGER.debug("The rename of staging [" + from + "] to real item [" + to + "] didn't work.  Trying rename of trash to real item.");
-		if (trash != null) {
-          if(!FileSystemHelper.rename(trash, to, true)) {
-			  LOGGER.debug("The rename of trash [" + trash + "] to real item [" + to + "] didn't work.  Silently proceeding.");
-		  }
+        LOGGER.debug(
+            "The rename of staging ["
+                + from
+                + "] to real item ["
+                + to
+                + "] didn't work.  Trying rename of trash to real item.");
+        if (trash != null) {
+          if (!FileSystemHelper.rename(trash, to, true)) {
+            LOGGER.debug(
+                "The rename of trash ["
+                    + trash
+                    + "] to real item ["
+                    + to
+                    + "] didn't work.  Silently proceeding.");
+          }
         }
         throw new FileSystemException(
             "Failed to commit to staging: "
