@@ -162,6 +162,21 @@
   text-transform: uppercase;
 }
 
+/*****************************************************************************
+Animations
+*****************************************************************************/
+@keyframes snackbar {
+  0%,
+  100% {
+    bottom: -80px;
+  }
+
+  10%,
+  90% {
+    bottom: 0px;
+  }
+}
+
 //**sass functions**//
 @function set-text-color($color) {
   @if (lightness($color) > 70) {
@@ -632,7 +647,7 @@ Alerts
   -moz-border-radius: 4px;
   border-radius: 4px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  position: absolute;
+  position: fixed;
   color: white;
   right: 35vw;
   bottom: 0;
@@ -641,6 +656,9 @@ Alerts
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
+  animation: snackbar 6s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
   button {
     background-color: transparent;
     border: none;
