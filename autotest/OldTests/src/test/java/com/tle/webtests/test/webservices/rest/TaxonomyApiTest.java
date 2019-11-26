@@ -27,6 +27,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   private static final String TERM_1_UUID = "abbd2610-1c3e-489a-a107-1c16fa22b0a0";
   private static final String API_TAXONOMY_PATH = "api/taxonomy";
   private static final String API_TERM_PATH_PART = "term";
+  private static final String ROOT_NODE_NAME = "root";
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
@@ -75,16 +76,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     ObjectNode termNode = (ObjectNode) getEntity(termUrl, getToken());
     assertEquals(termValue, termNode.get("term").asText());
 
-    termNode.put("parentUuid", TERM_1_UUID);
-    String putUrl =
-        PathUtils.urlPath(
-            context.getBaseUrl(),
-            API_TAXONOMY_PATH,
-            TAXONOMY_UUID,
-            API_TERM_PATH_PART,
-            termNode.get("uuid").getTextValue());
-    HttpResponse putRequest = getPut(putUrl, termNode, getToken());
-    assertResponse(putRequest, 200, "failed to update term");
+    moveNode(termNode, TERM_1_UUID, TAXONOMY_UUID, -1);
 
     HttpResponse response = deleteResource(termUrl, getToken());
     assertResponse(response, 200, "failed to delete term");
@@ -138,14 +130,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, null);
     assertResponse(sortRootsResponse, 200, "failed to sort root terms");
 
-    final List<String> returnedSortedRootTerms = new ArrayList<>(10);
     final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
-
-    for (int i = 0; i < arrayNode.size(); i++) {
-      final JsonNode node = arrayNode.get(i);
-      final String termName = node.get("term").getTextValue();
-      returnedSortedRootTerms.add(termName);
-    }
+    final List<String> returnedSortedRootTerms = getNodeNames(arrayNode);
     assertEquals(rootTerms, returnedSortedRootTerms);
 
     unlock(taxonomyUuid);
@@ -173,17 +159,23 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final int testTermIndex = 5;
     String testTermPath = null;
 
+    // Create root node
+    final String rootUuid = UUID.randomUUID().toString();
+    createTerm(taxonomyUuid, rootUuid, ROOT_NODE_NAME);
+
+    // Create first-level nodes
     for (int i = 0; i < 10; i++) {
       final String termName = randomString(8);
       final boolean isTestTerm = (i == testTermIndex);
-      final int childCount = (isTestTerm ? 100 : 8);
+      int childCount = (isTestTerm ? 100 : 8);
       final String termUuid = (isTestTerm ? testTermUuid : UUID.randomUUID().toString());
       if (isTestTerm) {
         testTermPath = termName;
       }
       rootTerms.add(termName);
-      createTerm(taxonomyUuid, termUuid, termName);
+      createTerm(taxonomyUuid, termUuid, termName, rootUuid, -1);
 
+      // Create second-level nodes
       for (int j = 0; j < childCount; j++) {
         final String subTermName = termName + "-" + randomString(8);
         if (isTestTerm) {
@@ -197,33 +189,46 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     alphaSort(rootTerms);
     alphaSort(testTermChildren);
 
+    final String rootNodePath = ROOT_NODE_NAME;
+    final String firstLevelNodePath = ROOT_NODE_NAME + "\\" + testTermPath;
     // Sort root
-    final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, null);
+    final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, rootNodePath);
     assertResponse(sortRootsResponse, 200, "failed to sort root terms");
     // Sort test terms children
-    final HttpResponse sortTestTermChildrenResponse = sortChildren(taxonomyUuid, testTermPath);
+    final HttpResponse sortTestTermChildrenResponse =
+        sortChildren(taxonomyUuid, firstLevelNodePath);
     assertResponse(sortTestTermChildrenResponse, 200, "failed to sort test term children");
 
     // Check root sorted
-    final List<String> returnedSortedRootTerms = new ArrayList<>(10);
-    final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
-    for (int i = 0; i < arrayNode.size(); i++) {
-      final JsonNode node = arrayNode.get(i);
-      final String termName = node.get("term").getTextValue();
-      returnedSortedRootTerms.add(termName);
-    }
+    final ArrayNode firstLevelNodes = getChildren(taxonomyUuid, ROOT_NODE_NAME);
+    final List<String> returnedSortedRootTerms = getNodeNames(firstLevelNodes);
     assertEquals(rootTerms, returnedSortedRootTerms);
 
     // Check test terms children sorted
-    final List<String> returnedSortedChildTerms = new ArrayList<>(10);
-    final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, testTermPath);
-
-    for (int i = 0; i < testTermSortedChildren.size(); i++) {
-      final JsonNode node = testTermSortedChildren.get(i);
-      final String termName = node.get("term").getTextValue();
-      returnedSortedChildTerms.add(termName);
-    }
+    final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, firstLevelNodePath);
+    final List<String> returnedSortedChildTerms = getNodeNames(testTermSortedChildren);
     assertEquals(testTermChildren, returnedSortedChildTerms);
+
+    // Check if the root sorting breaks the order of second-level nodes
+    final JsonNode firstNode = firstLevelNodes.get(0);
+    String firstNodePath = firstNode.get("fullTerm").asText();
+    String firstNodeUuid = firstNode.get("uuid").asText();
+
+    // Sort before any node movements
+    sortChildren(taxonomyUuid, firstNodePath);
+    ArrayNode firstNodeChildren = getChildren(taxonomyUuid, firstNodePath);
+    final List<String> nodeNames = getNodeNames(firstNodeChildren);
+
+    // Move a child node
+    JsonNode lastChildTerm = firstNodeChildren.get(firstNodeChildren.size() - 1);
+    moveNode((ObjectNode) lastChildTerm, firstNodeUuid, taxonomyUuid, 0);
+
+    // Sort again
+    sortChildren(taxonomyUuid, firstNodePath);
+    firstNodeChildren = getChildren(taxonomyUuid, firstNodePath);
+    final List<String> sortedNodeNames = getNodeNames(firstNodeChildren);
+
+    assertEquals(nodeNames, sortedNodeNames);
 
     unlock(taxonomyUuid);
 
@@ -458,6 +463,33 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
                 context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, API_TERM_PATH_PART),
             getToken(),
             varargs);
+  }
+
+  private List<String> getNodeNames(ArrayNode nodes) {
+    final List<String> nodeNames = new ArrayList<>();
+    for (int i = 0; i < nodes.size(); i++) {
+      final JsonNode node = nodes.get(i);
+      final String termName = node.get("term").getTextValue();
+      nodeNames.add(termName);
+    }
+    return nodeNames;
+  }
+
+  private void moveNode(ObjectNode node, String parentUuid, String taxonomyUuid, int index)
+      throws IOException {
+    node.put("parentUuid", parentUuid);
+    if (index >= 0) {
+      node.put("index", index);
+    }
+    String putUrl =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            taxonomyUuid,
+            API_TERM_PATH_PART,
+            node.get("uuid").getTextValue());
+    HttpResponse putRequest = getPut(putUrl, node, getToken());
+    assertResponse(putRequest, 200, "failed to move term");
   }
 
   private HttpResponse sortChildren(String taxonomyUuid, @Nullable String path) throws IOException {

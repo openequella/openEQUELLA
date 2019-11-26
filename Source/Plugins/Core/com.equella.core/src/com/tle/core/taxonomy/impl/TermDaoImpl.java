@@ -558,7 +558,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
       Query q = session.getNamedQuery("shiftByPath");
       q.setInteger("amount", amount);
       q.setString("fullValue", term.getFullValue());
-      q.setString("fullValueWild", term.getFullValue() + "%");
+      q.setString("fullValueWild", term.getFullValue() + "\\%");
       q.setParameter("taxonomy", taxonomy);
       q.executeUpdate();
     } else {
@@ -617,7 +617,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
                 if (shiftAmount != 0) {
                   // we need to use the term path for hierarchical identification, as the
                   // left+right indexes will get messed up during this process
-					shift(session, taxonomy, tsd.term, shiftAmount);
+                  shift(session, taxonomy, tsd.term, shiftAmount);
                 }
               }
               return null;
