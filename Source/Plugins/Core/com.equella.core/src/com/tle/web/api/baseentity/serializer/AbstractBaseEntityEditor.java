@@ -110,7 +110,6 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
         entity.setUuid(sourceUuid);
       }
     } else if (sourceUuid != null && !sourceUuid.equals(entity.getUuid())) {
-      // FIXME: i18n
       throw new InvalidDataException(
           new ValidationError(
               "uuid",

@@ -65,7 +65,7 @@ public class ManagementDialog extends JFrame implements ActionListener, WindowLi
 
   private static final Log LOGGER = LogFactory.getLog(ManagementDialog.class);
 
-  private static final int WINDOW_WIDTH = 450;
+  private static final int WINDOW_WIDTH = 470;
   private static final int WINDOW_HEIGHT = 610;
 
   private static final String EXIT_ICON = "/icons/exclamation.gif";
@@ -124,15 +124,15 @@ public class ManagementDialog extends JFrame implements ActionListener, WindowLi
     currentLaF = UIManager.getLookAndFeel();
     flatterLaF = new FlatterLookAndFeel();
 
-    JImage header = new JImage(ManagementDialog.class.getResource("/icons/header.gif"));
-    Dimension size1 = new Dimension(450, 70);
+    JImage header = new JImage(ManagementDialog.class.getResource("/icons/header.png"));
+    Dimension size1 = new Dimension(470, 70);
     header.setSize(size1);
     header.setMinimumSize(size1);
     header.setPreferredSize(size1);
     header.setMaximumSize(size1);
 
-    JImage footer = new JImage(ManagementDialog.class.getResource("/icons/footer.gif"));
-    Dimension size2 = new Dimension(450, 6);
+    JImage footer = new JImage(ManagementDialog.class.getResource("/icons/footer.png"));
+    Dimension size2 = new Dimension(470, 6);
     footer.setSize(size2);
     footer.setMinimumSize(size2);
     footer.setPreferredSize(size2);

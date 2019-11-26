@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.tle.common.Check;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.wizard.impl.WebRepository;
 import java.util.ArrayList;
 
 /**
@@ -88,9 +89,10 @@ public class CEditBox extends EditableCtrl {
   private void checkDuplicate(ImmutableCollection<String> list) {
     // We need to inform the wizard to check for uniqueness every time,
     // no matter what
+    WebRepository repository = editBoxSection.getWebRepository();
     isUnique =
-        getRepository().checkDataUniqueness(getFirstTarget().getXoqlPath(), list, !forceUnique);
-
+        repository.checkEditboxDuplicate(
+            getFirstTarget().getXoqlPath(), list, !forceUnique, getTitle());
     setInvalid(
         forceUnique && !isUnique && !isInvalid(),
         new KeyLabel("wizard.controls.editbox.uniqueerror"));

@@ -108,6 +108,33 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   import LegacyGuice.urlService
 
+  def isClientPath(relUrl: RelativeUrl): Boolean = {
+    // This regex matches the relative url of Item Summary page
+    // For example 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/'
+    // The last forward slash does not exist in some cases
+    val itemSummaryUrlPattern =
+      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?".r
+
+    // This regex explicitly matches the relative Url of logon
+    // For example, 'logon.do' or 'logon.do?.page=home.do'
+    val logonUrlPattern = "logon\\.do\\??.*".r
+
+    // This regex matches the relative Urls of other pages
+    // For example, 'home.do' or 'access/runwizard.do?.wizid...'
+    val otherUrlPattern = ".+\\.do\\??.*".r
+
+    relUrl.toString() match {
+      case logonUrlPattern()       => false
+      case itemSummaryUrlPattern() => true
+      case otherUrlPattern()       => true
+      case _                       => false
+    }
+  }
+
+  def internalRoute(uri: String): Option[String] = {
+    relativeURI(uri).filter(isClientPath).map(r => "/" + r.toString())
+  }
+
   override lazy val getExceptionHandlers: util.Collection[ExceptionHandlerMatch] = {
     val disableHandlers = Set("ajaxExceptionHandler", "defaultEquellaErrorHandler")
     val tracker         = SectionsControllerImpl.createExceptionTracker(AbstractPluginService.get())
@@ -227,6 +254,7 @@ class LegacyContentApi {
         info
       })
     }
+
     path match {
       case ""                          => ("/home.do", identity)
       case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
@@ -323,15 +351,13 @@ class LegacyContentApi {
                   new BookmarkAndModify(context,
                                         menuLink.getHandlerMap.getHandler("click").getModifier))
                 .getHref
-              val relativized =
-                LegacyContentController.relativeURI(href).filter(_.path.parts.last.endsWith(".do"))
-              val route   = Option(mc.getRoute)
+              val route   = Option(mc.getRoute).orElse(LegacyContentController.internalRoute(href))
               val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
               MenuItem(
                 menuLink.getLabelText,
-                if (relativized.isEmpty && route.isEmpty) Some(href) else None,
+                if (route.isEmpty) Some(href) else None,
                 Option(mc.getSystemIcon),
-                route.orElse(relativized.map(r => "/" + r.toString)),
+                route,
                 iconUrl,
                 "_blank" == menuLink.getTarget
               )
@@ -435,9 +461,9 @@ class LegacyContentApi {
     Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map {
       url =>
         Response.ok {
-          LegacyContentController.relativeURI(url) match {
-            case None           => ExternalRedirect(url)
-            case Some(relative) => InternalRedirect(relative.toString, userChanged(req))
+          LegacyContentController.internalRoute(url) match {
+            case Some(relative) => InternalRedirect(relative.substring(1), userChanged(req))
+            case _              => ExternalRedirect(url)
           }
         }
     }

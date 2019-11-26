@@ -136,6 +136,10 @@ public abstract class AbstractWorkflowOperation implements WorkflowOperation {
     getItem().setOwner(userid);
   }
 
+  protected void setLastOwner(String lastOwner) {
+    getItem().setLastOwner(lastOwner);
+  }
+
   protected String getUserId() {
     return CurrentUser.getUserID();
   }

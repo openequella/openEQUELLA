@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class TaxonomyBean extends BaseEntityBean {
+  private String dataSource = "internal";
   private boolean readonly;
 
   public boolean isReadonly() {
@@ -31,5 +32,13 @@ public class TaxonomyBean extends BaseEntityBean {
 
   public void setReadonly(boolean readonly) {
     this.readonly = readonly;
+  }
+
+  public String getDataSource() {
+    return dataSource;
+  }
+
+  public void setDataSource(String dataSource) {
+    this.dataSource = dataSource;
   }
 }

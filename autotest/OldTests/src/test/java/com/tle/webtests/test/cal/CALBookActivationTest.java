@@ -10,7 +10,6 @@ import com.tle.webtests.pageobject.cal.CALActivatePage;
 import com.tle.webtests.pageobject.cal.CALSummaryPage;
 import com.tle.webtests.pageobject.cal.EditActivationPage;
 import com.tle.webtests.pageobject.cal.ManageActivationsPage;
-import com.tle.webtests.pageobject.wizard.ContributePage;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -31,7 +30,7 @@ public class CALBookActivationTest extends AbstractActivationsTest {
 
   @Test(dependsOnMethods = "createBookForActivation")
   public void checkDuplicatedISBN() {
-    setupBookWithISBN("Book-Dupe", "ISBN-1").publishDuplicate().cancel(new ContributePage(context));
+    setupBookWithISBN("Book-Dupe", "ISBN-1");
   }
 
   @Test(dependsOnMethods = "createBookForActivation")

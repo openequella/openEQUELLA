@@ -19,7 +19,12 @@
 package com.tle.web.viewitem.attachments;
 
 import com.tle.beans.ReferencedURL;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
+import com.tle.common.security.SecurityConstants;
+import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
 import com.tle.core.url.URLCheckerService.URLCheckMode;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -27,6 +32,7 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.render.WrappedLabel;
+import com.tle.web.sections.result.util.CountLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
@@ -34,6 +40,7 @@ import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.SimpleUrlResource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DetailUrlResource extends SimpleUrlResource {
@@ -59,15 +66,21 @@ public class DetailUrlResource extends SimpleUrlResource {
   @PlugKey("linkresource.details.status.unknown")
   private static Label STATUS_UNKNOWN;
 
+  @PlugKey("linkresource.details.views")
+  private static Label VIEWS;
+
   private final URLCheckerService urlCheckerService;
+  private final TLEAclManager aclService;
 
   public DetailUrlResource(
       ViewableResource resource,
       String url,
       String description,
-      URLCheckerService urlCheckerService) {
+      URLCheckerService urlCheckerService,
+      TLEAclManager aclService) {
     super(resource, url, description, urlCheckerService.isUrlDisabled(url));
     this.urlCheckerService = urlCheckerService;
+    this.aclService = aclService;
   }
 
   @Override
@@ -77,8 +90,10 @@ public class DetailUrlResource extends SimpleUrlResource {
     // Type
     commonDetails.add(makeDetail(TYPE, MIMETYPE));
 
+    IAttachment attachment = getAttachment();
+
     // URL
-    String url = getAttachment().getUrl();
+    String url = attachment.getUrl();
     if (!Check.isEmpty(url)) {
       HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(url));
       link.setLabel(new WrappedLabel(new TextLabel(url), -1, true, false));
@@ -90,6 +105,20 @@ public class DetailUrlResource extends SimpleUrlResource {
       if (!urlStatus.isSuccess()) {
         commonDetails.add(
             makeDetail(STATUS, urlStatus.getTries() == 0 ? STATUS_UNKNOWN : STATUS_BAD));
+      }
+    }
+
+    if (attachment instanceof Attachment) {
+      final Attachment att = (Attachment) attachment;
+      if (!aclService
+          .filterNonGrantedPrivileges(
+              att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT))
+          .isEmpty()) {
+        Integer views =
+            ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+        if (views != null) {
+          commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
+        }
       }
     }
 

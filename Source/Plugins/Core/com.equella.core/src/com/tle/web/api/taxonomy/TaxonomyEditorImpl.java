@@ -23,9 +23,12 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.taxonomy.TaxonomyBean;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import javax.inject.Inject;
@@ -34,6 +37,10 @@ import javax.inject.Inject;
 @NonNullByDefault
 public class TaxonomyEditorImpl extends AbstractBaseEntityEditor<Taxonomy, TaxonomyBean>
     implements TaxonomyEditor {
+
+  private static final String INTERNAL_DATA_SOURCE_IDENTIFIER = "internal";
+  private static final String SQL_DATA_SOURCE_IDENTIFIER = "sql";
+
   @Inject private TaxonomyService taxonomyService;
 
   @AssistedInject
@@ -52,6 +59,27 @@ public class TaxonomyEditorImpl extends AbstractBaseEntityEditor<Taxonomy, Taxon
       @Assisted("stagingUuid") @Nullable String stagingUuid,
       @Assisted("importing") boolean importing) {
     this(entity, stagingUuid, null, false, importing);
+  }
+
+  @Override
+  protected void copyCustomFields(TaxonomyBean bean) {
+    super.copyCustomFields(bean);
+    final Taxonomy taxonomy = entity;
+    final String dataSource = bean.getDataSource();
+    if (dataSource == null || INTERNAL_DATA_SOURCE_IDENTIFIER.equals(dataSource)) {
+      taxonomy.setDataSourcePluginId("internalTaxonomyDataSource");
+    } else if (SQL_DATA_SOURCE_IDENTIFIER.equals(dataSource)) {
+      // Fully supporting this would require copying attributes like the connection string, queries,
+      // et al.
+      // taxonomy.setDataSourcePluginId("sqlTaxonomyDataSource");
+      throw new InvalidDataException(
+          new ValidationError(
+              "dataSource", CoreStrings.text("api.taxonomy.validation.datasource.notimplemented")));
+    } else {
+      throw new InvalidDataException(
+          new ValidationError(
+              "dataSource", CoreStrings.text("api.taxonomy.validation.datasource.unknown")));
+    }
   }
 
   @Override

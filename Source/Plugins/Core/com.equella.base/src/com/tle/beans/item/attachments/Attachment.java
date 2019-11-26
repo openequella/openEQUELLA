@@ -213,6 +213,7 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
     this.md5sum = md5sum;
   }
 
+  @Override
   public Item getItem() {
     return item;
   }

@@ -94,6 +94,9 @@ jobs:
       script: sbt test
       name: Unit test
     - stage: build and check
+      script: cd Source/Plugins/Core/com.equella.core/js && npm install && npm test; cd -
+      name: Jest test
+    - stage: build and check
       script: ci/import-export-tool-build.sh
       name: Build the Import/Export tool
 

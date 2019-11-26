@@ -20,6 +20,7 @@ package com.tle.core.taxonomy.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 import com.tle.common.EntityPack;
 import com.tle.common.Pair;
@@ -157,8 +158,8 @@ public class TaxonomyServiceImpl
   }
 
   @Override
-  public List<TermResult> getChildTerms(String taxonomyUuid, String parentTermId) {
-    return getDataSource(taxonomyUuid).getChildTerms(parentTermId);
+  public List<TermResult> getChildTerms(String taxonomyUuid, String parentTermFullPath) {
+    return getDataSource(taxonomyUuid).getChildTerms(parentTermFullPath);
   }
 
   @Override
@@ -178,10 +179,14 @@ public class TaxonomyServiceImpl
 
   @Override
   public TermResult addTerm(
-      String taxonomyUuid, String parentFullPath, String termValue, boolean createHierarchy) {
+      String taxonomyUuid,
+      String parentFullPath,
+      @Nullable String termUuid,
+      String termValue,
+      boolean createHierarchy) {
     TaxonomyDataSource dataSource = getDataSource(taxonomyUuid);
     if (dataSource.supportsTermAddition()) {
-      return dataSource.addTerm(parentFullPath, termValue, createHierarchy);
+      return dataSource.addTerm(parentFullPath, termUuid, termValue, createHierarchy);
     }
 
     throw new IllegalOperationException(
@@ -236,18 +241,20 @@ public class TaxonomyServiceImpl
       EntityEditingBean bean,
       Taxonomy taxonomy,
       ConverterParams params) {
-    final SubTemporaryFile termsFolder =
-        new SubTemporaryFile(taxonomyImportFolder, TaxonomyConstants.TERMS_EXPORT_FOLDER);
-    if (fileSystemService.fileExists(termsFolder)) {
-      // DELETE ALL EXISTING TERMS
-      termService.deleteForTaxonomy(taxonomy);
+    if (taxonomyImportFolder != null) {
+      final SubTemporaryFile termsFolder =
+          new SubTemporaryFile(taxonomyImportFolder, TaxonomyConstants.TERMS_EXPORT_FOLDER);
+      if (fileSystemService.fileExists(termsFolder)) {
+        // DELETE ALL EXISTING TERMS
+        termService.deleteForTaxonomy(taxonomy);
 
-      termService.doImport(
-          taxonomy, termsFolder, params.getInstituionInfo().getInstitution(), params);
+        termService.doImport(
+            taxonomy, termsFolder, params.getInstituionInfo().getInstitution(), params);
 
-      // remove the terms folder so it doesn't get committed as an entity
-      // file
-      fileSystemService.removeFile(termsFolder);
+        // remove the terms folder so it doesn't get committed as an entity
+        // file
+        fileSystemService.removeFile(termsFolder);
+      }
     }
   }
 

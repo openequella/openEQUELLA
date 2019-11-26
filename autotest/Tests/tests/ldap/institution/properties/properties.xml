@@ -1,150 +1,406 @@
 <map>
   <entry>
-    <string>ldap.groupObject</string>
-    <string>posixGroup</string>
+    <string>htmleditor.toolbar.rows.1.buttons.17</string>
+    <string>|</string>
   </entry>
   <entry>
-    <string>ldap.attributes.email</string>
-    <string>mail</string>
+    <string>htmleditor.toolbar.rows.1.buttons.18</string>
+    <string>col_before</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.0.name</string>
-    <string>admin</string>
-  </entry>
-  <entry>
-    <string>ldap.ssl</string>
-    <string>false</string>
-  </entry>
-  <entry>
-    <string>ldap.attributes.surname</string>
-    <string>sn</string>
-  </entry>
-  <entry>
-    <string>ldap.bases.0</string>
-    <string>dc=equella,dc=com</string>
+    <string>htmleditor.toolbar.rows.1.buttons.19</string>
+    <string>col_after</string>
   </entry>
   <entry>
     <string>ldap.admin.password</string>
-    <string></string>
+    <string>password</string>
   </entry>
   <entry>
-    <string>ldap.enabled</string>
-    <string>true</string>
+    <string>htmleditor.toolbar.rows.1.buttons.13</string>
+    <string>|</string>
   </entry>
   <entry>
-    <string>wrapper.group.enabled</string>
-    <string>true</string>
+    <string>htmleditor.toolbar.rows.1.buttons.7</string>
+    <string>selectall</string>
   </entry>
   <entry>
-    <string>ldap.attributes.memberKey</string>
-    <string>cn</string>
+    <string>htmleditor.toolbar.rows.1.buttons.14</string>
+    <string>row_before</string>
   </entry>
   <entry>
-    <string>ldap.version</string>
-    <string>3</string>
+    <string>htmleditor.toolbar.rows.1.buttons.6</string>
+    <string>paste</string>
   </entry>
   <entry>
-    <string>wrapper.user.enabled</string>
-    <string>false</string>
+    <string>htmleditor.toolbar.rows.1.buttons.15</string>
+    <string>row_after</string>
   </entry>
   <entry>
-    <string>wrapper.role.enabled</string>
-    <string>true</string>
+    <string>htmleditor.toolbar.rows.1.buttons.9</string>
+    <string>table</string>
   </entry>
   <entry>
-    <string>ldap.attributes.groupId</string>
-    <string>gidNumber</string>
+    <string>htmleditor.toolbar.rows.1.buttons.16</string>
+    <string>delete_row</string>
   </entry>
   <entry>
-    <string>ldap.attributes.username</string>
-    <string>uid</string>
+    <string>htmleditor.toolbar.rows.1.buttons.8</string>
+    <string>|</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.0.id</string>
-    <string>0096aa87-3da2-47e2-9ef3-983d2e38acb8</string>
+    <string>htmleditor.toolbar.rows.1.buttons.10</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.11</string>
+    <string>row_props</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.12</string>
+    <string>cell_props</string>
+  </entry>
+  <entry>
+    <string>ldap.bases.0</string>
+    <string>dc=edalex,dc=com</string>
   </entry>
   <entry>
     <string>cache.enabled</string>
     <string>false</string>
   </entry>
   <entry>
-    <string>ldap.attributes.givenname</string>
-    <string>givenName</string>
+    <string>htmleditor.toolbar.rows.0.buttons.0</string>
+    <string>bold</string>
   </entry>
   <entry>
-    <string>security.applet.shared.secrets.0.expression</string>
-    <string>*</string>
+    <string>htmleditor.toolbar.rows.0.buttons.1</string>
+    <string>italic</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.2</string>
+    <string>underline</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.3</string>
+    <string>strikethrough</string>
+  </entry>
+  <entry>
+    <string>ldap.url</string>
+    <string>ldap://127.0.1.1:10389</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.email</string>
+    <string>mail</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.4</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.5</string>
+    <string>justifyleft</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.6</string>
+    <string>justifycenter</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.7</string>
+    <string>justifyright</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.8</string>
+    <string>justifyfull</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.9</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>ldap.groupObject</string>
+    <string>posixGroup</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.3</string>
+    <string>redo</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.groupId</string>
+    <string>gidNumber</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.2</string>
+    <string>undo</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.5</string>
+    <string>copy</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.4</string>
+    <string>cut</string>
   </entry>
   <entry>
     <string>ldap.attributes.member</string>
-    <string>memberUid</string>
+    <string></string>
   </entry>
   <entry>
-    <string>ldap.persionObject</string>
-    <string>person</string>
+    <string>htmleditor.toolbar.rows.1.buttons.1</string>
+    <string>|</string>
   </entry>
   <entry>
-    <string>ldap.attributes.groupName</string>
-    <string>cn</string>
+    <string>htmleditor.toolbar.rows.1.buttons.0</string>
+    <string>code</string>
+  </entry>
+  <entry>
+    <string>wrapper.group.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.14</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.15</string>
+    <string>sub</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.12</string>
+    <string>removeformat</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.0</string>
+    <string>bullist</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.13</string>
+    <string>visualaid</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.18</string>
+    <string>charmap</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.2</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.19</string>
+    <string>link</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.1</string>
+    <string>numlist</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.16</string>
+    <string>sup</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.4</string>
+    <string>indent</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.17</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.3</string>
+    <string>outdent</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.10</string>
+    <string>formatselect</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.11</string>
+    <string>hr</string>
   </entry>
   <entry>
     <string>ldap.attributes.memberOf</string>
     <string></string>
   </entry>
   <entry>
-    <string>ldap.searchLimit</string>
-    <string>100</string>
+    <string>ldap.persionObject</string>
+    <string>person</string>
   </entry>
   <entry>
-    <string>ldap.attributes.id</string>
-    <string>uidNumber</string>
+    <string>htmleditor.toolbar.rows.1.buttons.24</string>
+    <string>|</string>
   </entry>
   <entry>
-    <string>security.applet.shared.secrets.0.id</string>
-    <string>APPLET</string>
+    <string>htmleditor.toolbar.rows.1.buttons.25</string>
+    <string>forecolorpicker</string>
   </entry>
   <entry>
-    <string>ldap.url</string>
-    <string>ldap://openldap</string>
+    <string>security.applet.shared.secrets.0.expression</string>
+    <string>*</string>
   </entry>
   <entry>
-    <string>ldap.forcelowercaseids</string>
+    <string>htmleditor.toolbar.rows.1.buttons.26</string>
+    <string>backcolorpicker</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.20</string>
+    <string>delete_col</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.6</string>
+    <string>tle_fileuploader</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.21</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.5</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.1.buttons.22</string>
+    <string>split_cells</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.8</string>
+    <string>tle_scrapbookpicker</string>
+  </entry>
+  <entry>
+    <string>ldap.enabled</string>
     <string>true</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.0.expression</string>
-    <string>G:group+a G:group+b OR </string>
+    <string>htmleditor.toolbar.rows.1.buttons.23</string>
+    <string>merge_cells</string>
   </entry>
   <entry>
-    <string>security.applet.shared.secrets.0.secret</string>
-    <string>bd859dc9-b5a1-4eb4-96b9-f371dc87bdff</string>
+    <string>htmleditor.toolbar.rows.2.buttons.7</string>
+    <string>tle_reslinker</string>
   </entry>
   <entry>
-    <string>ldap.validateCert</string>
-    <string>false</string>
+    <string>wrapper.role.enabled</string>
+    <string>true</string>
   </entry>
   <entry>
-    <string>ldap.follow</string>
-    <string>false</string>
-  </entry>
-  <entry>
-    <string>ldap.defaultdomain</string>
-    <string>equella.com</string>
-  </entry>
-  <entry>
-    <string>ldap.admin.username</string>
-    <string></string>
+    <string>htmleditor.toolbar.rows.2.buttons.9</string>
+    <string>|</string>
   </entry>
   <entry>
     <string>cache.schedule.gap</string>
     <string>0</string>
   </entry>
   <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.11</string>
+    <string>fontsizeselect</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.10</string>
+    <string>fontselect</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.13</string>
+    <string>spellchecker</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.2.buttons.12</string>
+    <string>|</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.21</string>
+    <string>anchor</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.22</string>
+    <string>image</string>
+  </entry>
+  <entry>
+    <string>ldap.searchLimit</string>
+    <string>100</string>
+  </entry>
+  <entry>
+    <string>htmleditor.toolbar.rows.0.buttons.20</string>
+    <string>unlink</string>
+  </entry>
+  <entry>
+    <string>ldap.follow</string>
+    <string>false</string>
+  </entry>
+  <entry>
     <string>ldap.port</string>
     <string>0</string>
   </entry>
   <entry>
+    <string>ldap.validateCert</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.groupName</string>
+    <string>ou</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.name</string>
+    <string>admin</string>
+  </entry>
+  <entry>
+    <string>ldap.admin.username</string>
+    <string>cn=equella</string>
+  </entry>
+  <entry>
+    <string>ldap.forcelowercaseids</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.givenname</string>
+    <string>givenName</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.surname</string>
+    <string>sn</string>
+  </entry>
+  <entry>
     <string>ldap.wildcards</string>
     <string>true</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.id</string>
+    <string>uid</string>
+  </entry>
+  <entry>
+    <string>wrapper.user.enabled</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.id</string>
+    <string>APPLET</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.secret</string>
+    <string>bd859dc9-b5a1-4eb4-96b9-f371dc87bdff</string>
+  </entry>
+  <entry>
+    <string>ldap.version</string>
+    <string>3</string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.memberKey</string>
+    <string>cn</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.expression</string>
+    <string>G:group+a G:group+b OR </string>
+  </entry>
+  <entry>
+    <string>ldap.ssl</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.id</string>
+    <string>0096aa87-3da2-47e2-9ef3-983d2e38acb8</string>
+  </entry>
+  <entry>
+    <string>ldap.defaultdomain</string>
+    <string></string>
+  </entry>
+  <entry>
+    <string>ldap.attributes.username</string>
+    <string>cn</string>
   </entry>
 </map>

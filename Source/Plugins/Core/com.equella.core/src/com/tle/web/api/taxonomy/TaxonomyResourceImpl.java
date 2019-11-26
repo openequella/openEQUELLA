@@ -18,7 +18,6 @@
 
 package com.tle.web.api.taxonomy;
 
-import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.WebException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,21 +25,20 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.taxonomy.TaxonomyBean;
 import com.tle.beans.taxonomy.TermBean;
 import com.tle.common.Pair;
+import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
-import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.core.entity.EnumerateOptions;
-import com.tle.core.entity.service.EntityLockingService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermResult;
 import com.tle.core.taxonomy.TermService;
+import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.SearchBean;
-import com.tle.web.remoting.rest.service.RestImportExportHelper;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
+import com.tle.web.api.taxonomy.interfaces.TaxonomyResource;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -48,146 +46,28 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
-@NonNullByDefault
-@Bind
-@Path("taxonomy")
-@Api(value = "Taxonomies", description = "taxonomy")
-@Produces({"application/json"})
 @SuppressWarnings("nls")
+@NonNullByDefault
+@Bind(TaxonomyResource.class)
 @Singleton
-public class TaxonomyResource {
+public class TaxonomyResourceImpl
+    extends AbstractBaseEntityResource<Taxonomy, BaseEntitySecurityBean, TaxonomyBean>
+    implements TaxonomyResource {
+
   private enum PrivCheck {
     VIEW,
     EDIT,
     DELETE
   }
 
-  @Inject private EntityLockingService lockingService;
   @Inject private TaxonomyService taxonomyService;
   @Inject private TermService termService;
   @Inject private InstitutionService institutionService;
   @Inject private TaxonomyBeanSerializer taxonomySerializer;
-
-  /**
-   * Returns all taxonomies.
-   *
-   * @return Response encapsulating SearchBean of List of TaxonomyBean
-   */
-  @GET
-  @Path("/")
-  @Produces("application/json")
-  @ApiOperation(value = "List all taxonomies")
-  public Response listAllTaxonomies(UriInfo uriInfo) {
-    SearchBean<TaxonomyBean> results = new SearchBean<TaxonomyBean>();
-    boolean isExport = RestImportExportHelper.isExport(uriInfo);
-    List<TaxonomyBean> beans = Lists.newArrayList();
-    List<Taxonomy> taxonomies =
-        taxonomyService.query(new EnumerateOptions().setIncludeSystem(isExport));
-    for (Taxonomy taxonomy : taxonomies) {
-      TaxonomyBean bean = taxonomySerializer.serialize(taxonomy, null, false);
-      beans.add(bean);
-    }
-    results.setResults(beans);
-    results.setAvailable(beans.size());
-    results.setLength(beans.size());
-    return Response.ok(results).build();
-  }
-
-  /**
-   * Returns terms
-   *
-   * @return Response encapsulating TermBeans
-   */
-  @GET
-  @Path("/{uuid}")
-  @Produces("application/json")
-  @ApiOperation(value = "Get taxonomy")
-  public Response getTaxonomy(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String uuid) {
-    final Taxonomy taxonomy = ensureTaxonomy(uuid, PrivCheck.VIEW);
-    return Response.ok(taxonomySerializer.serialize(taxonomy, null, true)).build();
-  }
-
-  @DELETE
-  @Path("/{uuid}")
-  @ApiOperation(value = "Delete taxonomy")
-  public Response delete(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String uuid) {
-    final Taxonomy taxonomy = ensureTaxonomy(uuid, PrivCheck.DELETE);
-    taxonomyService.delete(taxonomy, false);
-    return Response.noContent().build();
-  }
-
-  @GET
-  @Path("/{uuid}/lock")
-  @ApiOperation(value = "Get taxonomy lock status")
-  public Response getTaxonomyLockStatus(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid) {
-    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
-    if (lockingService.isEntityLocked(taxonomy, CurrentUser.getUserID(), null)) {
-      return Response.status(Status.NOT_FOUND).build();
-    }
-
-    return Response.ok().build();
-  }
-
-  @POST
-  @Path("/{uuid}/lock")
-  @ApiOperation(value = "Lock taxonomy")
-  public Response lockTaxonomy(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid) {
-    try {
-      final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
-      lockingService.lockEntity(taxonomy);
-    } catch (LockedException ex) {
-      if (CurrentUser.getUserID().equals(ex.getUserID())) {
-        throw new WebApplicationException(
-            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.",
-            Status.UNAUTHORIZED);
-      } else {
-        throw new WebApplicationException(
-            "Taxonomy is locked by another user: " + ex.getUserID(), Status.UNAUTHORIZED);
-      }
-    }
-    return Response.ok().build();
-  }
-
-  @DELETE
-  @Path("/{uuid}/lock")
-  @Produces("application/json")
-  @ApiOperation(value = "unlock taxonomy")
-  public Response unlockTaxonomy(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "force unlock", required = false) @QueryParam("force") boolean force) {
-    try {
-      final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
-      lockingService.unlockEntity(taxonomy, force);
-    } catch (LockedException ex) {
-      if (CurrentUser.getUserID().equals(ex.getUserID())) {
-        throw new WebApplicationException(
-            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.",
-            Status.UNAUTHORIZED);
-      } else {
-        throw new WebApplicationException(
-            "You do not own the lock on this taxonomy.  It is held by user ID " + ex.getUserID(),
-            Status.UNAUTHORIZED);
-      }
-    }
-    return Response.ok().build();
-  }
 
   /**
    * Search terms
@@ -199,27 +79,10 @@ public class TaxonomyResource {
    * @param searchfullterm
    * @return Response
    */
-  @GET
-  @Path("/{uuid}/search")
-  @Produces("application/json")
-  @ApiOperation(value = "Search terms")
+  @Override
   public Response searchTaxonomyTerms(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String uuid,
-      @ApiParam(value = "Term query", required = true) @QueryParam("q") String query,
-      @ApiParam(
-              value = "Selection restriction",
-              required = false,
-              defaultValue = "UNRESTRICTED",
-              allowableValues = "TOP_LEVEL_ONLY,LEAF_ONLY,UNRESTRICTED")
-          @QueryParam("restriction")
-          String restriction,
-      @ApiParam(value = "Limit number of results", required = false, defaultValue = "20")
-          @QueryParam("limit")
-          int limit,
-      @ApiParam(value = "search fullterm", required = false, defaultValue = "false")
-          @QueryParam("searchfullterm")
-          boolean searchfullterm) {
-    final Taxonomy taxonomy = ensureTaxonomy(uuid, PrivCheck.VIEW);
+      String uuid, String query, String restriction, int limit, boolean searchfullterm) {
+    ensureTaxonomy(uuid, PrivCheck.VIEW);
 
     SelectionRestriction restrict =
         (restriction == null
@@ -236,7 +99,7 @@ public class TaxonomyResource {
       beans.add(bean);
     }
 
-    final SearchBean<TermBean> result = new SearchBean<TermBean>();
+    final SearchBean<TermBean> result = new SearchBean<>();
     result.setAvailable((int) (long) searchTerms.getFirst());
     result.setLength(beans.size());
     result.setResults(beans);
@@ -248,14 +111,9 @@ public class TaxonomyResource {
    *
    * @return Response encapsulating TermBeans
    */
-  @GET
-  @Path("/{uuid}/term")
-  @Produces("application/json")
-  @ApiOperation(value = "Get taxonomy terms")
-  public Response getTaxonomyTerms(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "Term path", required = false) @QueryParam("path") String path) {
-    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+  @Override
+  public Response getTaxonomyTerms(String taxonomyUuid, String path) {
+    ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
 
     Collection<TermResult> terms = taxonomyService.getChildTerms(taxonomyUuid, path);
     final List<TermBean> beans = Lists.newArrayList();
@@ -269,17 +127,12 @@ public class TaxonomyResource {
   /**
    * Insert new term
    *
-   * @param uuid
+   * @param taxonomyUuid
    * @param termBean
    * @return
    */
-  @POST
-  @Path("/{uuid}/term")
-  @Produces("application/json")
-  @ApiOperation(value = "Create taxonomy term")
-  public Response createTaxonomyTerm(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "Taxonomy term") TermBean termBean) {
+  @Override
+  public Response createTaxonomyTerm(String taxonomyUuid, TermBean termBean) {
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw new WebException(
           Status.METHOD_NOT_ALLOWED.getStatusCode(),
@@ -288,9 +141,18 @@ public class TaxonomyResource {
     }
 
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
+    final String parentTermUuid = termBean.getParentUuid();
+    TermResult parentTerm = null;
+    if (parentTermUuid != null) {
+      parentTerm = taxonomyService.getTermResultByUuid(taxonomyUuid, termBean.getParentUuid());
+      if (parentTerm == null) {
+        throw new WebException(
+            Status.NOT_FOUND.getStatusCode(),
+            Status.NOT_FOUND.getReasonPhrase(),
+            "Parent term not found");
+      }
+    }
 
-    TermResult parentTerm =
-        taxonomyService.getTermResultByUuid(taxonomyUuid, termBean.getParentUuid());
     int index = termBean.getIndex();
 
     if (index < 0) {
@@ -299,7 +161,8 @@ public class TaxonomyResource {
 
     try {
       TermResult termResult =
-          termService.insertTerm(taxonomy, parentTerm, termBean.getTerm(), index);
+          termService.insertTerm(
+              taxonomy, parentTerm, termBean.getUuid(), termBean.getTerm(), index);
       return Response.created(getTermUrl(taxonomyUuid, termResult.getUuid())).build();
     } catch (Exception e) {
       throw new WebException(
@@ -312,18 +175,13 @@ public class TaxonomyResource {
   /**
    * Update term
    *
-   * @param uuid
+   * @param taxonomyUuid
+   * @param termUuid
    * @param termBean
    * @return
    */
-  @PUT
-  @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
-  @ApiOperation(value = "Update term")
-  public Response updateTaxonomyTerm(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "Term uuid", required = true) @PathParam("termUuid") String termUuid,
-      @ApiParam(value = "Taxonomy term") TermBean termBean) {
+  @Override
+  public Response updateTaxonomyTerm(String taxonomyUuid, String termUuid, TermBean termBean) {
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw new WebException(
           Status.METHOD_NOT_ALLOWED.getStatusCode(),
@@ -357,17 +215,12 @@ public class TaxonomyResource {
   /**
    * Remove term
    *
-   * @param uuid
-   * @param termBean
+   * @param taxonomyUuid
+   * @param termUuid
    * @return
    */
-  @DELETE
-  @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
-  @ApiOperation(value = "Remove term")
-  public Response rmTaxonomyTerm(
-      @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "Term uuid", required = true) @PathParam("termUuid") String termUuid) {
+  @Override
+  public Response rmTaxonomyTerm(String taxonomyUuid, String termUuid) {
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw new WebException(
           Status.METHOD_NOT_ALLOWED.getStatusCode(),
@@ -394,19 +247,13 @@ public class TaxonomyResource {
    *
    * @return Response encapsulating TermBeans
    */
-  @GET
-  @Path("/{uuid}/term/{termUuid}")
-  @Produces("application/json")
-  @ApiOperation(value = "Get term by UUID")
-  public Response getTermByUuid(
-      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid) {
-    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+  @Override
+  public Response getTermByUuid(String taxonomyUuid, String termUuid) {
+    ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
     TermResult term = taxonomyService.getTermResultByUuid(taxonomyUuid, termUuid);
 
-    TermBean bean = null;
     if (term != null) {
-      bean = beanFromTaxonomyTerm(term, taxonomyUuid);
+      final TermBean bean = beanFromTaxonomyTerm(term, taxonomyUuid);
       return Response.ok(bean).build();
     } else {
       throw new WebException(
@@ -423,14 +270,9 @@ public class TaxonomyResource {
    * @param termUuid
    * @return
    */
-  @GET
-  @Path("/{uuid}/term/{termUuid}/data")
-  @Produces("application/json")
-  @ApiOperation(value = "Data")
-  public Response getAllTermData(
-      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid) {
-    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+  @Override
+  public Response getAllTermData(String taxonomyUuid, String termUuid) {
+    ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
     try {
       Map<String, String> data = taxonomyService.getAllDataByTermUuid(taxonomyUuid, termUuid);
 
@@ -451,17 +293,11 @@ public class TaxonomyResource {
    * @param dataKey
    * @return
    */
-  @GET
-  @Path("/{uuid}/term/{termUuid}/data/{datakey}")
-  @Produces("application/json")
-  @ApiOperation(value = "Get term data")
-  public Response getTermDataByKey(
-      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
-      @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey) {
-    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+  @Override
+  public Response getTermDataByKey(String taxonomyUuid, String termUuid, String dataKey) {
+    ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
 
-    String value = null;
+    String value;
     try {
       value = taxonomyService.getDataByTermUuid(taxonomyUuid, termUuid, dataKey);
     } catch (IllegalArgumentException ex) {
@@ -487,15 +323,9 @@ public class TaxonomyResource {
    * @param dataKey
    * @return
    */
-  @PUT
-  @Path("/{uuid}/term/{termUuid}/data/{datakey}/{datavalue}")
-  @Produces("application/json")
-  @ApiOperation(value = "Set term data")
+  @Override
   public Response setTermData(
-      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
-      @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey,
-      @ApiParam(value = "data value", required = true) @PathParam("datakey") String dataValue) {
+      String taxonomyUuid, String termUuid, String dataKey, String dataValue) {
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw new WebException(
           Status.METHOD_NOT_ALLOWED.getStatusCode(),
@@ -523,14 +353,8 @@ public class TaxonomyResource {
    * @param dataKey
    * @return
    */
-  @DELETE
-  @Path("/{uuid}/term/{termUuid}/data/{datakey}")
-  @Produces("application/json")
-  @ApiOperation(value = "Delete term data")
-  public Response deleteTermData(
-      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
-      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
-      @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey) {
+  @Override
+  public Response deleteTermData(String taxonomyUuid, String termUuid, String dataKey) {
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw new WebException(
           Status.METHOD_NOT_ALLOWED.getStatusCode(),
@@ -547,6 +371,23 @@ public class TaxonomyResource {
           "termUuid given is not valid");
     }
 
+    return Response.ok().build();
+  }
+
+  /** @return 200 response if successful */
+  @Override
+  public Response sortChildTerms(String taxonomyUuid, String path) {
+    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+
+    termService.sortChildren(taxonomy, path);
+    return Response.ok().build();
+  }
+
+  @Override
+  public Response sortTaxonomy(String taxonomyUuid) {
+    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+
+    termService.sortTaxonomy(taxonomy);
     return Response.ok().build();
   }
 
@@ -581,5 +422,30 @@ public class TaxonomyResource {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
     return taxonomy;
+  }
+
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_TAXONOMIES};
+  }
+
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
+
+  @Override
+  public AbstractEntityService<?, Taxonomy> getEntityService() {
+    return taxonomyService;
+  }
+
+  @Override
+  protected BaseEntitySerializer<Taxonomy, TaxonomyBean> getSerializer() {
+    return taxonomySerializer;
+  }
+
+  @Override
+  protected Class<?> getResourceClass() {
+    return TaxonomyResource.class;
   }
 }

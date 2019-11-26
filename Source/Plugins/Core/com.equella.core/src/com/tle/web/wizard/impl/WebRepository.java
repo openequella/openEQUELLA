@@ -381,6 +381,11 @@ public class WebRepository implements LERepository {
     wizardService.checkDuplicateUrls(state, urls);
   }
 
+  public boolean checkEditboxDuplicate(
+      String xpath, ImmutableCollection<String> values, boolean canAccept, String fieldName) {
+    return wizardService.checkEditboxDuplicate(state, xpath, values, canAccept, fieldName);
+  }
+
   @Override
   public FileInfo unzipFile(String zipfile, String targetFolder, boolean ignoreZipError) {
     try {

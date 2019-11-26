@@ -27,6 +27,7 @@ import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.guice.Bind
+import com.tle.core.i18n.CoreStrings
 import com.tle.core.item.dao.AttachmentDao
 import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
@@ -61,7 +62,7 @@ import com.tle.web.sections.js.generic.function.{
   PartiallyApply
 }
 import com.tle.web.sections.render._
-import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
 import com.tle.web.sections.standard.Button
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer}
@@ -121,7 +122,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var attachmentDao: AttachmentDao                         = _
 
   @Component
-  @PlugKey("duplicatewarningmessage")
+  @PlugKey("duplicatewarning.linktext")
   var duplicateWarningMessage: Button = _
 
   var ctx: AfterRegister = _
@@ -192,7 +193,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       // These two methods are called in universalattachmentlist.ftl
       def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
-      def getDuplicateWarningMessage         = duplicateWarningMessage
+      def getDuplicateWarningLink            = duplicateWarningMessage
+      def getDuplicateWarningMessage         = CoreStrings.text("duplicatewarning.message")
 
       def getDivTag = {
         def entries(attachments: Iterable[AttachmentNode],
@@ -243,7 +245,9 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "preview",
             PREVIEW.getText,
             "toomany",
-            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments")
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments"),
+            "toomany_1",
+            CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments.1")
           ),
           "reloadState",
           CloudWizardControl.reloadState,
@@ -286,13 +290,16 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         }
       }
 
-      if (definition.isMaxFilesEnabled && uploadedAttachments > definition.getMaxFiles) {
+      val maxFiles = if (definition.isMaxFilesEnabled) definition.getMaxFiles else 1
+
+      if ((!definition.isMultipleSelection && uploadedAttachments > 1) ||
+          (definition.isMaxFilesEnabled && uploadedAttachments > maxFiles)) {
         setInvalid(
           true,
-          new KeyLabel(
+          new PluralKeyLabel(
             "wizard.controls.file.toomanyattachments",
-            definition.getMaxFiles.asInstanceOf[Object],
-            (uploadedAttachments - definition.getMaxFiles).asInstanceOf[Object]
+            maxFiles,
+            (uploadedAttachments - maxFiles).asInstanceOf[Object]
           )
         )
       }

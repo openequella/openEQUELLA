@@ -27,8 +27,8 @@ import java.util.Random;
 
 @SuppressWarnings("nls")
 public final class Version {
-  private final String mmr; // MMR = major.minor.revision
-  private final String display;
+  private final String displayName;
+  private final String semanticVersion;
   private final String commit;
   private boolean dev;
 
@@ -49,17 +49,15 @@ public final class Version {
     if (p == null) {
       return new Version("dev" + new Random().nextInt(1000), "Development", "dev (dev)", true);
     } else {
-      return new Version(
-          p.getProperty("version.mmr"),
-          p.getProperty("version.display"),
-          p.getProperty("version.commit"),
-          false);
+      String displayName = p.getProperty("version.display");
+      String semanticVersion = displayName.substring(0, displayName.indexOf("-"));
+      return new Version(semanticVersion, displayName, p.getProperty("version.commit"), false);
     }
   }
 
-  private Version(String mmr, String display, String commit, boolean dev) {
-    this.mmr = mmr;
-    this.display = display;
+  private Version(String semanticVersion, String displayName, String commit, boolean dev) {
+    this.semanticVersion = semanticVersion;
+    this.displayName = displayName;
     this.commit = commit;
     this.dev = dev;
   }
@@ -72,16 +70,16 @@ public final class Version {
     return commit;
   }
 
-  public String getMmr() {
-    return mmr;
+  public String getSemanticVersion() {
+    return semanticVersion;
   }
 
   public String getDisplay() {
-    return display;
+    return displayName;
   }
 
   public String getFull() {
-    return MessageFormat.format("{0} ({1})", mmr, display);
+    return MessageFormat.format("{0} ({1})", semanticVersion, displayName);
   }
 
   /**
@@ -111,11 +109,11 @@ public final class Version {
 
     // Empty or non-digit this.version? Allow anything. Either way return
     // false.
-    if (Check.isEmpty(mmr) || !Character.isDigit(mmr.charAt(0))) {
+    if (Check.isEmpty(semanticVersion) || !Character.isDigit(semanticVersion.charAt(0))) {
       return false;
     }
 
-    return getMajorMinorValue(mmr) > getMajorMinorValue(otherVersion);
+    return getMajorMinorValue(semanticVersion) > getMajorMinorValue(otherVersion);
   }
 
   /**
