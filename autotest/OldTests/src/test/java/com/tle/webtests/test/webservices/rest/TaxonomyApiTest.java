@@ -152,8 +152,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     // Lock
     lock(taxonomyUuid);
 
-    final List<String> rootTerms = new ArrayList<>();
-    final List<String> testTermChildren = new ArrayList<>();
+    final List<String> firstLevelTerms = new ArrayList<>();
+    final List<String> secondLevelTerms = new ArrayList<>();
 
     final String testTermUuid = UUID.randomUUID().toString();
     final int testTermIndex = 5;
@@ -167,68 +167,67 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     for (int i = 0; i < 10; i++) {
       final String termName = randomString(8);
       final boolean isTestTerm = (i == testTermIndex);
-      int childCount = (isTestTerm ? 100 : 8);
+      final int childCount = (isTestTerm ? 100 : 8);
       final String termUuid = (isTestTerm ? testTermUuid : UUID.randomUUID().toString());
       if (isTestTerm) {
         testTermPath = termName;
       }
-      rootTerms.add(termName);
+      firstLevelTerms.add(termName);
       createTerm(taxonomyUuid, termUuid, termName, rootUuid, -1);
 
       // Create second-level nodes
       for (int j = 0; j < childCount; j++) {
         final String subTermName = termName + "-" + randomString(8);
         if (isTestTerm) {
-          testTermChildren.add(subTermName);
+          secondLevelTerms.add(subTermName);
         }
         createTerm(taxonomyUuid, null, subTermName, termUuid, -1);
       }
     }
 
     // These are the orders we will expect
-    alphaSort(rootTerms);
-    alphaSort(testTermChildren);
+    alphaSort(firstLevelTerms);
+    alphaSort(secondLevelTerms);
 
     final String rootNodePath = ROOT_NODE_NAME;
     final String firstLevelNodePath = ROOT_NODE_NAME + "\\" + testTermPath;
-    // Sort root
-    final HttpResponse sortRootsResponse = sortChildren(taxonomyUuid, rootNodePath);
-    assertResponse(sortRootsResponse, 200, "failed to sort root terms");
-    // Sort test terms children
-    final HttpResponse sortTestTermChildrenResponse =
-        sortChildren(taxonomyUuid, firstLevelNodePath);
-    assertResponse(sortTestTermChildrenResponse, 200, "failed to sort test term children");
+    // Sort first-level nodes
+    final HttpResponse sortFirstLevelResponse = sortChildren(taxonomyUuid, rootNodePath);
+    assertResponse(sortFirstLevelResponse, 200, "failed to sort first-level terms");
+    // Sort second-level nodes
+    final HttpResponse sortSecondLevelResponse = sortChildren(taxonomyUuid, firstLevelNodePath);
+    assertResponse(sortSecondLevelResponse, 200, "failed to sort second-level terms");
 
-    // Check root sorted
-    final ArrayNode firstLevelNodes = getChildren(taxonomyUuid, ROOT_NODE_NAME);
-    final List<String> returnedSortedRootTerms = getNodeNames(firstLevelNodes);
-    assertEquals(rootTerms, returnedSortedRootTerms);
+    // Check first-level sorted nodes
+    final ArrayNode firstLevelNodes = getChildren(taxonomyUuid, rootNodePath);
+    final List<String> sortedFirstLevelTerms = getNodeNames(firstLevelNodes);
+    assertEquals(firstLevelTerms, sortedFirstLevelTerms);
 
-    // Check test terms children sorted
-    final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, firstLevelNodePath);
-    final List<String> returnedSortedChildTerms = getNodeNames(testTermSortedChildren);
-    assertEquals(testTermChildren, returnedSortedChildTerms);
+    // Check second-level sorted nodes
+    final ArrayNode secondLevelNodes = getChildren(taxonomyUuid, firstLevelNodePath);
+    final List<String> sortedSecondLevelTerms = getNodeNames(secondLevelNodes);
+    assertEquals(secondLevelTerms, sortedSecondLevelTerms);
 
-    // Check if the root sorting breaks the order of second-level nodes
-    final JsonNode firstNode = firstLevelNodes.get(0);
-    String firstNodePath = firstNode.get("fullTerm").asText();
-    String firstNodeUuid = firstNode.get("uuid").asText();
+    // Check if the first-level sorting breaks the indexes of second-level nodes
+    final JsonNode node = firstLevelNodes.get(0);
+    String nodePath = node.get("fullTerm").asText();
+    String nodeUuid = node.get("uuid").asText();
 
     // Sort before any node movements
-    sortChildren(taxonomyUuid, firstNodePath);
-    ArrayNode firstNodeChildren = getChildren(taxonomyUuid, firstNodePath);
-    final List<String> nodeNames = getNodeNames(firstNodeChildren);
+    sortChildren(taxonomyUuid, nodePath);
+    ArrayNode childNodes = getChildren(taxonomyUuid, nodePath);
+    final List<String> childNodeNames = getNodeNames(childNodes);
 
     // Move a child node
-    JsonNode lastChildTerm = firstNodeChildren.get(firstNodeChildren.size() - 1);
-    moveNode((ObjectNode) lastChildTerm, firstNodeUuid, taxonomyUuid, 0);
+    JsonNode lastChildNode = childNodes.get(childNodes.size() - 1);
+    moveNode((ObjectNode) lastChildNode, nodeUuid, taxonomyUuid, 0);
 
     // Sort again
-    sortChildren(taxonomyUuid, firstNodePath);
-    firstNodeChildren = getChildren(taxonomyUuid, firstNodePath);
-    final List<String> sortedNodeNames = getNodeNames(firstNodeChildren);
+    sortChildren(taxonomyUuid, nodePath);
+    childNodes = getChildren(taxonomyUuid, nodePath);
+    final List<String> sortedChildNodeNames = getNodeNames(childNodes);
 
-    assertEquals(nodeNames, sortedNodeNames);
+    assertEquals(childNodeNames, sortedChildNodeNames);
 
     unlock(taxonomyUuid);
 

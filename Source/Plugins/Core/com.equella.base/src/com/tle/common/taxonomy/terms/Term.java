@@ -86,7 +86,7 @@ import org.hibernate.annotations.NamedQuery;
       name = "shiftByPath",
       query =
           "UPDATE Term SET lft = lft + :amount, rht = rht + :amount "
-              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild ESCAPE '\uD83D\uDE80') "
+              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild ESCAPE '\u0021') "
               + "AND taxonomy = :taxonomy",
       cacheable = true)
 })
