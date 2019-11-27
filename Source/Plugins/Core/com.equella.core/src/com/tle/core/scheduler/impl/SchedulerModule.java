@@ -26,6 +26,6 @@ public class SchedulerModule extends OptionalConfigModule {
   protected void configure() {
     bindInt("com.tle.core.tasks.RemoveDeletedItems.daysBeforeRemoval");
     bindInt("com.tle.core.tasks.RemoveOldAuditLogs.daysBeforeRemoval");
-    bindBoolean("com.tle.core.tasks.RemoveStagingAreas.enable");
+    bindBoolean("com.tle.core.tasks.RemoveStagingAreas.enable", true);
   }
 }
