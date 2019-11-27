@@ -99,6 +99,10 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
   @Named("tomcat.useBio")
   private boolean useBio = false;
 
+  @Inject(optional = true)
+  @Named("tomcat.internalProxies")
+  private String internalProxies;
+
   @Inject private DataSourceService dataSourceService;
 
   @Inject private ZookeeperService zookeeperService;
@@ -124,8 +128,17 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       context.setDocBase(new File(".").getAbsolutePath());
       context.setUseHttpOnly(false);
       if (useXForwardedFor) {
+        LOGGER.debug("Enabling the Tomcat RemoteIpValve.");
         RemoteIpValve protoValve = new RemoteIpValve();
         protoValve.setProtocolHeader("X-Forwarded-Proto");
+
+        if (!Check.isEmpty(internalProxies)) {
+          LOGGER.debug(
+              "Setting the Tomcat RemoteIpValve InternalProxies to: [" + internalProxies + "]");
+          protoValve.setInternalProxies(internalProxies);
+        } else {
+          LOGGER.debug("Not enabling the Tomcat RemoteIpValve InternalProxies - config is empty");
+        }
         context.getPipeline().addValve(protoValve);
       }
 
