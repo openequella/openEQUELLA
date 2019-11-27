@@ -44,7 +44,7 @@ public class RemoveStagingAreas implements ScheduledTask {
     if (enableTask) {
       stagingService.removeUnusedStagingAreas();
     } else {
-      LOGGER.info("RemoveStagingAreas is disabled.  Not running task.");
+      LOGGER.debug("RemoveStagingAreas is disabled.  Not running task.");
     }
   }
 }

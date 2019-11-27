@@ -67,12 +67,12 @@ public class StagingServiceImpl implements StagingService {
     if (s == null) {
       LOGGER.error("Staging area does not exist");
     } else {
-      LOGGER.info("Deleting Staging entry in DB [" + s.getStagingID() + "]");
+      LOGGER.debug("Deleting Staging entry in DB [" + s.getStagingID() + "]");
       stagingDao.delete(s);
     }
 
     if (removeFiles) {
-      LOGGER.info("Removing Staging area in the filestore [" + s.getStagingID() + "]");
+      LOGGER.debug("Removing Staging area in the filestore [" + s.getStagingID() + "]");
       fileSystemService.removeFile(staging);
     }
   }
