@@ -558,7 +558,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
       Query q = session.getNamedQuery("shiftByPath");
       q.setInteger("amount", amount);
       q.setString("fullValue", term.getFullValue());
-      q.setString("fullValueWild", term.getFullValue() + "%");
+      q.setString("fullValueWild", term.getFullValue() + "\\%");
       q.setParameter("taxonomy", taxonomy);
       q.executeUpdate();
     } else {
