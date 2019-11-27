@@ -4,7 +4,6 @@
 @import "themes/equella/jquery-ui.css";
 @import "component/autocomplete.css";
 @import "component/richdropdown.css";
-@import "component/zebratable.css";
 @import "autocompleteeditbox.css";
 @import "attachments/attachments.css";
 @import "jquerylib/jquery.autocomplete.css";
@@ -180,7 +179,7 @@ Animations
 //**sass functions**//
 @function set-text-color($color) {
   @if (lightness($color) > 70) {
-    @return #000000;
+    @return #444444;
   } @else {
     @return #ffffff;
   }
@@ -259,6 +258,9 @@ select {
   vertical-align: baseline;
   background: transparent;
   font-family: "Roboto";
+}
+ul {
+  list-style: none;
 }
 
 /*****************************************************************************
@@ -425,6 +427,29 @@ select[multiple="multiple"] {
 }
 
 /*****************************************************************************
+ Generic CSS classes
+*****************************************************************************/
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.clear {
+  clear: both;
+}
+
+/*****************************************************************************
 Generic layout
 *****************************************************************************/
 
@@ -510,7 +535,9 @@ Generic layout
 
 .area h3 {
   @include typography-headline-6;
+  color: #444444;
   word-wrap: break-word;
+  padding-top: 8px;
 }
 
 .area p,
@@ -518,6 +545,15 @@ Generic layout
 .area ul.standard {
   @include typography-body-1;
   margin: 20px;
+}
+
+.area h2 {
+  @include typography-headline-4;
+  color: #444444;
+}
+
+.button-strip {
+  text-align: right;
 }
 
 /*****************************************************************************
@@ -634,6 +670,156 @@ a.feedlink {
 .action-link-extra,
 .action-link {
   font-size: 10px;
+}
+
+/*****************************************************************************
+Zebra tables
+*****************************************************************************/
+
+.sortData {
+  display: none;
+}
+
+.filterData {
+  display: none;
+}
+
+div.tableContainer {
+  position: relative;
+}
+
+div.tableFilter {
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding-bottom: 5px;
+  float: right;
+}
+
+div.tableContainer div.tableFilter {
+  position: absolute;
+  top: -30px;
+  right: 0;
+}
+
+div.tableFilter input.filterBox {
+  width: 300px !important;
+  background-image: url(../../images/component/tablefilter.png);
+  background-repeat: no-repeat;
+  background-position: right;
+  padding-right: 22px;
+}
+
+div.tableFilter input.blur {
+  color: #aaaaaa;
+  background-image: url(../../images/component/tablefilterdis.png);
+}
+
+table.zebra {
+  width: 100%;
+  margin: 10px 0;
+  border-collapse: collapse;
+}
+
+table.zebra.withfilter {
+  margin-top: 5px;
+}
+
+table.zebra tr {
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+}
+
+tr:hover {
+  background-color: rgba(224, 224, 224, 1);
+}
+
+table.zebra tr.rowHidden {
+  display: none;
+}
+
+table.zebra tr.rowShown {
+  display: table-row;
+}
+
+table.zebra tr th {
+  @include typography-body-1;
+  text-align: left;
+  vertical-align: middle;
+  padding: 18px 10px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+table.zebra.large th {
+  font-size: 13px;
+  font-weight: bold;
+  padding: 13px 11px 12px;
+}
+
+table.zebra tr td.nowrap {
+  white-space: nowrap;
+}
+
+table.zebra tr td {
+  text-align: left;
+  vertical-align: top;
+  padding: 16px 10px;
+}
+
+table.zebra.large tr td {
+  font-size: 12px;
+  padding: 11px 11px 9px;
+  line-height: 1.5;
+}
+
+table.zebra tr td.middle {
+  vertical-align: middle;
+}
+
+table.zebra tr td a.position {
+  padding-right: 2px;
+}
+
+.area h2 + table.zebra {
+  margin-top: 20px;
+}
+
+.area h3 + table.zebra {
+  margin-top: 4px;
+}
+
+table.zebra th.sortable {
+  cursor: pointer;
+}
+
+table.zebra th.sortable div.sortArrow {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  margin-left: 1em;
+}
+
+table.zebra th.sortable.sortedasc,
+table.zebra th.sortable.unsorted.sortAsc:hover {
+  :before {
+    content: "\e5d8";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+  }
+}
+
+table.zebra th.sortable.sorteddesc,
+table.zebra th.sortable.unsorted.sortDesc:hover {
+  :before {
+    content: "\e5db";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+  }
 }
 
 /*****************************************************************************
@@ -1543,4 +1729,585 @@ html.wait {
     list-style-type: none;
     text-transform: capitalize;
   }
+}
+
+/*****************************************************************************
+Item summary styling
+*****************************************************************************/
+
+#searchprevnext {
+  .btn-group {
+    position: absolute;
+    top: 80px;
+    right: 0px;
+    .btn {
+      background-color: transparent;
+      border: 1px solid rgba(0, 0, 0, 0.23);
+      margin-right: 16px;
+      color: $primaryTextColor;
+      .icon-arrow-left:before {
+        content: "\e5c4";
+        font-family: "Material Icons";
+        font-size: 24px;
+        color: $primaryTextColor;
+        padding-right: 4px;
+        font-style: normal;
+        vertical-align: middle;
+      }
+      .icon-arrow-right:before {
+        content: "\e5c8";
+        font-family: "Material Icons";
+        font-size: 24px;
+        color: $primaryTextColor;
+        padding-right: 4px;
+        font-style: normal;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.action-button {
+  @include typography-button;
+  color: set-text-color($primaryColor);
+  width: 100%;
+  margin: 8px 0;
+  &:hover {
+    background-color: transparentize($primaryColor, 0.1);
+  }
+  &:active {
+    background-color: transparentize($primaryColor, 0.3);
+  }
+}
+
+.shareButton {
+  background-image: url(../../images/baseline_share_white_18dp.png);
+  background-color: $primaryColor;
+  background-repeat: no-repeat;
+}
+
+.addToFavourites {
+  background-image: url(../../images/baseline_star_white_18dp.png);
+  background-color: $primaryColor;
+  background-repeat: no-repeat;
+}
+
+.itemsummary-layout hr {
+  display: none;
+}
+.itemsummary-layout #col2 {
+  margin-left: 16px;
+  flex-shrink: 0;
+  width: 260px;
+}
+
+.itemsummary-layout #col1 .area td > h3 {
+  margin-top: 0px;
+}
+
+.itemsummary-layout #col1 .area td > p {
+  margin-bottom: 10px;
+}
+
+.itemsummary-layout #col2 h3 {
+  @include typography-headline-5;
+  padding-top: 8px;
+}
+
+.itemsummary-layout #col2 h2 {
+  @include typography-headline-4;
+}
+
+.itemsummary-layout #col2 ul {
+  margin: 10px 0px;
+}
+
+/* keeps li spacing even when one list follows another in the same section */
+.itemsummary-layout #adjacentuls ul {
+  margin: 5px 0px;
+}
+
+.itemsummary-layout #adjacentuls ul li {
+  margin: 5px 0px;
+}
+
+.itemsummary-layout #adjacentuls .prop {
+  clear: both;
+}
+
+.itemsummary-layout #col2 ul li {
+  line-height: 1.5;
+  margin: 4px 8px;
+}
+
+.itemsummary-layout .box {
+  width: 137px;
+}
+
+.itemsummary-layout #col1 ul.moderators {
+  list-style: disc;
+  margin-top: 4px;
+  padding-left: 2.5em;
+  padding-right: 2.5em;
+}
+
+.itemsummary-layout #col1 div.flowchart-thumb {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.itemsummary-layout #col1 div.flowchart-thumb img {
+  border: 1px solid #8f8b7f;
+  max-width: 522px;
+}
+
+.itemsummary-layout #col1 #historyevents {
+  margin: 10px 0;
+}
+
+.itemsummary-layout #col1 .displayNodeHalf {
+  display: inline-block;
+  vertical-align: top;
+  margin: -15px 0;
+  width: 49%;
+}
+
+.action-button.select {
+  background-image: url("../images/addselected.ltr.png");
+}
+
+.action-button.unselect {
+  background-image: url("../images/removeselected.ltr.png");
+}
+
+.itemdetails {
+  padding-top: 8px;
+}
+
+div.in-selection .itemdetails-left {
+  float: left;
+}
+
+div.in-selection ul.itemdetails-right {
+  float: right;
+}
+
+div.action_list {
+  margin-top: 110px;
+}
+
+.htmlcontent {
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: auto;
+  overflow-y: hidden;
+}
+
+/**
+	Versions table
+**/
+table.versions {
+  table-layout: fixed;
+}
+
+table.versions td {
+  word-wrap: break-word;
+}
+// star ratings
+.rate-stars div {
+  display: flex;
+}
+
+.ui-stars-cancel {
+  a {
+    font-size: 0;
+  }
+  a:before {
+    content: "\e15d";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $secondaryColor;
+  }
+}
+
+.ui-stars-star {
+  a {
+    font-size: 0;
+  }
+  a:before {
+    content: "\e83a";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $secondaryColor;
+  }
+}
+
+.ui-stars-star-hover,
+.ui-stars-star-on {
+  a {
+    font-size: 0;
+  }
+  a:before {
+    content: "\e838";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $secondaryColor;
+  }
+}
+
+.ratingwrapper {
+  float: left;
+}
+//i'm sure this could be done much, much better, will come back if time permits
+.star-rating-static {
+  float: left;
+  div.star-rating-static-1 {
+    &:before {
+      content: "\e838 \e83a \e83a \e83a \e83a";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $secondaryColor;
+    }
+  }
+  div.star-rating-static-2 {
+    &:before {
+      content: "\e838 \e838 \e83a \e83a \e83a";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $secondaryColor;
+    }
+  }
+  div.star-rating-static-3 {
+    &:before {
+      content: "\e838 \e838 \e838 \e83a \e83a";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $secondaryColor;
+    }
+  }
+  div.star-rating-static-4 {
+    &:before {
+      content: "\e838 \e838 \e838 \e838 \e83a";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $secondaryColor;
+    }
+  }
+  div.star-rating-static-5 {
+    &:before {
+      content: "\e838 \e838 \e838 \e838 \e838";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $secondaryColor;
+    }
+  }
+}
+
+// comments
+.comment {
+  position: relative;
+  margin: 20px 0;
+}
+
+.comment-username {
+  @include typography-headline-6;
+  padding: 8px;
+  &:before {
+    content: "\e7fd";
+    font-family: "Material Icons";
+    font-size: 30px;
+    color: $secondaryColor;
+    vertical-align: middle;
+  }
+  .timeago {
+    @include typography-subtitle-1;
+  }
+}
+
+.comment-date {
+  color: #b1b17b;
+  font-size: 10px;
+  padding: 0 0 0 5px;
+}
+
+.comment-content p {
+  margin: 5px 0;
+}
+
+.comment-delete {
+  height: 1.5em;
+  float: right;
+  padding-top: 8px;
+}
+
+.comment-delete a {
+  float: right;
+  line-height: 16px;
+  padding-left: 20px;
+}
+.ratingwrapper {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.rate {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  padding-right: 154px;
+}
+
+.rate .rate-stars {
+  position: absolute;
+  top: -2px;
+  right: 0;
+}
+
+.rating-form {
+  position: relative;
+  padding-top: 8px;
+}
+
+.rating-form div.input {
+  margin-top: 0;
+}
+
+.comment-form textarea {
+  border: 1px solid #8f8b7f;
+  height: 80px;
+  width: 100%;
+}
+
+.comment-form button {
+  float: right;
+}
+
+// cal/cla activations
+span.chapterNumber {
+  @include typography-body-1;
+  font-weight: bold;
+}
+
+#copyright-holdinglink {
+  margin-top: 2px;
+  margin-bottom: 0px;
+}
+
+table#copyright-table,
+table#copyright-totals {
+  width: 100%;
+}
+
+table#copyright-table {
+  margin-top: 10px;
+}
+
+table#copyright-totals .copyright-total {
+  font-weight: bold;
+  text-align: right;
+}
+
+table#copyright-totals .copyright-totalvalue {
+  text-align: right;
+}
+
+.sectionCheckbox {
+  margin-top: 6px;
+}
+
+.sectionAttachment {
+  margin-top: 5px;
+  width: 255px;
+}
+
+div.selection #copyright-table .sectionAttachment {
+  width: 175px;
+}
+
+td.sectionAttachment span,
+td.sectionAttachment a {
+  white-space: pre-wrap;
+}
+
+.sectionPages {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-top: 6px;
+}
+
+.sectionStatus {
+  margin-top: 6px;
+}
+
+td.sectionAction {
+  width: 60px;
+}
+
+div.selection #copyright-table td.sectionAction {
+  max-width: 14px;
+  width: 12px;
+}
+
+td.sectionAction button.activate-one {
+  float: right;
+  position: relative;
+  height: 34px;
+  z-index: 1000;
+  right: 0px;
+}
+
+td.sectionAction button.add {
+  float: right;
+  height: 26px;
+  width: 28px;
+}
+
+.copyright-portionlink {
+  margin-left: 18px;
+}
+
+img.copyright-sectionlink {
+  height: 16px;
+  width: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+span.restricted-message {
+  font-style: italic;
+  display: inline-block;
+  margin-left: -18px;
+}
+
+table#copyright-table {
+  width: 100%;
+  margin: 10px 0;
+  border-collapse: collapse;
+}
+
+table#copyright-table td {
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+}
+
+table#copyright-table tr.section-row:hover {
+  background-color: rgba(224, 224, 224, 1);
+}
+
+table#copyright-table tr td {
+  text-align: left;
+  vertical-align: top;
+  padding: 18px 10px;
+}
+
+.copylink_hidden {
+  display: none;
+}
+
+.history-options label {
+  padding-right: 8px;
+}
+
+//Attachments - Structured view
+.attachments-browse.structured {
+  border: none;
+}
+
+.attachments-browse.structured li.attachmentrow:hover {
+  border: none;
+  background-color: rgba(224, 224, 224, 1);
+}
+
+.attachments-browse.structured li.attachmentrow.active {
+  border: none;
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.attachments-browse.structured li.attachmentrow .detail {
+  border: none;
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  right: 0px !important;
+  top: 35px !important;
+}
+
+.attachments-browse.structured li.attachmentrow .detail .attachments-meta {
+  @include typography-subtitle-2;
+}
+
+.attachments-browse.structured li.attachmentrow .droparrow {
+  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
+}
+
+.attachments-browse.thumbs li.attachmentrow .droparrow {
+  border: none;
+  background-color: transparent;
+  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
+}
+
+.attachments-browse.structured li.attachmentrow.active .droparrow {
+  background-image: url(../../images/baseline_arrow_drop_up_black_18dp.png);
+  background-position: 0;
+  top: 8px;
+}
+
+.attachments-browse.thumbs li.attachmentrow.active {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.attachments-browse.structured li.attachmentrow,
+.attachments-browse.structured li.folder {
+  position: relative;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  padding: 8px 20px 8px 12px;
+  background-position: 5px 5px;
+  background-repeat: no-repeat;
+  background-image: none;
+  .link-div a:before {
+    content: "\e24d";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+    padding-right: 6px;
+  }
+}
+
+.attachments-browse.thumbs li.attachmentrow .detail {
+  background-color: white;
+  border: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.attachments-browse li.attachmentrow .attachments-meta {
+  @include typography-subtitle-2;
+  background-color: white;
+}
+
+.extras a {
+  .icon-fullscreen {
+    &:before {
+      content: "\e5d0";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: $menuItemIconColor;
+      vertical-align: middle;
+      font-style: normal;
+    }
+  }
+  .icon-move {
+    &:before {
+      content: "\e8fe";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: $menuItemIconColor;
+      vertical-align: middle;
+      font-style: normal;
+    }
+  }
+}
+a.modal-control.modal-save {
+  right: 394px;
 }
