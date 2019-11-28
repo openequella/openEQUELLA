@@ -34,6 +34,8 @@ public interface WizardStateInterface extends Serializable, Cloneable {
 
   ItemPack<Item> getItemPack();
 
+  int getStateVersion();
+
   FileHandle getFileHandle();
 
   Item getItem();
@@ -47,6 +49,4 @@ public interface WizardStateInterface extends Serializable, Cloneable {
   String getStagingId();
 
   void onSessionSave();
-
-  WizardStateInterface clone();
 }

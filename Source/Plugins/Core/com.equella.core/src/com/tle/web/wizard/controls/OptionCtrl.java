@@ -62,7 +62,7 @@ public abstract class OptionCtrl extends AbstractHTMLControl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     clearTargets(itemxml);
     for (Item item : items) {
       if (item.isSelected()) {

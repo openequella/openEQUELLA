@@ -100,7 +100,7 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl {
   public abstract void loadFromDocument(PropBagEx itemxml);
 
   @Override
-  public abstract void saveToDocument(PropBagEx itemxml) throws Exception;
+  public abstract void saveToDocument(PropBagEx itemxml);
 
   @Nullable
   @Override
@@ -338,8 +338,7 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl {
     return targets.get(0);
   }
 
-  protected void addValueToTargets(String value, List<TargetNode> targets, PropBagEx itemxml)
-      throws Exception {
+  protected void addValueToTargets(String value, List<TargetNode> targets, PropBagEx itemxml) {
     for (TargetNode tnode : targets) {
       tnode.addNode(itemxml, value);
       if (isUniquified()) {

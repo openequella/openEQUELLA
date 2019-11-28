@@ -153,7 +153,7 @@ public class GroupsCtrl extends OptionCtrl {
     }
   }
 
-  protected void saveGroup(ControlGroup group, PropBagEx itemxml, boolean clear) throws Exception {
+  protected void saveGroup(ControlGroup group, PropBagEx itemxml, boolean clear) {
     for (HTMLControl ctrl : group.getControls()) {
       // only process the values if not disabled
       if (clear || !ctrl.isVisible()) {

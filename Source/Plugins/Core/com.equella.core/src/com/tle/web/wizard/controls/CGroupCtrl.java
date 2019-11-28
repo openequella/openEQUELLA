@@ -100,7 +100,7 @@ public class CGroupCtrl extends GroupsCtrl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     super.saveToDocument(itemxml);
 
     final ImmutableList<ControlGroup> groups = getGroups();

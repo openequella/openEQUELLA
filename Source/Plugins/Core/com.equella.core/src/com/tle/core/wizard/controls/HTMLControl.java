@@ -41,7 +41,7 @@ public interface HTMLControl {
 
   void validate();
 
-  void saveToDocument(PropBagEx itemxml) throws Exception;
+  void saveToDocument(PropBagEx itemxml);
 
   void loadFromDocument(PropBagEx itemxml);
 
@@ -70,7 +70,7 @@ public interface HTMLControl {
 
   NameValue getNameValue();
 
-  void afterSaveValidate() throws Exception;
+  void afterSaveValidate();
 
   boolean isHidden();
 
