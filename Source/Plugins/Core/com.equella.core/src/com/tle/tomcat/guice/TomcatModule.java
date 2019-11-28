@@ -39,6 +39,7 @@ public class TomcatModule extends MandatoryConfigModule {
       bindBoolean("tomcat.useBio");
       bindBoolean("sessions.neverPersist");
       bindBoolean("userService.useXForwardedFor");
+      bindProp("tomcat.internalProxies");
     }
   }
 }
