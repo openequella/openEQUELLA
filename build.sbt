@@ -108,7 +108,7 @@ bundleOracleDriver in ThisBuild := {
     false
   }
 }
-oracleDriverModuleId in ThisBuild := Seq("com.oracle.ojdbc" % "ojdbc8" % "19.3.0.0")
+oracleDriverMavenCoordinate in ThisBuild := Seq("com.oracle.ojdbc" % "ojdbc8" % "19.3.0.0")
 
 buildConfig in ThisBuild := Common.buildConfig
 

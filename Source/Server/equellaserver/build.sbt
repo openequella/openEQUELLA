@@ -236,7 +236,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
-    oracleDriverModuleId.value
+    oracleDriverMavenCoordinate.value
   } else {
     Seq.empty
   }
