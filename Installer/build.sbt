@@ -8,6 +8,14 @@ libraryDependencies ++= Seq(
   sqlServerDep
 )
 
+libraryDependencies ++= {
+  if (bundleOracleDriver.value) {
+    oracleDriverModuleId.value
+  } else {
+    Seq.empty
+  }
+}
+
 excludeDependencies ++= Seq(
   "log4j"           % "log4j",
   "org.slf4j"       % "slf4j-log4j12",

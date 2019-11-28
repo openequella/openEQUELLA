@@ -100,6 +100,16 @@ checkJavaCodeStyle := {
   }
 }
 
+bundleOracleDriver in ThisBuild := {
+  val path = "build.bundleOracleDriver"
+  if (buildConfig.value.hasPath(path)) {
+    buildConfig.value.getBoolean(path)
+  } else {
+    false
+  }
+}
+oracleDriverModuleId in ThisBuild := Seq("com.oracle.ojdbc" % "ojdbc8" % "19.3.0.0")
+
 buildConfig in ThisBuild := Common.buildConfig
 
 name := "Equella"
