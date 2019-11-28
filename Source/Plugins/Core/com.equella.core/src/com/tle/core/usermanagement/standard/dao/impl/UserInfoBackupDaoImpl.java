@@ -58,12 +58,6 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
                 });
   }
 
-  @Transactional(propagation = Propagation.MANDATORY)
-  @Override
-  public void saveOrUpdate(UserInfoBackup entity) {
-    super.saveOrUpdate(entity);
-  }
-
   @Override
   public List<UserInfoBackup> getAllInfo() {
     return getHibernateTemplate()
@@ -71,6 +65,7 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
             "from UserInfoBackup where institution_id = ?", CurrentInstitution.get().getUniqueId());
   }
 
+  @Transactional(propagation = Propagation.MANDATORY)
   @Override
   public void deleteAllInfo() {
     getHibernateTemplate()
