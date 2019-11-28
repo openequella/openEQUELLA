@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.common.Check;
 import com.tle.common.DontUseMethod;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.common.taxonomy.TaxonomyConstants;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +87,9 @@ import org.hibernate.annotations.NamedQuery;
       name = "shiftByPath",
       query =
           "UPDATE Term SET lft = lft + :amount, rht = rht + :amount "
-              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild ESCAPE '❗') "
+              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild ESCAPE '"
+              + TaxonomyConstants.LIKE_ESCAPE
+              + "') "
               + "AND taxonomy = :taxonomy",
       cacheable = true)
 })
