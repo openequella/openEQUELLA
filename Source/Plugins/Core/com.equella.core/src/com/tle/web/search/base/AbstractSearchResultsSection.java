@@ -392,6 +392,7 @@ public abstract class AbstractSearchResultsSection<
     private boolean showResultTypeSelection;
     private SingleSelectionList resultSelectionMenu;
     private String canonicalUrl;
+    private String searchResultCssClassName;
 
     public boolean isShowResultSelection() {
       return showResultTypeSelection;
@@ -527,6 +528,14 @@ public abstract class AbstractSearchResultsSection<
 
     public void setCanonicalUrl(String canonicalUrl) {
       this.canonicalUrl = canonicalUrl;
+    }
+
+    public String getSearchResultCssClassName() {
+      return searchResultCssClassName;
+    }
+
+    public void setSearchResultCssClassName(String searchResultCssClassName) {
+      this.searchResultCssClassName = searchResultCssClassName;
     }
   }
 
