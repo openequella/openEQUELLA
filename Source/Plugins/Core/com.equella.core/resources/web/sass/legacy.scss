@@ -317,6 +317,7 @@ select[multiple="multiple"] {
 .newListSelected {
   @include typography-body-1;
   padding-left: 8px;
+  min-width: 100px;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
@@ -424,6 +425,17 @@ select[multiple="multiple"] {
 .select-area-placeholder {
   height: 1px;
   margin-top: 8px;
+}
+
+.input {
+  label {
+    padding-right: 8px;
+    padding-left: 4px;
+  }
+}
+
+.lineItem span {
+  padding-left: 8px;
 }
 
 /*****************************************************************************
@@ -1772,6 +1784,8 @@ Item summary styling
   color: set-text-color($primaryColor);
   width: 100%;
   margin: 8px 0;
+  background-color: $primaryColor;
+  background-repeat: no-repeat;
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
@@ -1782,14 +1796,14 @@ Item summary styling
 
 .shareButton {
   background-image: url(../../images/baseline_share_white_18dp.png);
-  background-color: $primaryColor;
-  background-repeat: no-repeat;
 }
 
 .addToFavourites {
   background-image: url(../../images/baseline_star_white_18dp.png);
-  background-color: $primaryColor;
-  background-repeat: no-repeat;
+}
+
+.removeFromFavourites {
+  background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
 .itemsummary-layout hr {
@@ -2006,7 +2020,8 @@ table.versions td {
 // comments
 .comment {
   position: relative;
-  margin: 20px 0;
+  margin: 10px 0;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .comment-username {
@@ -2076,7 +2091,7 @@ table.versions td {
 .comment-form textarea {
   border: 1px solid #8f8b7f;
   height: 80px;
-  width: 100%;
+  width: 99%;
 }
 
 .comment-form button {
