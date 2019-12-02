@@ -10,6 +10,9 @@
 @import "jquerylib/jquery.stylish-select.css";
 @import "themes/equella/jquery-ui.css";
 @import "component/richdropdown.css";
+@import "component/box.css";
+@import "altlinks.css";
+@import "courselist.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -291,6 +294,14 @@ Buttons
   }
 }
 
+.button-expandable {
+  font-size: 0;
+  border-radius: 4px;
+  &:hover {
+    @include typography-button();
+  }
+}
+
 /*****************************************************************************
 Inputs
 *****************************************************************************/
@@ -492,6 +503,7 @@ Generic layout
 
 #mainDiv #selection-content-inner {
   padding: 16px 17px 0;
+  display: flex;
 }
 
 #mainDiv #selection-content #breadcrumbs {
@@ -515,6 +527,10 @@ Generic layout
 
 #mainDiv .content {
   box-sizing: content-box;
+}
+
+#fancybox-outer {
+  height: fit-content;
 }
 
 #fancybox-inner button {
@@ -566,6 +582,7 @@ Generic layout
 
 .button-strip {
   text-align: right;
+  padding: 8px;
 }
 
 /*****************************************************************************
@@ -900,6 +917,7 @@ Search page
   }
   #col2 {
     width: 221px;
+    margin-left: 14px;
     .box hr {
       border-color: #c1beb0;
       border-bottom: none;
@@ -1160,8 +1178,7 @@ div.skinnysearch {
 }
 
 .nav-tabs {
-  border-bottom: solid 1px #8f8b7e;
-  height: 30px;
+  height: 42px;
 }
 
 .nav-tabs > li {
@@ -1179,12 +1196,11 @@ div.skinnysearch {
 .nav-tabs > li.active > a,
 .nav-tabs > li > a:hover,
 .nav-tabs > li.active > a:hover {
-  border: 1px solid #8f8b7e;
 }
 
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover {
-  background-color: #f1f1f1;
+  border-bottom: 2px solid $secondaryColor;
 }
 
 .strip {
@@ -1384,7 +1400,6 @@ ul.ui-autocomplete {
   z-index: 10;
   height: 0px;
   .btn {
-    border: 1px solid $primaryColor;
     background-color: transparent;
     color: $primaryColor;
     margin-left: 3px;
@@ -2174,8 +2189,8 @@ td.sectionAction button.activate-one {
 
 td.sectionAction button.add {
   float: right;
-  height: 26px;
-  width: 28px;
+  height: 36px;
+  min-width: 22px;
 }
 
 .copyright-portionlink {
@@ -2325,4 +2340,831 @@ table#copyright-table tr td {
 }
 a.modal-control.modal-save {
   right: 394px;
+}
+
+.universalresourcedialog .modal-content {
+  height: 400px;
+}
+
+.universalresourcedialog .modal-content-inner {
+  min-height: 384px;
+}
+
+.universalresourcedialog .pick-resource-type td {
+  cursor: pointer;
+}
+
+.universalresourcedialog .pick-resource-type td.selected {
+  background: #80d2ee !important;
+}
+
+.universalresourcedialog .pick-resource-type td h4 {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.universalresourcedialog .file-header {
+  height: 140px;
+}
+
+.universalresourcedialog .file-header img.file-thumbnail {
+  float: left;
+  width: 88px;
+}
+
+.universalresourcedialog .file-header .file-info {
+  float: left;
+  line-height: 1.3;
+  margin-left: 20px;
+}
+
+.universalresourcedialog .input.text label,
+.universalresourcedialog .input.textarea label {
+  padding: 5px 0px;
+}
+
+.universalresourcedialog .input.text input[type="text"],
+.universalresourcedialog .input.text textarea {
+  width: 450px;
+  margin: 5px 0px;
+}
+
+.universalresources {
+  word-break: break-all;
+}
+
+.universalresources td.actions {
+  width: 110px;
+}
+
+div.universaliframe {
+  /*
+	This is what the fancybox ends up being
+	for multiple resource handler selection
+	*/
+  height: 476px;
+  overflow: hidden;
+}
+
+div.universaliframe iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.attachment-details table.zebra.detail {
+  border: none;
+  margin: 0px 0px 15px;
+}
+
+.attachment-details .detail .label {
+  font-weight: bold;
+}
+
+.attachment-details .thumbnail {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.attachment-details .viewlink {
+  text-align: center;
+  font-weight: bold;
+}
+
+.attachment-details .thumbnail img {
+  height: 66px;
+}
+
+.attachment-content {
+  min-height: 340px;
+  padding: 20px 25px;
+}
+
+.attachment-details {
+  width: 34%;
+}
+
+.attachment-content .settingContainer > .settingRow:first-child {
+  padding-top: 3px;
+}
+
+.attachment-content .settingContainer {
+  width: 432px;
+}
+
+.attachment-content .settingRow .settingLabel {
+  width: 105px;
+}
+
+.attachment-content .settingRow .settingField {
+  width: 315px;
+}
+
+.subsiduaryboxes > .settingRow > .settingField {
+  padding-left: 25px;
+  padding-top: 0;
+  width: 290px;
+}
+
+.attachment-content .settingField input[type="text"],
+.attachment-content .settingField input[type="password"],
+.attachment-content .settingField textarea,
+.attachment-content .settingField select {
+  /* IE needs a fixed width for the select it would seem */
+  width: 300px;
+}
+
+.attachment-details hr {
+  margin: 10px 0 10px;
+}
+
+.preview-tag {
+  margin-left: 0.5em;
+}
+
+p.warning {
+  background-color: #f90;
+  border: 1px solid red;
+  margin-bottom: 20px;
+  padding: 10px;
+  text-align: center;
+}
+
+.warningimg {
+  margin: 5px 20px 5px 55px;
+}
+
+img.warningimg {
+  vertical-align: middle;
+}
+
+.universalresources .progress-bar {
+  width: 200px;
+  height: 14px;
+  border: 1px solid #aaa;
+  margin: 0 10px 0 0;
+
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  float: right;
+}
+
+.universalresources .progressbarInner {
+  height: 14px;
+  background: #80d2ee !important;
+}
+
+/*****************************************************************************
+ Selection Summary
+*****************************************************************************/
+.action-button.execute-action {
+  background-image: url("../../images/baseline_exit_to_app_white_18dp.png");
+  background-repeat: no-repeat;
+  background-color: $primaryColor;
+  text-align: center;
+  background-size: 26px 26px;
+  background-position: left 3px top 4px;
+  &:hover {
+    background-color: transparentize($primaryColor, 0.1);
+  }
+  &:active {
+    background-color: transparentize($primaryColor, 0.3);
+  }
+}
+
+/*****************************************************************************
+ Selection Dialog
+*****************************************************************************/
+#wrapper {
+  min-width: 784px;
+}
+
+#body-wrap2 {
+  padding-top: 0;
+}
+
+#body-wrap3,
+#body-inner {
+  width: auto;
+}
+
+#body-inner {
+  float: none;
+  padding: 0;
+}
+
+#footer {
+  background: url(../images/selection-footer-bg.gif) 0 0 repeat-x;
+  height: 2px;
+}
+
+#selection-header {
+  height: 40px;
+  border-bottom: 2px solid $primaryColor;
+  background-color: white;
+}
+
+#selection-header-content {
+  position: fixed;
+  margin: 0 auto;
+  z-index: 1000;
+}
+
+#selection-header-content .logo {
+  color: transparent;
+  width: 100px;
+  background: url(../theme/newLogo.png) no-repeat;
+  overflow: hidden;
+  text-indent: -9999px;
+  background-size: 100px;
+}
+
+#selection-header-content .selectactions {
+  position: absolute;
+  top: 6px;
+  left: 105px;
+}
+
+#selection-header-content .close {
+  margin-top: 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  float: right;
+}
+
+#selection-page {
+  margin: 0 auto;
+  width: 784px;
+  position: relative;
+}
+
+#selection-content {
+  background: url(../images/content-middle.gif) repeat-y 0px 0px;
+  position: relative;
+  width: 784px;
+  float: left;
+}
+
+#selection-content #breadcrumb-inner {
+  margin-left: 18px;
+}
+
+#selection-header-content h3 a {
+  color: #045f7f;
+  text-decoration: none;
+}
+
+#selection-header-content h3 a:hover {
+  color: #045f7f;
+  text-decoration: underline;
+}
+
+#selection-content-bottom {
+  background: url(../images/content-bottom.gif) no-repeat 1px 100%;
+  float: left;
+  /* This is to ensure the above background logo shows */
+  padding-bottom: 90px;
+}
+
+#selection-content-inner {
+  background: url(../images/content-top.gif) no-repeat 0px 0px;
+  min-height: 400px;
+  padding: 32px 17px 0;
+  float: left;
+  width: 750px;
+}
+
+/*****************************************************************************
+ Selection dashboard
+*****************************************************************************/
+.selectiondashboard #col1 {
+  width: 368px;
+}
+
+.selectiondashboard #col2 {
+  width: 368px;
+  margin-left: 16px;
+}
+//Search query portlet
+.compactQuery {
+  display: flex;
+}
+
+.compactQuery .autocomplete-container {
+  margin-right: 8px;
+}
+
+#col .compactQuery .autocomplete-container {
+  width: 677px;
+}
+
+.quick-search .compactQuery .autocomplete-container {
+  width: 280px;
+}
+
+#col1 .compactQuery .autocomplete-container {
+  width: 435px;
+}
+
+.compactQuery input {
+  margin: 0 3px 0 0;
+  padding: 5px 5px 4px;
+  box-sizing: border-box;
+}
+
+.compactQuery .compactQueryButton {
+  .icon-search:before {
+    font-family: "Material Icons";
+    font-size: 24px;
+    content: "\E8B6";
+    color: white;
+    vertical-align: middle;
+    font-style: normal;
+  }
+}
+
+.compactQuery input[disabled],
+input[disabled="disabled"] {
+  opacity: 1;
+}
+
+.compactQuery input {
+  width: 100%;
+}
+
+#searchresults-select {
+  background: none repeat scroll 0 0 #fbfbfb;
+  border: 1px solid #e9e9e6;
+  @include typography-subtitle-1;
+  padding: 4px;
+}
+
+.recent-portal .box_content_inner,
+.recent-portal .box_content {
+  padding: 0px;
+}
+
+//Hierarchy portlet
+.browse-layout .browse-topics h2.folder {
+  padding: 5px 0 5px 35px;
+  font-weight: bold;
+  background: url(../images/folder_big.png) 0 0 no-repeat;
+}
+
+.browse-layout .area.browse-topics {
+  margin: 0 0 11px;
+}
+
+.browse-layout #col .area.browse-topics {
+  padding-bottom: 16px;
+}
+
+.browse-layout .browse-topics ul {
+  margin: 5px 0 5px -18px;
+}
+
+.browse-topics ul li {
+  margin: 8px 0;
+  line-height: 1.2;
+  @include typography-body-1;
+  padding: 0 0 0 18px;
+  background: url(../../images/baseline_arrow_right_black_18dp.png) 0 1px
+    no-repeat;
+}
+
+.browse-topics ul li span {
+  @include typography-subtitle-2;
+}
+
+//Recents portlet
+#searchresults-select {
+  background-color: white;
+  border: none;
+  strong {
+    border-bottom: 2px solid $secondaryColor;
+    padding-bottom: 5px;
+  }
+}
+
+div#sssh_finishedButton {
+  text-align: right !important;
+  padding-top: 4px;
+}
+
+.alt-links a.favourites {
+  &:before {
+    content: "\e838";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $secondaryColor;
+    padding-right: 4px;
+  }
+}
+
+/*****************************************************************************
+ Selection session nav bar overrides
+*****************************************************************************/
+#selection-header
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
+  width: 784px;
+  display: flex;
+  align-content: space-around;
+  justify-content: center;
+}
+
+#selection-header
+  .navbar-equella-selection.course
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
+  display: flex;
+  align-content: space-around;
+  justify-content: center;
+}
+
+#selection-header .navbar-equella-selection.normal,
+.navbar-equella-selection.course
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content
+  .centered-pills {
+  ul {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    @include typography-button;
+  }
+  li {
+    padding: 0 12px 0 12px;
+  }
+}
+
+.nav.pull-right {
+  width: fit-content;
+  right: 0;
+  position: absolute;
+}
+
+.box {
+  border: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  background: none;
+}
+
+.box_head {
+  background-color: white;
+  border: none;
+  &:hover {
+    background: none;
+  }
+  h3 {
+    @include typography-headline-6;
+    color: $primaryTextColor;
+  }
+}
+
+.box_content {
+  background: none;
+  border: none;
+  background-color: white;
+}
+
+.box_title_wrapper:focus {
+  background-color: white;
+}
+
+.box_content_inner {
+  background: none;
+  border: none;
+}
+
+.contribute-div {
+  text-align: right;
+  margin: 8px 0 8px;
+  .btn {
+    .icon-arrow-right:after {
+      content: "\e145";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: set-text-color($primaryColor);
+      padding-right: 4px;
+      font-style: normal;
+      vertical-align: middle;
+      padding-top: 4px;
+    }
+  }
+}
+
+#_continueButton,
+#_cancelButton {
+  background: none;
+  color: $primaryColor;
+  .icon-arrow-left:before {
+    content: "\e5c4";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $primaryColor;
+    padding-right: 4px;
+    font-style: normal;
+    vertical-align: middle;
+    padding-top: 4px;
+  }
+}
+
+#_finishButton {
+  .icon-ok:before {
+    content: "\e879";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: set-text-color($primaryColor);
+    padding-right: 4px;
+    font-style: normal;
+    vertical-align: middle;
+    padding-top: 4px;
+  }
+}
+
+#selection-content-inner .mainCols #col1 {
+  margin-right: 16px;
+}
+
+/*****************************************************************************
+ Selection session search page
+*****************************************************************************/
+.itemresult-rating div.float-right {
+  padding-top: 8px;
+  .btn {
+    float: right;
+  }
+}
+
+#helpAndOptions {
+  display: none;
+}
+
+.icon-plus:before {
+  content: "\e145";
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: set-text-color($primaryColor);
+  padding-right: 4px;
+  font-style: normal;
+  vertical-align: middle;
+  padding-top: 4px;
+}
+
+/*****************************************************************************
+ Structured search page
+*****************************************************************************/
+#selection-content-inner.search-layout .mainCols #col2 {
+  display: none;
+}
+
+.selection-courses-inner .folder.rootfolder {
+  @include typography-subtitle-1;
+}
+
+.folders {
+  padding-top: 16px;
+}
+
+.folderlist {
+  display: flex;
+  flex-direction: column;
+}
+
+.selection-courses-inner .folder.targetfolder.selected {
+  background-color: transparentize($primaryColor, 0.8);
+}
+
+.selection-courses-inner .courselisttop button {
+  margin-bottom: 8px;
+  .icon-ok:before {
+    content: "\e161";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: set-text-color($primaryColor);
+    padding-right: 4px;
+    font-style: normal;
+    vertical-align: middle;
+    padding-top: 4px;
+  }
+}
+
+/*****************************************************************************
+ Structured item summary page
+*****************************************************************************/
+#selection-content-inner.itemsummary-layout .box {
+  width: 238px;
+}
+
+#selection-content-inner.itemsummary-layout .majorActions {
+  padding-top: 30px;
+}
+
+#selection-content-inner.itemsummary-layout #searchprevnext .btn-group {
+  top: 8px;
+}
+
+#selection-content-inner.itemsummary-layout #col2 {
+  width: fit-content;
+  max-width: 260px;
+}
+
+/*****************************************************************************
+ Selection session wizard layout
+*****************************************************************************/
+#selection-content-inner.wizard-layout #col1 {
+  width: 592px;
+}
+
+#selection-content-inner.wizard-layout #col2,
+#selection-content-inner.wizard-layout #affix-div {
+  width: 146px;
+}
+
+#selection-content-inner.wizard-layout .indent1 {
+  width: 486px;
+}
+
+#selection-content-inner.wizard-layout .indent2 {
+  width: 446px;
+}
+
+#selection-content-inner.wizard-layout .indent3 {
+  width: 406px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .input.text input[type="text"],
+#selection-content-inner.wizard-layout .input.text textarea,
+#selection-content-inner.wizard-layout select.listbox {
+  width: 512px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .input.text input[type="text"],
+#selection-content-inner.wizard-layout .indent1 .input.text textarea,
+#selection-content-inner.wizard-layout .indent1 select.listbox {
+  width: 472px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .input.text input[type="text"],
+#selection-content-inner.wizard-layout .indent2 .input.text textarea,
+#selection-content-inner.wizard-layout .indent2 select.listbox {
+  width: 432px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .input.text input[type="text"],
+#selection-content-inner.wizard-layout .indent3 .input.text textarea,
+#selection-content-inner.wizard-layout .indent3 select.listbox {
+  width: 392px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .multieditbox input[type="text"],
+#selection-content-inner.wizard-layout .multieditbox select {
+  width: 240px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent1
+  .multieditbox
+  input[type="text"],
+#selection-content-inner.wizard-layout .indent1 .multieditbox select {
+  width: 220px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent2
+  .multieditbox
+  input[type="text"],
+#selection-content-inner.wizard-layout .indent2 .multieditbox select {
+  width: 200px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent3
+  .multieditbox
+  input[type="text"],
+#selection-content-inner.wizard-layout .indent3 .multieditbox select {
+  width: 180px;
+}
+
+#selection-content-inner.wizard-layout
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+#selection-content-inner.wizard-layout
+  .multieditbox
+  div.singletranslation
+  textarea {
+  width: 512px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent1
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+#selection-content-inner.wizard-layout
+  .indent1
+  .multieditbox
+  div.singletranslation
+  textarea {
+  width: 472px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent2
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+#selection-content-inner.wizard-layout
+  .indent2
+  .multieditbox
+  div.singletranslation
+  textarea {
+  width: 432px;
+}
+
+#selection-content-inner.wizard-layout
+  .indent3
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+#selection-content-inner.wizard-layout
+  .indent3
+  .multieditbox
+  div.singletranslation
+  textarea {
+  width: 392px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .shuffle input[type="text"],
+#selection-content-inner.wizard-layout .shuffle select {
+  width: 455px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle input[type="text"],
+#selection-content-inner.wizard-layout .indent1 .shuffle select {
+  width: 415px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle input[type="text"],
+#selection-content-inner.wizard-layout .indent2 .shuffle select {
+  width: 375px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle input[type="text"],
+#selection-content-inner.wizard-layout .indent3 .shuffle select {
+  width: 335px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shufflelist {
+  width: 556px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shufflelist {
+  width: 516px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shufflelist {
+  width: 476px;
+}
+
+#selection-content-inner.wizard-layout .shuffle-box-inner select {
+  width: 216px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle-box-inner select {
+  width: 196px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle-box-inner select {
+  width: 176px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle-box-inner select {
+  width: 156px;
+}
+
+#selection-content-inner.wizard-layout .indent0 .shuffle-box-inner label {
+  width: 253px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle-box-inner label {
+  width: 233px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle-box-inner label {
+  width: 213px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle-box-inner label {
+  width: 193px;
 }
