@@ -392,7 +392,7 @@ public abstract class AbstractSearchResultsSection<
     private boolean showResultTypeSelection;
     private SingleSelectionList resultSelectionMenu;
     private String canonicalUrl;
-    private String searchResultCssClassName;
+    private String searchResultCssClassName = "standard";
 
     public boolean isShowResultSelection() {
       return showResultTypeSelection;
