@@ -101,9 +101,6 @@ public final class SearchResultsSection
     boolean videoGallery = resType.equals(videoResults) && !resType.isDisabled();
     getPaging().setIsVideoGallery(context, videoGallery);
 
-    SearchResultsModel model = getModel(context);
-    model.setSearchResultCssClassName(resType.getValue());
-
     return super.renderHtml(context);
   }
 

@@ -256,6 +256,7 @@ public abstract class AbstractSearchResultsSection<
     if (resultTypeSelector != null && resultTypeSelector.size(context) > 1) {
       model.setShowResultSelection(true);
       model.setResultSelectionMenu(resultTypeSelector);
+      model.setSearchResultCssClassName(resultTypeSelector.getSelectedValueAsString(context));
     }
 
     model.setShowResults(showResults(context, searchEvent, resultsEvent));
