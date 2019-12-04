@@ -172,4 +172,11 @@ public interface RemoteTermService {
    * @param fullTermPath The term to sort the children of
    */
   void sortChildren(Taxonomy taxonomy, String fullTermPath);
+
+  /**
+   * Alphabetically sort each level of the whole taxonomy.
+   *
+   * @param taxonomy
+   */
+  void sortTaxonomy(Taxonomy taxonomy);
 }

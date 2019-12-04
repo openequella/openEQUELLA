@@ -21,15 +21,13 @@ package com.tle.admin.gui.common.actions;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.Action;
 
-/** @author Nicholas Read */
-public abstract class AddSiblingAction extends TLEAction {
-  @SuppressWarnings("nls")
-  public AddSiblingAction() {
-    setIcon(AddSiblingAction.class, "add.png");
+public abstract class SortTreeAction extends TLEAction {
+  public SortTreeAction() {
+    setIcon(SortTreeAction.class, "sortasc.png");
     putValue(
-        Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.addsiblingaction.name"));
+        Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.sorttreeaction.name"));
     putValue(
         Action.SHORT_DESCRIPTION,
-        CurrentLocale.get("com.tle.admin.gui.common.actions.addsiblingaction.desc"));
+        CurrentLocale.get("com.tle.admin.gui.common.actions.sorttreeaction.desc"));
   }
 }

@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.tle.admin.Driver;
 import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
 import com.tle.admin.gui.common.actions.SortChildrenAction;
+import com.tle.admin.gui.common.actions.SortTreeAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.common.Check;
 import com.tle.common.LazyTreeNode.ChildrenState;
@@ -153,10 +154,7 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
   protected void setupAdditionalActions(List<TLEAction> actions) {
     super.setupAdditionalActions(actions);
     actions.add(sortChildrenAction);
-  }
-
-  protected void doSortChildren(TermTreeNode node) {
-    termService.sortChildren(taxonomy, (node == root ? null : node.getFullPath()));
+    actions.add(sortTreeAction);
   }
 
   protected void doSortChildrenGui(TermTreeNode node) {
@@ -164,7 +162,7 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
         new GlassSwingWorker<Object>() {
           @Override
           public Object construct() {
-            doSortChildren(node);
+            termService.sortChildren(taxonomy, (node == root ? null : node.getFullPath()));
             return null;
           }
 
@@ -172,6 +170,33 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
           public void finished() {
             node.setChildrenState(ChildrenState.UNLOADED);
             loadChildren(node);
+          }
+
+          @Override
+          public void exception() {
+            Exception ex = getException();
+            LOGGER.error("Problem sorting terms", ex);
+            Driver.displayError(
+                TermTree.this, KEY_ERROR_TERMSORT_TITLE, KEY_ERROR_TERMSORT_MESSAGE, ex);
+          }
+        };
+    worker.setComponent(this);
+    worker.start();
+  }
+
+  protected void doSortTreeGui() {
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<Object>() {
+          @Override
+          public Object construct() {
+            termService.sortTaxonomy(taxonomy);
+            return null;
+          }
+
+          @Override
+          public void finished() {
+            root.setChildrenState(ChildrenState.UNLOADED);
+            loadChildren(root);
           }
 
           @Override
@@ -201,6 +226,14 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
         @Override
         public void update() {
           setSortRootTerms(tree.getSelectionCount() == 0);
+        }
+      };
+
+  private final TLEAction sortTreeAction =
+      new SortTreeAction() {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+          doSortTreeGui();
         }
       };
 }

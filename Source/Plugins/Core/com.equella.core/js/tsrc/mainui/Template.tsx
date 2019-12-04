@@ -60,6 +60,8 @@ export interface TemplateProps {
   menuMode?: MenuMode;
   disableNotifications?: boolean;
   currentUser?: UserData;
+  /* Extra meta tags */
+  metaTags?: string;
 }
 
 export interface TemplateUpdateProps {
@@ -85,6 +87,7 @@ export type TemplateUpdate = (
  * No footer content
  * Show the menu
  * Allow notifications links
+ * No extra meta tags
  */
 export function templateDefaults(title: string): TemplateUpdate {
   return tp =>
@@ -100,7 +103,8 @@ export function templateDefaults(title: string): TemplateUpdate {
       hideAppBar: undefined,
       fullscreenMode: undefined,
       menuMode: undefined,
-      disableNotifications: undefined
+      disableNotifications: undefined,
+      metaTags: undefined
     } as TemplateProps);
 }
 
@@ -253,6 +257,9 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
 
+  // Record what customised meta tags have been added into <head>
+  const [metaTags, setMetaTags] = React.useState<Array<string>>([]);
+
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -281,6 +288,36 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   React.useEffect(() => {
     window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
   }, [props.title]);
+
+  React.useEffect(() => {
+    updateMetaTags(props.metaTags);
+  }, [props.metaTags]);
+
+  function updateMetaTags(tags: string | undefined) {
+    const head = document.head;
+    if (tags) {
+      // The meta tags generated on the server side, separated by new line symbols
+      const newMetaTags = tags.split("\n");
+      newMetaTags.forEach(newMetaTag => {
+        head.appendChild(
+          document.createRange().createContextualFragment(newMetaTag)
+        );
+      });
+      setMetaTags(newMetaTags);
+    } else {
+      // While there are no new meta tags to display, also remove old customised meta tags
+      const existingMetaTags = document.querySelectorAll("meta");
+      existingMetaTags.forEach(existingMetaTag => {
+        if (
+          metaTags.some(tag => {
+            return tag === existingMetaTag.outerHTML;
+          })
+        ) {
+          head.removeChild(existingMetaTag);
+        }
+      });
+    }
+  }
 
   function linkItem(
     link: LocationDescriptor,

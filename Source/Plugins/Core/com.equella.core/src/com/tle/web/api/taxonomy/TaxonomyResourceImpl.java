@@ -391,6 +391,14 @@ public class TaxonomyResourceImpl
     return Response.ok().build();
   }
 
+  @Override
+  public Response sortTaxonomy(String taxonomyUuid) {
+    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.VIEW);
+
+    termService.sortTaxonomy(taxonomy);
+    return Response.ok().build();
+  }
+
   private TermBean beanFromTaxonomyTerm(TermResult term, String taxonomyUuid) {
     TermBean bean = new TermBean();
     bean.setTerm(term.getTerm());
