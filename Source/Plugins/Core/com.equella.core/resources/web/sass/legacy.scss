@@ -3,13 +3,24 @@
 @import "themes/equella/jquery-ui.css";
 @import "themes/equella/jquery-ui.css";
 @import "component/autocomplete.css";
+@import "autocompleteeditbox.css";
 @import "component/richdropdown.css";
 @import "autocompleteeditbox.css";
 @import "attachments/attachments.css";
 @import "jquerylib/jquery.autocomplete.css";
 @import "jquerylib/jquery.stylish-select.css";
+@import "jquerylib/jquery.treeview.css";
 @import "themes/equella/jquery-ui.css";
 @import "component/richdropdown.css";
+@import "render/jquery.fileinput.css";
+@import "render/ajaxupload.css";
+@import "settings.css";
+@import "popupbrowser.css";
+@import "shufflebox.css";
+@import "treenavctl.css";
+@import "moderate.css";
+@import "modcomments.css";
+@import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -300,11 +311,19 @@ input[type="password"],
 input[type="number"],
 textarea,
 select[multiple="multiple"] {
-  border-bottom: 1px solid $primaryTextColor;
-  font-size: 16px;
-  padding: 4px 6px;
+  border: 1px solid #f5f5f5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  border-radius: 4px 4px 0 0;
+  background-color: #f5f5f5;
+  height: 56px;
+
+  &:hover {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.42);
+  }
+
   &:focus {
-    border-bottom: 2px solid $primaryTextColor;
+    border-bottom: 2px solid $primaryColor;
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 .calendar {
@@ -317,7 +336,7 @@ select[multiple="multiple"] {
 .newListSelected {
   @include typography-body-1;
   padding-left: 8px;
-  min-width: 100px;
+  min-width: 160px;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
@@ -438,6 +457,348 @@ select[multiple="multiple"] {
   padding-left: 8px;
 }
 
+ul.select_options li {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+/*****************************************************************************
+Contribution wizard inputs
+*****************************************************************************/
+.wizard-controls {
+  margin: 4px 0;
+}
+
+.wizard-controls .control {
+  margin: 0 0 15px;
+}
+
+.wizard-controls .indent1 .control:first-child,
+.wizard-controls .indent2 .control:first-child,
+.wizard-controls .indent3 .control:first-child {
+  margin-top: 15px;
+}
+
+.wizard-controls .ctrlinvalidmessage {
+  display: none;
+}
+
+.wizard-controls .ctrlinvalid > .ctrlinvalidmessage {
+  background-color: #fdd;
+  padding: 5px;
+  display: block;
+}
+
+.wizard-controls .ctrlmandatory,
+.wizard-controls .ctrlinvalidmessage {
+  color: red;
+  text-align: center;
+}
+
+.wizard-controls .control p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.wizard-controls .indent1,
+.wizard-controls .indent2,
+.wizard-controls .indent3 {
+  padding: 20px 0px 20px 40px;
+}
+
+.indent0 .indent1,
+.indent1 .indent2,
+.indent2 .indent3 {
+  padding-bottom: 0px;
+}
+
+.option + .indent1,
+.option + .indent2,
+.option + .indent3 {
+  padding-top: 0px;
+}
+
+/************************/
+.wizard-controls .indent1 {
+  width: 556px;
+}
+
+.wizard-controls .indent2 {
+  width: 516px;
+}
+
+.wizard-controls .indent3 {
+  width: 476px;
+}
+
+.wizard-controls .input.text input[type="text"],
+.wizard-controls .input.text textarea,
+.wizard-controls select.listbox {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls select.listbox + .newListSelected,
+.wizard-controls select.listbox + .newListSelected .newList {
+  box-sizing: border-box;
+  width: 100% !important;
+}
+
+.wizard-controls .indent1 .input.text input[type="text"],
+.wizard-controls .indent1 .input.text textarea,
+.wizard-controls .indent1 select.listbox {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent2 .input.text input[type="text"],
+.wizard-controls .indent2 .input.text textarea,
+.wizard-controls .indent2 select.listbox {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent3 .input.text input[type="text"],
+.wizard-controls .indent3 .input.text textarea,
+.wizard-controls .indent3 select.listbox {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/************************/
+.wizard-controls .multieditbox input[type="text"],
+.wizard-controls .multieditbox select,
+.wizard-controls .multieditbox textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent1 .multieditbox input[type="text"],
+.wizard-controls .indent1 .multieditbox select,
+.wizard-controls .indent1 .multieditbox textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent2 .multieditbox input[type="text"],
+.wizard-controls .indent2 .multieditbox select,
+.wizard-controls .indent2 .multieditbox textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent3 .multieditbox input[type="text"],
+.wizard-controls .indent3 .multieditbox select,
+.wizard-controls .indent3 .multieditbox textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .multieditbox div.singletranslation input[type="text"],
+.wizard-controls .multieditbox div.singletranslation textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls
+  .indent1
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+.wizard-controls .indent1 .multieditbox div.singletranslation textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls
+  .indent2
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+.wizard-controls .indent2 .multieditbox div.singletranslation textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls
+  .indent3
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
+.wizard-controls .indent3 .multieditbox div.singletranslation textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/************************/
+.wizard-controls .shuffle input[type="text"],
+.wizard-controls .shuffle select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent1 .shuffle input[type="text"],
+.wizard-controls .indent1 .shuffle select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent2 .shuffle input[type="text"],
+.wizard-controls .indent2 .shuffle select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.wizard-controls .indent3 .shuffle input[type="text"],
+.wizard-controls .indent3 .shuffle select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/************************/
+.repeater {
+  border: 1px solid #8f8b7e;
+  margin: 0px 0px 10px;
+  padding: 15px 19px 9px !important;
+  position: relative;
+}
+
+.repeater-remove {
+  background: url(../images/repeater-remove.png) no-repeat 0px 0px;
+  margin-left: 3px;
+  cursor: pointer;
+  height: 17px;
+  float: right;
+  width: 17px;
+}
+
+.repeater-move {
+  background: url(../images/repeater-button-bg.png) no-repeat 0px 0px;
+  height: 17px;
+  float: right;
+  width: 17px;
+  padding-left: 4px;
+  background-position: center;
+}
+
+.repeater-move i {
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.options-control {
+  width: 100%;
+}
+
+.options-control label {
+  margin: 0 5px;
+}
+
+/************************/
+.calendar-control .calendar {
+  display: inline;
+  margin-right: 40px;
+}
+
+.calendar-control .calendar-clear {
+  display: inline;
+}
+
+/************************/
+.wizard-layout .indent1 .shufflelist {
+  width: 556px;
+}
+
+.wizard-layout .indent2 .shufflelist {
+  width: 516px;
+}
+
+.wizard-layout .indent3 .shufflelist {
+  width: 476px;
+}
+
+.wizard-layout .indent1 .shuffle-box-inner select {
+  width: 236px;
+}
+
+.wizard-layout .indent2 .shuffle-box-inner select {
+  width: 216px;
+}
+
+.wizard-layout .indent3 .shuffle-box-inner select {
+  width: 197px;
+}
+
+.wizard-layout .indent0 .shuffle-box-inner label {
+  width: 253px;
+}
+
+.wizard-layout .indent1 .shuffle-box-inner label {
+  width: 233px;
+}
+
+.wizard-layout .indent2 .shuffle-box-inner label {
+  width: 213px;
+}
+
+.wizard-layout .indent3 .shuffle-box-inner label {
+  width: 193px;
+}
+/************************/
+#searchform .wizard-controls div.input {
+  margin: 8px 0;
+  padding: 0px;
+}
+
+#searchform .wizard-controls .input.text input[type="text"],
+#searchform .wizard-controls .input.text textarea,
+#searchform .wizard-controls select.listbox {
+  width: 465px;
+}
+
+#searchform .wizard-controls div.input.calendar {
+  margin: 8px 40px 8px 0;
+}
+
+#searchform .wizard-controls div.input.calendar input[type="text"] {
+  width: 140px;
+}
+
+#searchform .wizard-controls .shuffle input[type="text"],
+#searchform .wizard-controls .shuffle select {
+  width: 410px;
+}
+
+#searchform .wizard-controls .shuffle-box select {
+  width: 195px;
+}
+
+#searchform .wizard-controls .autocompleteControl input[type="text"] {
+  width: 385px;
+}
+
+div.error-receipt {
+  background-color: #fdd;
+  padding: 5px;
+  display: block;
+  text-align: left;
+  color: red;
+  margin: 12px 0;
+}
+
+html[class="accessibility"] div.error-receipt:focus {
+  outline: thin solid rgba(299, 151, 0, 255);
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+div.error-receipt p {
+  margin: 5px 0;
+}
+div.error-receipt ul li {
+  margin-left: 10px;
+  height: 18px;
+}
+
 /*****************************************************************************
  Generic CSS classes
 *****************************************************************************/
@@ -515,6 +876,10 @@ Generic layout
 
 #mainDiv .content {
   box-sizing: content-box;
+}
+
+#fancybox-inner {
+  min-width: 320px;
 }
 
 #fancybox-inner button {
@@ -640,6 +1005,8 @@ div[class*="fancy-bg"] {
   padding-top: 20px;
   padding-right: 18px;
   text-align: right;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .modal-footer-inner input {
@@ -1230,7 +1597,7 @@ div.skinnysearch {
 }
 
 #wizard-controls .autocompleteControl input[type="text"] {
-  height: 15px;
+  height: 34px;
 }
 
 .ac_odd {
@@ -1744,6 +2111,437 @@ html.wait {
 }
 
 /*****************************************************************************
+Contribution wizard styling
+*****************************************************************************/
+.wizard-layout #col2,
+#affix-div {
+  width: 221px;
+  top: 55px;
+}
+
+.wizard-layout #col2 {
+  padding-left: 8px;
+}
+
+#wizard-pagelist {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  margin: 15px 0;
+  background: #fff;
+}
+
+#wizard-pagelist ul {
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  background: url(../images/bg-rhs-nav.gif) 0 bottom repeat-x;
+  padding: 10px 12px;
+  list-style: none;
+}
+
+#wizard-pagelist ul li {
+  margin: 6px 0;
+  background: url(../images/rhs-nav-list-icon.ltr.png) 0 0 no-repeat;
+  padding: 2px 0px 2px 15px;
+}
+
+#wizard-pagelist ul li.active {
+  background: url(../images/rhs-nav-list-icon-dark.ltr.png) 0 0 no-repeat;
+  :before {
+    content: "insert_drive_file";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+    padding-right: 8px;
+  }
+}
+
+#wizard-pagelist ul li a {
+  margin: 2px 0 0 0;
+  &:before {
+    content: "insert_drive_file";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $primaryColor;
+    vertical-align: middle;
+    padding-right: 8px;
+  }
+}
+
+#wizard-pagelist ul li span {
+  margin: 2px 0 0 0;
+  color: #bfbfbf;
+}
+
+#wizard-pagelist ul li.active span {
+  color: $primaryTextColor;
+  font-weight: bold;
+}
+
+#wizard-navigation {
+  text-align: right;
+  margin: 10px 0 0 0;
+}
+
+#wizard-navigation input[type="button"] {
+  margin: 0 0 0 3px;
+}
+
+#wizard-major-actions .action-button.save {
+  background-image: url("../../images/baseline_save_white_18dp.png");
+  text-align: left;
+  padding-left: 42px;
+}
+
+#wizard-major-actions .action-button.edit {
+  background-image: url("../../images/baseline_edit_white_18dp.png");
+}
+
+#wizard-major-actions .action-button.view {
+  background-image: url("../../images/baseline_list_white_18dp.png");
+}
+
+#wizard-major-actions .action-button.moderate-approve {
+  background-image: url("../../images/baseline_check_white_18dp.png");
+}
+
+#wizard-major-actions .action-button.moderate-reject {
+  background-image: url("../../images/baseline_close_white_18dp.png");
+}
+
+#wizard-actions {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+#more-actions li {
+  margin-top: 10px;
+}
+
+.action-link {
+  margin-left: 14px;
+  text-align: left;
+  font-size: 11px;
+}
+
+#wizard-actions a,
+#more-actions li .action-link a {
+  @include typography-subtitle-2;
+}
+
+#wizard-actions span {
+  padding: 0 5px;
+}
+
+.wizard-layout {
+  a.add {
+    &:before {
+      content: "add_circle";
+      font-family: "Material Icons";
+      font-size: 20px;
+      color: $primaryColor;
+      vertical-align: middle;
+      padding-right: 8px;
+    }
+  }
+}
+
+#moderateMessage textarea {
+  width: 100%;
+}
+
+button + .repeater-groups {
+  margin-top: 1em;
+}
+
+.ctrlbutton {
+  margin-top: 4px;
+  i.icon-plus {
+    &:before {
+      content: "\e145";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: set-text-color($primaryColor);
+      vertical-align: top;
+      padding-right: 4px;
+      font-style: normal;
+    }
+  }
+}
+
+// Attachment control
+.filedrop {
+  border: 3px dotted #ccc;
+  padding-top: 45px;
+  padding-bottom: 45px;
+  margin: 1em 0;
+  text-align: center;
+  cursor: pointer;
+  color: rgb(130, 130, 130);
+}
+
+.filedrop-file {
+  position: absolute;
+  height: 100px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+}
+
+.customfile-feedback {
+  background: none;
+  padding-left: 4px;
+  font-style: normal;
+  @include typography-subtitle-1;
+  &:before {
+    content: "\e2c6";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $secondaryColor;
+    vertical-align: middle;
+    padding-right: 8px;
+    font-style: normal;
+  }
+}
+
+.uploadsprogress .progress-bar + a {
+  &:before {
+    content: "\e872";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+    padding-right: 8px;
+    font-style: normal;
+  }
+}
+
+.uploadsprogress .progress-bar {
+  margin: 2px 10px 0 0;
+}
+
+.uploadsprogress .file-upload .file-name {
+  padding-left: 8px;
+}
+
+.uploadsprogress .file-upload {
+  margin: 12px 0;
+}
+
+.selections td.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.settingField input[type="text"],
+.settingField input[type="password"],
+.settingField textarea,
+.settingField select,
+.settingField .multieditbox .singletranslation input[type="text"] {
+  width: 250px;
+}
+
+.settingRow {
+  padding: 8px 0px;
+}
+
+.settingRow .settingField {
+  width: fit-content;
+  padding-left: 26px;
+}
+
+.settingContainer {
+  width: 452px;
+  .editLinks {
+    padding-top: 8px;
+  }
+}
+
+.attachment-content {
+  min-height: 340px;
+  padding: 20px 25px;
+  width: 500px;
+  h3 {
+    @include typography-headline-6;
+  }
+}
+
+//html editor width hack
+.mceLayout {
+  width: 100% !important;
+}
+
+//workflow related content
+#moderate .task-name {
+  padding-right: 16px;
+}
+
+.modcomment-content {
+  @include typography-body-1;
+}
+
+.modcomment-username {
+  @include typography-body-1;
+  color: $primaryColor;
+}
+
+.modcomment-avatar {
+  background: url("../../images/baseline_person_black_18dp.png") 0 0 no-repeat;
+  background-size: 24px;
+  background-position: center;
+}
+
+//shuffle list
+
+.shuffle-box {
+  select[multiple="multiple"] {
+    height: 220px !important;
+  }
+}
+.shuffle-box-controls {
+  button {
+    margin: 4px 0;
+  }
+}
+
+//navigation viewer
+.addRemovePanel {
+  button {
+    min-width: fit-content;
+  }
+  i.icon-plus {
+    &:before {
+      content: "\e145";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: set-text-color($primaryColor);
+      vertical-align: top;
+      padding-right: 4px;
+      font-style: normal;
+    }
+  }
+
+  i.icon-remove {
+    &:before {
+      content: "\e872";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: set-text-color($primaryColor);
+      vertical-align: top;
+      padding-right: 4px;
+      font-style: normal;
+    }
+  }
+}
+
+//Term browser
+.popupbrowserdialog #termChooser {
+  border-right: 1px solid #e8e8e8;
+}
+#termChooser.ui-tabs {
+  border: none;
+  border-right: 2px solid #e8e8e8;
+  ul {
+    border: none;
+  }
+  li {
+    border: none;
+    background: none;
+    a {
+      color: $primaryColor;
+    }
+
+    a.add {
+      &:before {
+        content: "add";
+        font-family: "Material Icons";
+        font-size: 24px;
+        color: $secondaryColor;
+        vertical-align: top;
+        padding-right: 4px;
+        font-style: normal;
+      }
+    }
+
+    a.viewterm {
+      padding-left: 0px;
+      &:before {
+        content: "remove_red_eye";
+        font-family: "Material Icons";
+        font-size: 24px;
+        color: $secondaryColor;
+        vertical-align: top;
+        padding-right: 4px;
+        font-style: normal;
+      }
+    }
+    &.ui-tabs-active {
+      border-bottom: 2px solid $secondaryColor;
+      a {
+        color: $primaryTextColor;
+      }
+    }
+  }
+}
+
+.ui-widget-header {
+  background: none;
+}
+
+ul.treeview {
+  .hitarea {
+    background: none;
+    margin-right: 12px;
+  }
+
+  li.collapsable {
+    a.hitarea:before {
+      content: "arrow_drop_down";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: $menuItemIconColor;
+      vertical-align: top;
+      padding-right: 4px;
+      font-style: normal;
+    }
+  }
+
+  li.expandable {
+    a.hitarea:before {
+      content: "arrow_right";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: $menuItemIconColor;
+      vertical-align: top;
+      padding-right: 4px;
+      font-style: normal;
+    }
+  }
+}
+
+#selectedTerms {
+  h3 {
+    @include typography-headline-6;
+  }
+  .selectedItems {
+    background-color: #e8e8e8;
+  }
+}
+
+a.unselect {
+  background: none;
+  &:before {
+    content: "delete";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $menuItemIconColor;
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
+  }
+}
+
+/*****************************************************************************
 Item summary styling
 *****************************************************************************/
 
@@ -1804,6 +2602,10 @@ Item summary styling
 
 .removeFromFavourites {
   background-image: url(../../images/baseline_remove_white_18dp.png);
+}
+
+.save {
+  background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
 .itemsummary-layout hr {
