@@ -137,6 +137,7 @@ public class UserServiceImpl
     return userInfoBackupDao.findUserInfoBackup(username);
   }
 
+  @Transactional
   @Override
   public void saveUserInfoBackup(UserBean userBean) {
     String userUniqueId = userBean.getUniqueID();
