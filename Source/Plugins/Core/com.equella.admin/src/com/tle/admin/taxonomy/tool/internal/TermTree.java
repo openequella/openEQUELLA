@@ -110,7 +110,8 @@ public class TermTree extends AbstractTreeEditorTree<TermTreeNode> {
     final JValidatingTextField field =
         new JValidatingTextField(
             new JValidatingTextField.MaxLength(Term.MAX_TERM_VALUE_LENGTH),
-            new JValidatingTextField.DisallowStr(TaxonomyConstants.TERM_SEPARATOR));
+            new JValidatingTextField.DisallowStr(TaxonomyConstants.TERM_SEPARATOR),
+            new JValidatingTextField.DisallowStr(TaxonomyConstants.LIKE_ESCAPE));
     String name = null;
     do {
       final int result =

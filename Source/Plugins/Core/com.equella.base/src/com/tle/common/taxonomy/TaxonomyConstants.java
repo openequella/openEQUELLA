@@ -22,6 +22,7 @@ package com.tle.common.taxonomy;
 public final class TaxonomyConstants {
   public static final String TERM_SEPARATOR = "\\";
   public static final String TERM_SEPARATOR_REGEX = "\\\\";
+  public static final String LIKE_ESCAPE = "!";
 
   public static final String TERM_ALLOW_ADDITION = "TERM_ALLOW_ADDITION";
 
