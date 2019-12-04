@@ -2245,6 +2245,19 @@ Contribution wizard styling
   }
 }
 
+.resumeables {
+  padding-bottom: 16px;
+}
+
+.contribution-selection-page .resumeables ul li span.resumable {
+  display: inline-block;
+  width: 520px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-left: 22px;
+}
+
 #moderateMessage textarea {
   width: 100%;
 }
