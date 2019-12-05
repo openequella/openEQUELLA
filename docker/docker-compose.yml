@@ -1,0 +1,68 @@
+version: "3.6"
+
+services:
+  oeq:
+    build:
+      context: .
+      args:
+        - OEQ_INSTALL_FILE=equella-installer-2019.2.0.zip
+    networks:
+      - oeq-cluster
+    links:
+      - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=oeq"
+      - "traefik.docker.network=oeq-cluster"
+      - "traefik.frontend.rule=Host:oeq.localhost"
+      - "traefik.port=8080"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.backend.loadbalancer.stickiness.cookieName=JSESSIONNODE"
+      - "traefik.frontend.passHostHeader=true"
+    environment:
+      - EQ_MESSAGING_BINDPORT=8999
+      - EQ_MESSAGING_USEHOSTNAME=true
+      - EQ_USERSERVICE_USEXFORWARDEDFOR=true
+      - EQ_ZOOKEEPER_INSTANCES=zookeeper
+      - EQ_ZOOKEEPER_PREFIX=eqdev
+      - EQ_ADMIN_URL=http://oeq.localhost/admin/
+      - EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://database:5432/equella
+    depends_on:
+      - zookeeper
+    volumes:
+      - ./filestore:/home/equella/equella/filestore
+      - ./hikari.properties:/home/equella/equella/learningedge-config/hikari.properties
+      - ./learningedge-log4j.properties:/home/equella/equella/learningedge-config/learningedge-log4j.properties
+
+  zookeeper:
+    image: zookeeper:3.5.5
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+      ZOO_LOG4J_PROP: INFO, CONSOLE, ROLLINGFILE
+      ZOO_AUTOPURGE_PURGEINTERVAL: 1
+    networks:
+      - oeq-cluster
+
+  database:
+    image: postgres:9.6
+    restart: always
+    networks:
+      - oeq-cluster
+
+  traefik:
+    image: traefik:1.7.14
+    restart: always
+    command: --api --docker
+    ports:
+      - "8080:8080"
+      - "80:80"
+    networks:
+      - oeq-cluster
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.toml:/traefik.toml
+
+networks:
+  oeq-cluster:
+    driver: bridge

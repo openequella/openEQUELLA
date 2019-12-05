@@ -111,15 +111,12 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     Set<ItemId> allItemIds = new HashSet<ItemId>();
     List<DuplicateDataView> views = new ArrayList<DuplicateDataView>();
 
-    boolean canAcceptAny = false;
     boolean mustChangeAny = false;
 
     for (Map.Entry<String, DuplicateData> entry : duplicated.entrySet()) {
       DuplicateData data = entry.getValue();
 
-      if (data.isCanAccept()) {
-        canAcceptAny = true;
-      } else {
+      if (!data.isCanAccept()) {
         mustChangeAny = true;
       }
 
@@ -129,7 +126,6 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
       allItemIds.addAll(data.getItems());
     }
     model.setDuplicateData(views);
-    model.setCanAcceptAny(canAcceptAny);
     model.setMustChangeAny(mustChangeAny);
 
     Map<ItemId, LanguageBundle> itemNames = itemService.getItemNames(allItemIds);
@@ -190,7 +186,6 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     @Bookmarked(stateful = false)
     private boolean submit;
 
-    protected boolean canAcceptAny;
     protected boolean mustChangeAny;
 
     private void setDuplicateData(Collection<DuplicateDataView> duplicateData) {
@@ -210,14 +205,6 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
     public Collection<DuplicateDataView> getTextfieldDuplicateData() {
       return textfieldDuplicateData;
-    }
-
-    public boolean isCanAcceptAny() {
-      return canAcceptAny;
-    }
-
-    public void setCanAcceptAny(boolean canAcceptAny) {
-      this.canAcceptAny = canAcceptAny;
     }
 
     public boolean isMustChangeAny() {
@@ -290,6 +277,10 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
       public boolean isAttachmentDupCheck() {
         return dup.isAttachmentDupCheck();
+      }
+
+      public String getWizardControlTitle() {
+        return dup.getWizardControlTitle();
       }
     }
 

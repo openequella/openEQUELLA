@@ -87,6 +87,13 @@ public interface WizardService extends ScriptEvaluator {
 
   void checkLinkAttachmentDuplicate(WizardState state, String url, String linkUuid);
 
+  boolean checkEditboxDuplicate(
+      WizardState state,
+      String xpath,
+      Collection<String> values,
+      boolean canAccept,
+      String fieldName);
+
   ScriptContext createScriptContext(
       WizardState state, WizardPage page, HTMLControl control, Map<String, Object> attributes);
 

@@ -21,7 +21,7 @@ package com.tle.core.auditlog.impl;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
@@ -180,7 +180,7 @@ public class AuditLogServiceImpl implements AuditLogService {
       ItemKey itemId,
       String contentType,
       String path,
-      Attachment attachment,
+      IAttachment attachment,
       HttpServletRequest request) {
     logContentViewed(ITEM_CATEGORY, itemId, contentType, path, request);
   }

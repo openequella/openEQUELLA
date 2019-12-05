@@ -236,9 +236,11 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
       String json, String uri, String token, boolean consume, Object... paramNameValues)
       throws IOException {
     final HttpPost request = new HttpPost(appendQueryString(uri, queryString(paramNameValues)));
-    final StringEntity ent = new StringEntity(json, "UTF-8");
-    ent.setContentType("application/json");
-    request.setEntity(ent);
+    if (json != null) {
+      final StringEntity ent = new StringEntity(json, "UTF-8");
+      ent.setContentType("application/json");
+      request.setEntity(ent);
+    }
     return execute(request, consume, token);
   }
 

@@ -1,0 +1,82 @@
+<com.tle.beans.item.Item>
+  <id>501273</id>
+  <uuid>6b4f3e8b-1435-4995-9317-6504a6b6485c</uuid>
+  <version>1</version>
+  <owner></owner>
+  <lastOwner>e48a42a0-7d82-445e-9064-3dbe87c25b2b</lastOwner>
+  <dateModified class="sql-timestamp">2019-10-08 14:31:31.486</dateModified>
+  <dateCreated class="sql-timestamp">2019-10-08 14:31:31.509</dateCreated>
+  <dateForIndex class="sql-timestamp">2019-10-08 14:32:41.772</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>501275</id>
+    <liveApprovalDate class="sql-timestamp">2019-10-08 14:31:31.486</liveApprovalDate>
+    <lastAction class="sql-timestamp">2019-10-08 14:31:31.486</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>501278</id>
+      <user>e48a42a0-7d82-445e-9064-3dbe87c25b2b</user>
+      <date class="sql-timestamp">2019-10-08 14:31:31.486</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>501279</id>
+      <user>e48a42a0-7d82-445e-9064-3dbe87c25b2b</user>
+      <date class="sql-timestamp">2019-10-08 14:31:31.486</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>501280</id>
+      <user>e48a42a0-7d82-445e-9064-3dbe87c25b2b</user>
+      <date class="sql-timestamp">2019-10-08 14:31:31.486</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>501276</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>501283</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>LastKnownOwner Test</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>501282</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

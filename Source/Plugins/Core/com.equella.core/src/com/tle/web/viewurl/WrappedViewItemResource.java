@@ -18,6 +18,8 @@
 
 package com.tle.web.viewurl;
 
+import com.tle.annotation.Nullable;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.viewable.ViewableItem;
@@ -65,6 +67,12 @@ public abstract class WrappedViewItemResource implements ViewItemResource {
   @Override
   public String getFilepath() {
     return inner.getFilepath();
+  }
+
+  @Nullable
+  @Override
+  public IAttachment getAttachment() {
+    return inner.getAttachment();
   }
 
   @Override

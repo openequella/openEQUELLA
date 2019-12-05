@@ -7,5 +7,6 @@
 /.psc*
 /.purs*
 /.psa*
+/public/
 yarn-error.log
 .vscode

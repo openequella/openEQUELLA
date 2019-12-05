@@ -18,6 +18,8 @@
 
 package com.tle.core.taxonomy;
 
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -28,6 +30,7 @@ import com.tle.common.taxonomy.terms.RemoteTermService;
 import com.tle.core.institution.convert.ConverterParams;
 import java.util.List;
 
+@NonNullByDefault
 public interface TermService extends RemoteTermService {
   /**
    * Get TermResult by full term path
@@ -54,11 +57,20 @@ public interface TermService extends RemoteTermService {
    * whether calling this is really allowed.
    */
   TermResult addTerm(
-      Taxonomy taxonomy, String parentFullPath, String termValue, boolean createHierarchy);
+      Taxonomy taxonomy,
+      String parentFullPath,
+      @Nullable String termUuid,
+      String termValue,
+      boolean createHierarchy);
 
   void move(Taxonomy taxonomy, TermResult termToMove, TermResult parentTerm, int index);
 
-  TermResult insertTerm(Taxonomy taxonomy, TermResult parentTerm, String termValue, int index);
+  TermResult insertTerm(
+      Taxonomy taxonomy,
+      TermResult parentTerm,
+      @Nullable String termUuid,
+      String termValue,
+      int index);
 
   /** Make sure you put the @Transactional annotation on the implementation! */
   void doInTransaction(Runnable runnable);

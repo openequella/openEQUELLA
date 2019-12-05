@@ -8,8 +8,8 @@ exemptLabels:
   - security
   - Tech debt
   - roadmap
-  - Edelex
-  - Edelex RDA
+  - Edalex
+  - Edalex RDA
   - Unicon SE
 # Label to use when marking an issue as stale
 staleLabel: stale

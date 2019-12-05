@@ -66,24 +66,28 @@ import org.hibernate.annotations.NamedQuery;
     })
 @NamedQueries({
   @NamedQuery(
-      name = "incLeft",
+      name = "shiftLeftIndex",
       query =
           "UPDATE Term SET lft = lft + :amount WHERE lft >= :from AND lft <= :to AND taxonomy = :taxonomy",
       cacheable = true),
   @NamedQuery(
-      name = "incRight",
+      name = "shiftRightIndex",
       query =
           "UPDATE Term SET rht = rht + :amount WHERE rht >= :from AND rht <= :to AND taxonomy = :taxonomy",
       cacheable = true),
   @NamedQuery(
-      name = "decLeft",
+      name = "shift",
       query =
-          "UPDATE Term SET lft = lft - :amount WHERE lft >= :from AND lft <= :to AND taxonomy = :taxonomy",
+          "UPDATE Term SET lft = lft + :amount, rht = rht + :amount "
+              + "WHERE (lft >= :from OR rht >= :from) AND (lft <= :to OR rht <= :to) "
+              + "AND taxonomy = :taxonomy",
       cacheable = true),
   @NamedQuery(
-      name = "decRight",
+      name = "shiftByPath",
       query =
-          "UPDATE Term SET rht = rht - :amount WHERE rht >= :from AND rht <= :to AND taxonomy = :taxonomy",
+          "UPDATE Term SET lft = lft + :amount, rht = rht + :amount "
+              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild) "
+              + "AND taxonomy = :taxonomy",
       cacheable = true)
 })
 public class Term implements Serializable {

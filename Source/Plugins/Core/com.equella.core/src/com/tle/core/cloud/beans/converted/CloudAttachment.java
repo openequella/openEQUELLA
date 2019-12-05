@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CloudAttachment implements IAttachment, Serializable {
-  public static final String TYPE_FILE = "file";
   public static final String TYPE_URL = "url";
 
+  private CloudItem item;
   private String uuid;
   private String description;
   private String filename;
@@ -173,5 +173,14 @@ public class CloudAttachment implements IAttachment, Serializable {
   @Override
   public boolean isRestricted() {
     return false;
+  }
+
+  @Override
+  public CloudItem getItem() {
+    return item;
+  }
+
+  public void setItem(CloudItem item) {
+    this.item = item;
   }
 }

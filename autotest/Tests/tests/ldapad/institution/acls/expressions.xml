@@ -1,57 +1,57 @@
 <list>
   <com.tle.beans.security.AccessExpression>
-    <id>756239</id>
+    <id>490696</id>
     <dynamic>false</dynamic>
-    <expression>R:0096aa87-3da2-47e2-9ef3-983d2e38acb8 </expression>
+    <expression>G:1003 </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756637</id>
+    <id>4172</id>
     <dynamic>false</dynamic>
-    <expression>G:cool </expression>
+    <expression>R:0096aa87-3da2-47e2-9ef3-983d2e38acb8</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756634</id>
+    <id>4176</id>
     <dynamic>false</dynamic>
-    <expression>R:4b1f3713-3f0e-44eb-bc87-eab44d09c3d2 </expression>
+    <expression>G:administrators</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756632</id>
+    <id>273</id>
     <dynamic>false</dynamic>
-    <expression>R:3a140db6-4aea-4c22-beb2-7d41028e24d3 </expression>
+    <expression>*</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756636</id>
+    <id>4175</id>
     <dynamic>false</dynamic>
-    <expression>G:administrators </expression>
+    <expression>R:3a140db6-4aea-4c22-beb2-7d41028e24d3</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>491</id>
+    <id>490824</id>
     <dynamic>false</dynamic>
-    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+    <expression>G:1004 </expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>562854</id>
+    <id>264</id>
     <dynamic>false</dynamic>
-    <expression>* </expression>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756635</id>
-    <dynamic>false</dynamic>
-    <expression>G:groupception </expression>
-  </com.tle.beans.security.AccessExpression>
-  <com.tle.beans.security.AccessExpression>
-    <id>172</id>
+    <id>272</id>
     <dynamic>true</dynamic>
-    <expression>$OWNER </expression>
+    <expression>$OWNER</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756633</id>
+    <id>4174</id>
     <dynamic>false</dynamic>
-    <expression>G:uncool </expression>
+    <expression>R:4b1f3713-3f0e-44eb-bc87-eab44d09c3d2</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
-    <id>756638</id>
+    <id>490693</id>
     <dynamic>false</dynamic>
-    <expression>G:allthepeople </expression>
+    <expression>G:1002 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>490690</id>
+    <dynamic>false</dynamic>
+    <expression>G:1001 </expression>
   </com.tle.beans.security.AccessExpression>
 </list>

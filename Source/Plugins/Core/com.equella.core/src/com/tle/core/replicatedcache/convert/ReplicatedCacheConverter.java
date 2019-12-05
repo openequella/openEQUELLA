@@ -43,16 +43,12 @@ public class ReplicatedCacheConverter extends AbstractConverter<CachedValue> {
 
   @Override
   public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-      throws IOException {
-    // SHITBAG 1
-  }
+      throws IOException {}
 
   @Override
   public void doExport(
       TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-      throws IOException {
-    // SHITBAG 2
-  }
+      throws IOException {}
 
   @Override
   public String getStringId() {

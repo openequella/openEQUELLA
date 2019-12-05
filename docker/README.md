@@ -104,3 +104,18 @@ See https://github.com/equella/Equella#keystore for more details.
 ## Future
 
 For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/apereo/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.
+
+## Setup a local clustering environment of oEQ
+
+- From the root use SBT to build the installer;
+
+```
+sbt installerZip
+```
+
+- Copy the installer zip from `Equella/Installer/target` to the docker folder `Equella/docker`
+- Run `docker-compose up -d` from `Equella/docker`
+- Run docker-compose logs | grep 'ClusterMessagingServiceImpl' and you should expect to see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
+- Open `oeq.localhost/admin/` from a browser, go the oEQ Administer server page and then open Health check, you should expect to see a table which lists all node IDs
+- If you have a new oEQ installer, you can run `docker-compose up -d --force-recreate --build`
+- You can also specify the number of oEQ instance by running 'docker-compose up -d --scale oeq=3', here `oeq` is the service name defined in the yml file

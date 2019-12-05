@@ -36,7 +36,8 @@ public class UserDeletedOperation extends AbstractStandardWorkflowOperation // N
   @Override
   public boolean execute() {
     if (isOwner(user)) {
-      setOwner(""); // $NON-NLS-1$
+      setOwner("");
+      setLastOwner(user);
     }
     getItem().getCollaborators().remove(user);
     return true;

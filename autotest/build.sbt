@@ -62,16 +62,26 @@ installOptions := {
     dbport = db.getInt("port"),
     dbhost = db.getString("host"),
     dbuser = db.getString("user"),
-    dbpassword = db.getString("password")
+    dbpassword = db.getString("password"),
+    auditLevel = ic.getString("auditLevel")
   )
 }
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
 
 autotestInstallerZip := {
-  val bc = autotestBuildConfig.value
-  optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
-    (d * "equella-installer-*.zip").get.head))
+  val bc                    = autotestBuildConfig.value
+  val equellaFullVersion    = equellaVersion.value
+  val installerFileName     = s"equella-installer-${equellaFullVersion.semanticVersion}.zip"
+  val installerDirectory    = (target in LocalProject("Installer")).value
+  val installerAbsolutePath = installerDirectory / installerFileName
+  // If the Installer named as installerFileName exists then return it, otherwise returns the default Installer
+  if (installerAbsolutePath.exists) {
+    Some(installerAbsolutePath)
+  } else {
+    optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
+      (d * "equella-installer-*.zip").get.head))
+  }
 }
 
 sourceZip := optPath(autotestBuildConfig.value, "install.sourcezip")

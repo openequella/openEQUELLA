@@ -62,6 +62,8 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 
 @Bind
 public class RootThemeSection
@@ -89,6 +91,8 @@ public class RootThemeSection
   @Component private FileUpload upload;
   private JSAssignable validateFile;
 
+  private final String LEGACY_CSS = "legacy.css";
+
   @Override
   public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
@@ -107,8 +111,9 @@ public class RootThemeSection
   public void prepare(SectionContext context) throws IOException {
     RootCustomisationModel model = getModel(context);
     CustomisationFile baseCustomisations = new CustomisationFile();
-
-    FileEntry[] entries = fileSystemService.enumerate(baseCustomisations, "", null);
+    // Exclude 'legacy.css' as it's not a customer css file
+    NotFileFilter fileFilter = new NotFileFilter(new NameFileFilter(LEGACY_CSS));
+    FileEntry[] entries = fileSystemService.enumerate(baseCustomisations, "", fileFilter);
     model.setExistsCurrentTheme(entries.length > 0);
   }
 

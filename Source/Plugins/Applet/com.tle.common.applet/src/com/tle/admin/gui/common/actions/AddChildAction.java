@@ -25,7 +25,7 @@ import javax.swing.Action;
 public abstract class AddChildAction extends TLEAction {
   @SuppressWarnings("nls")
   public AddChildAction() {
-    setIcon("/icons/add.gif");
+    setIcon(AddChildAction.class, "add.png");
     putValue(
         Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.addchildaction.name"));
     putValue(

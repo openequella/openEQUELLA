@@ -25,7 +25,7 @@ import javax.swing.Action;
 @SuppressWarnings("nls")
 public abstract class RemoveAction extends TLEAction {
   public RemoveAction() {
-    setIcon(RemoveAction.class, "remove.gif");
+    setIcon(RemoveAction.class, "remove.png");
     putValue(Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.removeaction.name"));
     putValue(
         Action.SHORT_DESCRIPTION,

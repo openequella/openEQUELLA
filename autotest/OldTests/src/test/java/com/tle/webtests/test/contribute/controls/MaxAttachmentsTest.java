@@ -36,7 +36,7 @@ public class MaxAttachmentsTest extends AbstractCleanupAutoTest {
     wizard.save().finishInvalid(wizard);
     Assert.assertEquals(
         wizard.getErrorMessage(2),
-        "This attachment control is restricted to a max. of 2 attachments. Please remove 1 attachment(s).");
+        "This control is restricted to a maximum of 2 attachments. Please remove 1 attachment(s).");
     control.deleteResource(YOUTUBE_TITLE);
     wizard.save().publish();
   }

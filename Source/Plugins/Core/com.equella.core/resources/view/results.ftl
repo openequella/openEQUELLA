@@ -30,7 +30,7 @@
 		<@render s.cssInclude/>
 
 		<#if m.showResults>
-			<@a.div id="searchresults" class="searchresults area">
+			<@a.div id="searchresults" class="searchresults area ${m.searchResultCssClassName}">
 				<#if m.resultsAvailable>
 					<@render m.itemList/>
 					<@render s.paging.pager/>

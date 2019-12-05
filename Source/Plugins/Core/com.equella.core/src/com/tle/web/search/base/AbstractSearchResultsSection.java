@@ -256,6 +256,7 @@ public abstract class AbstractSearchResultsSection<
     if (resultTypeSelector != null && resultTypeSelector.size(context) > 1) {
       model.setShowResultSelection(true);
       model.setResultSelectionMenu(resultTypeSelector);
+      model.setSearchResultCssClassName(resultTypeSelector.getSelectedValueAsString(context));
     }
 
     model.setShowResults(showResults(context, searchEvent, resultsEvent));
@@ -392,6 +393,7 @@ public abstract class AbstractSearchResultsSection<
     private boolean showResultTypeSelection;
     private SingleSelectionList resultSelectionMenu;
     private String canonicalUrl;
+    private String searchResultCssClassName = "standard";
 
     public boolean isShowResultSelection() {
       return showResultTypeSelection;
@@ -527,6 +529,14 @@ public abstract class AbstractSearchResultsSection<
 
     public void setCanonicalUrl(String canonicalUrl) {
       this.canonicalUrl = canonicalUrl;
+    }
+
+    public String getSearchResultCssClassName() {
+      return searchResultCssClassName;
+    }
+
+    public void setSearchResultCssClassName(String searchResultCssClassName) {
+      this.searchResultCssClassName = searchResultCssClassName;
     }
   }
 

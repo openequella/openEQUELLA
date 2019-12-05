@@ -18,6 +18,7 @@
 
 package com.tle.core.taxonomy.datasource;
 
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.taxonomy.SelectionRestriction;
@@ -58,7 +59,11 @@ public interface TaxonomyDataSource {
    *     Mammalia/Felidae/Panthera.
    * @param termValue The term to be added, eg, Tiger.
    */
-  TermResult addTerm(String parentFullTermPath, String termValue, boolean createHierarchy);
+  TermResult addTerm(
+      String parentFullTermPath,
+      @Nullable String termUuid,
+      String termValue,
+      boolean createHierarchy);
 
   void validateTerm(String parentFullTermPath, String termValue, boolean requireParent)
       throws InvalidDataException;
