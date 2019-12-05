@@ -20,6 +20,8 @@
 @import "treenavctl.css";
 @import "moderate.css";
 @import "modcomments.css";
+@import "youtube.css";
+@import "taskaction.css";
 @import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
 
 @font-face {
@@ -336,7 +338,7 @@ select[multiple="multiple"] {
 .newListSelected {
   @include typography-body-1;
   padding-left: 8px;
-  min-width: 160px;
+  min-width: 204px;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
@@ -460,6 +462,12 @@ select[multiple="multiple"] {
 ul.select_options li {
   padding-top: 4px;
   padding-bottom: 4px;
+  input[disabled="disabled"] {
+    position: static;
+  }
+  label {
+    padding-left: 8px;
+  }
 }
 /*****************************************************************************
 Contribution wizard inputs
@@ -880,6 +888,14 @@ Generic layout
 
 #fancybox-inner {
   min-width: 320px;
+}
+
+#fancybox-wrap {
+  height: 100%;
+}
+
+#fancybox-outer {
+  height: auto;
 }
 
 #fancybox-inner button {
@@ -1467,9 +1483,12 @@ div.skinnysearch {
 
 #searchform .query-wrapper #querycontainer input[type="text"] {
   width: calc(100% - 14px);
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.42);
+  border-radius: 1em 0 0 1em;
+  padding-left: 8px;
+  background: none;
   border-right: none;
-  height: 17px;
-  border-bottom: 2px, $primaryTextColor;
 }
 
 #searchform .query-wrapper #querycontainer #q {
@@ -2146,7 +2165,7 @@ Contribution wizard styling
 #wizard-pagelist ul li.active {
   background: url(../images/rhs-nav-list-icon-dark.ltr.png) 0 0 no-repeat;
   :before {
-    content: "insert_drive_file";
+    content: "\e24d";
     font-family: "Material Icons";
     font-size: 20px;
     color: $menuItemIconColor;
@@ -2158,7 +2177,7 @@ Contribution wizard styling
 #wizard-pagelist ul li a {
   margin: 2px 0 0 0;
   &:before {
-    content: "insert_drive_file";
+    content: "\e24d";
     font-family: "Material Icons";
     font-size: 20px;
     color: $primaryColor;
@@ -2233,15 +2252,17 @@ Contribution wizard styling
 }
 
 .wizard-layout {
-  a.add {
-    &:before {
-      content: "add_circle";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $primaryColor;
-      vertical-align: middle;
-      padding-right: 8px;
-    }
+}
+
+a.add {
+  &:before {
+    content: "\e147";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $primaryColor;
+    vertical-align: middle;
+    padding-right: 8px;
+    padding-left: 8px;
   }
 }
 
@@ -2258,8 +2279,12 @@ Contribution wizard styling
   padding-left: 22px;
 }
 
-#moderateMessage textarea {
-  width: 100%;
+.taskactiondialog .modal-content {
+  height: auto;
+}
+
+.taskactiondialog .modal-content-inner {
+  min-height: 420px;
 }
 
 button + .repeater-groups {
@@ -2301,6 +2326,12 @@ button + .repeater-groups {
   opacity: 0;
 }
 
+.universalresourcedialog {
+  td {
+    cursor: pointer;
+  }
+}
+
 .customfile-feedback {
   background: none;
   padding-left: 4px;
@@ -2327,6 +2358,11 @@ button + .repeater-groups {
     padding-right: 8px;
     font-style: normal;
   }
+}
+
+.universalresourcedialog .pick-resource-type td.selected {
+  background: $primaryColor;
+  color: set-text-color($primaryColor);
 }
 
 .uploadsprogress .progress-bar {
@@ -2359,10 +2395,13 @@ button + .repeater-groups {
 }
 
 .settingRow .settingField {
-  width: fit-content;
+  width: 100%;
   padding-left: 26px;
 }
 
+.settingRow .settingLabel {
+  text-align: left;
+}
 .settingContainer {
   width: 452px;
   .editLinks {
@@ -2370,10 +2409,17 @@ button + .repeater-groups {
   }
 }
 
+.fileHandler {
+  .modal-content-inner {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+}
+
 .attachment-content {
   min-height: 340px;
   padding: 20px 25px;
-  width: 500px;
+  margin-right: 30px;
   h3 {
     @include typography-headline-6;
   }
@@ -2417,10 +2463,55 @@ button + .repeater-groups {
   }
 }
 
+//flickr
+.flickrHandler {
+}
+
+//youtube control
+#youtube-query {
+  div.input label {
+    display: none !important;
+  }
+  div.input {
+    padding: initial;
+  }
+  button {
+    background-color: $primaryColor;
+    color: set-text-color($primaryColor);
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-left: 8px;
+    .icon-search:before {
+      content: "\e8b6";
+      font-family: "Material Icons";
+      font-size: 24px;
+      color: set-text-color($primaryColor);
+      padding-right: 4px;
+      font-style: normal;
+      vertical-align: middle;
+    }
+  }
+  input[type="text"],
+  #youtube-query select {
+    width: 528px;
+  }
+}
+.modal-search-results {
+  p {
+    @include typography-body-1;
+  }
+  p.info.results {
+    background: none;
+    border: none;
+  }
+}
+
 //navigation viewer
 .addRemovePanel {
   button {
-    min-width: fit-content;
+    width: auto;
+    padding-left: 8px;
+    padding-right: 8px;
   }
   i.icon-plus {
     &:before {
@@ -2466,7 +2557,7 @@ button + .repeater-groups {
 
     a.add {
       &:before {
-        content: "add";
+        content: "\e145";
         font-family: "Material Icons";
         font-size: 24px;
         color: $secondaryColor;
@@ -2904,9 +2995,22 @@ table.versions td {
 }
 
 .comment-form textarea {
-  border: 1px solid #8f8b7f;
   height: 80px;
   width: 99%;
+  border: 1px solid #f5f5f5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  border-radius: 4px 4px 0 0;
+  background-color: #f5f5f5;
+  height: 56px;
+
+  &:hover {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.42);
+  }
+
+  &:focus {
+    border-bottom: 2px solid $primaryColor;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 }
 
 .comment-form button {
