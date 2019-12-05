@@ -2570,7 +2570,7 @@ button + .repeater-groups {
     a.viewterm {
       padding-left: 0px;
       &:before {
-        content: "remove_red_eye";
+        content: "\e417";
         font-family: "Material Icons";
         font-size: 24px;
         color: $secondaryColor;
@@ -2600,7 +2600,7 @@ ul.treeview {
 
   li.collapsable {
     a.hitarea:before {
-      content: "arrow_drop_down";
+      content: "\e313";
       font-family: "Material Icons";
       font-size: 24px;
       color: $menuItemIconColor;
@@ -2612,7 +2612,7 @@ ul.treeview {
 
   li.expandable {
     a.hitarea:before {
-      content: "arrow_right";
+      content: "\e315";
       font-family: "Material Icons";
       font-size: 24px;
       color: $menuItemIconColor;
@@ -2635,7 +2635,7 @@ ul.treeview {
 a.unselect {
   background: none;
   &:before {
-    content: "delete";
+    content: "\e872";
     font-family: "Material Icons";
     font-size: 24px;
     color: $menuItemIconColor;
