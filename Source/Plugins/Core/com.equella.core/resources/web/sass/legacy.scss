@@ -2563,12 +2563,10 @@ img.warningimg {
   height: 40px;
   border-bottom: 2px solid $primaryColor;
   background-color: white;
-}
-
-#selection-header-content {
   position: fixed;
   margin: 0 auto;
   z-index: 1000;
+  width: 100%;
 }
 
 #selection-header-content .logo {
