@@ -1553,13 +1553,6 @@ Expandable button
   margin-right: 3px;
 }
 
-/* Firefox3-specific CSS property for expandable button icon position*/
-@-moz-document url-prefix() {
-  .button-expandable i {
-    margin-left: 6px;
-  }
-}
-
 .button-expandable:hover {
   width: auto;
   /* Transition */
