@@ -9,6 +9,7 @@ import com.tle.common.PathUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
   private static final String TERM_1_UUID = "abbd2610-1c3e-489a-a107-1c16fa22b0a0";
   private static final String API_TAXONOMY_PATH = "api/taxonomy";
   private static final String API_TERM_PATH_PART = "term";
+  private static final String API_TERM_DATA_PATH_PART = "data";
   private static final String ROOT_NODE_NAME = "root";
 
   @Override
@@ -410,6 +412,27 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     return result;
   }
 
+  @Test
+  public void testAddDatum() throws IOException {
+    final String taxUuid = UUID.randomUUID().toString();
+    createTaxononmy(taxUuid, "Datum test");
+
+    final String termUuid = UUID.randomUUID().toString();
+    createTerm(taxUuid, termUuid, "TEST");
+
+    final String TEST_KEY = "This is a key";
+    final String TEST_VALUE = "This is a value";
+    final String datumLoc = addDatum(taxUuid, termUuid, TEST_KEY, TEST_VALUE);
+
+    final ObjectNode result = (ObjectNode) getEntity(datumLoc, getToken());
+    assertEquals(result.get(TEST_KEY).asText(), TEST_VALUE);
+
+    // Future tests:
+    // Add another data
+    // Call get all data
+    // Check all keys and values
+  }
+
   private void createTaxononmy(String uuid, String name) throws IOException {
     final String uri = PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH);
     final ObjectNode jsonObj = mapper.createObjectNode();
@@ -446,6 +469,30 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final String jsonStr = jsonObj.toString();
     final HttpResponse response = postEntity(jsonStr, uri, getToken(), true);
     assertResponse(response, 201, "failed to create term");
+    return response.getFirstHeader("Location").getValue();
+  }
+
+  private String addDatum(String taxonomyUuid, String termUuid, String key, String value)
+      throws IOException {
+    return addDatum(taxonomyUuid, termUuid, key, value, true);
+  }
+
+  private String addDatum(
+      String taxonomyUuid, String termUuid, String key, String value, boolean create)
+      throws IOException {
+    final String uri =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            taxonomyUuid,
+            API_TERM_PATH_PART,
+            termUuid,
+            API_TERM_DATA_PATH_PART,
+            URLEncoder.encode(key, "utf-8").replace("+", "%20"),
+            URLEncoder.encode(value, "utf-8").replace("+", "%20"));
+
+    final HttpResponse response = putEntity(null, uri, getToken(), true);
+    assertResponse(response, create ? 201 : 200, "failed to create term data");
     return response.getFirstHeader("Location").getValue();
   }
 
