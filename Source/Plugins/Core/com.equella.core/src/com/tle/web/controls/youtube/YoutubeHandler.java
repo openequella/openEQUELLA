@@ -275,7 +275,7 @@ public class YoutubeHandler
               VideoSnippet vidInfo = video.getSnippet();
 
               final String title = vidInfo.getTitle();
-              String href = "//www.youtube.com/v/" + videoId;
+              String href = "//www.youtube.com/watch?v=" + videoId;
               final LinkRenderer titleLink =
                   new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
               titleLink.setLabel(new TextLabel(title));
@@ -388,7 +388,7 @@ public class YoutubeHandler
       a.setData(YoutubeUtils.PROPERTY_THUMB_URL, defaultThumb.getUrl());
       a.setThumbnail(defaultThumb.getUrl());
 
-      a.setData(YoutubeUtils.PROPERTY_PLAY_URL, "//www.youtube.com/v/" + v.getId());
+      a.setData(YoutubeUtils.PROPERTY_PLAY_URL, "//www.youtube.com/watch?v=" + v.getId());
 
       a.setData(YoutubeUtils.PROPERTY_ID, v.getId());
       a.setData(YoutubeUtils.PROPERTY_DURATION, v.getContentDetails().getDuration());
