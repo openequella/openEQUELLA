@@ -25,8 +25,10 @@
 @import "modcomments.css";
 @import "youtube.css";
 @import "taskaction.css";
-@import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
-
+@import "remotecaching.css";
+@import "contentrestrictions.css";
+@import "adduserandquota.css";
+@import "selector.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -959,13 +961,46 @@ Generic layout
 }
 
 .button-strip {
-  text-align: right;
+  display: flex;
+  flex-direction: row-reverse;
   padding: 8px;
+  .btn {
+    margin-right: 8px;
+  }
+}
+
+.CodeMirror {
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  color: black;
 }
 
 /*****************************************************************************
- Generic Dialog Styling
+Settings page styling
 *****************************************************************************/
+
+div.leftPanel {
+  width: 50%;
+}
+
+div.rightPanel {
+  width: 40%;
+}
+
+.settingContainer.wide {
+  width: 100%;
+}
+
+//recipient selector
+.modal-content-inner #right-cloumn {
+  width: 43%;
+}
+
+/*****************************************************************************
+   Generic Dialog Styling
+  *****************************************************************************/
 div[class*="fancy-bg"] {
   display: none;
 }
