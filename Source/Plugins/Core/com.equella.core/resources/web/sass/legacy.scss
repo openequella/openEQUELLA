@@ -27,7 +27,6 @@
 @import "taskaction.css";
 @import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
 
-
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -1934,6 +1933,46 @@ ul.ui-autocomplete {
       }
     }
   }
+}
+
+//video/image gallery
+.searchresults.area.gallery {
+  @import "gallerylist.css";
+}
+
+.searchresults.area.video {
+  @import "videolist.css";
+}
+
+.searchresults.area.gallery div.gallery-preview {
+  z-index: 9999;
+}
+
+.icon-comment:before {
+  content: "\e253";
+  font-family: "Material Icons";
+  font-size: 16px;
+  color: white;
+  font-style: normal;
+  vertical-align: middle;
+}
+
+.icon-picture:before {
+  content: "\e40b";
+  font-family: "Material Icons";
+  font-size: 16px;
+  color: white;
+  font-style: normal;
+  vertical-align: middle;
+}
+
+.icon-th-list:before {
+  content: "\e335";
+  font-family: "Material Icons";
+  font-size: 16px;
+  color: white;
+  font-style: normal;
+  vertical-align: middle;
 }
 
 //*** css/itemlist.css
