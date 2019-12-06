@@ -25,7 +25,14 @@
 @import "modcomments.css";
 @import "youtube.css";
 @import "taskaction.css";
+@import "bulkresults.css";
+@import "bulkscript.css";
+@import "editmetadata.css";
+@import "rollover.css";
+@import "selectionreview.css";
+@import "select2.min.css";
 @import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
+@import "../js/codemirror/lib/codemirror.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -852,6 +859,10 @@ Generic layout
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
+.area .indent {
+  padding: 0 0 0 16px;
+}
+
 #mainDiv .dashboard #topwide {
   width: auto;
 }
@@ -913,6 +924,10 @@ Generic layout
 #fancybox-inner button {
   background-color: transparent;
   color: $primaryColor;
+  &.validate {
+    background-color: $primaryColor;
+    color: set-text-color($primaryColor);
+  }
 }
 
 #mainDiv #content-body {
@@ -1408,6 +1423,11 @@ Search page
 .searchresults-header,
 .repo-onecol .searchresults-header,
 .search-layout .searchresults-header {
+  span {
+    @include typography-headline-6;
+    top: -32px;
+    position: absolute;
+  }
   position: relative;
   border-bottom: none;
   background-color: transparent;
@@ -2045,10 +2065,7 @@ html.wait {
 
 .itemresult-content p {
   margin: 5px 0;
-  font-size: 11px;
-  line-height: 14px;
-  word-wrap: break-word;
-  white-space: normal;
+  @include typography-subtitle-2;
 }
 
 .itemresult-meta {
@@ -2098,6 +2115,7 @@ html.wait {
 
 .itemresult-rating .rating-bar {
   border: none;
+  height: 22px;
 }
 
 .itemresult-rating div.float-right {
@@ -2177,6 +2195,100 @@ html.wait {
     margin: 0 4px;
     list-style-type: none;
     text-transform: capitalize;
+  }
+}
+
+//management pages
+.page-layout-menu-full {
+  .action-button.execute-action {
+    background-image: url("../../images/baseline_check_white_18dp.png");
+  }
+}
+
+.page-layout-menu-full {
+  .search-layout {
+    #col2 {
+      width: auto;
+    }
+  }
+}
+
+.itemadmin-page {
+  .area {
+    width: 100%;
+  }
+}
+
+.itemresult img.cornerimage {
+  padding-top: 36px;
+}
+
+.itemresult-container.selected {
+  background-color: transparentize($primaryColor, 0.9);
+}
+
+.newListSelected.bulkactions {
+  width: 100% !important;
+  .onBottom {
+    width: 100% !important;
+    z-index: 1000;
+  }
+  td {
+    cursor: pointer;
+  }
+}
+
+#bulkresults_inner {
+  textarea {
+    width: 100%;
+  }
+  width: 492px;
+}
+
+#bulkresults_container {
+  height: 100%;
+}
+
+#bss_bulkDialog {
+  .modal-footer-inner {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  height: 600px;
+}
+
+#bss_bulkDialogfooter {
+  margin-top: 30px;
+}
+
+input.term-paths {
+  width: 516px;
+  position: fixed;
+}
+
+.itemresult-rating div.float-right {
+  .btn {
+    margin: 0 8px;
+  }
+}
+.box_content_inner {
+  .blue {
+    li {
+      padding-bottom: 4px;
+      padding-top: 4px;
+      padding-left: 4px;
+    }
+  }
+}
+td.unselect a {
+  &:before {
+    content: "\e872";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+    padding-right: 8px;
+    font-style: normal;
   }
 }
 
@@ -2358,6 +2470,10 @@ button + .repeater-groups {
 }
 
 // Attachment control
+.fileAdd {
+  width: 100%;
+}
+
 .filedrop {
   border: 3px dotted #ccc;
   padding-top: 45px;
@@ -2575,17 +2691,41 @@ button + .repeater-groups {
       font-style: normal;
     }
   }
+}
 
-  i.icon-remove {
-    &:before {
-      content: "\e872";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
-      vertical-align: top;
-      padding-right: 4px;
-      font-style: normal;
-    }
+i.icon-remove {
+  &:before {
+    content: "\e872";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: set-text-color($primaryColor);
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
+  }
+}
+
+i.icon-pencil {
+  &:before {
+    content: "\e3c9";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: set-text-color($primaryColor);
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
+  }
+}
+
+i.icon-ban-circle {
+  &:before {
+    content: "\e15b";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: set-text-color($primaryColor);
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
   }
 }
 
@@ -2759,7 +2899,7 @@ Item summary styling
   background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
-.save {
+.wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
@@ -3127,6 +3267,21 @@ td.sectionAttachment a {
 
 td.sectionAction {
   width: 60px;
+}
+
+.settingContainer.skinny {
+  width: 100%;
+  .button-strip {
+    display: flex;
+    flex-direction: row-reverse;
+    button {
+      margin: 0 8px;
+      &.btn-equella {
+        background-color: transparent;
+        color: $primaryColor;
+      }
+    }
+  }
 }
 
 div.selection #copyright-table td.sectionAction {
