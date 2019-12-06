@@ -2165,6 +2165,20 @@ html.wait {
   }
 }
 
+.page-layout-menu-full {
+  .search-layout {
+    #col2 {
+      width: auto;
+    }
+  }
+}
+
+.itemadmin-page {
+  .area {
+    width: 100%;
+  }
+}
+
 .itemresult img.cornerimage {
   padding-top: 36px;
 }
@@ -2845,7 +2859,7 @@ Item summary styling
   background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
-.save {
+.wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
