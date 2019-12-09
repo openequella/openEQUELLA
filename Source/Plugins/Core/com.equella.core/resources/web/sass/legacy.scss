@@ -31,6 +31,7 @@
 @import "selector.css";
 @import "select2.css";
 @import "schedulersettings.css";
+@import "schedulersettings.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -502,6 +503,10 @@ ul.select_options li {
     input {
       width: 80% !important;
     }
+    input[type="radio"] {
+      width: auto !important;
+      top: 9px;
+    }
   }
 }
 
@@ -879,6 +884,10 @@ div.error-receipt ul li {
   clear: both;
 }
 
+.indent {
+  padding-left: 60px;
+}
+
 /*****************************************************************************
 Generic layout
 *****************************************************************************/
@@ -972,7 +981,6 @@ Generic layout
 #mainDiv #col1,
 #mainDiv #col {
   flex-grow: 1;
-  width: auto;
   float: none;
 }
 
