@@ -31,7 +31,7 @@
 @import "selector.css";
 @import "select2.css";
 @import "schedulersettings.css";
-@import "schedulersettings.css";
+@import "settings/searchsettings.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -1089,6 +1089,9 @@ div.rightPanel {
   }
 }
 
+#title-slider label {
+  margin-top: 15px;
+}
 /*****************************************************************************
    Generic Dialog Styling
   *****************************************************************************/
