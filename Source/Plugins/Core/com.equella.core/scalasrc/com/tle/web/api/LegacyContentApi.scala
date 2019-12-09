@@ -80,6 +80,7 @@ case class MenuItem(title: String,
                     newWindow: Boolean)
 
 case class LegacyContent(html: Map[String, String],
+                         css: Option[Iterable[String]],
                          js: Iterable[String],
                          script: String,
                          state: Map[String, Array[String]],
@@ -503,8 +504,9 @@ class LegacyContentApi {
             JQueryCore.JQUERY,
             new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
 
-      val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
-      val jsFiles = context.getJsFiles.asScala
+      val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
+      val jsFiles  = context.getJsFiles.asScala
+      val cssFiles = loadCss(context)
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
@@ -515,6 +517,7 @@ class LegacyContentApi {
         LegacyContentKey,
         LegacyContent(
           html,
+          cssFiles,
           jsFiles,
           scripts.mkString("\n"),
           getBookmarkState(info, new BookmarkEvent(null, true, info)),
@@ -527,6 +530,21 @@ class LegacyContentApi {
           decs.isExcludeForm
         )
       )
+    }
+  }
+
+  def loadCss(context: StandardRenderContext): Option[Iterable[String]] = {
+    val uri = context.getRequest.getRequestURI
+    // Below three pages don't need 'legacy.css' so load CSS from server side
+    val pagePattern = ".+/(apidocs|editoradmin|reports)\\.do".r
+
+    uri match {
+      case pagePattern(_) =>
+        val cssIncludes = context.getCssFiles.asScala.collect {
+          case css: CssInclude => css.getHref(context)
+        }
+        Option(cssIncludes)
+      case _ => None
     }
   }
 
