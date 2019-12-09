@@ -1618,8 +1618,11 @@ div.skinnysearch {
 }
 
 #searchform-search {
-  height: 34px;
+  height: 38px;
   padding-left: 8px;
+  border-radius: 0px 20px 20px 0px;
+  height: 38px;
+  margin-left: -6px;
 }
 
 #searchform .query-wrapper #querycontainer input[type="text"] {
