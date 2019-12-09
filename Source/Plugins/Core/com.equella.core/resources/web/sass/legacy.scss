@@ -31,7 +31,7 @@
 @import "selector.css";
 @import "select2.css";
 @import "schedulersettings.css";
-@import "settings/searchsettings.css";
+@import "ipaddress.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -346,7 +346,6 @@ select[multiple="multiple"] {
   }
 }
 .calendar {
-  display: flex;
   padding-top: 4px;
   img {
     padding-left: 4px;
@@ -466,6 +465,7 @@ select[multiple="multiple"] {
 }
 
 .input {
+  padding-top: 8px;
   label {
     padding-right: 8px;
     padding-left: 4px;
@@ -1092,6 +1092,7 @@ div.rightPanel {
 #title-slider label {
   margin-top: 15px;
 }
+
 /*****************************************************************************
    Generic Dialog Styling
   *****************************************************************************/
@@ -1959,7 +1960,20 @@ ul.ui-autocomplete {
   input {
     background-color: set-text-color($primaryColor);
   }
-
+  .input {
+    width: 230px;
+  }
+  .newListSelected {
+    margin-bottom: 8px;
+  }
+  hr {
+    height: 0;
+    border: none;
+    border-top: 1px solid #98927c;
+    border-bottom: 1px solid #fdfdfd;
+    clear: both;
+    margin: 15px 0;
+  }
   .btn {
     border: 1px solid set-text-color($primaryColor);
     background-color: transparent;
