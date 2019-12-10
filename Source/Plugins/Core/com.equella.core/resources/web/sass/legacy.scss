@@ -33,6 +33,13 @@
 @import "select2.min.css";
 @import "../scripts/tinymce/themes/advanced/skins/tle/content.css";
 @import "../js/codemirror/lib/codemirror.css";
+@import "remotecaching.css";
+@import "contentrestrictions.css";
+@import "adduserandquota.css";
+@import "selector.css";
+@import "select2.css";
+@import "schedulersettings.css";
+@import "ipaddress.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -347,7 +354,6 @@ select[multiple="multiple"] {
   }
 }
 .calendar {
-  display: flex;
   padding-top: 4px;
   img {
     padding-left: 4px;
@@ -467,6 +473,7 @@ select[multiple="multiple"] {
 }
 
 .input {
+  padding-top: 8px;
   label {
     padding-right: 8px;
     padding-left: 4px;
@@ -487,6 +494,43 @@ ul.select_options li {
     padding-left: 8px;
   }
 }
+
+.modal {
+  .resultlist {
+    width: auto;
+  }
+
+  .modal-search-result {
+    background: transparent;
+    li {
+      width: 100% !important;
+    }
+  }
+
+  .selectgroup {
+    input {
+      width: 80% !important;
+    }
+    input[type="radio"] {
+      width: auto !important;
+      top: 9px;
+    }
+  }
+}
+
+#bss_bulkDialog {
+  .settingContainer {
+    width: 515px;
+  }
+  .bulkactions {
+    width: 515px !important;
+  }
+
+  .settingRow .settingField {
+    width: auto;
+  }
+}
+
 /*****************************************************************************
 Contribution wizard inputs
 *****************************************************************************/
@@ -848,6 +892,10 @@ div.error-receipt ul li {
   clear: both;
 }
 
+.indent {
+  padding-left: 60px;
+}
+
 /*****************************************************************************
 Generic layout
 *****************************************************************************/
@@ -949,7 +997,6 @@ Generic layout
 #mainDiv #col1,
 #mainDiv #col {
   flex-grow: 1;
-  width: auto;
   float: none;
 }
 
@@ -973,13 +1020,98 @@ Generic layout
 }
 
 .button-strip {
-  text-align: right;
+  display: flex;
+  flex-direction: row-reverse;
   padding: 8px;
+  .btn {
+    margin-right: 8px;
+  }
+}
+
+.CodeMirror {
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  color: black;
 }
 
 /*****************************************************************************
- Generic Dialog Styling
+Settings page styling
 *****************************************************************************/
+
+div.leftPanel {
+  width: 50%;
+}
+
+div.rightPanel {
+  width: 40%;
+}
+
+.settingContainer.wide {
+  width: 100%;
+}
+
+//recipient selector
+.modal-content-inner #right-cloumn {
+  width: 43%;
+}
+
+.settingField input[type="text"].hasDatepicker {
+  width: 200px !important;
+}
+
+.area {
+  .settingContainer {
+    input [type="text"] {
+      width: 100% !important;
+    }
+  }
+
+  .control {
+    li {
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+  }
+
+  .checkbox {
+    :first-child {
+      padding-top: 8px;
+    }
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .customfile {
+    width: 400px;
+  }
+}
+
+.checklist {
+  li {
+    padding-bottom: 8px;
+  }
+}
+
+.mimeexttemplate {
+  width: 100%;
+}
+
+.extension-buttons {
+  button {
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+#title-slider label {
+  margin-top: 15px;
+}
+
+/*****************************************************************************
+   Generic Dialog Styling
+  *****************************************************************************/
 div[class*="fancy-bg"] {
   display: none;
 }
@@ -1511,8 +1643,11 @@ div.skinnysearch {
 }
 
 #searchform-search {
-  height: 34px;
+  height: 38px;
   padding-left: 8px;
+  border-radius: 0px 20px 20px 0px;
+  height: 38px;
+  margin-left: -6px;
 }
 
 #searchform .query-wrapper #querycontainer input[type="text"] {
@@ -1846,7 +1981,20 @@ ul.ui-autocomplete {
   input {
     background-color: set-text-color($primaryColor);
   }
-
+  .input {
+    width: 230px;
+  }
+  .newListSelected {
+    margin-bottom: 8px;
+  }
+  hr {
+    height: 0;
+    border: none;
+    border-top: 1px solid #98927c;
+    border-bottom: 1px solid #fdfdfd;
+    clear: both;
+    margin: 15px 0;
+  }
   .btn {
     border: 1px solid set-text-color($primaryColor);
     background-color: transparent;
@@ -2127,7 +2275,7 @@ html.wait {
 
 .itemresult-rating div.float-right .btn {
   margin-left: 0 !important;
-  margin-right: 0;
+  margin-right: 4px;
   vertical-align: middle;
   border-radius: 0;
 }
@@ -2562,18 +2710,24 @@ button + .repeater-groups {
 }
 
 .settingRow .settingField {
-  width: 100%;
+  width: auto;
   padding-left: 26px;
 }
 
 .settingRow .settingLabel {
   text-align: left;
+  width: 266px;
 }
 .settingContainer {
-  width: 452px;
+  width: 100%;
   .editLinks {
     padding-top: 8px;
   }
+}
+
+.spacer {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .fileHandler {
@@ -2901,6 +3055,10 @@ Item summary styling
 
 .wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
+}
+
+.add-mime {
+  background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
 .itemsummary-layout hr {
@@ -4007,6 +4165,7 @@ div#sssh_finishedButton {
   padding-top: 8px;
   .btn {
     float: right;
+    margin-left: 4px;
   }
 }
 
@@ -4275,4 +4434,139 @@ div#sssh_finishedButton {
 
 #selection-content-inner.wizard-layout .indent3 .shuffle-box-inner label {
   width: 193px;
+}
+
+/*****************************************************************************
+Login Notice Formatting
+*****************************************************************************/
+#loginNotice p {
+  font-family: "Arial", "georgia", "impact", "Tahoma", "Times", "Verdana",
+    monospace;
+}
+#loginNotice ins {
+  text-decoration: underline;
+}
+
+#loginNotice code {
+  font-family: "Courier New", monospace;
+  line-height: 100%;
+  background-color: #d1d1d0;
+  word-break: normal;
+}
+
+#loginNotice pre {
+  background-color: #d1d1d0;
+  overflow: auto;
+  font-family: "Courier New", monospace;
+  padding: 1em 1em;
+}
+
+#loginNotice sup {
+  position: relative;
+  top: -0.5em;
+  font-size: 80%;
+}
+
+#loginNotice sub {
+  position: relative;
+  bottom: -0.5em;
+  font-size: 80%;
+}
+
+#loginNotice h1 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 39px;
+  font-weight: bold;
+}
+
+#loginNotice h2 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 29px;
+  font-weight: bold;
+}
+
+#loginNotice h3 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+#loginNotice h4 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#loginNotice h5 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+#loginNotice h6 {
+  margin: initial;
+  color: initial;
+  line-height: 2;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#loginNotice blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  font-style: italic;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+#loginNotice blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+#loginNotice blockquote p {
+  display: inline;
+}
+
+#loginNotice ol {
+  list-style: decimal outside;
+  margin-left: 10px;
+  margin-bottom: unset;
+  margin-right: unset;
+  margin-top: unset;
+}
+
+#loginNotice ul {
+  list-style: disc;
+  margin-left: 5px;
+  padding: unset;
+}
+
+#loginNotice iframe {
+  width: 560px;
+  height: 314px;
+}
+
+#loginNotice li {
+  font-size: 12px;
+  line-height: 2;
+}
+
+#loginNotice ol li {
+  margin: unset;
 }
