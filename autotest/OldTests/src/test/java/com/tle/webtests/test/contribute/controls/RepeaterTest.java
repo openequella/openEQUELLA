@@ -30,7 +30,7 @@ public class RepeaterTest extends AbstractWizardControlsTest {
     wizardPage.setCheckAppear(2, "true", true, 3);
 
     RepeaterControl repeater = wizardPage.repeater(3);
-    Assert.assertEquals(repeater.getAddNoun(), "Thing");
+    Assert.assertTrue(repeater.getAddNoun().equalsIgnoreCase("Thing"));
     repeater.remove(1);
     repeater.remove(0);
     assertTrue(repeater.isShowingMinError(), "Should be an min error message");
