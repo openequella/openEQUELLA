@@ -7,7 +7,9 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.viewitem.PreviewItemDialog;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends AbstractPage<T> {
 
@@ -40,10 +42,13 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
           "//input[contains(@class, 'action-button') and normalize-space(@value)="
               + quoteXPath(command)
               + "]";
+
     } else {
       xpath = "//div[@id='wizard-actions']/a[normalize-space(text())=" + quoteXPath(command) + "]";
     }
     WebElement elem = driver.findElement(By.xpath(xpath));
+    ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
+    waiter.until(ExpectedConditions.elementToBeClickable(elem));
     elem.click();
   }
 
