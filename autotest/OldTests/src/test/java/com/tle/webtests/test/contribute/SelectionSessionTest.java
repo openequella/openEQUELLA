@@ -228,11 +228,11 @@ public class SelectionSessionTest extends AbstractCleanupTest {
     SelectionSession session = itp.clickPostToUrlButton(new SelectionSession(context));
     List<WebElement> topLinkMenu = session.getTopLinkMenu();
     assertEquals(topLinkMenu.size(), 5);
-    assertEquals(topLinkMenu.get(0).getText(), "Search");
-    assertEquals(topLinkMenu.get(1).getText(), "Browse");
-    assertEquals(topLinkMenu.get(2).getText(), "Favourites");
-    assertEquals(topLinkMenu.get(3).getText(), "My resources");
-    assertEquals(topLinkMenu.get(4).getText(), "Contribute");
+    assertTrue(topLinkMenu.get(0).getText().equalsIgnoreCase("Search"));
+    assertTrue(topLinkMenu.get(1).getText().equalsIgnoreCase("Browse"));
+    assertTrue(topLinkMenu.get(2).getText().equalsIgnoreCase("Favourites"));
+    assertTrue(topLinkMenu.get(3).getText().equalsIgnoreCase("My resources"));
+    assertTrue(topLinkMenu.get(4).getText().equalsIgnoreCase("Contribute"));
   }
 
   @Override
