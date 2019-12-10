@@ -34,12 +34,12 @@ public class WizardConfigTest extends AbstractSessionTest {
     assertTrue(wizardPage.hasPage("Attachments", false));
 
     // Check button text Next and Prev
-    assertEquals(wizardPage.getNextButtonText(), "Next");
+    assertTrue(wizardPage.getNextButtonText().equalsIgnoreCase("Next"));
     wizardPage.next();
-    assertEquals(wizardPage.getPrevButtonText(), "Prev");
-    assertEquals(wizardPage.getNextButtonText(), "Next");
+    assertTrue(wizardPage.getPrevButtonText().equalsIgnoreCase("Prev"));
+    assertTrue(wizardPage.getNextButtonText().equalsIgnoreCase("Next"));
     wizardPage.next();
-    assertEquals(wizardPage.getPrevButtonText(), "Prev");
+    assertTrue(wizardPage.getPrevButtonText().equalsIgnoreCase("Prev"));
 
     assertTrue(
         wizardPage.hasPage("Name", true)
@@ -63,12 +63,12 @@ public class WizardConfigTest extends AbstractSessionTest {
     assertPages(wizardPage, pages, true);
 
     // Check button text
-    assertEquals(wizardPage.getNextButtonText(), "Description");
+    assertTrue(wizardPage.getNextButtonText().equalsIgnoreCase("Description"));
     wizardPage.next();
-    assertEquals(wizardPage.getPrevButtonText(), "Name");
-    assertEquals(wizardPage.getNextButtonText(), "Attachments");
+    assertTrue(wizardPage.getPrevButtonText().equalsIgnoreCase("Name"));
+    assertTrue(wizardPage.getNextButtonText().equalsIgnoreCase("Attachments"));
     wizardPage.next();
-    assertEquals(wizardPage.getPrevButtonText(), "Description");
+    assertTrue(wizardPage.getPrevButtonText().equalsIgnoreCase("Description"));
 
     wizardPage.cancel(contribPage);
   }
