@@ -2928,6 +2928,18 @@ i.icon-ban-circle {
   }
 }
 
+i.icon-minus {
+  &:before {
+    content: "\e15b";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: set-text-color($primaryColor);
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
+  }
+}
+
 //Term browser
 .popupbrowserdialog #termChooser {
   border-right: 1px solid #e8e8e8;
@@ -4245,7 +4257,7 @@ div#sssh_finishedButton {
  Structured search page
 *****************************************************************************/
 #selection-content-inner.search-layout .mainCols #col2 {
-  display: none;
+  width: auto;
 }
 
 .selection-courses-inner .folder.rootfolder {
