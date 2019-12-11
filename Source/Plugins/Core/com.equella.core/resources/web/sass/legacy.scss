@@ -930,7 +930,7 @@ Generic layout
 }
 
 #mainDiv #selection-content-inner {
-  padding: 48px 17px 0;
+  padding: 0px 17px 0;
   display: flex;
 }
 
@@ -2663,7 +2663,7 @@ button + .repeater-groups {
 }
 
 // Attachment control
-.fileAdd {
+.fileadd {
   width: 100%;
 }
 
@@ -4085,6 +4085,7 @@ div#sssh_finishedButton {
   display: flex;
   align-content: space-around;
   justify-content: center;
+  padding-top: 10px;
 }
 
 #selection-header
@@ -4215,7 +4216,18 @@ div#sssh_finishedButton {
 }
 
 #helpAndOptions {
-  display: none;
+  padding-top: 50px;
+  float: right;
+  width: 100%;
+  #button-bar {
+    float: right;
+  }
+
+  .btn {
+    border: none;
+    background-color: transparent;
+    color: $primaryColor;
+  }
 }
 
 .icon-plus:before {
