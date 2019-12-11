@@ -241,6 +241,5 @@ public class ItemAdminPage
     ReceiptPage.waiter(
             "Successfully added this search to your favourites", dialog.favourite(searchName, this))
         .get();
-    ReceiptPage.dismiss(waiter);
   }
 }

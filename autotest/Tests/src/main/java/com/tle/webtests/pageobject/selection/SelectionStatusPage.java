@@ -22,6 +22,7 @@ public class SelectionStatusPage extends AbstractPage<SelectionStatusPage> {
   }
 
   public SelectionCheckoutPage finishSelections() {
+    scrollToElement(finishedButton);
     finishedButton.click();
     return new SelectionCheckoutPage(context).get();
   }
