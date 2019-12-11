@@ -1125,6 +1125,47 @@ div.rightPanel {
   padding-top: 20px;
 }
 
+//scripted portlet
+.load-action {
+  .dropdown-toggle {
+    b:before {
+      content: "\e313";
+      font-family: "Material Icons";
+      font-size: 16px;
+      color: white;
+      font-style: normal;
+      vertical-align: middle;
+    }
+    color: set-text-color($primaryColor);
+    min-width: 1px;
+    margin-left: 2px;
+  }
+  .dropdown-menu {
+    display: none;
+  }
+  &.open {
+    .dropdown-menu {
+      display: block;
+      border: 1px solid rgba(0, 0, 0, 0.42);
+      width: 244px;
+      padding: 8px;
+      li {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        :hover {
+          background-color: rgba(224, 224, 224, 1);
+          color: set-text-color(white);
+        }
+      }
+    }
+  }
+}
+
+div.load-action button.dropdown-toggle {
+  top: 134px;
+  right: 30px;
+}
+
 /*****************************************************************************
    Generic Dialog Styling
   *****************************************************************************/
