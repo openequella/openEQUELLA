@@ -1207,9 +1207,10 @@ div[class*="fancy-bg"] {
 
 .modal-content-inner {
   padding: 0 18px 15px;
-  .select2-container {
-    z-index: 9999;
-  }
+}
+
+.select2-container {
+  z-index: 9999;
 }
 
 .modal-title h3 {
@@ -1823,6 +1824,11 @@ div.skinnysearch {
   padding-bottom: 5px;
   @include typography-body-1;
   background: url(../../images/select-down.png) right 12px no-repeat #fff;
+}
+#searchresults-actions {
+  .select2-container {
+    z-index: auto;
+  }
 }
 
 .ui-autocomplete li {
