@@ -505,7 +505,7 @@ public abstract class AbstractPage<T extends PageObject>
     }
   }
 
-  protected void scrollToElement(WebElement el) {
+  public void scrollToElement(WebElement el) {
     if (driver instanceof JavascriptExecutor) {
       ((JavascriptExecutor) driver)
           .executeScript("arguments[0].scrollIntoView({block:'center'});", el);

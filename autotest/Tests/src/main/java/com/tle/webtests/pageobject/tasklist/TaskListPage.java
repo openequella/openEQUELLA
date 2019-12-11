@@ -68,6 +68,7 @@ public class TaskListPage
 
   public TaskListPage clearFilters() {
     WaitingPageObject<ModerateListSearchResults> waiter = resultsPageObject.getUpdateWaiter();
+    scrollToElement(clearFilters);
     clearFilters.click();
     return waitForResultsReload(waiter);
   }
