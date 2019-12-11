@@ -35,6 +35,7 @@ public class AutoCompleteTermResults extends AbstractPage<AutoCompleteTermResult
   public AutoCompleteTermControl selectByIndex(int number) {
     WebElement listElem = waitForElement(rootUl, By.xpath("li[" + number + "]/a/.."));
     waiter.until(ExpectedConditions.elementToBeClickable(listElem));
+    scrollToElement(listElem);
     listElem.click();
     return control.get();
   }
