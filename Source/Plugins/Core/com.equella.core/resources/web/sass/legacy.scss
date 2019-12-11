@@ -930,7 +930,7 @@ Generic layout
 }
 
 #mainDiv #selection-content-inner {
-  padding: 48px 17px 0;
+  padding: 0px 17px 0;
   display: flex;
 }
 
@@ -1107,6 +1107,16 @@ div.rightPanel {
 
 #title-slider label {
   margin-top: 15px;
+}
+
+#lce_selectCustom_opener {
+  position: relative;
+  top: -7px;
+  left: 465px;
+}
+
+.settingHelp {
+  padding-top: 20px;
 }
 
 /*****************************************************************************
@@ -2103,6 +2113,41 @@ ul.ui-autocomplete {
   }
 }
 
+#dndOptionsList {
+  .dropdown-toggle {
+    b:before {
+      content: "\e313";
+      font-family: "Material Icons";
+      font-size: 16px;
+      color: white;
+      font-style: normal;
+      vertical-align: middle;
+    }
+    color: $primaryColor;
+    min-width: 1px;
+    margin-left: 2px;
+  }
+  .dropdown-menu {
+    display: none;
+  }
+  .open {
+    .dropdown-menu {
+      display: block;
+      border: 1px solid rgba(0, 0, 0, 0.42);
+      width: 244px;
+      padding: 8px;
+      li {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        :hover {
+          background-color: rgba(224, 224, 224, 1);
+          color: set-text-color(white);
+        }
+      }
+    }
+  }
+}
+
 //video/image gallery
 .searchresults.area.gallery {
   @import "gallerylist.css";
@@ -2618,7 +2663,7 @@ button + .repeater-groups {
 }
 
 // Attachment control
-.fileAdd {
+.fileadd {
   width: 100%;
 }
 
@@ -4040,6 +4085,7 @@ div#sssh_finishedButton {
   display: flex;
   align-content: space-around;
   justify-content: center;
+  padding-top: 10px;
 }
 
 #selection-header
@@ -4170,7 +4216,18 @@ div#sssh_finishedButton {
 }
 
 #helpAndOptions {
-  display: none;
+  padding-top: 50px;
+  float: right;
+  width: 100%;
+  #button-bar {
+    float: right;
+  }
+
+  .btn {
+    border: none;
+    background-color: transparent;
+    color: $primaryColor;
+  }
 }
 
 .icon-plus:before {
