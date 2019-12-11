@@ -37,7 +37,6 @@
 @import "contentrestrictions.css";
 @import "adduserandquota.css";
 @import "selector.css";
-@import "select2.css";
 @import "settings/searchsettings.css";
 @import "ipaddress.css";
 @import "whereclause.css";
@@ -532,6 +531,10 @@ ul.select_options li {
   .settingRow .settingField {
     width: auto;
   }
+}
+
+.select2-container {
+  z-index: 9999;
 }
 
 /*****************************************************************************
