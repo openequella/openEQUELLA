@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -143,6 +144,8 @@ public class MyResourcesPage
       }
       authorPages.addPage(pageTitles[aTitleIndex], pageBodies[aBodyIndex]);
     }
+    ((JavascriptExecutor) getContext().getDriver())
+        .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
     return authorPages.save();
   }
 
