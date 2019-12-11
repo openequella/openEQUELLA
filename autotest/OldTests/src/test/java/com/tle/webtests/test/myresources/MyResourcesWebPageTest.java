@@ -14,6 +14,7 @@ import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
+import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.Test;
 
 /**
@@ -89,6 +90,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     // abandon changes
     // Refresh the results list and the particular item reference, with the
     // old name
+    ((JavascriptExecutor) getContext().getDriver())
+        .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
     MyResourcesPage myResourcesPage = editor.cancel();
     ItemListPage results = myResourcesPage.results();
     ItemSearchResult result = results.getResultForTitle(scrapbookItem, 1);
@@ -108,6 +111,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
 
     // Refresh the results list and the particular item reference, with the
     // new name
+    ((JavascriptExecutor) getContext().getDriver())
+        .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
     result = editor.save().exactQuery(descStr).getResultForTitle(descStr, 1);
 
     // Verify the old page name has changed
