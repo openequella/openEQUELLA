@@ -40,6 +40,7 @@
 @import "select2.css";
 @import "settings/searchsettings.css";
 @import "ipaddress.css";
+@import "whereclause.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -988,6 +989,9 @@ Generic layout
   display: flex;
   flex-grow: 1;
   justify-content: space-between;
+  #col2 {
+    min-width: 240px;
+  }
 }
 
 #mainDiv .selectiondashboard #col1 {
@@ -2431,6 +2435,11 @@ html.wait {
   }
 }
 
+#treePanel {
+  float: left;
+  width: auto;
+}
+
 #bulkresults_inner {
   textarea {
     width: 100%;
@@ -2456,7 +2465,7 @@ html.wait {
 
 input.term-paths {
   width: 516px;
-  position: fixed;
+  position: relative;
 }
 
 .itemresult-rating div.float-right {
@@ -2473,6 +2482,16 @@ input.term-paths {
     }
   }
 }
+
+.criteria-wrapper {
+  border: none;
+  background: none;
+}
+
+.criteria .addbutton {
+  padding-left: 460px;
+}
+
 td.unselect a {
   &:before {
     content: "\e872";
