@@ -53,6 +53,7 @@ public class NavNodePageObject extends AbstractPage<NavNodePageObject> {
   public NavNodeEditor select() {
     NavNodeEditor editor = new NavNodeEditor(navBuilder, this);
     if (!selectElem.getAttribute("class").contains("selected")) {
+      scrollToElement(selectLink);
       selectLink.click();
     }
     return editor.get();
