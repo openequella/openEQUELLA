@@ -41,6 +41,8 @@
 @import "settings/searchsettings.css";
 @import "ipaddress.css";
 @import "whereclause.css";
+@import "myresourcecontribute.css";
+@import "htmleditorwebcontrol.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -2504,6 +2506,16 @@ td.unselect a {
   }
 }
 
+.file-upload .file-name {
+  width: 400px;
+  overflow: hidden;
+}
+
+.file-upload-progress {
+  float: right;
+  width: 300px;
+}
+
 /*****************************************************************************
 Contribution wizard styling
 *****************************************************************************/
@@ -2813,6 +2825,10 @@ button + .repeater-groups {
 //html editor width hack
 .mceLayout {
   width: 100% !important;
+}
+
+.lockedHtml {
+  width: auto;
 }
 
 //workflow related content
