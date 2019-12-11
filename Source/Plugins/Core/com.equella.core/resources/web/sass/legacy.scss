@@ -41,6 +41,8 @@
 @import "settings/searchsettings.css";
 @import "ipaddress.css";
 @import "whereclause.css";
+@import "myresourcecontribute.css";
+@import "htmleditorwebcontrol.css";
 
 @font-face {
   font-family: "Material Icons";
@@ -2152,6 +2154,22 @@ ul.ui-autocomplete {
   }
 }
 
+//cloud search
+
+.glyphicon-cloud {
+  padding-top: 4px;
+  padding-right: 8px;
+  &:before {
+    content: "\e2c2";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: $menuItemIconColor;
+    font-style: normal;
+    vertical-align: middle;
+    padding-top: 4px;
+  }
+}
+
 //video/image gallery
 .searchresults.area.gallery {
   @import "gallerylist.css";
@@ -2504,6 +2522,16 @@ td.unselect a {
   }
 }
 
+.file-upload .file-name {
+  width: 400px;
+  overflow: hidden;
+}
+
+.file-upload-progress {
+  float: right;
+  width: 300px;
+}
+
 /*****************************************************************************
 Contribution wizard styling
 *****************************************************************************/
@@ -2815,6 +2843,10 @@ button + .repeater-groups {
   width: 100% !important;
 }
 
+.lockedHtml {
+  width: auto;
+}
+
 //workflow related content
 #moderate .task-name {
   padding-right: 16px;
@@ -2911,6 +2943,13 @@ button + .repeater-groups {
   }
 }
 
+.upDownButtonPanel {
+  top: 8px !important;
+  button {
+    min-width: 2px;
+  }
+}
+
 i.icon-remove {
   &:before {
     content: "\e872";
@@ -2950,6 +2989,18 @@ i.icon-ban-circle {
 i.icon-minus {
   &:before {
     content: "\e15b";
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: set-text-color($primaryColor);
+    vertical-align: top;
+    padding-right: 4px;
+    font-style: normal;
+  }
+}
+
+i.icon-arrow-left {
+  &:before {
+    content: "\e317";
     font-family: "Material Icons";
     font-size: 24px;
     color: set-text-color($primaryColor);
@@ -3258,6 +3309,12 @@ table.versions {
 table.versions td {
   word-wrap: break-word;
 }
+
+//cal violation page
+.area.error {
+  box-shadow: none;
+}
+
 // star ratings
 .rate-stars div {
   display: flex;
@@ -4263,6 +4320,28 @@ div#sssh_finishedButton {
 
 .icon-plus:before {
   content: "\e145";
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: set-text-color($primaryColor);
+  padding-right: 4px;
+  font-style: normal;
+  vertical-align: middle;
+  padding-top: 4px;
+}
+
+.icon-chevron-up:before {
+  content: "\e316";
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: set-text-color($primaryColor);
+  padding-right: 4px;
+  font-style: normal;
+  vertical-align: middle;
+  padding-top: 4px;
+}
+
+.icon-chevron-down:before {
+  content: "\e316";
   font-family: "Material Icons";
   font-size: 20px;
   color: set-text-color($primaryColor);
