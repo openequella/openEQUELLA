@@ -38,6 +38,7 @@ type LegacyContent = {
   script: string;
   noForm: boolean;
   title: string;
+  metaTags: string;
   fullscreenMode: string;
   menuMode: string;
   hideAppBar: boolean;
@@ -51,6 +52,7 @@ export interface PageContent {
   state: StateData;
   script: string;
   title: string;
+  metaTags: string;
   fullscreenMode: string;
   menuMode: string;
   hideAppBar: boolean;

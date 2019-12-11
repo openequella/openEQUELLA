@@ -16,27 +16,6 @@
         </value>
       </option>
     </AndroidXmlCodeStyleSettings>
-    <JavaCodeStyleSettings>
-      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
-      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
-      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
-      <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
-        <value />
-      </option>
-      <option name="IMPORT_LAYOUT_TABLE">
-        <value>
-          <package name="" withSubpackages="true" static="true" />
-          <emptyLine />
-          <package name="" withSubpackages="true" static="false" />
-        </value>
-      </option>
-      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
-      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
-      <option name="JD_P_AT_EMPTY_LINES" value="false" />
-      <option name="JD_KEEP_EMPTY_PARAMETER" value="false" />
-      <option name="JD_KEEP_EMPTY_EXCEPTION" value="false" />
-      <option name="JD_KEEP_EMPTY_RETURN" value="false" />
-    </JavaCodeStyleSettings>
     <DBN-PSQL>
       <case-options enabled="true">
         <option name="KEYWORD_CASE" value="lower" />
@@ -61,6 +40,27 @@
         <option name="ITERATION_ELEMENTS_WRAPPING" value="chop_down_if_not_single" />
       </formatting-settings>
     </DBN-SQL>
+    <JavaCodeStyleSettings>
+      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+      <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+        <value />
+      </option>
+      <option name="IMPORT_LAYOUT_TABLE">
+        <value>
+          <package name="" withSubpackages="true" static="true" />
+          <emptyLine />
+          <package name="" withSubpackages="true" static="false" />
+        </value>
+      </option>
+      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+      <option name="JD_P_AT_EMPTY_LINES" value="false" />
+      <option name="JD_KEEP_EMPTY_PARAMETER" value="false" />
+      <option name="JD_KEEP_EMPTY_EXCEPTION" value="false" />
+      <option name="JD_KEEP_EMPTY_RETURN" value="false" />
+    </JavaCodeStyleSettings>
     <ScalaCodeStyleSettings>
       <option name="FORMATTER" value="1" />
     </ScalaCodeStyleSettings>

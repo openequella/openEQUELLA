@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.common.Check;
 import com.tle.common.DontUseMethod;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.common.taxonomy.TaxonomyConstants;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +87,9 @@ import org.hibernate.annotations.NamedQuery;
       name = "shiftByPath",
       query =
           "UPDATE Term SET lft = lft + :amount, rht = rht + :amount "
-              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild) "
+              + "WHERE (fullValue = :fullValue OR fullValue LIKE :fullValueWild ESCAPE '"
+              + TaxonomyConstants.LIKE_ESCAPE
+              + "') "
               + "AND taxonomy = :taxonomy",
       cacheable = true)
 })
@@ -282,9 +285,12 @@ public class Term implements Serializable {
     return null;
   }
 
-  public void setAttribute(String key, String value) {
+  /** @return true if the attribute did not previously exist */
+  public boolean setAttribute(String key, String value) {
     ensureAttributes();
+    final boolean created = (attributes.get(key) == null);
     attributes.put(key, new TermAttribute(key, value));
+    return created;
   }
 
   public void removeAttribute(String key) {

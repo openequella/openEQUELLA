@@ -237,18 +237,9 @@ libraryDependencies ++= Seq(
   "io.github.classgraph"   % "classgraph"                % "4.8.52"
 )
 
-bundleOracleDriver := {
-  val path = "build.bundleOracleDriver"
-  if (buildConfig.value.hasPath(path)) {
-    buildConfig.value.getBoolean(path)
-  } else {
-    false
-  }
-}
-
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
-    Seq("com.oracle.ojdbc" % "ojdbc8" % "19.3.0.0")
+    oracleDriverMavenCoordinate.value
   } else {
     Seq.empty
   }

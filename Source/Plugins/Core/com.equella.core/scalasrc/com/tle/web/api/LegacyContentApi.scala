@@ -85,6 +85,7 @@ case class LegacyContent(html: Map[String, String],
                          script: String,
                          state: Map[String, Array[String]],
                          title: String,
+                         metaTags: String,
                          menuMode: String,
                          fullscreenMode: String,
                          hideAppBar: Boolean,
@@ -507,6 +508,7 @@ class LegacyContentApi {
       val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
       val jsFiles  = context.getJsFiles.asScala
       val cssFiles = loadCss(context)
+      val metaTags = context.getHeaderMarkup
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
@@ -522,6 +524,7 @@ class LegacyContentApi {
           scripts.mkString("\n"),
           getBookmarkState(info, new BookmarkEvent(null, true, info)),
           title,
+          metaTags,
           menuMode,
           fullscreenMode,
           hideAppBar,

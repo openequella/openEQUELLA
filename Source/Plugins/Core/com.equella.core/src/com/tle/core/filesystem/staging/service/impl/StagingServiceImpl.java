@@ -67,10 +67,12 @@ public class StagingServiceImpl implements StagingService {
     if (s == null) {
       LOGGER.error("Staging area does not exist");
     } else {
+      LOGGER.debug("Deleting Staging entry in DB [" + s.getStagingID() + "]");
       stagingDao.delete(s);
     }
 
     if (removeFiles) {
+      LOGGER.debug("Removing Staging area in the filestore [" + s.getStagingID() + "]");
       fileSystemService.removeFile(staging);
     }
   }
@@ -100,9 +102,10 @@ public class StagingServiceImpl implements StagingService {
             String uuid = file.getFileName().toString();
             if (!stagingExists(uuid)) {
               try {
+                LOGGER.debug("Deleting staging area [" + uuid + "]");
                 FileUtils.delete(file, null, true);
               } catch (IOException ex) {
-                LOGGER.warn("Could not delete staging area: " + uuid, ex);
+                LOGGER.warn("Could not delete staging area [" + uuid + "]", ex);
               }
             }
           }

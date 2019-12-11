@@ -58,7 +58,7 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
     query.append("SELECT a FROM Item i LEFT JOIN i.attachments a WHERE a.md5sum = :md5sum");
     query.append(" AND i.itemDefinition = :collection AND i.institution = :institution");
     if (ignoreDeletedRejectedSuspenedItems) {
-      query.append(" AND i.status NOT IN ('REJECTED', 'SUSPENDED', 'DELETED')");
+      query.append(" AND i.status NOT IN ('REJECTED', 'SUSPENDED', 'DELETED', 'ARCHIVED')");
     }
     if (excludedItemUuid != null) {
       query.append(" AND i.uuid != :excludedItemUuid");

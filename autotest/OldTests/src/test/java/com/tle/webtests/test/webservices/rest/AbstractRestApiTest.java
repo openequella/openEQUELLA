@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
+import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestInstitution;
@@ -38,6 +39,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -233,9 +235,22 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   }
 
   protected HttpResponse postEntity(
-      String json, String uri, String token, boolean consume, Object... paramNameValues)
+      @Nullable String json, String uri, String token, boolean consume, Object... paramNameValues)
       throws IOException {
     final HttpPost request = new HttpPost(appendQueryString(uri, queryString(paramNameValues)));
+    return putOrPostEntity(request, token, json, consume);
+  }
+
+  protected HttpResponse putEntity(
+      @Nullable String json, String uri, String token, boolean consume, Object... paramNameValues)
+      throws IOException {
+    final HttpPut request = new HttpPut(appendQueryString(uri, queryString(paramNameValues)));
+    return putOrPostEntity(request, token, json, consume);
+  }
+
+  protected HttpResponse putOrPostEntity(
+      HttpEntityEnclosingRequestBase request, String token, @Nullable String json, boolean consume)
+      throws IOException {
     if (json != null) {
       final StringEntity ent = new StringEntity(json, "UTF-8");
       ent.setContentType("application/json");

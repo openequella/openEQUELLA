@@ -262,7 +262,7 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
       @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
       @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
       @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey,
-      @ApiParam(value = "data value", required = true) @PathParam("datakey") String dataValue);
+      @ApiParam(value = "data value", required = true) @PathParam("datavalue") String dataValue);
 
   /**
    * Remove term data

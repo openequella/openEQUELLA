@@ -31,6 +31,7 @@ interface LegacyPageProps extends TemplateUpdateProps {
 
 export function templatePropsForLegacy({
   title,
+  metaTags,
   html,
   contentId,
   hideAppBar,
@@ -45,6 +46,7 @@ export function templatePropsForLegacy({
   );
   return {
     title,
+    metaTags,
     hideAppBar,
     fullscreenMode: fullscreenMode as FullscreenMode,
     menuMode: menuMode as MenuMode,

@@ -28,6 +28,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind(UserInfoBackupDao.class)
 @Singleton
@@ -57,17 +59,13 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
   }
 
   @Override
-  public void saveOrUpdate(UserInfoBackup entity) {
-    super.saveOrUpdate(entity);
-  }
-
-  @Override
   public List<UserInfoBackup> getAllInfo() {
     return getHibernateTemplate()
         .find(
             "from UserInfoBackup where institution_id = ?", CurrentInstitution.get().getUniqueId());
   }
 
+  @Transactional(propagation = Propagation.MANDATORY)
   @Override
   public void deleteAllInfo() {
     getHibernateTemplate()

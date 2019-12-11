@@ -18,6 +18,8 @@ object CommonSettings extends AutoPlugin {
     lazy val equellaVersion    = settingKey[EquellaVersion]("The full equella version")
     lazy val bundleOracleDriver =
       settingKey[Boolean]("The flag used to indicate if oracle driver is needed or not")
+    lazy val oracleDriverMavenCoordinate =
+      settingKey[Seq[ModuleID]]("The Maven coordinate of Oracle JDBC")
     lazy val buildConfig           = settingKey[Config]("The build configuration settings")
     lazy val prepareDevConfig      = taskKey[Unit]("Prepare the dev learningedge-config folder")
     lazy val writeSourceZip        = taskKey[File]("Write out a zip containing all sources")
