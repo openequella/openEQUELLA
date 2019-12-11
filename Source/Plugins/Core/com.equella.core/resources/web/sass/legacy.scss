@@ -533,10 +533,6 @@ ul.select_options li {
   }
 }
 
-.select2-container {
-  z-index: 9999;
-}
-
 /*****************************************************************************
 Contribution wizard inputs
 *****************************************************************************/
@@ -1211,6 +1207,9 @@ div[class*="fancy-bg"] {
 
 .modal-content-inner {
   padding: 0 18px 15px;
+  .select2-container {
+    z-index: 9999;
+  }
 }
 
 .modal-title h3 {
