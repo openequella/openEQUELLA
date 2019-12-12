@@ -29,6 +29,7 @@ public class EquellaSelect extends AbstractPage<EquellaSelect> {
   }
 
   public void selectByVisibleText(String name) {
+    scrollToElement(textDiv);
     textDiv.click();
     WebElement entry =
         dropDiv.findElement(

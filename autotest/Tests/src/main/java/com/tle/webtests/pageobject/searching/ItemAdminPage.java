@@ -189,6 +189,7 @@ public class ItemAdminPage
   public ItemAdminPage setModOnly(boolean checked) {
     openFilters();
     WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
+    scrollToElement(modOnlyBox);
     boolean isChecked = modOnlyBox.isSelected();
     if (checked != isChecked) modOnlyBox.click();
     return waitForResultsReload(waiter);
@@ -240,6 +241,5 @@ public class ItemAdminPage
     ReceiptPage.waiter(
             "Successfully added this search to your favourites", dialog.favourite(searchName, this))
         .get();
-    ReceiptPage.dismiss(waiter);
   }
 }

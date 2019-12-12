@@ -93,14 +93,9 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
           .priority(Priority.LOWEST)
           .make();
   public static final CssInclude IE11_COMPAT_CSS =
-      include(RESOURCES.url("css/ie11compat.css"))
-          .prerender(BOOTSTRAP_CSS)
-          .hasRtl()
-          .priority(Priority.LOWEST)
-          .make();
+      include(RESOURCES.url("css/ie11compat.css")).hasRtl().priority(Priority.LOWEST).make();
   public static final CssInclude TINYMCE_SKIN_CSS =
       include(RESOURCES.url("reactjs/tinymce/skins/ui/oxide/skin.css"))
-          .prerender(BOOTSTRAP_CSS)
           .hasRtl()
           .priority(Priority.LOWEST)
           .make();

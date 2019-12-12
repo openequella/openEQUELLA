@@ -9,6 +9,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebElement;
 
 public abstract class AbstractItemSearchResult<SR extends AbstractItemSearchResult<SR>>
     extends SearchResult<SR> {
@@ -45,7 +46,10 @@ public abstract class AbstractItemSearchResult<SR extends AbstractItemSearchResu
   public <T extends PageObject> T removeFavourite(WaitingPageObject<T> returnTo) {
     WaitingPageObject<T> waiter =
         ReceiptPage.waiter("Successfully removed from favourites", returnTo);
-    resultDiv.findElement(By.xpath(".//a[@title='Remove from favourites']")).click();
+    WebElement removeFavourites =
+        resultDiv.findElement(By.xpath(".//a[@title='Remove from favourites']"));
+    scrollToElement(removeFavourites);
+    removeFavourites.click();
     acceptConfirmation();
     return waiter.get();
   }

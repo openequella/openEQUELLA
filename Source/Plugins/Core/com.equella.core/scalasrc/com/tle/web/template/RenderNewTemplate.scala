@@ -77,6 +77,7 @@ object RenderNewTemplate {
       supportIEPolyFills(info)
       info.preRender(bundleJs)
       links.foreach(l => info.addCss(r.url(l.attr("href"))))
+      info.addCss(RenderTemplate.CUSTOMER_CSS)
     }
     (prerender, htmlDoc)
   }

@@ -6,6 +6,7 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.component.SelectCourseDialog;
 import com.tle.webtests.pageobject.searching.AbstractBulkResultsPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
@@ -77,6 +78,8 @@ public class ManageActivationsPage
     try {
       WaitingPageObject<ActivationListPage> waiter = resultsPageObject.getUpdateWaiter();
       WebElement resetButton = context.getDriver().findElement(By.id("rf_resetButton"));
+      ((JavascriptExecutor) driver)
+          .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
       resetButton.click();
       return waitForResultsReload(waiter);
     } catch (NoSuchElementException noseeum) {

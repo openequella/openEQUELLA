@@ -30,11 +30,13 @@ public interface ThemeSettingsService {
 
   InputStream getCustomLogo() throws IOException;
 
-  void setTheme(NewUITheme theme) throws JsonProcessingException;
+  void setTheme(NewUITheme theme) throws JsonProcessingException, IOException;
 
   void setLogo(File logoFile) throws IOException;
 
   boolean isCustomLogo();
 
   void deleteLogo();
+
+  InputStream getLegacyCss() throws IOException;
 }

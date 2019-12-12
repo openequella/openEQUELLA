@@ -50,4 +50,6 @@ public interface AjaxRenderContext extends PreRenderContext {
   Map<String, FullAjaxCaptureResult> getAllCaptures();
 
   void captureResources(PreRenderable... preRenderables);
+
+  void clearCss();
 }

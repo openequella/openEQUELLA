@@ -32,6 +32,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -213,6 +214,8 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     ssp = sfp.setName(filterName).save();
 
     sfp = ssp.editFilter(filterName);
+    ((JavascriptExecutor) getContext().getDriver())
+        .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
     sfp.selectMimeType("equella/plan", false);
     ssp = sfp.selectMimeType("image/gif", true).setName(filterNameEdited).save().get();
     assertTrue(

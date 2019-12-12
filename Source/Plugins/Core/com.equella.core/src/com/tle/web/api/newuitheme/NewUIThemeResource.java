@@ -55,7 +55,7 @@ public interface NewUIThemeResource {
   @PUT
   @Path("settings")
   @ApiParam("Changes the theme settings of the current institution.")
-  Response updateTheme(NewUITheme theme) throws JsonProcessingException;
+  Response updateTheme(NewUITheme theme) throws JsonProcessingException, IOException;
 
   @PUT
   @Path("logo")
@@ -66,4 +66,10 @@ public interface NewUIThemeResource {
   @Path("logo")
   @ApiParam("Resets the institution's logo to the default openEQUELLA logo.")
   Response resetLogo();
+
+  @GET
+  @Path("legacy.css")
+  @ApiParam("Retrieves the current institution's legacy css file")
+  @Produces("text/css")
+  Response retrieveLegacyCss() throws IOException;
 }

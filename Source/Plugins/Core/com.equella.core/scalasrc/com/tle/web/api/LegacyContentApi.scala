@@ -80,7 +80,7 @@ case class MenuItem(title: String,
                     newWindow: Boolean)
 
 case class LegacyContent(html: Map[String, String],
-                         css: Iterable[String],
+                         css: Option[Iterable[String]],
                          js: Iterable[String],
                          script: String,
                          state: Map[String, Array[String]],
@@ -505,11 +505,9 @@ class LegacyContentApi {
             JQueryCore.JQUERY,
             new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
 
-      val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
-      val jsFiles = context.getJsFiles.asScala
-      val cssFiles = context.getCssFiles.asScala.collect {
-        case css: CssInclude => css.getHref(context)
-      }
+      val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
+      val jsFiles  = context.getJsFiles.asScala
+      val cssFiles = loadCss(context)
       val metaTags = context.getHeaderMarkup
       val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
@@ -535,6 +533,21 @@ class LegacyContentApi {
           decs.isExcludeForm
         )
       )
+    }
+  }
+
+  def loadCss(context: StandardRenderContext): Option[Iterable[String]] = {
+    val uri = context.getRequest.getRequestURI
+    // Below three pages don't need 'legacy.css' so load CSS from server side
+    val pagePattern = ".+/(apidocs|editoradmin|reports)\\.do".r
+
+    uri match {
+      case pagePattern(_) =>
+        val cssIncludes = context.getCssFiles.asScala.collect {
+          case css: CssInclude => css.getHref(context)
+        }
+        Option(cssIncludes)
+      case _ => None
     }
   }
 
@@ -637,6 +650,8 @@ class LegacyContentApi {
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
     info.setRendered()
+    //removes old ui css that gets included when a sections ajax request is made
+    arc.clearCss()
     Response.ok(responseCallback.getResponseObject(arc))
   }
 }

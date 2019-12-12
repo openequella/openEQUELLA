@@ -88,7 +88,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
   @PUT
   @Path("settings")
-  public Response updateTheme(NewUITheme theme) throws JsonProcessingException {
+  public Response updateTheme(NewUITheme theme) throws JsonProcessingException, IOException {
     themeSettingsService.setTheme(theme);
     return Response.accepted().build();
   }
@@ -105,5 +105,12 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
   public Response resetLogo() {
     themeSettingsService.deleteLogo();
     return Response.accepted().build();
+  }
+
+  @GET
+  @Path("legacy.css")
+  @Produces("text/css")
+  public Response retrieveLegacyCss() throws IOException {
+    return Response.ok(themeSettingsService.getLegacyCss()).build();
   }
 }

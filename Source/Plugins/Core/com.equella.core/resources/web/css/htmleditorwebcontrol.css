@@ -1,65 +1,55 @@
-.lockedHtml
-{
-	width: 584px;
-	height: 300px;
-	overflow: auto;
+.lockedHtml {
+  width: 584px;
+  height: 300px;
+  overflow: auto;
 
-	/* Make it look like a textarea.  Copied from styles.css */
-	border: 1px solid #cfcbbe;
-	border-right: 1px solid #c3beae;
-	border-top: 1px solid #7e765e;
-	background: #fff;
-	font-size: 12px;
-	padding: 4px 6px;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
+  /* Make it look like a textarea.  Copied from styles.css */
+  border: 1px solid #cfcbbe;
+  border-right: 1px solid #c3beae;
+  border-top: 1px solid #7e765e;
+  background: #fff;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
 }
 
-.toggleEditLink
-{
-	line-height: 2.5em;
+.toggleEditLink {
+  line-height: 2.5em;
 }
 
 #selection-content-inner.wizard-layout .indent0 .lockedHtml,
-#selection-content-inner.wizard-layout .indent0 .editorbox TEXTAREA
-{
-	width: 512px;
+#selection-content-inner.wizard-layout .indent0 .editorbox textarea {
+  width: 512px;
 }
 
 #selection-content-inner.wizard-layout .indent1 .lockedHtml,
-#selection-content-inner.wizard-layout .indent1 .editorbox TEXTAREA
-{
-	width: 486px;
+#selection-content-inner.wizard-layout .indent1 .editorbox textarea {
+  width: 486px;
 }
 
 #selection-content-inner.wizard-layout .indent2 .lockedHtml,
-#selection-content-inner.wizard-layout .indent2 .editorbox TEXTAREA
-{
-	width: 446px;
+#selection-content-inner.wizard-layout .indent2 .editorbox textarea {
+  width: 446px;
 }
 
 #selection-content-inner.wizard-layout .indent3 .lockedHtml,
-#selection-content-inner.wizard-layout .indent3 .editorbox TEXTAREA
-{
-	width: 406px;
+#selection-content-inner.wizard-layout .indent3 .editorbox textarea {
+  width: 406px;
 }
 
-
 .wizard-controls .indent1 .lockedHtml,
-.wizard-controls .indent1 .editorbox TEXTAREA 
-{
-	width: 542px;
+.wizard-controls .indent1 .editorbox textarea {
+  width: 542px;
 }
 
 .wizard-controls .indent2 .lockedHtml,
-.wizard-controls .indent2 .editorbox TEXTAREA 
-{
-	width: 502px;
+.wizard-controls .indent2 .editorbox textarea {
+  width: 502px;
 }
 
 .wizard-controls .indent3 .lockedHtml,
-.wizard-controls .indent3 .editorbox TEXTAREA 
-{
-	width: 562px;
-}}
+.wizard-controls .indent3 .editorbox textarea {
+  width: 562px;
+}

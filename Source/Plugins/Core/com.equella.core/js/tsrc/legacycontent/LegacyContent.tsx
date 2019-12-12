@@ -2,6 +2,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
+import { Config } from "../config";
 
 declare global {
   interface Window {
@@ -32,7 +33,7 @@ type FormUpdate = {
 type LegacyContent = {
   html: { [key: string]: string };
   state: StateData;
-  css: string[];
+  css?: string[];
   js: string[];
   script: string;
   noForm: boolean;
@@ -107,7 +108,7 @@ export const LegacyContent = React.memo(function LegacyContent(
   }
 
   function updatePageContent(content: LegacyContent, scrollTop: boolean) {
-    updateIncludes(content.css, content.js).then(extraCss => {
+    updateIncludes(content.js, content.css).then(extraCss => {
       const pageContent = {
         ...content,
         contentId: v4(),
@@ -190,10 +191,10 @@ export const LegacyContent = React.memo(function LegacyContent(
         return false;
       },
       updateIncludes(
-        includes: { css: string[]; js: string[]; script: string },
+        includes: { js: string[]; css?: string[]; script: string },
         cb: () => void
       ) {
-        updateIncludes(includes.css, includes.js).then(_ => {
+        updateIncludes(includes.js, includes.css).then(_ => {
           window.eval(includes.script);
           cb();
         });
@@ -236,8 +237,8 @@ function resolveUrl(url: string) {
 }
 
 async function updateIncludes(
-  css: string[],
-  js: string[]
+  js: string[],
+  css?: string[]
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   let extraCss = await updateStylesheets(css);
   await loadMissingScripts(js);
@@ -245,14 +246,17 @@ async function updateIncludes(
 }
 
 function updateStylesheets(
-  _sheets: string[]
+  _sheets?: string[]
 ): Promise<{ [url: string]: HTMLLinkElement }> {
-  const sheets = _sheets.map(resolveUrl);
+  const sheets = _sheets
+    ? _sheets.map(resolveUrl)
+    : [resolveUrl(`${Config.baseUrl}api/theme/legacy.css`)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert")!;
   const head = doc.getElementsByTagName("head")[0];
   let current = insertPoint.previousElementSibling;
   const existingSheets = {};
+
   while (current != null && current.tagName == "LINK") {
     existingSheets[(current as HTMLLinkElement).href] = current;
     current = current.previousElementSibling;
