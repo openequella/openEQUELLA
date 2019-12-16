@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.portal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
@@ -74,7 +75,11 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    getBoxHead().findElement(By.className("box_edit")).click();
+    WebElement boxHead = getBoxHead();
+    waiter.until(ExpectedConditions2.presenceOfElement(boxHead));
+    waiter.until(
+        ExpectedConditions2.presenceOfElement(boxHead.findElement(By.className("box_edit"))));
+    boxHead.findElement(By.className("box_edit")).click();
     return portal.get();
   }
 
