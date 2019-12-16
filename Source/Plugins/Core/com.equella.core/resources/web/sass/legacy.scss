@@ -4786,11 +4786,12 @@ Login Notice Formatting
 #loginNotice ol li {
   margin: unset;
 }
-
+$bulletPointOffset: 8; //width of the bullet point margin
+$indentOffset: 16; //width of the indent applied to each list item
 .duplicate_attachment_section {
   line-height: 2;
 }
-.duplicate_attachment_section ul {
+.duplicate_attachment_section li {
   list-style: disc;
-  margin-left: 24px;
+  margin-left: $bulletPointOffset + $indentOffset + unquote("px");
 }
