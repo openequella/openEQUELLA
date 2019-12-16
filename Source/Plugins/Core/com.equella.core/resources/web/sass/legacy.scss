@@ -1183,7 +1183,7 @@ div[class*="fancy-bg"] {
 }
 
 .modal-content-inner p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 14px;
   margin: 10px 0;
 }
@@ -1203,6 +1203,7 @@ div[class*="fancy-bg"] {
   -moz-background-inline-policy: continuous;
   -moz-background-origin: padding;
   position: relative;
+  height: auto;
 }
 
 .modal-content-inner {
