@@ -3115,11 +3115,6 @@ i.icon-arrow-left {
 }
 
 ul.treeview {
-  .hitarea {
-    background: none;
-    margin-right: 12px;
-  }
-
   li.collapsable {
     a.hitarea:before {
       content: "\e313";
@@ -4794,4 +4789,15 @@ Login Notice Formatting
 .duplicate_attachment_section li {
   list-style: disc;
   margin-left: 2.5em;
+}
+
+ul.treeview .hitarea {
+  background-image: transparent;
+  margin-right: 0;
+}
+ul.treeview li.expandable a.hitarea::before {
+  content: none;
+}
+ul.treeview li.collapsable a.hitarea::before {
+  content: none;
 }
