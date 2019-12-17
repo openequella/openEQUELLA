@@ -4786,3 +4786,11 @@ Login Notice Formatting
 #loginNotice ol li {
   margin: unset;
 }
+
+.duplicate_attachment_section {
+  line-height: 2;
+}
+.duplicate_attachment_section li {
+  list-style: disc;
+  margin-left: 2.5em;
+}
