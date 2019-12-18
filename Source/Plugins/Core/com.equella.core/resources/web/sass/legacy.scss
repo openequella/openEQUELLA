@@ -1183,7 +1183,7 @@ div[class*="fancy-bg"] {
 }
 
 .modal-content-inner p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 14px;
   margin: 10px 0;
 }
@@ -1203,6 +1203,7 @@ div[class*="fancy-bg"] {
   -moz-background-inline-policy: continuous;
   -moz-background-origin: padding;
   position: relative;
+  height: auto;
 }
 
 .modal-content-inner {
@@ -3114,11 +3115,6 @@ i.icon-arrow-left {
 }
 
 ul.treeview {
-  .hitarea {
-    background: none;
-    margin-right: 12px;
-  }
-
   li.collapsable {
     a.hitarea:before {
       content: "\e313";
@@ -4785,4 +4781,52 @@ Login Notice Formatting
 
 #loginNotice ol li {
   margin: unset;
+}
+.duplicate_editbox_section {
+  line-height: 2;
+}
+.duplicate_editbox_section li {
+  list-style: disc;
+  margin-left: 2.5em;
+}
+.duplicate_attachment_section {
+  line-height: 2;
+}
+.duplicate_attachment_section li {
+  list-style: disc;
+  margin-left: 2.5em;
+}
+
+ul.treeview .hitarea {
+  background-image: transparent;
+  margin-right: 0;
+}
+ul.treeview li.expandable a.hitarea::before {
+  content: none;
+}
+ul.treeview li.collapsable a.hitarea::before {
+  content: none;
+}
+$loginLabelWidth: 100;
+$whitespaceWidth: 4;
+$loginTextBoxWidth: 200;
+#_logonButton {
+  display: block;
+  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
+  margin-top: 16px;
+  width: $loginTextBoxWidth + unquote("px");
+}
+#username {
+  width: $loginTextBoxWidth + unquote("px");
+}
+#password {
+  width: $loginTextBoxWidth + unquote("px");
+}
+label[for="username"] {
+  display: inline-block;
+  width: $loginLabelWidth + unquote("px");
+}
+label[for="password"] {
+  display: inline-block;
+  width: $loginLabelWidth + unquote("px");
 }

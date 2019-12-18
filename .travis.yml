@@ -30,6 +30,7 @@ addons:
   apt:
     packages:
       - chromium-browser
+      - chromium-chromedriver
       - ffmpeg
       - libimage-exiftool-perl
       - openjdk-8-jdk
@@ -50,8 +51,6 @@ before_install:
   - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
   - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
-  - curl -OL https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
@@ -66,6 +65,7 @@ before_script:
 stages:
   - name: build and check
   - name: functional test
+    if: false # Currently disabled due to Travis now running with Chromium 79 which is having issues headless
   - name: finalise
     if: fork = false # No access to S3, so skip for forks
 
