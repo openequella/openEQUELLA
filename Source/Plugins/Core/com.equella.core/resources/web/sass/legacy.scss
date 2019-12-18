@@ -4782,7 +4782,13 @@ Login Notice Formatting
 #loginNotice ol li {
   margin: unset;
 }
-
+.duplicate_editbox_section {
+  line-height: 2;
+}
+.duplicate_editbox_section li {
+  list-style: disc;
+  margin-left: 2.5em;
+}
 .duplicate_attachment_section {
   line-height: 2;
 }
