@@ -4801,10 +4801,26 @@ ul.treeview li.expandable a.hitarea::before {
 ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
-
+$loginLabelWidth: 100;
+$whitespaceWidth: 4;
+$loginTextBoxWidth: 200;
 #_logonButton {
   display: block;
-  margin-left: 79px;
+  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
   margin-top: 16px;
-  width: 197px;
+  width: $loginTextBoxWidth + unquote("px");
+}
+#username {
+  width: $loginTextBoxWidth + unquote("px");
+}
+#password {
+  width: $loginTextBoxWidth + unquote("px");
+}
+label[for="username"] {
+  display: inline-block;
+  width: $loginLabelWidth + unquote("px");
+}
+label[for="password"] {
+  display: inline-block;
+  width: $loginLabelWidth + unquote("px");
 }
