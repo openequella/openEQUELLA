@@ -65,7 +65,6 @@ before_script:
 stages:
   - name: build and check
   - name: functional test
-    if: false # Currently disabled due to Travis now running with Chromium 79 which is having issues headless
   - name: finalise
     if: fork = false # No access to S3, so skip for forks
 
