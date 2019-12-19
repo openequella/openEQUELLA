@@ -97,6 +97,8 @@ jobs:
           name: prebuilt-integtester
           paths:
             - autotest/IntegTester/target/
+            - autotest/IntegTester/ps/output/
+            - autotest/IntegTester/ps/target/
       name: Pre-build IntegTester
     - stage: build and check
       script: sbt test
