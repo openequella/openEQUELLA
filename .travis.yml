@@ -6,6 +6,7 @@ branches:
     - master
     - /^release\/.+/
     - /^stable-.+/
+    - /^travis\/.+/
 env:
   global:
     ### AWS START ###
