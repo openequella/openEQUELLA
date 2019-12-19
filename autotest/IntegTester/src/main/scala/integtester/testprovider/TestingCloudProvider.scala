@@ -1,5 +1,6 @@
 package integtester.testprovider
 
+import java.nio.file.Paths
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -10,6 +11,7 @@ import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.multipart.Multipart
 import org.http4s.server.AuthMiddleware
 import scalaoauth2.provider._
 
@@ -128,10 +130,28 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       System.err.println(req.req.queryString)
       Ok()
     case authReq @ POST -> Root / "myService" as user =>
-      val req = authReq.req
-      req.decode[String] { serviceData =>
-        Ok(ServiceResponse(user, serviceData, req.queryString).asJson)
+      val req          = authReq.req
+      val contentTypes = headerMap(req).get("content-type")
+      if (contentTypes.get.exists(contentType => contentType.startsWith("multipart/form-data"))) {
+        req.decode[Multipart[IO]] { multipart =>
+          Ok(s"${multipart.parts
+            .map { part =>
+              // Save the files
+              part.body
+                .through(fs2.io.file.writeAll(Paths.get(part.filename.get), global))
+                .compile
+                .toList
+                .unsafeRunSync()
+              // Generate a response message
+              part.headers.map(_.toString())
+            }}")
+        }
+      } else {
+        req.decode[String] { serviceData =>
+          Ok(ServiceResponse(user, serviceData, req.queryString).asJson)
+        }
       }
+
     case authReq @ GET -> Root / "myService" as user =>
       val req = authReq.req
       Ok(ServiceResponse(user, "<NONE>", req.queryString).asJson)

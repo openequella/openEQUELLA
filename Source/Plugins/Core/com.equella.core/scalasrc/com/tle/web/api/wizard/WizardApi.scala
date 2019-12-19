@@ -205,10 +205,13 @@ class WizardApi {
                 content: InputStream): Response = {
     val streamedBody =
       readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
+
+    val headers = for {
+      headerName <- req.getHeaderNames.asScala
+    } yield (headerName, req.getHeader(headerName))
+
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
-      sttp
-        .post(uri)
-        .streamBody(streamedBody)
+      sttp.post(uri).streamBody(streamedBody).headers(headers.toMap)
     }
   }
 }

@@ -182,6 +182,25 @@ function TestControl(p: ControlApi<MyConfig>) {
       >
         Execute
       </button>
+
+      <button
+        onClick={_ => {
+          const formData = new FormData();
+          var file = document.getElementById("attachments") as HTMLInputElement;
+          for (var i = 0; i < file.files.length; i++) {
+            formData.append("file_" + i, file.files[i]);
+          }
+          const url = p.providerUrl(serviceId);
+          const req = axios.post(url, formData);
+          return req
+            .then(resp => setServiceResponse(resp.data))
+            .catch((err: Error) => {
+              setServiceResponse(err.message);
+            });
+        }}
+      >
+        Streaming test
+      </button>
     </div>
   );
 
@@ -277,6 +296,7 @@ function TestControl(p: ControlApi<MyConfig>) {
       <h4>Upload file</h4>
       <input
         type="file"
+        id="attachments"
         multiple
         onChange={e => {
           Array.from(e.currentTarget.files).forEach(f => {

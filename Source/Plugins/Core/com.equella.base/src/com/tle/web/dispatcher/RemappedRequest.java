@@ -19,8 +19,10 @@
 package com.tle.web.dispatcher;
 
 import com.tle.common.URLUtils;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -30,14 +32,20 @@ public final class RemappedRequest extends HttpServletRequestWrapper {
   private String pathInfo;
   private String requestURI;
   private final HttpServletRequest wrapped;
+  private ServletInputStream servletInputStream;
 
   private RemappedRequest(
-      HttpServletRequest request, String context, String servletPath, String pathInfo) {
+      HttpServletRequest request,
+      String context,
+      String servletPath,
+      String pathInfo,
+      ServletInputStream servletInputStream) {
     super(request);
     this.wrapped = request;
     this.contextPath = context;
     this.servletPath = servletPath;
     this.pathInfo = pathInfo;
+    this.servletInputStream = servletInputStream;
     setupURI();
   }
 
@@ -71,6 +79,11 @@ public final class RemappedRequest extends HttpServletRequestWrapper {
   }
 
   @Override
+  public ServletInputStream getInputStream() {
+    return servletInputStream;
+  }
+
+  @Override
   public void setAttribute(String name, Object o) {
     if (name.equals("org.apache.catalina.core.DISPATCHER_REQUEST_PATH")) // $NON-NLS-1$
     {
@@ -90,16 +103,18 @@ public final class RemappedRequest extends HttpServletRequestWrapper {
   }
 
   public static HttpServletRequest wrap(
-      HttpServletRequest request, String context, String servletPath, String pathInfo) {
+      HttpServletRequest request, String context, String servletPath, String pathInfo)
+      throws IOException {
     if (request instanceof RemappedRequest) {
       RemappedRequest orig = (RemappedRequest) request;
+      orig.servletInputStream = request.getInputStream();
       orig.contextPath = context;
       orig.pathInfo = pathInfo;
       orig.servletPath = servletPath;
       orig.setupURI();
       return orig;
     } else {
-      return new RemappedRequest(request, context, servletPath, pathInfo);
+      return new RemappedRequest(request, context, servletPath, pathInfo, request.getInputStream());
     }
   }
 }
