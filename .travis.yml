@@ -91,6 +91,14 @@ jobs:
         - ci/s3cp.sh target/reference-language-pack.zip                  $S3_DEST_BUILD
         - ci/s3cp.sh target/scriptingapi-javadoc-*.zip                   $S3_DEST_BUILD
     - stage: build and check
+      script: sbt "project IntegTester" package
+      workspaces:
+        create:
+          name: prebuilt-integtester
+          paths:
+            - autotest/IntegTester/target/
+      name: Pre-build IntegTester
+    - stage: build and check
       script: sbt test
       name: Unit test
     - stage: build and check
@@ -105,7 +113,9 @@ jobs:
         installEquella startEquella configureInstall setupForTests \
         Tests/test dumpCoverage
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: Scalacheck
       after_script: ci/scalacheck-save-results.sh Tests
     - stage: functional test
@@ -113,21 +123,27 @@ jobs:
         installEquella startEquella configureInstall setupForTests \
         Tests/Serial/test dumpCoverage
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: Scalacheck Serial
       after_script: ci/scalacheck-save-results.sh Tests-Serial
     # Admin
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (admin)
       env: OLD_TEST_SUITE=admin
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (admin - new UI)
       env:
         - OLD_TEST_SUITE=admin
@@ -137,14 +153,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (advanced script controls - ASC)
       env: OLD_TEST_SUITE=asc
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (advanced script controls - ASC - new UI)
       env:
         - OLD_TEST_SUITE=asc
@@ -154,14 +174,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (contribution)
       env: OLD_TEST_SUITE=contribution
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (contribution - new UI)
       env:
         - OLD_TEST_SUITE=contribution
@@ -171,14 +195,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (controls)
       env: OLD_TEST_SUITE=controls
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (controls - new UI)
       env:
         - OLD_TEST_SUITE=controls
@@ -188,14 +216,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (searching)
       env: OLD_TEST_SUITE=searching
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (searching - new UI)
       env:
         - OLD_TEST_SUITE=searching
@@ -205,14 +237,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (users)
       env: OLD_TEST_SUITE=users
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (users - new UI)
       env:
         - OLD_TEST_SUITE=users
@@ -222,14 +258,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (viewing)
       env: OLD_TEST_SUITE=viewing
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (viewing - new UI)
       env:
         - OLD_TEST_SUITE=viewing
@@ -239,14 +279,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (webservices)
       env: OLD_TEST_SUITE=webservices
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (webservices - new UI)
       env:
         - OLD_TEST_SUITE=webservices
@@ -256,14 +300,18 @@ jobs:
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (workflow)
       env: OLD_TEST_SUITE=workflow
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
       script: ci/oldtests-run.sh
       workspaces:
-        use: oeq-installer
+        use:
+          - oeq-installer
+          - prebuilt-integtester
       name: TestNG (workflow - new UI)
       env:
         - OLD_TEST_SUITE=workflow
