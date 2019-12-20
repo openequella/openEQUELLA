@@ -97,8 +97,7 @@ jobs:
           name: prebuilt-integtester
           paths:
             - autotest/IntegTester/target/
-            - autotest/IntegTester/ps/output/
-            - autotest/IntegTester/ps/target/
+            - autotest/IntegTester/ps/
       name: Pre-build IntegTester
     - stage: build and check
       script: sbt test
@@ -111,9 +110,14 @@ jobs:
       name: Build the Import/Export tool
 
     - stage: functional test
-      script: sbt -jvm-opts autotest/.jvmopts "project autotest" \
-        installEquella startEquella configureInstall setupForTests \
-        Tests/test dumpCoverage
+      script:
+        # DEBUG: Confirm PS directory is being properly cached
+        - ls -l autotest/IntegTester/ps/
+        # DEBUG: Confirm Target directory is being properly cached
+        - ls -l autotest/IntegTester/target/
+        - sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          installEquella startEquella configureInstall setupForTests \
+          Tests/test dumpCoverage
       workspaces:
         use:
           - oeq-installer
