@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.portal;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class RecentContributionsEditPage
     extends AbstractPortalEditPage<RecentContributionsEditPage> {
@@ -21,6 +22,12 @@ public class RecentContributionsEditPage
     super.checkLoaded();
     stausList = new EquellaSelect(context, driver.findElement(By.id("rct_s")));
     displayList = new EquellaSelect(context, driver.findElement(By.id("rct_d")));
+  }
+
+  public void checkSelectedCollection() {
+    WebElement allResourceOption =
+        driver.findElement(By.xpath("//input[@id=//label[text()='All resources']/@for]"));
+    if (!allResourceOption.isSelected()) allResourceOption.click();
   }
 
   @Override
