@@ -27,11 +27,10 @@ env:
 services:
   - postgresql
 addons:
+  chrome: beta
   postgresql: "9.6"
   apt:
     packages:
-      - chromium-browser
-      - chromium-chromedriver
       - ffmpeg
       - libimage-exiftool-perl
       - openjdk-8-jdk
@@ -52,6 +51,8 @@ before_install:
   - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
   - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
+  - curl -OL https://chromedriver.storage.googleapis.com/80.0.3987.16/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
