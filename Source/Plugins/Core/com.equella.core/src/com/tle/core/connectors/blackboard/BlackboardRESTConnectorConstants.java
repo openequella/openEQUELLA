@@ -21,13 +21,28 @@ package com.tle.core.connectors.blackboard;
 /** @author Aaron */
 @SuppressWarnings("nls")
 public final class BlackboardRESTConnectorConstants {
-  private BlackboardRESTConnectorConstants() {
-    throw new Error();
-  }
+
+  public static final String AUTHENTICATION_SERVICE_URI_PATH = "/learn/api/public/v1/oauth2/token";
+  public static final String SESSION_KEY_USER_CONTEXT = "BbRest.UserContext";
+  public static final String SESSION_KEY_ADMIN_USER_CONTEXT = "BbRest.AdminUserContext";
+  public static final String SESSION_KEY_USER_ID = "BbRest.UserId";
+  public static final String SESSION_KEY_USER_KEY = "BbRest.UserKey";
 
   public static final String CONNECTOR_TYPE = "blackboardrest";
 
   public static final String FIELD_TESTED_WEBSERVICE = "testedWebservice";
   public static final String FIELD_API_KEY = "apiKey";
   public static final String FIELD_API_SECRET = "apiSecret";
+
+  public static final String FIELD_APP_ID = "appId";
+  public static final String FIELD_APP_KEY = "appKey";
+
+  public static final String STATE_KEY_FORWARD_URL = "forwardUrl";
+  public static final String STATE_KEY_POSTFIX_KEY = "postfixKey";
+
+  public static final String AUTH_URL = "blackboardauth";
+
+  private BlackboardRESTConnectorConstants() {
+    throw new Error();
+  }
 }

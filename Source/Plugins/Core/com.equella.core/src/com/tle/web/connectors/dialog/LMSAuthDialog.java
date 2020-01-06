@@ -41,11 +41,14 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
 /** @author Aaron */
 @NonNullByDefault
 @Bind
 public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
+  private static final Logger LOGGER = Logger.getLogger(LMSAuthDialog.class);
+
   @PlugKey("dialog.lmsauth.title")
   private static Label LABEL_TITLE;
 
@@ -79,6 +82,7 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
         final Connector connector = connectorService.getByUuid(connectorUuid);
         authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
       }
+      LOGGER.trace("Setting authUrl to [" + authUrl + "].");
       model.setAuthUrl(authUrl);
     } catch (Exception e) {
       throw Throwables.propagate(e);
