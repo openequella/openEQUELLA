@@ -27,10 +27,10 @@ env:
 services:
   - postgresql
 addons:
-  chrome: beta
   postgresql: "9.6"
   apt:
     packages:
+      - google-chrome-beta
       - ffmpeg
       - libimage-exiftool-perl
       - openjdk-8-jdk
