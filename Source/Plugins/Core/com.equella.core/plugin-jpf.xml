@@ -4271,6 +4271,10 @@
     <parameter id="type" value="blackboardrest" />
     <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="blackboardRestOAuthServlet">
+    <parameter id="bean" value="bean:com.tle.web.connectors.brightspace.servlet.BlackboardRestOauthSignonServlet" />
+    <parameter id="url-pattern" value="/blackboardauth" />
+  </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
     <parameter id="id" value="blackboard" />
     <parameter id="nameKey" value="com.equella.core.connector.name" />
