@@ -20,9 +20,11 @@ package com.tle.core.connectors.blackboard.service.impl;
 
 import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -33,6 +35,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ViewableItemType;
+import com.tle.common.Check;
 import com.tle.common.PathUtils;
 import com.tle.common.connectors.ConnectorContent;
 import com.tle.common.connectors.ConnectorCourse;
@@ -42,8 +45,12 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
+import com.tle.core.connectors.blackboard.BlackboardRestAppContext;
+import com.tle.core.connectors.blackboard.BlackboardRestUserContext;
 import com.tle.core.connectors.blackboard.beans.*;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
+import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
+import com.tle.core.connectors.exception.LmsRequiresAuthenticationException;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
@@ -56,15 +63,22 @@ import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.exceptions.AuthenticationException;
 import com.tle.web.integration.Integration;
 import com.tle.web.selection.SelectedResource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.log4j.Level;
@@ -82,10 +96,16 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   private static final String API_ROOT = "/learn/api/public/v1";
 
+  private static final byte[] SHAREPASS =
+      new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};
+  private static final IvParameterSpec INITVEC = new IvParameterSpec("thisis16byteslog".getBytes());
+
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
   @Inject private ConnectorService connectorService;
   @Inject private EncryptionService encryptionService;
+  @Inject private UserSessionService userSessionService;
+  @Inject private InstitutionService institutionService;
 
   private static final String TOKEN_KEY = "TOKEN";
   private InstitutionCache<LoadingCache<String, LoadingCache<String, String>>> tokenCache;
@@ -111,6 +131,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Inject
   public void setInstitutionService(InstitutionService service) {
+    LOGGER.trace("Preparing to setup institution service for Blackboard REST cache");
+
     tokenCache =
         service.newInstitutionAwareCache(
             new CacheLoader<Institution, LoadingCache<String, LoadingCache<String, String>>>() {
@@ -129,7 +151,10 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
                             // BB tokens last one hour, so no point holding onto it longer than
                             // that. Of course, we need to handle the case
                             // where we are still holding onto an expired token.
-
+                            LOGGER.trace(
+                                "Loading Blackboard REST cache for connector ["
+                                    + connectorUuid
+                                    + "]");
                             return CacheBuilder.newBuilder()
                                 .expireAfterWrite(60, TimeUnit.MINUTES)
                                 .build(
@@ -165,11 +190,40 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
                                         try (final Response resp =
                                             httpService.getWebContent(
                                                 req, configService.getProxyDetails())) {
-                                          final Token token =
-                                              jsonMapper.readValue(
-                                                  resp.getInputStream(), Token.class);
-                                          return token.getAccessToken();
+                                          if (resp.isOk()) {
+                                            final Token token =
+                                                jsonMapper.readValue(
+                                                    resp.getInputStream(), Token.class);
+                                            LOGGER.warn(
+                                                "Gathered Blackboard access token for ["
+                                                    + connectorUuid
+                                                    + "]");
+                                            return token.getAccessToken();
+                                          } else {
+                                            final ErrorResponse bbErr =
+                                                jsonMapper.readValue(
+                                                    resp.getBody(), ErrorResponse.class);
+                                            LOGGER.warn(
+                                                "Unable to gather Blackboard access token for ["
+                                                    + connectorUuid
+                                                    + "] - Code ["
+                                                    + resp.getCode()
+                                                    + "] - Msg ["
+                                                    + resp.getMessage()
+                                                    + "] - Body ["
+                                                    + resp.getBody()
+                                                    + "]");
+                                            throw new AuthenticationException(
+                                                "Unable to authenticate with Blackboard - "
+                                                    + bbErr.getErrorDescription());
+                                          }
                                         } catch (Exception e) {
+                                          LOGGER.warn(
+                                              "Unable to gather Blackboard access token for ["
+                                                  + connectorUuid
+                                                  + "] - "
+                                                  + e.getMessage(),
+                                              e);
                                           throw Throwables.propagate(e);
                                         }
                                       }
@@ -197,12 +251,52 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public boolean isRequiresAuthentication(Connector connector) {
-    return false;
+    try {
+      getUserContext(connector);
+      return false;
+    } catch (LmsRequiresAuthenticationException ex) {
+      return true;
+    }
   }
 
   @Override
-  public String getAuthorisationUrl(Connector connector, String forwardUrl, String authData) {
-    return null;
+  public String getAuthorisationUrl(
+      Connector connector, String forwardUrl, @Nullable String authData) {
+    final BlackboardRestAppContext appContext = getAppContext(connector);
+    return getAuthorisationUrl(appContext, forwardUrl, authData);
+  }
+
+  @Override
+  public String getAuthorisationUrl(
+      String appId,
+      String appKey,
+      String bbServerUrl,
+      String forwardUrl,
+      @Nullable String postfixKey) {
+    final BlackboardRestAppContext appContext = getAppContext(appId, appKey, bbServerUrl);
+    return getAuthorisationUrl(appContext, forwardUrl, postfixKey);
+  }
+
+  private String getAuthorisationUrl(
+      BlackboardRestAppContext appContext, String forwardUrl, @Nullable String postfixKey) {
+    final ObjectMapper mapper = new ObjectMapper();
+    final ObjectNode stateJson = mapper.createObjectNode();
+    stateJson.put(BrightspaceConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
+    if (postfixKey != null) {
+      stateJson.put(BrightspaceConnectorConstants.STATE_KEY_POSTFIX_KEY, postfixKey);
+    }
+
+    URI uri;
+    try {
+      uri =
+          appContext.createWebUrlForAuthentication(
+              URI.create(
+                  institutionService.institutionalise(BlackboardRESTConnectorConstants.AUTH_URL)),
+              encrypt(mapper.writeValueAsString(stateJson)));
+    } catch (JsonProcessingException e) {
+      throw Throwables.propagate(e);
+    }
+    return uri.toString();
   }
 
   @Override
@@ -569,7 +663,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   private String getToken(String connectorUuid) {
     try {
-      return tokenCache.getCache().get(connectorUuid).get(TOKEN_KEY);
+      final String cachedToken = tokenCache.getCache().get(connectorUuid).getUnchecked(TOKEN_KEY);
+      if (cachedToken == null) {
+        throw new AuthenticationException("User was not able to obtain REST auth token.");
+      }
+      return cachedToken;
     } catch (ExecutionException e) {
       throw Throwables.propagate(e);
     }
@@ -577,5 +675,83 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   private String getKey(String partKey) {
     return KEY_PFX + "blackboardrest." + partKey;
+  }
+
+  private BlackboardRestAppContext getAppContext(Connector connector) {
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace(
+          "Blackboard REST connector attributes: "
+              + Arrays.toString(connector.getAttributes().keySet().toArray()));
+    }
+    return getAppContext(
+        connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY),
+        connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET),
+        connector.getServerUrl());
+  }
+
+  private BlackboardRestAppContext getAppContext(String appId, String appKey, String serverUrl) {
+    return new BlackboardRestAppContext(appId, appKey, serverUrl);
+  }
+
+  private BlackboardRestUserContext getUserContext(Connector connector) {
+    BlackboardRestUserContext userContext =
+        userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_CONTEXT);
+    if (userContext == null) {
+      final String userId =
+          userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+      if (userId == null) {
+        throw new LmsRequiresAuthenticationException(
+            "No Blackboard user ID associated with session");
+      }
+
+      final String userKey =
+          userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_KEY);
+
+      final BlackboardRestAppContext appContext = getAppContext(connector);
+      userContext = appContext.createUserContext(userId, userKey);
+      userSessionService.setAttribute(
+          BlackboardRESTConnectorConstants.SESSION_KEY_USER_CONTEXT, userContext);
+
+      userSessionService.removeAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+      userSessionService.removeAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_KEY);
+    }
+    return userContext;
+  }
+
+  @Override
+  public String encrypt(String data) {
+    if (!Check.isEmpty(data)) {
+      try {
+        SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
+        Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        ecipher.init(Cipher.ENCRYPT_MODE, key, INITVEC);
+
+        // Encrypt
+        byte[] enc = ecipher.doFinal(data.getBytes());
+        return new Base64().encode(enc);
+
+      } catch (Exception e) {
+        throw new RuntimeException("Error encrypting", e);
+      }
+    }
+
+    return data;
+  }
+
+  @Override
+  public String decrypt(String encryptedData) {
+    if (!Check.isEmpty(encryptedData)) {
+      try {
+        byte[] bytes = new Base64().decode(encryptedData);
+        SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
+        Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);
+        return new String(ecipher.doFinal(bytes));
+      } catch (Exception e) {
+        throw new RuntimeException("Error decrypting ", e);
+      }
+    }
+
+    return encryptedData;
   }
 }
