@@ -47,8 +47,8 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def clearAndPopulatePreNoticeField(notice: String): Unit = {
     switchToTinyMCEIFrame()
-    preNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a"))
-    preNoticeField.sendKeys(Keys.DELETE)
+    preNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.BACK_SPACE))
+
     preNoticeField.sendKeys(notice)
     waitFor(ExpectedConditions.textToBePresentInElement(preNoticeField, notice))
   }
@@ -124,8 +124,7 @@ case class LoginNoticePage(ctx: PageContext)
 
   def populatePostNoticeField(notice: String): Unit = {
     gotoPostNoticeTab()
-    postNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a"))
-    postNoticeField.sendKeys(Keys.DELETE)
+    postNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.BACK_SPACE))
     postNoticeField.sendKeys(notice)
   }
 
