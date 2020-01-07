@@ -55,14 +55,8 @@ install:
   #  - sudo dpkg -i google-chrome-beta_current_amd64.deb
   - curl -OL https://chromedriver.storage.googleapis.com/80.0.3987.16/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
-  - whereis google-chrome
-  - whereis google-chrome-beta
-  - sudo apt-get purge google-chrome-stable
-  - whereis google-chrome
-  - whereis google-chrome-beta
-  - echo "google chrome version"
+  - sudo apt-get purge google-chrome-stable # have to delete the stable version to force chromedriver to use the beta
   - echo `google-chrome --version`
-  - echo `google-chrome-beta --version`
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
