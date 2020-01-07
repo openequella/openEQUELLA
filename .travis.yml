@@ -33,7 +33,7 @@ addons:
       - sourceline: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
         key_url: "https://dl-ssl.google.com/linux/linux_signing_key.pub"
     packages:
-      - google-chrome
+      - google-chrome-beta
       - ffmpeg
       - libimage-exiftool-perl
       - openjdk-8-jdk
