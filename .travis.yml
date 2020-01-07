@@ -57,6 +57,9 @@ install:
   - unzip chromedriver_linux64.zip
   - whereis google-chrome
   - whereis google-chrome-beta
+  - apt-get purge google-chrome-stable
+  - whereis google-chrome
+  - whereis google-chrome-beta
   - echo "google chrome version"
   - echo `google-chrome --version`
   - echo `google-chrome-beta --version`
