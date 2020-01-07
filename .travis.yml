@@ -58,6 +58,9 @@ install:
   - unzip chromedriver_linux64.zip
   - echo "google chrome version"
   - echo `google-chrome --version`
+  - echo `google-chrome-beta --version`
+  - echo `google-chrome-unstable --version`
+  - echo `google-chrome-stable --version`
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
