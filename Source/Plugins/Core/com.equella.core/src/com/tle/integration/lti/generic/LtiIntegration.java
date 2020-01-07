@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.blackboard;
+package com.tle.integration.lti.generic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.PrettyPrinter;
@@ -38,7 +38,6 @@ import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
@@ -75,32 +74,16 @@ import org.apache.log4j.Logger;
 @Singleton
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class BlackboardLtiIntegration extends AbstractIntegrationService<BlackboardLtiSessionData> {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardLtiIntegration.class);
+public class LtiIntegration extends AbstractIntegrationService<GenericLtiSessionData> {
+  private static final Logger LOGGER = Logger.getLogger(LtiIntegration.class);
 
-  // TODO - I think all this can be removed.
-  // Omitted logic for now...
-  //
-  // private static final String CUSTOM_CANVAS_COURSE_ID = "custom_bb_course_id";
-  // private static final String CUSTOM_CANVAS_API_DOMAIN = "custom_bb_api_domain";
-  // private static final String LIS_COURSE_OFFERING_SOURCEDID = "lis_course_offering_sourcedid";
   private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
 
-  // TODO - I think all this can be removed.
-  // Omitted logic for now...
-  //
-  // These two are only supplied to us if configured in the Canvas LTI tool setup.  E.g.:
-  // Custom Fields:
-  // course_id=$Canvas.course.sisSourceId
-  // course_code=$com.instructure.contextLabel
-  // private static final String CUSTOM_COURSE_ID = "custom_course_id";
-  // private static final String CUSTOM_COURSE_CODE = "custom_course_code";
-
   static {
-    PluginResourceHandler.init(BlackboardLtiIntegration.class);
+    PluginResourceHandler.init(LtiIntegration.class);
   }
 
-  @PlugKey("integration.receipt.addedtoblackboard")
+  @PlugKey("integration.receipt.addedtolti")
   private static String KEY_RECEIPT_ADDED;
 
   @PlugKey("canvas.error.requireoneconnector")
@@ -116,77 +99,43 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
   @Inject private ViewableItemResolver viewableItemResolver;
   @Inject private ReceiptService receiptService;
   @Inject private ConnectorService connectorService;
-  @Inject private BlackboardConnectorService bbService;
+  // @Inject private BlackboardConnectorService bbService;
   @Inject private ConnectorRepositoryService connectorRepoService;
-  // Omitted logic for now...
-  //
   @Inject private ReplicatedCacheService cacheService;
 
   private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  // TODO - I think all this can be removed.
-  //	private static final Multimap<String, String> CONTENT_TYPES_TO_MIME = HashMultimap.create(6,
-  // 6);
-  //
-  //	static
-  //	{
-  //		// oembed,lti_launch_url,url,image_url,iframe
-  //		// CONTENT_TYPES_TO_MIME.put("oembed", "");
-  //		CONTENT_TYPES_TO_MIME.put("image_url", "image/jpeg");
-  //		CONTENT_TYPES_TO_MIME.put("image_url", "image/gif");
-  //		CONTENT_TYPES_TO_MIME.put("image_url", "image/png");
-  //	}
-  // Omitted logic for now...
-  //
-  //	@PostConstruct
-  //	public void setupCache()
-  //	{
-  //		courseStructureCache = cacheService.getCache("BlackboardSignonCourseStructure", 100, 2,
-  // TimeUnit.MINUTES);
-  //	}
-
   @Override
   protected String getIntegrationType() {
-    return "blackboardLti";
+    return "lti";
   }
 
-  public boolean isItemOnly(BlackboardLtiSessionData data) {
+  public boolean isItemOnly(GenericLtiSessionData data) {
     return false;
   }
 
   @Override
-  public BlackboardLtiSessionData createDataForViewing(SectionInfo info) {
-    return new BlackboardLtiSessionData();
+  public GenericLtiSessionData createDataForViewing(SectionInfo info) {
+    return new GenericLtiSessionData();
   }
 
   @Override
   public void setupSingleSignOn(SectionInfo info, SingleSignonForm form) {
-    final BlackboardLtiSessionData data = new BlackboardLtiSessionData(info.getRequest());
+    final GenericLtiSessionData data = new GenericLtiSessionData(info.getRequest());
     String courseId = null;
     final UserState userState = CurrentUser.getUserState();
-    // TODO:  I think this can be removed as well
-    // final List<String> courseCodes = new ArrayList<String>();
     String courseCode = form.getCourseCode();
     if (userState instanceof LtiUserState) {
       final LtiUserState ltiUserState = (LtiUserState) userState;
       final LtiData ltiData = ltiUserState.getData();
       if (ltiData != null) {
-        // TODO: does BB pass anything about this?  Want a second opinion, but I don't think so.
-        data.setApiDomain(null); // ltiData.getCustom(CUSTOM_CANVAS_API_DOMAIN));
         courseId = form.getCourseId();
         if (Strings.isNullOrEmpty(courseId)) {
-          // courseId = ltiData.getCustom(CUSTOM_CANVAS_COURSE_ID);
           courseId = ltiData.getContextId();
         }
         data.setCourseId(courseId);
         data.setContextTitle(ltiData.getContextTitle());
-        //
-        //				courseCodes.add(ltiData.getCustom(CUSTOM_COURSE_CODE));
-        //				courseCodes.add(ltiData.getCustom(CUSTOM_COURSE_ID));
-        //				courseCodes.add(ltiData.getCustom(LIS_COURSE_OFFERING_SOURCEDID));
-        //				courseCodes.add(ltiData.getContextLabel());
-
         if (Strings.isNullOrEmpty(courseCode)) {
           courseCode = ltiData.getContextLabel();
         }
@@ -209,7 +158,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
       actionInfo = new IntegrationActionInfo();
     }
 
-    LOGGER.debug("BlackboardLtiIntegration.setupSingleSignOn: about to forward - data=" + data);
+    LOGGER.debug("GenericLtiIntegration.setupSingleSignOn: about to forward - data=" + data);
     integrationService.standardForward(
         info, convertToForward(actionInfo, form), data, actionInfo, form);
   }
@@ -231,7 +180,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
   @Override
   public SelectionSession setupSelectionSession(
       SectionInfo info,
-      BlackboardLtiSessionData data,
+      GenericLtiSessionData data,
       SelectionSession session,
       SingleSignonForm form) {
     final boolean structured = "structured".equals(data.getAction());
@@ -253,7 +202,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 
   @Nullable
   private String initStructure(
-      BlackboardLtiSessionData data, SelectionSession session, SingleSignonForm form) {
+      GenericLtiSessionData data, SelectionSession session, SingleSignonForm form) {
     final String courseId = data.getCourseId();
     String structure = form.getStructure();
     if (structure == null) {
@@ -263,7 +212,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
       }
       structure = courseStructureCache.get(courseId).orNull();
     }
-    // if no structure, get from Canvas
+    // if no structure, get from LMS
     if (structure == null) {
       final ObjectNode root = objectMapper.createObjectNode();
       root.put("id", courseId);
@@ -300,7 +249,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
     return structure;
   }
 
-  private Connector findConnector(BlackboardLtiSessionData data) {
+  private Connector findConnector(GenericLtiSessionData data) {
     Connector connector = null;
     final String connectorUuid = data.getConnectorUuid();
     if (connectorUuid != null) {
@@ -327,14 +276,14 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
   }
 
   @Override
-  public boolean select(SectionInfo info, BlackboardLtiSessionData data, SelectionSession session) {
+  public boolean select(SectionInfo info, GenericLtiSessionData data, SelectionSession session) {
     try {
       // TODO: a find a better way to determine if in structured session or not
       if (!session.getLayout().equals(RootSelectionSection.Layout.COURSE)) {
         String lti_message_type = data.getLtiMessageType();
         if (lti_message_type != null
             && lti_message_type.equalsIgnoreCase(CONTENT_ITEM_SELECTION_REQUEST)) {
-          info.forward(info.createForward("/blackboardlticipreturn.do"));
+          info.forward(info.createForward("/lticipreturn.do"));
         } else {
           final SelectedResource resource = getFirstSelectedResource(session);
           final IItem<?> item = getItemForResource(resource);
@@ -365,25 +314,6 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
           final StringBuilder retUrl = new StringBuilder(launchPresentationReturnUrl);
           retUrl.append(launchPresentationReturnUrl.contains("?") ? "&" : "?");
 
-          //					final Set<String> extContentReturnTypes = data.getExtContentReturnTypes();
-          //
-          //					if( extContentReturnTypes.contains("image_url")
-          //						&& CONTENT_TYPES_TO_MIME.get("image_url").contains(mimeType) )
-          //					{
-          //						retUrl.append("return_type=image_url");
-          //
-          //						retUrl.append("&url=");
-          //						retUrl.append(URLEncoder.encode(link.getUrl(), "UTF-8"));
-          //
-          //						retUrl.append("&alt=");
-          //						retUrl.append(URLEncoder.encode(link.getName(), "UTF-8"));
-          //					}
-          // "oembed" not supported yet
-          // "iframe"
-          // "url"
-
-          //					else
-          //					{
           retUrl.append("return_type=lti_launch_url");
 
           retUrl.append("&url=");
@@ -404,9 +334,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
         // maintain the selections so they survive the forwarding
         return true;
 
-      } else // TODO - I don't think there is a way to select multiple resources with the current Bb
-      // UI.
-      {
+      } else {
         final Connector connector = findConnector(data);
 
         final String courseId = session.getStructure().getId();
@@ -437,24 +365,24 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
   }
 
   @Override
-  public String getClose(BlackboardLtiSessionData data) {
+  public String getClose(GenericLtiSessionData data) {
     return data.getLaunchPresentationReturnUrl();
   }
 
   @Nullable
   @Override
-  public String getCourseInfoCode(BlackboardLtiSessionData data) {
+  public String getCourseInfoCode(GenericLtiSessionData data) {
     return data.getCourseInfoCode();
   }
 
   @Nullable
   @Override
-  public NameValue getLocation(BlackboardLtiSessionData data) {
+  public NameValue getLocation(GenericLtiSessionData data) {
     return null;
   }
 
   @Override
-  protected boolean canSelect(BlackboardLtiSessionData data) {
+  protected boolean canSelect(GenericLtiSessionData data) {
     // can be select_link, embed_content etc
     final String sd = data.getSelectionDirective();
     return sd != null || "ContentItemSelectionRequest".equals(data.getLtiMessageType());

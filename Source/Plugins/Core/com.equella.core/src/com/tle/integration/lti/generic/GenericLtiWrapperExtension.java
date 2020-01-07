@@ -16,35 +16,26 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.blackboard;
+package com.tle.integration.lti.generic;
 
+import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
-import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Checks for Canvas custom_bb_user_login_id param to match an existing user.
- *
- * <p>NOTE 1/21/19 (CB): This was ported over from the Canvas logic. We may not Need this
- * eventually.
- */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class BlackboardLtiWrapperExtension implements LtiWrapperExtension {
-  // TODO - 'lis_sourcedid' looks to provide this detail.  Anything we could gain by allowing it to
-  // be custom?
+public class GenericLtiWrapperExtension
+    implements com.tle.web.lti.usermanagement.LtiWrapperExtension {
   @Override
   public String getUserId(HttpServletRequest request) {
-    return request.getParameter("custom_bb_user_id");
+    return null;
   }
 
-  // TODO - 'lis_sourcedid' looks to provide this detail.  Anything we could gain by allowing it to
-  // be custom?
   @Override
   public String getUsername(HttpServletRequest request) {
-    return request.getParameter("custom_bb_user_login_id");
+    return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
   }
 
   @Override
