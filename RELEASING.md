@@ -85,8 +85,8 @@ Starting from a `develop` which is feature complete, assuming we're aiming for v
 8. Await build and then do a final validation of the resultant artefacts, if all in order tag the
    merge commit on master as `2020.1.0` - ensure to push the tag to git with `git push origin 2020.1.0`
 9. Now go to GitHub to publish/create the new release utilising the pushed tag
-10. Merge that tag point into develop (e.g. `git checkout develop && git pull && git merge 2020.1.0`) resolving any conflicts that may arise
-11. Last step, update `build.sbt` on `develop` to reflect the next planned feature release and
+10. Merge that tag point into develop (e.g. `git checkout develop && git pull && git merge 2020.1.0`) resolving any conflicts that may arise 11. Last step, update `build.sbt` on `develop`
+    to reflect the next planned feature release and
     setting `equellaStream` to `Alpha`
 
 **Publishing release candidate builds:** It is possible to publish the individual RC builds on
@@ -113,6 +113,31 @@ releases.
 
 ### Hotfix Releases
 
+Although there are essentially two processes here, they are the same other than the initial starting
+point for the `hotfix/` branch and then the target for the merge (and later tag).
+
 #### For current stable version
 
+To do a hotfix for the current stable version (i.e. the most recent feature release) you use
+`master` as the **base branch**.
+
 #### For previous stable versions
+
+To do a hotfix for one of the previous stable versions (i.e. versions which have been superseded
+by a newer feature release currently sitting on `master`), you use `stable-<version>` as the **base
+branch**. For example, if you wanted to do a new hotfix for 2019.1 your base branch would be
+`stable-2019.1`.
+
+#### Common Steps
+
+With the above starting **base branches** the steps are as follow:
+
+1. Checkout and pull the **base branch**
+2. Create the new `hotfix/<version>` branch - .e.g `git checkout -b hotfix/2019.2.1`
+3. Update `build.sbt` to correct version information - refer to guidance above
+4. Apply fixes that have already been made on other branches (ideally `develop`). Hopefully this can
+   be simply achieved with `git cherry-pick`, otherwise do manually
+5. Push and retrieve a Travis CI build to undertake testing
+6. If all is in order, then merge `hotfix/<version>` branch back to **base branch**
+7. Tag merge commit with version
+8. Retrieve the build from the tag, and use to create release on GitHub
