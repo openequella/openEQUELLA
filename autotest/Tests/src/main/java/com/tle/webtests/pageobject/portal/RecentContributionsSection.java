@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.portal;
 
 import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class RecentContributionsSection extends AbstractPortalSection<RecentContributionsSection> {
 
@@ -18,12 +19,18 @@ public class RecentContributionsSection extends AbstractPortalSection<RecentCont
                 + "]"));
   }
 
-  public boolean descriptionExists(String description) {
+  public boolean descriptionExists(String description, boolean expectedExisting) {
+    String descriptionQuoteXpath = quoteXPath(description);
+    if (expectedExisting) {
+      waiter.until(
+          ExpectedConditions.visibilityOfElementLocated(
+              By.xpath("//p[normalize-space(text())=" + descriptionQuoteXpath + "]")));
+    }
     return isPresent(
         getBoxContent(),
         By.xpath(
             ".//div[normalize-space(@class)='recent-items']//p[normalize-space(text())="
-                + quoteXPath(description)
+                + descriptionQuoteXpath
                 + "]"));
   }
 }
