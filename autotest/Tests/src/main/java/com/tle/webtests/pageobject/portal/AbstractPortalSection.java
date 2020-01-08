@@ -2,13 +2,13 @@ package com.tle.webtests.pageobject.portal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     extends AbstractPage<T> {
@@ -19,7 +19,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     this.title = title;
   }
 
-  protected WebElement getBoxHead() {
+  public WebElement getBoxHead() {
     return find(
         driver,
         By.xpath(
@@ -75,11 +75,9 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    WebElement boxHead = getBoxHead();
-    waiter.until(ExpectedConditions2.presenceOfElement(boxHead));
-    waiter.until(
-        ExpectedConditions2.presenceOfElement(boxHead.findElement(By.className("box_edit"))));
-    boxHead.findElement(By.className("box_edit")).click();
+    WebElement editButton = getBoxHead().findElement(By.className("box_edit"));
+    waiter.until(ExpectedConditions.elementToBeClickable(editButton));
+    editButton.click();
     return portal.get();
   }
 

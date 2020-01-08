@@ -32,6 +32,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -354,6 +355,9 @@ public class PortalsTest extends AbstractCleanupTest {
 
     // Edit portlet for description option
     home = new MenuSection(context).home();
+    recent
+        .getWaiter()
+        .until(ExpectedConditions.textToBePresentInElement(recent.getBoxHead(), recentName));
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
     edit.save(new HomePage(context));
