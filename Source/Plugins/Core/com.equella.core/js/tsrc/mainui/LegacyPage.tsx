@@ -14,6 +14,7 @@ import {
   LegacyContentProps
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
+import v4 = require("uuid/v4");
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -40,7 +41,7 @@ export function templatePropsForLegacy({
 }: PageContent): TemplateProps {
   let soHtml = html["so"];
   let menuExtra = soHtml ? (
-    <ScreenOptions optionsHtml={soHtml} contentId={contentId} />
+    <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={v4()} />
   ) : (
     undefined
   );
