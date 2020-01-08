@@ -185,7 +185,7 @@ function TestControl(p: ControlApi<MyConfig>) {
 
       <button
         onClick={_ => {
-          const url = p.providerUrl(serviceId) + "?param1=ecs_video_test";
+          const url = p.providerUrl(serviceId) + "?param1=test_param_one";
           const req = axios.delete(url);
           return req
             .then(resp => setServiceResponse(resp.data))
