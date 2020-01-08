@@ -85,19 +85,21 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
     return rv;
   }
 
-  public String tabText(String attachment, String tabName) {
-    return tabText(attachment, tabName, 0);
+  public String tabText(String attachment, String tabName, String expectedText) {
+    return tabText(attachment, tabName, expectedText, 0);
   }
 
-  public String tabText(String attachment, String tabName, int split) {
+  public String tabText(String attachment, String tabName, String expectedText, int split) {
     clickAttachment(attachment);
     switchToFrame(split);
     driver.findElement(By.xpath("//a/span[text()=" + quoteXPath(tabName) + "]")).click();
     waiter.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("iframe-content"));
 
     waitForBody();
+    WebElement body = driver.findElement(By.cssSelector("body"));
+    waiter.until(ExpectedConditions.textToBePresentInElement(body, expectedText));
 
-    String text = driver.findElement(By.tagName("body")).getText();
+    String text = body.getText();
     driver.switchTo().defaultContent();
     return text;
   }
