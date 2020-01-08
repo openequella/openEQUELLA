@@ -322,6 +322,7 @@ public class PortalsTest extends AbstractCleanupTest {
     // Edit the portal
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
 
     // Check that the draft item is displayed
