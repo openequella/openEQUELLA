@@ -211,6 +211,16 @@ class WizardApi {
         .streamBody(streamedBody)
     }
   }
+
+  @DELETE
+  @Path("provider/{providerId}/{serviceId}")
+  def proxyDELETE(@PathParam("wizid") wizid: String,
+                  @PathParam("providerId") providerId: UUID,
+                  @PathParam("serviceId") serviceId: String,
+                  @Context uriInfo: UriInfo,
+                  @Context req: HttpServletRequest): Response = {
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.delete)
+  }
 }
 
 class SimpleWorkflowOperation extends WorkflowOperation {

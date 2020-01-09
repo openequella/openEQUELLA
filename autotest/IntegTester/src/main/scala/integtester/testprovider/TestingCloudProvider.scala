@@ -135,6 +135,8 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
     case authReq @ GET -> Root / "myService" as user =>
       val req = authReq.req
       Ok(ServiceResponse(user, "<NONE>", req.queryString).asJson)
+    case authReq @ DELETE -> Root / "myService" as user =>
+      Ok(ServiceResponse(user, "<NONE>", authReq.req.queryString).asJson)
   }
 
   val oauthService = publicServices <+> middleware(protectedService)

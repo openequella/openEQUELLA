@@ -182,6 +182,20 @@ function TestControl(p: ControlApi<MyConfig>) {
       >
         Execute
       </button>
+
+      <button
+        onClick={_ => {
+          const url = p.providerUrl(serviceId) + "?param1=test_param_one";
+          const req = axios.delete(url);
+          return req
+            .then(resp => setServiceResponse(resp.data))
+            .catch((err: Error) => {
+              setServiceResponse(err.message);
+            });
+        }}
+      >
+        Delete Test
+      </button>
     </div>
   );
 
