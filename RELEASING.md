@@ -85,8 +85,8 @@ Starting from a `develop` which is feature complete, assuming we're aiming for v
 8. Await build and then do a final validation of the resultant artefacts, if all in order tag the
    merge commit on master as `2020.1.0` - ensure to push the tag to git with `git push origin 2020.1.0`
 9. Now go to GitHub to publish/create the new release utilising the pushed tag
-10. Merge that tag point into develop (e.g. `git checkout develop && git pull && git merge 2020.1.0`) resolving any conflicts that may arise 11. Last step, update `build.sbt` on `develop`
-    to reflect the next planned feature release and
+10. Merge that tag point into develop (e.g. `git checkout develop && git pull && git merge 2020.1.0`) resolving any conflicts that may arise
+11. Last step, update `build.sbt` on `develop` to reflect the next planned feature release and
     setting `equellaStream` to `Alpha`
 
 **Publishing release candidate builds:** It is possible to publish the individual RC builds on
