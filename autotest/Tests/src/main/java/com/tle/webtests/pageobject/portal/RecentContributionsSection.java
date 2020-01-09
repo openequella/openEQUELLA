@@ -11,6 +11,9 @@ public class RecentContributionsSection extends AbstractPortalSection<RecentCont
   }
 
   public boolean recentContributionExists(String itemName) {
+    waiter.until(
+        ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//a[normalize-space(text())=" + quoteXPath(itemName) + "]")));
     return isPresent(
         getBoxContent(),
         By.xpath(

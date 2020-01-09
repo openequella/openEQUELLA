@@ -414,6 +414,12 @@ public abstract class AbstractPage<T extends PageObject>
   @Override
   public T get() {
     refreshTime = System.currentTimeMillis();
+    getWaiter()
+        .until(
+            driver ->
+                ((JavascriptExecutor) driver)
+                    .executeScript("return document.readyState")
+                    .equals("complete"));
     return getWaiter()
         .until(
             new ExpectedCondition<T>() {
