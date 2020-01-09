@@ -72,21 +72,21 @@ Starting from a `develop` which is feature complete, assuming we're aiming for v
 2020.1.0:
 
 1. Create a new branch (from `develop`) - e.g. `git checkout -b release/2020.1.0`
-2. Update `build.sbt` ensuring `equellaMajor`, `equellaMinor` and `equellaPatch` correctly represent
-   the version
-3. Update `build.sbt` to set `equellaStream` is `RC` - for release candidate, consider even using
-   `RC1` so that later you can use `RC2` etc for any rework cycles
+2. Update root `build.sbt` ensuring `equellaMajor`, `equellaMinor` and `equellaPatch` correctly
+   represent the version
+3. Update root `build.sbt` to set `equellaStream` is `RC` - for release candidate, consider even
+   using `RC1` so that later you can use `RC2` etc for any rework cycles
 4. Push to git and await a build from Travis CI (which will publish a build - for now - to an S3
    bucket maintained by Edalex but which is publicly accessible and noted in build log)
 5. Download resultant build, and commence testing (and any rework - do more RCs as needed)
-6. Once agreed that code is ready for release, update `build.sbt` so that `equellaStream` is
+6. Once agreed that code is ready for release, update root `build.sbt` so that `equellaStream` is
    `Stable` and commit
 7. Now merge `release/2020.1.0` into `master` and push
 8. Await build and then do a final validation of the resultant artefacts, if all in order tag the
    merge commit on master as `2020.1.0` - ensure to push the tag to git with `git push origin 2020.1.0`
 9. Now go to GitHub to publish/create the new release utilising the pushed tag
 10. Merge that tag point into develop (e.g. `git checkout develop && git pull && git merge 2020.1.0`) resolving any conflicts that may arise
-11. Last step, update `build.sbt` on `develop` to reflect the next planned feature release and
+11. Last step, update root `build.sbt` on `develop` to reflect the next planned feature release and
     setting `equellaStream` to `Alpha`
 
 **Publishing release candidate builds:** It is possible to publish the individual RC builds on
@@ -134,7 +134,7 @@ With the above starting **base branches** the steps are as follow:
 
 1. Checkout and pull the **base branch**
 2. Create the new `hotfix/<version>` branch - .e.g `git checkout -b hotfix/2019.2.1`
-3. Update `build.sbt` to correct version information - refer to guidance above
+3. Update root `build.sbt` to correct version information - refer to guidance above
 4. Apply fixes that have already been made on other branches (ideally `develop`). Hopefully this can
    be simply achieved with `git cherry-pick`, otherwise do manually
 5. Push and retrieve a Travis CI build to undertake testing
