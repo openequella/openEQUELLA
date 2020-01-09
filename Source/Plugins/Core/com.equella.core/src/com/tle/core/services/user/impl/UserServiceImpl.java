@@ -139,7 +139,7 @@ public class UserServiceImpl
 
   @Transactional
   @Override
-  public void saveUserInfoBackup(UserBean userBean) {
+  public synchronized void saveUserInfoBackup(UserBean userBean) {
     String userUniqueId = userBean.getUniqueID();
     UserInfoBackup userInfoBackup = findUserInfoBackup(userUniqueId);
     if (userInfoBackup == null) {
