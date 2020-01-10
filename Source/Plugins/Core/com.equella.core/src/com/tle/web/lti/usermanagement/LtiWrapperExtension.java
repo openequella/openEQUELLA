@@ -29,7 +29,13 @@ public interface LtiWrapperExtension {
   String getUserId(HttpServletRequest request);
 
   @Nullable
+  String getUserId(HttpServletRequest request, String param);
+
+  @Nullable
   String getUsername(HttpServletRequest request);
+
+  @Nullable
+  String getUsername(HttpServletRequest request, String param);
 
   @Nullable
   String getFirstName(HttpServletRequest request);

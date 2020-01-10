@@ -21,6 +21,12 @@
 <@setting label=b.key("editor.postfix") help=b.key("editor.username.help")>
 	<@textfield section=s.postfixField maxlength=50 />
 </@setting>
+<@setting label=b.key("editor.customuserid") help=b.key("editor.customuserid.help")>
+	<@textfield section=s.customUserIdParameterField maxlength=50 />
+</@setting>
+<@setting label=b.key("editor.customuserloginid") help=b.key("editor.customuserloginid.help")>
+	<@textfield section=s.customUserLoginIdParameterField maxlength=50 />
+</@setting>
 <@a.div id="allowed">
 	<@setting label=b.key("editor.allowed.label") help=b.key("editor.allowed.help")>
 		${m.prettyExpression}
@@ -40,8 +46,8 @@
 </@a.div>
 <@a.div id="customrole">
 	<@setting label=b.key("editor.role.custom.label") error=m.errors["nocustomrole"] help=b.key("editor.role.custom.help")>
-		<@render section=s.customRolesTable />	
-		<@autocomplete section=s.customRoleField class="custom-role" placeholder=b.key("editor.role.custom.placeholder")  /> 
+		<@render section=s.customRolesTable />
+		<@autocomplete section=s.customRoleField class="custom-role" placeholder=b.key("editor.role.custom.placeholder")  />
 		<@render section=s.customRoleDialog.opener  class="add">${b.key("editor.table.roles.add")}</@render>
 	</@setting>
 </@a.div>

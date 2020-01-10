@@ -20,6 +20,7 @@ package com.tle.integration.lti.generic;
 
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
+import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -27,21 +28,24 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class GenericLtiWrapperExtension
-    implements com.tle.web.lti.usermanagement.LtiWrapperExtension {
+public class GenericLtiWrapperExtension implements LtiWrapperExtension {
   @Override
   public String getUserId(HttpServletRequest request) {
-    // We need some specific code for BB in case we have the custom userId.
-    if (StringUtils.isNotEmpty(
-        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
-      String family =
-          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-      if ((!StringUtils.equals(family, "canvas"))
-          || (!StringUtils.equals(family, "desire2learn"))) {
-        if (request.getParameterMap().containsKey("custom_user_id")) {
-          return request.getParameter("custom_user_id");
-        } else {
-          return null;
+    return null;
+  }
+
+  @Override
+  public String getUserId(HttpServletRequest request, String param) {
+    if (StringUtils.isNotEmpty(param)) {
+      if (StringUtils.isNotEmpty(
+          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
+        String family =
+            request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
+        if ((!StringUtils.equals(family, "canvas"))
+            && (!StringUtils.equals(family, "desire2learn"))) {
+          if (request.getParameterMap().containsKey(param)) {
+            return request.getParameter(param);
+          }
         }
       }
     }
@@ -56,7 +60,7 @@ public class GenericLtiWrapperExtension
       String family =
           request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
       if ((!StringUtils.equals(family, "canvas"))
-          || (!StringUtils.equals(family, "desire2learn"))) {
+          && (!StringUtils.equals(family, "desire2learn"))) {
         if (request.getParameterMap().containsKey("custom_user_login_id")) {
           return request.getParameter("custom_user_login_id");
         } else {
@@ -65,6 +69,28 @@ public class GenericLtiWrapperExtension
       }
     }
     return null;
+  }
+
+  @Override
+  public String getUsername(HttpServletRequest request, String param) {
+    if (StringUtils.isNotEmpty(param)) {
+      if (StringUtils.isNotEmpty(
+          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
+        String family =
+            request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
+        if ((!StringUtils.equals(family, "canvas"))
+            && (!StringUtils.equals(family, "desire2learn"))) {
+          if (request.getParameterMap().containsKey(param)) {
+            return request.getParameter(param);
+          } else {
+            return getUsername(request);
+          }
+        }
+      }
+      return null;
+    } else {
+      return getUsername(request);
+    }
   }
 
   @Override

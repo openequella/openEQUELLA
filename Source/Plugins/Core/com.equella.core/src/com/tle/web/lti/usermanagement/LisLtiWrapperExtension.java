@@ -22,6 +22,7 @@ import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 
 /** @author Aaron */
 @Bind
@@ -33,8 +34,26 @@ public class LisLtiWrapperExtension implements LtiWrapperExtension {
   }
 
   @Override
+  public String getUserId(HttpServletRequest request, String param) {
+    if (StringUtils.isNotEmpty(param)) {
+      return request.getParameter(param);
+    } else {
+      return getUserId(request);
+    }
+  }
+
+  @Override
   public String getUsername(HttpServletRequest request) {
     return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
+  }
+
+  @Override
+  public String getUsername(HttpServletRequest request, String param) {
+    if (StringUtils.isNotEmpty(param)) {
+      return request.getParameter(param);
+    } else {
+      return getUsername(request);
+    }
   }
 
   @Override
