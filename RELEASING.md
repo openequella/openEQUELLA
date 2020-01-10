@@ -105,7 +105,7 @@ create a new branch called `stable-2019.2`. This is done via:
     git checkout -b stable-2019.2 2019.2.3
     git push -u origin stable-2019.2
 
-_NOTE:_ Unfortunately here we're using `stable-<version>` rather than `stable/<version` as
+_NOTE:_ Unfortunately here we're using `stable-<version>` rather than `stable/<version>` as
 historically a `stable` branch was created for oEQ 6.5.
 
 This newly created branch, will then be used below when creating hotfixes for 'previous' stable
