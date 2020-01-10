@@ -130,7 +130,7 @@ branch**. For example, if you wanted to do a new hotfix for 2019.1 your base bra
 
 #### Common Steps
 
-With the above starting **base branches** the steps are as follow:
+With the above starting **base branches** the steps are as follows:
 
 1. Checkout and pull the **base branch**
 2. Create the new `hotfix/<version>` branch - .e.g `git checkout -b hotfix/2019.2.1`
