@@ -40,7 +40,7 @@ export function templatePropsForLegacy({
 }: PageContent): TemplateProps {
   let soHtml = html["so"];
   let menuExtra = soHtml ? (
-    <ScreenOptions optionsHtml={soHtml} contentId={contentId} />
+    <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
   ) : (
     undefined
   );
