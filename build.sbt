@@ -113,7 +113,7 @@ name := "Equella"
 
 equellaMajor in ThisBuild := 2019
 equellaMinor in ThisBuild := 1
-equellaPatch in ThisBuild := 2
+equellaPatch in ThisBuild := 3
 equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
