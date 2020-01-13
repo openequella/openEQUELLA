@@ -184,6 +184,22 @@ class WizardApi {
 
   }
 
+  def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
+    readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
+  }
+
+  def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
+    val headers = for {
+      headerName <- req.getHeaderNames.asScala
+    } yield (headerName, req.getHeader(headerName))
+
+    def filterHeadersByValues(value: String) = {
+      val list = List("JSESSIONID")
+      !list.exists(value.contains(_))
+    }
+    headers.toMap.filter(header => filterHeadersByValues(header._2))
+  }
+
   @NoCache
   @GET
   @Path("provider/{providerId}/{serviceId}")
@@ -192,7 +208,9 @@ class WizardApi {
                @PathParam("serviceId") serviceId: String,
                @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest): Response = {
-    proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.get)
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp.get(uri).headers(getRequestHeaders(req))
+    }
   }
 
   @POST
@@ -203,12 +221,27 @@ class WizardApi {
                 @Context uriInfo: UriInfo,
                 @Context req: HttpServletRequest,
                 content: InputStream): Response = {
-    val streamedBody =
-      readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       sttp
         .post(uri)
-        .streamBody(streamedBody)
+        .headers(getRequestHeaders(req))
+        .streamBody(getStreamedBody(content))
+    }
+  }
+
+  @PUT
+  @Path("provider/{providerId}/{serviceId}")
+  def proxyPUT(@PathParam("wizid") wizid: String,
+               @PathParam("providerId") providerId: UUID,
+               @PathParam("serviceId") serviceId: String,
+               @Context uriInfo: UriInfo,
+               @Context req: HttpServletRequest,
+               content: InputStream): Response = {
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp
+        .put(uri)
+        .headers(getRequestHeaders(req))
+        .streamBody(getStreamedBody(content))
     }
   }
 
@@ -219,7 +252,9 @@ class WizardApi {
                   @PathParam("serviceId") serviceId: String,
                   @Context uriInfo: UriInfo,
                   @Context req: HttpServletRequest): Response = {
-    proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.delete)
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp.delete(uri).headers(getRequestHeaders(req))
+    }
   }
 }
 
