@@ -25,7 +25,7 @@
 	<@textfield section=s.customUserIdParameterField maxlength=128 />
 </@setting>
 <@setting label=b.key("editor.customusername") help=b.key("editor.customusername.help")>
-	<@textfield section=s.customUserNameParameterField maxlength=128 />
+	<@textfield section=s.customUsernameParameterField maxlength=128 />
 </@setting>
 <@a.div id="allowed">
 	<@setting label=b.key("editor.allowed.label") help=b.key("editor.allowed.help")>

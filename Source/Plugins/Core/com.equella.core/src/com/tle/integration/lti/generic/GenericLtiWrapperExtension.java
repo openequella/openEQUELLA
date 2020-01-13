@@ -36,13 +36,13 @@ public class GenericLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUserId(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      if (StringUtils.isNotEmpty(
-          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
-        String family =
-            request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-        if ((!StringUtils.equals(family, "canvas"))
-            && (!StringUtils.equals(family, "desire2learn"))) {
+    if (StringUtils.isNotEmpty(
+        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
+      String family =
+          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
+      if ((!StringUtils.equals(family, "canvas"))
+          && (!StringUtils.equals(family, "desire2learn"))) {
+        if (StringUtils.isNotEmpty(param)) {
           if (request.getParameterMap().containsKey(param)) {
             return request.getParameter(param);
           }
@@ -54,43 +54,24 @@ public class GenericLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUsername(HttpServletRequest request) {
-    // We need some specific code for BB in case we have the custom user login Id.
+    return getUsername(request, null);
+  }
+
+  @Override
+  public String getUsername(HttpServletRequest request, String param) {
     if (StringUtils.isNotEmpty(
         request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
       String family =
           request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
       if ((!StringUtils.equals(family, "canvas"))
           && (!StringUtils.equals(family, "desire2learn"))) {
-        if (request.getParameterMap().containsKey("custom_user_login_id")) {
-          return request.getParameter("custom_user_login_id");
-        } else {
-          return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
+        if (StringUtils.isNotEmpty(param) && request.getParameterMap().containsKey(param)) {
+          return request.getParameter(param);
         }
+        return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
       }
     }
     return null;
-  }
-
-  @Override
-  public String getUsername(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      if (StringUtils.isNotEmpty(
-          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
-        String family =
-            request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-        if ((!StringUtils.equals(family, "canvas"))
-            && (!StringUtils.equals(family, "desire2learn"))) {
-          if (request.getParameterMap().containsKey(param)) {
-            return request.getParameter(param);
-          } else {
-            return getUsername(request);
-          }
-        }
-      }
-      return null;
-    } else {
-      return getUsername(request);
-    }
   }
 
   @Override

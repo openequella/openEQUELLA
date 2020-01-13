@@ -47,6 +47,10 @@ public class LisLtiWrapperExtension implements LtiWrapperExtension {
     return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
   }
 
+  // FIXME: With the new GenericLtiWrapperExtension, this code shouldn't be called anymore
+  // I added this method because the interface now defines it but in the future, this wrapper
+  // can surely be removed.
+
   @Override
   public String getUsername(HttpServletRequest request, String param) {
     if (StringUtils.isNotEmpty(param)) {

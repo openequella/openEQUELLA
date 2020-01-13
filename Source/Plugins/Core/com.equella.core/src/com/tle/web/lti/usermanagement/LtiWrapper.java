@@ -168,9 +168,12 @@ public class LtiWrapper extends AbstractUserDirectory {
       @Nullable String fallbackUsername,
       @Nullable LtiConsumer consumer) {
     String username = fallbackUsername;
+    String customUsernameParameter = null;
+    if (consumer != null) {
+      customUsernameParameter = consumer.getAttribute("customUsernameParameter");
+    }
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      final String extensionUsername =
-          extension.getUsername(request, consumer.getAttribute("customUserNameParameter"));
+      final String extensionUsername = extension.getUsername(request, customUsernameParameter);
       if (!Strings.isNullOrEmpty(extensionUsername)) {
         username = extensionUsername;
         break;
@@ -189,9 +192,13 @@ public class LtiWrapper extends AbstractUserDirectory {
 
   private String getUserId(HttpServletRequest request, @Nullable LtiConsumer consumer) {
     String userId = null;
+    String customUserIdParameter = null;
+    if (consumer != null) {
+      customUserIdParameter = consumer.getAttribute("customUserIdParameter");
+    }
     boolean prefix = true;
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      userId = extension.getUserId(request, consumer.getAttribute("customUserIdParameter"));
+      userId = extension.getUserId(request, customUserIdParameter);
       if (userId != null) {
         prefix = extension.isPrefixUserId();
         break;
