@@ -22,10 +22,10 @@
 	<@textfield section=s.postfixField maxlength=50 />
 </@setting>
 <@setting label=b.key("editor.customuserid") help=b.key("editor.customuserid.help")>
-	<@textfield section=s.customUserIdParameterField maxlength=50 />
+	<@textfield section=s.customUserIdParameterField maxlength=128 />
 </@setting>
-<@setting label=b.key("editor.customuserloginid") help=b.key("editor.customuserloginid.help")>
-	<@textfield section=s.customUserLoginIdParameterField maxlength=50 />
+<@setting label=b.key("editor.customusername") help=b.key("editor.customusername.help")>
+	<@textfield section=s.customUserNameParameterField maxlength=128 />
 </@setting>
 <@a.div id="allowed">
 	<@setting label=b.key("editor.allowed.label") help=b.key("editor.allowed.help")>

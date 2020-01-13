@@ -133,7 +133,7 @@ public class LtiConsumerEditorSection
   @Component private TextField prefixField;
   @Component private TextField postfixField;
   @Component private TextField customUserIdParameterField;
-  @Component private TextField customUserLoginIdParameterField;
+  @Component private TextField customUserNameParameterField;
   @Component private SingleSelectionList<UnknownUser> unknownUserList;
   @Component private SelectionsTable instructorRolesTable;
 
@@ -416,7 +416,7 @@ public class LtiConsumerEditorSection
     prefixField.setValue(info, bean.getPrefix());
     postfixField.setValue(info, bean.getPostfix());
     customUserIdParameterField.setValue(info, bean.getAttribute("customUserIdParameter"));
-    customUserLoginIdParameterField.setValue(info, bean.getAttribute("customUserLoginIdParameter"));
+    customUserNameParameterField.setValue(info, bean.getAttribute("customUserNameParameter"));
     allowedSelector.setExpression(info, bean.getAllowedExpression());
     LtiConsumerEditorModel model = getModel(info);
     if (!Check.isEmpty(bean.getInstructorRoles())) {
@@ -491,7 +491,7 @@ public class LtiConsumerEditorSection
     LtiConsumerEditingBean bean = session.getBean();
     bean.setConsumerKey(consumerKeyField.getValue(info));
     bean.setAttribute("customUserIdParameter", customUserIdParameterField.getValue(info));
-    bean.setAttribute("customUserLoginIdParameter", customUserLoginIdParameterField.getValue(info));
+    bean.setAttribute("customUserNameParameter", customUserNameParameterField.getValue(info));
     bean.setConsumerSecret(consumerSecretField.getValue(info));
     bean.setPrefix(prefixField.getValue(info));
     bean.setPostfix(postfixField.getValue(info));
@@ -689,8 +689,8 @@ public class LtiConsumerEditorSection
     return customUserIdParameterField;
   }
 
-  public TextField getCustomUserLoginIdParameterField() {
-    return customUserLoginIdParameterField;
+  public TextField getCustomUserNameParameterField() {
+    return customUserNameParameterField;
   }
 
   public ExpressionSelectorDialog getAllowedSelector() {
