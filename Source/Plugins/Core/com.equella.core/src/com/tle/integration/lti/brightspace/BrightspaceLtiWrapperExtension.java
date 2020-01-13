@@ -27,7 +27,6 @@ import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Checks for Brightspace ext_d2l_username param to match an existing user.
@@ -62,16 +61,7 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUserId(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      final String rawId = request.getParameter(param);
-      if (StringUtils.isNotEmpty(rawId)) {
-        return truncatedUniqueName(rawId);
-      } else {
-        return getUserId(request);
-      }
-    } else {
-      return getUserId(request);
-    }
+    return getUserId(request);
   }
 
   /**
@@ -105,11 +95,7 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUsername(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      return request.getParameter(param);
-    } else {
-      return getUsername(request);
-    }
+    return getUsername(request);
   }
   /** Fallback to standard LIS params */
   @Override

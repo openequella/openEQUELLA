@@ -22,7 +22,6 @@ import com.tle.core.guice.Bind;
 import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Checks for Canvas custom_canvas_user_login_id param to match an existing user.
@@ -40,11 +39,7 @@ public class CanvasLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUserId(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      return request.getParameter(param);
-    } else {
-      return getUserId(request);
-    }
+    return getUserId(request);
   }
 
   @Override
@@ -54,11 +49,7 @@ public class CanvasLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUsername(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(param)) {
-      return request.getParameter(param);
-    } else {
-      return getUsername(request);
-    }
+    return getUsername(request);
   }
 
   @Override
