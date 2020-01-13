@@ -1086,6 +1086,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
   private void ascEditbox(int ctrlNum, String suffix, String text) {
     WebElement field = context.getDriver().findElement(By.name("c" + ctrlNum + suffix));
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    wait.until(ExpectedConditions.visibilityOf(field));
     field.clear();
     field.sendKeys(text);
   }
