@@ -7,7 +7,7 @@ the two main release types which are done - stable and hotfix.
 
 ## Introduction
 
-The oEQ project follows essentially the Git Flow workflow for the management of its git repository.
+The oEQ project follows essentially the [Git Flow workflow](https://nvie.com/posts/a-successful-git-branching-model) for the management of its git repository.
 Utilising this there are then two key release types:
 
 - **Stable** - these are releases which originate from the `master` git branch. These first start
