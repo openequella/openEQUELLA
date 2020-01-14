@@ -11,6 +11,7 @@ import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
+import org.http4s.util.CaseInsensitiveString
 import scalaoauth2.provider._
 
 import scala.collection.JavaConverters._
@@ -127,16 +128,36 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
     case req @ POST -> Root / "itemNotification" as user =>
       System.err.println(req.req.queryString)
       Ok()
+
     case authReq @ POST -> Root / "myService" as user =>
-      val req = authReq.req
+      createResponse(true, authReq.req, user)
+
+    case authReq @ PUT -> Root / "myService" as user =>
+      createResponse(true, authReq.req, user)
+
+    case authReq @ GET -> Root / "myService" as user =>
+      createResponse(false, authReq.req, user)
+
+    case authReq @ DELETE -> Root / "myService" as user =>
+      createResponse(false, authReq.req, user)
+  }
+  def createResponse(decode: Boolean, req: Request[IO], user: TestUser): IO[Response[IO]] = {
+    val cookies = req.headers.get(CaseInsensitiveString("cookie"))
+
+    // If header includes cookies then check if JSESSIONID exists; if yes then respond with a bad request.
+    if (cookies.isDefined) {
+      val jSessionId = cookies.get.value.split(";").exists(value => value.startsWith("JSESSIONID"))
+      if (jSessionId) {
+        return BadRequest("The unexpected cookie name (JSESSIONID) was found.")
+      }
+    }
+    if (decode) {
       req.decode[String] { serviceData =>
         Ok(ServiceResponse(user, serviceData, req.queryString).asJson)
       }
-    case authReq @ GET -> Root / "myService" as user =>
-      val req = authReq.req
+    } else {
       Ok(ServiceResponse(user, "<NONE>", req.queryString).asJson)
-    case authReq @ DELETE -> Root / "myService" as user =>
-      Ok(ServiceResponse(user, "<NONE>", authReq.req.queryString).asJson)
+    }
   }
 
   val oauthService = publicServices <+> middleware(protectedService)
