@@ -148,7 +148,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
     if (cookies.isDefined) {
       val jSessionId = cookies.get.value.split(";").exists(value => value.startsWith("JSESSIONID"))
       if (jSessionId) {
-        return BadRequest("Unexpected cookie is found.")
+        return BadRequest("The unexpected cookie name (JSESSIONID) was found.")
       }
     }
     if (decode) {
