@@ -23,7 +23,7 @@ been deemed safe to 'backport' to older versions. (E.g. a fix may be made to 201
 
 ### Versioning
 
-oEQ utilises the following version scheme:
+oEQ utilises the [calver versioning scheme](https://calver.org):
 
     <year>.<release>.<patch>
 
