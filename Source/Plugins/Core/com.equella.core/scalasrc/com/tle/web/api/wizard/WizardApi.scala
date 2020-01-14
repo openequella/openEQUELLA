@@ -184,20 +184,28 @@ class WizardApi {
 
   }
 
-  def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
+  private def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
     readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
   }
 
-  def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
-    val headers = for {
+  private def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
+    val headers = (for {
       headerName <- req.getHeaderNames.asScala
-    } yield (headerName, req.getHeader(headerName))
+    } yield (headerName, req.getHeader(headerName))).toMap
 
-    def filterHeadersByValues(value: String) = {
-      val list = List("JSESSIONID")
-      !list.exists(value.contains(_))
+    val filterCookies = {
+      val filterList = List("JSESSIONID")
+      val cookies =
+        req.getCookies.filter(cookie => filterList.exists(!_.startsWith(cookie.getName)))
+      // Generate a string which include cookie pairs separated by a semi-colon
+      cookies.map(cookie => s"${cookie.getName}=${cookie.getValue}").mkString(";")
     }
-    headers.toMap.filter(header => filterHeadersByValues(header._2))
+    // If have cookies apart from those unneeded then reset cookie in the header; otherwise remove cookie from the header.
+    if (!filterCookies.isEmpty) {
+      headers + ("cookie" -> filterCookies)
+    } else {
+      headers - "cookie"
+    }
   }
 
   @NoCache

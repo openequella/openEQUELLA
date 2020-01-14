@@ -1,6 +1,6 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import {
   ControlApi,
@@ -93,6 +93,28 @@ function TestControl(p: ControlApi<MyConfig>) {
     [failValidation, required]
   );
 
+  interface TestingButtonProps {
+    buttonName: string;
+    onClick: () => Promise<AxiosResponse<any>>;
+  }
+  const TestingButton = TestingButtonProps => (
+    <button
+      onClick={() => {
+        TestingButtonProps.onClick()
+          .then(resp => setServiceResponse(resp.data))
+          .catch((err: Error) => {
+            setServiceResponse(err.message);
+          });
+      }}
+    >
+      {TestingButtonProps.buttonName}
+    </button>
+  );
+
+  const requestUrl = (query: String = queryString) => {
+    return p.providerUrl(serviceId) + "?" + query;
+  };
+
   React.useEffect(() => {
     p.registerValidator(validator);
     return () => p.deregisterValidator(validator);
@@ -135,14 +157,6 @@ function TestControl(p: ControlApi<MyConfig>) {
           onChange={e => setQueryString(e.target.value)}
         />
       </div>
-      <div>
-        POST Request?{" "}
-        <input
-          type="checkbox"
-          checked={postRequest}
-          onChange={e => setPostRequest(e.target.checked)}
-        />
-      </div>
       {postRequest && (
         <div>
           Payload:
@@ -165,53 +179,31 @@ function TestControl(p: ControlApi<MyConfig>) {
           />
         </div>
       )}
-      <button
-        onClick={_ => {
-          const url = p.providerUrl(serviceId) + "?" + queryString;
-          const req = postRequest
-            ? axios.post(url, {
-                data: serviceContent
-              })
-            : axios.get(url);
-          return req
-            .then(resp => setServiceResponse(resp.data))
-            .catch((err: Error) => {
-              setServiceResponse(err.message);
-            });
-        }}
-      >
-        Execute
-      </button>
 
-      <button
-        onClick={_ => {
-          const url = p.providerUrl(serviceId) + "?param1=test_param_one";
-          const req = axios.delete(url);
-          return req
-            .then(resp => setServiceResponse(resp.data))
-            .catch((err: Error) => {
-              setServiceResponse(err.message);
-            });
-        }}
-      >
-        Delete Test
-      </button>
+      <TestingButton buttonName="GET" onClick={() => axios.get(requestUrl())} />
 
-      <button
-        onClick={_ => {
-          const url = p.providerUrl(serviceId) + "?" + queryString;
-          const req = axios.put(url, {
+      <TestingButton
+        buttonName="POST"
+        onClick={() =>
+          axios.post(requestUrl(), {
             data: serviceContent
-          });
-          return req
-            .then(resp => setServiceResponse(resp.data))
-            .catch((err: Error) => {
-              setServiceResponse(err.message);
-            });
-        }}
-      >
-        Put Test
-      </button>
+          })
+        }
+      />
+
+      <TestingButton
+        buttonName="DELETE"
+        onClick={() => axios.delete(requestUrl("param1=test_param_one"))}
+      />
+
+      <TestingButton
+        buttonName="PUT"
+        onClick={() =>
+          axios.put(requestUrl(), {
+            data: serviceContent
+          })
+        }
+      />
     </div>
   );
 
