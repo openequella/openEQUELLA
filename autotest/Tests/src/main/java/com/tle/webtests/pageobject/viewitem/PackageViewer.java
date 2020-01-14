@@ -65,8 +65,7 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
           @Override
           public Boolean apply(WebDriver d) {
             try {
-              WebElement body = driver.findElement(By.tagName("body"));
-              waiter.until(ExpectedConditions.visibilityOf(body));
+              driver.findElement(By.tagName("body"));
               return Boolean.TRUE;
             } catch (StaleElementReferenceException ste) {
               return Boolean.FALSE;
@@ -94,8 +93,9 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
     switchToFrame(split);
     driver.findElement(By.xpath("//a/span[text()=" + quoteXPath(tabName) + "]")).click();
     waiter.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("iframe-content"));
-    waitForBody();
-    String text = driver.findElement(By.tagName("body")).getText();
+    By body = By.tagName("body");
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(body));
+    String text = driver.findElement(body).getAttribute("innerText");
     driver.switchTo().defaultContent();
     return text;
   }
