@@ -25,7 +25,7 @@ been deemed safe to 'backport' to older versions. (E.g. a fix may be made to 201
 
 oEQ utilises the [calver versioning scheme](https://calver.org):
 
-    <year>.<release>.<patch>
+    YYYY.MINOR.MICRO
 
 Each feature release (new 'stable' release) has:
 
