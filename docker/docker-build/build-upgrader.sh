@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-cd /home/equella/repo/Equella
+cd /home/oeq/repo/openEQUELLA
 sbt upgradeZip

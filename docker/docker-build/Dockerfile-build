@@ -1,6 +1,6 @@
-FROM openjdk:8-jdk as baseequella
+FROM openjdk:8-jdk as oeq-base
 
-# Builder for openEQUELLA 2018.2 and prior
+# Builder for openEQUELLA.
 
 # Expects a host volume:  
 # -v /host/directory/for/artifacts:/artifacts 
@@ -12,7 +12,7 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV VERSION_SBT 1.1.1
 ENV VERSION_NODEJS 8.x
-LABEL supported.openequella.versions="2018.2"
+LABEL supported.openequella.versions="2019.1,2019.2"
 
 # Install basic tools.
 
@@ -55,35 +55,22 @@ RUN \
     nodejs \
     sbt=$VERSION_SBT \
     yarn \
+    nano \
   && rm -rf /var/lib/apt/lists/*
 
-# use the /home/equella as your working directory and switch to the equella user.
+# use the /home/oeq as your working directory and switch to the oequser.
 
-RUN useradd -ms /bin/bash equella
-WORKDIR /home/equella
-USER equella
+RUN useradd -ms /bin/bash oeq
+WORKDIR /home/oeq
+USER oeq
 
-# Clone openEQUELLA, switch to 2018.2
+# Clone openEQUELLA
 
 RUN \
-  mkdir /home/equella/repo \
-  && cd /home/equella/repo \
-  && git clone https://github.com/equella/Equella.git \
-  && cd /home/equella/repo/Equella \
-  && git checkout stable-2018.2 \
-  && sbt sbtVersion
-
-# Install psc-package
-
-ENV VERSION_PSC_PACKAGE v0.4.2
-
-RUN curl --create-dirs -Lo /home/equella/tools/pscPackage/bundle/linux64.tar.gz https://github.com/purescript/psc-package/releases/download/$VERSION_PSC_PACKAGE/linux64.tar.gz \
-  && cd /home/equella/tools/pscPackage \
-  && echo "bdf25acc5b4397bd03fd1da024896c5f33af85ce  bundle/linux64.tar.gz" | shasum -c - \
-  && cd /home/equella/tools \
-  && tar -xvzf pscPackage/bundle/linux64.tar.gz \
-  && rm -r /home/equella/tools/pscPackage
-ENV PATH "$PATH:/home/equella/tools/psc-package"
+  mkdir /home/oeq/repo \
+  && cd /home/oeq/repo \
+  && git clone https://github.com/openequella/openEQUELLA.git \
+  && cd /home/oeq/repo/openEQUELLA
 
 # Copy in helper files
 

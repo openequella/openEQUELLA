@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd /home/equella/repo/Equella/Installer/target/
+cd /home/oeq/repo/openEQUELLA/Installer/target/
 numOfZips=$(find . -maxdepth 1 -name '*.zip' | wc -l)
 if [ $numOfZips -gt 0 ]
 then
