@@ -19,7 +19,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     this.title = title;
   }
 
-  public WebElement getBoxHead() {
+  protected WebElement getBoxHead() {
     return find(
         driver,
         By.xpath(

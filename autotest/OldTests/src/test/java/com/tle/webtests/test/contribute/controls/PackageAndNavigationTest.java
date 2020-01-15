@@ -297,7 +297,6 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     PackageViewer viewer = attachments.viewFullscreen();
     viewer.clickAttachment("pageC.html");
     assertTrue(viewer.selectedAttachmentContainsText("This is a verifiable attachment 3"));
-
     assertEquals(viewer.tabText("Tab holder", "Tab number 2"), "This is a verifiable attachment 2");
     // DTEC-14853
     assertEquals(viewer.getTabOrder(), Lists.newArrayList("Tab number 1", "Tab number 2"));
@@ -315,7 +314,6 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
 
     assertEquals(
         viewer.tabText("Tab holder", "Tab number 1", 0), "This is a verifiable attachment 3");
-
     assertEquals(
         viewer.tabText("Tab holder", "Tab number 2", 1), "This is a verifiable attachment 2");
     // DTEC-14853
