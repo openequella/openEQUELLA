@@ -94,6 +94,7 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
     driver.findElement(By.xpath("//a/span[text()=" + quoteXPath(tabName) + "]")).click();
     waiter.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("iframe-content"));
     By body = By.tagName("body");
+    waiter.until(ExpectedConditions.numberOfWindowsToBe(1));
     waiter.until(ExpectedConditions.visibilityOfElementLocated(body));
     String text = driver.findElement(body).getAttribute("innerText");
     driver.switchTo().defaultContent();

@@ -139,7 +139,7 @@ public class UserServiceImpl
 
   @Transactional
   @Override
-  public synchronized void saveUserInfoBackup(UserBean userBean) {
+  public void saveUserInfoBackup(UserBean userBean) {
     String userUniqueId = userBean.getUniqueID();
     UserInfoBackup userInfoBackup = findUserInfoBackup(userUniqueId);
     if (userInfoBackup == null) {
@@ -492,7 +492,9 @@ public class UserServiceImpl
   public void userSessionCreatedEvent(UserSessionLoginEvent event) {
     UserState userState = event.getUserState();
     if (!userState.isGuest()) {
-      saveUserInfoBackup(userState.getUserBean());
+      synchronized (this) {
+        saveUserInfoBackup(userState.getUserBean());
+      }
     }
   }
 

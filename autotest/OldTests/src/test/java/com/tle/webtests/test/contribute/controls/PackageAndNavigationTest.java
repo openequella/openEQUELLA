@@ -235,7 +235,9 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertTrue(attachments.attachmentExists("Empty Node"));
     PackageViewer pv = attachments.viewFullscreen();
     assertEquals(pv.tabText("", "Tab 1"), "");
-    pv.get();
+    context.getDriver().navigate().back();
+    attachments.get();
+    attachments.viewFullscreen();
     assertEquals(pv.tabText("", "Another Tab"), "This is a verifiable attachment");
     // DTEC-14853
     assertEquals(pv.getTabOrder(), Lists.newArrayList("Tab 1", "Another Tab"));
