@@ -345,6 +345,7 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setQuery("query item");
     edit.setStatus("live");
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
     // Check that the queried item is displayed
     home = new MenuSection(context).home();
@@ -357,6 +358,7 @@ public class PortalsTest extends AbstractCleanupTest {
     recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
