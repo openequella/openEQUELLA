@@ -21,11 +21,11 @@ package com.tle.integration.lti.generic;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
 import com.tle.web.lti.usermanagement.LtiWrapperExtension;
+import java.util.function.Supplier;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
-@SuppressWarnings("nls")
 @Bind
 @Singleton
 public class GenericLtiWrapperExtension implements LtiWrapperExtension {
@@ -36,20 +36,7 @@ public class GenericLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUserId(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(
-        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
-      String family =
-          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-      if ((!StringUtils.equals(family, "canvas"))
-          && (!StringUtils.equals(family, "desire2learn"))) {
-        if (StringUtils.isNotEmpty(param)) {
-          if (request.getParameterMap().containsKey(param)) {
-            return request.getParameter(param);
-          }
-        }
-      }
-    }
-    return null;
+    return getGenericLtiParam(request, param, () -> request.getParameter(param));
   }
 
   @Override
@@ -59,19 +46,17 @@ public class GenericLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUsername(HttpServletRequest request, String param) {
-    if (StringUtils.isNotEmpty(
-        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE))) {
-      String family =
-          request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-      if ((!StringUtils.equals(family, "canvas"))
-          && (!StringUtils.equals(family, "desire2learn"))) {
-        if (StringUtils.isNotEmpty(param) && request.getParameterMap().containsKey(param)) {
-          return request.getParameter(param);
-        }
-        return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
-      }
-    }
-    return null;
+    return getGenericLtiParam(
+        request,
+        param,
+        () -> {
+          String username = request.getParameter(param);
+          if (StringUtils.isEmpty(username)) {
+            username = request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
+          }
+
+          return username;
+        });
   }
 
   @Override
@@ -92,5 +77,22 @@ public class GenericLtiWrapperExtension implements LtiWrapperExtension {
   @Override
   public boolean isPrefixUserId() {
     return true;
+  }
+
+  private String getGenericLtiParam(
+      HttpServletRequest request, String param, Supplier<String> supplier) {
+    String family =
+        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
+    if (StringUtils.isEmpty(family) || StringUtils.isEmpty(param)) {
+      // If invalid inputs provided
+      return null;
+    }
+
+    if (family.matches("(canvas)|(desire2learn)")) {
+      // If request is for an LTI provider we have explicit support for
+      return null;
+    }
+
+    return supplier.get();
   }
 }
