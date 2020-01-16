@@ -68,6 +68,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     logon();
     SearchPage searchPage = new SearchPage(context).load();
     ItemListPage itemList = searchPage.resultsPageObject();
+    searchPage.exactQuery(LAST_KNOWN_OWNER_ITEM_NAME);
     SummaryPage summaryPage = itemList.getResultForTitle(LAST_KNOWN_OWNER_ITEM_NAME).viewSummary();
 
     // Check if LAST_KNOWN_OWNER_ITEM_NAME is displayed instead of 'unknown user'

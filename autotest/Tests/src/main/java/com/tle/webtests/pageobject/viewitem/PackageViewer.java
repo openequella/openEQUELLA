@@ -11,6 +11,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class PackageViewer extends AbstractPage<PackageViewer> {
 
@@ -91,11 +92,9 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
     clickAttachment(attachment);
     switchToFrame(split);
     driver.findElement(By.xpath("//a/span[text()=" + quoteXPath(tabName) + "]")).click();
-    driver.switchTo().frame("iframe-content");
-
-    waitForBody();
-
-    String text = driver.findElement(By.tagName("body")).getText();
+    waiter.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("iframe-content"));
+    By body = By.cssSelector("body");
+    String text = waiter.until(ExpectedConditions.visibilityOfElementLocated(body)).getText();
     driver.switchTo().defaultContent();
     return text;
   }

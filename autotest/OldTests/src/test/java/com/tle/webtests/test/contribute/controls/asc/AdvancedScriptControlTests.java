@@ -39,6 +39,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
 @TestInstitution("asc")
@@ -1065,7 +1066,10 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @return
    */
   private WebElement getAscMessage() {
-    return context.getDriver().findElement(By.xpath("//div[@id='ascMessage']/pre"));
+    By ascMessageXpath = By.xpath("//div[@id='ascMessage']/pre");
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    wait.until(ExpectedConditions.visibilityOfElementLocated(ascMessageXpath));
+    return context.getDriver().findElement(ascMessageXpath);
   }
 
   private WebElement getAscMessage1() {
@@ -1082,6 +1086,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
   private void ascEditbox(int ctrlNum, String suffix, String text) {
     WebElement field = context.getDriver().findElement(By.name("c" + ctrlNum + suffix));
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    wait.until(ExpectedConditions.visibilityOf(field));
     field.clear();
     field.sendKeys(text);
   }
@@ -1093,6 +1099,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @param text
    */
   private void ascSelectDropdown(String id, String optText) {
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.id(id)));
     Select dropdown = new Select(context.getDriver().findElement(By.id(id)));
     dropdown.selectByVisibleText(optText);
   }

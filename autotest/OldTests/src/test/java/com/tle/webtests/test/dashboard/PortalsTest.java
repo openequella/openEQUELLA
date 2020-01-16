@@ -322,6 +322,7 @@ public class PortalsTest extends AbstractCleanupTest {
     // Edit the portal
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
 
     // Check that the draft item is displayed
@@ -344,23 +345,26 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setQuery("query item");
     edit.setStatus("live");
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
     // Check that the queried item is displayed
     home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.recentContributionExists(itemToQuery));
-    assertTrue(recent.descriptionExists(description));
+    assertTrue(recent.descriptionExists(description, true));
 
     // Edit portlet for description option
     home = new MenuSection(context).home();
+    recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
+    edit.checkSelectedCollection();
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
     home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
-    assertFalse(recent.descriptionExists(description));
+    assertFalse(recent.descriptionExists(description, false));
   }
 
   @Test
