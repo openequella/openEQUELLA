@@ -32,7 +32,7 @@ RUN curl -o icedtea-web-1.8.linux.bin.zip http://icedtea.wildebeest.org/download
 RUN echo "074955c9ca36b9c02df17a71052584b2da6293808db138baa20a6bee41a2dd38  icedtea-web-1.8.linux.bin.zip" > icedtea-web-checksum.verified
 RUN sha256sum -c icedtea-web-checksum.verified
 RUN unzip icedtea-web-1.8.linux.bin.zip
-RUN cp icedtea-web-image/share/icedtea-web/javaws.jar /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext
+RUN cp icedtea-web-image/share/icedtea-web/javaws.jar /usr/local/openjdk-8/jre/lib/ext
 
 # Confirm Applet / Web Start abilities
 
