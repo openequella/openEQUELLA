@@ -51,8 +51,6 @@ before_install:
   - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
   - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
-  #  - wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
-  #  - sudo dpkg -i google-chrome-beta_current_amd64.deb
   - curl -OL https://chromedriver.storage.googleapis.com/80.0.3987.16/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo apt-get purge google-chrome-stable # have to delete the stable version to force chromedriver to use the beta
@@ -116,10 +114,6 @@ jobs:
 
     - stage: functional test
       script:
-        # DEBUG: Confirm PS directory is being properly cached
-        - ls -l autotest/IntegTester/ps/
-        # DEBUG: Confirm Target directory is being properly cached
-        - ls -l autotest/IntegTester/target/
         - sbt -jvm-opts autotest/.jvmopts "project autotest" \
           installEquella startEquella configureInstall setupForTests \
           Tests/test dumpCoverage
