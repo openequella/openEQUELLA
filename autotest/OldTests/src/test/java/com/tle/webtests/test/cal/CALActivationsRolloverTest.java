@@ -7,6 +7,7 @@ import com.tle.webtests.pageobject.cal.ActivationListPage;
 import com.tle.webtests.pageobject.cal.CALRolloverDialog;
 import com.tle.webtests.pageobject.cal.CALSummaryPage;
 import com.tle.webtests.pageobject.cal.ManageActivationsPage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.Test;
 
 public class CALActivationsRolloverTest extends AbstractActivationsTest {
@@ -40,7 +41,18 @@ public class CALActivationsRolloverTest extends AbstractActivationsTest {
     rolloverDialog.selectCourse(ROLLOVER_COURSE);
     assertTrue(rolloverDialog.execute(activationResults));
 
+    activations
+        .getWaiter()
+        .until(
+            ExpectedConditions.textToBePresentInElement(
+                activationResults.getResultsDiv(), ORIGINAL_COURSE));
     assertTrue(activationResults.isShowing(portionName, ORIGINAL_COURSE));
+
+    activations
+        .getWaiter()
+        .until(
+            ExpectedConditions.textToBePresentInElement(
+                activationResults.getResultsDiv(), ROLLOVER_COURSE));
     assertTrue(activationResults.isShowing(portionName, ROLLOVER_COURSE));
 
     // bulk all activations rollover using same course + dates

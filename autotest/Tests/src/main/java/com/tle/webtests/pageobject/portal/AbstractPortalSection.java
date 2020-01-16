@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     extends AbstractPage<T> {
@@ -74,7 +75,14 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    getBoxHead().findElement(By.className("box_edit")).click();
+    WebElement editButton =
+        driver.findElement(
+            By.xpath(
+                "//div[contains(@title,"
+                    + quoteXPath(getTitle())
+                    + ")]/following-sibling::img[contains(@class, 'box_edit')]"));
+    waiter.until(ExpectedConditions.elementToBeClickable(editButton));
+    editButton.click();
     return portal.get();
   }
 

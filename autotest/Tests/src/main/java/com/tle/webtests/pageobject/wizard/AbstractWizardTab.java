@@ -46,8 +46,8 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
     } else {
       xpath = "//div[@id='wizard-actions']/a[normalize-space(text())=" + quoteXPath(command) + "]";
     }
-    WebElement elem = driver.findElement(By.xpath(xpath));
     ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
+    WebElement elem = driver.findElement(By.xpath(xpath));
     waiter.until(ExpectedConditions.elementToBeClickable(elem));
     elem.click();
   }
