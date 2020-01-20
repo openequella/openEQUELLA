@@ -6,8 +6,8 @@
 <div class="area">
 	<h2>${b.key('docs.title')}</h2>
 
-	<p>${b.key('guide.download', 'https://equella.github.io/')}</p>
-	
+	<p>${b.key('guide.download', 'https://openequella.github.io/')}</p>
+
     <div id="swagger-ui"></div>
     <script src="${p.url('apidocs/bundle.js')}"></script>
 </div>
