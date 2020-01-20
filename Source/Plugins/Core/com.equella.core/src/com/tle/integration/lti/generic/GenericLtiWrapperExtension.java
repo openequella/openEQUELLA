@@ -19,9 +19,9 @@
 package com.tle.integration.lti.generic;
 
 import com.tle.common.externaltools.constants.ExternalToolConstants;
+import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.guice.Bind;
 import com.tle.web.lti.usermanagement.LtiWrapperExtension;
-import java.util.function.Supplier;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -29,70 +29,69 @@ import org.apache.commons.lang.StringUtils;
 @Bind
 @Singleton
 public class GenericLtiWrapperExtension implements LtiWrapperExtension {
+
   @Override
-  public String getUserId(HttpServletRequest request) {
-    return null;
+  public String getUserId(HttpServletRequest request, LtiConsumer consumer) {
+    return getGenericLtiParam(
+        request, consumer, LtiConsumer.ATT_CUSTOM_USER_ID, ExternalToolConstants.USER_ID);
   }
 
   @Override
-  public String getUserId(HttpServletRequest request, String param) {
-    return getGenericLtiParam(request, param, () -> request.getParameter(param));
-  }
-
-  @Override
-  public String getUsername(HttpServletRequest request) {
-    return getUsername(request, null);
-  }
-
-  @Override
-  public String getUsername(HttpServletRequest request, String param) {
+  public String getUsername(HttpServletRequest request, LtiConsumer consumer) {
     return getGenericLtiParam(
         request,
-        param,
-        () -> {
-          String username = request.getParameter(param);
-          if (StringUtils.isEmpty(username)) {
-            username = request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
-          }
-
-          return username;
-        });
+        consumer,
+        LtiConsumer.ATT_CUSTOM_USERNAME,
+        ExternalToolConstants.LIS_PERSON_SOURCEDID);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getFirstName(HttpServletRequest request) {
-    return null;
+    return request.getParameter(ExternalToolConstants.LIS_PERSON_NAME_GIVEN);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getLastName(HttpServletRequest request) {
-    return null;
+    return request.getParameter(ExternalToolConstants.LIS_PERSON_NAME_FAMILY);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getEmail(HttpServletRequest request) {
-    return null;
+    return request.getParameter(ExternalToolConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY);
   }
 
+  /**
+   * Default is true (prefix the user id with a hash of the consumer).
+   *
+   * <p>This can be overridden by configuring the custom LTI setting of 'Prefix ID'
+   *
+   * <p>Note: This is different then the username prefix that an LTI Consumer can be configured to
+   * append.
+   */
   @Override
-  public boolean isPrefixUserId() {
-    return true;
+  public boolean isPrefixUserId(LtiConsumer consumer) {
+    if (consumer == null) {
+      return true;
+    }
+
+    return consumer.getAttribute(LtiConsumer.ATT_CUSTOM_ENABLE_ID_PREFIX, true);
   }
 
   private String getGenericLtiParam(
-      HttpServletRequest request, String param, Supplier<String> supplier) {
-    String family =
-        request.getParameter(ExternalToolConstants.TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE);
-    if (StringUtils.isEmpty(family) || StringUtils.isEmpty(param)) {
-      // If invalid inputs provided
+      HttpServletRequest request, LtiConsumer consumer, String customParam, String defaultParam) {
+
+    if ((request == null) || (consumer == null)) {
       return null;
     }
 
-    if (family.matches("(canvas)|(desire2learn)")) {
-      // If request is for an LTI provider we have explicit support for
-      return null;
+    String paramVal = request.getParameter(consumer.getAttribute(customParam));
+    if (StringUtils.isEmpty(paramVal)) {
+      paramVal = request.getParameter(defaultParam);
     }
 
-    return supplier.get();
+    return paramVal;
   }
 }

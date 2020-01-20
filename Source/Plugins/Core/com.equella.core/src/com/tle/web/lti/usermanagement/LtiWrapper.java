@@ -169,11 +169,9 @@ public class LtiWrapper extends AbstractUserDirectory {
       @Nullable LtiConsumer consumer) {
     String username = fallbackUsername;
     String customUsernameParameter = null;
-    if (consumer != null) {
-      customUsernameParameter = consumer.getAttribute("customUsernameParameter");
-    }
+
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      final String extensionUsername = extension.getUsername(request, customUsernameParameter);
+      final String extensionUsername = extension.getUsername(request, consumer);
       if (!Strings.isNullOrEmpty(extensionUsername)) {
         username = extensionUsername;
         break;
@@ -192,15 +190,11 @@ public class LtiWrapper extends AbstractUserDirectory {
 
   private String getUserId(HttpServletRequest request, @Nullable LtiConsumer consumer) {
     String userId = null;
-    String customUserIdParameter = null;
-    if (consumer != null) {
-      customUserIdParameter = consumer.getAttribute("customUserIdParameter");
-    }
     boolean prefix = true;
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      userId = extension.getUserId(request, customUserIdParameter);
+      userId = extension.getUserId(request, consumer);
       if (userId != null) {
-        prefix = extension.isPrefixUserId();
+        prefix = extension.isPrefixUserId(consumer);
         break;
       }
     }
@@ -347,7 +341,7 @@ public class LtiWrapper extends AbstractUserDirectory {
     state.setLoggedInUser(
         new DefaultUserBean(
             userId,
-            getUsername(request, "lti:" + userId, null),
+            getUsername(request, "lti:" + userId, consumer),
             getFirstName(request),
             getLastName(request),
             getEmail(request)));

@@ -99,7 +99,6 @@ public class LtiIntegration extends AbstractIntegrationService<GenericLtiSession
   @Inject private ViewableItemResolver viewableItemResolver;
   @Inject private ReceiptService receiptService;
   @Inject private ConnectorService connectorService;
-  // @Inject private BlackboardConnectorService bbService;
   @Inject private ConnectorRepositoryService connectorRepoService;
   @Inject private ReplicatedCacheService cacheService;
 

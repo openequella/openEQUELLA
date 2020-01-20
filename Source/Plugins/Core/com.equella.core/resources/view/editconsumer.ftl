@@ -6,7 +6,6 @@
 <#include "/com.tle.web.sections.standard@/dropdown.ftl" />
 <#include "/com.tle.web.sections.standard@/textfield.ftl"/>
 <#include "/com.tle.web.sections.standard@/autocomplete.ftl"/>
-
 <@css "editconsumer.css" />
 
 <@setting label=b.key("editor.key") mandatory=true error=m.errors["key"]>
@@ -21,12 +20,18 @@
 <@setting label=b.key("editor.postfix") help=b.key("editor.username.help")>
 	<@textfield section=s.postfixField maxlength=50 />
 </@setting>
-<@setting label=b.key("editor.customuserid") help=b.key("editor.customuserid.help")>
+<hr/>
+<@setting label='' help=b.key('editor.custom.lti.params.help') />
+<@setting label=b.key("editor.custom.lti.params.user.id")>
 	<@textfield section=s.customUserIdParameterField maxlength=128 />
 </@setting>
-<@setting label=b.key("editor.customusername") help=b.key("editor.customusername.help")>
+<@setting label=b.key("editor.custom.lti.params.username")>
 	<@textfield section=s.customUsernameParameterField maxlength=128 />
 </@setting>
+<@setting label=''>
+  <div class="input checkbox"><@render s.customEnableIdPrefixField /></div>
+</@setting>
+<hr/>
 <@a.div id="allowed">
 	<@setting label=b.key("editor.allowed.label") help=b.key("editor.allowed.help")>
 		${m.prettyExpression}

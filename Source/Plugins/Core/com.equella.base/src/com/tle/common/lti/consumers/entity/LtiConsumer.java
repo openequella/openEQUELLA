@@ -35,6 +35,10 @@ import org.hibernate.annotations.Index;
 @Entity
 @AccessType("field")
 public class LtiConsumer extends BaseEntity {
+  public static final String ATT_CUSTOM_USER_ID = "ATT_CUSTOM_USER_ID";
+  public static final String ATT_CUSTOM_USERNAME = "ATT_CUSTOM_USERNAME";
+  public static final String ATT_CUSTOM_ENABLE_ID_PREFIX = "ATT_CUSTOM_ENABLE_ID_PREFIX";
+
   @Index(name = "consumerKey")
   @Column(length = 255, nullable = false)
   private String consumerKey;

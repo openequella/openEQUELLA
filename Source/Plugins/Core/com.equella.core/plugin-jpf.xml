@@ -2201,7 +2201,7 @@
   <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="genericLtiExt">
     <parameter id="id" value="genlti" />
     <parameter id="bean" value="bean:com.tle.integration.lti.generic.GenericLtiWrapperExtension" />
-    <parameter id="order" value="1000" />
+    <parameter id="order" value="9000" />
   </extension>
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="moodleEditor">
     <parameter id="id" value="moodle" />
