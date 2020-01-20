@@ -168,8 +168,6 @@ public class LtiWrapper extends AbstractUserDirectory {
       @Nullable String fallbackUsername,
       @Nullable LtiConsumer consumer) {
     String username = fallbackUsername;
-    String customUsernameParameter = null;
-
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
       final String extensionUsername = extension.getUsername(request, consumer);
       if (!Strings.isNullOrEmpty(extensionUsername)) {
