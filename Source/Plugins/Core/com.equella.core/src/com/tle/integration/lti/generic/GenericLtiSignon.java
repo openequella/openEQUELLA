@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.blackboard;
+package com.tle.integration.lti.generic;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
@@ -34,14 +34,14 @@ import javax.inject.Inject;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class BlackboardSignon extends AbstractPrototypeSection<SingleSignonForm>
+public class GenericLtiSignon extends AbstractPrototypeSection<SingleSignonForm>
     implements AfterParametersListener {
-  @Inject private BlackboardLtiIntegration blackboardLtiIntegration;
+  @Inject private GenericLtiIntegration genericLtiIntegration;
 
   @Override
   public void afterParameters(SectionInfo info, ParametersEvent event) {
     final SingleSignonForm model = getModel(info);
-    blackboardLtiIntegration.setupSingleSignOn(info, model);
+    genericLtiIntegration.setupSingleSignOn(info, model);
   }
 
   @Override

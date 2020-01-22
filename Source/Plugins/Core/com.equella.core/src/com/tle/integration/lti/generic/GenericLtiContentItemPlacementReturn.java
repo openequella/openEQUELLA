@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.blackboard;
+package com.tle.integration.lti.generic;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,6 +48,7 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.HiddenInput;
 import com.tle.web.sections.render.HtmlRenderer;
+import com.tle.web.sections.render.TextUtils;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
@@ -60,15 +61,14 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
-// TODO: defer - we should be able to make this a generic LTI return
 @Bind
-public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSection<Object>
+public class GenericLtiContentItemPlacementReturn extends AbstractPrototypeSection<Object>
     implements HtmlRenderer {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardContentItemPlacementReturn.class);
+  private static final Logger LOGGER = Logger.getLogger(GenericLtiContentItemPlacementReturn.class);
 
   @Inject private SelectionService selectionService;
   @Inject private IntegrationService integrationService;
-  @Inject private BlackboardLtiIntegration blackboardLtiIntegration;
+  @Inject private GenericLtiIntegration genericLtiIntegration;
   @Inject private ItemResolver itemResolver;
   @Inject private OAuthWebService oauthWebService;
   @Inject private LtiConsumerService consumerService;
@@ -86,10 +86,10 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
       final IItem<?> item = getItemForResource(resource);
 
       final LmsLink link =
-          blackboardLtiIntegration
+          genericLtiIntegration
               .getLinkForResource(
                   context,
-                  blackboardLtiIntegration.createViewableItem(item, resource),
+                  genericLtiIntegration.createViewableItem(item, resource),
                   resource,
                   false,
                   session.isAttachmentUuidUrls())
@@ -145,10 +145,7 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
       graph.id = link.getUrl();
       graph.url = link.getUrl();
       graph.title = link.getName();
-      graph.text = link.getName();
-      // FIXME: Is there a custom BB property for the description?  Base LTI spec doesn't specify
-      // one
-      // graph.description = TextUtils.INSTANCE.ensureWrap(link.getDescription(),250, 250, true);
+      graph.text = TextUtils.INSTANCE.ensureWrap(link.getDescription(), 250, 250, true);
       graph.mediaType = "application/vnd.ims.lti.v1.ltilink";
       graph.windowTarget = "_blank";
       final ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice placementAdvice =

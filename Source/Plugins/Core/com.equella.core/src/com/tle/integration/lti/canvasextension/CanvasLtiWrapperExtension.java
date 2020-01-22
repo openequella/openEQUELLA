@@ -18,6 +18,7 @@
 
 package com.tle.integration.lti.canvasextension;
 
+import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.guice.Bind;
 import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
@@ -33,12 +34,12 @@ import javax.servlet.http.HttpServletRequest;
 @Singleton
 public class CanvasLtiWrapperExtension implements LtiWrapperExtension {
   @Override
-  public String getUserId(HttpServletRequest request) {
+  public String getUserId(HttpServletRequest request, LtiConsumer consumer) {
     return request.getParameter("custom_canvas_user_id");
   }
 
   @Override
-  public String getUsername(HttpServletRequest request) {
+  public String getUsername(HttpServletRequest request, LtiConsumer consumer) {
     return request.getParameter("custom_canvas_user_login_id");
   }
 
@@ -58,7 +59,7 @@ public class CanvasLtiWrapperExtension implements LtiWrapperExtension {
   }
 
   @Override
-  public boolean isPrefixUserId() {
+  public boolean isPrefixUserId(LtiConsumer consumer) {
     return true;
   }
 }
