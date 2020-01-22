@@ -74,13 +74,13 @@ import org.apache.log4j.Logger;
 @Singleton
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class LtiIntegration extends AbstractIntegrationService<GenericLtiSessionData> {
-  private static final Logger LOGGER = Logger.getLogger(LtiIntegration.class);
+public class GenericLtiIntegration extends AbstractIntegrationService<GenericLtiSessionData> {
+  private static final Logger LOGGER = Logger.getLogger(GenericLtiIntegration.class);
 
   private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
 
   static {
-    PluginResourceHandler.init(LtiIntegration.class);
+    PluginResourceHandler.init(GenericLtiIntegration.class);
   }
 
   @PlugKey("integration.receipt.addedtolti")

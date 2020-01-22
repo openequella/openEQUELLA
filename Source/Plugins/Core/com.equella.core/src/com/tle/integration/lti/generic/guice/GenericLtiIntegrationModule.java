@@ -19,18 +19,20 @@
 package com.tle.integration.lti.generic.guice;
 
 import com.google.inject.name.Names;
-import com.tle.integration.lti.generic.LtiContentItemPlacementReturn;
-import com.tle.integration.lti.generic.LtiSignon;
+import com.tle.integration.lti.generic.GenericLtiContentItemPlacementReturn;
+import com.tle.integration.lti.generic.GenericLtiSignon;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 @SuppressWarnings("nls")
-public class LtiIntegrationModule extends SectionsModule {
+public class GenericLtiIntegrationModule extends SectionsModule {
   @Override
   protected void configure() {
-    bind(Object.class).annotatedWith(Names.named("/ltisignon")).toProvider(node(LtiSignon.class));
+    bind(Object.class)
+        .annotatedWith(Names.named("/ltisignon"))
+        .toProvider(node(GenericLtiSignon.class));
 
     bind(Object.class)
         .annotatedWith(Names.named("/lticipreturn"))
-        .toProvider(node(LtiContentItemPlacementReturn.class));
+        .toProvider(node(GenericLtiContentItemPlacementReturn.class));
   }
 }

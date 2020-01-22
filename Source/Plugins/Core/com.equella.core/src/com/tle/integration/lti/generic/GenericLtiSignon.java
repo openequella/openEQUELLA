@@ -34,14 +34,14 @@ import javax.inject.Inject;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class LtiSignon extends AbstractPrototypeSection<SingleSignonForm>
+public class GenericLtiSignon extends AbstractPrototypeSection<SingleSignonForm>
     implements AfterParametersListener {
-  @Inject private LtiIntegration ltiIntegration;
+  @Inject private GenericLtiIntegration genericLtiIntegration;
 
   @Override
   public void afterParameters(SectionInfo info, ParametersEvent event) {
     final SingleSignonForm model = getModel(info);
-    ltiIntegration.setupSingleSignOn(info, model);
+    genericLtiIntegration.setupSingleSignOn(info, model);
   }
 
   @Override

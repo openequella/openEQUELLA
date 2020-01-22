@@ -62,13 +62,13 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 @Bind
-public class LtiContentItemPlacementReturn extends AbstractPrototypeSection<Object>
+public class GenericLtiContentItemPlacementReturn extends AbstractPrototypeSection<Object>
     implements HtmlRenderer {
-  private static final Logger LOGGER = Logger.getLogger(LtiContentItemPlacementReturn.class);
+  private static final Logger LOGGER = Logger.getLogger(GenericLtiContentItemPlacementReturn.class);
 
   @Inject private SelectionService selectionService;
   @Inject private IntegrationService integrationService;
-  @Inject private LtiIntegration ltiIntegration;
+  @Inject private GenericLtiIntegration genericLtiIntegration;
   @Inject private ItemResolver itemResolver;
   @Inject private OAuthWebService oauthWebService;
   @Inject private LtiConsumerService consumerService;
@@ -86,10 +86,10 @@ public class LtiContentItemPlacementReturn extends AbstractPrototypeSection<Obje
       final IItem<?> item = getItemForResource(resource);
 
       final LmsLink link =
-          ltiIntegration
+          genericLtiIntegration
               .getLinkForResource(
                   context,
-                  ltiIntegration.createViewableItem(item, resource),
+                  genericLtiIntegration.createViewableItem(item, resource),
                   resource,
                   false,
                   session.isAttachmentUuidUrls())

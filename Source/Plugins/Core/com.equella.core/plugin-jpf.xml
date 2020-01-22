@@ -122,7 +122,7 @@
     <parameter id="class" value="com.tle.core.xslt.guice.XsltModule" />
     <parameter id="class" value="com.tle.integration.lti.brightspace.guice.BrightspaceIntegrationModule" />
     <parameter id="class" value="com.tle.integration.lti.canvasextension.guice.CanvasIntegrationModule" />
-    <parameter id="class" value="com.tle.integration.lti.generic.guice.LtiIntegrationModule" />
+    <parameter id="class" value="com.tle.integration.lti.generic.guice.GenericLtiIntegrationModule" />
     <parameter id="class" value="com.tle.integration.standard.guice.StandardIntegrationModule" />
     <parameter id="class" value="com.tle.mycontent.guice.MyContentModule" />
     <parameter id="class" value="com.tle.mypages.guice.MyPagesModule" />
@@ -2173,9 +2173,9 @@
     <parameter id="id" value="canvas" />
     <parameter id="class" value="bean:com.tle.integration.lti.canvasextension.CanvasIntegration" />
   </extension>
-  <extension plugin-id="com.tle.web.integration" point-id="integration" id="ltiintegration">
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="genericltiintegration">
     <parameter id="id" value="lti" />
-    <parameter id="class" value="bean:com.tle.integration.lti.generic.LtiIntegration" />
+    <parameter id="class" value="bean:com.tle.integration.lti.generic.GenericLtiIntegration" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
