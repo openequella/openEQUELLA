@@ -215,9 +215,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % springVersion,
-  "org.springframework" % "spring-tx"   % springVersion,
-  "org.springframework" % "spring-web"  % springVersion,
+  "org.springframework" % "spring-jdbc"          % springVersion,
+  "org.springframework" % "spring-tx"            % springVersion,
+  "org.springframework" % "spring-orm"           % springVersion,
+  "org.springframework" % "spring-framework-bom" % springVersion,
+  "org.springframework" % "spring-web"           % springVersion,
 //  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
 //    ExclusionRule(organization = "jasperreports", name = "jasperreports")
 //    ),

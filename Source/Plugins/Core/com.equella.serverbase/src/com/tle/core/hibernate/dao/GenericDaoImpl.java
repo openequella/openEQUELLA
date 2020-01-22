@@ -216,6 +216,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * .Criterion[])
    */
   @Override
+  @Transactional
   public List<T> findAllByCriteria(final Criterion... criterion) {
     return findAllByCriteria(null, -1, criterion);
   }
@@ -227,6 +228,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * .Order, org.hibernate.criterion.Criterion[])
    */
   @Override
+  @Transactional
   public List<T> findAllByCriteria(
       @Nullable final Order order, final int maxResults, final Criterion... criterion) {
     return findAllByCriteria(order, -1, maxResults, criterion);
@@ -239,6 +241,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * .Order, int, int, org.hibernate.criterion.Criterion[])
    */
   @Override
+  @Transactional
   @SuppressWarnings("unchecked")
   public List<T> findAllByCriteria(
       @Nullable final Order order,

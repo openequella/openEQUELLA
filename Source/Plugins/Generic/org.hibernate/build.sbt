@@ -14,7 +14,7 @@ libraryDependencies := Seq(
   "org.springframework" % "spring-orm" % springVersion excludeAll (
     ExclusionRule(organization = "com.oracle", name = "toplink-essentials"),
     ExclusionRule(organization = "org.springframework", name = "spring-beans"),
-    ExclusionRule(organization = "org.springframework", name = "spring-tx"),
+    //   ExclusionRule(organization = "org.springframework", name = "spring-tx"),
     ExclusionRule(organization = "org.springframework", name = "spring-core"),
     ExclusionRule(organization = "org.springframework", name = "spring-context")
   )
