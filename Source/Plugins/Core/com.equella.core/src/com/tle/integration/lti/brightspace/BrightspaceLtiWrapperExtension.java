@@ -22,6 +22,7 @@ import com.dytech.devlib.Md5;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.tle.common.Utils;
+import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.guice.Bind;
 import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Named;
@@ -46,13 +47,13 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
   private String userIdParameter;
 
   @Override
-  public String getUserId(HttpServletRequest request) {
+  public String getUserId(HttpServletRequest request, LtiConsumer consumer) {
     final String rawId = request.getParameter(userIdParameter);
     if (!Strings.isNullOrEmpty(rawId)) {
       return truncatedUniqueName(rawId);
     }
     // Fall back to username param (which may mean username and user ID are the same, which is fine)
-    final String rawUsername = getUsername(request);
+    final String rawUsername = getUsername(request, consumer);
     if (!Strings.isNullOrEmpty(rawUsername)) {
       return truncatedUniqueName(rawUsername);
     }
@@ -60,7 +61,7 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
   }
 
   /**
-   * EQUELLA only allows 40 chars for user IDs. We hope that this is vaguely unique.
+   * openEQUELLA only allows 40 chars for user IDs. We hope that this is vaguely unique.
    *
    * @param rawName
    * @return
@@ -84,7 +85,7 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
   }
 
   @Override
-  public String getUsername(HttpServletRequest request) {
+  public String getUsername(HttpServletRequest request, LtiConsumer consumer) {
     return request.getParameter(usernameParameter);
   }
 
@@ -107,7 +108,7 @@ public class BrightspaceLtiWrapperExtension implements LtiWrapperExtension {
   }
 
   @Override
-  public boolean isPrefixUserId() {
+  public boolean isPrefixUserId(LtiConsumer consumer) {
     return false;
   }
 }

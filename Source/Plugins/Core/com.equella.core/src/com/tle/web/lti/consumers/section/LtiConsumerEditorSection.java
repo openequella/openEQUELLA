@@ -63,6 +63,7 @@ import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.ComponentFactory;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.SingleSelectionList;
@@ -132,6 +133,13 @@ public class LtiConsumerEditorSection
   @Component private TextField consumerSecretField;
   @Component private TextField prefixField;
   @Component private TextField postfixField;
+  @Component private TextField customUserIdParameterField;
+  @Component private TextField customUsernameParameterField;
+  @Component private Checkbox customEnableIdPrefixField;
+
+  @PlugKey("editor.custom.lti.params.prefix.id")
+  private static Label LABEL_CUSTOM_ENABLE_ID_PREFIX_FIELD;
+
   @Component private SingleSelectionList<UnknownUser> unknownUserList;
   @Component private SelectionsTable instructorRolesTable;
 
@@ -262,6 +270,8 @@ public class LtiConsumerEditorSection
             tree, this, events.getEventHandler("removeCustom"), "customrole");
 
     customRoleField.setAutoCompleteCallback(ajax.getAjaxFunction("customRolesAutocomplete"));
+
+    customEnableIdPrefixField.setLabel(LABEL_CUSTOM_ENABLE_ID_PREFIX_FIELD);
   }
 
   @Override
@@ -413,6 +423,10 @@ public class LtiConsumerEditorSection
         bean.getConsumerSecret() == null ? UUID.randomUUID().toString() : bean.getConsumerSecret());
     prefixField.setValue(info, bean.getPrefix());
     postfixField.setValue(info, bean.getPostfix());
+    customUserIdParameterField.setValue(info, bean.getAttribute(LtiConsumer.ATT_CUSTOM_USER_ID));
+    customUsernameParameterField.setValue(info, bean.getAttribute(LtiConsumer.ATT_CUSTOM_USERNAME));
+    customEnableIdPrefixField.setChecked(
+        info, bean.getAttribute(LtiConsumer.ATT_CUSTOM_ENABLE_ID_PREFIX, true));
     allowedSelector.setExpression(info, bean.getAllowedExpression());
     LtiConsumerEditorModel model = getModel(info);
     if (!Check.isEmpty(bean.getInstructorRoles())) {
@@ -486,6 +500,10 @@ public class LtiConsumerEditorSection
       boolean validate) {
     LtiConsumerEditingBean bean = session.getBean();
     bean.setConsumerKey(consumerKeyField.getValue(info));
+    bean.setAttribute(LtiConsumer.ATT_CUSTOM_USER_ID, customUserIdParameterField.getValue(info));
+    bean.setAttribute(LtiConsumer.ATT_CUSTOM_USERNAME, customUsernameParameterField.getValue(info));
+    bean.setAttribute(
+        LtiConsumer.ATT_CUSTOM_ENABLE_ID_PREFIX, customEnableIdPrefixField.isChecked(info));
     bean.setConsumerSecret(consumerSecretField.getValue(info));
     bean.setPrefix(prefixField.getValue(info));
     bean.setPostfix(postfixField.getValue(info));
@@ -677,6 +695,18 @@ public class LtiConsumerEditorSection
 
   public TextField getPostfixField() {
     return postfixField;
+  }
+
+  public TextField getCustomUserIdParameterField() {
+    return customUserIdParameterField;
+  }
+
+  public TextField getCustomUsernameParameterField() {
+    return customUsernameParameterField;
+  }
+
+  public Checkbox getCustomEnableIdPrefixField() {
+    return customEnableIdPrefixField;
   }
 
   public ExpressionSelectorDialog getAllowedSelector() {

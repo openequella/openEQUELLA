@@ -106,7 +106,7 @@ public class LtiWrapper extends AbstractUserDirectory {
 
       ModifiableUserState userState = null;
       final String username = getUsername(request, null, consumer);
-      final String userId = getUserId(request);
+      final String userId = getUserId(request, consumer);
 
       if (username != null) {
         userState = getChain().authenticateUserFromUsername(username, null);
@@ -137,7 +137,7 @@ public class LtiWrapper extends AbstractUserDirectory {
       ltiUserState.setData(generateLtiData(request));
       ltiUserState.getUsersRoles().addAll(getDynamicRoles(request, consumer));
       if (ltiUserState.getUserBean() == null) {
-        setupUser(request, ltiUserState);
+        setupUser(request, ltiUserState, consumer);
       }
 
       if (userCreated && !Check.isEmpty(createGroups)) {
@@ -169,7 +169,7 @@ public class LtiWrapper extends AbstractUserDirectory {
       @Nullable LtiConsumer consumer) {
     String username = fallbackUsername;
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      final String extensionUsername = extension.getUsername(request);
+      final String extensionUsername = extension.getUsername(request, consumer);
       if (!Strings.isNullOrEmpty(extensionUsername)) {
         username = extensionUsername;
         break;
@@ -186,13 +186,13 @@ public class LtiWrapper extends AbstractUserDirectory {
     return username;
   }
 
-  private String getUserId(HttpServletRequest request) {
+  private String getUserId(HttpServletRequest request, @Nullable LtiConsumer consumer) {
     String userId = null;
     boolean prefix = true;
     for (LtiWrapperExtension extension : extensions.getBeanList()) {
-      userId = extension.getUserId(request);
+      userId = extension.getUserId(request, consumer);
       if (userId != null) {
-        prefix = extension.isPrefixUserId();
+        prefix = extension.isPrefixUserId(consumer);
         break;
       }
     }
@@ -333,12 +333,13 @@ public class LtiWrapper extends AbstractUserDirectory {
     return extraRoles;
   }
 
-  private void setupUser(HttpServletRequest request, ModifiableUserState state) {
-    final String userId = getUserId(request);
+  private void setupUser(
+      HttpServletRequest request, ModifiableUserState state, LtiConsumer consumer) {
+    final String userId = getUserId(request, consumer);
     state.setLoggedInUser(
         new DefaultUserBean(
             userId,
-            getUsername(request, "lti:" + userId, null),
+            getUsername(request, "lti:" + userId, consumer),
             getFirstName(request),
             getLastName(request),
             getEmail(request)));
