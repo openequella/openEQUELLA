@@ -1,5 +1,6 @@
 lazy val Hibernate     = config("hibernate")
 lazy val CustomCompile = config("compile") extend Hibernate
+val springVersion      = "3.2.18.RELEASE"
 
 libraryDependencies := Seq(
   "org.hibernate"    % "hibernate-core"      % "3.6.8.Final",
@@ -10,7 +11,7 @@ libraryDependencies := Seq(
   "com.thoughtworks.xstream"        % "xstream-hibernate"     % "1.4.9" excludeAll (
     ExclusionRule(organization = "org.hibernate")
   ),
-  "org.springframework" % "spring-orm" % "2.5.5" excludeAll (
+  "org.springframework" % "spring-orm" % springVersion excludeAll (
     ExclusionRule(organization = "com.oracle", name = "toplink-essentials"),
     ExclusionRule(organization = "org.springframework", name = "spring-beans"),
     ExclusionRule(organization = "org.springframework", name = "spring-tx"),

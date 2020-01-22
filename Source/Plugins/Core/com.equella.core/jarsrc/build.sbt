@@ -1,9 +1,11 @@
+val springVersion = "3.2.18.RELEASE"
+
 libraryDependencies ++= Seq(
   "net.java.dev.jna"    % "platform"     % "3.5.2",
   "org.rococoa"         % "rococoa-core" % "0.5",
   "com.google.guava"    % "guava"        % "18.0",
-  "org.springframework" % "spring-web"   % "2.5.5",
-  "org.springframework" % "spring-aop"   % "2.5.5"
+  "org.springframework" % "spring-web"   % springVersion,
+  "org.springframework" % "spring-aop"   % springVersion
 )
 
 packageOptions in assembly += Package.ManifestAttributes(
@@ -14,6 +16,13 @@ packageOptions in assembly += Package.ManifestAttributes(
   "Caller-Allowable-Codebase"              -> "*"
 )
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+
+assemblyMergeStrategy in assembly := {
+  case x if x.contains("overview.html") => MergeStrategy.first
+  case x =>
+    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
 
 dependsOn(platformSwing,
           LocalProject("com_equella_base"),

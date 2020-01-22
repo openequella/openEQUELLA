@@ -1,3 +1,5 @@
+val springVersion = "3.2.18.RELEASE"
+
 libraryDependencies ++= Seq(
   "org.slf4j"              % "jcl-over-slf4j"  % "1.7.28",
   "org.slf4j"              % "slf4j-api"       % "1.7.28",
@@ -7,8 +9,8 @@ libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
   "com.fifesoft"           % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout"          % "miglayout-swing" % "4.2",
-  "org.springframework"    % "spring-web"      % "2.5.5",
-  "org.springframework"    % "spring-aop"      % "2.5.5"
+  "org.springframework"    % "spring-web"      % springVersion,
+  "org.springframework"    % "spring-aop"      % springVersion
 )
 
 unmanagedJars in Compile += file(sys.props("java.home")) / "lib/javaws.jar"

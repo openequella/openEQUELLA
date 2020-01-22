@@ -201,7 +201,7 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
   }
 
   @SuppressWarnings("unchecked")
-  private List<TermResult> executeListQuery(String query, Map<String, ?> params) {
+  private List<TermResult> executeListQuery(String query, Map<String, Object> params) {
     if (Check.isEmpty(query)) {
       return Collections.emptyList();
     }
@@ -232,7 +232,7 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
         });
   }
 
-  private Object executeSingleResultQuery(String query, Map<?, ?> params) {
+  private Object executeSingleResultQuery(String query, Map<String, Object> params) {
     return jdbcTemplate.query(
         query,
         params,
