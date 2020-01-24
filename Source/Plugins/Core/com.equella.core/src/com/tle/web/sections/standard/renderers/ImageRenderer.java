@@ -100,9 +100,13 @@ public class ImageRenderer extends TagRenderer {
     attrs.put("src", source); // $NON-NLS-1$
     attrs.put("width", width); // $NON-NLS-1$
     attrs.put("height", height); // $NON-NLS-1$
-    if (alt != null) {
+    if (alt != null && alt.getText().length() > 0) {
       attrs.put("alt", alt.getText()); // $NON-NLS-1$
       attrs.put("title", alt.getText()); // $NON-NLS-1$
+    } else {
+      // If the alt tag is not set, just use the source as the alt
+      attrs.put("alt", source); // $NON-NLS-1$
+      attrs.put("title", source); // $NON-NLS-1$
     }
   }
 
