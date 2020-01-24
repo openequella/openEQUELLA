@@ -26,6 +26,7 @@ import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TagState;
 import java.io.IOException;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 public class ImageRenderer extends TagRenderer {
   private String source;
@@ -48,7 +49,7 @@ public class ImageRenderer extends TagRenderer {
   }
 
   public ImageRenderer(TagState state, String source, Label alt) {
-    super("img", state); // $NON-NLS-1$
+    super("img", state);
     this.source = source;
     this.alt = alt;
   }
@@ -97,16 +98,16 @@ public class ImageRenderer extends TagRenderer {
   protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
       throws IOException {
     super.prepareFirstAttributes(writer, attrs);
-    attrs.put("src", source); // $NON-NLS-1$
-    attrs.put("width", width); // $NON-NLS-1$
-    attrs.put("height", height); // $NON-NLS-1$
-    if (alt != null && alt.getText().length() > 0) {
-      attrs.put("alt", alt.getText()); // $NON-NLS-1$
-      attrs.put("title", alt.getText()); // $NON-NLS-1$
+    attrs.put("src", source);
+    attrs.put("width", width);
+    attrs.put("height", height);
+    if (alt != null && StringUtils.isNotBlank(alt.getText())) {
+      attrs.put("alt", alt.getText());
+      attrs.put("title", alt.getText());
     } else {
       // If the alt tag is not set, just use the source as the alt
-      attrs.put("alt", source); // $NON-NLS-1$
-      attrs.put("title", source); // $NON-NLS-1$
+      attrs.put("alt", source);
+      attrs.put("title", source);
     }
   }
 
