@@ -82,11 +82,17 @@ public final class FileUtils {
 
   public static boolean delete(Path f, @Nullable FileCallback callback, boolean failOnError)
       throws IOException {
+    if (LOGGER.isTraceEnabled()) {
+      // Exposes the code flows that delete files
+      Exception tracer = new Exception("Debug stack trace - about to delete - " + f.toString());
+      LOGGER.trace(tracer.getMessage(), tracer);
+    }
     if (!Files.exists(f, LinkOption.NOFOLLOW_LINKS)) {
+      LOGGER.debug("File does not exist.  Could not delete [" + f.toString() + "]");
       return true;
     }
     if (Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS)) {
-      LOGGER.debug("File is a folder, deleting contents");
+      LOGGER.debug("File [" + f.toString() + "] is a folder, deleting contents");
       try {
         final DeleteVisitor visitor = new DeleteVisitor(callback);
         Files.walkFileTree(f, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, visitor);
@@ -325,6 +331,7 @@ public final class FileUtils {
       }
       try {
         Files.delete(dir);
+        LOGGER.warn("Deleting folder " + dir.toString());
       } catch (Exception e) {
         success = false;
         LOGGER.warn("Folder deletion failed.  Could not delete " + dir.toString());

@@ -20,16 +20,17 @@ package com.tle.web.lti.usermanagement;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.common.lti.consumers.entity.LtiConsumer;
 import javax.servlet.http.HttpServletRequest;
 
 /** @author Aaron */
 @NonNullByDefault
 public interface LtiWrapperExtension {
   @Nullable
-  String getUserId(HttpServletRequest request);
+  String getUserId(HttpServletRequest request, LtiConsumer consumer);
 
   @Nullable
-  String getUsername(HttpServletRequest request);
+  String getUsername(HttpServletRequest request, LtiConsumer consumer);
 
   @Nullable
   String getFirstName(HttpServletRequest request);
@@ -40,5 +41,5 @@ public interface LtiWrapperExtension {
   @Nullable
   String getEmail(HttpServletRequest request);
 
-  boolean isPrefixUserId();
+  boolean isPrefixUserId(LtiConsumer consumer);
 }
