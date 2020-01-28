@@ -9,7 +9,9 @@
   <#assign visibility = "none">
 </#if>
 <div id="${m.id}_attachment_duplicate_warning" style="display: ${visibility}">
-  <p style="color:red">${m.duplicateWarningMessage}</p>
+  <p>
+    <b style="color:red" role="alert">${m.duplicateWarningMessage}</b>
+  </p>
   <@link section=s.duplicateWarningLink/>
 </div>
 
