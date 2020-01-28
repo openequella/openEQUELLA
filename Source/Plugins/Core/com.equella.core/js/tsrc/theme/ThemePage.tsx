@@ -404,7 +404,7 @@ class ThemePage extends React.Component<
               </Typography>
             </Grid>
             <Grid item>
-              <img src={this.state.logoURL} />
+              <img src={this.state.logoURL} alt={strings.logosettings.alt} />
             </Grid>
           </Grid>
         </CardContent>

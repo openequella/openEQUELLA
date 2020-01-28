@@ -228,6 +228,7 @@ export const languageStrings = {
       sidebariconcolour: "Icon Colour"
     },
     logosettings: {
+      alt: "Logo",
       title: "Logo Settings",
       imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
       current: "Current Logo: ",
