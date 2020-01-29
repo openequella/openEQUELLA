@@ -9,17 +9,17 @@
 
 	<div class="query-wrapper" role="search">
 		<div id="querycontainer" class="input-append">
-			<@textfield id="searchform-query" section=s.queryField 
-				autoSubmitButton="searchform-search" 
+			<@textfield id="searchform-query" section=s.queryField
+				autoSubmitButton="searchform-search"
 				placeholder=b.key('query.hint') />
-					
+
 			<@button id="searchform-search" section=s.searchButton class="btn btn-primary add-on">
 				<i class="icon-search icon-white"></i>
 			</@button>
 		</div>
-		
+
 		<#if s.textOrTagSelector.isDisplayed(_info)>
-			<div id="withincontainer">
+			<div id="withincontainer" role="listbox">
 				<@render id="searchform-in" section=s.textOrTagSelector />
 			</div>
 		</#if>
