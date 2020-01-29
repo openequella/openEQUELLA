@@ -735,7 +735,7 @@ Contribution wizard inputs
 }
 
 .repeater-remove:before {
-  content: "\e5cd";
+  content: "\e5cd"; //material ui close icon
   font-family: "Material Icons";
   font-size: 20px;
   color: #000000;
@@ -748,7 +748,7 @@ Contribution wizard inputs
 }
 
 a[title="move-up"]:before {
-  content: "\e5ce";
+  content: "\e5ce"; //material ui up chevron icon
   font-family: "Material Icons";
   font-size: 20px;
   color: #000000;
@@ -760,7 +760,7 @@ a[title="move-up"]:before {
   width: 17px;
 }
 a[title="move-down"]:before {
-  content: "\e5cf";
+  content: "\e5cf"; //material ui down chevron icon
   font-family: "Material Icons";
   font-size: 20px;
   color: #000000;
