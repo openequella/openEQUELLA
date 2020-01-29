@@ -5,7 +5,7 @@
     "dev": "parcel watch index.js --out-dir=../target/scala-2.12/classes/web/apidocs --out-file=bundle.js"
   },
   "dependencies": {
-    "swagger-ui": "3.23.11"
+    "swagger-ui": "3.25.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
