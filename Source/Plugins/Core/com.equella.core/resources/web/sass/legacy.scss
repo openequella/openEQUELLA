@@ -1631,7 +1631,7 @@ Search page
   position: absolute;
   left: 20px;
   top: 22px;
-  color: #696864;
+  color: $menuTextColor;
   font-size: 18px;
 }
 
@@ -2425,7 +2425,7 @@ html.wait {
 
 .itemresult-metaline .itemresult-meta-delim,
 .itemresult-metaline abbr {
-  color: #b1b17b;
+  color: $menuTextColor;
 }
 
 .highlight {
