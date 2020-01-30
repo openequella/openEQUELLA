@@ -2769,13 +2769,13 @@ button + .repeater-groups {
 }
 
 .filedrop {
-  border: 3px dotted #ccc;
+  border: 3px dotted transparentize($menuTextColor, 0.2);
   padding-top: 45px;
   padding-bottom: 45px;
   margin: 1em 0;
   text-align: center;
   cursor: pointer;
-  color: rgb(130, 130, 130);
+  color: $menuTextColor;
 }
 
 .filedrop-file {
