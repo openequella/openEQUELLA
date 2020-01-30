@@ -2011,6 +2011,7 @@ ul.ui-autocomplete {
       font-size: 24px;
       color: $menuItemIconColor;
       padding-right: 4px;
+
     }
     &#sra_sort:before {
       content: "\E164";
@@ -2024,12 +2025,15 @@ ul.ui-autocomplete {
     &:hover {
       background-color: transparentize($primaryColor, 0.7);
     }
-    &:active {
-      background-color: transparentize($primaryColor, 1);
-    }
     &.active {
       background-color: $primaryColor;
       color: set-text-color($primaryColor);
+      &:before {
+        color: set-text-color($primaryColor);
+      }
+    }
+    i:before {
+      display:none;
     }
   }
 }
