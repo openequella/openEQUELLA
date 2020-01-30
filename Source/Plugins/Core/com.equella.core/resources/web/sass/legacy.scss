@@ -734,9 +734,8 @@ Contribution wizard inputs
   position: relative;
 }
 
-.repeater-remove:before {
-  content: "\e5cd"; //material ui close icon
-  font-family: "Material Icons";
+.repeater-remove {
+  background: url(../../images/repeater-remove.png) no-repeat 0px 0px;
   font-size: 20px;
   color: #000000;
   padding-right: 4px;
