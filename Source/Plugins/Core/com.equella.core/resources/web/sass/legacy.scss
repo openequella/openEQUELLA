@@ -735,7 +735,10 @@ Contribution wizard inputs
 }
 
 .repeater-remove {
-  background: url(../images/repeater-remove.png) no-repeat 0px 0px;
+  background: url(../../images/repeater-remove.png) no-repeat 0px 0px;
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
   margin-left: 3px;
   cursor: pointer;
   height: 17px;
@@ -743,6 +746,30 @@ Contribution wizard inputs
   width: 17px;
 }
 
+a[title="move-up"]:before {
+  content: "\e5ce"; //material ui up chevron icon
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
+  margin-left: 3px;
+  cursor: pointer;
+  height: 17px;
+  float: right;
+  width: 17px;
+}
+a[title="move-down"]:before {
+  content: "\e5cf"; //material ui down chevron icon
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
+  margin-left: 3px;
+  cursor: pointer;
+  height: 17px;
+  float: right;
+  width: 17px;
+}
 .repeater-move {
   background: url(../images/repeater-button-bg.png) no-repeat 0px 0px;
   height: 17px;
