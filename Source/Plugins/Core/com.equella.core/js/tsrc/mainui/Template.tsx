@@ -229,7 +229,7 @@ export const useStyles = makeStyles((theme: Theme) => {
       background: menuColors.background
     },
     menuItem: {
-      color: menuColors.text
+      color: menuColors.text,
     },
     menuIcon: {
       color: menuColors.icon
@@ -378,6 +378,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           );
         }}
         key={ind}
+        button=true
       >
         <ListItemIcon>
           {item.iconUrl ? (
@@ -393,7 +394,6 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           primary={
             <Typography
               variant="subtitle1"
-              className={classes.menuItem}
               component="div"
             >
               {item.title}
