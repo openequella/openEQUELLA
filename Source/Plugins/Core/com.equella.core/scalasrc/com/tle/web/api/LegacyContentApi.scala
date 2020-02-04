@@ -32,6 +32,7 @@ import com.tle.core.notification.standard.indexer.NotificationSearch
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import com.tle.core.workflow.freetext.TaskListSearch
 import com.tle.legacy.LegacyGuice
+import com.tle.legacy.LegacyGuice.accessibilityModeService
 import com.tle.web.api.LegacyContentController.getBookmarkState
 import com.tle.web.sections._
 import com.tle.web.sections.ajax.{AjaxGenerator, AjaxRenderContext}
@@ -91,7 +92,8 @@ case class LegacyContent(html: Map[String, String],
                          hideAppBar: Boolean,
                          userUpdated: Boolean,
                          preventUnload: Boolean,
-                         noForm: Boolean)
+                         noForm: Boolean,
+                         accessibilityMode: Boolean)
 
 case class ItemCounts(tasks: Int, notifications: Int)
 
@@ -100,6 +102,7 @@ case class CurrentUserDetails(id: String,
                               firstName: String,
                               lastName: String,
                               emailAddress: String,
+                              accessibilityMode: Boolean,
                               autoLoggedIn: Boolean,
                               guest: Boolean,
                               prefsEditable: Boolean,
@@ -332,6 +335,8 @@ class LegacyContentApi {
 
     val cu = CurrentUser.getUserState
 
+    val accessibilityMode = LegacyGuice.accessibilityModeService.isAccessibilityMode
+
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
     val menuGroups = {
@@ -390,7 +395,8 @@ class LegacyContentApi {
           guest = cu.isGuest,
           prefsEditable = prefsEditable,
           menuGroups = menuGroups,
-          counts = counts
+          counts = counts,
+          accessibilityMode = accessibilityMode
         )
       )
       .cacheControl(cacheControl)
@@ -472,10 +478,12 @@ class LegacyContentApi {
   }
 
   class LegacyResponseListener(info: MutableSectionInfo) extends RenderResultListener {
+    import LegacyGuice.accessibilityModeService
 
     override def returnResult(result: SectionResult, fromId: String): Unit = {
-      val context = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
-      val decs    = Decorations.getDecorations(info)
+      val context           = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
+      val decs              = Decorations.getDecorations(info)
+      val accessibilityMode = accessibilityModeService.isAccessibilityMode
       val html = result match {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(
@@ -530,7 +538,8 @@ class LegacyContentApi {
           hideAppBar,
           userChanged(info.getRequest),
           preventUnload,
-          decs.isExcludeForm
+          decs.isExcludeForm,
+          accessibilityMode
         )
       )
     }
@@ -572,11 +581,12 @@ class LegacyContentApi {
   }
 
   def wrapBody(context: RenderContext, body: SectionRenderable): SectionRenderable = {
-    val decs = Decorations.getDecorations(context)
-
+    val decs              = Decorations.getDecorations(context)
+    val accessibilityMode = accessibilityModeService.isAccessibilityMode
     if (decs.isBanner || !decs.isMenuHidden || decs.isContent) {
       val cbTag = context.getBody
       cbTag.setId("content-body")
+      cbTag.addClass(if (accessibilityMode) "accessibility" else "")
       val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
       val cbtag = cbTag.addClasses[TagState](decs.getContentBodyClasses)
 
