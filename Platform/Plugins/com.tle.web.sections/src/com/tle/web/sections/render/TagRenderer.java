@@ -273,6 +273,12 @@ public class TagRenderer extends AbstractWrappedElementId
       attrs.put("class", sbuf.toString());
     }
     attrs.put("style", getStyle());
+    if (this.attrs != null) {
+      String roleAttr = (String) this.attrs.get("role");
+      if (roleAttr != null) {
+        attrs.put("role", roleAttr);
+      }
+    }
     final Map<String, String> allData = getData();
     if (allData != null) {
       for (Entry<String, String> d : allData.entrySet()) {
