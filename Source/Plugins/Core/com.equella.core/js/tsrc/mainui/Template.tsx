@@ -229,7 +229,7 @@ export const useStyles = makeStyles((theme: Theme) => {
       background: menuColors.background
     },
     menuItem: {
-      color: menuColors.text,
+      color: menuColors.text
     },
     menuIcon: {
       color: menuColors.icon
@@ -392,10 +392,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         <ListItemText
           disableTypography
           primary={
-            <Typography
-              variant="subtitle1"
-              component="div"
-            >
+            <Typography variant="subtitle1" component="div">
               {item.title}
             </Typography>
           }
