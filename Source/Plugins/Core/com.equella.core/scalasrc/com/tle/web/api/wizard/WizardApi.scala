@@ -201,11 +201,14 @@ class WizardApi {
       cookies.map(cookie => s"${cookie.getName}=${cookie.getValue}").mkString(";")
     }
     // If have cookies apart from those unneeded then reset cookie in the header; otherwise remove cookie from the header.
-    if (!filterCookies.isEmpty) {
-      headers + ("cookie" -> filterCookies)
-    } else {
-      headers - "cookie"
+    val filterHeaders = {
+      if (!filterCookies.isEmpty) {
+        headers + ("cookie" -> filterCookies)
+      } else {
+        headers - "cookie"
+      }
     }
+    filterHeaders - "host"
   }
 
   @NoCache

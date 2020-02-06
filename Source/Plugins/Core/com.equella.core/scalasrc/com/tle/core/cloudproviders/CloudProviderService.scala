@@ -36,6 +36,7 @@ import com.tle.core.db._
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService
 import fs2.Stream
+import org.apache.commons.lang.RandomStringUtils
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
@@ -87,7 +88,10 @@ object CloudProviderService {
         IO.fromEither(
           UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, cparams ++ params))
       }
-      req  = f(uri)
+      req            = f(uri)
+      requestContext = "[" + RandomStringUtils.randomAlphanumeric(6) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
+      _ = Logger.debug(
+        requestContext + ", method: " + req.method.m + ", request: " + uri.toString.split('?')(0))
       auth = provider.providerAuth
       response <- if (serviceUri.authenticated) {
         dbLiftIO.liftIO(tokenUrlForProvider(provider)).flatMap { oauthUrl =>
@@ -95,7 +99,11 @@ object CloudProviderService {
             .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
         }
       } else dbLiftIO.liftIO(req.send())
-    } yield response
+
+    } yield {
+      Logger.debug(requestContext + ", response status: " + response.code)
+      response
+    }
 
   case class ControlListCacheValue(
       expiry: Instant,
