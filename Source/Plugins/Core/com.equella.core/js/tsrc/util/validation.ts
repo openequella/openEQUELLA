@@ -1,5 +1,5 @@
 export function isInteger(
-  val: number | undefined,
+  val?: number,
   required?: boolean,
   positive?: boolean
 ): boolean {
