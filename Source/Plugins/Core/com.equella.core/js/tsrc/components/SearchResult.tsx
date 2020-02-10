@@ -43,8 +43,6 @@ export interface SearchResultProps {
   onDelete?: () => void;
   primaryText: string;
   secondaryText?: string;
-  //extraDetails?: SearchResultExtraDetail[];
-  //indicators?: string[];
 }
 
 type PropsWithStyles = SearchResultProps &
@@ -53,7 +51,7 @@ type PropsWithStyles = SearchResultProps &
 class SearchResult extends React.Component<PropsWithStyles> {
   render() {
     const { onDelete, to } = this.props;
-    const link: any = (
+    const link = (
       <Typography
         color="primary"
         variant="subtitle1"
@@ -64,25 +62,6 @@ class SearchResult extends React.Component<PropsWithStyles> {
         )}
       />
     );
-    /*
-        var details: JSX.Element | undefined;
-        if (extraDetails){
-            details = <List className={ classes.details } disablePadding>
-                    { extraDetails.map((detail: SearchResultExtraDetail, index: number) => 
-                    <ListItem key={index} className={classes.displayNode } disableGutters>
-                        <Typography variant="body1">{detail.label}</Typography>
-                        { (detail.value ? 
-                            <Typography component="div" color="textSecondary"> - {detail.value}</Typography> 
-                            : null) }
-                    </ListItem>) }
-                </List>;
-        }
-        var indic: JSX.Element | undefined;
-        if (indicators){
-            indic = <div>
-                    { indicators.map((ind, index: number) => <Chip key={index} label={ind} />) }
-                </div>;
-        }*/
 
     const content = (
       <Typography
