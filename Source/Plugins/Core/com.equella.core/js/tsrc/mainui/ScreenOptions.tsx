@@ -23,7 +23,7 @@ export default React.memo(function ScreenOptions(props: {
       <IconButton
         id="screenOptionsOpen"
         onClick={e => setOptionsAnchor(e.currentTarget)}
-        aria-label={languageStrings.screenOptions.descrption}
+        aria-label={languageStrings.screenoptions.description}
       >
         <MoreVertIcon />
       </IconButton>

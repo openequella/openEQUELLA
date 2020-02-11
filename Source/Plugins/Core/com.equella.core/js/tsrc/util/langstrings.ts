@@ -372,7 +372,7 @@ export const languageStrings = {
     },
     convertGroup: "Convert to group"
   },
-  screenOptions: {
-    descrption: "Screen options"
+  screenoptions: {
+    description: "Screen options"
   }
 };
