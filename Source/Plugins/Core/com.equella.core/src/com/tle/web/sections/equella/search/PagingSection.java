@@ -193,7 +193,8 @@ public class PagingSection<
     if (userPrefs.isSearchAttachment()) {
       attachmentSearch.setChecked(context, true);
     }
-
+    attachmentSearch.getState(context).setLabelText(LABEL_ATTACHMENT_SEARCH.getText());
+    perPage.getState(context).setLabelText(LABEL_PERPAGE.getText());
     event.addScreenOptions(
         new SettingsRenderer(LABEL_PERPAGE, renderSection(context, perPage), "screen-option"));
     SearchSettings searchingSettings = getSearchSettings();

@@ -911,6 +911,7 @@ public class SearchQuerySection
   @Override
   public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
     if (getSearchSettings().isSearchingShowNonLiveCheckbox()) {
+      includeNonLive.getState(context).setLabelText(LABEL_NONLIVE.getText());
       event.addScreenOptions(
           new SettingsRenderer(
               LABEL_NONLIVE,
