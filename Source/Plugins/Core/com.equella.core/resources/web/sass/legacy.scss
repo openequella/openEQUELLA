@@ -1122,6 +1122,7 @@ div.rightPanel {
 
 .settingHelp {
   padding-top: 20px;
+  color: $menuTextColor;
 }
 
 //scripted portlet
@@ -2011,7 +2012,6 @@ ul.ui-autocomplete {
       font-size: 24px;
       color: $menuItemIconColor;
       padding-right: 4px;
-
     }
     &#sra_sort:before {
       content: "\E164";
@@ -2033,7 +2033,7 @@ ul.ui-autocomplete {
       }
     }
     i:before {
-      display:none;
+      display: none;
     }
   }
 }
