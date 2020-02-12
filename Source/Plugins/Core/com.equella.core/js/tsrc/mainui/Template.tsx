@@ -392,7 +392,11 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         <ListItemText
           disableTypography
           primary={
-            <Typography variant="subtitle1" component="div">
+            <Typography
+              variant="subtitle1"
+              className={classes.menuItem}
+              component="div"
+            >
               {item.title}
             </Typography>
           }
