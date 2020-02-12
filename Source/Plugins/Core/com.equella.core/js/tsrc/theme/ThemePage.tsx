@@ -99,7 +99,7 @@ class ThemePage extends React.Component<
   handleDefaultButton = () => {
     this.setState(
       {
-        primary: "#2196f3",
+        primary: "#186caf",
         secondary: "#ff9800",
         background: "#fafafa",
         menuText: "#000000",
