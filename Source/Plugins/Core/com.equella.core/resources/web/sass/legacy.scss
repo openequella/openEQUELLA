@@ -295,6 +295,39 @@ ul {
   list-style: none;
 }
 
+a {
+  &:focus {
+    text-decoration: underline;
+  }
+}
+
+/*****************************************************************************
+Accessibility mode
+*****************************************************************************/
+//mostly a copy paste from the original styles.css
+#content-body.accessibility {
+  div.area a:focus,
+  div.modal-content a:focus,
+  .box a:focus,
+  div.area input:focus,
+  div.modal-content input:focus,
+  .box input:focus,
+  div.area button:focus,
+  div.modal-content button:focus,
+  .box button:focus,
+  div.area select:focus,
+  div.modal-content select:focus,
+  .box select:focus,
+  td:focus {
+    outline: thin solid rgba(299, 151, 0, 255);
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+  .accessibility select {
+    border: 1px solid #cbc7b9;
+  }
+}
+
 /*****************************************************************************
 Buttons
 *****************************************************************************/

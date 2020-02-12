@@ -378,6 +378,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           );
         }}
         key={ind}
+        button={true}
       >
         <ListItemIcon>
           {item.iconUrl ? (
