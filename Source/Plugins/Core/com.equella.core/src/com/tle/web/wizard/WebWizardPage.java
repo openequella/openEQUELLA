@@ -413,6 +413,7 @@ public class WebWizardPage extends WizardPage implements com.tle.web.wizard.page
 
         if (!ignored) {
           SectionRenderable rendered = SectionUtils.renderSection(context, ctrl);
+          tagState.setAttribute("aria-labelledby", "c" + ctrl.getControlNumber() + "_invalid");
           if (ajax) {
             renderable = new AjaxTagRenderer("div", tagState, rendered, true);
           } else {
