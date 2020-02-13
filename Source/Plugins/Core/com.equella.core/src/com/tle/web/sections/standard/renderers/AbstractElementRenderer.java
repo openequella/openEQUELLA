@@ -35,9 +35,6 @@ public abstract class AbstractElementRenderer extends AbstractComponentRenderer 
       throws IOException {
     super.prepareFirstAttributes(writer, attrs);
     attrs.put("name", getName(writer));
-    if (state.getLabel() == null && !state.getLabelText().isEmpty()) {
-      attrs.put("aria-label", getLabelText());
-    }
   }
 
   protected String getName(SectionInfo info) {

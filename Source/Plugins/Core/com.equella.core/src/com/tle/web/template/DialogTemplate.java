@@ -30,6 +30,7 @@ import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TemplateRenderable;
 import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.sections.result.util.KeyLabel;
@@ -76,7 +77,7 @@ public class DialogTemplate {
     DialogTemplateModel model = new DialogTemplateModel();
     model.setPageTitle(new LabelRenderer(title));
     model.setFooterId(footerId.getElementId(info));
-
+    model.setTitleId(dialog.getElementId(info));
     model.setTemplate(result);
     model.setContentBodyClass(contentBodyClass);
 
@@ -84,7 +85,7 @@ public class DialogTemplate {
     if (footer != null && footer.exists(info)) {
       model.setFooter(footer);
     }
-
+    dialog.getState(info).setAccessibilityAttr(TagRenderer.ARIA_LABELLEDBY, model.getTitleId());
     return viewFactory.createResultWithModel("layouts/inner/dialog.ftl", model);
   }
 
@@ -95,6 +96,7 @@ public class DialogTemplate {
     private String contentBodyClass;
     private TemplateRenderable footer;
     private String footerId;
+    private String titleId;
 
     public String getContentBodyClass() {
       return contentBodyClass;
@@ -142,6 +144,14 @@ public class DialogTemplate {
 
     public void setFooterId(String footerId) {
       this.footerId = footerId;
+    }
+
+    public String getTitleId() {
+      return titleId;
+    }
+
+    public void setTitleId(String titleId) {
+      this.titleId = titleId + "_title";
     }
   }
 }

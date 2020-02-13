@@ -50,6 +50,7 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
@@ -150,7 +151,6 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
     if (model.isSearchDisabled()) {
       return null;
     }
-
     setupButton(sort, sortSections, showing, context);
     setupButton(filter, filterSections, showing, context);
 
@@ -177,6 +177,9 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
         button.setClickHandler(context, new OverrideHandler(showFunc, buttonMode.toString()));
         state.setAttribute(Icon.class, Icon.DOWN);
       }
+      state.setAccessibilityAttr(TagRenderer.ARIA_CONTROL, ACTIONS_AJAX_ID);
+      state.setAccessibilityAttr(
+          TagRenderer.ARIA_EXPANDED, String.valueOf(!mode.equals(Showing.NONE)));
       getModel(context).addButton(button);
     }
   }

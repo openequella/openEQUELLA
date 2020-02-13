@@ -65,7 +65,6 @@ public class HtmlComponentState extends TagState implements RendererSelectable {
   private String name;
   private boolean cancel;
   private Label title;
-  private String labelText;
 
   public HtmlComponentState() {
     // nothing
@@ -165,14 +164,8 @@ public class HtmlComponentState extends TagState implements RendererSelectable {
   public String getLabelText() {
     if (label != null) {
       return label.getText();
-    } else if (labelText != null) {
-      return labelText;
     }
     return ""; //$NON-NLS-1$
-  }
-
-  public void setLabelText(String labelText) {
-    this.labelText = labelText;
   }
 
   public static final Comparator<HtmlComponentState> LABEL_COMPARATOR =

@@ -43,6 +43,7 @@ import com.tle.web.sections.js.generic.function.AnonymousFunction;
 import com.tle.web.sections.js.generic.function.AssignableFunction;
 import com.tle.web.sections.js.generic.statement.ReturnStatement;
 import com.tle.web.sections.js.generic.statement.ScriptStatement;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -133,6 +134,9 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
           new OverrideHandler(
               new ScriptStatement(
                   "if(this.value.length > 8192) this.value = this.value.slice(0, 8192);")));
+    }
+    if (box.isMandatory()) {
+      field.getState(context).setAccessibilityAttr(TagRenderer.ARIA_REQUIRED, String.valueOf(true));
     }
     addDisabler(context, field);
     return viewFactory.createResult("editbox.ftl", context);

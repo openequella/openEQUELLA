@@ -67,6 +67,7 @@ import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.CombinedRenderer;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.selection.SelectAttachmentHandler;
@@ -177,7 +178,9 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
                   createAttachmentsList(
                       context, item, structured, attId, itemUuid, itemVersion, true));
             } else {
-              entry.addExtras(new DivRenderer(new TagState(attId)));
+              TagState state = new TagState(attId);
+              state.setAccessibilityAttr(TagRenderer.ARIA_HIDDEN, String.valueOf(!model.show));
+              entry.addExtras(new DivRenderer(state));
             }
           }
 
@@ -215,6 +218,8 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
     model.put(
         "linkLabel", CurrentLocale.get(ATTACHMENT_LABEL_PREFIX + (defaultOpen ? "hide" : "show")));
     model.put("divToggle", new DivRenderer(divToggle));
+    model.put("linkedItemId", ATTACHMENTS_ID_PREFIX + itemUuid + itemVersion);
+    model.put("expanded", defaultOpen);
 
     return viewFactory.createResultWithModel("attachmentlisttoggle.ftl", model);
   }
@@ -342,7 +347,6 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
 
     final TagState attDivState = createAttDivState(attId);
     final TagState captureDiv = createCaptureDiv(context, item, attId, itemUuid, itemVersion);
-
     final List<AttachmentRowDisplay> attachments =
         buildAttachmentRowDisplay(context, item, structured, attId);
     model.setAttachmentRows(attachments);
