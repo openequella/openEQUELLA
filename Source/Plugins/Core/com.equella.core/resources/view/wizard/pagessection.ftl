@@ -5,16 +5,16 @@
 <div class="area">
 	<h2>${m.pageTitle}</h2>
 	<#if m.errors?has_content>
-	<div class="error-receipt" tabIndex="0" >	
+	<div class="error-receipt" tabIndex="0" role="alert">
 		<p>${b.key("error.receipt")}</p>
-		<ul> 
-			<#list m.errors as error> <li> ${error} </li> </#list> 
+		<ul>
+			<#list m.errors as error> <li> ${error} </li> </#list>
 		</ul>
-	</div>	 
+	</div>
 	</#if>
 	<div id="wizard-controls" class="wizard-parentcontrol wizard-controls indent0">
 		<#list m.pageResults['wizard-controls'] as section><#t/>
-			<#if section.result??> 
+			<#if section.result??>
 				<@render section=section.result/><#t/>
 			</#if>
 		</#list><#t/>
