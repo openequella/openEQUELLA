@@ -1,156 +1,154 @@
 .sortData {
-	display: none;
+  display: none;
 }
 
 .filterData {
-	display: none;
+  display: none;
 }
 
-DIV.tableContainer {
-	position: relative;
+div.tableContainer {
+  position: relative;
 }
 
-DIV.tableFilter {
-	text-align: left;
-	vertical-align: middle;
-	white-space: nowrap;
-	padding-bottom: 5px;
-	float: right;
+div.tableFilter {
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding-bottom: 5px;
+  float: right;
 }
 
-DIV.tableContainer DIV.tableFilter {
-	position: absolute;
-	top: -30px;
-	right: 0;
+div.tableContainer div.tableFilter {
+  position: absolute;
+  top: -30px;
+  right: 0;
 }
 
-DIV.tableFilter INPUT.filterBox {
-	width: 300px !important;
-	background-image: url(../../images/component/tablefilter.png);
-	background-repeat: no-repeat;
-	background-position: right;
-	padding-right: 22px;
-
+div.tableFilter input.filterBox {
+  width: 300px !important;
+  background-image: url(../../images/component/tablefilter.png);
+  background-repeat: no-repeat;
+  background-position: right;
+  padding-right: 22px;
 }
 
-DIV.tableFilter INPUT.blur {
-	color: #AAAAAA;
-	background-image: url(../../images/component/tablefilterdis.png);
+div.tableFilter input.blur {
+  color: #aaaaaa;
+  background-image: url(../../images/component/tablefilterdis.png);
 }
 
-TABLE.zebra {
-	border: 1px solid #8f8b7f;
-	width: 100%;
-	margin: 10px 0;
+table.zebra {
+  border: 1px solid #8f8b7f;
+  width: 100%;
+  margin: 10px 0;
 }
 
-TABLE.zebra.withfilter {
-	margin-top: 5px;
+table.zebra.withfilter {
+  margin-top: 5px;
 }
 
-TABLE.zebra TR.rowHidden {
-	display: none;
+table.zebra tr.rowHidden {
+  display: none;
 }
 
-TABLE.zebra TR.rowShown {
-	display: table-row;
+table.zebra tr.rowShown {
+  display: table-row;
 }
 
-TABLE.zebra TR TH {
-	color: #fff;
-	background: #d4cfb9;
-	text-align: left;
-	vertical-align: middle;
-	padding: 8px 10px;
-	white-space: nowrap;
+table.zebra tr th {
+  color: #fff;
+  background: #212121;
+  text-align: left;
+  vertical-align: middle;
+  padding: 8px 10px;
+  white-space: nowrap;
 }
 
-TABLE.zebra.large TH {
-	font-size: 13px;
-	font-weight: bold;
-	padding: 13px 11px 12px;
+table.zebra.large th {
+  font-size: 13px;
+  font-weight: bold;
+  padding: 13px 11px 12px;
 }
 
-TABLE.zebra TR TD.nowrap {
-	white-space: nowrap;
+table.zebra tr td.nowrap {
+  white-space: nowrap;
 }
 
-TABLE.zebra TR TD {
-	text-align: left;
-	vertical-align: top;
-	padding: 8px 10px;
+table.zebra tr td {
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 10px;
 }
 
-TABLE.zebra.large TR TD {
-	font-size: 12px;
-	padding: 11px 11px 9px;
-	line-height: 1.5;
+table.zebra.large tr td {
+  font-size: 12px;
+  padding: 11px 11px 9px;
+  line-height: 1.5;
 }
 
-TABLE.zebra TR TD.middle {
-	vertical-align: middle;
+table.zebra tr td.middle {
+  vertical-align: middle;
 }
 
-TABLE.zebra TR TD A.position {
-	padding-right: 2px;
+table.zebra tr td a.position {
+  padding-right: 2px;
 }
 
-
-TABLE.zebra TR.even TD {
-	background: #fefefe;
+table.zebra tr.even td {
+  background: #fefefe;
 }
 
-TABLE.zebra TR.odd TD {
-	background: #f3f1eb;
+table.zebra tr.odd td {
+  background: #f3f1eb;
 }
 
-TABLE.zebra.alternate TR.even TD {
-	background: #f3f1eb;
+table.zebra.alternate tr.even td {
+  background: #f3f1eb;
 }
 
-TABLE.zebra.alternate TR.odd TD {
-	background: #fefefe;
+table.zebra.alternate tr.odd td {
+  background: #fefefe;
 }
 
-TABLE.zebra TR:hover TD, TABLE.zebra TR:focus TD 
-{
-/* !important */
-	background-color: #ffc;
+table.zebra tr:hover td,
+table.zebra tr:focus td {
+  /* !important */
+  background-color: #ffc;
 }
 
-.area h2+TABLE.zebra {
-	margin-top: 20px;
+.area h2 + table.zebra {
+  margin-top: 20px;
 }
 
-.area h3+TABLE.zebra {
-	margin-top: 4px;
+.area h3 + table.zebra {
+  margin-top: 4px;
 }
 
-TABLE.zebra TH.sortable {
-	cursor: pointer;
+table.zebra th.sortable {
+  cursor: pointer;
 }
 
-TABLE.zebra TH.sortable:hover {
-	background-color: #E4DFC9;
-	text-decoration: underline;
+table.zebra th.sortable:hover {
+  background-color: #4c4c4c;
+  text-decoration: underline;
 }
 
-TABLE.zebra TH.sortable DIV.sortArrow {
-	width: 8px;
-	height: 8px;
-	display: inline-block;
-	background-repeat: no-repeat;
-	margin-left: 1em;
+table.zebra th.sortable div.sortArrow {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  margin-left: 1em;
 }
 
-TABLE.zebra TH.sortable.sortedasc DIV.sortArrow,TABLE.zebra TH.sortable.unsorted.sortAsc:hover DIV.sortArrow
-	{
-	background-image: url(../../images/component/tablesortasc.png);
-	/*background-color: #E4DFC9;*/
+table.zebra th.sortable.sortedasc div.sortArrow,
+table.zebra th.sortable.unsorted.sortAsc:hover div.sortArrow {
+  background-image: url(../../images/component/tablesortasc.png);
+  /*background-color: #E4DFC9;*/
 }
 
-TABLE.zebra TH.sortable.sorteddesc DIV.sortArrow,TABLE.zebra TH.sortable.unsorted.sortDesc:hover DIV.sortArrow
-	{
-	background-image: url(../../images/component/tablesortdesc.png);
-	/*background-color: #E4DFC9;*/
+table.zebra th.sortable.sorteddesc div.sortArrow,
+table.zebra th.sortable.unsorted.sortDesc:hover div.sortArrow {
+  background-image: url(../../images/component/tablesortdesc.png);
+  /*background-color: #E4DFC9;*/
 }
