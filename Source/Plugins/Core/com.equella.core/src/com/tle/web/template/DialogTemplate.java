@@ -61,7 +61,8 @@ public class DialogTemplate {
       AbstractDialog<?> dialog,
       JSHandler closeHandler,
       String contentBodyClass,
-      ElementId footerId) {
+      ElementId footerId,
+      ElementId titleId) {
     if (dialog.isModal()) {
       HtmlComponentState closeDialog = new HtmlComponentState(closeHandler);
       closeDialog.setId(dialog.getElementId(info) + "_close");
@@ -77,7 +78,7 @@ public class DialogTemplate {
     DialogTemplateModel model = new DialogTemplateModel();
     model.setPageTitle(new LabelRenderer(title));
     model.setFooterId(footerId.getElementId(info));
-    model.setTitleId(dialog.getElementId(info));
+    model.setTitleId(titleId.getElementId(info));
     model.setTemplate(result);
     model.setContentBodyClass(contentBodyClass);
 
@@ -151,7 +152,7 @@ public class DialogTemplate {
     }
 
     public void setTitleId(String titleId) {
-      this.titleId = titleId + "_title";
+      this.titleId = titleId;
     }
   }
 }

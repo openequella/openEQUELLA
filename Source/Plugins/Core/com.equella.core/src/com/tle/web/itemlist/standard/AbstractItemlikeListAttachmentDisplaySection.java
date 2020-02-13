@@ -234,6 +234,7 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
       boolean defaultOpen) {
     final TagState attDivState = createAttDivState(attId);
     final TagState captureDiv = createCaptureDiv(context, item, attId, itemUuid, itemVersion);
+    attDivState.setAccessibilityAttr(TagRenderer.ARIA_HIDDEN, String.valueOf(!defaultOpen));
 
     // Build Attachments
     final List<AttachmentRowDisplay> attachments =
