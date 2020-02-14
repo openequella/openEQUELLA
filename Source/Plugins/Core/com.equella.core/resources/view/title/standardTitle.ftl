@@ -10,17 +10,17 @@
 	<#if c.title?? && c.title?length gt 0>
 		<h3> ${c.title} <#if c.mandatory><span class="ctrlmandatory">*</span></#if></h3>
 	</#if>
-	
+
 	<#if c.description?? && c.description != ''>
 		<p>${c.description}</p>
 	</#if>
-	
-	
+
+
 </@render>
-	<p class="ctrlinvalidmessage"><#if controlinvalid>${c.message}</#if></p>
+	<p class="ctrlinvalidmessage" id="${c.formName}_invalid"><#if controlinvalid>${c.message}</#if></p>
 <#if c.groupLabelNeeded>
 	<@render c.fieldsetTag> <!--</@render>-->
 <#else>
 	<fieldset>
 </#if>
-	
+
