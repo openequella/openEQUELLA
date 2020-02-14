@@ -138,6 +138,13 @@ public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleV
     if (box.isMandatory()) {
       field.getState(context).setAccessibilityAttr(TagRenderer.ARIA_REQUIRED, String.valueOf(true));
     }
+    if (isInvalid() || getMessage() != null) {
+      field
+          .getState(context)
+          .setAccessibilityAttr(
+              TagRenderer.ARIA_LABELLEDBY,
+              field.getElementId(context) + "_label " + field.getElementId(context) + "_invalid ");
+    }
     addDisabler(context, field);
     return viewFactory.createResult("editbox.ftl", context);
   }
