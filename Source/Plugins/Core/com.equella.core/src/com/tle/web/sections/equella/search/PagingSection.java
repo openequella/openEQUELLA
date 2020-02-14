@@ -37,6 +37,7 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.StatementHandler;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.Pager;
@@ -193,7 +194,10 @@ public class PagingSection<
     if (userPrefs.isSearchAttachment()) {
       attachmentSearch.setChecked(context, true);
     }
-
+    attachmentSearch
+        .getState(context)
+        .setAccessibilityAttr(TagRenderer.ARIA_LABEL, LABEL_ATTACHMENT_SEARCH.getText());
+    perPage.getState(context).setAccessibilityAttr(TagRenderer.ARIA_LABEL, LABEL_PERPAGE.getText());
     event.addScreenOptions(
         new SettingsRenderer(LABEL_PERPAGE, renderSection(context, perPage), "screen-option"));
     SearchSettings searchingSettings = getSearchSettings();

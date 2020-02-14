@@ -106,6 +106,9 @@ public class SearchResult<T extends SearchResult<T>> extends AbstractPage<T> {
   public String getStatus() {
     String statusLine = getDetailText("Status");
     int firstDivider = statusLine.indexOf('|');
+    if (resultPage.usingNewUI()) {
+      firstDivider = statusLine.indexOf("Last");
+    }
     if (firstDivider != -1) {
       statusLine = statusLine.substring(0, firstDivider);
     }
