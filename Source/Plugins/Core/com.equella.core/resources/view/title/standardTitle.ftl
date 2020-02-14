@@ -17,7 +17,7 @@
 
 
 </@render>
-	<p class="ctrlinvalidmessage" id=${c.formName}_invalid><#if controlinvalid>${c.message}</#if></p>
+	<p class="ctrlinvalidmessage" id="${c.formName}_invalid"><#if controlinvalid>${c.message}</#if></p>
 <#if c.groupLabelNeeded>
 	<@render c.fieldsetTag> <!--</@render>-->
 <#else>
