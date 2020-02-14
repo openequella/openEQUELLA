@@ -371,5 +371,8 @@ export const languageStrings = {
       notor: "None match"
     },
     convertGroup: "Convert to group"
+  },
+  screenoptions: {
+    description: "Screen options"
   }
 };

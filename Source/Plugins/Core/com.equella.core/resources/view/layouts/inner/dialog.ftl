@@ -2,7 +2,7 @@
 <#import "/com.tle.web.sections.standard@/ajax.ftl" as ajax/>
 
 <div class="modal<#if m.contentBodyClass??> ${m.contentBodyClass}</#if>">
-	<div class="modal-title">
+	<div class="modal-title" id="${m.titleId}">
 		<h3><@render m.pageTitle /></h3><@render m.template["head"] />
 	</div>
 	<div class="modal-content">
