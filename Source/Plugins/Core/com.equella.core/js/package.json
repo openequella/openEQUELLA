@@ -78,7 +78,7 @@
     "@types/react": "16.9.11",
     "@types/react-autosuggest": "9.3.11",
     "@types/react-color": "2.17.0",
-    "@types/react-dom": "16.9.2",
+    "@types/react-dom": "16.9.5",
     "@types/react-redux": "5.0.21",
     "@types/react-router": "5.1.1",
     "@types/react-router-dom": "4.3.5",
