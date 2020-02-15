@@ -19,6 +19,7 @@
 package com.tle.web.remoting.rest.docs;
 
 import com.tle.core.guice.Bind;
+import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionResult;
@@ -36,6 +37,7 @@ public class DocsSection extends AbstractPrototypeSection<Object> implements Htm
 
   @ViewFactory private FreemarkerFactory viewFactory;
 
+  @RequiresPrivilege(priv = "VIEW_APIDOCS")
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     Decorations decorations = Decorations.getDecorations(context);
