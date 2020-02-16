@@ -7,7 +7,6 @@ branches:
     - /^release\/.+/
     - /^stable-.+/
     - /^travis\/.+/
-    - component/accessibility_changes
 env:
   global:
     ### AWS START ###
