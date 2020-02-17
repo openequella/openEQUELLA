@@ -77,6 +77,8 @@ public class AjaxCaptureDirective extends SectionsTemplateModel implements Templ
     String idString = renderer.getElementId(context);
     Object classParam = params.get("class");
     String classString = (classParam != null ? classParam.toString() : null);
+    Object roleParam = params.get("role");
+    String roleString = (roleParam != null ? roleParam.toString() : null);
     Object collectionObj = params.get("collection");
     boolean writediv;
     boolean collection =
@@ -106,6 +108,7 @@ public class AjaxCaptureDirective extends SectionsTemplateModel implements Templ
     writediv = writedivObj == null || ((TemplateBooleanModel) writedivObj).getAsBoolean();
     if (writediv) {
       renderer.setStyles("", classString, idString);
+      renderer.setAttribute("role", roleString);
       renderer.setNestedRenderable(new BodyRenderer(body, contentsOut));
       context.preRender(renderer);
       renderer.realRender(new SectionWriter(out, context));

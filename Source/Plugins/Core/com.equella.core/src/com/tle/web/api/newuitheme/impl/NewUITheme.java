@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class NewUITheme {
 
-  private String primaryColor = "#2196f3";
+  private String primaryColor = "#186caf";
   private String secondaryColor = "#ff9800";
   private String backgroundColor = "#fafafa";
   private String menuItemColor = "#ffffff";

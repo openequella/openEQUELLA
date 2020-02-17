@@ -77,6 +77,7 @@ import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.js.generic.function.RuntimeFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
@@ -108,7 +109,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 
@@ -247,7 +250,10 @@ public class MyResourceContributeSection
 
     saveButton.setLabel(context, model.isEditing() ? LABEL_SAVE_EDIT : LABEL_UPLOAD);
     archiveOptionsDropDown.setRendererType(context, "bootstrapsplitdropdown");
-
+    Map<String, String> toggleAttrs = new HashMap<>();
+    toggleAttrs.put(
+        TagRenderer.ARIA_LABEL, archiveOptionsDropDown.getState(context).getLabelText());
+    archiveOptionsDropDown.getState(context).setAttribute("toggleAttrs", toggleAttrs);
     if (model.isEditing()) {
       final ItemId itemId = new ItemId(model.getEditItem());
       final FileAttachment attachment = getAttachment(context, itemId);

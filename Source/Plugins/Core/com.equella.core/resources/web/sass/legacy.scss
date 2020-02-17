@@ -295,6 +295,39 @@ ul {
   list-style: none;
 }
 
+a {
+  &:focus {
+    text-decoration: underline;
+  }
+}
+
+/*****************************************************************************
+Accessibility mode
+*****************************************************************************/
+//mostly a copy paste from the original styles.css
+#content-body.accessibility {
+  div.area a:focus,
+  div.modal-content a:focus,
+  .box a:focus,
+  div.area input:focus,
+  div.modal-content input:focus,
+  .box input:focus,
+  div.area button:focus,
+  div.modal-content button:focus,
+  .box button:focus,
+  div.area select:focus,
+  div.modal-content select:focus,
+  .box select:focus,
+  td:focus {
+    outline: thin solid rgba(299, 151, 0, 255);
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+  .accessibility select {
+    border: 1px solid #cbc7b9;
+  }
+}
+
 /*****************************************************************************
 Buttons
 *****************************************************************************/
@@ -562,7 +595,7 @@ Contribution wizard inputs
 
 .wizard-controls .ctrlmandatory,
 .wizard-controls .ctrlinvalidmessage {
-  color: red;
+  color: #b90202;
   text-align: center;
 }
 
@@ -735,7 +768,10 @@ Contribution wizard inputs
 }
 
 .repeater-remove {
-  background: url(../images/repeater-remove.png) no-repeat 0px 0px;
+  background: url(../../images/repeater-remove.png) no-repeat 0px 0px;
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
   margin-left: 3px;
   cursor: pointer;
   height: 17px;
@@ -743,6 +779,30 @@ Contribution wizard inputs
   width: 17px;
 }
 
+a[title="move-up"]:before {
+  content: "\e5ce"; //material ui up chevron icon
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
+  margin-left: 3px;
+  cursor: pointer;
+  height: 17px;
+  float: right;
+  width: 17px;
+}
+a[title="move-down"]:before {
+  content: "\e5cf"; //material ui down chevron icon
+  font-family: "Material Icons";
+  font-size: 20px;
+  color: #000000;
+  padding-right: 4px;
+  margin-left: 3px;
+  cursor: pointer;
+  height: 17px;
+  float: right;
+  width: 17px;
+}
 .repeater-move {
   background: url(../images/repeater-button-bg.png) no-repeat 0px 0px;
   height: 17px;
@@ -853,7 +913,7 @@ div.error-receipt {
   padding: 5px;
   display: block;
   text-align: left;
-  color: red;
+  color: #b90202;
   margin: 12px 0;
 }
 
@@ -1122,6 +1182,7 @@ div.rightPanel {
 
 .settingHelp {
   padding-top: 20px;
+  color: $menuTextColor;
 }
 
 //scripted portlet
@@ -1243,7 +1304,7 @@ div[class*="fancy-bg"] {
   padding-right: 18px;
   text-align: right;
   display: flex;
-  flex-direction: row-reverse;
+  float: right;
 }
 
 .modal-footer-inner input {
@@ -1631,7 +1692,7 @@ Search page
   position: absolute;
   left: 20px;
   top: 22px;
-  color: #8d897e;
+  color: $menuTextColor;
   font-size: 18px;
 }
 
@@ -1983,7 +2044,7 @@ ul.ui-autocomplete {
 }
 
 .separator {
-  color: transparent;
+  visibility: hidden;
 }
 
 #searchresults-actions {
@@ -2024,12 +2085,15 @@ ul.ui-autocomplete {
     &:hover {
       background-color: transparentize($primaryColor, 0.7);
     }
-    &:active {
-      background-color: transparentize($primaryColor, 1);
-    }
     &.active {
       background-color: $primaryColor;
       color: set-text-color($primaryColor);
+      &:before {
+        color: set-text-color($primaryColor);
+      }
+    }
+    i:before {
+      display: none;
     }
   }
 }
@@ -2425,7 +2489,7 @@ html.wait {
 
 .itemresult-metaline .itemresult-meta-delim,
 .itemresult-metaline abbr {
-  color: #b1b17b;
+  color: $menuTextColor;
 }
 
 .highlight {
@@ -2657,6 +2721,9 @@ Contribution wizard styling
 #wizard-navigation input[type="button"] {
   margin: 0 0 0 3px;
 }
+#wizard-major-actions {
+  display: flex;
+}
 
 #wizard-major-actions .action-button.save {
   background-image: url("../../images/baseline_save_white_18dp.png");
@@ -2765,13 +2832,13 @@ button + .repeater-groups {
 }
 
 .filedrop {
-  border: 3px dotted #ccc;
+  border: 3px dotted transparentize($menuTextColor, 0.2);
   padding-top: 45px;
   padding-bottom: 45px;
   margin: 1em 0;
   text-align: center;
   cursor: pointer;
-  color: rgb(130, 130, 130);
+  color: $menuTextColor;
 }
 
 .filedrop-file {
@@ -3928,11 +3995,11 @@ div.universaliframe iframe {
 }
 
 p.warning {
-  background-color: #f90;
-  border: 1px solid red;
+  background-color: #fdd;
   margin-bottom: 20px;
   padding: 10px;
   text-align: center;
+  color: #b90202;
 }
 
 .warningimg {

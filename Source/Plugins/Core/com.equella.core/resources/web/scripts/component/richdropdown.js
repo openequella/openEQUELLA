@@ -67,11 +67,12 @@
           }
         })
         .on("keyup.richdrop", function(event) {
-          //tab key
-          if (event.which == 9) {
+          //enter key
+          if (event.which == 13 && $containerDiv.hasClass("active")) {
+            hideOptions();
+          } else if (event.which == 13) {
             showMenu(event);
           }
-
           if (event.which == 27) {
             hideOptions();
             $("#searchform-search").focus();

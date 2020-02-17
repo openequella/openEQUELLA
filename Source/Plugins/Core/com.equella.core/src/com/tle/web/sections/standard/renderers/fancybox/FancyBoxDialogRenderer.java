@@ -264,6 +264,7 @@ public class FancyBoxDialogRenderer extends AbstractComponentRenderer implements
     renderer.style = style;
     renderer.styleClasses = styleClasses;
     renderer.attrs = attrs;
+    renderer.setAttribute("role", "dialog");
     return renderer;
   }
 }
