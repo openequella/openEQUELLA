@@ -34,7 +34,7 @@ public abstract class AbstractElementRenderer extends AbstractComponentRenderer 
   protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
       throws IOException {
     super.prepareFirstAttributes(writer, attrs);
-    attrs.put("name", getName(writer)); // $NON-NLS-1$
+    attrs.put("name", getName(writer));
   }
 
   protected String getName(SectionInfo info) {

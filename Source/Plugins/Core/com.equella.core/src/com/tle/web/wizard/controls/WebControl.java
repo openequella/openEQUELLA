@@ -43,7 +43,6 @@ public interface WebControl extends HTMLControl, Section, HtmlRenderer {
 
   CombinedDisableable getDisabler(SectionInfo info);
 
-  // Yes this is rubbish
   void doEditsIfRequired(SectionInfo info);
 
   void doReads(SectionInfo info);

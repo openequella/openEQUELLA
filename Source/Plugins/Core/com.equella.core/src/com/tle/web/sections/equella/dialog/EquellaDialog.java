@@ -58,6 +58,7 @@ public abstract class EquellaDialog<S extends DialogModel> extends AbstractDialo
 
   private boolean alwaysShowFooter;
   private ElementId footerId;
+  private ElementId titleId;
 
   @Override
   protected SectionRenderable getDialogContents(RenderContext context) {
@@ -68,13 +69,15 @@ public abstract class EquellaDialog<S extends DialogModel> extends AbstractDialo
         this,
         getTemplateCloseFunction(),
         getContentBodyClass(context),
-        footerId);
+        footerId,
+        titleId);
   }
 
   @Override
   public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
     footerId = new AppendedElementId(this, "footer");
+    titleId = new AppendedElementId(this, "title");
   }
 
   @Override
@@ -152,6 +155,10 @@ public abstract class EquellaDialog<S extends DialogModel> extends AbstractDialo
 
   public ElementId getFooterId() {
     return footerId;
+  }
+
+  public ElementId getTitleId() {
+    return titleId;
   }
 
   protected void setAlwaysShowFooter(boolean show) {

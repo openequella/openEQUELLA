@@ -39,7 +39,9 @@ public class LabelTagRenderer extends DivRenderer {
   protected Map<String, String> prepareAttributes(SectionWriter writer) throws IOException {
     Map<String, String> attrs = super.prepareAttributes(writer);
     if (labelFor != null) {
-      attrs.put("for", labelFor.getElementId(writer));
+      String labelForId = labelFor.getElementId(writer);
+      attrs.put("for", labelForId);
+      attrs.put("id", labelForId + "_label");
     }
     return attrs;
   }

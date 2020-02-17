@@ -84,6 +84,7 @@ public class ThumbnailDisplay implements ItemlikeListEntryExtension<Item, ItemLi
                     ImageRenderer image =
                         viewableResource.createStandardThumbnailRenderer(
                             new TextLabel(Constants.BLANK));
+                    image.setAlt(new TextLabel(viewableResource.getDescription()));
                     if (image != null) {
                       entry.addThumbnail(image);
                     }

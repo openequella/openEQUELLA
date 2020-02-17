@@ -6,7 +6,9 @@
 
 <@a.div id="${id}_editbox_duplicate_warning">
 <#if m.displayDuplicateWarning>
-  <p style="color:red">${m.duplicateWarningMessage}</p>
+    <p>
+      <b style="color:red" role="alert">${m.duplicateWarningMessage}</b>
+    </p>
   <@link section=s.duplicateWarningLink/>
 </#if>
 </@a.div>

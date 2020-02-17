@@ -6,20 +6,20 @@
 
 <div class="area">
 	<h2>${b.key("logon.title")}</h2>
-	
+
 	<#if m.failed??>
-		<p class="warning">${b.gkey(m.failed)}</p>
+		<p class="warning" role="alert">${b.gkey(m.failed)}</p>
 	</#if>
 	<#if m.error??>
-		<p class="warning">${b.key('logon.problems')}</p>
+		<p class="warning" role="alert">${b.key('logon.problems')}</p>
 		<p class="warning">${m.error?html}</p>
 	</#if>
 
 	<noscript>
-		<p class="warning">${b.key("logon.enablejs")}</p>
+		<p class="warning" role="alert">${b.key("logon.enablejs")}</p>
 	</noscript>
-	<p id="cookieWarning" class="warning" style="display: none">${b.key("logon.enablecookies")}</p>
-	
+	<p id="cookieWarning" class="warning" style="display: none" role="alert">${b.key("logon.enablecookies")}</p>
+
 	<p>
 		<label for="username">${b.key("logon.username")}</label>
 		<@textfield id="username" section=s.username autoSubmitButton=s.logonButton/>
@@ -32,7 +32,7 @@
 	<#if m.childSections??>
 		<@render m.childSections/>
 	</#if>
-	
+
 	<#list m.loginLinks as link>
 		<@render link />
 	</#list>

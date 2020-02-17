@@ -53,6 +53,7 @@ public class TagState extends AbstractWrappedElementId {
   private List<PreRenderable> preRenderables;
   private List<TagProcessor> processors;
   private final HandlerMap handlerMap = new HandlerMap();
+  private Map<String, String> accessibilityAttrs;
 
   public TagState() {
     super(new PageUniqueId());
@@ -114,6 +115,17 @@ public class TagState extends AbstractWrappedElementId {
       return null;
     }
     return (T) attrs.get(key);
+  }
+
+  public void setAccessibilityAttr(String key, String value) {
+    if (accessibilityAttrs == null) {
+      accessibilityAttrs = new HashMap<String, String>();
+    }
+    accessibilityAttrs.put(key, value);
+  }
+
+  public Map<String, String> getAccessibilityAttrs() {
+    return accessibilityAttrs;
   }
 
   /**

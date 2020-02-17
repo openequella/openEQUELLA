@@ -92,6 +92,7 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
@@ -911,6 +912,9 @@ public class SearchQuerySection
   @Override
   public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
     if (getSearchSettings().isSearchingShowNonLiveCheckbox()) {
+      includeNonLive
+          .getState(context)
+          .setAccessibilityAttr(TagRenderer.ARIA_LABEL, LABEL_NONLIVE.getText());
       event.addScreenOptions(
           new SettingsRenderer(
               LABEL_NONLIVE,
