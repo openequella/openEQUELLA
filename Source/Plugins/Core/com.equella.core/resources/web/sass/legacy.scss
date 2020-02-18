@@ -4897,3 +4897,6 @@ label[for="password"] {
   display: inline-block;
   width: $loginLabelWidth + unquote("px");
 }
+button:focus {
+  outline: lightgrey dashed 1px;
+}
