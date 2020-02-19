@@ -21,7 +21,7 @@ function showHideActions(oldDiv, newContents, onSuccess) {
           500,
           onSuccess
         );
-        $("#searchresults-actions").attr("aria-hidden", !newhtml.html);
+        updateActionsHiddenStatus(!newhtml.html);
       };
 
       var foundChildren = oldDiv.children(".resulttopblock");
@@ -43,4 +43,8 @@ function showHideActions(oldDiv, newContents, onSuccess) {
       }
     });
   }
+}
+
+function updateActionsHiddenStatus(hidden) {
+  $("#searchresults-actions").attr("aria-hidden", hidden);
 }
