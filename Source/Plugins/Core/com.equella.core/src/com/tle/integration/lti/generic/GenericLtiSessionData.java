@@ -16,23 +16,24 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.blackboard.guice;
+package com.tle.integration.lti.generic;
 
-import com.google.inject.name.Names;
-import com.tle.integration.lti.blackboard.BlackboardContentItemPlacementReturn;
-import com.tle.integration.lti.blackboard.BlackboardSignon;
-import com.tle.web.sections.equella.guice.SectionsModule;
+import com.tle.integration.lti.LtiSessionData;
+import javax.servlet.http.HttpServletRequest;
 
-@SuppressWarnings("nls")
-public class BlackboardLtiIntegrationModule extends SectionsModule {
+public class GenericLtiSessionData extends LtiSessionData {
+  private static final long serialVersionUID = 1L;
+
+  public GenericLtiSessionData() {
+    super();
+  }
+
+  public GenericLtiSessionData(HttpServletRequest request) {
+    super(request);
+  }
+
   @Override
-  protected void configure() {
-    bind(Object.class)
-        .annotatedWith(Names.named("/blackboardltisignon"))
-        .toProvider(node(BlackboardSignon.class));
-
-    bind(Object.class)
-        .annotatedWith(Names.named("/blackboardlticipreturn"))
-        .toProvider(node(BlackboardContentItemPlacementReturn.class));
+  public String getIntegrationType() {
+    return "lti";
   }
 }

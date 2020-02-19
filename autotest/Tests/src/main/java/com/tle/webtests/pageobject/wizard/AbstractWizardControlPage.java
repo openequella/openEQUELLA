@@ -345,11 +345,13 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
   }
 
   public String getErrorMessage(int ctrlNum) {
-    return driver
-        .findElement(
+    WebElement errorMessage =
+        driver.findElement(
             By.xpath(
-                "id(" + quoteXPath(getControlId(ctrlNum)) + ")/div/p[@class='ctrlinvalidmessage']"))
-        .getText()
-        .trim();
+                "id("
+                    + quoteXPath(getControlId(ctrlNum))
+                    + ")/div/p[@class='ctrlinvalidmessage']"));
+    waiter.until(ExpectedConditions.visibilityOf(errorMessage));
+    return errorMessage.getText().trim();
   }
 }

@@ -16,49 +16,82 @@
  * limitations under the License.
  */
 
-package com.tle.web.lti.usermanagement;
+package com.tle.integration.lti.generic;
 
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.guice.Bind;
+import com.tle.web.lti.usermanagement.LtiWrapperExtension;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-
-/** @author Aaron */
-
-// FIXME: With the new GenericLtiWrapperExtension, this code shouldn't be called anymore
+import org.apache.commons.lang.StringUtils;
 
 @Bind
 @Singleton
-public class LisLtiWrapperExtension implements LtiWrapperExtension {
+public class GenericLtiWrapperExtension implements LtiWrapperExtension {
 
   @Override
   public String getUserId(HttpServletRequest request, LtiConsumer consumer) {
-    return null;
+    return getGenericLtiParam(
+        request, consumer, LtiConsumer.ATT_CUSTOM_USER_ID, ExternalToolConstants.USER_ID);
   }
 
   @Override
   public String getUsername(HttpServletRequest request, LtiConsumer consumer) {
-    return request.getParameter(ExternalToolConstants.LIS_PERSON_SOURCEDID);
+    return getGenericLtiParam(
+        request,
+        consumer,
+        LtiConsumer.ATT_CUSTOM_USERNAME,
+        ExternalToolConstants.LIS_PERSON_SOURCEDID);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getFirstName(HttpServletRequest request) {
     return request.getParameter(ExternalToolConstants.LIS_PERSON_NAME_GIVEN);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getLastName(HttpServletRequest request) {
     return request.getParameter(ExternalToolConstants.LIS_PERSON_NAME_FAMILY);
   }
 
+  /** This is the fallback to standard LIS params */
   @Override
   public String getEmail(HttpServletRequest request) {
     return request.getParameter(ExternalToolConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY);
   }
 
+  /**
+   * Default is true (prefix the user id with a hash of the consumer).
+   *
+   * <p>This can be overridden by configuring the custom LTI setting of 'Prefix ID'
+   *
+   * <p>Note: This is different then the username prefix that an LTI Consumer can be configured to
+   * append.
+   */
   @Override
   public boolean isPrefixUserId(LtiConsumer consumer) {
-    return true;
+    if (consumer == null) {
+      return true;
+    }
+
+    return consumer.getAttribute(LtiConsumer.ATT_CUSTOM_ENABLE_ID_PREFIX, true);
+  }
+
+  private String getGenericLtiParam(
+      HttpServletRequest request, LtiConsumer consumer, String customParam, String defaultParam) {
+
+    if ((request == null) || (consumer == null)) {
+      return null;
+    }
+
+    String paramVal = request.getParameter(consumer.getAttribute(customParam));
+    if (StringUtils.isEmpty(paramVal)) {
+      paramVal = request.getParameter(defaultParam);
+    }
+
+    return paramVal;
   }
 }

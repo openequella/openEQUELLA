@@ -29,6 +29,7 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.model.Option;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Render as button + dropdown as opposed to just a dropdown
@@ -89,6 +90,14 @@ public class BootstrapSplitDropDownRenderer extends BootstrapDropDownRenderer {
     }
     toggleButton.setNestedRenderable(caret());
     toggleButton.addClass("dropdown-toggle");
+
+    if (state.getAttribute("toggleAttrs") != null) {
+      Map<String, String> params = state.getAttribute("toggleAttrs");
+      params.forEach(
+          (key, value) -> {
+            toggleState.setAccessibilityAttr(key, value);
+          });
+    }
     writer.render(toggleButton);
   }
 

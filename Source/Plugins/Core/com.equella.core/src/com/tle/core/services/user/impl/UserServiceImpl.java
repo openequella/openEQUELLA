@@ -492,7 +492,9 @@ public class UserServiceImpl
   public void userSessionCreatedEvent(UserSessionLoginEvent event) {
     UserState userState = event.getUserState();
     if (!userState.isGuest()) {
-      saveUserInfoBackup(userState.getUserBean());
+      synchronized (this) {
+        saveUserInfoBackup(userState.getUserBean());
+      }
     }
   }
 

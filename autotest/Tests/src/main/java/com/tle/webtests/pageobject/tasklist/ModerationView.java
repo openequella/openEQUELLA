@@ -11,6 +11,7 @@ import com.tle.webtests.pageobject.wizard.RejectMessagePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class ModerationView extends AbstractPage<ModerationView> {
   @FindBy(className = "moderate-reject")
@@ -48,6 +49,7 @@ public class ModerationView extends AbstractPage<ModerationView> {
   }
 
   public ModerationMessagePage acceptToMessagePage() {
+    waiter.until(ExpectedConditions.elementToBeClickable(approveButton));
     approveButton.click();
     return new ApproveMessagePage(context).get();
   }

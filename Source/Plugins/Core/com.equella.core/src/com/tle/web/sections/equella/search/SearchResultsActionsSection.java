@@ -50,6 +50,7 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
@@ -64,12 +65,12 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
     implements HtmlRenderer, SearchResultsListener<RE> {
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(SearchResultsActionsSection.class);
+  private static final IncludeFile INCLUDE_FILE =
+      new IncludeFile(resources.url("scripts/resultactions.js"));
   private static final ExternallyDefinedFunction BLIND =
-      new ExternallyDefinedFunction(
-          "showHideActions",
-          JQueryUIEffects.BLIND,
-          new IncludeFile(resources.url("scripts/resultactions.js")));
-
+      new ExternallyDefinedFunction("showHideActions", JQueryUIEffects.BLIND, INCLUDE_FILE);
+  private static final JSCallable UPDATE_HIDDEN_STATUS =
+      new ExternallyDefinedFunction("updateActionsHiddenStatus", 1, INCLUDE_FILE);
   public static final String AREA_SHARE = "share";
   public static final String AREA_SORT = "sort";
   public static final String AREA_FILTER = "filter";
@@ -150,7 +151,6 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
     if (model.isSearchDisabled()) {
       return null;
     }
-
     setupButton(sort, sortSections, showing, context);
     setupButton(filter, filterSections, showing, context);
 
@@ -159,7 +159,7 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
         setupButton(share, shareSections, showing, context);
       }
     }
-
+    context.getBody().addReadyStatements(UPDATE_HIDDEN_STATUS, true);
     return viewFactory.createResult("resultactions.ftl", this);
   }
 
@@ -177,6 +177,9 @@ public class SearchResultsActionsSection<RE extends AbstractSearchResultsEvent<R
         button.setClickHandler(context, new OverrideHandler(showFunc, buttonMode.toString()));
         state.setAttribute(Icon.class, Icon.DOWN);
       }
+      state.setAccessibilityAttr(TagRenderer.ARIA_CONTROL, ACTIONS_AJAX_ID);
+      state.setAccessibilityAttr(
+          TagRenderer.ARIA_EXPANDED, String.valueOf(!mode.equals(Showing.NONE)));
       getModel(context).addButton(button);
     }
   }

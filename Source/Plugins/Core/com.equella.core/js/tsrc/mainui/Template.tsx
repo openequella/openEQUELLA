@@ -378,10 +378,11 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           );
         }}
         key={ind}
+        button={true}
       >
         <ListItemIcon>
           {item.iconUrl ? (
-            <img src={item.iconUrl} />
+            <img src={item.iconUrl} alt={item.title} />
           ) : (
             <Icon color="inherit" className={classes.menuIcon}>
               {item.systemIcon ? item.systemIcon : "folder"}
@@ -409,7 +410,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   const menuContent = React.useMemo(
     () => (
       <div className={classes.logo}>
-        <img role="presentation" src={logoURL} />
+        <img role="presentation" src={logoURL} alt={"Logo"} />
         {hasMenu && (
           <div id="menulinks">
             {currentUser.menuGroups.map((group, ind) => (

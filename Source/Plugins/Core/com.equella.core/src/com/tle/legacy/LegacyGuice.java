@@ -22,6 +22,7 @@ import com.google.inject.AbstractModule;
 import com.tle.cal.service.CALService;
 import com.tle.cal.web.service.CALWebServiceImpl;
 import com.tle.common.scripting.service.ScriptingService;
+import com.tle.core.accessibility.AccessibilityModeService;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
@@ -209,6 +210,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ItemEditorService itemEditorService;
 
   @Inject public static ViewItemUrlFactory viewItemUrlFactory;
+
+  @Inject public static AccessibilityModeService accessibilityModeService;
 
   @Override
   protected void configure() {

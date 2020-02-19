@@ -6,7 +6,6 @@
 <#include "/com.tle.web.sections.standard@/dropdown.ftl" />
 <#include "/com.tle.web.sections.standard@/textfield.ftl"/>
 <#include "/com.tle.web.sections.standard@/autocomplete.ftl"/>
-
 <@css "editconsumer.css" />
 
 <@setting label=b.key("editor.key") mandatory=true error=m.errors["key"]>
@@ -21,6 +20,18 @@
 <@setting label=b.key("editor.postfix") help=b.key("editor.username.help")>
 	<@textfield section=s.postfixField maxlength=50 />
 </@setting>
+<hr/>
+<@setting label='' help=b.key('editor.custom.lti.params.help') />
+<@setting label=b.key("editor.custom.lti.params.user.id")>
+	<@textfield section=s.customUserIdParameterField maxlength=128 />
+</@setting>
+<@setting label=b.key("editor.custom.lti.params.username")>
+	<@textfield section=s.customUsernameParameterField maxlength=128 />
+</@setting>
+<@setting label=''>
+  <div class="input checkbox"><@render s.customEnableIdPrefixField /></div>
+</@setting>
+<hr/>
 <@a.div id="allowed">
 	<@setting label=b.key("editor.allowed.label") help=b.key("editor.allowed.help")>
 		${m.prettyExpression}
@@ -40,8 +51,8 @@
 </@a.div>
 <@a.div id="customrole">
 	<@setting label=b.key("editor.role.custom.label") error=m.errors["nocustomrole"] help=b.key("editor.role.custom.help")>
-		<@render section=s.customRolesTable />	
-		<@autocomplete section=s.customRoleField class="custom-role" placeholder=b.key("editor.role.custom.placeholder")  /> 
+		<@render section=s.customRolesTable />
+		<@autocomplete section=s.customRoleField class="custom-role" placeholder=b.key("editor.role.custom.placeholder")  />
 		<@render section=s.customRoleDialog.opener  class="add">${b.key("editor.table.roles.add")}</@render>
 	</@setting>
 </@a.div>

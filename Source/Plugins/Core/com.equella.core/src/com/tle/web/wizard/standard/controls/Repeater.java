@@ -44,6 +44,7 @@ import com.tle.web.sections.js.generic.expression.*;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.IconLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Link;
@@ -219,6 +220,7 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
           new HtmlLinkState().addClass(getSectionId() + CLASS_REMOVE).addClass(CLASS_REMOVE);
       removeLink.setElementId(new AppendedElementId(this, "index" + index));
       removeLink.setDisablable(true);
+      removeLink.setTitle(new TextLabel(CLASS_REMOVE));
       removeLink.addReadyStatements(
           new JQueryStatement(
               removeLink, new FunctionCallExpression("data", "repeater.index", index)));
@@ -232,6 +234,7 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
           new HtmlLinkState().addClass(CLASS_MOVE).addClass(getSectionId() + CLASS_MOVE_DOWN);
       moveDown.setElementId(new AppendedElementId(this, "moveDownIndex" + index));
       moveDown.setLabel(new IconLabel(Icon.DOWN, null));
+      moveDown.setTitle(new TextLabel(CLASS_MOVE_DOWN));
       moveDown.setDisablable(true);
       moveDown.addReadyStatements(
           new JQueryStatement(
@@ -246,6 +249,7 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
       moveUp.setElementId(new AppendedElementId(this, "moveUpIndex" + index));
       moveUp.setDisablable(true);
       moveUp.setLabel(new IconLabel(Icon.UP, null));
+      moveUp.setTitle(new TextLabel(CLASS_MOVE_UP));
       moveUp.addReadyStatements(
           new JQueryStatement(moveUp, new FunctionCallExpression("data", "repeater.index", index)));
 

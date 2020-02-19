@@ -56,6 +56,14 @@ public class TagRenderer extends AbstractWrappedElementId
   @Nullable protected Set<String> styleClasses;
   private String tag;
 
+  public static final String ARIA_LABEL = "aria-label";
+  public static final String ARIA_CONTROL = "aria-controls";
+  public static final String ARIA_EXPANDED = "aria-expanded";
+  public static final String ARIA_HIDDEN = "aria-hidden";
+  public static final String ARIA_REQUIRED = "aria-required";
+  public static final String ARIA_LABELLEDBY = "aria-labelledby";
+  public static final String ARIA_DESCRIBEDBY = "aria-describedby";
+
   public TagRenderer(String tag, TagState state) {
     super(state);
     this.tag = tag;
@@ -273,6 +281,12 @@ public class TagRenderer extends AbstractWrappedElementId
       attrs.put("class", sbuf.toString());
     }
     attrs.put("style", getStyle());
+    if (this.attrs != null) {
+      String roleAttr = (String) this.attrs.get("role");
+      if (roleAttr != null) {
+        attrs.put("role", roleAttr);
+      }
+    }
     final Map<String, String> allData = getData();
     if (allData != null) {
       for (Entry<String, String> d : allData.entrySet()) {
@@ -288,6 +302,11 @@ public class TagRenderer extends AbstractWrappedElementId
       }
     }
     prepareLastAttributes(writer, attrs);
+
+    // Add aria-xxx attributes
+    if (tagState.getAccessibilityAttrs() != null) {
+      attrs.putAll(tagState.getAccessibilityAttrs());
+    }
     return attrs;
   }
 

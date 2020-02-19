@@ -42,6 +42,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.jquery.libraries.JQueryTextFieldHint;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -82,6 +83,7 @@ public class SearchPortletRenderer extends PortletContentRenderer<Object> {
 
   @Override
   public SectionRenderable renderHtml(RenderEventContext context) {
+    search.getState(context).setAccessibilityAttr(TagRenderer.ARIA_LABEL, TEXTFIELD_HINT.getText());
     return view.createResult("searchportlet.ftl", context);
   }
 

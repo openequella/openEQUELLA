@@ -90,6 +90,7 @@ public class TextFieldRenderer extends AbstractTextFieldRenderer
     final String placeholderText = valueState.getPlaceholderText();
     if (!Strings.isNullOrEmpty(placeholderText)) {
       attrs.put("placeholder", placeholderText);
+      attrs.put("aria-label", placeholderText);
     }
   }
 
