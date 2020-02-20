@@ -12,6 +12,10 @@ public class ApidocsPage extends AbstractPage<ApidocsPage> {
     return "apidocs.do";
   }
 
+  public String getFullUrl() {
+    return context.getBaseUrl() + ApidocsPage.getUrl();
+  }
+
   public ApidocsPage(PageContext context) {
     this(context, false);
   }
@@ -23,7 +27,7 @@ public class ApidocsPage extends AbstractPage<ApidocsPage> {
 
   @Override
   protected void loadUrl() {
-    driver.get(context.getBaseUrl() + ApidocsPage.getUrl());
+    driver.get(getFullUrl());
   }
 
   @Override

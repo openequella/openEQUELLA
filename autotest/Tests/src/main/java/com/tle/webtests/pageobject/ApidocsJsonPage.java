@@ -12,6 +12,10 @@ public class ApidocsJsonPage extends AbstractPage<ApidocsJsonPage> {
     return "api/swagger.json";
   }
 
+  public String getFullUrl() {
+    return context.getBaseUrl() + ApidocsJsonPage.getUrl();
+  }
+
   public ApidocsJsonPage(PageContext context) {
     this(context, false);
   }
@@ -23,7 +27,7 @@ public class ApidocsJsonPage extends AbstractPage<ApidocsJsonPage> {
 
   @Override
   protected void loadUrl() {
-    driver.get(context.getBaseUrl() + ApidocsJsonPage.getUrl());
+    driver.get(getFullUrl());
   }
 
   @Override

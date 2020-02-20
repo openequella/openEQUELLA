@@ -66,6 +66,7 @@ public class ApidocsTest extends AbstractSessionTest {
   }
 
   private void assertAccessDenied(ErrorPage error) {
+
     assertEquals(error.getMainErrorMessage(), testConfig.isNewUI() ? "Forbidden" : "Access denied");
     assertEquals(
         error.getSubErrorMessage(),
@@ -78,38 +79,44 @@ public class ApidocsTest extends AbstractSessionTest {
   }
 
   private void loadAndAssertSuccess() {
-    ApidocsPage ap = new ApidocsPage(context);
-    ap.load();
-    assertEquals(ap.getMainHeader(), "openEQUELLA REST API");
+    ApidocsPage page = new ApidocsPage(context);
+    page.load();
+    final String respText = "[" + page.getFullUrl() + "] > " + page.getLoadedElement().getText();
+
+    assertEquals(
+        page.getMainHeader(), "openEQUELLA REST API", "HTML instead contained: [" + respText + "]");
   }
 
   private void loadAndAssertSuccessJson() {
     ApidocsJsonPage page = new ApidocsJsonPage(context);
     page.load();
 
-    assertTrue(page.getLoadedElement().getText().contains("tags"), "JSON should contain 'tags'");
+    final String respText = "[" + page.getFullUrl() + "] > " + page.getLoadedElement().getText();
+
     assertTrue(
-        page.getLoadedElement().getText().contains("swagger"), "JSON should contain 'swagger'");
+        respText.contains("tags"),
+        "JSON should contain 'tags', instead it contained: [" + respText + "]");
     assertTrue(
-        page.getLoadedElement().getText().contains("parameters"),
-        "JSON should contain 'parameters'");
+        respText.contains("swagger"),
+        "JSON should contain 'swagger', instead it contained: [" + respText + "]");
+    assertTrue(
+        respText.contains("parameters"),
+        "JSON should contain 'parameters', instead it contained: [" + respText + "]");
   }
 
   private void loadAndAssertAccessDeniedJson() {
     ApidocsJsonPage page = new ApidocsJsonPage(context);
     page.load();
-
+    final String respText = "[" + page.getFullUrl() + "] > " + page.getLoadedElement().getText();
     assertTrue(
-        page.getLoadedElement().getText().contains("\"code\":403"),
-        "JSON should contain error code");
+        respText.contains("\"code\":403"),
+        "JSON should contain error code, instead it contained: [" + respText + "]");
     assertTrue(
-        page.getLoadedElement().getText().contains("\"error\":\"Forbidden\""),
-        "JSON should contain error status");
+        respText.contains("\"error\":\"Forbidden\""),
+        "JSON should contain error status, instead it contained: [" + respText + "]");
     assertTrue(
-        page.getLoadedElement()
-            .getText()
-            .contains(
-                "\"error_description\":\"You do not have the required privileges to access this object [VIEW_APIDOCS]\""),
-        "JSON should contain error description");
+        respText.contains(
+            "\"error_description\":\"You do not have the required privileges to access this object [VIEW_APIDOCS]\""),
+        "JSON should contain error description, instead it contained: [" + respText + "]");
   }
 }
