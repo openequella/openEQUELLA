@@ -89,7 +89,9 @@ public class FavouriteSearch {
   public String getUrl() {
     // The value of 'url' starts with '/access' if the fav search was added in old oEQ versions,
     // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
-    if (url != null && url.startsWith(WebConstants.ACCESS_PATH)) {
+    if (url != null
+        && url.startsWith(WebConstants.ACCESS_PATH)
+        && url.contains(WebConstants.SEARCHING_PAGE)) {
       url = "/" + url.replaceFirst(WebConstants.ACCESS_PATH, "");
     }
     return url;
