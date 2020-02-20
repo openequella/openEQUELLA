@@ -18,6 +18,7 @@
 
 package com.tle.core.favourites.bean;
 
+import com.dytech.edge.web.WebConstants;
 import com.tle.beans.Institution;
 import java.util.Date;
 import javax.persistence.Column;
@@ -86,6 +87,11 @@ public class FavouriteSearch {
   }
 
   public String getUrl() {
+    // The value of 'url' starts with '/access' if the fav search was added in old oEQ versions,
+    // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
+    if (url != null && url.startsWith(WebConstants.ACCESS_PATH)) {
+      url = "/" + url.replaceFirst(WebConstants.ACCESS_PATH, "");
+    }
     return url;
   }
 
