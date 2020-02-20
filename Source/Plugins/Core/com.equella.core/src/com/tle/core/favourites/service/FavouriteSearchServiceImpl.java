@@ -70,9 +70,9 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   public void executeSearch(SectionInfo info, long id) {
     FavouriteSearch search = dao.getById(id);
     if (search != null) {
-
       String url = search.getUrl();
-      // The value of 'url' starts with '/access' if the fav search was added in old oEQ versions,
+      // When user favourites a normal search, cloud search or hierarchy search,
+      // the value of 'url' starts with '/access' if the fav search is added in old oEQ versions,
       // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
       if (url != null
           && url.startsWith(WebConstants.ACCESS_PATH)
