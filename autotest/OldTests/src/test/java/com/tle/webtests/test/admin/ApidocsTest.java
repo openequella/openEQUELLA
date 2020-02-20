@@ -7,7 +7,6 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.ApidocsJsonPage;
 import com.tle.webtests.pageobject.ApidocsPage;
 import com.tle.webtests.pageobject.ErrorPage;
-import com.tle.webtests.pageobject.LoginPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
@@ -16,7 +15,8 @@ public class ApidocsTest extends AbstractSessionTest {
 
   @Test
   public void testLoginNoAccess() {
-    new LoginPage(context).load().login("AutoTest", "automated");
+    logout(context);
+    logon(context, "AutoTest", "automated");
 
     context.getDriver().get(context.getBaseUrl() + ApidocsPage.getUrl());
     ErrorPage error = new ErrorPage(context);
@@ -25,12 +25,14 @@ public class ApidocsTest extends AbstractSessionTest {
 
   @Test
   public void testLoginNoAccessJson() {
-    new LoginPage(context).load().login("AutoTest", "automated");
+    logout(context);
+    logon(context, "AutoTest", "automated");
     loadAndAssertAccessDeniedJson();
   }
 
   @Test
   public void testDefaultNoAccess() {
+    logout(context);
     context.getDriver().get(context.getBaseUrl() + ApidocsPage.getUrl());
     ErrorPage error = new ErrorPage(context);
     assertAccessDenied(error);
@@ -38,37 +40,40 @@ public class ApidocsTest extends AbstractSessionTest {
 
   @Test
   public void testDefaultNoAccessJson() {
+    logout(context);
     loadAndAssertAccessDeniedJson();
   }
 
   @Test
   public void testTleAdminAccess() {
-    new LoginPage(context).load().login("TLE_ADMINISTRATOR", this.testConfig.getAdminPassword());
+    logout(context);
+    logon(context, "TLE_ADMINISTRATOR", this.testConfig.getAdminPassword());
     loadAndAssertSuccess();
   }
 
-  //  This passes locally, but fails in Travis with the following response.  Commenting out for now.
-  //	[http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
-  //  @Test
-  //  public void testTleAdminAccessJson() {
-  //    new LoginPage(context).load().login("TLE_ADMINISTRATOR",
-  // this.testConfig.getAdminPassword());
-  //    loadAndAssertSuccessJson();
-  //  }
+  @Test
+  public void testTleAdminAccessJson() {
+    logout(context);
+    logon(context, "TLE_ADMINISTRATOR", this.testConfig.getAdminPassword());
+    loadAndAssertSuccessJson();
+  }
 
   @Test
   public void testLoginWithAccess() {
-    new LoginPage(context).load().login("AutoTestWithViewApidocs", "automated");
+    logout(context);
+    logon(context, "AutoTestWithViewApidocs", "automated");
     loadAndAssertSuccess();
   }
 
-  //  This passes locally, but fails in Travis with the following response.  Commenting out for now.
+  //  This has passed locally, but fails at times with the following response.  Commenting out for
+  // now.
   //	[http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
-  //  @Test
-  //  public void testLoginWithAccessJson() {
-  //    new LoginPage(context).load().login("AutoTestWithViewApidocs", "automated");
-  //    loadAndAssertSuccessJson();
-  //  }
+  //    @Test
+  //    public void testLoginWithAccessJson() {
+  //		logout(context);
+  //	logon(context,"AutoTestWithViewApidocs", "automated");
+  //      loadAndAssertSuccessJson();
+  //    }
 
   private void assertAccessDenied(ErrorPage error) {
 
