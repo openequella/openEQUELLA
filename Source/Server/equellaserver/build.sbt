@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.9.9"
+val jacksonVersion   = "2.10.2"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.50"
 val SwaggerVersion   = "1.5.24"
@@ -66,7 +66,10 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject"        % "3.0",
   "com.google.inject.extensions" % "guice-spring"                % "3.0",
   "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
-  sqlServerDep,
+  sqlServerDep excludeAll (
+    // Conflicts with RESTeasy jakarta.xml.bind-api
+    ExclusionRule(organization = "javax.xml.bind")
+  ),
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
   "com.rometools"             % "rome"                  % "1.12.2",
@@ -308,6 +311,8 @@ assemblyMergeStrategy in assembly := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // Safe to do at least in JDK 8
+  case "module-info.class" => MergeStrategy.discard
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
