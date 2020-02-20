@@ -31,21 +31,11 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
   }
 
   public String getMainErrorMessage() {
-    return driver
-        .findElement(
-            isNewUI()
-                ? By.xpath("id('mainDiv')//h5")
-                : By.xpath("//div[contains(@class, 'error')]/h2"))
-        .getText();
+    return driver.findElement(By.xpath("//div[contains(@class, 'error')]/h2")).getText();
   }
 
   public String getSubErrorMessage() {
-    return driver
-        .findElement(
-            isNewUI()
-                ? By.xpath("id('errorPage')//h3")
-                : By.xpath("//div[contains(@class, 'error')]/h3[1]"))
-        .getText();
+    return driver.findElement(By.xpath("//div[contains(@class, 'error')]/h3[1]")).getText();
   }
 
   public String getDetail() {
