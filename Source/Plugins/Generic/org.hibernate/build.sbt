@@ -7,7 +7,7 @@ libraryDependencies := Seq(
   "javax.validation" % "validation-api"      % "1.0.0.GA",
 //  "org.hibernate" % "hibernate-validator-annotation-processor" % "4.2.0.Final",
   "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
-  "com.thoughtworks.xstream"        % "xstream-hibernate"     % "1.4.9" excludeAll (
+  "com.thoughtworks.xstream"        % "xstream-hibernate"     % "1.4.11.1" excludeAll (
     ExclusionRule(organization = "org.hibernate")
   ),
   "org.springframework" % "spring-orm" % "2.5.5" excludeAll (
