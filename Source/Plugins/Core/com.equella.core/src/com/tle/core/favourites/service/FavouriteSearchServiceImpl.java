@@ -18,6 +18,7 @@
 
 package com.tle.core.favourites.service;
 
+import com.dytech.edge.web.WebConstants;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.institution.CurrentInstitution;
@@ -37,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +70,23 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   public void executeSearch(SectionInfo info, long id) {
     FavouriteSearch search = dao.getById(id);
     if (search != null) {
-      SectionInfo forward = info.createForwardForUri(search.getUrl());
+
+      String url = search.getUrl();
+      // The value of 'url' starts with '/access' if the fav search was added in old oEQ versions,
+      // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
+      if (url != null
+          && url.startsWith(WebConstants.ACCESS_PATH)
+          && StringUtils.indexOfAny(
+                  url,
+                  new String[] {
+                    WebConstants.SEARCHING_PAGE,
+                    WebConstants.HIERARCHY_PAGE,
+                    WebConstants.CLOUDSEARCH_PAGE
+                  })
+              > -1) {
+        url = "/" + url.replaceFirst(WebConstants.ACCESS_PATH, "");
+      }
+      SectionInfo forward = info.createForwardForUri(url);
       info.forwardAsBookmark(forward);
     }
   }
