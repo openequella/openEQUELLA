@@ -57,7 +57,7 @@ public class ACLTest extends AbstractCleanupAutoTest {
     assertFalse(summary.hasAttachmentsSection());
     goToAttachmentDirect();
     ErrorPage error = new ErrorPage(context);
-    assertEquals(error.getMainErrorMessage(), "Access denied");
+    assertEquals(error.getMainErrorMessage(false), "Access denied");
 
     logout();
 

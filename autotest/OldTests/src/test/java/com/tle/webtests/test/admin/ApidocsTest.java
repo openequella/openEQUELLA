@@ -72,9 +72,11 @@ public class ApidocsTest extends AbstractSessionTest {
 
   private void assertAccessDenied(ErrorPage error) {
 
-    assertEquals(error.getMainErrorMessage(), testConfig.isNewUI() ? "Forbidden" : "Access denied");
     assertEquals(
-        error.getSubErrorMessage(),
+        error.getMainErrorMessage(testConfig.isNewUI()),
+        testConfig.isNewUI() ? "Forbidden" : "Access denied");
+    assertEquals(
+        error.getSubErrorMessage(testConfig.isNewUI()),
         testConfig.isNewUI()
             ? "403 : Forbidden"
             : "Sorry you do not have access to view the page you requested.");

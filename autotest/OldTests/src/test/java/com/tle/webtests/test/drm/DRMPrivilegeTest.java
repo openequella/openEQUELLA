@@ -20,7 +20,9 @@ public class DRMPrivilegeTest extends AbstractTest {
 
   private void assertDenied() {
     assertEquals(
-        new ErrorPage(context, new ErrorPage(context).usingNewUI()).get().getMainErrorMessage(),
+        new ErrorPage(context, new ErrorPage(context).usingNewUI())
+            .get()
+            .getMainErrorMessage(false),
         "Access denied");
   }
 
