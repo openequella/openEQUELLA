@@ -49,7 +49,6 @@ import com.tle.core.connectors.blackboard.BlackboardRestAppContext;
 import com.tle.core.connectors.blackboard.BlackboardRestUserContext;
 import com.tle.core.connectors.blackboard.beans.*;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
-import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
 import com.tle.core.connectors.exception.LmsRequiresAuthenticationException;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
@@ -177,45 +176,64 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
                                                 .encode((apiKey + ":" + apiSecret).getBytes())
                                                 .replace("\n", "")
                                                 .replace("\r", "");
+                                        try {
+                                          // TODO is there a better way to get the previous token
+                                          // here?
+                                          final Request req =
+                                              new Request(
+                                                  PathUtils.urlPath(
+                                                      connector.getServerUrl(),
+                                                      "learn/api/public/v1/oauth2/token?refresh_token="
+                                                          + tokenCache
+                                                              .getCache()
+                                                              .get(connectorUuid)
+                                                              .getUnchecked(TOKEN_KEY)
+                                                          + "&redirect_uri="
+                                                          + institutionService.institutionalise(
+                                                              BlackboardRESTConnectorConstants
+                                                                  .AUTH_URL)));
+                                          req.setMethod(Request.Method.POST);
+                                          req.setMimeType("application/x-www-form-urlencoded");
+                                          req.addHeader("Authorization", "Basic " + b64);
+                                          req.setBody("grant_type=client_credentials");
 
-                                        final Request req =
-                                            new Request(
-                                                PathUtils.urlPath(
-                                                    connector.getServerUrl(),
-                                                    "learn/api/public/v1/oauth2/token"));
-                                        req.setMethod(Request.Method.POST);
-                                        req.setMimeType("application/x-www-form-urlencoded");
-                                        req.addHeader("Authorization", "Basic " + b64);
-                                        req.setBody("grant_type=client_credentials");
-                                        try (final Response resp =
-                                            httpService.getWebContent(
-                                                req, configService.getProxyDetails())) {
-                                          if (resp.isOk()) {
-                                            final Token token =
-                                                jsonMapper.readValue(
-                                                    resp.getInputStream(), Token.class);
-                                            LOGGER.warn(
-                                                "Gathered Blackboard access token for ["
-                                                    + connectorUuid
-                                                    + "]");
-                                            return token.getAccessToken();
-                                          } else {
-                                            final ErrorResponse bbErr =
-                                                jsonMapper.readValue(
-                                                    resp.getBody(), ErrorResponse.class);
+                                          try (final Response resp =
+                                              httpService.getWebContent(
+                                                  req, configService.getProxyDetails())) {
+                                            if (resp.isOk()) {
+                                              final Token token =
+                                                  jsonMapper.readValue(resp.getBody(), Token.class);
+                                              LOGGER.warn(
+                                                  "Gathered Blackboard access token for ["
+                                                      + connectorUuid
+                                                      + "]");
+                                              return token.getAccessToken();
+                                            } else {
+                                              final ErrorResponse bbErr =
+                                                  jsonMapper.readValue(
+                                                      resp.getBody(), ErrorResponse.class);
+                                              LOGGER.warn(
+                                                  "Unable to gather Blackboard access token for ["
+                                                      + connectorUuid
+                                                      + "] - Code ["
+                                                      + resp.getCode()
+                                                      + "] - Msg ["
+                                                      + resp.getMessage()
+                                                      + "] - Body ["
+                                                      + resp.getBody()
+                                                      + "]");
+                                              throw new AuthenticationException(
+                                                  "Unable to authenticate with Blackboard - "
+                                                      + bbErr.getErrorDescription());
+                                            }
+                                          } catch (Exception e) {
                                             LOGGER.warn(
                                                 "Unable to gather Blackboard access token for ["
                                                     + connectorUuid
-                                                    + "] - Code ["
-                                                    + resp.getCode()
-                                                    + "] - Msg ["
-                                                    + resp.getMessage()
-                                                    + "] - Body ["
-                                                    + resp.getBody()
-                                                    + "]");
-                                            throw new AuthenticationException(
-                                                "Unable to authenticate with Blackboard - "
-                                                    + bbErr.getErrorDescription());
+                                                    + "] - "
+                                                    + e.getMessage(),
+                                                e);
+                                            throw Throwables.propagate(e);
                                           }
                                         } catch (Exception e) {
                                           LOGGER.warn(
@@ -263,7 +281,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   public String getAuthorisationUrl(
       Connector connector, String forwardUrl, @Nullable String authData) {
     final BlackboardRestAppContext appContext = getAppContext(connector);
-    return getAuthorisationUrl(appContext, forwardUrl, authData);
+    return getAuthorisationUrl(appContext, forwardUrl, authData, connector.getUuid());
   }
 
   @Override
@@ -274,18 +292,21 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       String forwardUrl,
       @Nullable String postfixKey) {
     final BlackboardRestAppContext appContext = getAppContext(appId, appKey, bbServerUrl);
-    return getAuthorisationUrl(appContext, forwardUrl, postfixKey);
+    return getAuthorisationUrl(appContext, forwardUrl, postfixKey, null);
   }
 
   private String getAuthorisationUrl(
-      BlackboardRestAppContext appContext, String forwardUrl, @Nullable String postfixKey) {
+      BlackboardRestAppContext appContext,
+      String forwardUrl,
+      @Nullable String postfixKey,
+      String connectorUuid) {
     final ObjectMapper mapper = new ObjectMapper();
     final ObjectNode stateJson = mapper.createObjectNode();
-    stateJson.put(BrightspaceConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
+    stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
     if (postfixKey != null) {
-      stateJson.put(BrightspaceConnectorConstants.STATE_KEY_POSTFIX_KEY, postfixKey);
+      stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_POSTFIX_KEY, postfixKey);
     }
-
+    stateJson.put("connectorUuid", connectorUuid);
     URI uri;
     try {
       uri =
@@ -668,6 +689,14 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         throw new AuthenticationException("User was not able to obtain REST auth token.");
       }
       return cachedToken;
+    } catch (ExecutionException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  public void setToken(String connectorUuid, String token) {
+    try {
+      tokenCache.getCache().get(connectorUuid).put(TOKEN_KEY, token);
     } catch (ExecutionException e) {
       throw Throwables.propagate(e);
     }
