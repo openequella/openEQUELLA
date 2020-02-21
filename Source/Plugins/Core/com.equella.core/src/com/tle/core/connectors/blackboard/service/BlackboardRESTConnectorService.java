@@ -51,4 +51,6 @@ public interface BlackboardRESTConnectorService extends ConnectorRepositoryImple
   String encrypt(String data);
 
   String decrypt(String encryptedData);
+
+  void setToken(String connectorUuid, String token);
 }
