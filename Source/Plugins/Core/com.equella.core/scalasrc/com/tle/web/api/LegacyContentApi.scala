@@ -23,6 +23,7 @@ import java.util
 import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
+import com.dytech.edge.web.WebConstants
 import com.tle.beans.item.ItemTaskId
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
@@ -31,9 +32,12 @@ import com.tle.core.i18n.CoreStrings
 import com.tle.core.notification.standard.indexer.NotificationSearch
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import com.tle.core.workflow.freetext.TaskListSearch
+import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.legacy.LegacyGuice.accessibilityModeService
 import com.tle.web.api.LegacyContentController.getBookmarkState
+import com.tle.web.resources.ResourcesService
+import com.tle.web.searching.section.RootSearchSection
 import com.tle.web.sections._
 import com.tle.web.sections.ajax.{AjaxGenerator, AjaxRenderContext}
 import com.tle.web.sections.equella.js.StandardExpressions
@@ -59,8 +63,10 @@ import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributo
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
+import com.tle.web.wizard.render.WizardFreemarkerFactory
 import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
+import javax.inject.Inject
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.ResponseBuilder
@@ -623,9 +629,10 @@ class LegacyContentApi {
       .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
   }
 
-  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
+  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext): Response.ResponseBuilder = {
     var resp: ResponseBuilder = null
     val context               = LegacyContentController.prepareJSContext(info)
+    val responseCallback      = arc.getJSONResponseCallback
 
     def renderAjaxBody(sr: SectionRenderable): Unit = {
       val body    = context.getBody
@@ -656,9 +663,17 @@ class LegacyContentApi {
       case tr: TemplateResult    => tr.getNamedResult(context, "body")
       case sr: SectionRenderable => sr
       case pr: PreRenderable     => new PreRenderOnly(pr)
+      case _ => {
+        val urlHelper = ResourcesService.getResourceHelper(classOf[RootSearchSection])
+        arc.getResponse.getStatus match {
+          case 403 =>
+            throw new AccessDeniedException(
+              urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+          case _ => throw new RuntimeException("Unknown error");
+        }
+      }
     }
     renderAjaxBody(renderedBody)
-    val responseCallback = arc.getJSONResponseCallback
     info.setRendered()
     //removes old ui css that gets included when a sections ajax request is made
     arc.clearCss()

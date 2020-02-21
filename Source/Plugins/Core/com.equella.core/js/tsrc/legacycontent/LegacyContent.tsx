@@ -182,7 +182,7 @@ export const LegacyContent = React.memo(function LegacyContent(
         errorcallback: () => void
       ) {
         submitCurrentForm(
-          false,
+          true,
           false,
           form.action,
           collectParams(form, name, params),

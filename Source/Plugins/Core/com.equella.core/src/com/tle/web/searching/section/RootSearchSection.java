@@ -70,6 +70,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
+      context.getResponse().setStatus(403);
       if (CurrentUser.isGuest()) {
         LogonSection.forwardToLogon(
             context,
