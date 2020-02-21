@@ -93,4 +93,13 @@
     <emailAddress>auto@test.com</emailAddress>
     <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
   </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>14827</id>
+    <uuid>366ac350-4eaa-4377-8f1c-e1b12da96d64</uuid>
+    <username>AutoTestWithViewApidocs</username>
+    <firstName>Auto</firstName>
+    <lastName>Test With VIEW_APIDOCS</lastName>
+    <emailAddress>auto@test.com</emailAddress>
+    <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
+  </com.tle.beans.user.TLEUser>
 </list>

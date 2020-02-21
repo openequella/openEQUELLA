@@ -30,12 +30,24 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
     return newUi ? By.id("errorPage") : By.xpath("//div[@class='area error']");
   }
 
-  public String getMainErrorMessage() {
-    return driver.findElement(By.xpath("//div[contains(@class, 'error')]/h2")).getText();
+  // Existing tests have the old UI error screen appear for new UI flows.  Looks like
+  // tech debt as oEQ is converted to the new UI.  Eventually, it would be good to key
+  // off of testConfig.isNewUI()
+  public String getMainErrorMessage(boolean newUi) {
+    return driver
+        .findElement(
+            newUi ? By.xpath("id('mainDiv')//h5") : By.xpath("//div[contains(@class, 'error')]/h2"))
+        .getText();
   }
 
-  public String getSubErrorMessage() {
-    return driver.findElement(By.xpath("//div[contains(@class, 'error')]/h3[1]")).getText();
+  // See note above on getMainErrorMessage(boolean)
+  public String getSubErrorMessage(boolean newUi) {
+    return driver
+        .findElement(
+            newUi
+                ? By.xpath("id('errorPage')//h3")
+                : By.xpath("//div[contains(@class, 'error')]/h3[1]"))
+        .getText();
   }
 
   public String getDetail() {
@@ -44,6 +56,15 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
             isNewUI()
                 ? By.xpath("id('errorPage')//h5")
                 : By.xpath("//div[@class='area error']/p[@id='description']"))
+        .getText();
+  }
+
+  public String getDenied() {
+    return driver
+        .findElement(
+            isNewUI()
+                ? By.xpath("id('errorPage')//h5")
+                : By.xpath("//div[@class='area error']/p[@id='denied']"))
         .getText();
   }
 

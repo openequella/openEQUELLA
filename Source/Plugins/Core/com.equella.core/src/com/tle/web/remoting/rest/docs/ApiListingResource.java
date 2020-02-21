@@ -21,6 +21,7 @@ package com.tle.web.remoting.rest.docs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
+import com.tle.core.security.impl.RequiresPrivilege;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.jaxrs.listing.BaseApiListingResource;
 import io.swagger.models.Swagger;
@@ -44,6 +45,7 @@ public class ApiListingResource extends BaseApiListingResource {
   @GET
   @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
   @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
+  @RequiresPrivilege(priv = "VIEW_APIDOCS")
   public Response getListing(
       @Context Application app,
       @Context ServletConfig sc,

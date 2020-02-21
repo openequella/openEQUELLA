@@ -28,3 +28,4 @@ tests:
       - com.tle.webtests.test.importexport.CloneTest
       - com.tle.webtests.test.importexport.ExportTest
       - com.tle.webtests.test.importexport.ImportTest
+      - com.tle.webtests.test.admin.ApidocsTest
