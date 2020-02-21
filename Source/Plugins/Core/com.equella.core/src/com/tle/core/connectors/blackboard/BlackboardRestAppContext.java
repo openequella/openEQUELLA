@@ -31,9 +31,17 @@ public class BlackboardRestAppContext {
   private static final String APP_ID_PARAMETER = "x_a";
   private static final String APP_KEY_PARAMETER = "x_b";
   private static final String CALLBACK_URL_PARAMETER = "x_target";
-  private static final String STATE_PARAMETER = "x_state";
+  private static final String STATE_PARAMETER = "state";
   private static final String USER_ID_CALLBACK_PARAMETER = "x_a";
   private static final String USER_KEY_CALLBACK_PARAMETER = "x_b";
+
+  public static final String FIELD_CODE = "code";
+  public static final String VALUE_CODE = "code";
+  public static final String FIELD_REDIRECT_URI = "redirect_uri";
+  public static final String FIELD_RESPONSE_TYPE = "response_type";
+  public static final String FIELD_CLIENT_ID = "client_id";
+  public static final String FIELD_SCOPE = "scope";
+  public static final String VALUE_WRITE = "write";
 
   private final String _appId;
   private final String _appKey;
@@ -56,14 +64,43 @@ public class BlackboardRestAppContext {
     }
   }
 
-  public URI createWebUrlForAuthentication(URI redirectUrl, @Nullable String state) {
+  public URI createWebUrlForAuthenticationWithCode(
+      URI redirectUrl, @Nullable String state, String code) {
     try {
       URI uri =
           new URI(
               _url
                   + BlackboardRESTConnectorConstants.AUTHENTICATION_SERVICE_URI_PATH
                   + "?"
-                  + buildAuthenticationUriQueryString(redirectUrl, state));
+                  + buildAuthenticationUriQueryStringWithCode(redirectUrl, state, code));
+      return uri;
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
+  public URI createWebUrlForAuthenticationToken(URI redirectUrl, @Nullable String state) {
+    try {
+      URI uri =
+          new URI(
+              _url
+                  + BlackboardRESTConnectorConstants.AUTHENTICATIONCODE_SERVICE_URI_PATH
+                  + "?"
+                  + buildAuthenticationCodeUriQueryString(redirectUrl, state));
+      return uri;
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
+  public URI createWebUrlForAuthentication(URI redirectUrl, @Nullable String state) {
+    try {
+      URI uri =
+          new URI(
+              _url
+                  + BlackboardRESTConnectorConstants.AUTHENTICATIONCODE_SERVICE_URI_PATH
+                  + "?"
+                  + buildAuthenticationCodeUriQueryString(redirectUrl, state));
       return uri;
     } catch (URISyntaxException e) {
       return null;
@@ -121,6 +158,26 @@ public class BlackboardRestAppContext {
     } catch (UnsupportedEncodingException e) {
       result += "&" + CALLBACK_URL_PARAMETER + "=" + URLEncoder.encode(callbackUriString);
     }
+    if (state != null) {
+      result += "&" + STATE_PARAMETER + "=" + URLEncoder.encode(state);
+    }
+    return result;
+  }
+
+  private String buildAuthenticationUriQueryStringWithCode(
+      URI callbackUri, @Nullable String state, String code) {
+    String callbackUriString = callbackUri.toString();
+    String result = FIELD_CODE + "=" + code;
+    result += "&" + FIELD_REDIRECT_URI + "=" + callbackUriString;
+    return result;
+  }
+
+  private String buildAuthenticationCodeUriQueryString(URI callbackUri, @Nullable String state) {
+    String callbackUriString = callbackUri.toString();
+    String result = FIELD_RESPONSE_TYPE + "=" + VALUE_CODE;
+    result += "&" + FIELD_REDIRECT_URI + "=" + callbackUriString;
+    result += "&" + FIELD_CLIENT_ID + "=" + _appId;
+    result += "&" + FIELD_SCOPE + "=" + VALUE_WRITE;
     if (state != null) {
       result += "&" + STATE_PARAMETER + "=" + URLEncoder.encode(state);
     }

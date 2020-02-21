@@ -18,15 +18,28 @@
 
 package com.tle.web.connectors.blackboard.servlet;
 
+import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.common.PathUtils;
+import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
+import com.tle.core.connectors.blackboard.beans.ErrorResponse;
+import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
-import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
+import com.tle.core.connectors.service.ConnectorService;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.services.HttpService;
+import com.tle.core.services.http.Request;
+import com.tle.core.services.http.Response;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.exceptions.AuthenticationException;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,6 +47,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  * Served up at /blackboardauth
@@ -47,20 +61,28 @@ import javax.servlet.http.HttpServletResponse;
 @Bind
 @Singleton
 public class BlackboardRestOauthSignonServlet extends HttpServlet {
-  private static final String USER_ID_CALLBACK_PARAMETER = "x_a";
-  private static final String USER_KEY_CALLBACK_PARAMETER = "x_b";
-  private static final String STATE_CALLBACK_PARAMETER = "x_state";
+  private static final String STATE_CALLBACK_PARAMETER = "state";
 
+  private static final Logger LOGGER = Logger.getLogger(BlackboardRestOauthSignonServlet.class);
+  @Inject private HttpService httpService;
+  @Inject private ConnectorService connectorService;
+  @Inject private EncryptionService encryptionService;
+  @Inject private ConfigurationService configService;
   @Inject private UserSessionService sessionService;
   @Inject private BlackboardRESTConnectorService blackboardRestConnectorService;
+  @Inject private InstitutionService institutionService;
+
+  private static final ObjectMapper jsonMapper = new ObjectMapper();
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     String postfixKey = "";
+    String connectorUuid = "";
     String forwardUrl = null;
-
+    String token = null;
     String state = req.getParameter(STATE_CALLBACK_PARAMETER);
+
     if (state != null) {
       ObjectNode stateJson =
           (ObjectNode) new ObjectMapper().readTree(blackboardRestConnectorService.decrypt(state));
@@ -75,14 +97,72 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
       if (postfixKeyNode != null) {
         postfixKey = postfixKeyNode.asText();
       }
-    }
 
-    sessionService.setAttribute(
-        BrightspaceConnectorConstants.SESSION_KEY_USER_ID + postfixKey,
-        req.getParameter(USER_ID_CALLBACK_PARAMETER));
-    sessionService.setAttribute(
-        BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + postfixKey,
-        req.getParameter(USER_KEY_CALLBACK_PARAMETER));
+      JsonNode connectorUuidNode = stateJson.get("connectorUuid");
+      if (connectorUuidNode != null) {
+        connectorUuid = connectorUuidNode.asText();
+      }
+    }
+    String code = req.getParameter("code");
+    sessionService.setAttribute(BlackboardRESTConnectorConstants.SESSION_CODE + postfixKey, code);
+
+    // TODO, ask for the token.
+    final Connector connector = connectorService.getByUuid(connectorUuid);
+    final String apiKey = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY);
+    final String apiSecret =
+        encryptionService.decrypt(
+            connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET));
+    final String b64 =
+        new Base64()
+            .encode((apiKey + ":" + apiSecret).getBytes())
+            .replace("\n", "")
+            .replace("\r", "");
+
+    final Request req2 =
+        new Request(
+            PathUtils.urlPath(
+                connector.getServerUrl(),
+                "learn/api/public/v1/oauth2/token?code="
+                    + code
+                    + "&redirect_uri="
+                    + institutionService.institutionalise(
+                        BlackboardRESTConnectorConstants.AUTH_URL)));
+    req2.setMethod(Request.Method.POST);
+    req2.setMimeType("application/x-www-form-urlencoded");
+    req2.addHeader("Authorization", "Basic " + b64);
+    req2.setBody("grant_type=authorization_code");
+    try (final Response resp2 = httpService.getWebContent(req2, configService.getProxyDetails())) {
+      if (resp2.isOk()) {
+        final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
+        LOGGER.warn("Gathered Blackboard access token for [" + connectorUuid + "]");
+        token = tokenJson.getAccessToken();
+      } else {
+        final ErrorResponse bbErr = jsonMapper.readValue(resp2.getBody(), ErrorResponse.class);
+        LOGGER.warn(
+            "Unable to gather Blackboard access token for ["
+                + connectorUuid
+                + "] - Code ["
+                + resp2.getCode()
+                + "] - Msg ["
+                + resp2.getMessage()
+                + "] - Body ["
+                + resp2.getBody()
+                + "]");
+        throw new AuthenticationException(
+            "Unable to authenticate with Blackboard - " + bbErr.getErrorDescription());
+      }
+    } catch (Exception e) {
+      LOGGER.warn(
+          "Unable to gather Blackboard access token for ["
+              + connectorUuid
+              + "] - "
+              + e.getMessage(),
+          e);
+      throw Throwables.propagate(e);
+    }
+    blackboardRestConnectorService.setToken(connectorUuid, token);
+
+    sessionService.setAttribute(BlackboardRESTConnectorConstants.SESSION_TOKEN + postfixKey, token);
 
     // close dialog OR redirect...
     if (forwardUrl != null) {
