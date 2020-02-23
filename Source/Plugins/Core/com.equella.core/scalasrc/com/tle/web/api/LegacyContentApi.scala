@@ -660,7 +660,7 @@ class LegacyContentApi {
       case pr: PreRenderable     => new PreRenderOnly(pr)
       //Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
       case _ =>
-        LOGGER.error("Unknown error at renderedBody - ajaxResponse"); return Response.serverError();
+        LOGGER.debug("Unknown error at renderedBody - ajaxResponse"); return Response.serverError();
     }
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
