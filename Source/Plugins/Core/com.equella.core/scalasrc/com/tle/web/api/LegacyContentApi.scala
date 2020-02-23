@@ -65,6 +65,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.ResponseBuilder
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -247,6 +248,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 @Api("Legacy content")
 @Path("content")
 class LegacyContentApi {
+  val LOGGER = LoggerFactory.getLogger(classOf[LegacyContentApi])
 
   def parsePath(path: String): (String, MutableSectionInfo => MutableSectionInfo) = {
 
@@ -623,7 +625,7 @@ class LegacyContentApi {
       .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
   }
 
-  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
+  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext): Response.ResponseBuilder = {
     var resp: ResponseBuilder = null
     val context               = LegacyContentController.prepareJSContext(info)
 
@@ -656,6 +658,9 @@ class LegacyContentApi {
       case tr: TemplateResult    => tr.getNamedResult(context, "body")
       case sr: SectionRenderable => sr
       case pr: PreRenderable     => new PreRenderOnly(pr)
+      //Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
+      case _ =>
+        LOGGER.error("Unknown error at renderedBody - ajaxResponse"); return Response.serverError();
     }
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
