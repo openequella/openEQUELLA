@@ -65,6 +65,7 @@ object CoreSettingsRest {
 
 object SettingsList {
   val General               = "general"
+  val Searching             = "searching"
   val Integration           = "integration"
   val CloudProviderListPage = "page/cloudprovider"
 
@@ -216,7 +217,7 @@ object SettingsList {
                      "access/googleapisettings.do",
                      googlePrivProvider.isAuthorised),
     CoreSettingsPage("search",
-                     General,
+                     Searching,
                      "settings.link.title",
                      "settings.link.description",
                      "access/searchsettings.do",
