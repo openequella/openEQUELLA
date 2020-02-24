@@ -49,13 +49,14 @@ data Command = LoadSettings | DialogOpen Boolean
 
 settingsPageClass :: ReactClass {updateTemplate :: TemplateUpdateCB, refreshUser :: Effect Unit }
 settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
-  let 
+  let
     d = eval >>> affAction this
     groupDetails :: Array (Tuple String { name :: String, desc :: String })
     groupDetails = [
       Tuple "general" string.general,
       Tuple "integration" string.integration,
       Tuple "diagnostics" string.diagnostics,
+      Tuple "searching" string.searching,
       Tuple "ui" string.ui
     ]
 
@@ -69,13 +70,13 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
         let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
             renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
               let pages = sortWith _.name _pages
-                  linksOrEditor = case id of 
+                  linksOrEditor = case id of
                     "ui" -> uiSettingsEditor {refreshUser}
                     o -> expansionPanelDetails_ [ list_ $ map pageLink pages ]
               in Just $ settingGroup details linksOrEditor
             renderGroup _ = Nothing
         in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails <> [
-          unsafeCreateLeafElement adminDownloadDialogClass {open: state.adminDialogOpen, onClose: mkEffectFn1 \_ -> d $ DialogOpen false } 
+          unsafeCreateLeafElement adminDownloadDialogClass {open: state.adminDialogOpen, onClose: mkEffectFn1 \_ -> d $ DialogOpen false }
         ]
 
       settingGroup {name,desc} contents = expansionPanel_ [
@@ -91,7 +92,7 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
       ]
       pageLink s = listItem_ [
         listItemText' {
-          primary: (case s.route, s.href of 
+          primary: (case s.route, s.href of
             Just route, _ -> link { to: toLocation route }
             _, Just href -> D.a [DP.href href]
             _, _ -> D.div')
@@ -106,13 +107,13 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
       result <- lift $ get json $ baseUrl <> "api/settings"
       either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
 
-  pure {state: { 
-      settings:Nothing, 
+  pure {state: {
+      settings:Nothing,
       adminDialogOpen:false
-    } :: State, 
-        render: renderer render this, 
+    } :: State,
+        render: renderer render this,
         componentDidMount: affAction this $ eval LoadSettings}
-  where 
+  where
   styles theme = {
     heading: {
       fontSize: theme.typography.pxToRem 15,
@@ -122,12 +123,12 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
     secondaryHeading: {
       fontSize: theme.typography.pxToRem 15,
       color: theme.palette.text.secondary
-    }, 
+    },
     progress: {
-      display: "flex", 
+      display: "flex",
       marginTop: theme.spacing.unit * 4,
       justifyContent: "center"
-    } 
+    }
   }
 
 type GroupStrings = { name :: String, desc :: String }
