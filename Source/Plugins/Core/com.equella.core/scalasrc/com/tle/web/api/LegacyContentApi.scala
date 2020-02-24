@@ -63,7 +63,7 @@ import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
-import javax.ws.rs.core.Response.ResponseBuilder
+import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
 import org.slf4j.LoggerFactory
 
@@ -660,7 +660,8 @@ class LegacyContentApi {
       case pr: PreRenderable     => new PreRenderOnly(pr)
       //Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
       case _ =>
-        LOGGER.debug("Unknown error at renderedBody - ajaxResponse"); return Response.serverError();
+        LOGGER.debug("Unknown error at renderedBody - ajaxResponse");
+        return Response.status(Status.NOT_IMPLEMENTED);
     }
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
