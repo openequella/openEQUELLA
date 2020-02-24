@@ -52,7 +52,6 @@ before_install:
   - sudo ln -s /usr/bin/ffplay /usr/bin/avplay
   - sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 install:
-  - echo `google-chrome --version`
   # retrieve full git history for automatic versioning
   - git fetch --unshallow
 before_script:
@@ -63,6 +62,9 @@ before_script:
   - which java javac
   - java -version
   - javac -version
+  # Diagnostics: Display browser versions
+  - google-chrome --version
+  - chromium-browser --version
 
 stages:
   - name: build and check
