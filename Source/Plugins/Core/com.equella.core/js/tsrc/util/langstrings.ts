@@ -321,6 +321,7 @@ export const languageStrings = {
       desc: "Settings for integrating with external systems"
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
+    searching: { name: "Searching", desc: "Searching settings" },
     ui: { name: "UI", desc: "UI settings" }
   },
   adminconsoledownload: {
