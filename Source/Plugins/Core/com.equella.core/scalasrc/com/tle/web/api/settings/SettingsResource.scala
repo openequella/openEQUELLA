@@ -21,12 +21,16 @@ package com.tle.web.api.settings
 import java.net.URI
 
 import com.tle.common.institution.CurrentInstitution
+import com.tle.common.settings.ConfigurationProperties
+import com.tle.common.settings.standard.SearchSettings
+import com.tle.core.cloud.settings.CloudSettings
 import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.security.AclChecks
 import com.tle.core.settings.SettingsDB
+import com.tle.legacy.LegacyGuice
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
-import javax.ws.rs.{GET, PUT, Path, Produces}
+import javax.ws.rs.{GET, POST, PUT, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
@@ -45,11 +49,43 @@ object SettingTypeLinks {
                        if (ed.isRoute) Some("/" + ed.uri) else None)
   }
 }
+
+case class GalleryViewSettings(disableImage: Boolean,
+                               disableVideo: Boolean,
+                               disableFileCount: Boolean)
+
+case class SearchPageSettings(showNoneLive: Boolean,
+                              disableGalleryViews: GalleryViewSettings,
+                              disableCloudSearching: Boolean,
+                              defaultResultOrder: String,
+                              authenticateFeeds: Boolean)
+
+object SearchPageSettings {
+  def apply(searchSettings: SearchSettings, cloudSettings: CloudSettings): SearchPageSettings =
+    SearchPageSettings(
+      searchSettings.isSearchingShowNonLiveCheckbox,
+      GalleryViewSettings(searchSettings.isSearchingDisableGallery,
+                          searchSettings.isSearchingDisableVideos,
+                          searchSettings.isFileCountDisabled),
+      cloudSettings.isDisabled,
+      searchSettings.getDefaultSearchSort,
+      searchSettings.isAuthenticateFeedsByDefault
+    )
+
+}
+
 @NoCache
 @Path("settings/")
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class SettingsResource {
+
+  val searchPrivProvider = LegacyGuice.searchPrivProvider
+
+  // Load a variety of settings such as search setting and search filter setting
+  def loadSettings[T <: ConfigurationProperties](settings: T): T = {
+    LegacyGuice.configService.getProperties(settings)
+  }
 
   @GET
   def settings: Iterable[SettingType] = {
@@ -69,4 +105,26 @@ class SettingsResource {
   def setUISettings(in: UISettings): Unit = RunWithDB.executeWithPostCommit(
     SettingsDB.ensureEditSystem(UISettings.setUISettings(in))
   )
+
+  @GET
+  @Path("searchpage")
+  def loadSearchPageSettings: SearchPageSettings = {
+    searchPrivProvider.checkAuthorised()
+    SearchPageSettings(loadSettings(new SearchSettings), loadSettings(new CloudSettings))
+  }
+
+  @POST
+  @Path("searchpage")
+  def updateSearchPageSettings(settings: SearchPageSettings): Unit = {
+    searchPrivProvider.checkAuthorised()
+    val searchSettings = loadSettings(new SearchSettings)
+    searchSettings.setSearchingShowNonLiveCheckbox(settings.showNoneLive)
+    searchSettings.setAuthenticateFeedsByDefault(settings.authenticateFeeds)
+    searchSettings.setDefaultSearchSort(settings.defaultResultOrder)
+    searchSettings.setSearchingDisableGallery(settings.disableGalleryViews.disableImage)
+    searchSettings.setSearchingDisableVideos(settings.disableGalleryViews.disableVideo)
+    searchSettings.setFileCountDisabled(settings.disableGalleryViews.disableFileCount)
+    val cloudSettings = loadSettings(new CloudSettings)
+    cloudSettings.setDisabled(settings.disableCloudSearching)
+  }
 }
