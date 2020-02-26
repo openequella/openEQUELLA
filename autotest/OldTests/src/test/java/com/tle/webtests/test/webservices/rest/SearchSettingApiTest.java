@@ -58,7 +58,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     newSearchPageSettings.put(DISABLE_GALLERY_VIEWS, newGallerySettings);
     newSearchPageSettings.put(DEFAULT_RESULT_ORDER, "RATING");
 
-    HttpResponse response = postEntity(newSearchPageSettings.toString(), uri, token, true);
+    HttpResponse response = putEntity(newSearchPageSettings.toString(), uri, token, true);
     assertEquals(response.getStatusLine().getStatusCode(), 204);
 
     // Load and check the updated settings

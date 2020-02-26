@@ -30,7 +30,7 @@ import com.tle.core.settings.SettingsDB
 import com.tle.legacy.LegacyGuice
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
-import javax.ws.rs.{GET, POST, PUT, Path, Produces}
+import javax.ws.rs.{GET, PUT, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
@@ -113,7 +113,7 @@ class SettingsResource {
     SearchPageSettings(loadSettings(new SearchSettings), loadSettings(new CloudSettings))
   }
 
-  @POST
+  @PUT
   @Path("searchpage")
   def updateSearchPageSettings(settings: SearchPageSettings): Unit = {
     searchPrivProvider.checkAuthorised()
