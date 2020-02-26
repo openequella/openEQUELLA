@@ -54,10 +54,10 @@ case class GalleryViewSettings(disableImage: Boolean,
                                disableVideo: Boolean,
                                disableFileCount: Boolean)
 
-case class SearchPageSettings(showNoneLive: Boolean,
+case class SearchPageSettings(showNonLive: Boolean,
                               disableGalleryViews: GalleryViewSettings,
                               disableCloudSearching: Boolean,
-                              defaultResultOrder: String,
+                              defaultSortOrder: String,
                               authenticateFeeds: Boolean)
 
 object SearchPageSettings {
@@ -118,9 +118,9 @@ class SettingsResource {
   def updateSearchPageSettings(settings: SearchPageSettings): Unit = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-    searchSettings.setSearchingShowNonLiveCheckbox(settings.showNoneLive)
+    searchSettings.setSearchingShowNonLiveCheckbox(settings.showNonLive)
     searchSettings.setAuthenticateFeedsByDefault(settings.authenticateFeeds)
-    searchSettings.setDefaultSearchSort(settings.defaultResultOrder)
+    searchSettings.setDefaultSearchSort(settings.defaultSortOrder)
     searchSettings.setSearchingDisableGallery(settings.disableGalleryViews.disableImage)
     searchSettings.setSearchingDisableVideos(settings.disableGalleryViews.disableVideo)
     searchSettings.setFileCountDisabled(settings.disableGalleryViews.disableFileCount)
