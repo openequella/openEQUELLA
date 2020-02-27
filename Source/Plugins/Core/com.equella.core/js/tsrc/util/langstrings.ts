@@ -321,7 +321,36 @@ export const languageStrings = {
       desc: "Settings for integrating with external systems"
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
-    searching: { name: "Searching", desc: "Searching settings" },
+    searching: {
+      name: "Search",
+      desc: "Searching settings",
+      searchPageSettings: {
+        name: "Search page settings",
+        defaultSortOrder: "Default sort order",
+        relevance: "Relevance",
+        lastModified: "Date last modified",
+        dateCreated: "Date created",
+        title: "Title",
+        userRating: "User rating",
+        allowNonLive: "Allow non-live results",
+        allowNonLiveLabel:
+          "Show the 'Include results that are not live' checkbox",
+        authFeed: "Authenticated feeds",
+        authFeedLabel: "Generate authenticated RSS and Atom feed links ",
+        galleryViews: "Gallery views",
+        disableImages: "Disable Images",
+        disableVideos: "Disable Videos",
+        disableFileCount: "Disable File Count",
+        cloudSearching: "Cloud searching",
+        cloudSearchingLabel:
+          "Do not show cloud results when performing searches.",
+        disableCloud: "Disable cloud searching",
+        save: "Save",
+        success: "Settings saved successfully.",
+        notFoundError: "Endpoint not found",
+        notFoundErrorDesc: "Endpoint not found. Refresh to retry."
+      }
+    },
     ui: { name: "UI", desc: "UI settings" }
   },
   adminconsoledownload: {
