@@ -74,9 +74,10 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.defaultsort")
   private String defaultSearchSort;
 
-  @JsonIgnore // The REST endpoints for this was split into two - one for general search settings,
-              // and one for filters - so we don't want this included in the general search
-              // settings.
+  // The REST endpoints for this was split into two - one for general search settings,
+  // and one for filters - so we don't want this included in the general search
+  // settings.
+  @JsonIgnore
   @PropertyDataList(key = SEARCH + ".filters", type = SearchFilter.class)
   private final List<SearchFilter> filters =
       new ArrayList<SearchFilter>() {
