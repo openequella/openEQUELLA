@@ -19,19 +19,14 @@
 package com.tle.web.api.settings
 
 import java.net.URI
-import java.util.UUID
 
 import com.tle.common.institution.CurrentInstitution
-import com.tle.common.settings.ConfigurationProperties
-import com.tle.common.settings.standard.SearchSettings
-import com.tle.common.settings.standard.SearchSettings.SearchFilter
-import com.tle.core.cloud.settings.CloudSettings
-import com.tle.core.db.RunWithDB
+import com.tle.core.db.{DB, RunWithDB}
+import com.tle.core.security.AclChecks
 import com.tle.core.settings.SettingsDB
-import com.tle.legacy.LegacyGuice
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
-import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.{DELETE, GET, PUT, Path, Produces}
+import io.swagger.annotations.Api
+import javax.ws.rs.{GET, PUT, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
@@ -50,24 +45,11 @@ object SettingTypeLinks {
                        if (ed.isRoute) Some("/" + ed.uri) else None)
   }
 }
-
 @NoCache
 @Path("settings/")
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class SettingsResource {
-
-  val searchPrivProvider = LegacyGuice.searchPrivProvider
-
-  def loadSettings[T <: ConfigurationProperties](settings: T): T = {
-    searchPrivProvider.checkAuthorised()
-    LegacyGuice.configService.getProperties(settings)
-  }
-
-  def updateSettings[T <: ConfigurationProperties](settings: T): Unit = {
-    searchPrivProvider.checkAuthorised()
-    LegacyGuice.configService.setProperties(settings)
-  }
 
   @GET
   def settings: Iterable[SettingType] = {
@@ -87,46 +69,4 @@ class SettingsResource {
   def setUISettings(in: UISettings): Unit = RunWithDB.executeWithPostCommit(
     SettingsDB.ensureEditSystem(UISettings.setUISettings(in))
   )
-
-  @GET
-  @Path("search")
-  @ApiOperation(
-    value = "Load Search settings",
-    notes =
-      "This endpoint is used to retrieve general search settings excluding search filter. The corresponding Model class is SearchSettings."
-  )
-  def loadSearchSettings: SearchSettings = {
-    loadSettings(new SearchSettings)
-  }
-
-  @PUT
-  @Path("search")
-  @ApiOperation(
-    value = "Update Search settings",
-    notes =
-      "This endpoint is used to update general search settings excluding search filter. It updates the values of fields in SearchSettings, except 'filter'."
-  )
-  def updateSearchSettings(settings: SearchSettings): Unit = {
-    updateSettings(settings)
-  }
-
-  @GET
-  @Path("search/cloud")
-  @ApiOperation(
-    value = "Load Cloud settings",
-    notes =
-      "This endpoint is used to retrieve cloud settings. The corresponding Model class is CloudSettings")
-  def loadCloudSettings: CloudSettings = {
-    loadSettings(new CloudSettings)
-  }
-
-  @PUT
-  @Path("search/cloud")
-  @ApiOperation(
-    value = "Update Cloud settings",
-    notes =
-      "This endpoint is used to update cloud settings. It updates the values of fields in CloudSettings.")
-  def updateCloudSettings(settings: CloudSettings): Unit = {
-    updateSettings(settings)
-  }
 }
