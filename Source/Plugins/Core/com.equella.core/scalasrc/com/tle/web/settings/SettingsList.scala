@@ -166,17 +166,12 @@ object SettingsList {
                                     OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS)
         .isEmpty
   )
-  val searchPageSettings = CoreSettingsPage(
-    "searchpage",
-    Searching,
-    "setting.searchpage.title",
-    "setting.searchpage.desc",
-    "page/searchsettings",
-    () =>
-      !aclManager
-        .filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS")
-        .isEmpty
-  )
+  val searchPageSettings = CoreSettingsPage("searchpage",
+                                            Searching,
+                                            "setting.searchpage.title",
+                                            "setting.searchpage.desc",
+                                            "page/searchsettings",
+                                            searchPrivProvider.isAuthorised)
 
   val htmlEditorSettings = CoreSettingsPage("htmleditor",
                                             General,
