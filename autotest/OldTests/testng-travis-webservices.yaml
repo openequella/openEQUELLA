@@ -32,3 +32,4 @@ tests:
       - com.tle.webtests.test.webservices.soap.SoapServicesTest
       - com.tle.webtests.test.webservices.OAIEndpointTest
       - com.tle.webtests.test.webservices.SRWTest
+      - com.tle.webtests.test.webservices.rest.SearchSettingApiTest
