@@ -19,13 +19,14 @@
 package com.tle.web.api.settings
 
 import java.net.URI
+import java.util.UUID
 
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
+import com.tle.common.settings.standard.SearchSettings.SearchFilter
 import com.tle.core.cloud.settings.CloudSettings
-import com.tle.core.db.{DB, RunWithDB}
-import com.tle.core.security.AclChecks
+import com.tle.core.db.RunWithDB
 import com.tle.core.settings.SettingsDB
 import com.tle.legacy.LegacyGuice
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
@@ -82,9 +83,14 @@ class SettingsResource {
 
   val searchPrivProvider = LegacyGuice.searchPrivProvider
 
-  // Load a variety of settings such as search setting and search filter setting
   def loadSettings[T <: ConfigurationProperties](settings: T): T = {
+    searchPrivProvider.checkAuthorised()
     LegacyGuice.configService.getProperties(settings)
+  }
+
+  def updateSettings[T <: ConfigurationProperties](settings: T): Unit = {
+    searchPrivProvider.checkAuthorised()
+    LegacyGuice.configService.setProperties(settings)
   }
 
   @GET
@@ -107,24 +113,26 @@ class SettingsResource {
   )
 
   @GET
-  @Path("searchpage")
-  def loadSearchPageSettings: SearchPageSettings = {
-    searchPrivProvider.checkAuthorised()
-    SearchPageSettings(loadSettings(new SearchSettings), loadSettings(new CloudSettings))
+  @Path("search")
+  def loadSearchSettings: SearchSettings = {
+    loadSettings(new SearchSettings)
   }
 
   @PUT
-  @Path("searchpage")
-  def updateSearchPageSettings(settings: SearchPageSettings): Unit = {
-    searchPrivProvider.checkAuthorised()
-    val searchSettings = loadSettings(new SearchSettings)
-    searchSettings.setSearchingShowNonLiveCheckbox(settings.showNonLive)
-    searchSettings.setAuthenticateFeedsByDefault(settings.authenticateFeeds)
-    searchSettings.setDefaultSearchSort(settings.defaultSortOrder)
-    searchSettings.setSearchingDisableGallery(settings.disableGalleryViews.disableImage)
-    searchSettings.setSearchingDisableVideos(settings.disableGalleryViews.disableVideo)
-    searchSettings.setFileCountDisabled(settings.disableGalleryViews.disableFileCount)
-    val cloudSettings = loadSettings(new CloudSettings)
-    cloudSettings.setDisabled(settings.disableCloudSearching)
+  @Path("search")
+  def updateSearchSettings(settings: SearchSettings): Unit = {
+    updateSettings(settings)
+  }
+
+  @GET
+  @Path("search/cloud")
+  def loadCloudSettings: CloudSettings = {
+    loadSettings(new CloudSettings)
+  }
+
+  @PUT
+  @Path("search/cloud")
+  def updateCloudSettings(settings: CloudSettings): Unit = {
+    updateSettings(settings)
   }
 }

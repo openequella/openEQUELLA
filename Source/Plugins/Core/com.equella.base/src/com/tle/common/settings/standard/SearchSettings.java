@@ -18,6 +18,7 @@
 
 package com.tle.common.settings.standard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyDataList;
@@ -73,6 +74,7 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.defaultsort")
   private String defaultSearchSort;
 
+  @JsonIgnore
   @PropertyDataList(key = SEARCH + ".filters", type = SearchFilter.class)
   private final List<SearchFilter> filters =
       new ArrayList<SearchFilter>() {
