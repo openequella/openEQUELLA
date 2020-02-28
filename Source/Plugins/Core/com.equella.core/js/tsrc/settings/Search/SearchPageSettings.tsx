@@ -37,6 +37,7 @@ let useStyles = makeStyles({
     marginTop: "4px"
   },
   section: {
+    marginLeft: "8px",
     marginTop: "4px",
     marginBottom: "24px"
   },
