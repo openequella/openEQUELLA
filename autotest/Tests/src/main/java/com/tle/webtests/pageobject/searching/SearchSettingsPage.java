@@ -8,9 +8,10 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
-  public static final String SEARCH_SETTINGS_SECTION_TITLE = "Searching";
+  public static final String SEARCH_SETTINGS_SECTION_TITLE = "Search page settings";
 
   public enum Order {
     RANK,
@@ -43,25 +44,34 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   @FindBy(id = "cs_dc")
   private WebElement disableCloud;
 
+  @FindBy(id = "_disableGallery")
+  private WebElement disableGalleryCheckbox;
+
+  @FindBy(id = "_sortOrder")
+  private WebElement sortOrderDropdown;
+
   private EquellaSelect resultOrder;
 
   public SearchSettingsPage(PageContext context) {
-    super(context, By.xpath("//h2[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"));
+    super(context, By.xpath("//h5[text()='Search page settings']"));
   }
 
   @Override
   protected void loadUrl() {
-    driver.get(context.getBaseUrl() + "access/searchsettings.do");
+    driver.get(context.getBaseUrl() + "page/searchsettings");
   }
 
   @Override
   public void checkLoaded() throws Error {
     super.checkLoaded();
-    resultOrder = new EquellaSelect(context, driver.findElement(By.id("_defaultSortType")));
   }
 
   public SearchSettingsPage setOrder(Order order) {
-    resultOrder.selectByValue(order.name());
+    sortOrderDropdown.click();
+
+    By by = By.xpath("//li[@data-value='" + order.name() + "']");
+    waiter.until(ExpectedConditions.elementToBeClickable(by));
+    find(getSearchContext(), by).click();
     return get();
   }
 
@@ -89,6 +99,13 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   public SearchSettingsPage setDisableCloud(boolean disable) {
     if (disableCloud.isSelected() != disable) {
       disableCloud.click();
+    }
+    return get();
+  }
+
+  public SearchSettingsPage setDisableImageGallery(boolean disable) {
+    if (disableGalleryCheckbox.isSelected() != disable) {
+      disableGalleryCheckbox.click();
     }
     return get();
   }
@@ -125,6 +142,9 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public void save() {
     save.click();
+    waiter.until(
+        ExpectedConditions.presenceOfElementLocated(
+            By.xpath("//span[text()='Settings saved successfully.']")));
   }
 
   public CreateSearchFilterPage addFilter() {
