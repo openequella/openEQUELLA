@@ -92,6 +92,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
         <FormControl>
           <FormLabel>{strings.defaultSortOrder}</FormLabel>
           <Select
+            SelectDisplayProps={{ id: "_sortOrder" }}
             disabled={errorMessage}
             onChange={event =>
               setSearchSettings({
@@ -134,6 +135,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             label={strings.allowNonLiveLabel}
             control={
               <Checkbox
+                id={"_showNonLiveCheckbox"}
                 checked={searchSettings.searchingShowNonLiveCheckbox}
                 className={classes.checkbox}
               />
@@ -160,6 +162,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             label={strings.authFeedLabel}
             control={
               <Checkbox
+                id={"_authenticateByDefault"}
                 checked={searchSettings.authenticateFeedsByDefault}
                 className={classes.checkbox}
               />
@@ -186,6 +189,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             label={strings.disableImages}
             control={
               <Checkbox
+                id={"_disableGallery"}
                 checked={searchSettings.searchingDisableGallery}
                 className={classes.checkbox}
               />
@@ -242,6 +246,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             label={strings.disableCloud}
             control={
               <Checkbox
+                id={"cs_dc"}
                 checked={cloudSettings.disabled}
                 className={classes.checkbox}
               />
@@ -296,6 +301,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
       <GalleryViewsSetting />
       <CloudSearchSetting />
       <Button
+        id={"_saveButton"}
         disabled={errorMessage}
         className={classes.floatingButton}
         variant="contained"
