@@ -26,8 +26,8 @@ export enum SortOrder {
   RATING = "RATING"
 }
 
-export const SEARCH_SETTINGS_URL = "/api/settings/search";
-export const CLOUD_SETTINGS_URL = "/api/settings/search/cloud";
+export const SEARCH_SETTINGS_URL = "api/settings/search";
+export const CLOUD_SETTINGS_URL = "api/settings/search/cloud";
 
 export function getSearchSettingsFromServer(): AxiosPromise<SearchSettings> {
   return Axios.get(SEARCH_SETTINGS_URL);
@@ -36,7 +36,7 @@ export function getSearchSettingsFromServer(): AxiosPromise<SearchSettings> {
 export function saveSearchSettingsToServer(
   settings: SearchSettings
 ): AxiosPromise {
-  return Axios.post(SEARCH_SETTINGS_URL, settings);
+  return Axios.put(SEARCH_SETTINGS_URL, settings);
 }
 
 export function getCloudSettingsFromServer(): AxiosPromise<CloudSettings> {
@@ -46,7 +46,7 @@ export function getCloudSettingsFromServer(): AxiosPromise<CloudSettings> {
 export function saveCloudSettingsToServer(
   settings: CloudSettings
 ): AxiosPromise {
-  return Axios.post(CLOUD_SETTINGS_URL, settings);
+  return Axios.put(CLOUD_SETTINGS_URL, settings);
 }
 
 export const defaultSearchSettings: SearchSettings = {
