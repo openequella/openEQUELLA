@@ -32,6 +32,7 @@ import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.plugins.PluginTracker;
 import java.awt.Component;
 import java.awt.event.KeyListener;
@@ -123,7 +124,7 @@ public class ItemSummaryTemplateTab extends AbstractItemdefTab {
         }
 
         if (section.getValue().equals("displayNodes")) {
-          xstream = new XStream();
+          xstream = XStreamSecurityManager.newXStream();
           xstream.setClassLoader(getClass().getClassLoader());
 
           Object fromXML = xstream.fromXML(section.getConfiguration());

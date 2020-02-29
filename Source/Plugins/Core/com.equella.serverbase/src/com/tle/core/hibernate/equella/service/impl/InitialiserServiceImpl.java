@@ -24,6 +24,7 @@ import com.thoughtworks.xstream.hibernate.converter.*;
 import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 import com.tle.beans.IdCloneable;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.AbstractHibernateDao;
 import com.tle.core.hibernate.equella.service.FieldProperty;
@@ -452,6 +453,7 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
             return new HibernateMapper(next);
           }
         };
+    XStreamSecurityManager.applyPolicy(xstream);
     xstream.setClassLoader(classLoader);
     xstream.autodetectAnnotations(true);
     xstream.registerConverter(new HibernateProxyConverter());

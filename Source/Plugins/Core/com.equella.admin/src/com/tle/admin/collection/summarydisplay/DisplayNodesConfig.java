@@ -29,6 +29,7 @@ import com.tle.beans.entity.itemdef.DisplayNode;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.util.List;
@@ -42,7 +43,7 @@ public class DisplayNodesConfig extends AbstractOnlyTitleConfig {
   private XStream xstream;
 
   public DisplayNodesConfig() {
-    xstream = new XStream();
+    xstream = XStreamSecurityManager.newXStream();
     xstream.setClassLoader(getClass().getClassLoader());
   }
 
