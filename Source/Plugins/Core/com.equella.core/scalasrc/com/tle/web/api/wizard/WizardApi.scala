@@ -184,6 +184,33 @@ class WizardApi {
 
   }
 
+  private def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
+    readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
+  }
+
+  private def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
+    val headers = (for {
+      headerName <- req.getHeaderNames.asScala
+    } yield (headerName, req.getHeader(headerName))).toMap
+
+    val filterCookies = {
+      val filterList = List("JSESSIONID")
+      val cookies =
+        req.getCookies.filter(cookie => filterList.exists(!_.startsWith(cookie.getName)))
+      // Generate a string which include cookie pairs separated by a semi-colon
+      cookies.map(cookie => s"${cookie.getName}=${cookie.getValue}").mkString(";")
+    }
+    // If have cookies apart from those unneeded then reset cookie in the header; otherwise remove cookie from the header.
+    val filterHeaders = {
+      if (!filterCookies.isEmpty) {
+        headers + ("cookie" -> filterCookies)
+      } else {
+        headers - "cookie"
+      }
+    }
+    filterHeaders - "host"
+  }
+
   @NoCache
   @GET
   @Path("provider/{providerId}/{serviceId}")
@@ -192,7 +219,9 @@ class WizardApi {
                @PathParam("serviceId") serviceId: String,
                @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest): Response = {
-    proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.get)
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp.get(uri).headers(getRequestHeaders(req))
+    }
   }
 
   @POST
@@ -203,12 +232,39 @@ class WizardApi {
                 @Context uriInfo: UriInfo,
                 @Context req: HttpServletRequest,
                 content: InputStream): Response = {
-    val streamedBody =
-      readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       sttp
         .post(uri)
-        .streamBody(streamedBody)
+        .headers(getRequestHeaders(req))
+        .streamBody(getStreamedBody(content))
+    }
+  }
+
+  @PUT
+  @Path("provider/{providerId}/{serviceId}")
+  def proxyPUT(@PathParam("wizid") wizid: String,
+               @PathParam("providerId") providerId: UUID,
+               @PathParam("serviceId") serviceId: String,
+               @Context uriInfo: UriInfo,
+               @Context req: HttpServletRequest,
+               content: InputStream): Response = {
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp
+        .put(uri)
+        .headers(getRequestHeaders(req))
+        .streamBody(getStreamedBody(content))
+    }
+  }
+
+  @DELETE
+  @Path("provider/{providerId}/{serviceId}")
+  def proxyDELETE(@PathParam("wizid") wizid: String,
+                  @PathParam("providerId") providerId: UUID,
+                  @PathParam("serviceId") serviceId: String,
+                  @Context uriInfo: UriInfo,
+                  @Context req: HttpServletRequest): Response = {
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp.delete(uri).headers(getRequestHeaders(req))
     }
   }
 }

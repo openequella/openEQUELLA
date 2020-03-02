@@ -57,8 +57,9 @@ import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
-import javax.ws.rs.core.Response.ResponseBuilder
+import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -103,6 +104,33 @@ case class CurrentUserDetails(id: String,
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
   import LegacyGuice.urlService
+
+  def isClientPath(relUrl: RelativeUrl): Boolean = {
+    // This regex matches the relative url of Item Summary page
+    // For example 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/'
+    // The last forward slash does not exist in some cases
+    val itemSummaryUrlPattern =
+      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?".r
+
+    // This regex explicitly matches the relative Url of logon
+    // For example, 'logon.do' or 'logon.do?.page=home.do'
+    val logonUrlPattern = "logon\\.do\\??.*".r
+
+    // This regex matches the relative Urls of other pages
+    // For example, 'home.do' or 'access/runwizard.do?.wizid...'
+    val otherUrlPattern = ".+\\.do\\??.*".r
+
+    relUrl.toString() match {
+      case logonUrlPattern()       => false
+      case itemSummaryUrlPattern() => true
+      case otherUrlPattern()       => true
+      case _                       => false
+    }
+  }
+
+  def internalRoute(uri: String): Option[String] = {
+    relativeURI(uri).filter(isClientPath).map(r => "/" + r.toString())
+  }
 
   def relativeURI(uri: String): Option[RelativeUrl] = {
     val baseUrl   = AbsoluteUrl.parse(urlService.getBaseInstitutionURI.toString)
@@ -208,6 +236,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 @Api("Legacy content")
 @Path("content")
 class LegacyContentApi {
+  val LOGGER = LoggerFactory.getLogger(classOf[LegacyContentApi])
 
   def parsePath(path: String): (String, MutableSectionInfo => MutableSectionInfo) = {
 
@@ -220,6 +249,7 @@ class LegacyContentApi {
         info
       })
     }
+
     path match {
       case ""                          => ("/home.do", identity)
       case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
@@ -316,15 +346,13 @@ class LegacyContentApi {
                   new BookmarkAndModify(context,
                                         menuLink.getHandlerMap.getHandler("click").getModifier))
                 .getHref
-              val relativized =
-                LegacyContentController.relativeURI(href).filter(_.path.parts.last.endsWith(".do"))
-              val route   = Option(mc.getRoute)
+              val route   = Option(mc.getRoute).orElse(LegacyContentController.internalRoute(href))
               val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
               MenuItem(
                 menuLink.getLabelText,
-                if (relativized.isEmpty && route.isEmpty) Some(href) else None,
+                if (route.isEmpty) Some(href) else None,
                 Option(mc.getSystemIcon),
-                route.orElse(relativized.map(r => "/" + r.toString)),
+                route,
                 iconUrl,
                 "_blank" == menuLink.getTarget
               )
@@ -428,9 +456,9 @@ class LegacyContentApi {
     Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map {
       url =>
         Response.ok {
-          LegacyContentController.relativeURI(url) match {
-            case None           => ExternalRedirect(url)
-            case Some(relative) => InternalRedirect(relative.toString, userChanged(req))
+          LegacyContentController.internalRoute(url) match {
+            case Some(relative) => InternalRedirect(relative.substring(1), userChanged(req))
+            case _              => ExternalRedirect(url)
           }
         }
     }
@@ -563,7 +591,7 @@ class LegacyContentApi {
       .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
   }
 
-  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
+  def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext): Response.ResponseBuilder = {
     var resp: ResponseBuilder = null
     val context               = LegacyContentController.prepareJSContext(info)
 
@@ -596,6 +624,10 @@ class LegacyContentApi {
       case tr: TemplateResult    => tr.getNamedResult(context, "body")
       case sr: SectionRenderable => sr
       case pr: PreRenderable     => new PreRenderOnly(pr)
+      //Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
+      case _ =>
+        LOGGER.debug("Unknown error at renderedBody - ajaxResponse");
+        return Response.status(Status.NOT_IMPLEMENTED);
     }
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
