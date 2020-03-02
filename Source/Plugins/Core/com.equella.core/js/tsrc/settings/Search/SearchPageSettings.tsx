@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
+  Grid,
   MenuItem,
   Select
 } from "@material-ui/core";
@@ -33,22 +34,10 @@ import { generateFromError, generateNewErrorID } from "../../api/errors";
 import MessageInfo from "../../components/MessageInfo";
 
 let useStyles = makeStyles({
-  dropDown: {
-    marginTop: "4px"
-  },
-  section: {
-    marginLeft: "8px",
-    marginTop: "4px",
-    marginBottom: "24px"
-  },
   floatingButton: {
     right: "16px",
     bottom: "16px",
     position: "fixed"
-  },
-  checkbox: {
-    paddingTop: "4px",
-    paddingBottom: "4px"
   }
 });
 
@@ -90,7 +79,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
 
   function DefaultSortOrderSetting() {
     return (
-      <div className={classes.section}>
+      <Grid item>
         <FormControl>
           <FormLabel>{searchPageSettingsStrings.defaultSortOrder}</FormLabel>
           <Select
@@ -102,7 +91,6 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 defaultSearchSort: event.target.value as SortOrder
               })
             }
-            className={classes.dropDown}
             variant={"standard"}
             value={searchSettings.defaultSearchSort}
           >
@@ -123,13 +111,13 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             </MenuItem>
           </Select>
         </FormControl>
-      </div>
+      </Grid>
     );
   }
 
   function NonLiveItemsSetting() {
     return (
-      <div className={classes.section}>
+      <Grid item>
         <FormControl>
           <FormLabel>{searchPageSettingsStrings.allowNonLive}</FormLabel>
           <FormControlLabel
@@ -145,18 +133,17 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
               <Checkbox
                 id={"_showNonLiveCheckbox"}
                 checked={searchSettings.searchingShowNonLiveCheckbox}
-                className={classes.checkbox}
               />
             }
           />
         </FormControl>
-      </div>
+      </Grid>
     );
   }
 
   function AuthenticatedFeedSetting() {
     return (
-      <div className={classes.section}>
+      <Grid item>
         <FormControl>
           <FormLabel>{searchPageSettingsStrings.authFeed}</FormLabel>
           <FormControlLabel
@@ -172,18 +159,17 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
               <Checkbox
                 id={"_authenticateByDefault"}
                 checked={searchSettings.authenticateFeedsByDefault}
-                className={classes.checkbox}
               />
             }
           />
         </FormControl>
-      </div>
+      </Grid>
     );
   }
 
   function GalleryViewsSetting() {
     return (
-      <div className={classes.section}>
+      <Grid item>
         <FormControl>
           <FormLabel>{searchPageSettingsStrings.galleryViews}</FormLabel>
           <FormControlLabel
@@ -199,7 +185,6 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
               <Checkbox
                 id={"_disableGallery"}
                 checked={searchSettings.searchingDisableGallery}
-                className={classes.checkbox}
               />
             }
           />
@@ -213,10 +198,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             }}
             label={searchPageSettingsStrings.disableVideos}
             control={
-              <Checkbox
-                checked={searchSettings.searchingDisableVideos}
-                className={classes.checkbox}
-              />
+              <Checkbox checked={searchSettings.searchingDisableVideos} />
             }
           />
           <FormControlLabel
@@ -228,21 +210,16 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
               });
             }}
             label={searchPageSettingsStrings.disableFileCount}
-            control={
-              <Checkbox
-                checked={searchSettings.fileCountDisabled}
-                className={classes.checkbox}
-              />
-            }
+            control={<Checkbox checked={searchSettings.fileCountDisabled} />}
           />
         </FormControl>
-      </div>
+      </Grid>
     );
   }
 
   function CloudSearchSetting() {
     return (
-      <div className={classes.section}>
+      <Grid item>
         <FormControl>
           <FormLabel>{searchPageSettingsStrings.cloudSearching}</FormLabel>
           <FormHelperText>
@@ -254,16 +231,10 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
               setCloudSettings({ ...cloudSettings, disabled: checked });
             }}
             label={searchPageSettingsStrings.disableCloud}
-            control={
-              <Checkbox
-                id={"cs_dc"}
-                checked={cloudSettings.disabled}
-                className={classes.checkbox}
-              />
-            }
+            control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}
           />
         </FormControl>
-      </div>
+      </Grid>
     );
   }
 
@@ -305,11 +276,13 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
 
   return (
     <SettingsMenuContainer>
-      <DefaultSortOrderSetting />
-      <NonLiveItemsSetting />
-      <AuthenticatedFeedSetting />
-      <GalleryViewsSetting />
-      <CloudSearchSetting />
+      <Grid container direction={"column"} spacing={8}>
+        <DefaultSortOrderSetting />
+        <NonLiveItemsSetting />
+        <AuthenticatedFeedSetting />
+        <GalleryViewsSetting />
+        <CloudSearchSetting />
+      </Grid>
       <Button
         id={"_saveButton"}
         disabled={errorMessage}
