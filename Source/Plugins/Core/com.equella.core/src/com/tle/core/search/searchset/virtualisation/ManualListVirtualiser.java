@@ -21,6 +21,7 @@ package com.tle.core.search.searchset.virtualisation;
 import com.dytech.common.GeneralConstants;
 import com.thoughtworks.xstream.XStream;
 import com.tle.common.search.searchset.SearchSet;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.search.VirtualisableAndValue;
 import java.util.Collection;
@@ -31,7 +32,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class ManualListVirtualiser implements SearchSetVirtualiser {
-  private static XStream xstream = new XStream();
+  private static XStream xstream = XStreamSecurityManager.newXStream();
 
   /**
    * For a hierarchical topic (hence searchSet.supportsHierachy), we do a matrixSearch to determine

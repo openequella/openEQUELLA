@@ -26,6 +26,7 @@ import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.mets.MetsIDElementInfo;
 import com.tle.web.sections.SectionInfo;
@@ -63,7 +64,7 @@ public class CustomMetsAttachmentImporterExporter extends AbstractMetsAttachment
     final CustomAttachment custom = (CustomAttachment) attachment;
 
     final PropBagEx xmlData = new PropBagEx();
-    final XStream x = new XStream();
+    final XStream x = XStreamSecurityManager.newXStream();
     xmlData.append("xstream", new PropBagEx(x.toXML(custom.getDataAttributesReadOnly())));
     xmlData.setNode("url", custom.getUrl());
     xmlData.setNode("uuid", custom.getUuid());
@@ -93,7 +94,7 @@ public class CustomMetsAttachmentImporterExporter extends AbstractMetsAttachment
       AttachmentAdder attachmentAdder) {
     final CustomAttachment custom = new CustomAttachment();
 
-    final XStream x = new XStream();
+    final XStream x = XStreamSecurityManager.newXStream();
     // need to use the first child
     PropBagEx mapXml = null;
     for (PropBagEx child : xmlData.getSubtree("xstream").iterator()) {
