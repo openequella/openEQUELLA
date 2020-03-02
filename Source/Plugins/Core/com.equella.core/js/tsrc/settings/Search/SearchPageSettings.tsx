@@ -61,12 +61,13 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
   });
   const [errorMessage, setErrorMessage] = React.useState<boolean>(false);
   const [successMessage, setSuccessMessage] = React.useState<boolean>(false);
-  const strings = languageStrings.settings.searching.searchPageSettings;
+  const searchPageSettingsStrings =
+    languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
 
   React.useEffect(() => {
     props.updateTemplate(tp => ({
-      ...templateDefaults(strings.name)(tp),
+      ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to
     }));
     getSearchSettingsFromServer()
@@ -91,7 +92,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     return (
       <div className={classes.section}>
         <FormControl>
-          <FormLabel>{strings.defaultSortOrder}</FormLabel>
+          <FormLabel>{searchPageSettingsStrings.defaultSortOrder}</FormLabel>
           <Select
             SelectDisplayProps={{ id: "_sortOrder" }}
             disabled={errorMessage}
@@ -105,15 +106,21 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
             variant={"standard"}
             value={searchSettings.defaultSearchSort}
           >
-            <MenuItem value={SortOrder.RANK}>{strings.relevance}</MenuItem>
+            <MenuItem value={SortOrder.RANK}>
+              {searchPageSettingsStrings.relevance}
+            </MenuItem>
             <MenuItem value={SortOrder.DATEMODIFIED}>
-              {strings.lastModified}
+              {searchPageSettingsStrings.lastModified}
             </MenuItem>
             <MenuItem value={SortOrder.DATECREATED}>
-              {strings.dateCreated}
+              {searchPageSettingsStrings.dateCreated}
             </MenuItem>
-            <MenuItem value={SortOrder.NAME}>{strings.title}</MenuItem>
-            <MenuItem value={SortOrder.RATING}>{strings.userRating}</MenuItem>
+            <MenuItem value={SortOrder.NAME}>
+              {searchPageSettingsStrings.title}
+            </MenuItem>
+            <MenuItem value={SortOrder.RATING}>
+              {searchPageSettingsStrings.userRating}
+            </MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -124,7 +131,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     return (
       <div className={classes.section}>
         <FormControl>
-          <FormLabel>{strings.allowNonLive}</FormLabel>
+          <FormLabel>{searchPageSettingsStrings.allowNonLive}</FormLabel>
           <FormControlLabel
             disabled={errorMessage}
             onChange={(event, checked) => {
@@ -133,7 +140,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 searchingShowNonLiveCheckbox: checked
               });
             }}
-            label={strings.allowNonLiveLabel}
+            label={searchPageSettingsStrings.allowNonLiveLabel}
             control={
               <Checkbox
                 id={"_showNonLiveCheckbox"}
@@ -151,7 +158,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     return (
       <div className={classes.section}>
         <FormControl>
-          <FormLabel>{strings.authFeed}</FormLabel>
+          <FormLabel>{searchPageSettingsStrings.authFeed}</FormLabel>
           <FormControlLabel
             disabled={errorMessage}
             onChange={(event, checked) => {
@@ -160,7 +167,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 authenticateFeedsByDefault: checked
               });
             }}
-            label={strings.authFeedLabel}
+            label={searchPageSettingsStrings.authFeedLabel}
             control={
               <Checkbox
                 id={"_authenticateByDefault"}
@@ -178,7 +185,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     return (
       <div className={classes.section}>
         <FormControl>
-          <FormLabel>{strings.galleryViews}</FormLabel>
+          <FormLabel>{searchPageSettingsStrings.galleryViews}</FormLabel>
           <FormControlLabel
             disabled={errorMessage}
             onChange={(event, checked) => {
@@ -187,7 +194,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 searchingDisableGallery: checked
               });
             }}
-            label={strings.disableImages}
+            label={searchPageSettingsStrings.disableImages}
             control={
               <Checkbox
                 id={"_disableGallery"}
@@ -204,7 +211,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 searchingDisableVideos: checked
               });
             }}
-            label={strings.disableVideos}
+            label={searchPageSettingsStrings.disableVideos}
             control={
               <Checkbox
                 checked={searchSettings.searchingDisableVideos}
@@ -220,7 +227,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
                 fileCountDisabled: checked
               });
             }}
-            label={strings.disableFileCount}
+            label={searchPageSettingsStrings.disableFileCount}
             control={
               <Checkbox
                 checked={searchSettings.fileCountDisabled}
@@ -237,14 +244,16 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     return (
       <div className={classes.section}>
         <FormControl>
-          <FormLabel>{strings.cloudSearching}</FormLabel>
-          <FormHelperText>{strings.cloudSearchingLabel}</FormHelperText>
+          <FormLabel>{searchPageSettingsStrings.cloudSearching}</FormLabel>
+          <FormHelperText>
+            {searchPageSettingsStrings.cloudSearchingLabel}
+          </FormHelperText>
           <FormControlLabel
             disabled={errorMessage}
             onChange={(event, checked) => {
               setCloudSettings({ ...cloudSettings, disabled: checked });
             }}
-            label={strings.disableCloud}
+            label={searchPageSettingsStrings.disableCloud}
             control={
               <Checkbox
                 id={"cs_dc"}
@@ -266,9 +275,9 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
           props.updateTemplate(
             templateError(
               generateNewErrorID(
-                strings.notFoundError,
+                searchPageSettingsStrings.notFoundError,
                 error.response.status,
-                strings.notFoundErrorDesc
+                searchPageSettingsStrings.notFoundErrorDesc
               )
             )
           );
@@ -309,10 +318,10 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
         onClick={handleSubmitButton}
         size="large"
       >
-        {strings.save}
+        {searchPageSettingsStrings.save}
       </Button>
       <MessageInfo
-        title={strings.success}
+        title={searchPageSettingsStrings.success}
         open={successMessage}
         onClose={() => setSuccessMessage(false)}
         variant={"success"}
