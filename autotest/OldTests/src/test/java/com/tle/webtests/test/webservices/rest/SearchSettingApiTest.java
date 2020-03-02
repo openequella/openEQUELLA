@@ -2,6 +2,7 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +18,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String OAUTH_CLIENT_ID = "SearchSettingApiTestClient";
   private static final String API_SEARCH_SETTINGS_PATH = "api/settings/search";
   private static final String API_CLOUD_SETTINGS_PATH = "api/settings/search/cloud";
+  private static final String API_SEARCH_FILTER_PATH = "api/settings/search/filter";
 
   private static final String DEFAULT_SORT_ORDER = "defaultSearchSort";
   private static final String SHOW_NON_LIVE = "searchingShowNonLiveCheckbox";
@@ -114,5 +116,50 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
 
     final JsonNode updatedCloudSettings = getEntity(uri, token);
     assertTrue(updatedCloudSettings.get(DISABLE_CLOUD).asBoolean());
+  }
+
+  @Test
+  public void testSearchFilter() throws Exception {
+    final String NAME = "name";
+    final String MIMI_TYPES = "mimeTypes";
+    final String IMAGE_FILTER = "image filter";
+    final String JPEG = "image/jpeg";
+    final String PNG = "image/png";
+    final String PDF_FILTER = "PDF filter";
+    final String PDF = "application/pdf";
+    final String ID = "id";
+
+    String token = requestToken(OAUTH_CLIENT_ID);
+    final String uri = PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_FILTER_PATH);
+
+    // Load initial search filters
+    final JsonNode initialFilters = getEntity(uri, token);
+    assertEquals(initialFilters.size(), 0);
+
+    // Create a search filter
+    HttpResponse response =
+        postEntity(null, uri, token, true, NAME, IMAGE_FILTER, MIMI_TYPES, JPEG, MIMI_TYPES, PNG);
+    assertEquals(response.getStatusLine().getStatusCode(), 201);
+
+    // Load filters again
+    final JsonNode filters = getEntity(uri, token);
+    assertEquals(filters.size(), 1);
+    String filterId = filters.get(0).get(ID).asText();
+    assertNotNull(filterId);
+
+    // Update filter
+    String newfilterUri = uri + "/" + filterId;
+    response = putEntity(null, newfilterUri, token, true, NAME, PDF_FILTER, MIMI_TYPES, PDF);
+    assertEquals(response.getStatusLine().getStatusCode(), 204);
+
+    // Load this filter again
+    final JsonNode filter = getEntity(newfilterUri, token);
+    assertEquals(filter.get(ID).asText(), filterId);
+    assertEquals(filter.get(NAME).asText(), PDF_FILTER);
+    assertEquals(filter.get(MIMI_TYPES).get(0).asText(), PDF);
+
+    // Delete filter
+    response = deleteResource(newfilterUri, token);
+    assertEquals(response.getStatusLine().getStatusCode(), 200);
   }
 }
