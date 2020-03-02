@@ -39,12 +39,12 @@ class SearchFilterResource {
   @GET
   @Path("search/filter")
   @ApiOperation(
-    value = "Load search filters",
+    value = "List search filters",
     notes = "This endpoint is used to retrieve all search filters.",
     response = classOf[SearchFilter],
     responseContainer = "List"
   )
-  def loadSearchFilters: Response = {
+  def listSearchFilters: Response = {
     searchPrivProvider.checkAuthorised()
     val filters = loadSettings(new SearchSettings).getFilters
     Response.ok().entity(filters).build()
@@ -53,11 +53,11 @@ class SearchFilterResource {
   @GET
   @Path("search/filter/{uuid}")
   @ApiOperation(
-    value = "Load a search filter",
+    value = "Retrieve a search filter",
     notes = "This endpoint is used to retrieve one search filter.",
     response = classOf[SearchFilter]
   )
-  def loadSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
+  def getSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
 
