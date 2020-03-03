@@ -4,7 +4,6 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ReceiptPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
-import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -50,10 +49,8 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   @FindBy(id = "_sortOrder")
   private WebElement sortOrderDropdown;
 
-  private EquellaSelect resultOrder;
-
   public SearchSettingsPage(PageContext context) {
-    super(context, By.xpath("//h5[text()='Search page settings']"));
+    super(context, By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"));
   }
 
   @Override
