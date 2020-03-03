@@ -5,17 +5,14 @@ import { languageStrings } from "../../../util/langstrings";
 import { SearchSettings } from "../SearchSettingsModule";
 
 export interface GalleryViewsSettingsProps {
-  searchSettings: SearchSettings;
   disabled: boolean;
-  handleSearchSettingsChange: (
-    key: keyof SearchSettings,
-    value: boolean
-  ) => void;
+  searchSettings: SearchSettings;
+  setSearchSettings: (searchSettings: SearchSettings) => void;
 }
 export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
-  const { searchSettings, disabled, handleSearchSettingsChange } = props;
+  const { searchSettings, disabled, setSearchSettings } = props;
   return (
     <Grid container direction={"column"} spacing={8}>
       <Grid item>
@@ -29,7 +26,10 @@ export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
           disabled={disabled}
           title={searchPageSettingsStrings.galleryViews}
           onChange={(_, checked) =>
-            handleSearchSettingsChange("searchingDisableGallery", checked)
+            setSearchSettings({
+              ...searchSettings,
+              searchingDisableGallery: checked
+            })
           }
           label={searchPageSettingsStrings.disableImages}
         />
@@ -44,7 +44,10 @@ export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
           }
           disabled={disabled}
           onChange={(_, checked) =>
-            handleSearchSettingsChange("searchingDisableVideos", checked)
+            setSearchSettings({
+              ...searchSettings,
+              searchingDisableVideos: checked
+            })
           }
           label={searchPageSettingsStrings.disableVideos}
         />
@@ -59,7 +62,7 @@ export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
           }
           disabled={disabled}
           onChange={(_, checked) =>
-            handleSearchSettingsChange("fileCountDisabled", checked)
+            setSearchSettings({ ...searchSettings, fileCountDisabled: checked })
           }
           label={searchPageSettingsStrings.disableFileCount}
         />

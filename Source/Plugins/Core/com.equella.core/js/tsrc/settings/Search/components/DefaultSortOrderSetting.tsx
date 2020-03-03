@@ -6,15 +6,12 @@ import { languageStrings } from "../../../util/langstrings";
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
   searchSettings: SearchSettings;
-  handleSearchSettingsChange: (
-    key: keyof SearchSettings,
-    value: SortOrder
-  ) => void;
+  setSearchSettings: (searchSettings: SearchSettings) => void;
 }
 export default function DefaultSortOrderSetting(
   props: DefaultSortOrderSettingProps
 ) {
-  const { disabled, searchSettings, handleSearchSettingsChange } = props;
+  const { disabled, searchSettings, setSearchSettings } = props;
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   return (
@@ -27,8 +24,10 @@ export default function DefaultSortOrderSetting(
           SelectDisplayProps={{ id: "_sortOrder" }}
           disabled={disabled}
           onChange={event =>
-            handleSearchSettingsChange("defaultSearchSort", event.target
-              .value as SortOrder)
+            setSearchSettings({
+              ...searchSettings,
+              defaultSearchSort: event.target.value as SortOrder
+            })
           }
           variant={"standard"}
           value={searchSettings.defaultSearchSort}

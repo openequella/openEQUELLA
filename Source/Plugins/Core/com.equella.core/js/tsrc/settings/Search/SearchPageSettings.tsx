@@ -16,8 +16,7 @@ import {
   getSearchSettingsFromServer,
   saveCloudSettingsToServer,
   saveSearchSettingsToServer,
-  SearchSettings,
-  SortOrder
+  SearchSettings
 } from "./SearchSettingsModule";
 import { AxiosError, AxiosResponse } from "axios";
 import { generateFromError, generateNewErrorID } from "../../api/errors";
@@ -108,23 +107,6 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       .catch((error: AxiosError) => handleError(error));
   }
 
-  function handleSearchSettingsChange(
-    key: keyof SearchSettings,
-    value: boolean | SortOrder
-  ) {
-    setSearchSettings({
-      ...searchSettings,
-      [key]: value
-    });
-  }
-
-  function handleCloudSettingsChange(key: keyof CloudSettings, value: boolean) {
-    setCloudSettings({
-      ...cloudSettings,
-      [key]: value
-    });
-  }
-
   return (
     <SettingsMenuContainer>
       <Grid container direction={"column"} spacing={8}>
@@ -133,7 +115,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
           <DefaultSortOrderSetting
             disabled={errorMessage}
             searchSettings={searchSettings}
-            handleSearchSettingsChange={handleSearchSettingsChange}
+            setSearchSettings={setSearchSettings}
           />
         </Grid>
 
@@ -149,10 +131,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             label={searchPageSettingsStrings.allowNonLiveLabel}
             disabled={errorMessage}
             onChange={(_, checked) =>
-              handleSearchSettingsChange(
-                "searchingShowNonLiveCheckbox",
-                checked
-              )
+              setSearchSettings({
+                ...searchSettings,
+                searchingShowNonLiveCheckbox: checked
+              })
             }
             title={searchPageSettingsStrings.allowNonLive}
           />
@@ -170,7 +152,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             label={searchPageSettingsStrings.authFeedLabel}
             disabled={errorMessage}
             onChange={(_, checked) =>
-              handleSearchSettingsChange("authenticateFeedsByDefault", checked)
+              setSearchSettings({
+                ...searchSettings,
+                authenticateFeedsByDefault: checked
+              })
             }
             title={searchPageSettingsStrings.authFeed}
           />
@@ -180,7 +165,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
         <Grid item>
           <GalleryViewsSettings
             disabled={errorMessage}
-            handleSearchSettingsChange={handleSearchSettingsChange}
+            setSearchSettings={setSearchSettings}
             searchSettings={searchSettings}
           />
         </Grid>
@@ -192,7 +177,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             label={searchPageSettingsStrings.cloudSearchingLabel}
             disabled={errorMessage}
             onChange={(_, checked) =>
-              handleCloudSettingsChange("disabled", checked)
+              setCloudSettings({ ...cloudSettings, disabled: checked })
             }
             helperText={searchPageSettingsStrings.cloudSearchingLabel}
             title={searchPageSettingsStrings.cloudSearching}
