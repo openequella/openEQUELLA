@@ -34,7 +34,7 @@ let useStyles = makeStyles({
   }
 });
 
-export function SearchPageSettings(props: TemplateUpdateProps) {
+function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
     defaultSearchSettings
   );
@@ -49,7 +49,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
   const classes = useStyles();
 
   React.useEffect(() => {
-    props.updateTemplate(tp => ({
+    updateTemplate(tp => ({
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to
     }));
@@ -67,9 +67,21 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
   function handleError(error: AxiosError) {
     setErrorMessage(true);
     if (error.response) {
+      //axios errors
       switch (error.response.status) {
+        case 403:
+          updateTemplate(
+            templateError(
+              generateNewErrorID(
+                searchPageSettingsStrings.permissionsError,
+                error.response.status,
+                searchPageSettingsStrings.permissionsError
+              )
+            )
+          );
+          break;
         case 404:
-          props.updateTemplate(
+          updateTemplate(
             templateError(
               generateNewErrorID(
                 searchPageSettingsStrings.notFoundError,
@@ -80,7 +92,8 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
           );
       }
     } else {
-      props.updateTemplate(templateError(generateFromError(error)));
+      //non axios or unhandled errors
+      updateTemplate(templateError(generateFromError(error)));
     }
   }
 
@@ -205,3 +218,4 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
     </SettingsMenuContainer>
   );
 }
+export default SearchPageSettings;

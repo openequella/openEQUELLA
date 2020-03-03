@@ -8,7 +8,7 @@ import ThemePage from "../theme/ThemePage";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
-import { SearchPageSettings } from "../settings/Search/SearchPageSettings";
+import SearchPageSettings from "../settings/Search/SearchPageSettings";
 
 declare const bridge: Bridge;
 
