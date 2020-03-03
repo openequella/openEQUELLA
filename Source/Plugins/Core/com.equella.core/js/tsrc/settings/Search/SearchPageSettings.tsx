@@ -233,7 +233,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
 
   function handleError(error: AxiosError) {
     setErrorMessage(true);
-    if (error.response != undefined) {
+    if (error.response) {
       switch (error.response.status) {
         case 404:
           props.updateTemplate(
