@@ -147,8 +147,7 @@ public class SearchPage
 
   public boolean isImagesLinkAvailable() {
     return driver
-            .findElements(
-                By.xpath("//div[@id='result-type-select']/a[normalize-space(@title) = 'Images']"))
+            .findElements(By.xpath("//div[@id='result-type-select']/a[@title = 'Images']"))
             .size()
         > 0;
   }
