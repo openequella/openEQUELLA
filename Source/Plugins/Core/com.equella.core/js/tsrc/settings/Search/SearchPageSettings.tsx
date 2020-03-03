@@ -40,8 +40,8 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   const [cloudSettings, setCloudSettings] = React.useState<CloudSettings>({
     disabled: false
   });
-  const [errorMessage, setErrorMessage] = React.useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = React.useState<boolean>(false);
+  const [showError, setShowError] = React.useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
 
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
@@ -64,7 +64,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   }, []);
 
   function handleError(error: AxiosError) {
-    setErrorMessage(true);
+    setShowError(true);
     if (error.response) {
       //axios errors
       switch (error.response.status) {
@@ -103,7 +103,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
-      .then(() => setSuccessMessage(true))
+      .then(() => setShowSuccess(true))
       .catch((error: AxiosError) => handleError(error));
   }
 
@@ -113,7 +113,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
         {/*Default Sort Order*/}
         <Grid item>
           <DefaultSortOrderSetting
-            disabled={errorMessage}
+            disabled={showError}
             searchSettings={searchSettings}
             setSearchSettings={setSearchSettings}
           />
@@ -129,7 +129,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               />
             }
             label={searchPageSettingsStrings.allowNonLiveLabel}
-            disabled={errorMessage}
+            disabled={showError}
             onChange={(_, checked) =>
               setSearchSettings({
                 ...searchSettings,
@@ -150,7 +150,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               />
             }
             label={searchPageSettingsStrings.authFeedLabel}
-            disabled={errorMessage}
+            disabled={showError}
             onChange={(_, checked) =>
               setSearchSettings({
                 ...searchSettings,
@@ -164,7 +164,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
         {/*Gallery views*/}
         <Grid item>
           <GalleryViewsSettings
-            disabled={errorMessage}
+            disabled={showError}
             setSearchSettings={setSearchSettings}
             searchSettings={searchSettings}
           />
@@ -175,7 +175,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
           <SearchSettingFormControl
             control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}
             label={searchPageSettingsStrings.cloudSearchingLabel}
-            disabled={errorMessage}
+            disabled={showError}
             onChange={(_, checked) =>
               setCloudSettings({ ...cloudSettings, disabled: checked })
             }
@@ -188,7 +188,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       {/*Save Button*/}
       <Button
         id={"_saveButton"}
-        disabled={errorMessage}
+        disabled={showError}
         className={classes.floatingButton}
         variant="contained"
         onClick={handleSubmitButton}
@@ -200,8 +200,8 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       {/*Snackbar*/}
       <MessageInfo
         title={searchPageSettingsStrings.success}
-        open={successMessage}
-        onClose={() => setSuccessMessage(false)}
+        open={showSuccess}
+        onClose={() => setShowSuccess(false)}
         variant={"success"}
       />
     </SettingsMenuContainer>
