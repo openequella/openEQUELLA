@@ -90,9 +90,13 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               )
             )
           );
+          break;
+        default:
+          updateTemplate(templateError(generateFromError(error)));
+          break;
       }
     } else {
-      //non axios or unhandled errors
+      //non axios errors
       updateTemplate(templateError(generateFromError(error)));
     }
   }
