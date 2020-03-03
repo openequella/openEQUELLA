@@ -60,21 +60,14 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
       backRoute: routes.Settings.to
     }));
     getSearchSettingsFromServer()
-      .then((settings: AxiosResponse<SearchSettings>) => {
-        setSearchSettings(settings.data);
-      })
-      .then(() => {
-        getCloudSettingsFromServer()
-          .then((settings: AxiosResponse<CloudSettings>) => {
-            setCloudSettings(settings.data);
-          })
-          .catch((error: AxiosError) => {
-            handleError(error);
-          });
-      })
-      .catch((error: AxiosError) => {
-        handleError(error);
-      });
+      .then((settings: AxiosResponse<SearchSettings>) =>
+        setSearchSettings(settings.data)
+      )
+      .then(() => getCloudSettingsFromServer())
+      .then((settings: AxiosResponse<CloudSettings>) =>
+        setCloudSettings(settings.data)
+      )
+      .catch((error: AxiosError) => handleError(error));
   }, []);
 
   function DefaultSortOrderSetting() {
@@ -260,18 +253,9 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
-      .then(() => {
-        saveCloudSettingsToServer(cloudSettings)
-          .then(() => {
-            setSuccessMessage(true);
-          })
-          .catch((error: AxiosError) => {
-            handleError(error);
-          });
-      })
-      .catch((error: AxiosError) => {
-        handleError(error);
-      });
+      .then(() => saveCloudSettingsToServer(cloudSettings))
+      .then(() => setSuccessMessage(true))
+      .catch((error: AxiosError) => handleError(error));
   }
 
   return (
