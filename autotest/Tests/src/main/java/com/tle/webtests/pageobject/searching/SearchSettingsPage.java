@@ -137,11 +137,12 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
     return disableCloud.isSelected();
   }
 
-  public void save() {
+  public SearchSettingsPage save() {
     save.click();
     waiter.until(
         ExpectedConditions.presenceOfElementLocated(
             By.xpath("//span[text()='Settings saved successfully.']")));
+    return get();
   }
 
   public CreateSearchFilterPage addFilter() {

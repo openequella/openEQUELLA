@@ -158,18 +158,14 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   public void testDisableGallery() {
     // Disable Images Gallery view
     logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setDisableImageGallery(true);
-    ssp.save();
+    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(true).save();
 
     // Go to search page, test that gallery is disabled
     SearchPage searchPage = new SearchPage(context).load();
     assertFalse(searchPage.isImagesLinkAvailable());
 
     // Now reenable Images Gallery
-    ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setDisableImageGallery(false);
-    ssp.save();
+    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(false).save();
 
     // Go to search page, test that gallery is enabled
     searchPage = new SearchPage(context).load();
