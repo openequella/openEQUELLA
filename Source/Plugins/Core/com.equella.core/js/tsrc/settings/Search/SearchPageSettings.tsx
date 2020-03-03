@@ -6,17 +6,7 @@ import {
   TemplateUpdateProps
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Grid,
-  MenuItem,
-  Select
-} from "@material-ui/core";
+import { Button, Checkbox, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -32,6 +22,9 @@ import {
 import { AxiosError, AxiosResponse } from "axios";
 import { generateFromError, generateNewErrorID } from "../../api/errors";
 import MessageInfo from "../../components/MessageInfo";
+import SearchSettingFormControl from "../../components/SearchSettingFormControl";
+import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
+import GalleryViewsSettings from "./components/GalleryViewsSettings";
 
 let useStyles = makeStyles({
   floatingButton: {
@@ -50,6 +43,7 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
   });
   const [errorMessage, setErrorMessage] = React.useState<boolean>(false);
   const [successMessage, setSuccessMessage] = React.useState<boolean>(false);
+
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
@@ -69,167 +63,6 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
       )
       .catch((error: AxiosError) => handleError(error));
   }, []);
-
-  function DefaultSortOrderSetting() {
-    return (
-      <Grid item>
-        <FormControl>
-          <FormLabel>{searchPageSettingsStrings.defaultSortOrder}</FormLabel>
-          <Select
-            SelectDisplayProps={{ id: "_sortOrder" }}
-            disabled={errorMessage}
-            onChange={event =>
-              setSearchSettings({
-                ...searchSettings,
-                defaultSearchSort: event.target.value as SortOrder
-              })
-            }
-            variant={"standard"}
-            value={searchSettings.defaultSearchSort}
-          >
-            <MenuItem value={SortOrder.RANK}>
-              {searchPageSettingsStrings.relevance}
-            </MenuItem>
-            <MenuItem value={SortOrder.DATEMODIFIED}>
-              {searchPageSettingsStrings.lastModified}
-            </MenuItem>
-            <MenuItem value={SortOrder.DATECREATED}>
-              {searchPageSettingsStrings.dateCreated}
-            </MenuItem>
-            <MenuItem value={SortOrder.NAME}>
-              {searchPageSettingsStrings.title}
-            </MenuItem>
-            <MenuItem value={SortOrder.RATING}>
-              {searchPageSettingsStrings.userRating}
-            </MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
-    );
-  }
-
-  function NonLiveItemsSetting() {
-    return (
-      <Grid item>
-        <FormControl>
-          <FormLabel>{searchPageSettingsStrings.allowNonLive}</FormLabel>
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setSearchSettings({
-                ...searchSettings,
-                searchingShowNonLiveCheckbox: checked
-              });
-            }}
-            label={searchPageSettingsStrings.allowNonLiveLabel}
-            control={
-              <Checkbox
-                id={"_showNonLiveCheckbox"}
-                checked={searchSettings.searchingShowNonLiveCheckbox}
-              />
-            }
-          />
-        </FormControl>
-      </Grid>
-    );
-  }
-
-  function AuthenticatedFeedSetting() {
-    return (
-      <Grid item>
-        <FormControl>
-          <FormLabel>{searchPageSettingsStrings.authFeed}</FormLabel>
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setSearchSettings({
-                ...searchSettings,
-                authenticateFeedsByDefault: checked
-              });
-            }}
-            label={searchPageSettingsStrings.authFeedLabel}
-            control={
-              <Checkbox
-                id={"_authenticateByDefault"}
-                checked={searchSettings.authenticateFeedsByDefault}
-              />
-            }
-          />
-        </FormControl>
-      </Grid>
-    );
-  }
-
-  function GalleryViewsSetting() {
-    return (
-      <Grid item>
-        <FormControl>
-          <FormLabel>{searchPageSettingsStrings.galleryViews}</FormLabel>
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setSearchSettings({
-                ...searchSettings,
-                searchingDisableGallery: checked
-              });
-            }}
-            label={searchPageSettingsStrings.disableImages}
-            control={
-              <Checkbox
-                id={"_disableGallery"}
-                checked={searchSettings.searchingDisableGallery}
-              />
-            }
-          />
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setSearchSettings({
-                ...searchSettings,
-                searchingDisableVideos: checked
-              });
-            }}
-            label={searchPageSettingsStrings.disableVideos}
-            control={
-              <Checkbox checked={searchSettings.searchingDisableVideos} />
-            }
-          />
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setSearchSettings({
-                ...searchSettings,
-                fileCountDisabled: checked
-              });
-            }}
-            label={searchPageSettingsStrings.disableFileCount}
-            control={<Checkbox checked={searchSettings.fileCountDisabled} />}
-          />
-        </FormControl>
-      </Grid>
-    );
-  }
-
-  function CloudSearchSetting() {
-    return (
-      <Grid item>
-        <FormControl>
-          <FormLabel>{searchPageSettingsStrings.cloudSearching}</FormLabel>
-          <FormHelperText>
-            {searchPageSettingsStrings.cloudSearchingLabel}
-          </FormHelperText>
-          <FormControlLabel
-            disabled={errorMessage}
-            onChange={(event, checked) => {
-              setCloudSettings({ ...cloudSettings, disabled: checked });
-            }}
-            label={searchPageSettingsStrings.disableCloud}
-            control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}
-          />
-        </FormControl>
-      </Grid>
-    );
-  }
 
   function handleError(error: AxiosError) {
     setErrorMessage(true);
@@ -258,15 +91,99 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
       .catch((error: AxiosError) => handleError(error));
   }
 
+  function handleSearchSettingsChange(
+    key: keyof SearchSettings,
+    value: boolean | SortOrder
+  ) {
+    setSearchSettings({
+      ...searchSettings,
+      [key]: value
+    });
+  }
+
+  function handleCloudSettingsChange(key: keyof CloudSettings, value: boolean) {
+    setCloudSettings({
+      ...cloudSettings,
+      [key]: value
+    });
+  }
+
   return (
     <SettingsMenuContainer>
       <Grid container direction={"column"} spacing={8}>
-        <DefaultSortOrderSetting />
-        <NonLiveItemsSetting />
-        <AuthenticatedFeedSetting />
-        <GalleryViewsSetting />
-        <CloudSearchSetting />
+        {/*Default Sort Order*/}
+        <Grid item>
+          <DefaultSortOrderSetting
+            disabled={errorMessage}
+            searchSettings={searchSettings}
+            handleSearchSettingsChange={handleSearchSettingsChange}
+          />
+        </Grid>
+
+        {/*Include Non-Live checkbox*/}
+        <Grid item>
+          <SearchSettingFormControl
+            control={
+              <Checkbox
+                id={"_showNonLiveCheckbox"}
+                checked={searchSettings.searchingShowNonLiveCheckbox}
+              />
+            }
+            label={searchPageSettingsStrings.allowNonLiveLabel}
+            disabled={errorMessage}
+            onChange={(_, checked) =>
+              handleSearchSettingsChange(
+                "searchingShowNonLiveCheckbox",
+                checked
+              )
+            }
+            title={searchPageSettingsStrings.allowNonLive}
+          />
+        </Grid>
+
+        {/*Authenticate By Default*/}
+        <Grid item>
+          <SearchSettingFormControl
+            control={
+              <Checkbox
+                id={"_authenticateByDefault"}
+                checked={searchSettings.authenticateFeedsByDefault}
+              />
+            }
+            label={searchPageSettingsStrings.authFeedLabel}
+            disabled={errorMessage}
+            onChange={(_, checked) =>
+              handleSearchSettingsChange("authenticateFeedsByDefault", checked)
+            }
+            title={searchPageSettingsStrings.authFeed}
+          />
+        </Grid>
+
+        {/*Gallery views*/}
+        <Grid item>
+          <GalleryViewsSettings
+            disabled={errorMessage}
+            handleSearchSettingsChange={handleSearchSettingsChange}
+            searchSettings={searchSettings}
+          />
+        </Grid>
+
+        {/*Cloud Settings*/}
+        <Grid item>
+          <SearchSettingFormControl
+            control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}
+            label={searchPageSettingsStrings.cloudSearchingLabel}
+            disabled={errorMessage}
+            onChange={(_, checked) =>
+              handleCloudSettingsChange("disabled", checked)
+            }
+            helperText={searchPageSettingsStrings.cloudSearchingLabel}
+            title={searchPageSettingsStrings.cloudSearching}
+          />
+        </Grid>
       </Grid>
+
+      {/*Save Button*/}
       <Button
         id={"_saveButton"}
         disabled={errorMessage}
@@ -277,6 +194,8 @@ export function SearchPageSettings(props: TemplateUpdateProps) {
       >
         {searchPageSettingsStrings.save}
       </Button>
+
+      {/*Snackbar*/}
       <MessageInfo
         title={searchPageSettingsStrings.success}
         open={successMessage}
