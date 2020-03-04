@@ -114,8 +114,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
         <Grid item>
           <DefaultSortOrderSetting
             disabled={showError}
-            searchSettings={searchSettings}
-            setSearchSettings={setSearchSettings}
+            value={searchSettings.defaultSearchSort}
+            setValue={order =>
+              setSearchSettings({ ...searchSettings, defaultSearchSort: order })
+            }
           />
         </Grid>
 

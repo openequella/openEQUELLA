@@ -1,17 +1,17 @@
 import { FormLabel, Grid, MenuItem, Select } from "@material-ui/core";
-import { SearchSettings, SortOrder } from "../SearchSettingsModule";
+import { SortOrder } from "../SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
-  searchSettings: SearchSettings;
-  setSearchSettings: (searchSettings: SearchSettings) => void;
+  value: SortOrder;
+  setValue: (order: SortOrder) => void;
 }
 export default function DefaultSortOrderSetting({
   disabled,
-  searchSettings,
-  setSearchSettings
+  value,
+  setValue
 }: DefaultSortOrderSettingProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
@@ -24,14 +24,9 @@ export default function DefaultSortOrderSetting({
         <Select
           SelectDisplayProps={{ id: "_sortOrder" }}
           disabled={disabled}
-          onChange={event =>
-            setSearchSettings({
-              ...searchSettings,
-              defaultSearchSort: event.target.value as SortOrder
-            })
-          }
+          onChange={event => setValue(event.target.value as SortOrder)}
           variant={"standard"}
-          value={searchSettings.defaultSearchSort}
+          value={value}
         >
           <MenuItem value={SortOrder.RANK}>
             {searchPageSettingsStrings.relevance}
