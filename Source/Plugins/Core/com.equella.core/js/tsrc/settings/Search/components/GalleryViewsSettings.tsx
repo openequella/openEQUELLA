@@ -1,8 +1,8 @@
-import { Checkbox, Grid } from "@material-ui/core";
-import SearchSettingFormControl from "../../../components/SearchSettingFormControl";
+import { Grid } from "@material-ui/core";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import { SearchSettings } from "../SearchSettingsModule";
+import SettingsCheckbox from "../../../components/SettingsCheckbox";
 
 export interface GalleryViewsSettingsProps {
   disabled: boolean;
@@ -16,55 +16,43 @@ export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
   return (
     <Grid container direction={"column"} spacing={8}>
       <Grid item>
-        <SearchSettingFormControl
-          control={
-            <Checkbox
-              id={"_disableGallery"}
-              checked={searchSettings.searchingDisableGallery}
-            />
+        <SettingsCheckbox
+          value={searchSettings.searchingDisableGallery}
+          setValue={value =>
+            setSearchSettings({
+              ...searchSettings,
+              searchingDisableGallery: value
+            })
           }
           disabled={disabled}
           title={searchPageSettingsStrings.galleryViews}
-          onChange={(_, checked) =>
-            setSearchSettings({
-              ...searchSettings,
-              searchingDisableGallery: checked
-            })
-          }
           label={searchPageSettingsStrings.disableImages}
+          id={"_disableGallery"}
         />
       </Grid>
       <Grid item>
-        <SearchSettingFormControl
-          control={
-            <Checkbox
-              id={"_disableVideo"}
-              checked={searchSettings.searchingDisableVideos}
-            />
-          }
-          disabled={disabled}
-          onChange={(_, checked) =>
+        <SettingsCheckbox
+          value={searchSettings.searchingDisableVideos}
+          setValue={value =>
             setSearchSettings({
               ...searchSettings,
-              searchingDisableVideos: checked
+              searchingDisableVideos: value
             })
           }
+          disabled={disabled}
           label={searchPageSettingsStrings.disableVideos}
+          id={"_disableVideo"}
         />
       </Grid>
       <Grid item>
-        <SearchSettingFormControl
-          control={
-            <Checkbox
-              id={"_disableFileCount"}
-              checked={searchSettings.fileCountDisabled}
-            />
+        <SettingsCheckbox
+          value={searchSettings.fileCountDisabled}
+          setValue={value =>
+            setSearchSettings({ ...searchSettings, fileCountDisabled: value })
           }
           disabled={disabled}
-          onChange={(_, checked) =>
-            setSearchSettings({ ...searchSettings, fileCountDisabled: checked })
-          }
           label={searchPageSettingsStrings.disableFileCount}
+          id={"_disableFileCount"}
         />
       </Grid>
     </Grid>

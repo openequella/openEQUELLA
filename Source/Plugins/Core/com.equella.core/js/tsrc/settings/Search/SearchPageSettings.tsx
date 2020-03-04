@@ -6,7 +6,7 @@ import {
   TemplateUpdateProps
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import { Button, Checkbox, Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -21,9 +21,9 @@ import {
 import { AxiosError, AxiosResponse } from "axios";
 import { generateFromError, generateNewErrorID } from "../../api/errors";
 import MessageInfo from "../../components/MessageInfo";
-import SearchSettingFormControl from "../../components/SearchSettingFormControl";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import GalleryViewsSettings from "./components/GalleryViewsSettings";
+import SettingsCheckbox from "../../components/SettingsCheckbox";
 
 let useStyles = makeStyles({
   floatingButton: {
@@ -121,44 +121,53 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
 
         {/*Include Non-Live checkbox*/}
         <Grid item>
-          <SearchSettingFormControl
-            control={
-              <Checkbox
-                id={"_showNonLiveCheckbox"}
-                checked={searchSettings.searchingShowNonLiveCheckbox}
-              />
+          <SettingsCheckbox
+            value={searchSettings.searchingShowNonLiveCheckbox}
+            setValue={value =>
+              setSearchSettings({
+                ...searchSettings,
+                searchingShowNonLiveCheckbox: value
+              })
             }
             label={searchPageSettingsStrings.allowNonLiveLabel}
             disabled={showError}
-            onChange={(_, checked) =>
-              setSearchSettings({
-                ...searchSettings,
-                searchingShowNonLiveCheckbox: checked
-              })
-            }
             title={searchPageSettingsStrings.allowNonLive}
+            id={"_showNonLiveCheckbox"}
           />
         </Grid>
 
         {/*Authenticate By Default*/}
         <Grid item>
-          <SearchSettingFormControl
-            control={
-              <Checkbox
-                id={"_authenticateByDefault"}
-                checked={searchSettings.authenticateFeedsByDefault}
-              />
+          <SettingsCheckbox
+            value={searchSettings.authenticateFeedsByDefault}
+            setValue={value =>
+              setSearchSettings({
+                ...searchSettings,
+                authenticateFeedsByDefault: value
+              })
             }
             label={searchPageSettingsStrings.authFeedLabel}
             disabled={showError}
-            onChange={(_, checked) =>
-              setSearchSettings({
-                ...searchSettings,
-                authenticateFeedsByDefault: checked
-              })
-            }
             title={searchPageSettingsStrings.authFeed}
+            id={"_authenticateByDefault"}
           />
+          {/*<SearchSettingFormControl*/}
+          {/*  control={*/}
+          {/*    <Checkbox*/}
+          {/*      id={"_authenticateByDefault"}*/}
+          {/*      checked={searchSettings.authenticateFeedsByDefault}*/}
+          {/*    />*/}
+          {/*  }*/}
+          {/*  label={searchPageSettingsStrings.authFeedLabel}*/}
+          {/*  disabled={showError}*/}
+          {/*  onChange={(_, checked) =>*/}
+          {/*    setSearchSettings({*/}
+          {/*      ...searchSettings,*/}
+          {/*      authenticateFeedsByDefault: checked*/}
+          {/*    })*/}
+          {/*  }*/}
+          {/*  title={searchPageSettingsStrings.authFeed}*/}
+          {/*/>*/}
         </Grid>
 
         {/*Gallery views*/}
@@ -172,16 +181,26 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
 
         {/*Cloud Settings*/}
         <Grid item>
-          <SearchSettingFormControl
-            control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}
+          <SettingsCheckbox
+            value={cloudSettings.disabled}
+            setValue={value =>
+              setCloudSettings({ ...cloudSettings, disabled: value })
+            }
             label={searchPageSettingsStrings.cloudSearchingLabel}
             disabled={showError}
-            onChange={(_, checked) =>
-              setCloudSettings({ ...cloudSettings, disabled: checked })
-            }
-            helperText={searchPageSettingsStrings.cloudSearchingLabel}
             title={searchPageSettingsStrings.cloudSearching}
+            id={"cs_dc"}
           />
+          {/*<SearchSettingFormControl*/}
+          {/*  control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}*/}
+          {/*  label={searchPageSettingsStrings.cloudSearchingLabel}*/}
+          {/*  disabled={showError}*/}
+          {/*  onChange={(_, checked) =>*/}
+          {/*    setCloudSettings({ ...cloudSettings, disabled: checked })*/}
+          {/*  }*/}
+          {/*  helperText={searchPageSettingsStrings.cloudSearchingLabel}*/}
+          {/*  title={searchPageSettingsStrings.cloudSearching}*/}
+          {/*/>*/}
         </Grid>
       </Grid>
 

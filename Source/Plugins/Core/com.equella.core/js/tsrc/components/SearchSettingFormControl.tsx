@@ -10,7 +10,7 @@ export default function SearchSettingFormControl(props: {
   title?: string;
   label?: string;
   helperText?: string;
-  disabled: boolean;
+  disabled?: boolean;
   control: React.ReactElement;
   onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
 }) {
