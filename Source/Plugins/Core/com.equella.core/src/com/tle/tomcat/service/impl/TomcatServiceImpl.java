@@ -182,6 +182,7 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       if (ajpPort != -1) {
         Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
         connector.setPort(ajpPort);
+        connector.setAttribute("requiredSecret", false);
         connector.setAttribute("tomcatAuthentication", false);
         connector.setAttribute("packetSize", "65536");
         setConnector(connector);
