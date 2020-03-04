@@ -9,7 +9,7 @@ export interface SettingsCheckbox {
   label?: string;
   title?: string;
   helperText?: string;
-  id?: string;
+  id: string;
 }
 export default function SettingsCheckbox({
   disabled,
