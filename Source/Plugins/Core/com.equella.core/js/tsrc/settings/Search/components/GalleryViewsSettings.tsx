@@ -17,7 +17,7 @@ export default function GalleryViewsSettings({
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   return (
-    <Grid container direction={"column"} spacing={8}>
+    <>
       <Grid item>
         <SettingsCheckbox
           value={searchSettings.searchingDisableGallery}
@@ -58,6 +58,6 @@ export default function GalleryViewsSettings({
           id={"_disableFileCount"}
         />
       </Grid>
-    </Grid>
+    </>
   );
 }

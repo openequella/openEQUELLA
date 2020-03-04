@@ -16,7 +16,7 @@ export default function DefaultSortOrderSetting({
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   return (
-    <Grid container direction={"column"} spacing={8}>
+    <>
       <Grid item>
         <FormLabel>{searchPageSettingsStrings.defaultSortOrder}</FormLabel>
       </Grid>
@@ -45,6 +45,6 @@ export default function DefaultSortOrderSetting({
           </MenuItem>
         </Select>
       </Grid>
-    </Grid>
+    </>
   );
 }
