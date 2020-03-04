@@ -151,23 +151,6 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             title={searchPageSettingsStrings.authFeed}
             id={"_authenticateByDefault"}
           />
-          {/*<SearchSettingFormControl*/}
-          {/*  control={*/}
-          {/*    <Checkbox*/}
-          {/*      id={"_authenticateByDefault"}*/}
-          {/*      checked={searchSettings.authenticateFeedsByDefault}*/}
-          {/*    />*/}
-          {/*  }*/}
-          {/*  label={searchPageSettingsStrings.authFeedLabel}*/}
-          {/*  disabled={showError}*/}
-          {/*  onChange={(_, checked) =>*/}
-          {/*    setSearchSettings({*/}
-          {/*      ...searchSettings,*/}
-          {/*      authenticateFeedsByDefault: checked*/}
-          {/*    })*/}
-          {/*  }*/}
-          {/*  title={searchPageSettingsStrings.authFeed}*/}
-          {/*/>*/}
         </Grid>
 
         {/*Gallery views*/}
@@ -191,16 +174,6 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             title={searchPageSettingsStrings.cloudSearching}
             id={"cs_dc"}
           />
-          {/*<SearchSettingFormControl*/}
-          {/*  control={<Checkbox id={"cs_dc"} checked={cloudSettings.disabled} />}*/}
-          {/*  label={searchPageSettingsStrings.cloudSearchingLabel}*/}
-          {/*  disabled={showError}*/}
-          {/*  onChange={(_, checked) =>*/}
-          {/*    setCloudSettings({ ...cloudSettings, disabled: checked })*/}
-          {/*  }*/}
-          {/*  helperText={searchPageSettingsStrings.cloudSearchingLabel}*/}
-          {/*  title={searchPageSettingsStrings.cloudSearching}*/}
-          {/*/>*/}
         </Grid>
       </Grid>
 
