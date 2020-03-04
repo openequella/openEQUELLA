@@ -8,10 +8,11 @@ export interface DefaultSortOrderSettingProps {
   searchSettings: SearchSettings;
   setSearchSettings: (searchSettings: SearchSettings) => void;
 }
-export default function DefaultSortOrderSetting(
-  props: DefaultSortOrderSettingProps
-) {
-  const { disabled, searchSettings, setSearchSettings } = props;
+export default function DefaultSortOrderSetting({
+  disabled,
+  searchSettings,
+  setSearchSettings
+}: DefaultSortOrderSettingProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   return (

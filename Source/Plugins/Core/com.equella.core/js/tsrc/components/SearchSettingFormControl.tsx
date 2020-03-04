@@ -5,16 +5,22 @@ import {
   FormLabel
 } from "@material-ui/core";
 import * as React from "react";
-
-export default function SearchSettingFormControl(props: {
+export interface SearchSettingFormControlProps {
   title?: string;
   label?: string;
   helperText?: string;
   disabled?: boolean;
   control: React.ReactElement;
   onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
-}) {
-  const { title, label, disabled, control, onChange, helperText } = props;
+}
+export default function SearchSettingFormControl({
+  title,
+  label,
+  helperText,
+  disabled,
+  control,
+  onChange
+}: SearchSettingFormControlProps) {
   return (
     <FormControl>
       {title && <FormLabel>{title}</FormLabel>}

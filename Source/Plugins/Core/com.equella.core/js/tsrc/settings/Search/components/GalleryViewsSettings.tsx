@@ -9,10 +9,13 @@ export interface GalleryViewsSettingsProps {
   searchSettings: SearchSettings;
   setSearchSettings: (searchSettings: SearchSettings) => void;
 }
-export default function GalleryViewsSettings(props: GalleryViewsSettingsProps) {
+export default function GalleryViewsSettings({
+  searchSettings,
+  disabled,
+  setSearchSettings
+}: GalleryViewsSettingsProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
-  const { searchSettings, disabled, setSearchSettings } = props;
   return (
     <Grid container direction={"column"} spacing={8}>
       <Grid item>
