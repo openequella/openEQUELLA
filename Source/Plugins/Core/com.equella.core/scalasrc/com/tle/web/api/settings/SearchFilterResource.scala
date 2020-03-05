@@ -19,6 +19,9 @@
 package com.tle.web.api.settings
 
 import java.util.UUID
+import com.dytech.edge.common.Constants
+import com.tle.beans.mime.MimeEntry
+import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.settings.standard.SearchSettings.SearchFilter
 import com.tle.legacy.LegacyGuice
@@ -27,6 +30,8 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
+import scala.collection.JavaConverters._
+import scala.collection.mutable.ArrayBuffer
 
 @NoCache
 @Path("settings/")
@@ -68,24 +73,32 @@ class SearchFilterResource {
   }
 
   @POST
+  @Produces(value = Array("text/html"))
   @Path("search/filter")
   @ApiOperation(
     value = "Add a search filter",
-    notes = "This endpoint is used to add a search filter.",
+    notes =
+      "This endpoint is used to add a search filter. The new filter's ID is returned if operation is successful.",
   )
   def addSearchFilter(
       @ApiParam(value = "filter name", required = true) @QueryParam("name") name: String,
       @ApiParam(value = "filter types", required = true) @QueryParam("mimeTypes") mimeTypes: java.util.List[
         String]): Response = {
-    val searchFilter = new SearchFilter
-    searchFilter.setId(UUID.randomUUID().toString)
-    searchFilter.setName(name)
-    searchFilter.setMimeTypes(mimeTypes)
-    loadSettings(new SearchSettings).getFilters.add(searchFilter)
-    Response.status(201).build()
+    searchPrivProvider.checkAuthorised()
+    validate(name, mimeTypes) match {
+      case Left(error) => Response.status(400).entity(error).build()
+      case Right(_) =>
+        val searchFilter = new SearchFilter
+        searchFilter.setId(UUID.randomUUID().toString)
+        searchFilter.setName(name)
+        searchFilter.setMimeTypes(mimeTypes)
+        loadSettings(new SearchSettings).getFilters.add(searchFilter)
+        Response.status(201).entity(searchFilter.getId).build()
+    }
   }
 
   @PUT
+  @Produces(value = Array("text/html"))
   @Path("search/filter/{uuid}")
   @ApiOperation(
     value = "Update a search filter",
@@ -101,10 +114,14 @@ class SearchFilterResource {
 
     getFilterById(uuid, searchSettings) match {
       case Some(filter) =>
-        filter.setMimeTypes(mimeTypes)
-        filter.setName(name)
-        updateSettings(searchSettings)
-        Response.status(204).build()
+        validate(name, mimeTypes) match {
+          case Left(error) => Response.status(400).entity(error).build()
+          case Right(_) =>
+            filter.setMimeTypes(mimeTypes)
+            filter.setName(name)
+            updateSettings(searchSettings)
+            Response.status(204).build()
+        }
       case None => Response.status(404).build()
     }
   }
@@ -132,5 +149,36 @@ class SearchFilterResource {
   private def getFilterById(filterId: UUID,
                             searchSettings: SearchSettings): Option[SearchFilter] = {
     Option(searchSettings.getSearchFilter(filterId.toString))
+  }
+
+  private def validate(filterName: String,
+                       mimeTypes: java.util.List[String]): Either[String, Unit] = {
+    val errorMessages = ArrayBuffer[String]()
+
+    if (Check.isEmpty(filterName)) {
+      errorMessages += "Filter name cannot be empty."
+    }
+
+    if (Check.isEmpty(mimeTypes)) {
+      errorMessages += "Need at least one MIMEType."
+    } else {
+      if (mimeTypes.asScala.exists(_.isEmpty)) {
+        errorMessages += "Value of MIMEType cannot be empty."
+      }
+      // Find out MIMETypes of which the values are non-empty but invalid
+      val invalidTypes = mimeTypes.asScala.filter(mimeType =>
+        mimeType.nonEmpty && !validMimeTypes.contains(mimeType))
+      if (invalidTypes.nonEmpty) {
+        errorMessages += s"Invalid MIMETypes found : ${invalidTypes.mkString(",")} "
+      }
+    }
+
+    if (errorMessages.nonEmpty) Left(errorMessages.mkString("\n")) else Right()
+  }
+
+  private def validMimeTypes: List[String] = {
+    val mimeEntries: Seq[MimeEntry] =
+      LegacyGuice.mimeTypeService.searchByMimeType(Constants.BLANK, 0, -1).getResults.asScala
+    mimeEntries.map(_.getType).toList
   }
 }

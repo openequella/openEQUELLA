@@ -35,6 +35,7 @@ import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
+import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
@@ -202,6 +203,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static OAuthService oAuthService;
 
   @Inject public static EncryptionService encryptionService;
+
+  @Inject public static MimeTypeService mimeTypeService;
 
   @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
 
