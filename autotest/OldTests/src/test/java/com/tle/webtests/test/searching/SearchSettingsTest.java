@@ -33,7 +33,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-@TestInstitution("fiveo")
+@TestInstitution("flakey")
 public class SearchSettingsTest extends AbstractCleanupAutoTest {
   private SoapService50 soapService;
   private SoapHelper soapHelper;
