@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshot test 1`] = `
+<WithStyles(FormControl)>
+  <WithStyles(WithFormControlContext(FormControlLabel))
+    control={
+      <TextField
+        id="testTextField"
+        onChange={[MockFunction]}
+        required={false}
+        select={false}
+        value="test"
+        variant="standard"
+      />
+    }
+    onChange={[MockFunction]}
+  />
+</WithStyles(FormControl)>
+`;
+
+exports[`snapshot test 2`] = `
+<WithStyles(FormControl)>
+  <WithStyles(WithFormControlContext(FormLabel))>
+    this one has a title
+  </WithStyles(WithFormControlContext(FormLabel))>
+  <WithStyles(WithFormControlContext(FormHelperText))>
+    helper text
+  </WithStyles(WithFormControlContext(FormHelperText))>
+  <WithStyles(WithFormControlContext(FormControlLabel))
+    control={
+      <WithStyles(Checkbox)
+        id="testCheckbox"
+        onChange={[MockFunction]}
+        value={true}
+      />
+    }
+    label="and a label"
+    onChange={[MockFunction]}
+  />
+</WithStyles(FormControl)>
+`;
