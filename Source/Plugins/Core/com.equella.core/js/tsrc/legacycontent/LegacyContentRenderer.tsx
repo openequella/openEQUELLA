@@ -9,8 +9,13 @@ const useStyles = makeStyles(t => ({
   }
 }));
 
-export function LegacyContentRenderer(props: PageContent) {
-  const { html, fullscreenMode, script, afterHtml, menuMode } = props;
+export function LegacyContentRenderer({
+  afterHtml,
+  fullscreenMode,
+  html,
+  menuMode,
+  script
+}: PageContent) {
   const classes = useStyles();
 
   let { body, crumbs, upperbody } = html;

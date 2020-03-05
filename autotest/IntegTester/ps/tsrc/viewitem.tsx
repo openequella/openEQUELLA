@@ -14,8 +14,11 @@ interface Props {
 
 declare const postValues: Props;
 
-function ViewItem(props: { query: Props }) {
-  const q = props.query;
+interface ViewItemProps {
+  query: Props;
+}
+
+function ViewItem({ query: q }: ViewItemProps) {
   const classes = useStyles();
 
   return (

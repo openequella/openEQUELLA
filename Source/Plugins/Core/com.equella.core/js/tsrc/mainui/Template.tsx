@@ -237,22 +237,41 @@ export const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-function useFullscreen(props: TemplateProps) {
+interface useFullscreenProps {
+  fullscreenMode?: FullscreenMode;
+  hideAppBar?: boolean;
+}
+
+function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
   const modeIsFullscreen = (function() {
-    switch (props.fullscreenMode) {
+    switch (fullscreenMode) {
       case "YES":
-        return true;
       case "YES_WITH_TOOLBAR":
         return true;
+
       default:
         return false;
     }
   })();
-  return props.hideAppBar || modeIsFullscreen;
+  return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = React.memo(function Template(props: TemplateProps) {
-  const currentUser = props.currentUser ? props.currentUser : guestUser;
+export const Template = React.memo(function Template({
+  backRoute,
+  children,
+  currentUser = guestUser,
+  disableNotifications,
+  errorResponse,
+  fixedViewPort,
+  footer,
+  fullscreenMode,
+  hideAppBar,
+  menuExtra,
+  menuMode,
+  tabs,
+  title,
+  titleExtra
+}: TemplateProps) {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
@@ -263,15 +282,15 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   const classes = useStyles();
 
   React.useEffect(() => {
-    if (props.errorResponse) {
+    if (errorResponse) {
       setErrorOpen(true);
     }
-  }, [props.errorResponse]);
+  }, [errorResponse]);
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
     var remove = "fullscreen-toolbar";
-    switch (props.fullscreenMode) {
+    switch (fullscreenMode) {
       case "YES":
         classList.add("fullscreen");
         break;
@@ -283,11 +302,11 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         classList.remove("fullscreen");
     }
     classList.remove(remove);
-  }, [props.fullscreenMode]);
+  }, [fullscreenMode]);
 
   React.useEffect(() => {
-    window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
-  }, [props.title]);
+    window.document.title = `${title}${coreStrings.windowtitlepostfix}`;
+  }, [title]);
 
   React.useEffect(() => {
     updateMetaTags(props.metaTags);
@@ -405,7 +424,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     );
   }
 
-  const hasMenu = props.menuMode !== "HIDDEN";
+  const hasMenu = menuMode !== "HIDDEN";
 
   const menuContent = React.useMemo(
     () => (
@@ -433,8 +452,8 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   function titleArea() {
     return (
       <div className={classes.titleArea}>
-        {props.backRoute && (
-          <Link to={props.backRoute}>
+        {backRoute && (
+          <Link to={backRoute}>
             <IconButton>
               <BackIcon />
             </IconButton>
@@ -444,14 +463,12 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           variant="h5"
           color="inherit"
           className={`${
-            props.backRoute && hasMenu
-              ? classes.titleDense
-              : classes.titlePadding
+            backRoute && hasMenu ? classes.titleDense : classes.titlePadding
           } ${classes.title}`}
         >
-          {props.title}
+          {title}
         </Typography>
-        {props.titleExtra}
+        {titleExtra}
       </div>
     );
   }
@@ -459,8 +476,8 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   function menuArea() {
     return (
       <div className={classes.userMenu}>
-        {props.menuExtra}
-        {!props.disableNotifications && !currentUser.guest && (
+        {menuExtra}
+        {!disableNotifications && !currentUser.guest && (
           <React.Fragment>
             <Hidden smDown>
               {badgedLink(
@@ -501,8 +518,8 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     );
   }
 
-  const layout = useFullscreen(props) ? (
-    <main>{props.children}</main>
+  const layout = useFullscreen({ fullscreenMode, hideAppBar }) ? (
+    <main>{children}</main>
   ) : (
     <div className={classes.appFrame}>
       <AppBar className={classes.appBar}>
@@ -518,7 +535,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           {titleArea()}
           {menuArea()}
         </Toolbar>
-        {props.tabs}
+        {tabs}
       </AppBar>
       <Hidden mdUp>
         <Drawer
@@ -542,16 +559,14 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       </Hidden>
       <main
         className={`${classes.content} ${
-          props.fixedViewPort
-            ? classes.contentFixedHeight
-            : classes.contentMinHeight
+          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight
         }`}
       >
         <div className={classes.toolbar} />
-        {props.tabs && <div className={classes.tabs} />}
-        <div className={classes.contentArea}>{props.children}</div>
+        {tabs && <div className={classes.tabs} />}
+        <div className={classes.contentArea}>{children}</div>
       </main>
-      {props.footer && <div className={classes.footer}>{props.footer}</div>}
+      {footer && <div className={classes.footer}>{footer}</div>}
     </div>
   );
 
@@ -571,7 +586,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {props.errorResponse && renderError(props.errorResponse)}
+        {errorResponse && renderError(errorResponse)}
       </div>
     </MuiPickersUtilsProvider>
   );

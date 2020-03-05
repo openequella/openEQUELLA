@@ -9,11 +9,15 @@ import {
 } from "@material-ui/core";
 import { languageStrings } from "../util/langstrings";
 
-export default function AdminDownloadDialog(props: {
+interface AdminDownloadDialogProps {
   open: boolean;
   onClose: () => void;
-}) {
-  const { open, onClose } = props;
+}
+
+export default function AdminDownloadDialog({
+  open,
+  onClose
+}: AdminDownloadDialogProps) {
   const { ok } = languageStrings.common.action;
   const { link, text, title } = languageStrings.adminconsoledownload;
 
