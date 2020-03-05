@@ -8,7 +8,12 @@
     "psglob": "output/*/*.js",
     "dist": "target/resources/web/reactjs",
     "jest": {
-      "verbose": true
+      "verbose": true,
+      "preset": "ts-jest",
+      "testEnvironment": "jsdom",
+      "snapshotSerializers": [
+        "enzyme-to-json/serializer"
+      ]
     }
   },
   "scripts": {
