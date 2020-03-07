@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:base", ":masterIssue"],
   "prConcurrentLimit": 10,
   "rebaseStalePrs": false,
   "prHourlyLimit": 1,
