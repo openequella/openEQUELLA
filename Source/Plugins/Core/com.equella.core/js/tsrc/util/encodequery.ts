@@ -1,3 +1,10 @@
+/**
+ * Encode an object as a query string
+ *
+ * @param params object to encode
+ *
+ * TODO: replace with https://github.com/ljharb/qs
+ */
 export function encodeQuery(params: {
   [key: string]: string | string[] | boolean | number | undefined;
 }): string {

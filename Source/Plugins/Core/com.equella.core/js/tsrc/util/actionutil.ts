@@ -4,7 +4,14 @@ import actionCreatorFactory from "typescript-fsa";
 
 export const actionCreator = actionCreatorFactory();
 
-// https://github.com/aikoven/typescript-fsa/issues/5#issuecomment-255347353
+/**
+ * Handle asynchronous actions in the redux store
+ *
+ * @param asyncAction redux action to map to
+ * @param worker asynchronous callback of work to be done
+ *
+ * NOTE: originally from https://github.com/aikoven/typescript-fsa/issues/5#issuecomment-255347353
+ */
 export function wrapAsyncWorker<TParameters, TSuccess, TError>(
   asyncAction: AsyncActionCreators<TParameters, TSuccess, TError>,
   worker: (params: TParameters) => Promise<TSuccess>

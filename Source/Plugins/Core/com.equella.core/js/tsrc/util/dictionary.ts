@@ -2,7 +2,13 @@ export interface IDictionary<T> {
   [key: string]: T | undefined;
 }
 
-// TODO: replace this with Object.keys or Object.getOwnPropertyNames
+/**
+ * Get a list of key/property names from an object
+ *
+ * @param obj object to find keys for
+ *
+ * TODO: replace this with Object.keys or Object.getOwnPropertyNames
+ */
 export function properties<T>(obj: IDictionary<T>): string[] {
   const props: string[] = [];
   for (const key in obj) {
