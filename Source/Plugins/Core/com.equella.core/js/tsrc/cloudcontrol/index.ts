@@ -213,9 +213,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       var nextState = await getState(wizardIds.wizId);
       if (nextState.stateVersion < state.stateVersion) {
         console.log(
-          `Out of order state detected, already had ${
-            state.stateVersion
-          } but got ${nextState.stateVersion}`
+          `Out of order state detected, already had ${state.stateVersion} but got ${nextState.stateVersion}`
         );
         console.log(
           `Already had ${serializer.serializeToString(
@@ -390,9 +388,7 @@ export const CloudControl: CloudControlRegisterImpl = {
 const missingControl: Registration = {
   mount: params => {
     let errText = $(
-      `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${
-        params.vendorId
-      }_${params.controlType}"</p></div>`
+      `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${params.vendorId}_${params.controlType}"</p></div>`
     );
     $(params.element).append(errText);
     console.error("Parameters for failed cloud control", params);

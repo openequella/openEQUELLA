@@ -258,7 +258,4 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
 }
 
 // What's with these any's?
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchCourse);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchCourse);
