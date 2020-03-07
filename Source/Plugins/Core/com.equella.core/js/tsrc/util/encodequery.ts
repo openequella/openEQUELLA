@@ -2,7 +2,7 @@ export function encodeQuery(params: {
   [key: string]: string | string[] | boolean | number | undefined;
 }): string {
   let s = "";
-  function addOne(key: string, element: any) {
+  function addOne(key: string, element: string | number | boolean) {
     if (s.length > 0) s += "&";
     s += encodeURIComponent(key) + "=" + encodeURIComponent(element.toString());
   }
