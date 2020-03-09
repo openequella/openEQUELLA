@@ -270,14 +270,15 @@ export const Template = React.memo(function Template({
   menuMode,
   tabs,
   title,
-  titleExtra
+  titleExtra,
+  metaTags
 }: TemplateProps) {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
 
   // Record what customised meta tags have been added into <head>
-  const [metaTags, setMetaTags] = React.useState<Array<string>>([]);
+  const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
   const classes = useStyles();
 
@@ -309,8 +310,8 @@ export const Template = React.memo(function Template({
   }, [title]);
 
   React.useEffect(() => {
-    updateMetaTags(props.metaTags);
-  }, [props.metaTags]);
+    updateMetaTags(metaTags);
+  }, [metaTags]);
 
   function updateMetaTags(tags: string | undefined) {
     const head = document.head;
@@ -322,13 +323,13 @@ export const Template = React.memo(function Template({
           document.createRange().createContextualFragment(newMetaTag)
         );
       });
-      setMetaTags(newMetaTags);
+      setGoogleMetaTags(newMetaTags);
     } else {
       // While there are no new meta tags to display, also remove old customised meta tags
       const existingMetaTags = document.querySelectorAll("meta");
       existingMetaTags.forEach(existingMetaTag => {
         if (
-          metaTags.some(tag => {
+          googleMetaTags.some(tag => {
             return tag === existingMetaTag.outerHTML;
           })
         ) {
