@@ -9,10 +9,10 @@ import com.dytech.edge.ejb.helpers.metadata.mappers.PackageMapper;
 import com.dytech.edge.ejb.helpers.metadata.mappers.XPathMapper;
 import com.dytech.edge.ejb.helpers.metadata.mapping.Mapping;
 import com.google.common.base.Throwables;
-import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.MetadataMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.xstream.XMLCompare;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +49,7 @@ public abstract class AbstractMetadataMapperTester extends TestCase {
             new UnicodeReader(
                 getClass().getResourceAsStream("/" + folder + "/itemdef.xml"), "UTF-8");
         InputStream schemaIn = getClass().getResourceAsStream("/" + folder + "/schema.xml")) {
-      itemMapping = (MetadataMapping) new XStream().fromXML(mappingReader);
+      itemMapping = (MetadataMapping) XStreamSecurityManager.newXStream().fromXML(mappingReader);
 
       PropBagEx sxml = new PropBagEx(schemaIn);
       if (sxml.nodeExists("definition/xml")) {

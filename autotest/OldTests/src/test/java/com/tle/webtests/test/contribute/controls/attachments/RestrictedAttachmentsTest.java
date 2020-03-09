@@ -38,7 +38,7 @@ public class RestrictedAttachmentsTest extends AbstractSessionTest {
     logon("autotest", "automated");
     for (int x = 0; x < 6; x++) {
       ErrorPage error = new AttachmentAccessDeniedPage(context, attachmentUrls[x]).load();
-      assertEquals(error.getMainErrorMessage(), ERROR);
+      assertEquals(error.getMainErrorMessage(false), ERROR);
     }
   }
 

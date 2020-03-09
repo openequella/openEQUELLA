@@ -1624,4 +1624,17 @@
     <aclOrder>0</aclOrder>
     <aclPriority>-1850</aclPriority>
   </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>14914</id>
+    <expression>
+      <id>14913</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>VIEW_APIDOCS</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
 </list>

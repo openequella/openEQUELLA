@@ -49,6 +49,7 @@ import com.tle.common.Check;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.FileWorker;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.awt.Component;
@@ -350,18 +351,18 @@ public class WizardTree extends JPanel
         JOptionPane.showConfirmDialog(
             this,
             CurrentLocale.get(
-                "com.tle.admin.controls.warning.import",
+                "com.equella.admin.control.warning.import",
                 CurrentLocale //$NON-NLS-1$
                     .get("com.tle.application.name")),
             CurrentLocale //$NON-NLS-1$
-                .get("com.tle.admin.controls.title.import"),
+                .get("com.equella.admin.control.title.import"),
             JOptionPane.YES_NO_OPTION, // $NON-NLS-1$
             JOptionPane.WARNING_MESSAGE);
 
     if (confirm == JOptionPane.YES_OPTION) {
       DialogUtils.doOpenDialog(
           this,
-          CurrentLocale.get("com.tle.admin.controls.title.import"),
+          CurrentLocale.get("com.equella.admin.control.title.import"),
           new ControlFileFilter(), //$NON-NLS-1$
           importer());
     }
@@ -376,7 +377,7 @@ public class WizardTree extends JPanel
         final String controlXml =
             getCollectionService(Driver.instance()).importControl(Files.toByteArray(file));
 
-        final XStream xstream = new XStream();
+        final XStream xstream = XStreamSecurityManager.newXStream();
         final Set<String> pluginIds = getPluginIds(controlXml);
         final PluginService pluginService = Driver.instance().getPluginService();
 
@@ -395,10 +396,10 @@ public class WizardTree extends JPanel
       public void finished() {
         if (get() != null) {
           Driver.displayInformation(
-              parent, CurrentLocale.get("com.tle.admin.controls.imported")); // $NON-NLS-1$
+              parent, CurrentLocale.get("com.equella.admin.control.imported")); // $NON-NLS-1$
         } else {
           Driver.displayInformation(
-              parent, CurrentLocale.get("com.tle.admin.controls.notimported")); // $NON-NLS-1$
+              parent, CurrentLocale.get("com.equella.admin.control.notimported")); // $NON-NLS-1$
         }
       }
     };
@@ -453,7 +454,7 @@ public class WizardTree extends JPanel
     } else {
       if (parentControl == null) {
         Driver.displayInformation(
-            tree, CurrentLocale.get("com.tle.admin.controls.error.noparent")); // $NON-NLS-1$
+            tree, CurrentLocale.get("com.equella.admin.control.error.noparent")); // $NON-NLS-1$
         return null;
       }
       newControl = addChild(parentControl, newControlDef);
@@ -475,11 +476,12 @@ public class WizardTree extends JPanel
     final String suggestedFilename =
         DialogUtils.getSuggestedFileName(
             getTitle(
-                control.getWrappedObject(), CurrentLocale.get("com.tle.admin.controls.untitled")),
+                control.getWrappedObject(),
+                CurrentLocale.get("com.equella.admin.control.untitled")),
             CONTROL_FILE_EXTENSION); //$NON-NLS-1$
     DialogUtils.doSaveDialog(
         this,
-        CurrentLocale.get("com.tle.admin.controls.title.export"), // $NON-NLS-1$
+        CurrentLocale.get("com.equella.admin.control.title.export"), // $NON-NLS-1$
         new ControlFileFilter(),
         suggestedFilename,
         exporter(control));
@@ -487,8 +489,8 @@ public class WizardTree extends JPanel
 
   private FileWorker exporter(final Control control) {
     return new AbstractFileWorker<Object>(
-        CurrentLocale.get("com.tle.admin.controls.exported"), // $NON-NLS-1$
-        CurrentLocale.get("com.tle.admin.controls.error.exporting")) // $NON-NLS-1$
+        CurrentLocale.get("com.equella.admin.control.exported"), // $NON-NLS-1$
+        CurrentLocale.get("com.equella.admin.control.error.exporting")) // $NON-NLS-1$
     {
       @Override
       public Object construct() throws Exception {
@@ -498,7 +500,9 @@ public class WizardTree extends JPanel
         final ExportedControl ctl =
             getExportedControl(control, pluginService, driver.getVersion().getFull());
 
-        byte[] zipData = getCollectionService(driver).exportControl(new XStream().toXML(ctl));
+        byte[] zipData =
+            getCollectionService(driver)
+                .exportControl(XStreamSecurityManager.newXStream().toXML(ctl));
 
         ByteArrayInputStream stream = new ByteArrayInputStream(zipData);
         try (OutputStream out = new FileOutputStream(file)) {
@@ -841,7 +845,7 @@ public class WizardTree extends JPanel
     public ControlFileFilter() {
       super(
           new FileExtensionFilter(CONTROL_FILE_EXTENSION),
-          CurrentLocale.get("com.tle.admin.controls.wizardcontrolfiles"));
+          CurrentLocale.get("com.equella.admin.control.wizardcontrolfiles"));
     }
   }
 }

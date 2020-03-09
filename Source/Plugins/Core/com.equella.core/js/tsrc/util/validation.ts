@@ -1,16 +1,12 @@
 export function isInteger(
-  val: any,
+  val?: number,
   required?: boolean,
   positive?: boolean
 ): boolean {
-  const undef = typeof val === "undefined";
-  if (required && undef) {
-    return false;
+  if (typeof val === "undefined") {
+    return !required;
   }
-  if (!required && undef) {
-    return true;
-  }
-  const intVal = parseInt(val);
+  const intVal = parseInt(val.toString(), 10);
   if (positive && intVal <= 0) {
     return false;
   }

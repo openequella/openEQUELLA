@@ -307,7 +307,7 @@ public class DRMTest extends AbstractSessionTest {
     assertTrue(
         new ErrorPage(context)
             .get()
-            .getSubErrorMessage()
+            .getSubErrorMessage(false)
             .toLowerCase()
             .contains(error.toLowerCase()));
   }
@@ -316,7 +316,7 @@ public class DRMTest extends AbstractSessionTest {
     assertTrue(
         new ErrorPage(context, forceOld)
             .get()
-            .getSubErrorMessage()
+            .getSubErrorMessage(false)
             .toLowerCase()
             .contains(error.toLowerCase()));
   }

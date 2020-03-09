@@ -32,10 +32,13 @@ public class ItemServletRedirectTest extends AbstractCleanupAutoTest {
   @Test
   public void testErrors() {
     context.getDriver().get(context.getBaseUrl() + BADITEM_URL);
-    assertEquals(new ErrorPage(context, true).get().getMainErrorMessage(), "An error occurred");
+    assertEquals(
+        new ErrorPage(context, true).get().getMainErrorMessage(false), "An error occurred");
     context.getDriver().get(context.getBaseUrl() + BADITEM_URL2);
-    assertEquals(new ErrorPage(context, true).get().getMainErrorMessage(), "Resource not found");
+    assertEquals(
+        new ErrorPage(context, true).get().getMainErrorMessage(false), "Resource not found");
     context.getDriver().get(context.getBaseUrl() + BADITEM_URL3);
-    assertEquals(new ErrorPage(context, true).get().getMainErrorMessage(), "Resource not found");
+    assertEquals(
+        new ErrorPage(context, true).get().getMainErrorMessage(false), "Resource not found");
   }
 }

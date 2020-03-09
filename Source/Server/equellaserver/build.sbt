@@ -15,9 +15,9 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.9.9"
+val jacksonVersion   = "2.10.2"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.47"
+val TomcatVersion    = "8.5.51"
 val SwaggerVersion   = "1.5.24"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -66,7 +66,10 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject"        % "3.0",
   "com.google.inject.extensions" % "guice-spring"                % "3.0",
   "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
-  sqlServerDep,
+  sqlServerDep excludeAll (
+    // Conflicts with RESTeasy jakarta.xml.bind-api
+    ExclusionRule(organization = "javax.xml.bind")
+  ),
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
   "com.rometools"             % "rome"                  % "1.12.2",
@@ -183,7 +186,6 @@ libraryDependencies ++= Seq(
   "org.dspace"             % "cql-java"          % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.eclipse.jetty"                    % "jetty-util"                     % "8.1.7.v20120910",
   "org.freemarker"                       % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"            % "hurl"                           % "1.1",
   "org.javassist"                        % "javassist"                      % "3.18.2-GA",
@@ -309,6 +311,8 @@ assemblyMergeStrategy in assembly := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // Safe to do at least in JDK 8
+  case "module-info.class" => MergeStrategy.discard
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
