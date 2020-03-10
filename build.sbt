@@ -115,9 +115,9 @@ buildConfig in ThisBuild := Common.buildConfig
 name := "Equella"
 
 equellaMajor in ThisBuild := 2020
-equellaMinor in ThisBuild := 1
+equellaMinor in ThisBuild := 2
 equellaPatch in ThisBuild := 0
-equellaStream in ThisBuild := "Stable"
+equellaStream in ThisBuild := "Alpha"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
 version := {
