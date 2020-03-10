@@ -34,10 +34,10 @@ class SearchSettingsResource {
   @GET
   @Path("search")
   @ApiOperation(
-    value = "Load Search settings",
+    value = "List Search settings",
     notes = "This endpoint is used to retrieve general search settings excluding search filters."
   )
-  def loadSearchSettings: SearchSettings = {
+  def listSearchSettings: SearchSettings = {
     LegacyGuice.searchPrivProvider.checkAuthorised()
     loadSettings(new SearchSettings)
   }

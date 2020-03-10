@@ -33,9 +33,9 @@ class CloudSearchSettingsResource {
 
   @GET
   @Path("search/cloud")
-  @ApiOperation(value = "Load Cloud settings",
+  @ApiOperation(value = "List Cloud settings",
                 notes = "This endpoint is used to retrieve cloud settings.")
-  def loadCloudSettings: CloudSettings = {
+  def listCloudSettings: CloudSettings = {
     LegacyGuice.searchPrivProvider.checkAuthorised()
     loadSettings(new CloudSettings)
   }
