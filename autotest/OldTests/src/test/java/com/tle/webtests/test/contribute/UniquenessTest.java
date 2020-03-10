@@ -13,6 +13,7 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.controls.AbstractWizardControlsTest;
 import com.tle.webtests.pageobject.wizard.controls.ShuffleListControl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
@@ -110,6 +111,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
     // Test an editbox which doesn't allow duplicates
     String controlDivId = "p0c2";
     wizardPage.editbox(2, DUPLICATE_CHECK_ITEM_ID);
+    wizardPage.editbox(2).getLoadedElement().sendKeys(Keys.TAB);
     ConfirmationDialog confirmationDialog = wizardPage.save();
     assertTrue(confirmationDialog.containsButton(ConfirmButton.COMPLETE));
     confirmationDialog.cancel(wizardPage);

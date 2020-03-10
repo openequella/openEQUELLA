@@ -11,9 +11,14 @@ const useStyles = makeStyles(t => ({
   }
 }));
 
-export default React.memo(function ErrorPage(props: { error: ErrorResponse }) {
+interface ErrorPageProps {
+  error: ErrorResponse;
+}
+
+export default React.memo(function ErrorPage({
+  error: { code, error, error_description }
+}: ErrorPageProps) {
   const classes = useStyles();
-  const { code, error, error_description } = props.error;
   return (
     <div id="errorPage" className={classes.errorPage}>
       <Card>

@@ -1,11 +1,12 @@
 import * as React from "react";
 import { ReactNode, Fragment } from "react";
 
-export function LegacyForm(props: {
+interface LegacyFormProps {
   state: { [key: string]: string[] };
   children: ReactNode;
-}) {
-  const { state, children } = props;
+}
+
+export function LegacyForm({ children, state }: LegacyFormProps) {
   return (
     <form name="eqForm" id="eqpageForm" onSubmit={e => e.preventDefault()}>
       <div style={{ display: "none" }} className="_hiddenstate">

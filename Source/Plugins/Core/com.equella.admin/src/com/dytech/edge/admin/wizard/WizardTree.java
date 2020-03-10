@@ -49,6 +49,7 @@ import com.tle.common.Check;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.FileWorker;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.awt.Component;
@@ -376,7 +377,7 @@ public class WizardTree extends JPanel
         final String controlXml =
             getCollectionService(Driver.instance()).importControl(Files.toByteArray(file));
 
-        final XStream xstream = new XStream();
+        final XStream xstream = XStreamSecurityManager.newXStream();
         final Set<String> pluginIds = getPluginIds(controlXml);
         final PluginService pluginService = Driver.instance().getPluginService();
 
@@ -499,7 +500,9 @@ public class WizardTree extends JPanel
         final ExportedControl ctl =
             getExportedControl(control, pluginService, driver.getVersion().getFull());
 
-        byte[] zipData = getCollectionService(driver).exportControl(new XStream().toXML(ctl));
+        byte[] zipData =
+            getCollectionService(driver)
+                .exportControl(XStreamSecurityManager.newXStream().toXML(ctl));
 
         ByteArrayInputStream stream = new ByteArrayInputStream(zipData);
         try (OutputStream out = new FileOutputStream(file)) {
