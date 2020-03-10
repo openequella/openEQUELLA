@@ -25,9 +25,11 @@ import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.settings.standard.SearchSettings.SearchFilter
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse
 import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.JavaConverters._
@@ -68,17 +70,17 @@ class SearchFilterResource {
 
     getFilterById(uuid, searchSettings) match {
       case Some(filter) => Response.ok().entity(filter).build()
-      case None         => Response.status(404).build()
+      case None         => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
     }
   }
 
   @POST
-  @Produces(value = Array("text/html"))
   @Path("search/filter")
   @ApiOperation(
     value = "Add a search filter",
     notes =
-      "This endpoint is used to add a search filter. The new filter's ID is returned if operation is successful.",
+      "This endpoint is used to add a search filter. A JSON object representing the new filter is returned if operation is successful.",
+    response = classOf[SearchFilter]
   )
   def addSearchFilter(
       @ApiParam(value = "filter name", required = true) @QueryParam("name") name: String,
@@ -86,23 +88,28 @@ class SearchFilterResource {
         String]): Response = {
     searchPrivProvider.checkAuthorised()
     validate(name, mimeTypes) match {
-      case Left(error) => Response.status(400).entity(error).build()
+      case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
       case Right(_) =>
         val searchFilter = new SearchFilter
         searchFilter.setId(UUID.randomUUID().toString)
         searchFilter.setName(name)
         searchFilter.setMimeTypes(mimeTypes)
-        loadSettings(new SearchSettings).getFilters.add(searchFilter)
-        Response.status(201).entity(searchFilter.getId).build()
+
+        // Adding a search filter is essentially a update of the search setting
+        val searchSetting = loadSettings(new SearchSettings)
+        searchSetting.getFilters.add(searchFilter)
+        updateSettings(searchSetting)
+        Response.status(Status.CREATED).entity(searchFilter).build()
     }
   }
 
   @PUT
-  @Produces(value = Array("text/html"))
   @Path("search/filter/{uuid}")
   @ApiOperation(
     value = "Update a search filter",
-    notes = "This endpoint is used to update a search filter.",
+    notes =
+      "This endpoint is used to update a search filter. A JSON object representing the updated filter is returned if operation is successful.",
+    response = classOf[SearchFilter]
   )
   def updateSearchFilter(
       @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID,
@@ -115,14 +122,14 @@ class SearchFilterResource {
     getFilterById(uuid, searchSettings) match {
       case Some(filter) =>
         validate(name, mimeTypes) match {
-          case Left(error) => Response.status(400).entity(error).build()
+          case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
           case Right(_) =>
             filter.setMimeTypes(mimeTypes)
             filter.setName(name)
             updateSettings(searchSettings)
-            Response.status(204).build()
+            Response.ok().entity(filter).build()
         }
-      case None => Response.status(404).build()
+      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
     }
   }
 
@@ -142,7 +149,7 @@ class SearchFilterResource {
         searchSettings.getFilters.remove(filter)
         updateSettings(searchSettings)
         Response.ok().build()
-      case None => Response.status(404).build()
+      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
     }
   }
 
@@ -151,8 +158,10 @@ class SearchFilterResource {
     Option(searchSettings.getSearchFilter(filterId.toString))
   }
 
+  private def uuidNotFound(uuid: UUID) = s"No Search filters matching UUID: $uuid."
+
   private def validate(filterName: String,
-                       mimeTypes: java.util.List[String]): Either[String, Unit] = {
+                       mimeTypes: java.util.List[String]): Either[Array[String], Unit] = {
     val errorMessages = ArrayBuffer[String]()
 
     if (Check.isEmpty(filterName)) {
@@ -160,10 +169,10 @@ class SearchFilterResource {
     }
 
     if (Check.isEmpty(mimeTypes)) {
-      errorMessages += "Need at least one MIMEType."
+      errorMessages += "Need at least one MIME type."
     } else {
       if (mimeTypes.asScala.exists(_.isEmpty)) {
-        errorMessages += "Value of MIMEType cannot be empty."
+        errorMessages += "Value of MIME type cannot be empty."
       }
       // Find out MIMETypes of which the values are non-empty but invalid
       val invalidTypes = mimeTypes.asScala.filter(mimeType =>
@@ -173,7 +182,7 @@ class SearchFilterResource {
       }
     }
 
-    if (errorMessages.nonEmpty) Left(errorMessages.mkString("\n")) else Right()
+    if (errorMessages.nonEmpty) Left(errorMessages.toArray) else Right()
   }
 
   private def validMimeTypes: List[String] = {

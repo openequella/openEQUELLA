@@ -10,7 +10,6 @@ import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
@@ -153,16 +152,24 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
             FILTER_MIME_TYPES,
             PNG);
     assertEquals(response.getStatusLine().getStatusCode(), 201);
-    newFilterId = EntityUtils.toString(response.getEntity());
+    JsonNode node = mapper.readTree(response.getEntity().getContent());
+    newFilterId = node.get(FILTER_ID).asText();
     assertNotNull(newFilterId);
+    assertEquals(IMAGE_FILTER, node.get(FILTER_NAME).asText());
+    assertEquals(JPEG, node.get(FILTER_MIME_TYPES).get(0).asText());
+    assertEquals(PNG, node.get(FILTER_MIME_TYPES).get(1).asText());
 
     // Create without filter name
     response = postEntity(null, uri, getToken(), false, FILTER_MIME_TYPES, JPEG);
+    node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals("Filter name cannot be empty.", node.get("errors").get(0).get("message").asText());
 
     // Create without MIMEType
     response = postEntity(null, uri, getToken(), false, FILTER_NAME, IMAGE_FILTER);
+    node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals("Need at least one MIME type.", node.get("errors").get(0).get("message").asText());
 
     // Create with bad MIMETypes
     response =
@@ -175,7 +182,11 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
             IMAGE_FILTER,
             FILTER_MIME_TYPES,
             BAD_MIME_TYPE);
+    node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals(
+        "Invalid MIMETypes found : " + BAD_MIME_TYPE,
+        node.get("errors").get(0).get("message").asText());
 
     // Create without token
     response =
@@ -206,13 +217,11 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
 
     // Update filter
     HttpResponse response =
-        putEntity(null, uri, getToken(), true, FILTER_NAME, PDF_FILTER, FILTER_MIME_TYPES, PDF);
-    assertEquals(204, response.getStatusLine().getStatusCode());
-
-    // Retrieve again to confirm the filter is updated
-    final JsonNode filter = getEntity(uri, getToken());
-    assertEquals(PDF_FILTER, filter.get(FILTER_NAME).asText());
-    assertEquals(PDF, filter.get(FILTER_MIME_TYPES).get(0).asText());
+        putEntity(null, uri, getToken(), false, FILTER_NAME, PDF_FILTER, FILTER_MIME_TYPES, PDF);
+    JsonNode node = mapper.readTree(response.getEntity().getContent());
+    assertEquals(200, response.getStatusLine().getStatusCode());
+    assertEquals(PDF_FILTER, node.get(FILTER_NAME).asText());
+    assertEquals(PDF, node.get(FILTER_MIME_TYPES).get(0).asText());
 
     // Update with a bad filter ID
     response =
