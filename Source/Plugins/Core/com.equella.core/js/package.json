@@ -6,15 +6,13 @@
     "devlang": "../target/scala-2.12/classes/lang",
     "devjs": "../target/scala-2.12/classes/web/reactjs",
     "psglob": "output/*/*.js",
-    "dist": "target/resources/web/reactjs",
-    "jest": {
-      "verbose": true,
-      "preset": "ts-jest",
-      "testEnvironment": "jsdom",
-      "snapshotSerializers": [
-        "enzyme-to-json/serializer"
-      ]
-    }
+    "dist": "target/resources/web/reactjs"
+  },
+  "jest": {
+    "projects": [
+      "jest.jsconfig.js",
+      "jest.tsconfig.js"
+    ]
   },
   "scripts": {
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
@@ -100,6 +98,7 @@
     "cross-spawn": "6.0.5",
     "css-vars-ponyfill": "1.17.2",
     "envify": "4.1.0",
+    "jest-enzyme": "7.1.2",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
     "enzyme-to-json": "3.4.4",

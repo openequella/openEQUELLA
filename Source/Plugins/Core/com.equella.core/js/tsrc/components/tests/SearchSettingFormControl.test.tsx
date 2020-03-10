@@ -1,10 +1,7 @@
 import SearchSettingFormControl from "../SearchSettingFormControl";
 import { Checkbox, TextField } from "@material-ui/core";
 import * as React from "react";
-import * as Adapter from "enzyme-adapter-react-16";
-import { configure, shallow } from "enzyme";
-
-configure({ adapter: new Adapter() });
+import { shallow } from "enzyme";
 
 test("snapshot test", () => {
   const onChange = jest.fn();
