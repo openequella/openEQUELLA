@@ -120,7 +120,7 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 **Git Clone**
 
 ```
-~$ git clone git@github.com:equella/Equella.git
+~$ git clone git@github.com:openequella/openEQUELLA.git
 ```
 
 ### Optional code

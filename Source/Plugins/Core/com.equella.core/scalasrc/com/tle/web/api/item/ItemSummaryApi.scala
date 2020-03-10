@@ -23,6 +23,7 @@ import com.tle.beans.entity.itemdef.DisplayNode
 import com.tle.beans.item.{Item, ItemId, ItemPack}
 import com.tle.common.i18n.LangUtils
 import com.tle.common.security.SecurityConstants
+import com.tle.common.security.streaming.XStreamSecurityManager
 import com.tle.core.item.helper.ItemHelper
 import com.tle.exceptions.{AccessDeniedException, PrivilegeRequiredException}
 import com.tle.legacy.LegacyGuice
@@ -38,7 +39,7 @@ import scala.collection.JavaConverters._
 
 object ItemSummaryApi {
 
-  val xstream = new XStream()
+  val xstream = XStreamSecurityManager.newXStream()
   val Logger  = LoggerFactory.getLogger(getClass)
 
   def getItemSummary(uuid: String, version: Int): ItemSummary = {

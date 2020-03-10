@@ -21,12 +21,13 @@ package com.dytech.edge.admin.wizard;
 import com.dytech.gui.adapters.TablePasteAdapter.DataConverter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 
 public class XStreamDataConverter implements DataConverter {
   private final XStream xstream;
 
   public XStreamDataConverter(Class<?> klass) {
-    xstream = new XStream();
+    xstream = XStreamSecurityManager.newXStream();
     ClassLoader cl = xstream.getClassLoader();
     // I think they always are
     if (cl instanceof CompositeClassLoader) {
