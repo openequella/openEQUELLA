@@ -75,7 +75,7 @@
   "devDependencies": {
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
-    "@types/jest": "22.2.3",
+    "@types/jest": "25.1.4",
     "@types/lodash": "4.14.144",
     "@types/luxon": "1.15.1",
     "@types/node": "9.6.52",
@@ -98,6 +98,7 @@
     "cross-spawn": "6.0.5",
     "css-vars-ponyfill": "1.17.2",
     "envify": "4.1.0",
+    "jest-config": "25.1.0",
     "jest-enzyme": "7.1.2",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
