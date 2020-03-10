@@ -1,4 +1,5 @@
 module.exports = {
+  displayName: "TypeScript tests",
   preset: "ts-jest",
   testEnvironment: "jsdom",
   snapshotSerializers: ["enzyme-to-json/serializer"],
