@@ -178,7 +178,7 @@ class SearchFilterResource {
       val invalidTypes = mimeTypes.asScala.filter(mimeType =>
         mimeType.nonEmpty && !validMimeTypes.contains(mimeType))
       if (invalidTypes.nonEmpty) {
-        errorMessages += s"Invalid MIMETypes found : ${invalidTypes.mkString(",")} "
+        errorMessages += s"Invalid MIMETypes found : ${invalidTypes.mkString(",")}"
       }
     }
 
