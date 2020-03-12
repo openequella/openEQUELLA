@@ -31,6 +31,7 @@ import com.thoughtworks.xstream.io.xml.DomWriter;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -52,6 +53,7 @@ public class TLEXStream extends XStream {
     xppDriver = new XppDriver();
     registerConverter(new XMLDataConverter());
     this.disallowAdd = disallowAdd;
+    XStreamSecurityManager.applyPolicy(this);
   }
 
   @Override

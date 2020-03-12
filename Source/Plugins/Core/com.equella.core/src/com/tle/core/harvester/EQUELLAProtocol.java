@@ -25,6 +25,7 @@ import com.tle.common.harvester.HarvesterException;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
 import com.tle.core.guice.Bind;
@@ -51,7 +52,7 @@ public class EQUELLAProtocol extends AbstractHarvesterProtocol {
   private static final Logger LOGGR = Logger.getLogger(EQUELLAProtocol.class);
   private static final String HARVESTER_END_POINT = "services/SoapHarvesterService";
 
-  private final XStream customAttachXstream = new XStream();
+  private final XStream customAttachXstream = XStreamSecurityManager.newXStream();
 
   @Inject private SoapClientFactory clientFactory;
   @Inject private FileSystemService fileSystemService;

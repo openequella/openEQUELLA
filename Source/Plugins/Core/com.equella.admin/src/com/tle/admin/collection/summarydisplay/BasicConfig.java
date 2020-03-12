@@ -27,6 +27,7 @@ import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,7 +98,7 @@ public class BasicConfig extends AbstractOnlyTitleConfig implements ActionListen
     super.load(element);
     if (element.getConfiguration() != null) {
       try {
-        XStream xstream = new XStream();
+        XStream xstream = XStreamSecurityManager.newXStream();
         HashMap<String, String> fromXML =
             (HashMap<String, String>) xstream.fromXML(element.getConfiguration());
 
@@ -136,7 +137,7 @@ public class BasicConfig extends AbstractOnlyTitleConfig implements ActionListen
       settings.put(TITLE_LENGTH_KEY, maxLengthTitle.getCurrentValue());
     }
 
-    XStream xstream = new XStream();
+    XStream xstream = XStreamSecurityManager.newXStream();
     String toXML = xstream.toXML(settings);
     element.setConfiguration(toXML);
     super.save(element);

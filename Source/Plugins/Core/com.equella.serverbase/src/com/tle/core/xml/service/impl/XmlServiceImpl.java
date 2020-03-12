@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.ClassLoaderReference;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.XppDriver;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.xml.service.XmlService;
 import java.io.Reader;
@@ -96,6 +97,7 @@ public final class XmlServiceImpl implements XmlService {
       autodetectAnnotations(true);
       registerConverter(new OldSingletonMapConverter(getMapper(), getReflectionProvider()));
       registerConverter(new OldSqlTimestampConverter());
+      XStreamSecurityManager.applyPolicy(this);
     }
 
     @Override
