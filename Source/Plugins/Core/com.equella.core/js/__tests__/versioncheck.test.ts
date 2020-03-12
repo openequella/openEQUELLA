@@ -1,12 +1,8 @@
-// versioncheck.js is not processed by Parcel and it only serves to the browser.
-// So here need to read the file and then evaluate its content
-const mockData = require("../__mocks__/versioncheck_mock_data");
-const fs = require("fs");
-const version_check_js_file = fs.readFileSync(
-  "../resources/web/js/versioncheck.js",
-  "utf8"
-);
-eval(version_check_js_file);
+import * as mockData from "../__mocks__/versioncheck_mock_data";
+import rewire = require("rewire");
+
+const versioncheck = rewire("../../resources/web/js/versioncheck.js");
+const createCheckResult = versioncheck.__get__("createCheckResult");
 
 describe("versioncheck", () => {
   describe("createCheckResult", () => {
