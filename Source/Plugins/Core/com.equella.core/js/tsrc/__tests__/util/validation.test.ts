@@ -1,4 +1,4 @@
-import { isInteger } from "./validation";
+import { isInteger } from "../../util/validation";
 
 describe("validation", () => {
   describe("isInteger", () => {

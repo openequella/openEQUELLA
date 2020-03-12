@@ -1,4 +1,4 @@
-import { encodeQuery } from "./encodequery";
+import { encodeQuery } from "../../util/encodequery";
 
 describe("encodequery", () => {
   describe("encodeQuery", () => {

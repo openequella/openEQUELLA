@@ -1,4 +1,4 @@
-import { commonString } from "./commonstrings";
+import { commonString } from "../../util/commonstrings";
 
 describe("commonstrings", () => {
   describe("commonString", () => {

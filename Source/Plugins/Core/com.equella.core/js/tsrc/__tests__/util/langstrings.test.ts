@@ -1,4 +1,9 @@
-import { formatSize, Sizes, prepLangStrings, initStrings } from "./langstrings";
+import {
+  formatSize,
+  Sizes,
+  prepLangStrings,
+  initStrings
+} from "../../util/langstrings";
 
 describe("langstrings", () => {
   describe("formatSize", () => {
