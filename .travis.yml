@@ -135,7 +135,7 @@ jobs:
       after_script: ci/scalacheck-save-results.sh Tests-Serial
     # Admin
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -144,7 +144,7 @@ jobs:
       env: OLD_TEST_SUITE=admin
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -156,7 +156,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Advanced Script Controls
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -165,7 +165,7 @@ jobs:
       env: OLD_TEST_SUITE=asc
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -177,7 +177,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Contribution
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -186,7 +186,7 @@ jobs:
       env: OLD_TEST_SUITE=contribution
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -198,7 +198,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Controls
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -207,7 +207,7 @@ jobs:
       env: OLD_TEST_SUITE=controls
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -219,7 +219,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Searching
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -228,7 +228,7 @@ jobs:
       env: OLD_TEST_SUITE=searching
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -240,7 +240,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Users
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -249,7 +249,7 @@ jobs:
       env: OLD_TEST_SUITE=users
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -261,7 +261,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Viewing
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -270,7 +270,7 @@ jobs:
       env: OLD_TEST_SUITE=viewing
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -282,7 +282,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Webservices
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -291,7 +291,7 @@ jobs:
       env: OLD_TEST_SUITE=webservices
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -303,7 +303,7 @@ jobs:
       after_script: ci/oldtests-save-results.sh
     # Workflow
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
@@ -312,7 +312,7 @@ jobs:
       env: OLD_TEST_SUITE=workflow
       after_script: ci/oldtests-save-results.sh
     - stage: functional test
-      script: ci/oldtests-run.sh
+      script: travis_retry ci/oldtests-run.sh
       workspaces:
         use:
           - oeq-installer
