@@ -11,6 +11,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { Config } from "../config";
+import { AxiosError } from "axios";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -30,11 +31,12 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface UISettingEditorProps {
   refreshUser: () => void;
+  handleError: (error: AxiosError) => void;
 }
 
 const UISettingEditor = (props: UISettingEditorProps) => {
   const classes = useStyles();
-  const { refreshUser } = props;
+  const { refreshUser, handleError } = props;
   const { uiconfig } = languageStrings;
 
   const [newUIEnabled, setNewUIEnabled] = React.useState<boolean>(true);
@@ -43,23 +45,35 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   );
 
   React.useEffect(() => {
-    fetchUISetting().then(result => {
-      const setting: UISetting = result.data;
-      setNewSearchEnabled(setting.newUI.newSearch);
-      setNewUIEnabled(setting.newUI.enabled);
-    });
+    fetchUISetting()
+      .then(result => {
+        const setting: UISetting = result.data;
+        setNewSearchEnabled(setting.newUI.newSearch);
+        setNewUIEnabled(setting.newUI.enabled);
+      })
+      .catch(error => {
+        handleError(error);
+      });
   }, []);
 
   const setNewUI = (enabled: boolean) => {
     setNewUIEnabled(enabled);
-    saveUISetting(enabled, newSearchEnabled).then(_ => {
-      window.location.href = Config.baseUrl + "access/settings.do";
-    });
+    saveUISetting(enabled, newSearchEnabled)
+      .then(_ => {
+        window.location.href = Config.baseUrl + "access/settings.do";
+      })
+      .catch(error => {
+        handleError(error);
+      });
   };
 
   const setNewSearch = (enabled: boolean) => {
     setNewSearchEnabled(enabled);
-    saveUISetting(newUIEnabled, enabled).then(_ => refreshUser());
+    saveUISetting(newUIEnabled, enabled)
+      .then(_ => refreshUser())
+      .catch(error => {
+        handleError(error);
+      });
   };
 
   return (

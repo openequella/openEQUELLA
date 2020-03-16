@@ -1,6 +1,10 @@
 import * as React from "react";
 import { Theme } from "@material-ui/core";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
+import {
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps
+} from "../mainui/Template";
 import { fetchSettings } from "./SettingsPageModule";
 import { GeneralSetting } from "./SettingsPageEntry";
 import { languageStrings } from "../util/langstrings";
@@ -18,6 +22,8 @@ import AdminDownloadDialog from "../settings/AdminDownloadDialog";
 import { ReactElement } from "react";
 import UISettingEditor from "./UISettingEditor";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { generateFromError } from "../api/errors";
+import { AxiosError } from "axios";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -77,16 +83,25 @@ const SettingsPage = (props: SettingsPageProps) => {
   // Fetch settings from the server
   React.useEffect(() => {
     let cancel = false;
-    fetchSettings().then(result => {
-      if (!cancel) {
-        setSettings(result.data);
-        setLoading(false);
-      }
-    });
+    fetchSettings()
+      .then(result => {
+        if (!cancel) {
+          setSettings(result.data);
+        }
+      })
+      .catch(error => {
+        handleError(error);
+      })
+      .finally(() => setLoading(false));
+
     return () => {
       cancel = true;
     };
   }, []);
+
+  const handleError = (error: AxiosError) => {
+    updateTemplate(templateError(generateFromError(error)));
+  };
 
   // Group settings by their category and sort each group by setting name
   const settingGroups = (): SettingGroup[] => {
@@ -110,7 +125,9 @@ const SettingsPage = (props: SettingsPageProps) => {
     settings?: GeneralSetting[]
   ): ReactElement => {
     if (category === "ui") {
-      return <UISettingEditor refreshUser={refreshUser} />;
+      return (
+        <UISettingEditor refreshUser={refreshUser} handleError={handleError} />
+      );
     } else {
       return (
         <ExpansionPanelDetails>
