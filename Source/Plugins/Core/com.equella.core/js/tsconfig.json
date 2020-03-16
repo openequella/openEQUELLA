@@ -23,7 +23,7 @@
       "~*": ["./entrybuild/*"]
     }
   },
-  "include": ["tsrc/**/*"],
+  "include": ["tsrc/**/*", "__test__/**/*.ts"],
   "exclude": [
     "node_modules",
     "build",
