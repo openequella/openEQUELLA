@@ -8,6 +8,7 @@ import ThemePage from "../theme/ThemePage";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
+import SettingsPage from "../settings/SettingsPage";
 
 declare const bridge: Bridge;
 
@@ -46,7 +47,7 @@ export const routes = {
   Settings: {
     path: "(/access/settings.do|/page/settings)",
     to: "/page/settings",
-    render: (p: OEQRouteComponentProps<any>) => <bridge.SettingsPage {...p} />
+    component: SettingsPage
   },
   Search: {
     path: "/page/search",
