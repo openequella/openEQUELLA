@@ -23,9 +23,9 @@ import com.dytech.edge.common.Version;
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
-import com.thoughtworks.xstream.XStream;
 import com.tle.admin.PluginServiceImpl;
 import com.tle.client.ListCookieHandler;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
@@ -266,7 +266,7 @@ public class ClientLauncher extends JFrame
     File f = new File(SERVER_XML);
     if (f.exists() && f.isFile()) {
       try (Reader reader = new BufferedReader(new FileReader(f))) {
-        config = (HarnessConfig) new XStream().fromXML(reader);
+        config = (HarnessConfig) XStreamSecurityManager.newXStream().fromXML(reader);
       } catch (IOException ex) {
         // Ignore this
       } catch (Error err) {
@@ -312,7 +312,7 @@ public class ClientLauncher extends JFrame
 
     // Write the configuration back to the file.
     try (Writer out = new BufferedWriter(new FileWriter(newFile))) {
-      new XStream().toXML(config, out);
+      XStreamSecurityManager.newXStream().toXML(config, out);
     } catch (Exception ex) {
       LOGGER.warn("Error saving server xml", ex);
     }

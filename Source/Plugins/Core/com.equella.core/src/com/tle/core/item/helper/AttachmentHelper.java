@@ -32,6 +32,7 @@ import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.common.Check;
 import com.tle.common.security.Privilege;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.ViewCountJavaDao;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class AttachmentHelper extends AbstractHelper {
-  private final XStream customAttachXstream = new XStream();
+  private final XStream customAttachXstream = XStreamSecurityManager.newXStream();
   private final ItemXmlSecurity security;
 
   @Inject

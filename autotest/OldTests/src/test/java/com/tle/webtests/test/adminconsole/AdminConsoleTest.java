@@ -105,7 +105,7 @@ public class AdminConsoleTest extends AbstractTest {
     // Write the configuration back to the file.
     try {
       Writer out = new BufferedWriter(new FileWriter(newFile));
-      new XStream().toXML(config, out);
+      new XStream().toXML(config, out); /* Test - Not a security risk */
     } catch (Exception e) {
       throw new Error(e);
     }

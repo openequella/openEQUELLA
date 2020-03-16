@@ -16,12 +16,17 @@ export function defaultNavMessage() {
   return strings.navaway.content;
 }
 
-export const NavAwayDialog = React.memo(function NavAwayDialog(props: {
+interface NavAwayDialogProps {
   message: string;
-  open: boolean;
   navigateConfirm: (confirmed: boolean) => void;
-}) {
-  const { navigateConfirm, open, message } = props;
+  open: boolean;
+}
+
+export const NavAwayDialog = React.memo(function NavAwayDialog({
+  message,
+  navigateConfirm,
+  open
+}: NavAwayDialogProps) {
   return (
     <Dialog open={open}>
       <DialogTitle>{strings.navaway.title}</DialogTitle>

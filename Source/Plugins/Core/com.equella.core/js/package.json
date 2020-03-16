@@ -73,14 +73,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/enzyme": "^3.10.5",
-    "@types/enzyme-adapter-react-16": "^1.0.6",
-    "@types/jest": "25.1.4",
+    "@types/enzyme": "3.10.5",
+    "@types/enzyme-adapter-react-16": "1.0.6",
+    "@types/jest": "22.2.3",
     "@types/lodash": "4.14.144",
     "@types/luxon": "1.15.1",
     "@types/node": "9.6.52",
     "@types/react": "16.9.11",
-    "@types/react-autosuggest": "9.3.11",
+    "@types/react-autosuggest": "9.3.13",
     "@types/react-color": "2.17.0",
     "@types/react-dom": "16.9.5",
     "@types/react-redux": "5.0.21",
@@ -89,10 +89,12 @@
     "@types/react-swipeable-views": "0.12.2",
     "@types/react-test-renderer": "^16.9.2",
     "@types/redux-logger": "3.0.7",
+    "@types/rewire": "2.5.28",
     "@types/sprintf-js": "1.1.2",
     "@types/tinymce": "4.5.23",
     "@types/uuid": "3.4.4",
     "argparse": "1.0.10",
+    "babel-jest": "25.1.0",
     "combined-stream2": "1.1.2",
     "cross-env": "5.2.1",
     "cross-spawn": "6.0.5",
@@ -109,8 +111,8 @@
     "psc-package": "3.0.1",
     "pulp": "12.3.1",
     "purescript": "0.12.0",
-    "react-test-renderer": "16.8.6",
+    "rewire": "5.0.0",
     "ts-jest": "25.2.1",
-    "typescript": "3.3.3333"
+    "typescript": "3.8.3"
   }
 }

@@ -22,13 +22,13 @@ import com.dytech.edge.admin.wizard.editor.Editor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.TargetNode;
 import com.dytech.edge.wizard.beans.control.WizardControl;
-import com.thoughtworks.xstream.XStream;
 import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
 import com.tle.admin.schema.TargetChooser;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.streaming.XStreamSecurityManager;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -230,7 +230,7 @@ public final class WizardHelper {
   }
 
   public static String getXmlForComparison(Object wizard) {
-    return new XStream().toXML(wizard);
+    return XStreamSecurityManager.newXStream().toXML(wizard);
   }
 
   // ////// OLD STUFF //////////////////////////////////////////

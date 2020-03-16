@@ -7,8 +7,17 @@ export interface Sizes {
   one: string;
   more: string;
 }
+
+/**
+ * Get appropriate language string based off size of value
+ *
+ * @param size size or count of value
+ * @param strings language strings to choose from
+ *
+ * TODO: replace with https://github.com/formatjs/react-intl
+ */
 export function formatSize(size: number, strings: Sizes): string {
-  var format;
+  let format;
   switch (size) {
     case 0:
       format = strings.zero;
@@ -23,12 +32,20 @@ export function formatSize(size: number, strings: Sizes): string {
   return sprintf(format, size);
 }
 
+/**
+ * Add prefix to language strings
+ *
+ * @param prefix prefix to add
+ * @param strings language string or object to process
+ *
+ * TODO: replace with https://github.com/formatjs/react-intl
+ */
 export function prepLangStrings<A>(prefix: string, strings: A): A {
   if (typeof bundle == "undefined") return strings;
   const overrideVal = (prefix: string, val: any) => {
     if (typeof val == "object") {
-      var newOut = {};
-      for (var key in val) {
+      let newOut = {};
+      for (const key in val) {
         if (val.hasOwnProperty(key)) {
           newOut[key] = overrideVal(prefix + "." + key, val[key]);
         }
