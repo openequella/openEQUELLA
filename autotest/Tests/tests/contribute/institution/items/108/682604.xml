@@ -17,7 +17,7 @@
       <url></url>
       <description>Vimeo tool</description>
       <value1>lti</value1>
-      <thumbnail>https://www.edu-apps.org/assets/lti_public_resources/youtube_icon.png</thumbnail>
+      <thumbnail>https://www.edu-apps.org/assets/lti_public_resources/vimeo_icon.png</thumbnail>
       <data>
         <entry>
           <string>SHARED_SECRET</string>
