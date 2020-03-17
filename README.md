@@ -62,7 +62,7 @@ In ubuntu:
 
 <https://nodejs.org/>
 
-As of the time of writing the build was tested Node v8.11.3 and NPM v5.6.0.
+As of the time of writing the build was tested Node v12.16.1 and NPM v6.13.4.
 
 **Download and install Java 8 JDK**
 
