@@ -267,33 +267,30 @@ function updateStylesheets(
     existingSheets[(current as HTMLLinkElement).href] = current;
     current = current.previousElementSibling;
   }
-  const cssPromises = sheets.reduce(
-    (lastLink, cssUrl) => {
-      if (existingSheets[cssUrl]) {
-        delete existingSheets[cssUrl];
-        return lastLink;
-      } else {
-        const newCss = doc.createElement("link");
-        newCss.rel = "stylesheet";
-        newCss.href = cssUrl;
-        head.insertBefore(newCss, insertPoint);
-        const p = new Promise((resolve, reject) => {
-          newCss.addEventListener("load", resolve, false);
-          newCss.addEventListener(
-            "error",
-            err => {
-              console.error(`Failed to load css: ${newCss.href}`);
-              resolve();
-            },
-            false
-          );
-        });
-        lastLink.push(p);
-        return lastLink;
-      }
-    },
-    [] as Promise<any>[]
-  );
+  const cssPromises = sheets.reduce((lastLink, cssUrl) => {
+    if (existingSheets[cssUrl]) {
+      delete existingSheets[cssUrl];
+      return lastLink;
+    } else {
+      const newCss = doc.createElement("link");
+      newCss.rel = "stylesheet";
+      newCss.href = cssUrl;
+      head.insertBefore(newCss, insertPoint);
+      const p = new Promise((resolve, reject) => {
+        newCss.addEventListener("load", resolve, false);
+        newCss.addEventListener(
+          "error",
+          err => {
+            console.error(`Failed to load css: ${newCss.href}`);
+            resolve();
+          },
+          false
+        );
+      });
+      lastLink.push(p);
+      return lastLink;
+    }
+  }, [] as Promise<any>[]);
   return Promise.all(cssPromises).then(_ => existingSheets);
 }
 
