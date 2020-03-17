@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class ItemUnlock extends AbstractCleanupTest {
-  private static final String RENAMED_NAME = "AMAZON";
+  private static final String RENAMED_NAME = "Google Renamed";
   private static final String DISPLAY_NAME = "Google";
   private final String LINK_ATTACHMENT_URL = "https://www.google.com";
 
