@@ -138,6 +138,7 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   }
 
   public SearchSettingsPage save() {
+    waiter.until(ExpectedConditions.elementToBeClickable(save));
     save.click();
     waiter.until(
         ExpectedConditions.presenceOfElementLocated(
