@@ -9,16 +9,15 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
-import com.tle.webtests.pageobject.wizard.controls.universal.YouTubeUniversalControlType;
+import com.tle.webtests.pageobject.wizard.controls.universal.UrlUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class ItemUnlock extends AbstractCleanupTest {
-  private static final String RENAMED_NAME = "A Video";
-  private static final String ORIGINAL_NAME =
-      "What is a function? | Functions and their graphs | Algebra II | Khan Academy";
-  private static final String DISPLAY_NAME = "Original Displayname";
+  private static final String RENAMED_NAME = "AMAZON";
+  private static final String DISPLAY_NAME = "Google";
+  private final String LINK_ATTACHMENT_URL = "https://www.google.com";
 
   @Test
   public void unlockAndResumeItem() {
@@ -30,10 +29,10 @@ public class ItemUnlock extends AbstractCleanupTest {
         new ContributePage(context).load().openWizard("Youtube Channel Testing Collection");
     wizard.editbox(1, itemName);
     UniversalControl control = wizard.universalControl(2);
-    YouTubeUniversalControlType youtube =
-        control.addDefaultResource(new YouTubeUniversalControlType(control));
-    youtube.search("Functions and their graphs", "The Khan Academy").selectVideo(1, ORIGINAL_NAME);
-    control.editResource(youtube.editPage(), ORIGINAL_NAME).setDisplayName(DISPLAY_NAME).save();
+
+    UrlUniversalControlType urlControl =
+        control.addDefaultResource(new UrlUniversalControlType(control));
+    urlControl.addUrl(LINK_ATTACHMENT_URL, DISPLAY_NAME);
     SummaryPage item = wizard.save().publish();
     assertTrue(item.attachments().attachmentExists(DISPLAY_NAME));
 
@@ -49,7 +48,7 @@ public class ItemUnlock extends AbstractCleanupTest {
 
     control = wizard.universalControl(2);
     control
-        .editResource(new YouTubeUniversalControlType(control), DISPLAY_NAME)
+        .editResource(new UrlUniversalControlType(control), DISPLAY_NAME)
         .setDisplayName(RENAMED_NAME)
         .save();
 
