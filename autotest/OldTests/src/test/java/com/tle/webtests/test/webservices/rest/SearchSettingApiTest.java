@@ -36,7 +36,6 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
 
   private static final String DISABLE_CLOUD = "disabled";
 
-
   private final String FILTER_NAME = "name";
   private final String FILTER_ID = "id";
   private final String FILTER_MIME_TYPES = "mimeTypes";
@@ -134,7 +133,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     final JsonNode updatedCloudSettings = getEntity(uri, token);
     assertTrue(updatedCloudSettings.get(DISABLE_CLOUD).asBoolean());
   }
-  
+
   @Test(dependsOnMethods = "testSearchSettings")
   public void testCreateSearchFilter() throws Exception {
     final String uri = searchFilterUri("");
