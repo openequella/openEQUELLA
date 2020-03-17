@@ -25,7 +25,7 @@ import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import GalleryViewsSettings from "./components/GalleryViewsSettings";
 import SettingsCheckbox from "../../components/SettingsCheckbox";
 
-let useStyles = makeStyles({
+const useStyles = makeStyles({
   floatingButton: {
     right: "16px",
     bottom: "16px",
