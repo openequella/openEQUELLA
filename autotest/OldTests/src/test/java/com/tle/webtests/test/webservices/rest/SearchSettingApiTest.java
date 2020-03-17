@@ -2,6 +2,7 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +18,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String OAUTH_CLIENT_ID = "SearchSettingApiTestClient";
   private static final String API_SEARCH_SETTINGS_PATH = "api/settings/search";
   private static final String API_CLOUD_SETTINGS_PATH = "api/settings/search/cloud";
+  private static final String API_SEARCH_FILTER_PATH = "api/settings/search/filter";
 
   private static final String DEFAULT_SORT_ORDER = "defaultSearchSort";
   private static final String SHOW_NON_LIVE = "searchingShowNonLiveCheckbox";
@@ -33,6 +35,23 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String URL_LEVEL = "urlLevel";
 
   private static final String DISABLE_CLOUD = "disabled";
+
+
+  private final String FILTER_NAME = "name";
+  private final String FILTER_ID = "id";
+  private final String FILTER_MIME_TYPES = "mimeTypes";
+
+  private final String IMAGE_FILTER = "image filter";
+  private final String JPEG = "image/jpeg";
+  private final String PNG = "image/png";
+
+  private final String PDF_FILTER = "PDF filter";
+  private final String PDF = "application/pdf";
+
+  private final String BAD_FILTER_ID = "d43a4d03-73dc-48d0-8563-c6f4dc845bbb";
+  private final String BAD_MIME_TYPE = "image/bad";
+
+  private String newFilterId = "";
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
@@ -114,5 +133,154 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
 
     final JsonNode updatedCloudSettings = getEntity(uri, token);
     assertTrue(updatedCloudSettings.get(DISABLE_CLOUD).asBoolean());
+  }
+  
+  @Test(dependsOnMethods = "testSearchSettings")
+  public void testCreateSearchFilter() throws Exception {
+    final String uri = searchFilterUri("");
+
+    // Create a search filter
+    HttpResponse response =
+        postEntity(
+            null,
+            uri,
+            getToken(),
+            false,
+            FILTER_NAME,
+            IMAGE_FILTER,
+            FILTER_MIME_TYPES,
+            JPEG,
+            FILTER_MIME_TYPES,
+            PNG);
+    assertEquals(response.getStatusLine().getStatusCode(), 201);
+    JsonNode node = mapper.readTree(response.getEntity().getContent());
+    newFilterId = node.get(FILTER_ID).asText();
+    assertNotNull(newFilterId);
+    assertEquals(IMAGE_FILTER, node.get(FILTER_NAME).asText());
+    assertEquals(JPEG, node.get(FILTER_MIME_TYPES).get(0).asText());
+    assertEquals(PNG, node.get(FILTER_MIME_TYPES).get(1).asText());
+
+    // Create without filter name
+    response = postEntity(null, uri, getToken(), false, FILTER_MIME_TYPES, JPEG);
+    node = mapper.readTree(response.getEntity().getContent());
+    assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals("Filter name cannot be empty.", node.get("errors").get(0).get("message").asText());
+
+    // Create without MIMEType
+    response = postEntity(null, uri, getToken(), false, FILTER_NAME, IMAGE_FILTER);
+    node = mapper.readTree(response.getEntity().getContent());
+    assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals("Need at least one MIME type.", node.get("errors").get(0).get("message").asText());
+
+    // Create with bad MIMETypes
+    response =
+        postEntity(
+            null,
+            uri,
+            getToken(),
+            false,
+            FILTER_NAME,
+            IMAGE_FILTER,
+            FILTER_MIME_TYPES,
+            BAD_MIME_TYPE);
+    node = mapper.readTree(response.getEntity().getContent());
+    assertEquals(400, response.getStatusLine().getStatusCode());
+    assertEquals(
+        "Invalid MIMETypes found : " + BAD_MIME_TYPE,
+        node.get("errors").get(0).get("message").asText());
+
+    // Create without token
+    response =
+        postEntity(null, uri, null, false, FILTER_NAME, IMAGE_FILTER, FILTER_MIME_TYPES, JPEG);
+    assertEquals(403, response.getStatusLine().getStatusCode());
+  }
+
+  @Test(dependsOnMethods = "testCreateSearchFilter")
+  public void testRetrieveSearchFilter() throws Exception {
+    final String uri = searchFilterUri("");
+
+    // Retrieve all search filters
+    // getEntity already includes the check of when user is not authenticated
+    final JsonNode initialFilters = getEntity(uri, getToken());
+    assertEquals(1, initialFilters.size());
+
+    // Retrieve a specific search filter
+    final JsonNode filter = getEntity(searchFilterUri(newFilterId), getToken());
+    assertEquals(newFilterId, filter.get(FILTER_ID).asText());
+    assertEquals(IMAGE_FILTER, filter.get(FILTER_NAME).asText());
+    assertEquals(JPEG, filter.get(FILTER_MIME_TYPES).get(0).asText());
+    assertEquals(PNG, filter.get(FILTER_MIME_TYPES).get(1).asText());
+  }
+
+  @Test(dependsOnMethods = "testRetrieveSearchFilter")
+  public void testUpdateSearchFilter() throws Exception {
+    final String uri = searchFilterUri(newFilterId);
+
+    // Update filter
+    HttpResponse response =
+        putEntity(null, uri, getToken(), false, FILTER_NAME, PDF_FILTER, FILTER_MIME_TYPES, PDF);
+    JsonNode node = mapper.readTree(response.getEntity().getContent());
+    assertEquals(200, response.getStatusLine().getStatusCode());
+    assertEquals(PDF_FILTER, node.get(FILTER_NAME).asText());
+    assertEquals(PDF, node.get(FILTER_MIME_TYPES).get(0).asText());
+
+    // Update with a bad filter ID
+    response =
+        putEntity(
+            null,
+            searchFilterUri(BAD_FILTER_ID),
+            getToken(),
+            true,
+            FILTER_NAME,
+            IMAGE_FILTER,
+            FILTER_MIME_TYPES,
+            JPEG);
+    assertEquals(404, response.getStatusLine().getStatusCode());
+
+    // Update without filter name
+    response = putEntity(null, uri, getToken(), true, FILTER_MIME_TYPES, JPEG);
+    assertEquals(400, response.getStatusLine().getStatusCode());
+
+    // Update without MIMETypes
+    response = putEntity(null, uri, getToken(), true, FILTER_NAME, IMAGE_FILTER);
+    assertEquals(400, response.getStatusLine().getStatusCode());
+
+    // Update with bad MIMETypes
+    response =
+        putEntity(
+            null,
+            uri,
+            getToken(),
+            true,
+            FILTER_NAME,
+            IMAGE_FILTER,
+            FILTER_MIME_TYPES,
+            BAD_MIME_TYPE);
+    assertEquals(400, response.getStatusLine().getStatusCode());
+
+    // Update without token
+    response = putEntity(null, uri, null, true, FILTER_NAME, IMAGE_FILTER, FILTER_MIME_TYPES, JPEG);
+    assertEquals(403, response.getStatusLine().getStatusCode());
+  }
+
+  @Test(dependsOnMethods = "testUpdateSearchFilter")
+  public void testDeleteSearchFilter() throws Exception {
+    final String uri = searchFilterUri(newFilterId);
+
+    // Delete filter
+    HttpResponse response = deleteResource(uri, getToken());
+    assertEquals(response.getStatusLine().getStatusCode(), 200);
+
+    // Delete with a bad filter ID
+    response = deleteResource(searchFilterUri(BAD_FILTER_ID), getToken());
+    assertEquals(404, response.getStatusLine().getStatusCode());
+
+    // Delete without token
+    response = deleteResource(searchFilterUri(BAD_FILTER_ID), null);
+    assertEquals(403, response.getStatusLine().getStatusCode());
+  }
+
+  private String searchFilterUri(String filterId) {
+    return PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_FILTER_PATH, filterId);
   }
 }
