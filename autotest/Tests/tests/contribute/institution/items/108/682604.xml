@@ -1,31 +1,27 @@
 <com.tle.beans.item.Item>
-  <id>217346</id>
+  <id>682604</id>
   <uuid>2c5be16d-90ec-46ba-b137-724d595f838b</uuid>
   <version>1</version>
   <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
-  <dateModified class="sql-timestamp">2015-05-18 10:49:14.041</dateModified>
+  <dateModified class="sql-timestamp">2020-03-17 16:13:10.392</dateModified>
   <dateCreated class="sql-timestamp">2013-12-17 13:59:20.29</dateCreated>
-  <dateForIndex class="sql-timestamp">2015-05-18 10:49:14.041</dateForIndex>
+  <dateForIndex class="sql-timestamp">2020-03-17 16:13:10.392</dateForIndex>
   <rating>-1.0</rating>
   <moderating>false</moderating>
   <status>LIVE</status>
   <metadataSecurityTargets/>
   <attachments>
     <com.tle.beans.item.attachments.CustomAttachment>
-      <id>217365</id>
+      <id>682610</id>
       <uuid>9b246ac5-1916-4ec7-8209-04e7e252479b</uuid>
       <url></url>
-      <description>youtube tool</description>
+      <description>Vimeo tool</description>
       <value1>lti</value1>
-      <thumbnail>https://www.edu-apps.org/tools/youtube/icon.png</thumbnail>
+      <thumbnail>https://www.edu-apps.org/assets/lti_public_resources/vimeo_icon.png</thumbnail>
       <data>
         <entry>
           <string>SHARED_SECRET</string>
           <string>secret</string>
-        </entry>
-        <entry>
-          <string>ICON_URL</string>
-          <string>https://www.edu-apps.org/assets/lti_public_resources/youtube_icon.png</string>
         </entry>
         <entry>
           <string>SHARE_EMAIL</string>
@@ -36,16 +32,12 @@
           <string>key</string>
         </entry>
         <entry>
-          <string>CUSTOM_PARAMS</string>
-          <list/>
-        </entry>
-        <entry>
           <string>SHARE_NAME</string>
           <boolean>true</boolean>
         </entry>
         <entry>
           <string>LAUNCH_URL</string>
-          <string>https://www.edu-apps.org/lti_public_resources/?tool_id=youtube</string>
+          <string>https://www.edu-apps.org/lti_public_resources/?tool_id=vimeo</string>
         </entry>
         <entry>
           <string>EXTERNAL_TOOL_PROVIDER_UUID</string>
@@ -60,7 +52,7 @@
   <collaborators/>
   <referencedUrls/>
   <moderation>
-    <id>217353</id>
+    <id>682607</id>
     <liveApprovalDate class="sql-timestamp">2013-12-17 13:59:20.28</liveApprovalDate>
     <start class="sql-timestamp">2013-12-17 14:44:26.98</start>
     <lastAction class="sql-timestamp">2013-12-17 13:59:20.28</lastAction>
@@ -72,7 +64,7 @@
   </moderation>
   <history>
     <com.tle.beans.item.HistoryEvent>
-      <id>217369</id>
+      <id>682611</id>
       <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
       <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
       <applies>false</applies>
@@ -80,7 +72,7 @@
       <state>DRAFT</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>217371</id>
+      <id>682612</id>
       <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
       <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
       <applies>false</applies>
@@ -88,7 +80,7 @@
       <state>DRAFT</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>217373</id>
+      <id>682613</id>
       <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
       <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
       <applies>false</applies>
@@ -96,7 +88,7 @@
       <state>LIVE</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>217374</id>
+      <id>682614</id>
       <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
       <date class="sql-timestamp">2014-01-08 11:15:19.267</date>
       <applies>false</applies>
@@ -104,9 +96,17 @@
       <state>LIVE</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>217494</id>
+      <id>682615</id>
       <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
       <date class="sql-timestamp">2015-05-18 10:49:14.041</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>682721</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-03-17 16:13:10.392</date>
       <applies>false</applies>
       <type>edit</type>
       <state>LIVE</state>
@@ -118,13 +118,13 @@
   <treeNodes/>
   <notifications/>
   <name>
-    <id>217355</id>
+    <id>682608</id>
     <strings>
       <entry>
-        <string>en_US</string>
+        <string>en_GB</string>
         <com.tle.beans.entity.LanguageString>
-          <id>217496</id>
-          <locale>en_US</locale>
+          <id>682722</id>
+          <locale>en_GB</locale>
           <priority>2</priority>
           <text>lti viewer item</text>
           <bundle reference="../../../.."/>
@@ -132,10 +132,6 @@
       </entry>
     </strings>
   </name>
-  <description>
-    <id>217495</id>
-    <strings/>
-  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>
