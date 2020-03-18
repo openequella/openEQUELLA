@@ -63,6 +63,7 @@ In ubuntu:
 <https://nodejs.org/>
 
 As of the time of writing the build was tested Node v12.16.1 and NPM v6.13.4.
+The recommended version of Node is noted in [_.nvmrc_](./.nvmrc), this version can be installed with [nvm](https://github.com/nvm-sh/nvm) using `nvm install`,
 
 **Download and install Java 8 JDK**
 
