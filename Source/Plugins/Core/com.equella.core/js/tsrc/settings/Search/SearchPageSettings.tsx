@@ -177,19 +177,20 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             id={"cs_dc"}
           />
         </Grid>
+        <Grid item>
+          {/*Save Button*/}
+          <Button
+            id={"_saveButton"}
+            disabled={showError}
+            className={classes.floatingButton}
+            variant="contained"
+            onClick={handleSubmitButton}
+            size="large"
+          >
+            {searchPageSettingsStrings.save}
+          </Button>
+        </Grid>
       </Grid>
-
-      {/*Save Button*/}
-      <Button
-        id={"_saveButton"}
-        disabled={showError}
-        className={classes.floatingButton}
-        variant="contained"
-        onClick={handleSubmitButton}
-        size="large"
-      >
-        {searchPageSettingsStrings.save}
-      </Button>
 
       {/*Snackbar*/}
       <MessageInfo
@@ -201,4 +202,5 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     </SettingsMenuContainer>
   );
 }
+
 export default SearchPageSettings;
