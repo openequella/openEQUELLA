@@ -3,7 +3,7 @@
     "outDir": "target/ts",
     "module": "CommonJS",
     "target": "es5",
-    "lib": ["es6", "dom", "es2018.promise"],
+    "lib": ["es2020", "dom"],
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowJs": true,
