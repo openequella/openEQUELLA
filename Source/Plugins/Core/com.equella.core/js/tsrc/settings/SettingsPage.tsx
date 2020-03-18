@@ -58,12 +58,10 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [settingGroups, setSettingGroups] = React.useState<SettingGroup[]>([]);
 
-  // Update the title of App Bar
   React.useEffect(() => {
     updateTemplate(templateDefaults(languageStrings["com.equella.core"].title));
   }, []);
 
-  // Fetch settings from the server
   React.useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
     let cancel = false;
@@ -87,12 +85,17 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     updateTemplate(templateError(generateFromError(error)));
   };
 
-  // Create the content of each ExpansionPanel
+  /**
+   * Create the UI content for setting category
+   * @param category - One of the pre-defined categories
+   * @param settings - settings of the category
+   * @returns {ReactElement} Either a List or UISettingEditor, depending on the category
+   */
   const expansionPanelContent = ({
     category,
     settings
   }: SettingGroup): ReactElement => {
-    if (category.name === "UI") {
+    if (category.name === languageStrings.settings.ui.name) {
       return (
         <UISettingEditor refreshUser={refreshUser} handleError={handleError} />
       );
@@ -100,30 +103,31 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     return (
       <ExpansionPanelDetails>
         <List>
-          {settings.map(setting => {
-            const { id, description } = setting;
-            return (
-              <ListItem key={id}>
-                <ListItemText
-                  primary={settingLink(setting)}
-                  secondary={description}
-                />
-              </ListItem>
-            );
-          })}
+          {settings.map(setting => (
+            <ListItem key={setting.id}>
+              <ListItemText
+                primary={settingLink(setting)}
+                secondary={setting.description}
+              />
+            </ListItem>
+          ))}
         </List>
       </ExpansionPanelDetails>
     );
   };
 
-  // Create a link for each setting
+  /**
+   * Create a link for each setting
+   * @param {GeneralSetting} setting - A oEQ general setting
+   * @returns {ReactElement} A link to the setting's page
+   */
   const settingLink = (setting: GeneralSetting): ReactElement => {
     let link = <div />;
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;
     } else if (setting.links.href) {
       link = <MUILink href={setting.links.href}>{setting.name}</MUILink>;
-    } else if (setting.id === "adminconsole") {
+    } else if (setting.id === languageStrings.adminconsoledownload.id) {
       link = (
         <MUILink
           href="javascript:void(0)"

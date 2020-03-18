@@ -11,10 +11,15 @@ export interface SettingGroup {
   settings: GeneralSetting[];
 }
 
-// Group settings by their category and sort each group by setting name
+/**
+ * Group all settings by their category and sort each group by setting name
+ * @param {GeneralSetting[]} settings
+ * @returns SettingGroup[] A array of SettingGroup which includes a category and settings of the category
+ */
 export const groupMap = (settings: GeneralSetting[]): SettingGroup[] => {
   const settingCategories: { [key: string]: SettingCategory } =
     languageStrings.settings;
+
   return Object.keys(settingCategories).map(key => {
     const settingsOfCategory = settings
       .filter(setting => setting.group === key)
