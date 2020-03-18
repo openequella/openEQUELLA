@@ -8,6 +8,7 @@ import {
 import { fetchSettings } from "./SettingsPageModule";
 import { GeneralSetting } from "./SettingsPageEntry";
 import { languageStrings } from "../util/langstrings";
+import MUILink from "@material-ui/core/Link";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -24,6 +25,7 @@ import UISettingEditor from "./UISettingEditor";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { generateFromError } from "../api/errors";
 import { AxiosError } from "axios";
+import { groupMap, SettingGroup } from "./SettingGroups";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -47,33 +49,12 @@ interface SettingsPageProps extends TemplateUpdateProps {
   refreshUser: () => void;
 }
 
-interface SettingCategory {
-  id: string;
-  details: {
-    name: string;
-    desc: string;
-  };
-}
-
-interface SettingGroup {
-  category: SettingCategory;
-  settings: GeneralSetting[];
-}
-
-const SettingsPage = (props: SettingsPageProps) => {
+const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
   const classes = useStyles();
-  const { refreshUser, updateTemplate } = props;
-  const SETTING_CATEGORIES: SettingCategory[] = [
-    { id: "general", details: languageStrings.settings.general },
-    { id: "integration", details: languageStrings.settings.integration },
-    { id: "diagnostics", details: languageStrings.settings.diagnostics },
-    { id: "searching", details: languageStrings.settings.searching },
-    { id: "ui", details: languageStrings.settings.ui }
-  ];
 
-  const [settings, setSettings] = React.useState<GeneralSetting[]>([]);
   const [adminDialogOpen, setAdminDialogOpen] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [settingGroups, setSettingGroups] = React.useState<SettingGroup[]>([]);
 
   // Update the title of App Bar
   React.useEffect(() => {
@@ -82,11 +63,12 @@ const SettingsPage = (props: SettingsPageProps) => {
 
   // Fetch settings from the server
   React.useEffect(() => {
+    // Use a flag to prevent setting state when component is being unmounted
     let cancel = false;
     fetchSettings()
       .then(result => {
         if (!cancel) {
-          setSettings(result.data);
+          setSettingGroups(groupMap(result.data));
         }
       })
       .catch(error => {
@@ -103,50 +85,32 @@ const SettingsPage = (props: SettingsPageProps) => {
     updateTemplate(templateError(generateFromError(error)));
   };
 
-  // Group settings by their category and sort each group by setting name
-  const settingGroups = (): SettingGroup[] => {
-    const groups: SettingGroup[] = [];
-
-    SETTING_CATEGORIES.forEach(category => {
-      const settingsOfCategory = settings
-        .filter(setting => setting.group === category.id)
-        .sort((s1, s2) => {
-          return s1.name > s2.name ? 1 : -1;
-        });
-      groups.push({ category: category, settings: settingsOfCategory });
-    });
-
-    return groups;
-  };
-
   // Create the content of each ExpansionPanel
-  const expansionPanelContent = (
-    category: string,
-    settings?: GeneralSetting[]
-  ): ReactElement => {
-    if (category === "ui") {
+  const expansionPanelContent = ({
+    category,
+    settings
+  }: SettingGroup): ReactElement => {
+    if (category.name === "UI") {
       return (
         <UISettingEditor refreshUser={refreshUser} handleError={handleError} />
       );
-    } else {
-      return (
-        <ExpansionPanelDetails>
-          <List>
-            {settings &&
-              settings.map(setting => {
-                return (
-                  <ListItem key={setting.id}>
-                    <ListItemText
-                      primary={settingLink(setting)}
-                      secondary={setting.description}
-                    />
-                  </ListItem>
-                );
-              })}
-          </List>
-        </ExpansionPanelDetails>
-      );
     }
+    return (
+      <ExpansionPanelDetails>
+        <List>
+          {settings.map(setting => {
+            return (
+              <ListItem key={setting.id}>
+                <ListItemText
+                  primary={settingLink(setting)}
+                  secondary={setting.description}
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+      </ExpansionPanelDetails>
+    );
   };
 
   // Create a link for each setting
@@ -155,12 +119,15 @@ const SettingsPage = (props: SettingsPageProps) => {
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;
     } else if (setting.links.href) {
-      link = <a href={setting.links.href}>{setting.name}</a>;
+      link = <MUILink href={setting.links.href}>{setting.name}</MUILink>;
     } else if (setting.id === "adminconsole") {
       link = (
-        <a href="javascript:void(0)" onClick={() => setAdminDialogOpen(true)}>
+        <MUILink
+          href="javascript:void(0)"
+          onClick={() => setAdminDialogOpen(true)}
+        >
           {setting.name}
-        </a>
+        </MUILink>
       );
     }
 
@@ -179,19 +146,17 @@ const SettingsPage = (props: SettingsPageProps) => {
           <CircularProgress variant="indeterminate" />
         </div>
       ) : (
-        settingGroups().map(group => {
-          const { category } = group;
+        settingGroups.map(group => {
+          const { name, desc } = group.category;
           return (
-            <ExpansionPanel key={category.id}>
+            <ExpansionPanel key={name}>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography className={classes.heading}>
-                  {category.details.name}
-                </Typography>
+                <Typography className={classes.heading}>{name}</Typography>
                 <Typography className={classes.secondaryHeading}>
-                  {category.details.desc}
+                  {desc}
                 </Typography>
               </ExpansionPanelSummary>
-              {expansionPanelContent(category.id, group.settings)}
+              {expansionPanelContent(group)}
             </ExpansionPanel>
           );
         })
