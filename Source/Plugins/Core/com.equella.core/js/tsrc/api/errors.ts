@@ -1,5 +1,5 @@
-import v4 = require("uuid/v4");
 import { AxiosResponse } from "axios";
+import v4 = require("uuid/v4");
 
 export interface ErrorResponse {
   id: string;
