@@ -1,15 +1,18 @@
 import * as React from "react";
-import { UISetting } from "./SettingsPageEntry";
 import { fetchUISetting, saveUISetting } from "./SettingsPageModule";
-import { ExpansionPanelDetails, Theme } from "@material-ui/core";
+import {
+  ExpansionPanelDetails,
+  Theme,
+  Button,
+  FormControl,
+  FormControlLabel,
+  Switch,
+  Grid
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
-import Button from "@material-ui/core/Button";
 import { languageStrings } from "../util/langstrings";
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import { Config } from "../config";
 import { AxiosError } from "axios";
 
@@ -46,10 +49,10 @@ const UISettingEditor = (props: UISettingEditorProps) => {
 
   React.useEffect(() => {
     fetchUISetting()
-      .then(result => {
-        const setting: UISetting = result.data;
-        setNewSearchEnabled(setting.newUI.newSearch);
-        setNewUIEnabled(setting.newUI.enabled);
+      .then(uiSetting => {
+        const { enabled, newSearch } = uiSetting.newUI;
+        setNewUIEnabled(enabled);
+        setNewSearchEnabled(newSearch);
       })
       .catch(error => {
         handleError(error);
@@ -78,42 +81,48 @@ const UISettingEditor = (props: UISettingEditorProps) => {
 
   return (
     <ExpansionPanelDetails>
-      <div>
-        <div className={classes.enableNewUIColumn}>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={newUIEnabled}
-                  onChange={(_, checked) => setNewUI(checked)}
-                />
-              }
-              label={uiconfig.enableNew}
-            />
-          </FormControl>
-        </div>
+      <Grid container direction={"column"}>
+        <Grid item>
+          <div className={classes.enableNewUIColumn}>
+            <FormControl>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newUIEnabled}
+                    onChange={(_, checked) => setNewUI(checked)}
+                  />
+                }
+                label={uiconfig.enableNew}
+              />
+            </FormControl>
+          </div>
+        </Grid>
 
-        <div className={classes.enableNewSearchColumn}>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={newSearchEnabled}
-                  disabled={!newUIEnabled}
-                  onChange={(_, checked) => setNewSearch(checked)}
-                />
-              }
-              label={uiconfig.enableSearch}
-            />
-          </FormControl>
-        </div>
+        <Grid item>
+          <div className={classes.enableNewSearchColumn}>
+            <FormControl>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newSearchEnabled}
+                    disabled={!newUIEnabled}
+                    onChange={(_, checked) => setNewSearch(checked)}
+                  />
+                }
+                label={uiconfig.enableSearch}
+              />
+            </FormControl>
+          </div>
+        </Grid>
 
-        <Link to={routes.ThemeConfig.path}>
-          <Button variant="contained" disabled={!newUIEnabled}>
-            {uiconfig.themeSettingsButton}
-          </Button>
-        </Link>
-      </div>
+        <Grid item>
+          <Link to={routes.ThemeConfig.path}>
+            <Button variant="contained" disabled={!newUIEnabled}>
+              {uiconfig.themeSettingsButton}
+            </Button>
+          </Link>
+        </Grid>
+      </Grid>
     </ExpansionPanelDetails>
   );
 };

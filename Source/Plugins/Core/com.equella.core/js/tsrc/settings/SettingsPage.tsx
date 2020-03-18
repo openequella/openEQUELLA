@@ -1,5 +1,15 @@
 import * as React from "react";
-import { Theme } from "@material-ui/core";
+import {
+  Theme,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress
+} from "@material-ui/core";
 import {
   templateDefaults,
   templateError,
@@ -9,20 +19,12 @@ import { fetchSettings } from "./SettingsPageModule";
 import { GeneralSetting } from "./SettingsPageEntry";
 import { languageStrings } from "../util/langstrings";
 import MUILink from "@material-ui/core/Link";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
 import { ReactElement } from "react";
 import UISettingEditor from "./UISettingEditor";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { generateFromError } from "../api/errors";
 import { AxiosError } from "axios";
 import { groupMap, SettingGroup } from "./SettingGroups";
@@ -66,9 +68,9 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     // Use a flag to prevent setting state when component is being unmounted
     let cancel = false;
     fetchSettings()
-      .then(result => {
+      .then(settings => {
         if (!cancel) {
-          setSettingGroups(groupMap(result.data));
+          setSettingGroups(groupMap(settings));
         }
       })
       .catch(error => {
@@ -99,11 +101,12 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
       <ExpansionPanelDetails>
         <List>
           {settings.map(setting => {
+            const { id, description } = setting;
             return (
-              <ListItem key={setting.id}>
+              <ListItem key={id}>
                 <ListItemText
                   primary={settingLink(setting)}
-                  secondary={setting.description}
+                  secondary={description}
                 />
               </ListItem>
             );

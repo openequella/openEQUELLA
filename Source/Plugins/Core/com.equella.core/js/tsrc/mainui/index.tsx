@@ -243,7 +243,7 @@ export default function() {
     ReactDOM.render(
       <BrowserRouter basename={basePath} forceRefresh>
         <ThemeProvider theme={oeqTheme}>
-          <SettingsPage refreshUser={() => {}} updateTemplate={_ => {}} />
+          <SettingsPage refreshUser={() => {}} updateTemplate={() => {}} />
         </ThemeProvider>
       </BrowserRouter>,
       document.getElementById("settingsPage")

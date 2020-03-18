@@ -5,22 +5,22 @@ import { Config } from "../config";
 const GET_SETTINGS_URL = `${Config.baseUrl}api/settings`;
 const GET_UI_SETTINGS_URL = `${GET_SETTINGS_URL}/ui`;
 
-export function fetchSettings(): AxiosPromise<GeneralSetting[]> {
-  return Axios.get(GET_SETTINGS_URL);
-}
+export const fetchSettings = (): Promise<GeneralSetting[]> => {
+  return Axios.get<GeneralSetting[]>(GET_SETTINGS_URL).then(res => res.data);
+};
 
-export function fetchUISetting(): AxiosPromise<UISetting> {
-  return Axios.get(GET_UI_SETTINGS_URL);
-}
+export const fetchUISetting = (): Promise<UISetting> => {
+  return Axios.get<UISetting>(GET_UI_SETTINGS_URL).then(res => res.data);
+};
 
-export function saveUISetting(
+export const saveUISetting = (
   newUIEnabled: boolean,
   newSearchEnabled: boolean
-): AxiosPromise<UISetting> {
+): AxiosPromise => {
   return Axios.put(GET_UI_SETTINGS_URL, {
     newUI: {
       enabled: newUIEnabled,
       newSearch: newSearchEnabled
     }
   });
-}
+};
