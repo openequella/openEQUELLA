@@ -107,7 +107,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   public void testShowNonLive() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setOrder(SearchSettingsPage.Order.RANK);
+    ssp.setOrder(SearchSettingsPage.Order.RANK).save();
     ssp.includeNonLive(true).save();
 
     SearchPage searchPage = new SearchPage(context).load();

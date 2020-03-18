@@ -74,6 +74,9 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage includeNonLive(boolean showNonLive) {
     if (includeNonLive.isSelected() != showNonLive) {
+      // click on the title to remove focus - fixes flakiness
+      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
+          .click();
       includeNonLive.click();
     }
     return get();
@@ -81,6 +84,9 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setGenerateAuthFeeds(boolean authFeeds) {
     if (genAuthFeeds.isSelected() != authFeeds) {
+      // click on the title to remove focus - fixes flakiness
+      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
+          .click();
       genAuthFeeds.click();
     }
     return get();
@@ -95,6 +101,9 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setDisableCloud(boolean disable) {
     if (disableCloud.isSelected() != disable) {
+      // click on the title to remove focus - fixes flakiness
+      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
+          .click();
       disableCloud.click();
     }
     return get();
@@ -102,6 +111,9 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setDisableImageGallery(boolean disable) {
     if (disableGalleryCheckbox.isSelected() != disable) {
+      // click on the title to remove focus - fixes flakiness
+      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
+          .click();
       disableGalleryCheckbox.click();
     }
     return get();
