@@ -5,6 +5,7 @@ import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ReceiptPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -84,9 +85,6 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setGenerateAuthFeeds(boolean authFeeds) {
     if (genAuthFeeds.isSelected() != authFeeds) {
-      // click on the title to remove focus - fixes flakiness
-      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
-          .click();
       genAuthFeeds.click();
     }
     return get();
@@ -101,9 +99,6 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setDisableCloud(boolean disable) {
     if (disableCloud.isSelected() != disable) {
-      // click on the title to remove focus - fixes flakiness
-      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
-          .click();
       disableCloud.click();
     }
     return get();
@@ -111,9 +106,6 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage setDisableImageGallery(boolean disable) {
     if (disableGalleryCheckbox.isSelected() != disable) {
-      // click on the title to remove focus - fixes flakiness
-      find(getSearchContext(), By.xpath("//h5[text()='" + SEARCH_SETTINGS_SECTION_TITLE + "']"))
-          .click();
       disableGalleryCheckbox.click();
     }
     return get();
@@ -151,7 +143,7 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
 
   public SearchSettingsPage save() {
     waiter.until(ExpectedConditions.elementToBeClickable(save));
-    save.click();
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", save);
     waiter.until(
         ExpectedConditions.presenceOfElementLocated(
             By.xpath("//span[text()='Settings saved successfully.']")));
