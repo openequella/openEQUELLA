@@ -21,13 +21,13 @@ describe("SearchSettingFormControl.tsx", () => {
   afterEach(() => jest.clearAllMocks);
 
   test("onChange - is not triggered before call", () => {
-    expect(onChange.mock.calls.length).toEqual(0);
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   test("onChange - is triggered after call", () => {
     const textField = component.find("input");
     textField.simulate("change");
-    expect(onChange.mock.calls.length).toEqual(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
     component.unmount();
   });
 });
