@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { Config } from "../config";
-import { AxiosError } from "axios";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -34,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface UISettingEditorProps {
   refreshUser: () => void;
-  handleError: (error: AxiosError) => void;
+  handleError: (error: Error) => void;
 }
 
 const UISettingEditor = (props: UISettingEditorProps) => {

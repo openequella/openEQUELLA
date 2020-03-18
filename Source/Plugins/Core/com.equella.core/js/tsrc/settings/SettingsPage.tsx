@@ -26,7 +26,6 @@ import AdminDownloadDialog from "../settings/AdminDownloadDialog";
 import { ReactElement } from "react";
 import UISettingEditor from "./UISettingEditor";
 import { generateFromError } from "../api/errors";
-import { AxiosError } from "axios";
 import { groupMap, SettingGroup } from "./SettingGroups";
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -81,7 +80,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     };
   }, []);
 
-  const handleError = (error: AxiosError) => {
+  const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
   };
 
