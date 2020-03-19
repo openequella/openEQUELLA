@@ -1,4 +1,5 @@
 import * as React from "react";
+import axios from "axios";
 import {
   Theme,
   ExpansionPanel,
@@ -63,20 +64,22 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
 
   React.useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
-    let cancel = false;
-    fetchSettings()
+    let cancelToken = axios.CancelToken.source();
+    fetchSettings(cancelToken.token)
       .then(settings => {
-        if (!cancel) {
-          setSettingGroups(groupMap(settings));
-        }
+        setSettingGroups(groupMap(settings));
+        setLoading(false);
       })
       .catch(error => {
+        if (axios.isCancel(error)) {
+          return; // Request was cancelled
+        }
         handleError(error);
-      })
-      .finally(() => setLoading(false));
+        setLoading(false);
+      });
 
     return () => {
-      cancel = true;
+      cancelToken.cancel();
     };
   }, []);
 

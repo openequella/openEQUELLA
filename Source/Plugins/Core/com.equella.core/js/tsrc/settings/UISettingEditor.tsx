@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { Config } from "../config";
+import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -47,15 +48,23 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   );
 
   React.useEffect(() => {
-    fetchUISetting()
+    let cancelToken = axios.CancelToken.source();
+    fetchUISetting(cancelToken.token)
       .then(uiSetting => {
         const { enabled, newSearch } = uiSetting.newUI;
         setNewUIEnabled(enabled);
         setNewSearchEnabled(newSearch);
       })
       .catch(error => {
+        if (axios.isCancel(error)) {
+          return; // Request was cancelled
+        }
         handleError(error);
       });
+
+    return () => {
+      cancelToken.cancel();
+    };
   }, []);
 
   const setNewUI = (enabled: boolean) => {
