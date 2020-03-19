@@ -72,7 +72,7 @@
     "@types/jest": "22.2.3",
     "@types/lodash": "4.14.144",
     "@types/luxon": "1.15.1",
-    "@types/node": "9.6.52",
+    "@types/node": "12.12.30",
     "@types/react": "16.9.11",
     "@types/react-autosuggest": "9.3.13",
     "@types/react-color": "2.17.0",
