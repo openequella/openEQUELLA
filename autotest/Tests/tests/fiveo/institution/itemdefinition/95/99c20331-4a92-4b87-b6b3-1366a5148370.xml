@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>215996</id>
+  <id>678574</id>
   <uuid>99c20331-4a92-4b87-b6b3-1366a5148370</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
-  <dateModified class="sql-timestamp">2015-03-20 10:08:41.852</dateModified>
+  <dateModified class="sql-timestamp">2020-03-17 15:17:51.464</dateModified>
   <dateCreated class="sql-timestamp">2015-03-20 10:08:41.852</dateCreated>
   <name>
-    <id>215997</id>
+    <id>678575</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>215998</id>
+          <id>678576</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Max attachments restriction</text>
@@ -26,7 +26,7 @@
   <wizardcategory>Basic</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>215999</id>
+    <id>678577</id>
     <itemMetadataRules/>
     <dynamicMetadataRules/>
     <wizard>
@@ -117,12 +117,24 @@
                   <boolean>true</boolean>
                 </entry>
                 <entry>
+                  <string>FILE_SCORM_PACKAGE</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
                   <string>FILE_NOUNZIP</string>
                   <boolean>false</boolean>
                 </entry>
                 <entry>
+                  <string>FILE_MAXFILESIZE</string>
+                  <int>0</int>
+                </entry>
+                <entry>
                   <string>YoutubeChannels</string>
                   <list/>
+                </entry>
+                <entry>
+                  <string>FILE_RESTRICTSIZE</string>
+                  <boolean>false</boolean>
                 </entry>
                 <entry>
                   <string>FILE_QTI_PACKAGE</string>
@@ -132,11 +144,19 @@
                   <string>AttachmentTypes</string>
                   <set>
                     <string>fileHandler</string>
-                    <string>youTubeHandler</string>
+                    <string>urlHandler</string>
                   </set>
                 </entry>
                 <entry>
+                  <string>LINK_DUPLICATION_CHECK</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
                   <string>OptionRestrictChannel</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_DUPLICATION_CHECK</string>
                   <boolean>false</boolean>
                 </entry>
                 <entry>
