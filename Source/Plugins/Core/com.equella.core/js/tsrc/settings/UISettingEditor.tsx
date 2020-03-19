@@ -15,6 +15,7 @@ import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { Config } from "../config";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -42,12 +43,10 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   const { refreshUser, handleError } = props;
   const { uiconfig } = languageStrings;
 
-  const [newUIEnabled, setNewUIEnabled] = React.useState<boolean>(true);
-  const [newSearchEnabled, setNewSearchEnabled] = React.useState<boolean>(
-    false
-  );
+  const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
+  const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelToken = axios.CancelToken.source();
     fetchUISetting(cancelToken.token)
       .then(uiSetting => {

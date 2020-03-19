@@ -24,7 +24,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import UISettingEditor from "./UISettingEditor";
 import { generateFromError } from "../api/errors";
 import { groupMap, SettingGroup } from "./SettingGroups";
@@ -54,15 +54,15 @@ interface SettingsPageProps extends TemplateUpdateProps {
 const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
   const classes = useStyles();
 
-  const [adminDialogOpen, setAdminDialogOpen] = React.useState<boolean>(false);
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [settingGroups, setSettingGroups] = React.useState<SettingGroup[]>([]);
+  const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     updateTemplate(templateDefaults(languageStrings["com.equella.core"].title));
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
     let cancelToken = axios.CancelToken.source();
     fetchSettings(cancelToken.token)
