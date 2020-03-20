@@ -340,7 +340,7 @@ export const languageStrings = {
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     searching: {
       name: "Search",
-      desc: "Searching settings",
+      desc: "Search settings",
       searchPageSettings: {
         name: "Search page settings",
         defaultSortOrder: "Default sort order",
