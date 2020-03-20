@@ -32,7 +32,6 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   private static final String SEARCH_SETTING_TITLE = "Searching and content indexing";
 
   private static final String GROUP_SEARCHING = "Search";
-
   private static final String GROUP_INTEGRATIONS = "Integrations";
 
   public SettingsPage(PageContext context) {
