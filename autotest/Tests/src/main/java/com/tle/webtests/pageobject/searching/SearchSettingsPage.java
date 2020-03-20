@@ -10,6 +10,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+/**
+ * This page represents the search page settings, under the settings menu in Search -> Search page.
+ */
 public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   public static final String SEARCH_SETTINGS_SECTION_TITLE = "Search page settings";
 
