@@ -342,6 +342,7 @@ export const languageStrings = {
     ui: { name: "UI", desc: "UI settings" }
   },
   adminconsoledownload: {
+    id: "adminconsole",
     title: "Administration Console",
     text: {
       introTextOne:
