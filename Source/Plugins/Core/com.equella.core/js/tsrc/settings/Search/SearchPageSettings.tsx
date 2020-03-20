@@ -2,7 +2,7 @@ import * as React from "react";
 import SettingsMenuContainer from "../../components/SettingsMenuContainer";
 import {
   templateDefaults,
-  templateError,
+  TemplateUpdate,
   TemplateUpdateProps
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
@@ -18,8 +18,6 @@ import {
   saveSearchSettingsToServer,
   SearchSettings
 } from "./SearchSettingsModule";
-import { AxiosError, AxiosResponse } from "axios";
-import { generateFromError, generateNewErrorID } from "../../api/errors";
 import MessageInfo from "../../components/MessageInfo";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import GalleryViewsSettings from "./components/GalleryViewsSettings";
@@ -52,59 +50,26 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to
     }));
-    getSearchSettingsFromServer()
-      .then((settings: AxiosResponse<SearchSettings>) =>
-        setSearchSettings(settings.data)
+    getSearchSettingsFromServer
+      .then((settings: SearchSettings) => setSearchSettings(settings))
+      .then(() =>
+        getCloudSettingsFromServer.then((settings: CloudSettings) =>
+          setCloudSettings(settings)
+        )
       )
-      .then(() => getCloudSettingsFromServer())
-      .then((settings: AxiosResponse<CloudSettings>) =>
-        setCloudSettings(settings.data)
-      )
-      .catch((error: AxiosError) => handleError(error));
+      .catch(error => handleError(error));
   }, []);
 
-  function handleError(error: AxiosError) {
+  function handleError(error: TemplateUpdate) {
     setShowError(true);
-    if (error.response) {
-      //axios errors
-      switch (error.response.status) {
-        case 403:
-          updateTemplate(
-            templateError(
-              generateNewErrorID(
-                searchPageSettingsStrings.permissionsError,
-                error.response.status,
-                searchPageSettingsStrings.permissionsError
-              )
-            )
-          );
-          break;
-        case 404:
-          updateTemplate(
-            templateError(
-              generateNewErrorID(
-                searchPageSettingsStrings.notFoundError,
-                error.response.status,
-                searchPageSettingsStrings.notFoundErrorDesc
-              )
-            )
-          );
-          break;
-        default:
-          updateTemplate(templateError(generateFromError(error)));
-          break;
-      }
-    } else {
-      //non axios errors
-      updateTemplate(templateError(generateFromError(error)));
-    }
+    updateTemplate(error);
   }
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
-      .catch((error: AxiosError) => handleError(error));
+      .catch((error: TemplateUpdate) => handleError(error));
   }
 
   return (

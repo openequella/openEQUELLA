@@ -1,4 +1,6 @@
-import Axios, { AxiosPromise } from "axios";
+import Axios from "axios";
+import { fromAxiosError } from "../../api/errors";
+import { templateError, TemplateUpdate } from "../../mainui/Template";
 
 export interface SearchSettings {
   searchingShowNonLiveCheckbox: boolean;
@@ -29,25 +31,48 @@ export enum SortOrder {
 export const SEARCH_SETTINGS_URL = "api/settings/search";
 export const CLOUD_SETTINGS_URL = "api/settings/search/cloud";
 
-export function getSearchSettingsFromServer(): AxiosPromise<SearchSettings> {
-  return Axios.get(SEARCH_SETTINGS_URL);
-}
+export const getSearchSettingsFromServer = new Promise(
+  (
+    resolve: (settings: SearchSettings) => void,
+    reject: (error: TemplateUpdate) => void
+  ) => {
+    Axios.get(SEARCH_SETTINGS_URL)
+      .then(response => resolve(response.data))
+      .catch(error => reject(templateError(fromAxiosError(error))));
+  }
+);
 
-export function saveSearchSettingsToServer(
-  settings: SearchSettings
-): AxiosPromise {
-  return Axios.put(SEARCH_SETTINGS_URL, settings);
-}
+export const saveSearchSettingsToServer = (settings: SearchSettings) =>
+  new Promise(
+    (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
+      Axios.put(SEARCH_SETTINGS_URL, settings)
+        .then(() => {
+          resolve();
+        })
+        .catch(error => reject(templateError(fromAxiosError(error))));
+    }
+  );
+export const saveCloudSettingsToServer = (settings: CloudSettings) =>
+  new Promise(
+    (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
+      Axios.put(CLOUD_SETTINGS_URL, settings)
+        .then(() => {
+          resolve();
+        })
+        .catch(error => reject(templateError(fromAxiosError(error))));
+    }
+  );
 
-export function getCloudSettingsFromServer(): AxiosPromise<CloudSettings> {
-  return Axios.get(CLOUD_SETTINGS_URL);
-}
-
-export function saveCloudSettingsToServer(
-  settings: CloudSettings
-): AxiosPromise {
-  return Axios.put(CLOUD_SETTINGS_URL, settings);
-}
+export const getCloudSettingsFromServer = new Promise(
+  (
+    resolve: (settings: CloudSettings) => void,
+    reject: (error: TemplateUpdate) => void
+  ) => {
+    Axios.get(CLOUD_SETTINGS_URL)
+      .then(response => resolve(response.data))
+      .catch(error => reject(templateError(fromAxiosError(error))));
+  }
+);
 
 export const defaultSearchSettings: SearchSettings = {
   searchingShowNonLiveCheckbox: false,
