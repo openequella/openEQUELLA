@@ -19,15 +19,16 @@ describe("SearchSettingFormControl.tsx", () => {
     );
   });
   afterEach(() => jest.clearAllMocks);
+  describe("OnChange", () => {
+    it("should not be triggered before call", () => {
+      expect(onChange).not.toHaveBeenCalled();
+    });
 
-  test("onChange - is not triggered before call", () => {
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
-  test("onChange - is triggered after call", () => {
-    const textField = component.find("input");
-    textField.simulate("change");
-    expect(onChange).toHaveBeenCalledTimes(1);
-    component.unmount();
+    it("should be triggered after call", () => {
+      const textField = component.find("input");
+      textField.simulate("change");
+      expect(onChange).toHaveBeenCalledTimes(1);
+      component.unmount();
+    });
   });
 });
