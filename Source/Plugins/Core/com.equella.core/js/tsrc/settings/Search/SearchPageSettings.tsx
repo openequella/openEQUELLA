@@ -50,10 +50,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to
     }));
-    getSearchSettingsFromServer
+    getSearchSettingsFromServer()
       .then((settings: SearchSettings) => setSearchSettings(settings))
       .then(() =>
-        getCloudSettingsFromServer.then((settings: CloudSettings) =>
+        getCloudSettingsFromServer().then((settings: CloudSettings) =>
           setCloudSettings(settings)
         )
       )

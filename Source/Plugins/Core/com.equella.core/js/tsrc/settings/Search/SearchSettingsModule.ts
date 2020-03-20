@@ -31,16 +31,17 @@ export enum SortOrder {
 export const SEARCH_SETTINGS_URL = "api/settings/search";
 export const CLOUD_SETTINGS_URL = "api/settings/search/cloud";
 
-export const getSearchSettingsFromServer = new Promise(
-  (
-    resolve: (settings: SearchSettings) => void,
-    reject: (error: TemplateUpdate) => void
-  ) => {
-    Axios.get(SEARCH_SETTINGS_URL)
-      .then(response => resolve(response.data))
-      .catch(error => reject(templateError(fromAxiosError(error))));
-  }
-);
+export const getSearchSettingsFromServer = () =>
+  new Promise(
+    (
+      resolve: (settings: SearchSettings) => void,
+      reject: (error: TemplateUpdate) => void
+    ) => {
+      Axios.get(SEARCH_SETTINGS_URL)
+        .then(response => resolve(response.data))
+        .catch(error => reject(templateError(fromAxiosError(error))));
+    }
+  );
 
 export const saveSearchSettingsToServer = (settings: SearchSettings) =>
   new Promise(
@@ -63,16 +64,17 @@ export const saveCloudSettingsToServer = (settings: CloudSettings) =>
     }
   );
 
-export const getCloudSettingsFromServer = new Promise(
-  (
-    resolve: (settings: CloudSettings) => void,
-    reject: (error: TemplateUpdate) => void
-  ) => {
-    Axios.get(CLOUD_SETTINGS_URL)
-      .then(response => resolve(response.data))
-      .catch(error => reject(templateError(fromAxiosError(error))));
-  }
-);
+export const getCloudSettingsFromServer = () =>
+  new Promise(
+    (
+      resolve: (settings: CloudSettings) => void,
+      reject: (error: TemplateUpdate) => void
+    ) => {
+      Axios.get(CLOUD_SETTINGS_URL)
+        .then(response => resolve(response.data))
+        .catch(error => reject(templateError(fromAxiosError(error))));
+    }
+  );
 
 export const defaultSearchSettings: SearchSettings = {
   searchingShowNonLiveCheckbox: false,
