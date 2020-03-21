@@ -61,18 +61,18 @@ interface Registration {
   unmount: (removed: Element) => void;
 }
 
-var registrations: {
+const registrations: {
   [key: string]: Registration | undefined;
 } = {};
 
-var listeners: ((doc: ItemState) => void)[] = [];
-var controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
-var commandQueue: CommandsPromise[] = [];
-var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
-var reloadState: boolean = false;
-var wizardIds: WizardIds;
-var currentState: Promise<VersionedItemState>;
-var latestXml: XMLDocument;
+let listeners: ((doc: ItemState) => void)[] = [];
+let controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
+let commandQueue: CommandsPromise[] = [];
+let transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
+let reloadState = false;
+let wizardIds: WizardIds;
+let currentState: Promise<VersionedItemState>;
+let latestXml: XMLDocument;
 
 function resetGlobalState() {
   transformState = null;
@@ -87,7 +87,7 @@ function resetGlobalState() {
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
 
-var activeElements: {
+let activeElements: {
   element: Element;
   removed: Registration;
 }[] = [];
@@ -129,7 +129,7 @@ const observer = new MutationObserver(function() {
     null
   );
   const res: Element[] = [];
-  for (var i = 0; i < liveElements.snapshotLength; i++) {
+  for (let i = 0; i < liveElements.snapshotLength; i++) {
     res.push(liveElements.snapshotItem(i) as Element);
   }
   activeElements = activeElements.filter(e => {
@@ -145,7 +145,7 @@ observer.observe(document, {
   subtree: true
 });
 
-var allValid = true;
+let allValid = true;
 
 $(window).bind("validate", () => allValid);
 
@@ -156,9 +156,9 @@ $(window).bind("presubmit", () => {
   let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
   let xmlEdited = false;
   controlValidators.forEach(({ validator, ctrlId }) => {
-    let valid = validator(
+    const valid = validator(
       (edit: (doc: XMLDocument) => XMLDocument) => {
-        let oldXmlFunc = editXmlFunc;
+        const oldXmlFunc = editXmlFunc;
         editXmlFunc = d => edit(oldXmlFunc(d));
         xmlEdited = true;
       },
@@ -176,7 +176,7 @@ $(window).bind("presubmit", () => {
   });
   if (xmlEdited) {
     latestXml = editXmlFunc(latestXml);
-    let xmlDoc = serializer.serializeToString(latestXml);
+    const xmlDoc = serializer.serializeToString(latestXml);
     $("<input>")
       .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
       .appendTo("#cloudState");
@@ -210,7 +210,7 @@ export const CloudControl: CloudControlRegisterImpl = {
   async sendBatch(state: VersionedItemState): Promise<VersionedItemState> {
     if (reloadState) {
       reloadState = false;
-      var nextState = await getState(wizardIds.wizId);
+      let nextState = await getState(wizardIds.wizId);
       if (nextState.stateVersion < state.stateVersion) {
         console.log(
           `Out of order state detected, already had ${state.stateVersion} but got ${nextState.stateVersion}`
@@ -225,7 +225,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       return CloudControl.sendBatch(nextState);
     }
     let edits: ItemCommand[] = [];
-    let currentPromises: CommandsPromise[] = [];
+    const currentPromises: CommandsPromise[] = [];
     let xml;
     let newXml = state.xml;
     if (transformState) {
@@ -253,7 +253,7 @@ export const CloudControl: CloudControlRegisterImpl = {
             att = att.filter(at => at.uuid != change.uuid);
             break;
           case "edited":
-            var ind = att.findIndex(at => at.uuid == change.attachment.uuid);
+            const ind = att.findIndex(at => at.uuid == change.attachment.uuid);
             att[ind] = change.attachment;
             break;
         }
@@ -387,7 +387,7 @@ export const CloudControl: CloudControlRegisterImpl = {
 
 const missingControl: Registration = {
   mount: params => {
-    let errText = $(
+    const errText = $(
       `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${params.vendorId}_${params.controlType}"</p></div>`
     );
     $(params.element).append(errText);

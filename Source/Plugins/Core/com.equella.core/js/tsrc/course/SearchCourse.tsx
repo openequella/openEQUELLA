@@ -220,7 +220,7 @@ class SearchCourse extends React.Component<
               onDelete = () =>
                 this.setState({ confirmOpen: true, deleteDetails });
             }
-            var text = course.code + " - " + course.name;
+            let text = course.code + " - " + course.name;
             if (course.archived) {
               text = text + " (" + strings.archived + ")";
             }

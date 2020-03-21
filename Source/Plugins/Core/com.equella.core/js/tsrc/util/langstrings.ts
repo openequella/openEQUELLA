@@ -1,6 +1,6 @@
 import { sprintf } from "sprintf-js";
 
-declare var bundle: any;
+declare let bundle: any;
 
 export interface Sizes {
   zero: string;
@@ -44,7 +44,7 @@ export function prepLangStrings<A>(prefix: string, strings: A): A {
   if (typeof bundle == "undefined") return strings;
   const overrideVal = (prefix: string, val: any) => {
     if (typeof val == "object") {
-      let newOut = {};
+      const newOut = {};
       for (const key in val) {
         if (val.hasOwnProperty(key)) {
           newOut[key] = overrideVal(prefix + "." + key, val[key]);
@@ -52,7 +52,7 @@ export function prepLangStrings<A>(prefix: string, strings: A): A {
       }
       return newOut;
     } else {
-      var overriden = bundle[prefix];
+      const overriden = bundle[prefix];
       if (overriden != undefined) {
         return overriden;
       }

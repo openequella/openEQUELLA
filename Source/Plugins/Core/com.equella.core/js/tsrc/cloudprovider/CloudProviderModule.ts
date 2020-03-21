@@ -35,7 +35,7 @@ export function refreshCloudProvider(cloudProviderId: string): AxiosPromise {
 export function registerCloudProviderInit(
   cloudProviderUrl: string
 ): Promise<CloudProviderInitResponse> {
-  let params = {
+  const params = {
     url: cloudProviderUrl
   };
   return Axios.post<CloudProviderInitResponse>(

@@ -110,7 +110,7 @@ class CloudProviderListPage extends React.Component<
 
   confirmDeleteCloudProvider = () => {
     if (this.state.deleteDetails) {
-      let id = this.state.deleteDetails.id;
+      const id = this.state.deleteDetails.id;
       this.cancelDeleteCloudProvider();
       deleteCloudProvider(id)
         .then(() => {
@@ -178,7 +178,7 @@ class CloudProviderListPage extends React.Component<
           createOnClick={this.registerCloudProvider}
         >
           {cloudProviders.map(cloudProvider => {
-            let secondaryAction = (
+            const secondaryAction = (
               <IconButton
                 onClick={() => {
                   this.deleteCloudProvider(cloudProvider);
@@ -187,7 +187,7 @@ class CloudProviderListPage extends React.Component<
                 <DeleteIcon />
               </IconButton>
             );
-            let icon = (
+            const icon = (
               <Avatar
                 src={cloudProvider.iconUrl}
                 alt={cloudProvider.description}

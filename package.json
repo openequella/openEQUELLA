@@ -5,7 +5,7 @@
     "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
-    "format:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
+    "format:ts": "eslint --fix \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
     "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
@@ -50,6 +50,27 @@
     ],
     "env": {
       "jquery": true
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "Source/Plugins/Core/com.equella.core/js/tsrc/**/*.{ts,tsx}"
+        ],
+        "parserOptions": {
+          "project": "Source/Plugins/Core/com.equella.core/js/tsconfig.json"
+        },
+        "rules": {
+          "no-var": "error",
+          "prefer-const": "error",
+          "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "interface"
+          ],
+          "@typescript-eslint/no-inferrable-types": "error",
+          "@typescript-eslint/no-unnecessary-type-assertion": "error",
+          "@typescript-eslint/prefer-optional-chain": "error"
+        }
+      }
+    ]
   }
 }

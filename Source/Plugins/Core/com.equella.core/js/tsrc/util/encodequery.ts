@@ -15,7 +15,7 @@ export function encodeQuery(params: {
   }
   for (const key in params) {
     if (params.hasOwnProperty(key)) {
-      var paramValue = params[key];
+      const paramValue = params[key];
       if (typeof paramValue != "undefined") {
         if (typeof paramValue == "object") {
           paramValue.forEach(element => addOne(key, element));
