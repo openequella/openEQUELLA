@@ -35,6 +35,8 @@ import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 
+case class GeneralFilter(ownerFilterEnabled: Boolean, dateModifiedFilterEnabled: Boolean)
+
 @NoCache
 @Path("settings/")
 @Produces(value = Array("application/json"))
@@ -152,6 +154,40 @@ class SearchFilterResource {
         Response.ok().build()
       case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
     }
+  }
+
+  @GET
+  @Path("search/general-filter")
+  @ApiOperation(
+    value = "Check status of general filters",
+    notes = "This endpoint is used to check the status of Owner filter and Date-modified filer).",
+    response = classOf[GeneralFilter]
+  )
+  def getGeneralFilters: Response = {
+    searchPrivProvider.checkAuthorised()
+    val searchSettings = loadSettings(new SearchSettings)
+    Response
+      .ok()
+      .entity(GeneralFilter(searchSettings.isOwnerFilter, searchSettings.isDateModifiedFilter))
+      .build()
+  }
+
+  @PUT
+  @Path("search/general-filter")
+  @ApiOperation(
+    value = "Update status of general filters",
+    notes = "This endpoint is used to update the status of Owner filter and Date-modified filer."
+  )
+  def updateOwnerFilter(
+      @ApiParam(required = true) @QueryParam("enableOwnerFilter") enableOwnerFilter: Boolean,
+      @ApiParam(required = true) @QueryParam("enableDateModifiedFilter") enableDateModifiedFilter: Boolean)
+    : Response = {
+    searchPrivProvider.checkAuthorised()
+    val searchSettings = loadSettings(new SearchSettings)
+    searchSettings.setOwnerFilter(enableOwnerFilter)
+    searchSettings.setDateModifiedFilter(enableDateModifiedFilter)
+    updateSettings(searchSettings)
+    Response.noContent().build()
   }
 
   private def getFilterById(filterId: UUID,

@@ -74,6 +74,12 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.defaultsort")
   private String defaultSearchSort;
 
+  @Property(key = "search.ownerfilter")
+  private boolean ownerFilter = true;
+
+  @Property(key = "search.datemodifiedfilter")
+  private boolean dateModifiedFilter = true;
+
   // The REST endpoints for this was split into two - one for general search settings,
   // and one for filters - so we don't want this included in the general search
   // settings.
@@ -225,5 +231,21 @@ public class SearchSettings implements ConfigurationProperties {
 
   public void setFileCountDisabled(boolean fileCountDisabled) {
     this.fileCountDisabled = fileCountDisabled;
+  }
+
+  public boolean isOwnerFilter() {
+    return ownerFilter;
+  }
+
+  public void setOwnerFilter(boolean ownerFilter) {
+    this.ownerFilter = ownerFilter;
+  }
+
+  public boolean isDateModifiedFilter() {
+    return dateModifiedFilter;
+  }
+
+  public void setDateModifiedFilter(boolean dateModifiedFilter) {
+    this.dateModifiedFilter = dateModifiedFilter;
   }
 }
