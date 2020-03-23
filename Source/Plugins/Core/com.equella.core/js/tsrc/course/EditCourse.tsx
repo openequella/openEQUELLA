@@ -101,7 +101,9 @@ interface EditCourseProps
     EditCourseStateProps,
     EditCourseDispatchProps {
   updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
+
   setPreventNavigation(b: boolean): void;
+
   redirect(to: LocationDescriptor): void;
 }
 
@@ -125,6 +127,7 @@ interface EditCourseState {
   errored: boolean;
   editSecurity?: () => TargetListEntry[];
 }
+
 export const strings = languageStrings.courseedit;
 
 class EditCourse extends React.Component<Props, EditCourseState> {
