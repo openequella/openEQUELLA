@@ -18,7 +18,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String OAUTH_CLIENT_ID = "SearchSettingApiTestClient";
   private static final String API_SEARCH_SETTINGS_PATH = "api/settings/search";
   private static final String API_CLOUD_SETTINGS_PATH = "api/settings/search/cloud";
-  private static final String API_SEARCH_FILTER_PATH = "api/settings/search/filter";
+  private static final String API_SEARCH_MIME_TYPE_FILTER_PATH = "api/settings/search/filter";
+  private static final String API_SEARCH_GENERAL_FILTER_PATH = "api/settings/search/general-filter";
 
   private static final String DEFAULT_SORT_ORDER = "defaultSearchSort";
   private static final String SHOW_NON_LIVE = "searchingShowNonLiveCheckbox";
@@ -35,6 +36,9 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String URL_LEVEL = "urlLevel";
 
   private static final String DISABLE_CLOUD = "disabled";
+
+  private final String OWNER_FILTER = "ownerFilter";
+  private final String DATE_MODIFIED_FILTER = "dateModifiedFilter";
 
   private final String FILTER_NAME = "name";
   private final String FILTER_ID = "id";
@@ -135,8 +139,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   }
 
   @Test(dependsOnMethods = "testSearchSettings")
-  public void testCreateSearchFilter() throws Exception {
-    final String uri = searchFilterUri("");
+  public void testCreateMimeTypeFilter() throws Exception {
+    final String uri = mimeTypeFilterUri("");
 
     // Create a search filter
     HttpResponse response =
@@ -194,9 +198,9 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
-  @Test(dependsOnMethods = "testCreateSearchFilter")
-  public void testRetrieveSearchFilter() throws Exception {
-    final String uri = searchFilterUri("");
+  @Test(dependsOnMethods = "testCreateMimeTypeFilter")
+  public void testRetrieveMimeTypeFilter() throws Exception {
+    final String uri = mimeTypeFilterUri("");
 
     // Retrieve all search filters
     // getEntity already includes the check of when user is not authenticated
@@ -204,16 +208,16 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(1, initialFilters.size());
 
     // Retrieve a specific search filter
-    final JsonNode filter = getEntity(searchFilterUri(newFilterId), getToken());
+    final JsonNode filter = getEntity(mimeTypeFilterUri(newFilterId), getToken());
     assertEquals(newFilterId, filter.get(FILTER_ID).asText());
     assertEquals(IMAGE_FILTER, filter.get(FILTER_NAME).asText());
     assertEquals(JPEG, filter.get(FILTER_MIME_TYPES).get(0).asText());
     assertEquals(PNG, filter.get(FILTER_MIME_TYPES).get(1).asText());
   }
 
-  @Test(dependsOnMethods = "testRetrieveSearchFilter")
-  public void testUpdateSearchFilter() throws Exception {
-    final String uri = searchFilterUri(newFilterId);
+  @Test(dependsOnMethods = "testRetrieveMimeTypeFilter")
+  public void testUpdateMimeTypeFilter() throws Exception {
+    final String uri = mimeTypeFilterUri(newFilterId);
 
     // Update filter
     HttpResponse response =
@@ -227,7 +231,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     response =
         putEntity(
             null,
-            searchFilterUri(BAD_FILTER_ID),
+            mimeTypeFilterUri(BAD_FILTER_ID),
             getToken(),
             true,
             FILTER_NAME,
@@ -262,24 +266,43 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
-  @Test(dependsOnMethods = "testUpdateSearchFilter")
-  public void testDeleteSearchFilter() throws Exception {
-    final String uri = searchFilterUri(newFilterId);
+  @Test(dependsOnMethods = "testUpdateMimeTypeFilter")
+  public void testDeleteMimeTypeFilter() throws Exception {
+    final String uri = mimeTypeFilterUri(newFilterId);
 
     // Delete filter
     HttpResponse response = deleteResource(uri, getToken());
     assertEquals(response.getStatusLine().getStatusCode(), 200);
 
     // Delete with a bad filter ID
-    response = deleteResource(searchFilterUri(BAD_FILTER_ID), getToken());
+    response = deleteResource(mimeTypeFilterUri(BAD_FILTER_ID), getToken());
     assertEquals(404, response.getStatusLine().getStatusCode());
 
     // Delete without token
-    response = deleteResource(searchFilterUri(BAD_FILTER_ID), null);
+    response = deleteResource(mimeTypeFilterUri(BAD_FILTER_ID), null);
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
-  private String searchFilterUri(String filterId) {
-    return PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_FILTER_PATH, filterId);
+  private String mimeTypeFilterUri(String filterId) {
+    return PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_MIME_TYPE_FILTER_PATH, filterId);
+  }
+
+  @Test
+  public void testCheckGeneralFilter() throws Exception {
+    String token = requestToken(OAUTH_CLIENT_ID);
+    final String uri = PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_GENERAL_FILTER_PATH);
+
+    final JsonNode initialGeneralFilters = getEntity(uri, token);
+    // These two filters are enabled by default
+    assertTrue(initialGeneralFilters.get(OWNER_FILTER).asBoolean());
+    assertTrue(initialGeneralFilters.get(DATE_MODIFIED_FILTER).asBoolean());
+
+    // Disable them
+    HttpResponse response =
+        putEntity(null, uri, token, false, OWNER_FILTER, false, DATE_MODIFIED_FILTER, false);
+    assertEquals(200, response.getStatusLine().getStatusCode());
+    JsonNode node = mapper.readTree(response.getEntity().getContent());
+    assertFalse(node.get(OWNER_FILTER).asBoolean());
+    assertFalse(node.get(DATE_MODIFIED_FILTER).asBoolean());
   }
 }
