@@ -10,7 +10,7 @@ phases:
     commands:
       - env | sort | grep -vi -e key -e secret -e password
       - setupBuild
-      - nvm install # version from nvmrc
+      - . $NVM_DIR/nvm.sh && nvm install # version from nvmrc
       - npm config set unsafe-perm true
   install:
     commands:
