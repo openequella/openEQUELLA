@@ -23,7 +23,7 @@ import com.dytech.edge.common.Constants
 import com.tle.beans.mime.MimeEntry
 import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
-import com.tle.common.settings.standard.SearchSettings.SearchFilter
+import com.tle.common.settings.standard.SearchSettings.{GeneralFilter, SearchFilter}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse
 import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
@@ -34,8 +34,6 @@ import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryPara
 import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
-
-case class GeneralFilter(ownerFilterEnabled: Boolean, dateModifiedFilterEnabled: Boolean)
 
 @NoCache
 @Path("settings/")
@@ -168,7 +166,7 @@ class SearchFilterResource {
     val searchSettings = loadSettings(new SearchSettings)
     Response
       .ok()
-      .entity(GeneralFilter(searchSettings.isOwnerFilter, searchSettings.isDateModifiedFilter))
+      .entity(searchSettings.getGeneralFilter)
       .build()
   }
 
@@ -176,18 +174,20 @@ class SearchFilterResource {
   @Path("search/general-filter")
   @ApiOperation(
     value = "Update status of general filters",
-    notes = "This endpoint is used to update the status of Owner filter and Date-modified filer."
+    notes = "This endpoint is used to update the status of Owner filter and Date-modified filer.",
+    response = classOf[GeneralFilter]
   )
-  def updateOwnerFilter(
+  def updateGeneralFilter(
       @ApiParam(required = true) @QueryParam("enableOwnerFilter") enableOwnerFilter: Boolean,
       @ApiParam(required = true) @QueryParam("enableDateModifiedFilter") enableDateModifiedFilter: Boolean)
     : Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-    searchSettings.setOwnerFilter(enableOwnerFilter)
-    searchSettings.setDateModifiedFilter(enableDateModifiedFilter)
+    val generalFilter  = searchSettings.getGeneralFilter
+    generalFilter.setOwnerFilter(enableOwnerFilter)
+    generalFilter.setDateModifiedFilter(enableDateModifiedFilter)
     updateSettings(searchSettings)
-    Response.noContent().build()
+    Response.ok().entity(generalFilter).build()
   }
 
   private def getFilterById(filterId: UUID,

@@ -74,11 +74,7 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.defaultsort")
   private String defaultSearchSort;
 
-  @Property(key = "search.ownerfilter")
-  private boolean ownerFilter = true;
-
-  @Property(key = "search.datemodifiedfilter")
-  private boolean dateModifiedFilter = true;
+  @JsonIgnore private GeneralFilter generalFilter = new GeneralFilter();
 
   // The REST endpoints for this was split into two - one for general search settings,
   // and one for filters - so we don't want this included in the general search
@@ -233,19 +229,33 @@ public class SearchSettings implements ConfigurationProperties {
     this.fileCountDisabled = fileCountDisabled;
   }
 
-  public boolean isOwnerFilter() {
-    return ownerFilter;
+  public GeneralFilter getGeneralFilter() {
+    return generalFilter;
   }
 
-  public void setOwnerFilter(boolean ownerFilter) {
-    this.ownerFilter = ownerFilter;
-  }
+  public static class GeneralFilter implements ConfigurationProperties {
+    private static final long serialVersionUID = 1L;
 
-  public boolean isDateModifiedFilter() {
-    return dateModifiedFilter;
-  }
+    @Property(key = "search.ownerfilter")
+    private boolean ownerFilter = true;
 
-  public void setDateModifiedFilter(boolean dateModifiedFilter) {
-    this.dateModifiedFilter = dateModifiedFilter;
+    @Property(key = "search.datemodifiedfilter")
+    private boolean dateModifiedFilter = true;
+
+    public boolean isOwnerFilter() {
+      return ownerFilter;
+    }
+
+    public void setOwnerFilter(boolean ownerFilter) {
+      this.ownerFilter = ownerFilter;
+    }
+
+    public boolean isDateModifiedFilter() {
+      return dateModifiedFilter;
+    }
+
+    public void setDateModifiedFilter(boolean dateModifiedFilter) {
+      this.dateModifiedFilter = dateModifiedFilter;
+    }
   }
 }
