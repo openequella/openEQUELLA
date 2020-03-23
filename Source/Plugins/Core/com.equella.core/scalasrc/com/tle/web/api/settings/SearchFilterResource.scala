@@ -46,12 +46,12 @@ class SearchFilterResource {
   @GET
   @Path("search/filter")
   @ApiOperation(
-    value = "List search filters",
-    notes = "This endpoint is used to retrieve all search filters.",
+    value = "List MIME type filters",
+    notes = "This endpoint is used to retrieve all MIME type filters.",
     response = classOf[SearchFilter],
     responseContainer = "List"
   )
-  def listSearchFilters: Response = {
+  def listMimeTypeFilters: Response = {
     searchPrivProvider.checkAuthorised()
     val filters = loadSettings(new SearchSettings).getFilters
     Response.ok().entity(filters).build()
@@ -60,11 +60,12 @@ class SearchFilterResource {
   @GET
   @Path("search/filter/{uuid}")
   @ApiOperation(
-    value = "Retrieve a search filter",
-    notes = "This endpoint is used to retrieve one search filter.",
+    value = "Retrieve a MIME type filter",
+    notes = "This endpoint is used to retrieve one MIME type filter.",
     response = classOf[SearchFilter]
   )
-  def getSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
+  def getMimeTypeFilter(
+      @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
 
@@ -77,12 +78,12 @@ class SearchFilterResource {
   @POST
   @Path("search/filter")
   @ApiOperation(
-    value = "Add a search filter",
+    value = "Add a MIME type filter",
     notes =
-      "This endpoint is used to add a search filter. A JSON object representing the new filter is returned if operation is successful.",
+      "This endpoint is used to add a MIME type filter. A JSON object representing the new filter is returned if operation is successful.",
     response = classOf[SearchFilter]
   )
-  def addSearchFilter(
+  def addMimeTypeFilter(
       @ApiParam(value = "filter name", required = true) @QueryParam("name") name: String,
       @ApiParam(value = "filter types", required = true) @QueryParam("mimeTypes") mimeTypes: java.util.List[
         String]): Response = {
@@ -106,12 +107,12 @@ class SearchFilterResource {
   @PUT
   @Path("search/filter/{uuid}")
   @ApiOperation(
-    value = "Update a search filter",
+    value = "Update a MIME type filter",
     notes =
-      "This endpoint is used to update a search filter. A JSON object representing the updated filter is returned if operation is successful.",
+      "This endpoint is used to update a MIME type filter. A JSON object representing the updated filter is returned if operation is successful.",
     response = classOf[SearchFilter]
   )
-  def updateSearchFilter(
+  def updateMimeTypeFilter(
       @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID,
       @ApiParam(value = "filter name", required = true) @QueryParam("name") name: String,
       @ApiParam(value = "filter types", required = true) @QueryParam("mimeTypes") mimeTypes: java.util.List[
@@ -136,10 +137,10 @@ class SearchFilterResource {
   @DELETE
   @Path("search/filter/{uuid}")
   @ApiOperation(
-    value = "Delete a search filter",
-    notes = "This endpoint is used to delete a search filter.",
+    value = "Delete a MIME type filter",
+    notes = "This endpoint is used to delete a MIME type filter.",
   )
-  def deleteSearchFilters(
+  def deleteMimeTypeFilter(
       @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
