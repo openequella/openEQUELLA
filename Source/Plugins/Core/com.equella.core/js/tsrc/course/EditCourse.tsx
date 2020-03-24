@@ -604,8 +604,5 @@ function mapDispatchToProps(dispatch: Dispatch<any>): EditCourseDispatchProps {
 }
 
 export default withStyles(styles)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(EditCourse)
+  connect(mapStateToProps, mapDispatchToProps)(EditCourse)
 );
