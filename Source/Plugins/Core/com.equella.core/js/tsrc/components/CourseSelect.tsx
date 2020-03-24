@@ -57,9 +57,12 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState> {
 
   loadCourses = () => {
     const { query, maxResults } = this.props;
-    searchCourses(query, false, maxResults).then(
-      (value: PagingResults<Course>) =>
-        this.setState({ courses: value.results })
+    searchCourses(
+      query,
+      false,
+      maxResults
+    ).then((value: PagingResults<Course>) =>
+      this.setState({ courses: value.results })
     );
   };
 
