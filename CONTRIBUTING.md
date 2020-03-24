@@ -140,9 +140,8 @@ Each formatter has various IDE plugins, in particular IntelliJ is well supported
 
 #### Pre-commit hook
 
-openEQUELLA provides a script to set up git pre-commit hooks to format the code
-you have modified before commiting. To set it up you must run the installer once
-(from the root dir):
+openEQUELLA provides [a script to set up git pre-commit hooks](https://github.com/typicode/husky) to [format the code](#code-formatters) you have [modified before committing](https://github.com/okonet/lint-staged).
+To set it up you must run the installer once (from the root dir):
 
 ```bash
 npm install
