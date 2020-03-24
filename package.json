@@ -8,7 +8,7 @@
     "format:ts": "prettier --write \"Source/Plugins/Core/**/*.{ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
-    "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls .",
+    "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
     "check:ts": "prettier -c \"Source/Plugins/Core/**/*.{ts,tsx}\"",
     "check:tsx": "cd Source/Plugins/Core/com.equella.core/js && eslint src tsrc --ext js,ts,tsx && cd ../../../../..",
     "check": "run-s check:*",
