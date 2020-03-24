@@ -95,7 +95,7 @@ Note: There are a couple of changes to the build process, and some discussion on
 the frontend that should be understood when working on openEQUELLA code - please take a look at this
 [Google Group
 thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this
-[issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the
+[issue ticket](https://github.com/openequella/openEQUELLA/issues/437). This page will be updated once the
 React UI code is a bit more solidified.
 
 ### IDE
@@ -140,9 +140,8 @@ Each formatter has various IDE plugins, in particular IntelliJ is well supported
 
 #### Pre-commit hook
 
-openEQUELLA provides a script to set up git pre-commit hooks to format the code
-you have modified before commiting. To set it up you must run the installer once
-(from the root dir):
+openEQUELLA provides [a script to set up git pre-commit hooks](https://github.com/typicode/husky) to [format the code](#code-formatters) you have [modified before committing](https://github.com/okonet/lint-staged).
+To set it up you must run the installer once (from the root dir):
 
 ```bash
 npm install

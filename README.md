@@ -6,7 +6,7 @@ openEQUELLA is a digital repository that provides a single platform to house you
 learning, research, media, and library content.
 
 Builds for each openEQUELLA Release can be found on the [Releases
-page](https://github.com/equella/Equella/releases "EQUELLA Releases"). The latest stable versions
+page](https://github.com/openequella/openEQUELLA/releases "EQUELLA Releases"). The latest stable versions
 (with their changelogs) can also be retrieved from the version server at
 <https://version.openequella.net/>.
 
@@ -19,7 +19,7 @@ The project's homepage and documentation can be found at <https://openequella.gi
 If you would like to contribute to openEQUELLA please review the [Contributor
 Guidelines](CONTRIBUTING.md) - which also include details of how to get in touch. We welcome pull
 requests and issue reports. And if you'd like to assist with documentation, please head on over to
-the documentation repository at <https://github.com/equella/equella.github.io>.
+the documentation repository at <https://github.com/openequella/openEQUELLA.github.io>.
 
 Below you'll find further information for developers wishing to work with the source code.
 

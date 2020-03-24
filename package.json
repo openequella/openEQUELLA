@@ -8,6 +8,7 @@
     "format:ts": "eslint --fix \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
+    "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
     "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check": "run-s check:*",
     "format": "run-s format:*"
@@ -19,7 +20,7 @@
     "cross-env": "5.2.1",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
-    "eslint-config-react-app": "5.2.0",
+    "eslint-config-react-app": "5.2.1",
     "eslint-plugin-flowtype": "4.6.0",
     "eslint-plugin-import": "2.20.1",
     "eslint-plugin-jsx-a11y": "6.2.3",
@@ -30,6 +31,9 @@
     "lint-staged": "10.0.8",
     "npm-run-all": "4.1.5",
     "prettier": "1.19.1",
+    "remark-cli": "7.0.1",
+    "remark-lint-no-dead-urls": "1.0.2",
+    "remark-validate-links": "10.0.0",
     "typescript": "3.8.3"
   },
   "husky": {
