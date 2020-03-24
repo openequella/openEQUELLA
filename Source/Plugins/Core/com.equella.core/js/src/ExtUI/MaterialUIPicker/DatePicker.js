@@ -1,1 +1,1 @@
-exports.datePickerClass = require('material-ui-pickers/DatePicker').default;
+exports.datePickerClass = require("material-ui-pickers/DatePicker").default;

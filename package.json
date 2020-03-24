@@ -5,12 +5,11 @@
     "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
-    "format:ts": "prettier --write \"Source/Plugins/Core/**/*.{ts,tsx}\"",
+    "format:ts": "eslint --fix \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
     "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
-    "check:ts": "prettier -c \"Source/Plugins/Core/**/*.{ts,tsx}\"",
-    "check:tsx": "cd Source/Plugins/Core/com.equella.core/js && eslint src tsrc --ext js,ts,tsx && cd ../../../../..",
+    "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check": "run-s check:*",
     "format": "run-s format:*"
   },
@@ -20,10 +19,12 @@
     "babel-eslint": "10.1.0",
     "cross-env": "5.2.1",
     "eslint": "6.8.0",
+    "eslint-config-prettier": "6.10.0",
     "eslint-config-react-app": "5.2.1",
     "eslint-plugin-flowtype": "4.6.0",
     "eslint-plugin-import": "2.20.1",
     "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "7.19.0",
     "eslint-plugin-react-hooks": "2.5.0",
     "husky": "4.2.3",
@@ -41,13 +42,16 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx}": "prettier --write",
+    "*.{js,ts,tsx}": "eslint --fix",
     "*.java": "google-java-format --replace",
     "*.{scala,sbt}": "scalafmt"
   },
   "eslintConfig": {
     "root": true,
-    "extends": "react-app",
+    "extends": [
+      "react-app",
+      "plugin:prettier/recommended"
+    ],
     "env": {
       "jquery": true
     }
