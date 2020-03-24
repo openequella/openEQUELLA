@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createMount } from "@material-ui/core/test-utils";
-import ErrorPage from "./ErrorPage";
+import ErrorPage from "../../mainui/ErrorPage";
 
 jest.mock("@material-ui/styles", () => ({
   makeStyles: () => () => ({ errorPage: "mock-classname" })

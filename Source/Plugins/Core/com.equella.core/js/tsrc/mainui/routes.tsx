@@ -8,6 +8,7 @@ import ThemePage from "../theme/ThemePage";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
+import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
 
 declare const bridge: Bridge;
@@ -52,6 +53,10 @@ export const routes = {
   Search: {
     path: "/page/search",
     render: (p: OEQRouteComponentProps<any>) => <bridge.SearchPage {...p} />
+  },
+  SearchSettings: {
+    path: "/page/searchsettings",
+    render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />
   },
   ViewItem: {
     to: function(uuid: string, version: number) {

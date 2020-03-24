@@ -26,10 +26,12 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class SettingsPage extends AbstractPage<SettingsPage> {
-  public static final String SEARCH_SETTINGS_LINK_TITLE = "Searching and content indexing";
+
+  public static final String SEARCH_SETTINGS_LINK_TITLE = "Search page";
   public static final String COURSE_DEFAULTS_LINK_TITLE = "Copyright";
   private static final String SEARCH_SETTING_TITLE = "Searching and content indexing";
-  private static final String GROUP_SEARCHING = "Searching";
+
+  private static final String GROUP_SEARCHING = "Search";
   private static final String GROUP_INTEGRATIONS = "Integrations";
 
   public SettingsPage(PageContext context) {

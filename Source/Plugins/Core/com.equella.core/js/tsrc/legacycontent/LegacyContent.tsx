@@ -9,6 +9,7 @@ declare global {
     _trigger: any;
     eval: any;
   }
+
   const _trigger: any;
 }
 
@@ -69,7 +70,9 @@ export interface LegacyContentProps {
   userUpdated: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
+
   render(content: PageContent | undefined): React.ReactElement;
+
   children?: never;
 }
 

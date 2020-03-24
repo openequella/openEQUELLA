@@ -37,6 +37,7 @@ const styles = (theme: Theme) =>
 interface CourseItemProps {
   query: string;
   maxResults: number;
+
   getItemProps(options: GetItemPropsOptions<Course>): any;
 }
 
@@ -53,6 +54,7 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState> {
     super(props);
     this.state = { courses: [] };
   }
+
   loadCourses = () => {
     const { query, maxResults } = this.props;
     searchCourses(
@@ -74,6 +76,7 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState> {
       this.loadCourses();
     }
   }
+
   render() {
     const { courses } = this.state;
     const { getItemProps } = this.props;
@@ -122,6 +125,7 @@ class CourseSelect extends React.Component<
     this.setState({ inputValue });
     this.props.onCourseSelect(null);
   };
+
   render() {
     const { classes, title, course } = this.props;
     const { inputValue } = this.state;
