@@ -236,7 +236,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"           %% "scala-uri"                % "1.4.9",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
   "io.bit3"                % "jsass"                     % "5.3.0",
-  "io.github.classgraph"   % "classgraph"                % "4.8.52"
+  "io.github.classgraph"   % "classgraph"                % "4.8.65"
 )
 
 libraryDependencies ++= {
