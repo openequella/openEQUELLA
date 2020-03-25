@@ -180,10 +180,6 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       context.addErrorPage(accessDenied);
       context.addErrorPage(throwableError);
 
-      Rfc6265CookieProcessor cookieProcessor = new Rfc6265CookieProcessor();
-      cookieProcessor.setSameSiteCookies("none");
-      context.setCookieProcessor(cookieProcessor);
-
       if (ajpPort != -1) {
         Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
         connector.setPort(ajpPort);
@@ -204,6 +200,10 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
         connector.setPort(httpsPort);
         connector.setSecure(true);
         setConnector(connector);
+
+        Rfc6265CookieProcessor cookieProcessor = new Rfc6265CookieProcessor();
+        cookieProcessor.setSameSiteCookies("none");
+        context.setCookieProcessor(cookieProcessor);
       }
 
       // Clustering
