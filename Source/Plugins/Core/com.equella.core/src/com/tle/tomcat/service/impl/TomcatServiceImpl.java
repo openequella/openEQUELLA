@@ -184,7 +184,6 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       cookieProcessor.setSameSiteCookies("none");
       context.setCookieProcessor(cookieProcessor);
 
-
       if (ajpPort != -1) {
         Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
         connector.setPort(ajpPort);
