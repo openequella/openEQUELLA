@@ -6,6 +6,8 @@ export interface SearchSettings {
   searchingShowNonLiveCheckbox: boolean;
   searchingDisableGallery: boolean;
   searchingDisableVideos: boolean;
+  searchingDisableOwnerFilter: boolean;
+  searchingDisableDateModifiedFilter: boolean;
   fileCountDisabled: boolean;
   defaultSearchSort: SortOrder;
   authenticateFeedsByDefault: boolean;
@@ -80,6 +82,8 @@ export const defaultSearchSettings: SearchSettings = {
   searchingShowNonLiveCheckbox: false,
   searchingDisableGallery: false,
   searchingDisableVideos: false,
+  searchingDisableOwnerFilter: false,
+  searchingDisableDateModifiedFilter: false,
   fileCountDisabled: false,
   defaultSearchSort: SortOrder.RANK,
   authenticateFeedsByDefault: false,

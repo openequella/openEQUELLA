@@ -24,6 +24,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String SHOW_NON_LIVE = "searchingShowNonLiveCheckbox";
   private static final String AUTHENTICATE_FEEDS = "authenticateFeedsByDefault";
 
+  private static final String DISABLE_OWNER_FILTER = "searchingDisableOwnerFilter";
+  private static final String DISABLE_DATE_MODIFIED_FILTER = "searchingDisableDateModifiedFilter";
   private static final String DISABLE_IMAGE = "searchingDisableGallery";
   private static final String DISABLE_VIDEO = "searchingDisableVideos";
   private static final String DISABLE_FILE_COUNT = "fileCountDisabled";
@@ -72,6 +74,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertFalse(initialSearchSettings.get(DISABLE_IMAGE).asBoolean());
     assertFalse(initialSearchSettings.get(DISABLE_VIDEO).asBoolean());
     assertFalse(initialSearchSettings.get(DISABLE_FILE_COUNT).asBoolean());
+    assertFalse(initialSearchSettings.get(DISABLE_OWNER_FILTER).asBoolean());
+    assertFalse(initialSearchSettings.get(DISABLE_DATE_MODIFIED_FILTER).asBoolean());
 
     assertEquals(initialSearchSettings.get(TITLE_BOOST).asInt(), 5);
     assertEquals(initialSearchSettings.get(DESCRIPTION_BOOST).asInt(), 3);
@@ -89,6 +93,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     newSearchSettings.put(DISABLE_IMAGE, true);
     newSearchSettings.put(DISABLE_VIDEO, true);
     newSearchSettings.put(DISABLE_FILE_COUNT, true);
+    newSearchSettings.put(DISABLE_OWNER_FILTER, true);
+    newSearchSettings.put(DISABLE_DATE_MODIFIED_FILTER, true);
 
     newSearchSettings.put(TITLE_BOOST, 4);
     newSearchSettings.put(DESCRIPTION_BOOST, 4);
@@ -109,6 +115,8 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertTrue(updatedSearchSettings.get(DISABLE_IMAGE).asBoolean());
     assertTrue(updatedSearchSettings.get(DISABLE_VIDEO).asBoolean());
     assertTrue(updatedSearchSettings.get(DISABLE_FILE_COUNT).asBoolean());
+    assertTrue(updatedSearchSettings.get(DISABLE_OWNER_FILTER).asBoolean());
+    assertTrue(updatedSearchSettings.get(DISABLE_DATE_MODIFIED_FILTER).asBoolean());
 
     assertEquals(updatedSearchSettings.get(TITLE_BOOST).asInt(), 4);
     assertEquals(updatedSearchSettings.get(DESCRIPTION_BOOST).asInt(), 4);
