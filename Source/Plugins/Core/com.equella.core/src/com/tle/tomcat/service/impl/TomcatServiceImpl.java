@@ -57,6 +57,7 @@ import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 
 @Bind(TomcatService.class)
 @Singleton
@@ -178,6 +179,11 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       context.addErrorPage(notFound);
       context.addErrorPage(accessDenied);
       context.addErrorPage(throwableError);
+
+      Rfc6265CookieProcessor cookieProcessor = new Rfc6265CookieProcessor();
+      cookieProcessor.setSameSiteCookies("none");
+      context.setCookieProcessor(cookieProcessor);
+
 
       if (ajpPort != -1) {
         Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
