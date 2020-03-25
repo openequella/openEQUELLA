@@ -54,7 +54,9 @@ describe("langstrings", () => {
     });
 
     describe("initStrings", () => {
-      expect(() => initStrings()).not.toThrowError();
+      it("should not throw an exception", () => {
+        expect(() => initStrings()).not.toThrow();
+      });
     });
   });
 });
