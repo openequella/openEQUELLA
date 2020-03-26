@@ -86,6 +86,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     <>
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={searchPageSettingsStrings.general}>
+          {/*Default Sort Order*/}
           <SettingsListControl
             divider
             primaryText={searchPageSettingsStrings.defaultSortOrder}
@@ -103,6 +104,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               />
             }
           />
+          {/*Non-Live Results*/}
           <SettingsListControl
             divider
             primaryText={searchPageSettingsStrings.allowNonLive}
@@ -121,6 +123,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               />
             }
           />
+          {/*Authenticate Feeds*/}
           <SettingsListControl
             divider
             primaryText={searchPageSettingsStrings.authFeed}
@@ -139,6 +142,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               />
             }
           />
+          {/*Cloud Searching*/}
           <SettingsListControl
             primaryText={searchPageSettingsStrings.cloudSearching}
             secondaryText={searchPageSettingsStrings.cloudSearchingLabel}
@@ -156,6 +160,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
         </SettingsList>
       </Card>
       <Card className={classes.spacedCards}>
+        {/*Gallery view Settings*/}
         <SettingsList subHeading={searchPageSettingsStrings.gallery}>
           <SettingsListControl
             divider
