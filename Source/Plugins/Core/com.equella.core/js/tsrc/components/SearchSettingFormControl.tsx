@@ -5,6 +5,7 @@ import {
   FormLabel
 } from "@material-ui/core";
 import * as React from "react";
+import { makeStyles } from "@material-ui/styles";
 export interface SearchSettingFormControlProps {
   title?: string;
   label?: string;
@@ -13,6 +14,11 @@ export interface SearchSettingFormControlProps {
   control: React.ReactElement;
   onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
 }
+const useStyles = makeStyles({
+  formControlLabel: {
+    marginRight: 0
+  }
+});
 export default function SearchSettingFormControl({
   title,
   label,
@@ -21,16 +27,18 @@ export default function SearchSettingFormControl({
   control,
   onChange
 }: SearchSettingFormControlProps) {
+  const classes = useStyles();
   return (
     <FormControl>
       {title && <FormLabel>{title}</FormLabel>}
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
       <FormControlLabel
+        className={classes.formControlLabel}
         disabled={disabled}
         label={label}
         control={control}
         onChange={onChange}
       />
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 }
