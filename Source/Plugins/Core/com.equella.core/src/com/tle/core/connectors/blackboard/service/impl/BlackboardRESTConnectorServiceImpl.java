@@ -683,15 +683,16 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private String getToken(String connectorUuid) {
-    try {
-      final String cachedToken = tokenCache.getCache().get(connectorUuid).getUnchecked(TOKEN_KEY);
-      if (cachedToken == null) {
-        throw new AuthenticationException("User was not able to obtain REST auth token.");
-      }
-      return cachedToken;
-    } catch (ExecutionException e) {
-      throw Throwables.propagate(e);
+    //    try {
+    // final String cachedToken = tokenCache.getCache().get(connectorUuid).getUnchecked(TOKEN_KEY);
+    final String cachedToken = userSessionService.getAttribute(connectorUuid);
+    if (cachedToken == null) {
+      throw new AuthenticationException("User was not able to obtain REST auth token.");
     }
+    return cachedToken;
+    //    } catch (ExecutionException e) {
+    //      throw Throwables.propagate(e);
+    //    }
   }
 
   public void setToken(String connectorUuid, String token) {

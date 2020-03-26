@@ -31,7 +31,6 @@ import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
-import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
@@ -89,27 +88,6 @@ public class BlackboardRESTConnectorEditor
   @Override
   protected String getAjaxDivId() {
     return "blackboardsetup";
-  }
-
-  @EventHandlerMethod
-  public void testWebService(SectionInfo info) {
-    // final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-    //
-    //
-    // final ConnectorEditingBean connector = session.getBean();
-    //
-    // final String result = blackboardService.testConnection(connector.getServerUrl(), "");
-    //	if( result == null )
-    //	{
-    //	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, true);
-    //	getModel(info).setTestWebServiceStatus("ok");
-    //	}
-    //	else
-    //	{
-    //	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
-    //	getModel(info).setTestWebServiceStatus("fail");
-    //	session.getValidationErrors().put("blackboardwebservice", result);
-    //	}
   }
 
   @Override
