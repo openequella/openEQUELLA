@@ -54,6 +54,27 @@
     ],
     "env": {
       "jquery": true
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "Source/Plugins/Core/com.equella.core/js/tsrc/**/*.{ts,tsx}"
+        ],
+        "parserOptions": {
+          "project": "Source/Plugins/Core/com.equella.core/js/tsconfig.json"
+        },
+        "rules": {
+          "no-var": "error",
+          "prefer-const": "error",
+          "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "interface"
+          ],
+          "@typescript-eslint/no-inferrable-types": "error",
+          "@typescript-eslint/no-unnecessary-type-assertion": "error",
+          "@typescript-eslint/prefer-optional-chain": "error"
+        }
+      }
+    ]
   }
 }

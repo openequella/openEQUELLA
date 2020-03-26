@@ -240,7 +240,7 @@ function entityWorkers<E extends Entity>(
 function entityReducerBuilder<E extends Entity>(
   entityCrudActions: EntityCrudActions<E>
 ): ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>> {
-  let initialEntityState: PartialEntityState<E> = {
+  const initialEntityState: PartialEntityState<E> = {
     query: "",
     loading: false
   };

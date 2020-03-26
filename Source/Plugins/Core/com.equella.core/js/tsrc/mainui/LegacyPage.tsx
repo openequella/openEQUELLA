@@ -38,8 +38,8 @@ export function templatePropsForLegacy({
   fullscreenMode,
   menuMode
 }: PageContent): TemplateProps {
-  let soHtml = html["so"];
-  let menuExtra = soHtml ? (
+  const soHtml = html["so"];
+  const menuExtra = soHtml ? (
     <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
   ) : (
     undefined

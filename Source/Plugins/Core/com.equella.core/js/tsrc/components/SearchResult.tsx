@@ -56,7 +56,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
         color="primary"
         variant="subtitle1"
         component={p => (
-          <Link {...p} to={to!}>
+          <Link {...p} to={to}>
             {this.props.primaryText}
           </Link>
         )}

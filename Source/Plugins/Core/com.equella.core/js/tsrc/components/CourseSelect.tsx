@@ -78,7 +78,7 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState> {
     const { courses } = this.state;
     const { getItemProps } = this.props;
     return courses.map((course: Course) => {
-      let itemProps = getItemProps({ item: course });
+      const itemProps = getItemProps({ item: course });
       return (
         <MenuItem {...itemProps} key={course.name} component="div">
           {courseToString(course)}
@@ -118,7 +118,7 @@ class CourseSelect extends React.Component<
     this.props.onCourseSelect(selectedItem);
   };
   handleInputChange = (event: any) => {
-    let inputValue = event.target.value;
+    const inputValue = event.target.value;
     this.setState({ inputValue });
     this.props.onCourseSelect(null);
   };
