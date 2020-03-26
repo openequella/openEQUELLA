@@ -1,12 +1,11 @@
 import * as React from "react";
-import SettingsMenuContainer from "../../components/SettingsMenuContainer";
 import {
   templateDefaults,
   TemplateUpdate,
   TemplateUpdateProps
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -20,14 +19,25 @@ import {
 } from "./SearchSettingsModule";
 import MessageInfo from "../../components/MessageInfo";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
-import GalleryViewsSettings from "./components/GalleryViewsSettings";
-import SettingsCheckbox from "../../components/SettingsCheckbox";
+import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
+import { Save } from "@material-ui/icons";
+import SettingsList from "../../components/SettingsList";
+import SettingsListControl from "../../components/SettingsListControl";
 
 const useStyles = makeStyles({
   floatingButton: {
-    right: "16px",
-    bottom: "16px",
-    position: "fixed"
+    position: "fixed",
+    top: 0,
+    right: 0,
+    marginTop: "80px",
+    marginRight: "16px",
+    width: "calc(25% - 112px)"
+  },
+  spacedCards: {
+    margin: "16px",
+    width: "75%",
+    padding: "16px",
+    float: "left"
   }
 });
 
@@ -73,98 +83,156 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   }
 
   return (
-    <SettingsMenuContainer>
-      <Grid container direction={"column"} spacing={8}>
-        {/*Default Sort Order*/}
-        <Grid item>
-          <DefaultSortOrderSetting
-            disabled={showError}
-            value={searchSettings.defaultSearchSort}
-            setValue={order =>
-              setSearchSettings({ ...searchSettings, defaultSearchSort: order })
+    <>
+      <Card className={classes.spacedCards}>
+        <SettingsList subHeading={searchPageSettingsStrings.general}>
+          <SettingsListControl
+            divider
+            primaryText={searchPageSettingsStrings.defaultSortOrder}
+            secondaryText={searchPageSettingsStrings.defaultSortOrderDesc}
+            control={
+              <DefaultSortOrderSetting
+                disabled={showError}
+                value={searchSettings.defaultSearchSort}
+                setValue={order =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    defaultSearchSort: order
+                  })
+                }
+              />
             }
           />
-        </Grid>
-
-        {/*Include Non-Live checkbox*/}
-        <Grid item>
-          <SettingsCheckbox
-            value={searchSettings.searchingShowNonLiveCheckbox}
-            setValue={value =>
-              setSearchSettings({
-                ...searchSettings,
-                searchingShowNonLiveCheckbox: value
-              })
+          <SettingsListControl
+            divider
+            primaryText={searchPageSettingsStrings.allowNonLive}
+            secondaryText={searchPageSettingsStrings.allowNonLiveLabel}
+            control={
+              <SettingsToggleSwitch
+                value={searchSettings.searchingShowNonLiveCheckbox}
+                setValue={value =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    searchingShowNonLiveCheckbox: value
+                  })
+                }
+                disabled={showError}
+                id={"_showNonLiveCheckbox"}
+              />
             }
-            label={searchPageSettingsStrings.allowNonLiveLabel}
-            disabled={showError}
-            title={searchPageSettingsStrings.allowNonLive}
-            id={"_showNonLiveCheckbox"}
           />
-        </Grid>
-
-        {/*Authenticate By Default*/}
-        <Grid item>
-          <SettingsCheckbox
-            value={searchSettings.authenticateFeedsByDefault}
-            setValue={value =>
-              setSearchSettings({
-                ...searchSettings,
-                authenticateFeedsByDefault: value
-              })
+          <SettingsListControl
+            divider
+            primaryText={searchPageSettingsStrings.authFeed}
+            secondaryText={searchPageSettingsStrings.authFeedLabel}
+            control={
+              <SettingsToggleSwitch
+                value={searchSettings.authenticateFeedsByDefault}
+                setValue={value =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    authenticateFeedsByDefault: value
+                  })
+                }
+                disabled={showError}
+                id={"_authenticateByDefault"}
+              />
             }
-            label={searchPageSettingsStrings.authFeedLabel}
-            disabled={showError}
-            title={searchPageSettingsStrings.authFeed}
-            id={"_authenticateByDefault"}
           />
-        </Grid>
-
-        {/*Gallery views*/}
-        <Grid item>
-          <GalleryViewsSettings
-            disabled={showError}
-            setSearchSettings={setSearchSettings}
-            searchSettings={searchSettings}
-          />
-        </Grid>
-
-        {/*Cloud Settings*/}
-        <Grid item>
-          <SettingsCheckbox
-            value={cloudSettings.disabled}
-            setValue={value =>
-              setCloudSettings({ ...cloudSettings, disabled: value })
+          <SettingsListControl
+            primaryText={searchPageSettingsStrings.cloudSearching}
+            secondaryText={searchPageSettingsStrings.cloudSearchingLabel}
+            control={
+              <SettingsToggleSwitch
+                value={cloudSettings.disabled}
+                setValue={value =>
+                  setCloudSettings({ ...cloudSettings, disabled: value })
+                }
+                disabled={showError}
+                id={"cs_dc"}
+              />
             }
-            label={searchPageSettingsStrings.cloudSearchingLabel}
-            disabled={showError}
-            title={searchPageSettingsStrings.cloudSearching}
-            id={"cs_dc"}
           />
-        </Grid>
-        <Grid item>
-          {/*Save Button*/}
-          <Button
-            id={"_saveButton"}
-            disabled={showError}
-            className={classes.floatingButton}
-            variant="contained"
-            onClick={handleSubmitButton}
-            size="large"
-          >
-            {searchPageSettingsStrings.save}
-          </Button>
-        </Grid>
-      </Grid>
-
-      {/*Snackbar*/}
-      <MessageInfo
-        title={searchPageSettingsStrings.success}
-        open={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        variant={"success"}
-      />
-    </SettingsMenuContainer>
+        </SettingsList>
+      </Card>
+      <Card className={classes.spacedCards}>
+        <SettingsList subHeading={searchPageSettingsStrings.gallery}>
+          <SettingsListControl
+            divider
+            primaryText={searchPageSettingsStrings.disableImages}
+            secondaryText={searchPageSettingsStrings.disableImagesDesc}
+            control={
+              <SettingsToggleSwitch
+                value={searchSettings.searchingDisableGallery}
+                setValue={value =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    searchingDisableGallery: value
+                  })
+                }
+                disabled={showError}
+                id={"_disableGallery"}
+              />
+            }
+          />
+          <SettingsListControl
+            divider
+            primaryText={searchPageSettingsStrings.disableVideos}
+            secondaryText={searchPageSettingsStrings.disableVideosDesc}
+            control={
+              <SettingsToggleSwitch
+                value={searchSettings.searchingDisableVideos}
+                setValue={value =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    searchingDisableVideos: value
+                  })
+                }
+                disabled={showError}
+                id={"_disableVideos"}
+              />
+            }
+          />
+          <SettingsListControl
+            primaryText={searchPageSettingsStrings.disableFileCount}
+            secondaryText={searchPageSettingsStrings.disableFileCountDesc}
+            control={
+              <SettingsToggleSwitch
+                value={searchSettings.fileCountDisabled}
+                setValue={value =>
+                  setSearchSettings({
+                    ...searchSettings,
+                    fileCountDisabled: value
+                  })
+                }
+                disabled={showError}
+                id={"_disableFileCount"}
+              />
+            }
+          />
+        </SettingsList>
+        {/*Save Button*/}
+        <Button
+          color={"primary"}
+          id={"_saveButton"}
+          disabled={showError}
+          className={classes.floatingButton}
+          variant="contained"
+          onClick={handleSubmitButton}
+          size="large"
+        >
+          <Save />
+          {searchPageSettingsStrings.save}
+        </Button>
+        {/*Snackbar*/}
+        <MessageInfo
+          title={searchPageSettingsStrings.success}
+          open={showSuccess}
+          onClose={() => setShowSuccess(false)}
+          variant={"success"}
+        />
+      </Card>
+    </>
   );
 }
 
