@@ -1,8 +1,8 @@
 import SearchSettingFormControl from "./SearchSettingFormControl";
-import { Checkbox } from "@material-ui/core";
+import { Switch } from "@material-ui/core";
 import * as React from "react";
 
-export interface SettingsCheckbox {
+export interface SettingsToggleSwitchProps {
   value: boolean;
   setValue: (value: boolean) => void;
   disabled?: boolean;
@@ -11,7 +11,7 @@ export interface SettingsCheckbox {
   helperText?: string;
   id: string;
 }
-export default function SettingsCheckbox({
+export default function SettingsToggleSwitch({
   disabled,
   label,
   title,
@@ -19,12 +19,12 @@ export default function SettingsCheckbox({
   value,
   setValue,
   id
-}: SettingsCheckbox) {
+}: SettingsToggleSwitchProps) {
   return (
     <SearchSettingFormControl
       disabled={disabled}
       onChange={(_, checked) => setValue(checked)}
-      control={<Checkbox id={id} checked={value} />}
+      control={<Switch id={id} checked={value} />}
       label={label}
       title={title}
       helperText={helperText}
