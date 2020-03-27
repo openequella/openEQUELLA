@@ -4756,6 +4756,11 @@
     <parameter id="url-pattern" value="/*" />
     <parameter id="order" value="800" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webFilter" id="sameSiteFilter">
+    <parameter id="bean" value="bean:com.tle.web.core.filter.SameSiteFilter" />
+    <parameter id="url-pattern" value="/*" />
+    <parameter id="order" value="850" />
+  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="doNotServeServlet">
     <parameter id="bean" value="bean:com.tle.web.core.servlet.DoNotServeServlet" />
     <parameter id="url-pattern" value="/WEB-INF/*" />
