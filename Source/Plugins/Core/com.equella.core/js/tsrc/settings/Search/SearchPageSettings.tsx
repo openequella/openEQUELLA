@@ -216,27 +216,27 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             }
           />
         </SettingsList>
-        {/*Save Button*/}
-        <Button
-          color={"primary"}
-          id={"_saveButton"}
-          disabled={showError}
-          className={classes.floatingButton}
-          variant="contained"
-          onClick={handleSubmitButton}
-          size="large"
-        >
-          <Save />
-          {searchPageSettingsStrings.save}
-        </Button>
-        {/*Snackbar*/}
-        <MessageInfo
-          title={searchPageSettingsStrings.success}
-          open={showSuccess}
-          onClose={() => setShowSuccess(false)}
-          variant={"success"}
-        />
       </Card>
+      {/*Save Button*/}
+      <Button
+        color={"primary"}
+        id={"_saveButton"}
+        disabled={showError}
+        className={classes.floatingButton}
+        variant="contained"
+        onClick={handleSubmitButton}
+        size="large"
+      >
+        <Save />
+        {searchPageSettingsStrings.save}
+      </Button>
+      {/*Snackbar*/}
+      <MessageInfo
+        title={searchPageSettingsStrings.success}
+        open={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        variant={"success"}
+      />
     </>
   );
 }
