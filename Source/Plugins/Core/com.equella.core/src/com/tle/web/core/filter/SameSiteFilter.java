@@ -41,18 +41,15 @@ public class SameSiteFilter extends AbstractWebFilter {
       Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
       boolean firstHeader = true;
       for (String header : headers) {
-        LOGGER.info("Add SameSite=none to cookie: " + header);
         if (firstHeader) {
           response.setHeader(
-              HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=none"));
+              HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None"));
           firstHeader = false;
           continue;
         }
         response.addHeader(
-            HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=none"));
+            HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None"));
       }
-    } else {
-      LOGGER.debug("Not secure so not adding SameSite attribute.");
     }
     return FilterResult.FILTER_CONTINUE;
   }
