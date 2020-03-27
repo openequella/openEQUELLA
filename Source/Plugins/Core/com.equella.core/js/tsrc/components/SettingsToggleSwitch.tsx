@@ -11,6 +11,17 @@ export interface SettingsToggleSwitchProps {
   formHelperText?: string;
   id: string;
 }
+/*
+ * This component is used to define a boolean toggle control using a Material UI switch.
+ *
+ * @param value                 The value of the switch
+ * @param setValue              the function called when the value changes
+ * @param disabled              Whether or not the control is interactible
+ * @param label                 Optional label
+ * @param title                 Optional title string
+ * @param formHelperText        Optional secondary label
+ * @param id                    ID of the control
+ */
 export default function SettingsToggleSwitch({
   disabled,
   label,
