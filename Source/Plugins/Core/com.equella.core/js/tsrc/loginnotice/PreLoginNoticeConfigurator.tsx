@@ -96,7 +96,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse<PreLoginNotice>) => {
-        let preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
+        const preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
           response.data
         );
         if (preLoginNotice.notice != undefined) {

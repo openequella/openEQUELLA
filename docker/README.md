@@ -99,11 +99,11 @@ signer {
 }
 ```
 
-See https://github.com/equella/Equella#keystore for more details.
+See https://github.com/openequella/openEQUELLA#keystore for more details.
 
 ## Future
 
-For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/apereo/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.
+For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/openequella/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.
 
 ## Setup a local clustering environment of oEQ
 

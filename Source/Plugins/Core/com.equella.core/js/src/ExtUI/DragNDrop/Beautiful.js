@@ -1,5 +1,4 @@
-
-const DND = require('react-beautiful-dnd');
+const DND = require("react-beautiful-dnd");
 
 exports.dragDropContextClass = DND.DragDropContext;
 exports.draggableClass = DND.Draggable;

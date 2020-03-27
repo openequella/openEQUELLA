@@ -21,9 +21,9 @@ val TomcatVersion    = "8.5.51"
 val SwaggerVersion   = "1.5.24"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
-val circeVersion     = "0.11.1"
+val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.11.3"
-val sttpVersion      = "1.6.4"
+val sttpVersion      = "1.7.2"
 val fs2Version       = "1.0.5"
 val jsassVersion     = "5.3.0"
 
@@ -55,9 +55,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.4",
-  "com.google.apis"              % "google-api-services-books"   % "v1-rev20181212-1.30.1",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20190827-1.30.1",
+  "com.google.api-client"        % "google-api-client"           % "1.30.9",
+  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200213-1.30.9",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "1.7.2",
   "com.google.gdata"             % "core"                        % "1.47.1",
@@ -79,7 +79,7 @@ libraryDependencies ++= Seq(
   "io.swagger"                %% "swagger-scala-module" % "1.0.5",
   "com.zaxxer"                % "HikariCP"              % "2.7.9",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.13",
+  "commons-codec"             % "commons-codec"         % "1.14",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.2.2",
@@ -207,9 +207,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.0.3",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.28",
-  "org.slf4j"           % "slf4j-api"              % "1.7.28",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.28",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
+  "org.slf4j"           % "slf4j-api"              % "1.7.30",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.30",
   "org.springframework" % "spring-aop"             % "2.5.5",
   "org.springframework" % "spring-context"         % "2.5.5",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
@@ -233,10 +233,10 @@ libraryDependencies ++= Seq(
   "xml-resolver"           % "xml-resolver"              % "1.2",
   "org.scala-sbt"          %% "io"                       % "1.1.0",
   "org.mozilla"            % "rhino"                     % "1.7R4",
-  "io.lemonlabs"           %% "scala-uri"                % "1.4.9",
+  "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
   "io.bit3"                % "jsass"                     % "5.3.0",
-  "io.github.classgraph"   % "classgraph"                % "4.8.52"
+  "io.github.classgraph"   % "classgraph"                % "4.8.65"
 )
 
 libraryDependencies ++= {

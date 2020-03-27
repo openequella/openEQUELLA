@@ -1,1 +1,1 @@
-exports.timeAgoClass = require('timeago-react').default;
+exports.timeAgoClass = require("timeago-react").default;

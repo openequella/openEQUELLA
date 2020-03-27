@@ -1,6 +1,6 @@
 import { sprintf } from "sprintf-js";
 
-declare var bundle: any;
+declare let bundle: any;
 
 export interface Sizes {
   zero: string;
@@ -32,6 +32,10 @@ export function formatSize(size: number, strings: Sizes): string {
   return sprintf(format, size);
 }
 
+interface LanguageStrings {
+  [key: string]: string | LanguageStrings;
+}
+
 /**
  * Add prefix to language strings
  *
@@ -40,23 +44,26 @@ export function formatSize(size: number, strings: Sizes): string {
  *
  * TODO: replace with https://github.com/formatjs/react-intl
  */
-export function prepLangStrings<A>(prefix: string, strings: A): A {
+export function prepLangStrings(
+  prefix: string,
+  strings: LanguageStrings | string
+): LanguageStrings | string {
   if (typeof bundle == "undefined") return strings;
-  const overrideVal = (prefix: string, val: any) => {
-    if (typeof val == "object") {
-      let newOut = {};
+  const overrideVal = (prefix: string, val: LanguageStrings | string) => {
+    if (typeof val == "string") {
+      const overriden = bundle[prefix];
+      if (overriden != undefined) {
+        return overriden;
+      }
+      return val;
+    } else {
+      const newOut: LanguageStrings = {};
       for (const key in val) {
         if (val.hasOwnProperty(key)) {
           newOut[key] = overrideVal(prefix + "." + key, val[key]);
         }
       }
       return newOut;
-    } else {
-      var overriden = bundle[prefix];
-      if (overriden != undefined) {
-        return overriden;
-      }
-      return val;
     }
   };
   return overrideVal(prefix, strings);
@@ -68,7 +75,7 @@ export function initStrings() {
   }
 }
 
-export const languageStrings = {
+export const languageStrings: LanguageStrings = {
   cp: {
     title: "Cloud providers",
     cloudprovideravailable: {

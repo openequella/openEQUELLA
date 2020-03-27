@@ -26,12 +26,12 @@ interface StateData {
   [key: string]: string[];
 }
 
-type FormUpdate = {
+interface FormUpdate {
   state: StateData;
   partial: boolean;
-};
+}
 
-type LegacyContent = {
+interface LegacyContent {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];
@@ -45,7 +45,7 @@ type LegacyContent = {
   hideAppBar: boolean;
   preventUnload: boolean;
   userUpdated: boolean;
-};
+}
 
 export interface PageContent {
   contentId: string;
@@ -107,11 +107,10 @@ export const LegacyContent = React.memo(function LegacyContent({
   userUpdated
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
-  const baseUrl = (document.getElementsByTagName("base")[0] as HTMLBaseElement)
-    .href;
+  const baseUrl = document.getElementsByTagName("base")[0].href;
 
   function toRelativeUrl(url: string) {
-    let relUrl =
+    const relUrl =
       url.indexOf(baseUrl) == 0 ? url.substring(baseUrl.length) : url;
     return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
   }
@@ -211,7 +210,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       updateForm: function(formUpdate: FormUpdate) {
         setContent(content => {
           if (content) {
-            let newState = formUpdate.partial
+            const newState = formUpdate.partial
               ? { ...content.state, ...formUpdate.state }
               : formUpdate.state;
             return { ...content, state: newState };
@@ -223,10 +222,10 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   React.useEffect(() => {
     if (enabled) {
-      let params = new URLSearchParams(search);
-      let urlValues = {};
+      const params = new URLSearchParams(search);
+      const urlValues = {};
       params.forEach((val, key) => {
-        let exVal = urlValues[key];
+        const exVal = urlValues[key];
         if (exVal) exVal.push(val);
         else urlValues[key] = [val];
       });
@@ -249,7 +248,7 @@ async function updateIncludes(
   js: string[],
   css?: string[]
 ): Promise<{ [url: string]: HTMLLinkElement }> {
-  let extraCss = await updateStylesheets(css);
+  const extraCss = await updateStylesheets(css);
   await loadMissingScripts(js);
   return extraCss;
 }
@@ -321,7 +320,7 @@ function loadMissingScripts(_scripts: string[]) {
       if (scriptSrcs[scriptUrl]) {
         return lastScript;
       } else {
-        let newScript = doc.createElement("script");
+        const newScript = doc.createElement("script");
         newScript.src = scriptUrl;
         newScript.async = false;
         head.appendChild(newScript);
@@ -372,16 +371,16 @@ function collectParams(
           if (!v.checked || v.disabled) return;
       }
     }
-    let ex = vals[v.name];
+    const ex = vals[v.name];
     if (ex) {
       ex.push(v.value);
     } else vals[v.name] = [v.value];
   });
   form.querySelectorAll("select").forEach((v: HTMLSelectElement) => {
     for (let i = 0; i < v.length; i++) {
-      let o = v[i] as HTMLOptionElement;
+      const o = v[i] as HTMLOptionElement;
       if (o.selected) {
-        let ex = vals[v.name];
+        const ex = vals[v.name];
         if (ex) {
           ex.push(o.value);
         } else vals[v.name] = [o.value];

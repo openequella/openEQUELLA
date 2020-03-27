@@ -57,7 +57,7 @@ class CloudProviderAddDialog extends React.Component<
   };
 
   validateUrl = (): boolean => {
-    let url = this.state.cloudProviderUrl;
+    const url = this.state.cloudProviderUrl;
     if (url == "") {
       return true;
     } else {
@@ -80,7 +80,7 @@ class CloudProviderAddDialog extends React.Component<
   render() {
     const { open, onCancel, onRegister, classes } = this.props;
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
-    let isUrlValid = this.validateUrl();
+    const isUrlValid = this.validateUrl();
     return (
       <div>
         <Dialog
