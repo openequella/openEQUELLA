@@ -9,9 +9,9 @@ import { makeStyles } from "@material-ui/styles";
 
 interface SettingsListControlProps {
   divider?: boolean;
-  primaryText?: string;
-  secondaryText?: string;
-  control?: ReactNode;
+  primaryText: string;
+  secondaryText: string;
+  control: ReactNode;
 }
 
 const useStyles = makeStyles({
