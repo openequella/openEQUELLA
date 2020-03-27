@@ -27,12 +27,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
-import org.apache.log4j.Logger;
 
 @Bind
 public class SameSiteFilter extends AbstractWebFilter {
-
-  private static final Logger LOGGER = Logger.getLogger(SameSiteFilter.class);
 
   @Override
   public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
