@@ -8,14 +8,14 @@ export interface SettingsToggleSwitchProps {
   disabled?: boolean;
   label?: string;
   title?: string;
-  helperText?: string;
+  formHelperText?: string;
   id: string;
 }
 export default function SettingsToggleSwitch({
   disabled,
   label,
   title,
-  helperText,
+  formHelperText,
   value,
   setValue,
   id
@@ -27,7 +27,7 @@ export default function SettingsToggleSwitch({
       control={<Switch id={id} checked={value} />}
       label={label}
       title={title}
-      helperText={helperText}
+      formHelperText={formHelperText}
     />
   );
 }

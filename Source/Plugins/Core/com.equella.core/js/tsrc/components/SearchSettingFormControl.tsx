@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/styles";
 export interface SearchSettingFormControlProps {
   title?: string;
   label?: string;
-  helperText?: string;
+  formHelperText?: string;
   disabled?: boolean;
   control: React.ReactElement;
   onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 export default function SearchSettingFormControl({
   title,
   label,
-  helperText,
+  formHelperText,
   disabled,
   control,
   onChange
@@ -38,7 +38,7 @@ export default function SearchSettingFormControl({
         control={control}
         onChange={onChange}
       />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      {formHelperText && <FormHelperText>{formHelperText}</FormHelperText>}
     </FormControl>
   );
 }
