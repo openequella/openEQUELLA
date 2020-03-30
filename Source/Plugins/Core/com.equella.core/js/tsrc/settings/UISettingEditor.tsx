@@ -47,7 +47,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
 
   useEffect(() => {
-    let cancelToken = axios.CancelToken.source();
+    const cancelToken = axios.CancelToken.source();
     fetchUISetting(cancelToken.token)
       .then(uiSetting => {
         const { enabled, newSearch } = uiSetting.newUI;
