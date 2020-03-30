@@ -350,21 +350,29 @@ export const languageStrings: LanguageStrings = {
       desc: "Search settings",
       searchPageSettings: {
         name: "Search page settings",
+        general: "General",
         defaultSortOrder: "Default sort order",
+        defaultSortOrderDesc:
+          "The default order that search results are ordered by on the search page",
         relevance: "Relevance",
         lastModified: "Date last modified",
         dateCreated: "Date created",
         title: "Title",
         userRating: "User rating",
-        allowNonLive: "Allow non-live results",
+        allowNonLive: "Non-live results",
         allowNonLiveLabel:
           "Show the 'Include results that are not live' checkbox",
         authFeed: "Authenticated feeds",
         authFeedLabel: "Generate authenticated RSS and Atom feed links ",
+        gallery: "Gallery",
         galleryViews: "Gallery views",
         disableImages: "Disable Images",
+        disableImagesDesc: "Removes Images link from results box",
         disableVideos: "Disable Videos",
+        disableVideosDesc: "Removes Videos link from results box",
         disableFileCount: "Disable File Count",
+        disableFileCountDesc:
+          "Removes the file count that displays on each thumbnail in the Images and Videos views",
         cloudSearching: "Cloud searching",
         cloudSearchingLabel:
           "Do not show cloud results when performing searches.",
