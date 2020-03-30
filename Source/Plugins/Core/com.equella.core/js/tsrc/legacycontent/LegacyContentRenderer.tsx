@@ -18,8 +18,8 @@ export function LegacyContentRenderer({
 }: PageContent) {
   const classes = useStyles();
 
-  let { body, crumbs, upperbody } = html;
-  let extraClass = (function() {
+  const { body, crumbs, upperbody } = html;
+  const extraClass = (function() {
     switch (fullscreenMode) {
       case "YES":
       case "YES_WITH_TOOLBAR":
@@ -33,7 +33,7 @@ export function LegacyContentRenderer({
         }
     }
   })();
-  let mainContent = (
+  const mainContent = (
     <div className={`content ${extraClass}`}>
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}

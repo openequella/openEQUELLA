@@ -1,1 +1,1 @@
-exports.newUUID = require('uuid/v4');
+exports.newUUID = require("uuid/v4");

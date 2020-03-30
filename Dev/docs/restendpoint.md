@@ -6,12 +6,12 @@ representations.
 RestEasy 3.5.0 configured using [JAX-RS](https://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) annotations and Jackson for JSON de/serialization.
 On top of that Swagger annotations are used for documentation.
 
-- [Add an endpoint](#adding)
-- [Important annotations](#important_annotations)
-- [JSON de/serialization](#json)
-- [Creating URIs](#uri)
+- [Add an endpoint](#adding-a-new-api-resource)
+- [Important annotations](#important-annotations)
+- [JSON de/serialization](#json-deserialization-with-jackson)
+- [Creating URIs](#creating-uris)
 
-### <a href="#adding"></a>Adding a new API resource
+### Adding a new API resource
 
 Create your API resource class:
 
@@ -68,7 +68,7 @@ Voila! You should now have a new REST API accessible from `<insturl>/api/testres
 | `@io.swagger.annotations.Api`          | This is the name that will show on the swagger api docs page.                                                                                                                                |
 | `@io.swagger.annotations.ApiOperation` | This is the description that will show for a method on the api docs page.                                                                                                                    |
 
-## <a href="#json"></a>JSON de/serialization with Jackson
+## JSON de/serialization with Jackson
 
 Consider the following Java/Scala classes:
 
@@ -152,14 +152,12 @@ E.G.
 
 **NOTE:** Nulls are disallowed in the Scala deserializer, so you must use `Option` instead.
 
-## <a href="#uri"></a>Creating URIs
+## Creating URIs
 
 REST endpoints should provide URI links to relevant resources. The [URIInfo](https://docs.oracle.com/javaee/6/api/javax/ws/rs/core/UriInfo.html)
 context object should be used to generate the base URIs to build on top of:
 
 ```java
-
-
 @Path("testrest/")
 @Api("Test rest")
 public class TestResource {

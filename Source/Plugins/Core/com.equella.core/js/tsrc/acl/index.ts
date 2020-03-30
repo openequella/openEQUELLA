@@ -69,7 +69,7 @@ function aclWorkers(actions: AclActions): AclWorkers {
 function aclReducerBuilder(
   actions: AclActions
 ): ReducerBuilder<PartialAclState, PartialAclState> {
-  let initialState: PartialAclState = {
+  const initialState: PartialAclState = {
     nodes: {}
   };
 

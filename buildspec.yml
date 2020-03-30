@@ -10,8 +10,8 @@ phases:
     commands:
       - env | sort | grep -vi -e key -e secret -e password
       - setupBuild
+      - . $NVM_DIR/nvm.sh && nvm install # version from nvmrc
       - npm config set unsafe-perm true
-      - npm install -g npm@5.6.0
   install:
     commands:
       - service postgresql start

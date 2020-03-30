@@ -161,9 +161,9 @@ class ThemePage extends React.Component<
   };
 
   handleImageChange = (e: HTMLInputElement) => {
-    let reader = new FileReader();
+    const reader = new FileReader();
     if (e.files != null) {
-      let file = e.files[0];
+      const file = e.files[0];
       reader.readAsDataURL(file);
       reader.onloadend = () => {
         this.setState({

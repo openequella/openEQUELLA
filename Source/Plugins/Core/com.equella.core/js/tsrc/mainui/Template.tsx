@@ -290,7 +290,7 @@ export const Template = React.memo(function Template({
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
-    var remove = "fullscreen-toolbar";
+    let remove = "fullscreen-toolbar";
     switch (fullscreenMode) {
       case "YES":
         classList.add("fullscreen");
@@ -394,7 +394,7 @@ export const Template = React.memo(function Template({
           return item.route ? (
             <Link {...props} to={item.route} />
           ) : (
-            <a {...props} href={item.href!} />
+            <a {...props} href={item.href} />
           );
         }}
         key={ind}

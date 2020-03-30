@@ -243,7 +243,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
   handleIntChange(stateFieldName: string) {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
-      let val = event.target.value;
+      const val = event.target.value;
       let intVal: number | undefined = parseInt(val);
       if (!Number.isInteger(intVal)) {
         intVal = undefined;
@@ -373,7 +373,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
     let rules: TargetListEntry[] = [];
     if (security) {
-      rules = security!.rules;
+      rules = security.rules;
     }
 
     return (

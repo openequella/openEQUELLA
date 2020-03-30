@@ -79,7 +79,7 @@ The bridge's type is declared in [bridge.ts](../../Source/Plugins/Core/com.equel
 
 - Typescript 3.3.3333
 - [Axios](https://github.com/axios/axios) is currently the library of choice for a `Promise` based approach to AJAX calls.
-- [Redux](https://redux.js.org/introduction) is currently being used to dispatch AJAX calls and do state manipulation.
+- [Redux](https://redux.js.org) is currently being used to dispatch AJAX calls and do state manipulation.
 - [Material UI](https://material-ui.com/) contains Typescript bindings.
 
 Right now none of the pages share any part of the Redux store, but eventually if pages need to share state it will be via the Redux store.
