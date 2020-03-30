@@ -64,7 +64,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
 
   useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
-    let cancelToken = axios.CancelToken.source();
+    const cancelToken = axios.CancelToken.source();
     fetchSettings(cancelToken.token)
       .then(settings => {
         setSettingGroups(groupMap(settings));
