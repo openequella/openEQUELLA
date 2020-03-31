@@ -75,7 +75,11 @@ jobs:
   include:
     - stage: build and check
       script:
-        - npm install && npm run check
+        - cd Source/Plugins/Core/com.equella.core/js
+        - npm ci
+        - cd ../../../../..
+        - npm ci
+        - npm run check
         - sbt headerCheck checkJavaCodeStyle
       name: Check headers, code style and static analysis
       after_failure: ci/s3cp.sh target/checkstyle-report.html $S3_DEST_BUILD
