@@ -315,7 +315,7 @@ function loadMissingScripts(_scripts: string[]) {
       }
     }
     const lastScript = scripts.reduce(
-      (lastScript: HTMLScriptElement, scriptUrl) => {
+      (lastScript: HTMLScriptElement | null, scriptUrl) => {
         if (scriptSrcs[scriptUrl]) {
           return lastScript;
         } else {
@@ -326,7 +326,7 @@ function loadMissingScripts(_scripts: string[]) {
           return newScript;
         }
       },
-      new HTMLScriptElement()
+      null
     );
     if (!lastScript) resolve();
     else {
