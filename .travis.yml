@@ -76,9 +76,9 @@ jobs:
     - stage: build and check
       script:
         - cd Source/Plugins/Core/com.equella.core/js
-        - npm ci
+        - npm install-ci
         - cd ../../../../..
-        - npm ci
+        - npm install-ci
         - npm run check
         - sbt headerCheck checkJavaCodeStyle
       name: Check headers, code style and static analysis
@@ -109,7 +109,10 @@ jobs:
       script: sbt test
       name: Unit test
     - stage: build and check
-      script: cd Source/Plugins/Core/com.equella.core/js && npm install && npm test; cd -
+      script:
+        - cd Source/Plugins/Core/com.equella.core/js
+        - npm install-ci-test
+        - cd ../../../../..
       name: Jest test
     - stage: build and check
       script: ci/import-export-tool-build.sh
