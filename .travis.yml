@@ -77,7 +77,7 @@ jobs:
       script:
         - cd Source/Plugins/Core/com.equella.core/js
         - npm install-ci
-        - cd ../../../../..
+        - cd -
         - npm install-ci
         - npm run check
         - sbt headerCheck checkJavaCodeStyle
@@ -112,7 +112,7 @@ jobs:
       script:
         - cd Source/Plugins/Core/com.equella.core/js
         - npm install-ci-test
-        - cd ../../../../..
+        - cd -
       name: Jest test
     - stage: build and check
       script: ci/import-export-tool-build.sh
