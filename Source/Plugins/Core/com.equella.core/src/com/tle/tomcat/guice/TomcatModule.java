@@ -28,6 +28,11 @@ public class TomcatModule extends MandatoryConfigModule {
     bindInt("http.port", -1);
     bindInt("https.port", -1);
     bindInt("ajp.port", -1);
+    bindProp("ajp.address", "127.0.0.1");
+    // Makes sense for this to be in mandatory-config, but we have to provide a default, non-null
+    // value
+    bindProp("ajp.secret", "ignore");
+    bindBoolean("ajp.secret.required", true);
     bindInt("tomcat.max.threads", -2);
     install(new TomcatOptionalModule());
   }

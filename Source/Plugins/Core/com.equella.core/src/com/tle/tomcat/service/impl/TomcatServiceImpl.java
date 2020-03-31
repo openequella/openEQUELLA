@@ -84,6 +84,18 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
   private int ajpPort;
 
   @Inject
+  @Named("ajp.address")
+  private String ajpAddress;
+
+  @Inject
+  @Named("ajp.secret")
+  private String ajpSecret;
+
+  @Inject
+  @Named("ajp.secret.required")
+  private boolean ajpSecretRequired;
+
+  @Inject
   @Named("tomcat.max.threads")
   private int maxThreads;
 
@@ -182,9 +194,13 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
       if (ajpPort != -1) {
         Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
         connector.setPort(ajpPort);
-        connector.setAttribute("requiredSecret", false);
+        if (!ajpSecret.equals("ignore")) {
+          connector.setAttribute("secret", ajpSecret);
+        }
+        connector.setAttribute("secretRequired", ajpSecretRequired);
         connector.setAttribute("tomcatAuthentication", false);
         connector.setAttribute("packetSize", "65536");
+        connector.setAttribute("address", ajpAddress);
         setConnector(connector);
       }
 
