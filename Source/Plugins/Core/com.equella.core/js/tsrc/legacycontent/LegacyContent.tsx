@@ -8,6 +8,7 @@ declare global {
   interface Window {
     _trigger: any;
     eval: any;
+    EQ: { [index: string]: any };
   }
   const _trigger: any;
 }
@@ -176,7 +177,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   }
 
   React.useEffect(() => {
-    (window as { [key: string]: any })["EQ"] = {
+    window["EQ"] = {
       event: stdSubmit(true),
       eventnv: stdSubmit(false),
       postAjax(
@@ -313,7 +314,7 @@ function loadMissingScripts(_scripts: string[]) {
         scriptSrcs[scriptTag.src] = true;
       }
     }
-    const lastScript = scripts.reduce<HTMLScriptElement>(
+    const lastScript = scripts.reduce(
       (lastScript: HTMLScriptElement, scriptUrl) => {
         if (scriptSrcs[scriptUrl]) {
           return lastScript;
