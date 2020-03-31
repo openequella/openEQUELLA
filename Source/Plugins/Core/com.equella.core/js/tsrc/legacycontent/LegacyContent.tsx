@@ -260,12 +260,16 @@ function updateStylesheets(
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert")!;
   const head = doc.getElementsByTagName("head")[0];
-  let current = insertPoint.previousElementSibling as HTMLLinkElement;
+  let current = insertPoint.previousElementSibling;
   const existingSheets: { [index: string]: HTMLLinkElement } = {};
 
-  while (current != null && current.tagName == "LINK") {
+  while (
+    current != null &&
+    current.tagName == "LINK" &&
+    current instanceof HTMLLinkElement
+  ) {
     existingSheets[current.href] = current;
-    current = current.previousElementSibling as HTMLLinkElement;
+    current = current.previousElementSibling;
   }
   const cssPromises = sheets.reduce((lastLink, cssUrl) => {
     if (existingSheets[cssUrl]) {
