@@ -17,7 +17,7 @@ const styles = (theme: Theme) =>
   createStyles({
     closeButton: {
       position: "absolute",
-      right: theme.spacing.unit
+      right: theme.spacing(1)
     }
   });
 
