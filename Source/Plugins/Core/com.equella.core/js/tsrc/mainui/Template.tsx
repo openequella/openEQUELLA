@@ -191,12 +191,12 @@ export const useStyles = makeStyles((theme: Theme) => {
     },
     titlePadding: {
       [desktop]: {
-        marginLeft: theme.spacing.unit * 4
+        marginLeft: theme.spacing(4)
       },
-      marginLeft: theme.spacing.unit
+      marginLeft: theme.spacing(1)
     },
     titleDense: {
-      marginLeft: theme.spacing.unit
+      marginLeft: theme.spacing(1)
     },
     title: {
       overflow: "hidden",
@@ -218,7 +218,7 @@ export const useStyles = makeStyles((theme: Theme) => {
     },
     logo: {
       textAlign: "center",
-      marginTop: theme.spacing.unit * 2
+      marginTop: theme.spacing(2)
     },
     drawerPaper: {
       [desktop]: {

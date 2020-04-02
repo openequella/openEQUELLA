@@ -19,7 +19,6 @@ import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
 import { LocationDescriptor } from "history";
 import { DateTime } from "luxon";
-//import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from "material-ui-pickers";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
@@ -57,17 +56,17 @@ const styles = (theme: Theme) => {
       flexFlow: "row wrap"
     },
     formControl: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(1),
       flex: "1 1 40%",
-      marginBottom: 2 * theme.spacing.unit
+      marginBottom: theme.spacing(2)
     },
     formControl2: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(1),
       flex: "2 1 100%",
-      marginBottom: 2 * theme.spacing.unit
+      marginBottom: theme.spacing(2)
     },
     body: {
-      padding: `${theme.spacing.unit * 2}px`,
+      padding: `${theme.spacing(2)}px`,
       paddingBottom: footerHeight,
       height: "100%"
     },

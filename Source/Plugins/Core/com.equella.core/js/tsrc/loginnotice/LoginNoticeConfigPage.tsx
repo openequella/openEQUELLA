@@ -38,8 +38,8 @@ interface LoginNoticeConfigPageState {
 const styles = (theme: Theme) =>
   createStyles({
     floatingButton: {
-      right: theme.spacing.unit * 2,
-      bottom: theme.spacing.unit * 2,
+      right: theme.spacing(2),
+      bottom: theme.spacing(2),
       position: "fixed"
     }
   });

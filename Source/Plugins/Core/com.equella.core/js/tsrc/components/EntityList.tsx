@@ -15,11 +15,11 @@ import { FabProps } from "@material-ui/core/Fab";
 const styles = (theme: Theme) =>
   ({
     overall: {
-      padding: theme.spacing.unit * 2,
+      padding: theme.spacing(2),
       height: "100%"
     },
     results: {
-      padding: theme.spacing.unit * 2,
+      padding: theme.spacing(2),
       position: "relative"
     },
     resultHeader: {
@@ -36,8 +36,8 @@ const styles = (theme: Theme) =>
     fab: {
       zIndex: 1000,
       position: "fixed",
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 5
+      bottom: theme.spacing(2),
+      right: theme.spacing(5)
     }
   } as StyleRules);
 

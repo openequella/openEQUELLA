@@ -1,13 +1,12 @@
 import * as React from "react";
 import { ErrorResponse } from "../api/errors";
-import { makeStyles } from "@material-ui/styles";
-import { CardContent, Card, Typography } from "@material-ui/core";
+import { CardContent, Card, makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(t => ({
   errorPage: {
     display: "flex",
     justifyContent: "center",
-    marginTop: t.spacing.unit * 8
+    marginTop: t.spacing(8)
   }
 }));
 

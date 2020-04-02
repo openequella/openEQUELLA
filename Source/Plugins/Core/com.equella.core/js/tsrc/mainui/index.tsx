@@ -10,7 +10,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@material-ui/core";
 import { Provider } from "react-redux";
 import store from "../store";
 import { routes, OEQRoute, OEQRouteComponentProps } from "./routes";
