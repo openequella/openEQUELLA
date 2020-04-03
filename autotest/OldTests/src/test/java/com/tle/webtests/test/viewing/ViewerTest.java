@@ -84,7 +84,7 @@ public class ViewerTest extends AbstractCleanupAutoTest {
   public void testLTIViewer() {
     SummaryPage summary = SearchPage.searchAndView(context, "lti viewer item");
     LTIViewerPage lti =
-        summary.attachments().viewAttachment("youtube tool", new LTIViewerPage(context));
+        summary.attachments().viewAttachment("Vimeo tool", new LTIViewerPage(context));
     lti.searchYoutube("ghosts");
     lti.embedYTResult(4);
   }

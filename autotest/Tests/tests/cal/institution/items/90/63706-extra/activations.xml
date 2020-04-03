@@ -8,7 +8,7 @@
     <status>0</status>
     <time class="sql-timestamp">2009-04-16 15:49:15.643</time>
     <from class="sql-timestamp">2009-04-16 15:49:02.687</from>
-    <until class="sql-timestamp">2020-04-01 11:00:00.0</until>
+    <until class="sql-timestamp">2100-12-31 11:00:00.0</until>
     <course entityclass="com.tle.beans.item.cal.request.CourseInfo" uuid="313213e6-049a-8834-46d1-230be99f4490"/>
     <citation>Harvard</citation>
     <description>, &apos;Part Two&apos; in</description>
