@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>215972</id>
+  <id>679872</id>
   <uuid>f63c0eff-e9b9-4d60-a690-baa8638f051c</uuid>
   <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
-  <dateModified class="sql-timestamp">2011-08-23 13:14:26.556</dateModified>
+  <dateModified class="sql-timestamp">2020-03-17 15:38:48.317</dateModified>
   <dateCreated class="sql-timestamp">2011-08-23 13:14:26.556</dateCreated>
   <description>
-    <id>215973</id>
+    <id>679873</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>215974</id>
+          <id>679874</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>This collection is for testing the youtube channel.</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>215975</id>
+    <id>679875</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>215976</id>
+          <id>679876</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Youtube Channel Testing Collection</text>
@@ -41,8 +41,9 @@
   <wizardcategory>Wizard</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>215977</id>
+    <id>679877</id>
     <itemMetadataRules/>
+    <dynamicMetadataRules/>
     <wizard>
       <pages>
         <com.dytech.edge.wizard.beans.DefaultWizardPage>
@@ -127,6 +128,14 @@
               <classType>universal</classType>
               <attributes>
                 <entry>
+                  <string>EnableMaxFiles</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AllowPreviews</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
                   <string>AllowChannel</string>
                   <boolean>true</boolean>
                 </entry>
@@ -154,12 +163,20 @@
                 <entry>
                   <string>AttachmentTypes</string>
                   <set>
-                    <string>youTubeHandler</string>
+                    <string>urlHandler</string>
                   </set>
+                </entry>
+                <entry>
+                  <string>MaxFiles</string>
+                  <int>0</int>
                 </entry>
                 <entry>
                   <string>OptionAllowChannel</string>
                   <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>LINK_DUPLICATION_CHECK</string>
+                  <boolean>false</boolean>
                 </entry>
                 <entry>
                   <string>OptionRestrictChannel</string>
@@ -175,6 +192,12 @@
       <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
       <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
     </wizard>
+    <searchDetails>
+      <attDisplay>STRUCTURED</attDisplay>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
     <metadataMapping>
       <imsMapping class="list"/>
       <htmlMapping class="list"/>
