@@ -278,7 +278,7 @@ class ThemePage extends React.Component<
             <Typography variant={"h4"}>
               {strings.colourschemesettings.title}
             </Typography>
-            <Grid container spacing={16}>
+            <Grid container spacing={8}>
               <Grid item>
                 {this.colorPicker(
                   strings.colourschemesettings.primarycolour,
