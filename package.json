@@ -10,6 +10,7 @@
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
     "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
     "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
+    "check:ts-types": "tsc --noEmit --project \"Source/Plugins/Core/com.equella.core/js/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*"
   },

@@ -25,7 +25,7 @@ import {
   LegacyContentProps,
   PageContent
 } from "../legacycontent/LegacyContent";
-import { getCurrentUser } from "../api/currentuser";
+import { getCurrentUser, UserData } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
 import { LegacyForm } from "../legacycontent/LegacyForm";
@@ -48,7 +48,7 @@ const beforeunload = function(e: Event) {
 };
 
 function IndexPage() {
-  const [currentUser, setCurrentUser] = React.useState();
+  const [currentUser, setCurrentUser] = React.useState<UserData>();
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
 

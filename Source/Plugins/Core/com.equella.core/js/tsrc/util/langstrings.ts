@@ -70,12 +70,14 @@ export function prepLangStrings(
 }
 
 export function initStrings() {
-  for (const key in languageStrings) {
+  for (const key of Object.keys(languageStrings) as Array<
+    keyof typeof languageStrings
+  >) {
     prepLangStrings(key, languageStrings[key]);
   }
 }
 
-export const languageStrings: LanguageStrings = {
+export const languageStrings = {
   cp: {
     title: "Cloud providers",
     cloudprovideravailable: {
