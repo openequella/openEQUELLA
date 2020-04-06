@@ -384,6 +384,9 @@ export const languageStrings = {
         notFoundError: "Endpoint not found",
         notFoundErrorDesc: "Endpoint not found. Refresh to retry.",
         permissionsError: "You do not have permission to edit these settings."
+      },
+      searchfiltersettings: {
+        name: "Search filter settings"
       }
     },
     ui: { name: "UI", desc: "UI settings" }
