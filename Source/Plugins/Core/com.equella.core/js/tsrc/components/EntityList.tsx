@@ -69,7 +69,7 @@ class EntityList extends React.Component<EntityListProps, {}> {
           <Fab
             id="add-entity"
             className={classes.fab}
-            component={create}
+            component={create!}
             color="secondary"
             onClick={createOnClick}
           >

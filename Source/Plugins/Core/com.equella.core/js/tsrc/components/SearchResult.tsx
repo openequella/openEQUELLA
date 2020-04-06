@@ -38,7 +38,7 @@ export interface SearchResultExtraDetail {
 }
 
 export interface SearchResultProps {
-  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   to: LocationDescriptor;
   onDelete?: () => void;
   primaryText: string;

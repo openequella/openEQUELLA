@@ -395,7 +395,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   label={strings.name.label}
                   helperText={strings.name.help}
                   value={name || ""}
-                  onChange={this.handleChange("name")}
+                  onChange={() => this.handleChange("name")}
                   margin="normal"
                   className={classes.formControl2}
                   required
@@ -407,7 +407,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   label={strings.description.label}
                   helperText={strings.description.help}
                   value={description || ""}
-                  onChange={this.handleChange("description")}
+                  onChange={() => this.handleChange("description")}
                   multiline
                   rows={2}
                   margin="normal"
@@ -419,7 +419,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   label={strings.code.label}
                   helperText={strings.code.help}
                   value={code}
-                  onChange={this.handleChange("code")}
+                  onChange={() => this.handleChange("code")}
                   margin="normal"
                   className={classes.formControl}
                   required
@@ -432,7 +432,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     id="type"
                     value={type}
                     input={<Input id="type-inp" />}
-                    onChange={this.handleChange("type")}
+                    onChange={() => this.handleChange("type")}
                   >
                     <MenuItem key={"i"} value={"Internal"}>
                       {typeval.i}
@@ -451,7 +451,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   label={strings.department.label}
                   //helperText=""
                   value={departmentName || ""}
-                  onChange={this.handleChange("departmentName")}
+                  onChange={() => this.handleChange("departmentName")}
                   margin="normal"
                   className={classes.formControl}
                 />
@@ -464,7 +464,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     id="citation"
                     value={citation || ""}
                     input={<Input id="citation-inp" />}
-                    onChange={this.handleChange("citation")}
+                    onChange={() => this.handleChange("citation")}
                   >
                     {citations.map(citation => (
                       <MenuItem key={citation} value={citation}>
@@ -504,7 +504,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     id="versionSelection"
                     value={vs}
                     input={<Input id="versionSelection-inp" />}
-                    onChange={this.handleChange("versionSelection")}
+                    onChange={() => this.handleChange("versionSelection")}
                   >
                     <MenuItem key={"DEFAULT"} value={"INSTITUTION_DEFAULT"}>
                       {versionval.default}
