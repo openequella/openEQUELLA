@@ -57,7 +57,7 @@ interface CommandsPromise {
 }
 
 interface Registration {
-  mount: (api: ControlApi<object>) => void;
+  mount: (api: ControlApi<any>) => void;
   unmount: (removed: Element) => void;
 }
 

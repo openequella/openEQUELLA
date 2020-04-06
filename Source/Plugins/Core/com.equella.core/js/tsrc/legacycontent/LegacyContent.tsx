@@ -8,6 +8,7 @@ declare global {
   interface Window {
     _trigger: any;
     eval: any;
+    EQ: { [index: string]: any };
   }
   const _trigger: any;
 }
@@ -220,7 +221,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   React.useEffect(() => {
     if (enabled) {
       const params = new URLSearchParams(search);
-      const urlValues = {};
+      const urlValues: { [index: string]: string[] } = {};
       params.forEach((val, key) => {
         const exVal = urlValues[key];
         if (exVal) exVal.push(val);
@@ -260,10 +261,14 @@ function updateStylesheets(
   const insertPoint = doc.getElementById("_dynamicInsert")!;
   const head = doc.getElementsByTagName("head")[0];
   let current = insertPoint.previousElementSibling;
-  const existingSheets = {};
+  const existingSheets: { [index: string]: HTMLLinkElement } = {};
 
-  while (current != null && current.tagName == "LINK") {
-    existingSheets[(current as HTMLLinkElement).href] = current;
+  while (
+    current != null &&
+    current.tagName == "LINK" &&
+    current instanceof HTMLLinkElement
+  ) {
+    existingSheets[current.href] = current;
     current = current.previousElementSibling;
   }
   const cssPromises = sheets.reduce((lastLink, cssUrl) => {
@@ -306,30 +311,33 @@ function loadMissingScripts(_scripts: string[]) {
     const doc = window.document;
     const head = doc.getElementsByTagName("head")[0];
     const scriptTags = doc.getElementsByTagName("script");
-    const scriptSrcs = {};
+    const scriptSrcs: { [index: string]: boolean } = {};
     for (let i = 0; i < scriptTags.length; i++) {
       const scriptTag = scriptTags[i];
       if (scriptTag.src) {
         scriptSrcs[scriptTag.src] = true;
       }
     }
-    const lastScript = scripts.reduce((lastScript, scriptUrl) => {
-      if (scriptSrcs[scriptUrl]) {
-        return lastScript;
-      } else {
-        const newScript = doc.createElement("script");
-        newScript.src = scriptUrl;
-        newScript.async = false;
-        head.appendChild(newScript);
-        return newScript;
-      }
-    }, null);
+    const lastScript = scripts.reduce(
+      (lastScript: HTMLScriptElement | null, scriptUrl) => {
+        if (scriptSrcs[scriptUrl]) {
+          return lastScript;
+        } else {
+          const newScript = doc.createElement("script");
+          newScript.src = scriptUrl;
+          newScript.async = false;
+          head.appendChild(newScript);
+          return newScript;
+        }
+      },
+      null
+    );
     if (!lastScript) resolve();
     else {
       lastScript.addEventListener("load", resolve, false);
       lastScript.addEventListener(
         "error",
-        err => {
+        () => {
           console.error(`Failed to load script: ${lastScript.src}`);
           resolve();
         },
@@ -344,7 +352,7 @@ function collectParams(
   command: string | null,
   args: string[]
 ) {
-  const vals = {};
+  const vals: { [index: string]: string[] } = {};
   if (command) {
     vals["event__"] = [command];
   }
@@ -358,21 +366,23 @@ function collectParams(
     }
     vals["eventp__" + i] = [outval];
   });
-  form.querySelectorAll("input,textarea").forEach((v: HTMLInputElement) => {
-    if (v.type) {
-      switch (v.type) {
-        case "button":
-          return;
-        case "checkbox":
-        case "radio":
-          if (!v.checked || v.disabled) return;
+  form
+    .querySelectorAll<HTMLInputElement>("input,textarea")
+    .forEach((v: HTMLInputElement) => {
+      if (v.type) {
+        switch (v.type) {
+          case "button":
+            return;
+          case "checkbox":
+          case "radio":
+            if (!v.checked || v.disabled) return;
+        }
       }
-    }
-    const ex = vals[v.name];
-    if (ex) {
-      ex.push(v.value);
-    } else vals[v.name] = [v.value];
-  });
+      const ex = vals[v.name];
+      if (ex) {
+        ex.push(v.value);
+      } else vals[v.name] = [v.value];
+    });
   form.querySelectorAll("select").forEach((v: HTMLSelectElement) => {
     for (let i = 0; i < v.length; i++) {
       const o = v[i] as HTMLOptionElement;

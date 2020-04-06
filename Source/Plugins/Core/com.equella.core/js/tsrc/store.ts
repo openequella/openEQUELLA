@@ -6,13 +6,19 @@ import { CourseState } from "./course/index";
 import { SchemaState } from "./schema/index";
 import { courseService, schemaService, aclService } from "./services";
 
-export class StoreState {
+export interface StoreState {
   course: CourseState;
   schema: SchemaState;
   acl: AclState;
 }
 
 const loggerMiddleware = createLogger();
+
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
 
 const composeEnhancers =
   window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;

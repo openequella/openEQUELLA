@@ -79,7 +79,7 @@ export interface EntityState<E extends Entity> extends PartialEntityState<E> {
 }
 
 function baseValidate<E extends Entity>(entity: E): IDictionary<string> {
-  const validationErrors = {};
+  const validationErrors: IDictionary<string> = {};
   if (!entity.name) {
     validationErrors["name"] = "Name is required";
   }
