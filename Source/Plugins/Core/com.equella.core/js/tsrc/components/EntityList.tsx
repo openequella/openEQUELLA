@@ -1,16 +1,15 @@
 import * as React from "react";
 import {
-  WithStyles,
+  CircularProgress,
+  Fab,
+  List,
+  Paper,
   Theme,
   Typography,
-  Paper,
-  List,
-  CircularProgress,
-  Fab
+  WithStyles
 } from "@material-ui/core";
 import { StyleRules, withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import { FabProps } from "@material-ui/core/Fab";
 
 const styles = (theme: Theme) =>
   ({
@@ -45,7 +44,7 @@ interface EntityListProps extends WithStyles<typeof styles> {
   resultsText: React.ReactNode;
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
-  create?: React.ComponentType<FabProps>;
+  create?: any;
   createOnClick?: () => void;
   progress: Boolean;
   id?: string;
@@ -69,7 +68,7 @@ class EntityList extends React.Component<EntityListProps, {}> {
           <Fab
             id="add-entity"
             className={classes.fab}
-            component={create!}
+            component={create}
             color="secondary"
             onClick={createOnClick}
           >

@@ -1,6 +1,6 @@
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as React from "react";
-import { Dispatch, connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { searchCourses } from ".";
@@ -11,7 +11,7 @@ import SearchResult from "../components/SearchResult";
 import { courseService } from "../services";
 import { formatSize, languageStrings } from "../util/langstrings";
 import EntityList from "../components/EntityList";
-import { TemplateProps, templateDefaults } from "../mainui/Template";
+import { templateDefaults, TemplateProps } from "../mainui/Template";
 import { routes } from "../mainui/routes";
 import VisibilitySensor = require("react-visibility-sensor");
 
@@ -191,11 +191,7 @@ class SearchCourse extends React.Component<
             strings.coursesAvailable
           )}
           progress={searching}
-          create={
-            canCreate
-              ? p => <Link {...p} to={routes.NewCourse.path} />
-              : undefined
-          }
+          create={canCreate ? <Link to={routes.NewCourse.path} /> : undefined}
           resultsRight={
             <FormControlLabel
               control={
