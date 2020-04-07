@@ -66,7 +66,7 @@ const styles = (theme: Theme) => {
       marginBottom: theme.spacing(2)
     },
     body: {
-      padding: `${theme.spacing(2)}px`,
+      padding: theme.spacing(2),
       paddingBottom: footerHeight,
       height: "100%"
     },
@@ -425,7 +425,6 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   required
                   error={val["code"] ? true : false}
                 />
-
                 <FormControl margin="normal" className={classes.formControl}>
                   <InputLabel htmlFor="type">{strings.type.label}</InputLabel>
                   <Select
@@ -455,7 +454,6 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                   margin="normal"
                   className={classes.formControl}
                 />
-
                 <FormControl margin="normal" className={classes.formControl}>
                   <InputLabel htmlFor="citation">
                     {strings.citation.label}
