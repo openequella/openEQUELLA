@@ -6,7 +6,7 @@ import * as React from "react";
 const styles = (theme: Theme) => {
   return {
     error: {
-      padding: 3 * theme.spacing.unit,
+      padding: theme.spacing(3),
       backgroundColor: "rgb(255, 220, 220)"
     }
   };

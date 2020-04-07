@@ -21,7 +21,7 @@ import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 const styles = (theme: Theme) =>
   createStyles({
     disclaimerText: {
-      marginTop: theme.spacing.unit
+      marginTop: theme.spacing(1)
     },
     link: {
       cursor: "pointer"

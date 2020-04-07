@@ -1,11 +1,11 @@
 import * as React from "react";
 import JQueryDiv from "./JQueryDiv";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core";
 import { PageContent } from "./LegacyContent";
 
 const useStyles = makeStyles(t => ({
   withPadding: {
-    padding: t.spacing.unit * 2
+    padding: t.spacing(2)
   }
 }));
 
