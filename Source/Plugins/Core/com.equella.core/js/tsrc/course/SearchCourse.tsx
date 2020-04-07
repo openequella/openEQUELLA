@@ -1,7 +1,7 @@
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { searchCourses } from ".";
 import { Course } from "../api";
@@ -31,6 +31,7 @@ interface SearchCourseState {
   resumptionToken?: string;
   bottomVisible: boolean;
   courses: Course[];
+  linkClicked: boolean;
   deleteDetails?: {
     uuid: string;
     name: string;
@@ -54,7 +55,8 @@ class SearchCourse extends React.Component<
       includeArchived: false,
       courses: [],
       searching: false,
-      bottomVisible: true
+      bottomVisible: true,
+      linkClicked: false
     };
   }
 
@@ -190,8 +192,10 @@ class SearchCourse extends React.Component<
             courses.length == 0 ? 0 : totalAvailable || 0,
             strings.coursesAvailable
           )}
+          createOnClick={() => {
+            this.setState({ linkClicked: canCreate });
+          }}
           progress={searching}
-          create={canCreate ? <Link to={routes.NewCourse.path} /> : undefined}
           resultsRight={
             <FormControlLabel
               control={
@@ -205,6 +209,7 @@ class SearchCourse extends React.Component<
             />
           }
         >
+          {this.state.linkClicked && <Redirect to={routes.NewCourse.path} />}
           {courses.map(course => {
             let onDelete;
             if (

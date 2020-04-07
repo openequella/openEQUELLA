@@ -44,7 +44,6 @@ interface EntityListProps extends WithStyles<typeof styles> {
   resultsText: React.ReactNode;
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
-  create?: any;
   createOnClick?: () => void;
   progress: Boolean;
   id?: string;
@@ -59,16 +58,15 @@ class EntityList extends React.Component<EntityListProps, {}> {
       resultsText,
       resultsRight,
       children,
-      create,
       createOnClick
     } = this.props;
     return (
       <div id={id} className={classes.overall}>
-        {(create || createOnClick) && (
+        {createOnClick && (
           <Fab
             id="add-entity"
             className={classes.fab}
-            component={create}
+            component={"button"}
             color="secondary"
             onClick={createOnClick}
           >
