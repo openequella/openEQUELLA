@@ -1,6 +1,5 @@
 import * as React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { IconButton, Popover } from "@material-ui/core";
+import { IconButton, makeStyles, Popover } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";

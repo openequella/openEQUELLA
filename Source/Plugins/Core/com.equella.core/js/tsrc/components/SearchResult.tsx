@@ -17,7 +17,7 @@ import { Link } from "react-router-dom";
 const styles = (theme: Theme) =>
   createStyles({
     searchResultContent: {
-      marginTop: theme.spacing.unit
+      marginTop: theme.spacing(1)
     },
     itemThumb: {
       maxWidth: "88px",
@@ -28,7 +28,7 @@ const styles = (theme: Theme) =>
       padding: 0
     },
     details: {
-      marginTop: theme.spacing.unit
+      marginTop: theme.spacing(1)
     }
   });
 
@@ -38,7 +38,7 @@ export interface SearchResultExtraDetail {
 }
 
 export interface SearchResultProps {
-  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   to: LocationDescriptor;
   onDelete?: () => void;
   primaryText: string;

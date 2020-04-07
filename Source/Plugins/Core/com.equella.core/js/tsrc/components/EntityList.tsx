@@ -1,25 +1,24 @@
 import * as React from "react";
 import {
-  WithStyles,
+  CircularProgress,
+  Fab,
+  List,
+  Paper,
   Theme,
   Typography,
-  Paper,
-  List,
-  CircularProgress,
-  Fab
+  WithStyles
 } from "@material-ui/core";
 import { StyleRules, withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import { FabProps } from "@material-ui/core/Fab";
 
 const styles = (theme: Theme) =>
   ({
     overall: {
-      padding: theme.spacing.unit * 2,
+      padding: theme.spacing(2),
       height: "100%"
     },
     results: {
-      padding: theme.spacing.unit * 2,
+      padding: theme.spacing(2),
       position: "relative"
     },
     resultHeader: {
@@ -36,8 +35,8 @@ const styles = (theme: Theme) =>
     fab: {
       zIndex: 1000,
       position: "fixed",
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 5
+      bottom: theme.spacing(2),
+      right: theme.spacing(5)
     }
   } as StyleRules);
 
@@ -45,7 +44,6 @@ interface EntityListProps extends WithStyles<typeof styles> {
   resultsText: React.ReactNode;
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
-  create?: React.ComponentType<FabProps>;
   createOnClick?: () => void;
   progress: Boolean;
   id?: string;
@@ -60,16 +58,15 @@ class EntityList extends React.Component<EntityListProps, {}> {
       resultsText,
       resultsRight,
       children,
-      create,
       createOnClick
     } = this.props;
     return (
       <div id={id} className={classes.overall}>
-        {(create || createOnClick) && (
+        {createOnClick && (
           <Fab
             id="add-entity"
             className={classes.fab}
-            component={create}
+            component={"button"}
             color="secondary"
             onClick={createOnClick}
           >
