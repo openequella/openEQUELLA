@@ -24,7 +24,7 @@ export const DynamicVariant = () => (
   />
 );
 
-export const VarientSuccess = () => (
+export const VariantSuccess = () => (
   <MessageInfo
     open={boolean("open", true)}
     onClose={action("close")}
