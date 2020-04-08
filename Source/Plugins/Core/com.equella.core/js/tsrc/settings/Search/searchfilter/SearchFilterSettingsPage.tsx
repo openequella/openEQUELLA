@@ -1,6 +1,8 @@
 import * as React from "react";
 import {
   templateDefaults,
+  templateError,
+  TemplateUpdate,
   TemplateUpdateProps
 } from "../../../mainui/Template";
 import { routes } from "../../../mainui/routes";
@@ -9,20 +11,20 @@ import {
   Card,
   ListItem,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
+  ListSubheader
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../../util/langstrings";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import { useEffect, useState } from "react";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
-import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
@@ -30,13 +32,16 @@ import {
   SearchSettings
 } from "../SearchSettingsModule";
 import { Save } from "@material-ui/icons";
-import CardActions from "@material-ui/core/CardActions";
 import MessageInfo from "../../../components/MessageInfo";
 import {
-  deleteMIMETypeFilterFromServer,
-  getMIMETypeFiltersFromServer,
-  MIMETypeFilter
+  batchUpdateOrAdd,
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter
 } from "./SearchFilterSettingsModule";
+import MimeTypeFilterEditor from "./MimeTypeFilterEditor";
+import { commonString } from "../../../util/commonstrings";
+import CardActions from "@material-ui/core/CardActions";
+import { fromAxiosError } from "../../../api/errors";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -48,6 +53,14 @@ const useStyles = makeStyles({
   cardAction: {
     display: "flex",
     justifyContent: "flex-end"
+  },
+  floatingButton: {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    marginTop: "80px",
+    marginRight: "16px",
+    width: "calc(25% - 112px)"
   }
 });
 
@@ -58,9 +71,15 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] = useState<SearchSettings>(
     defaultSearchSettings
   );
-  const [mimeTypeFilters, setMimeTypeFilters] = useState<MIMETypeFilter[]>([]);
+  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-  const [ascendingSorting, setAscendingSorting] = useState<boolean>(true);
+
+  const [openMimeTypeFilterEditor, setOpenMimeTypeFilterEditor] = useState<
+    boolean
+  >(false);
+  const [selectedMimeTypeFilter, setSelectedMimeTypeFilter] = useState<
+    MimeTypeFilter | undefined
+  >();
 
   useEffect(() => {
     updateTemplate(tp => ({
@@ -76,7 +95,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   useEffect(() => {
-    getMIMETypeFilters();
+    getMimeTypeFiltersFromServer()
+      .then((filters: MimeTypeFilter[]) => setMimeTypeFilters(filters))
+      .catch(error => console.log(error));
   }, []);
 
   const setOwnerFilter = (disabled: boolean) => {
@@ -93,48 +114,56 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const saveFilterVisibility = () => {
-    saveSearchSettingsToServer(searchSettings).then(() => setShowSuccess(true));
+  const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
+    setMimeTypeFilters(
+      mimeTypeFilters.filter(mimeTypeFilter => mimeTypeFilter !== filter)
+    );
   };
 
-  const sortMIMETypeFilters = () => {
-    mimeTypeFilters.sort((s1, s2) => {
-      if (!ascendingSorting) {
-        return s1.name > s2.name ? 1 : -1;
-      }
-      return s1.name < s2.name ? 1 : -1;
-    });
-    setAscendingSorting(!ascendingSorting);
+  const addOrUpdateMimeTypeFilter = (filter: MimeTypeFilter, add: boolean) => {
+    if (add) {
+      setMimeTypeFilters(mimeTypeFilters.concat(filter));
+    } else {
+      const index = mimeTypeFilters.indexOf(selectedMimeTypeFilter!);
+      const filters = [...mimeTypeFilters];
+      filters[index] = filter;
+      setMimeTypeFilters(filters);
+    }
+    setOpenMimeTypeFilterEditor(false);
+    setSelectedMimeTypeFilter(undefined);
   };
 
-  const getMIMETypeFilters = () => {
-    getMIMETypeFiltersFromServer()
-      .then((filters: MIMETypeFilter[]) => setMimeTypeFilters(filters))
-      .catch(error => console.log(error));
+  const openMimeTypeFilterDialog = (filter?: MimeTypeFilter) => {
+    setOpenMimeTypeFilterEditor(true);
+    setSelectedMimeTypeFilter(filter);
   };
 
-  const deleteMIMETypeFilter = (uuid: string) => {
-    deleteMIMETypeFilterFromServer(uuid)
-      .then(() => {
+  const closeMimeTypeFilterDialog = () => {
+    setOpenMimeTypeFilterEditor(false);
+    setSelectedMimeTypeFilter(undefined);
+  };
+
+  const save = () => {
+    saveSearchSettingsToServer(searchSettings)
+      .then(() => batchUpdateOrAdd(mimeTypeFilters))
+      .then(data => {
         setShowSuccess(true);
-        getMIMETypeFilters();
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        handleError(templateError(fromAxiosError(error)));
+      });
+  };
+
+  const handleError = (error: TemplateUpdate) => {
+    updateTemplate(error);
   };
 
   return (
     <>
       <Card className={classes.spacedCards}>
-        <Typography
-          variant={"subheading"}
-          color={"textSecondary"}
-          paragraph={true}
-        >
-          Configure filter visibility
-        </Typography>
-
-        <SettingsList>
+        <SettingsList subHeading={"Filter visibility"}>
           <SettingsListControl
+            divider
             primaryText={"Disable Owner filter"}
             secondaryText={""}
             control={
@@ -161,59 +190,82 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }
           />
         </SettingsList>
-
-        <CardActions className={classes.cardAction}>
-          <Button
-            color={"primary"}
-            variant="contained"
-            size="large"
-            onClick={saveFilterVisibility}
-          >
-            <Save />
-            Save
-          </Button>
-        </CardActions>
       </Card>
 
       <Card className={classes.spacedCards}>
-        <Typography variant={"subheading"} color={"textSecondary"}>
-          Configure filters based on attachment file MIME types
-          <IconButton onClick={sortMIMETypeFilters}>
-            {ascendingSorting ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-          </IconButton>
-        </Typography>
-        <List>
-          {mimeTypeFilters.map(item => {
+        <List
+          subheader={
+            <ListSubheader disableGutters>
+              {"Attachment MIME type filters"}
+            </ListSubheader>
+          }
+        >
+          {mimeTypeFilters.map(filter => {
             return (
-              <ListItem alignItems={"flex-start"} divider={true} key={item.id}>
-                <ListItemText primary={item.name} />
+              <ListItem
+                alignItems={"flex-start"}
+                divider={true}
+                key={filter.name}
+              >
+                <ListItemText primary={filter.name} />
                 <ListItemSecondaryAction>
-                  <Button>edit</Button>|
-                  <Button
+                  <IconButton
                     onClick={() => {
-                      deleteMIMETypeFilter(item.id);
+                      openMimeTypeFilterDialog(filter);
                     }}
+                    aria-label={`edit MIME type filter ${filter.name}`}
+                    color="secondary"
                   >
-                    delete
-                  </Button>
+                    <EditIcon />
+                  </IconButton>
+                  |
+                  <IconButton
+                    onClick={() => deleteMimeTypeFilter(filter)}
+                    aria-label={`delete MIME type filter ${filter.name}`}
+                    color="secondary"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
             );
           })}
         </List>
-        <Button variant={"text"}>
-          Add a new MIME type filter
-          <IconButton onClick={() => alert(123)}>
-            <AddCircleIcon />
+        <CardActions className={classes.cardAction}>
+          <IconButton
+            onClick={() => openMimeTypeFilterDialog()}
+            aria-label={"add MIME type filter"}
+            color={"primary"}
+          >
+            <AddCircleIcon fontSize={"large"} />
           </IconButton>
-        </Button>
+        </CardActions>
       </Card>
+
+      <Button
+        color={"primary"}
+        className={classes.floatingButton}
+        variant="contained"
+        size="large"
+        onClick={save}
+        aria-label={"save Search filter configurations"}
+      >
+        <Save />
+        {commonString.action.save}
+      </Button>
 
       <MessageInfo
         title={searchingStrings.searchPageSettings.success}
         open={showSuccess}
         onClose={() => setShowSuccess(false)}
         variant={"success"}
+      />
+
+      <MimeTypeFilterEditor
+        open={openMimeTypeFilterEditor}
+        onClose={closeMimeTypeFilterDialog}
+        onAddOrUpdate={addOrUpdateMimeTypeFilter}
+        mimeTypeFilter={selectedMimeTypeFilter}
       />
     </>
   );
