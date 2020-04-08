@@ -26,8 +26,8 @@
     "bundleps:uploadlist": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Uploads.UploadList --main Uploads.UploadList -o entrybuild/target/uploadlist.js\"",
     "bundleps:langbundle": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Tools.GenLangStrings --main Tools.GenLangStrings -o target/genlang.js\"",
     "test": "jest test",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "storybook": "start-storybook -s ./node_modules -p 6006",
+    "build-storybook": "build-storybook -s ./node_modules"
   },
   "dependencies": {
     "@date-io/luxon": "1.3.11",
