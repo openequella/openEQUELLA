@@ -21,7 +21,7 @@
       "~*": ["./entrybuild/*"]
     }
   },
-  "include": ["tsrc/**/*", "__test__/**/*.ts"],
+  "include": ["tsrc/**/*", "__test__/**/*.ts", "__stories__/**/*.tsx"],
   "exclude": [
     "node_modules",
     "build",
