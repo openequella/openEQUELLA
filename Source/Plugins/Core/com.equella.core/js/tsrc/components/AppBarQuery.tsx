@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, FunctionComponent, ChangeEvent } from "react";
-import { Icon, Theme } from "@material-ui/core";
+import { Theme } from "@material-ui/core";
+import { Search } from "@material-ui/icons";
 import { fade } from "@material-ui/core/styles/colorManipulator";
 import { makeStyles } from "@material-ui/core/styles";
 import { commonString } from "../util/commonstrings";
@@ -58,7 +59,7 @@ const AppBarQuery: FunctionComponent<AppBarQueryProps> = ({
   return (
     <div className={classes.queryWrapper}>
       <div className={classes.queryIcon}>
-        <Icon>search</Icon>
+        <Search />
       </div>
       <input
         type="text"
