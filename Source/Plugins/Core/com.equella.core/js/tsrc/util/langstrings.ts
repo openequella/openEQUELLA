@@ -387,7 +387,19 @@ export const languageStrings = {
         permissionsError: "You do not have permission to edit these settings."
       },
       searchfiltersettings: {
-        name: "Search filter settings"
+        name: "Search filter settings",
+        changesaved: "Search filter changes saved successfully",
+        mimetypefiltertitle: "Attachment MIME type filters",
+        visibilityconfigtitle: "Filter visibility",
+        disableownerfilter: "Disable Owner filter",
+        disabledatemodifiedfilter: "Disable Date modified filter",
+        edit: "Edit MIME type filter",
+        add: "Create new MIME type filter",
+        delete: "delete MIME type filter",
+        save: "save Search filter configurations",
+        filternamelabel: "Name",
+        mimetypelistlabel: "MIME types *",
+        helptext: "This field is mandatory"
       }
     },
     ui: { name: "UI", desc: "UI settings" }

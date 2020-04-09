@@ -209,7 +209,6 @@ class SearchFilterResource {
       updateSettings(searchSettings)
       Response.ok().build()
     }
-
   }
 
   private def getFilterById(filterId: UUID,
