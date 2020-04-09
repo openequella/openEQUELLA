@@ -1,7 +1,7 @@
 import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { text } from "@storybook/addon-knobs";
-import RichTextEditor from "../tsrc/components/RichTextEditor";
+import RichTextEditor from "../../tsrc/components/RichTextEditor";
 
 /**
  * FIXME: to get the tinyMCE skin styles with the current setup

@@ -1,5 +1,5 @@
 import * as React from "react";
-import Error from "../tsrc/components/Error";
+import Error from "../../tsrc/components/Error";
 
 export default {
   title: "Error",

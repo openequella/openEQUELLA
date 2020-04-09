@@ -1,5 +1,5 @@
 import * as React from "react";
-import Loader from "../tsrc/components/Loader";
+import Loader from "../../tsrc/components/Loader";
 
 export default {
   title: "Loader",
