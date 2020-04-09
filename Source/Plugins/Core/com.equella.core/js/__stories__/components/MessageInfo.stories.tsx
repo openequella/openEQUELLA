@@ -1,7 +1,7 @@
 import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { boolean, select, text } from "@storybook/addon-knobs";
-import MessageInfo from "../tsrc/components/MessageInfo";
+import MessageInfo from "../../tsrc/components/MessageInfo";
 
 export default {
   title: "MessageInfo",

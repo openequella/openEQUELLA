@@ -1,7 +1,7 @@
 import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { text } from "@storybook/addon-knobs";
-import SearchResult from "../tsrc/components/SearchResult";
+import SearchResult from "../../tsrc/components/SearchResult";
 
 export default {
   title: "SearchResult",

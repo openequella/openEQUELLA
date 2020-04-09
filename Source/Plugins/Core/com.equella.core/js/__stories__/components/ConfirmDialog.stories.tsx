@@ -1,7 +1,7 @@
 import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { boolean, text } from "@storybook/addon-knobs";
-import ConfirmDialog from "../tsrc/components/ConfirmDialog";
+import ConfirmDialog from "../../tsrc/components/ConfirmDialog";
 
 export default {
   title: "ConfirmDialog",
