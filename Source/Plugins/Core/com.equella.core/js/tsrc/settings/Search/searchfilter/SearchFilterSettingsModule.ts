@@ -20,16 +20,18 @@ export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
 export const getMIMETypesFromServer = (): Promise<MimeTypeEntry[]> =>
   Axios.get(MIME_TYPE_URL).then(res => res.data);
 
+export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
+  Axios.put(MIME_TYPE_FILTERS_URL, filters);
+
+export const batchDelete = (filters: MimeTypeFilter[]) =>
+  Axios.delete(MIME_TYPE_FILTERS_URL, { data: filters });
+
 export const getMimeTypeDetail = (entry: MimeTypeEntry) => {
   const { mimeType, desc } = entry;
   if (desc) {
     return `${desc} (${mimeType})`;
   }
   return mimeType;
-};
-
-export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) => {
-  return Axios.put(MIME_TYPE_FILTERS_URL, filters);
 };
 
 export const vaidateMimeTypeName = (name: string | undefined): boolean => {

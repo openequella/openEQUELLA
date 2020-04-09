@@ -275,6 +275,7 @@ export const languageStrings = {
       cancel: "Cancel",
       undo: "Undo",
       add: "Add",
+      edit: "Edit",
       ok: "OK",
       discard: "Discard",
       select: "Select",

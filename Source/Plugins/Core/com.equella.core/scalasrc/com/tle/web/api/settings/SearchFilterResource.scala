@@ -137,17 +137,21 @@ class SearchFilterResource {
     val errorMessages  = ArrayBuffer[String]()
 
     searchFilters.foreach(searchFilter => {
-      val uuid = UUID.fromString(searchFilter.getId)
       validate(searchFilter) match {
         case Left(errors) => errorMessages ++= errors
         case Right(_) =>
-          getFilterById(uuid, searchSettings) match {
-            case Some(filter) =>
-              filter.setMimeTypes(searchFilter.getMimeTypes)
-              filter.setName(searchFilter.getName)
-            case None =>
-              searchFilter.setId(UUID.randomUUID().toString)
-              searchSettings.getFilters.add(searchFilter)
+          if (searchFilter.getId == null) {
+            searchFilter.setId(UUID.randomUUID().toString)
+            searchSettings.getFilters.add(searchFilter)
+          } else {
+            val uuid = UUID.fromString(searchFilter.getId)
+            getFilterById(uuid, searchSettings) match {
+              case Some(filter) =>
+                filter.setMimeTypes(searchFilter.getMimeTypes)
+                filter.setName(searchFilter.getName)
+              case None =>
+                return ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
+            }
           }
       }
     })
@@ -162,8 +166,8 @@ class SearchFilterResource {
   @DELETE
   @Path("search/filter/{uuid}")
   @ApiOperation(
-    value = "Delete a search filter",
-    notes = "This endpoint is used to delete a search filter.",
+    value = "Delete a MIME type filter",
+    notes = "This endpoint is used to delete a MIME type filter.",
   )
   def deleteSearchFilters(
       @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
@@ -177,6 +181,35 @@ class SearchFilterResource {
         Response.ok().build()
       case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
     }
+  }
+
+  @DELETE
+  @Path("search/filter/")
+  @ApiOperation(
+    value = "Delete multiple MIME type filter",
+    notes = "This endpoint is used to delete multiple MIME type filter.",
+  )
+  def batchDelete(searchFilters: Array[SearchFilter]): Response = {
+    searchPrivProvider.checkAuthorised()
+    val searchSettings = loadSettings(new SearchSettings)
+    val errorMessages  = ArrayBuffer[String]()
+
+    searchFilters.foreach(searchFilter => {
+      val uuid = UUID.fromString(searchFilter.getId)
+      getFilterById(uuid, searchSettings) match {
+        case Some(filter) =>
+          searchSettings.getFilters.remove(filter)
+        case None => errorMessages += uuidNotFound(uuid)
+      }
+    })
+
+    if (errorMessages.nonEmpty) {
+      ApiErrorResponse.resourceNotFound(errorMessages: _*)
+    } else {
+      updateSettings(searchSettings)
+      Response.ok().build()
+    }
+
   }
 
   private def getFilterById(filterId: UUID,

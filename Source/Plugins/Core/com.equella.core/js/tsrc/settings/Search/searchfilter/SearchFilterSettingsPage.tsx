@@ -2,29 +2,29 @@ import * as React from "react";
 import {
   templateDefaults,
   templateError,
-  TemplateUpdate,
   TemplateUpdateProps
 } from "../../../mainui/Template";
 import { routes } from "../../../mainui/routes";
 import {
   Button,
   Card,
+  CardActions,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  ListSubheader
+  ListSubheader,
+  IconButton,
+  List
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { languageStrings } from "../../../util/langstrings";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
-import { useEffect, useState } from "react";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
-import List from "@material-ui/core/List";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { useEffect, useState } from "react";
 import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
@@ -34,14 +34,15 @@ import {
 import { Save } from "@material-ui/icons";
 import MessageInfo from "../../../components/MessageInfo";
 import {
+  batchDelete,
   batchUpdateOrAdd,
   getMimeTypeFiltersFromServer,
   MimeTypeFilter
 } from "./SearchFilterSettingsModule";
 import MimeTypeFilterEditor from "./MimeTypeFilterEditor";
 import { commonString } from "../../../util/commonstrings";
-import CardActions from "@material-ui/core/CardActions";
 import { fromAxiosError } from "../../../api/errors";
+import { AxiosError } from "axios";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -71,15 +72,36 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] = useState<SearchSettings>(
     defaultSearchSettings
   );
-  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
-  const [openMimeTypeFilterEditor, setOpenMimeTypeFilterEditor] = useState<
+  const [initialOwnerFilter, setInitialOwnerFilter] = useState<boolean>(false);
+  const [initialDateModifiedFilter, setInitialDateModifiedFilter] = useState<
     boolean
   >(false);
+
+  // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added
+  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
+
+  // changedMimeTypeFilters contains filters that are added or edited
+  const [changedMimeTypeFilters, setChangedMimeTypeFilters] = useState<
+    MimeTypeFilter[]
+  >([]);
+
+  // deletedMimeTypeFilters contains filters to be deleted from the Server
+  const [deletedMimeTypeFilters, setDeletedMimeTypeFilters] = useState<
+    MimeTypeFilter[]
+  >([]);
+
+  // selectedMimeTypeFilter refers to the filter to be edited
   const [selectedMimeTypeFilter, setSelectedMimeTypeFilter] = useState<
     MimeTypeFilter | undefined
   >();
+
+  const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
+  const [openMimeTypeFilterEditor, setOpenMimeTypeFilterEditor] = useState<
+    boolean
+  >(false);
+
+  const [changesDetected, setChangesDetected] = useState<boolean>(false);
 
   useEffect(() => {
     updateTemplate(tp => ({
@@ -89,15 +111,11 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   useEffect(() => {
-    getSearchSettingsFromServer()
-      .then(settings => setSearchSettings(settings))
-      .catch(error => console.log(error));
+    getSearchSettings();
   }, []);
 
   useEffect(() => {
-    getMimeTypeFiltersFromServer()
-      .then((filters: MimeTypeFilter[]) => setMimeTypeFilters(filters))
-      .catch(error => console.log(error));
+    getMimeTypeFilters();
   }, []);
 
   const setOwnerFilter = (disabled: boolean) => {
@@ -114,23 +132,51 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
-    setMimeTypeFilters(
-      mimeTypeFilters.filter(mimeTypeFilter => mimeTypeFilter !== filter)
-    );
+  const getSearchSettings = () => {
+    getSearchSettingsFromServer()
+      .then(settings => {
+        setSearchSettings(settings);
+        setInitialOwnerFilter(settings.searchingDisableOwnerFilter);
+        setInitialDateModifiedFilter(
+          settings.searchingDisableDateModifiedFilter
+        );
+      })
+      .catch((error: AxiosError) => handleError(error));
+  };
+  const getMimeTypeFilters = () => {
+    getMimeTypeFiltersFromServer()
+      .then((filters: MimeTypeFilter[]) => {
+        setMimeTypeFilters(filters);
+        setDeletedMimeTypeFilters([]);
+        setChangedMimeTypeFilters([]);
+      })
+      .catch((error: AxiosError) => handleError(error));
   };
 
+  // Visually add or update a filter, and put this filter into changedMimeTypeFilters
   const addOrUpdateMimeTypeFilter = (filter: MimeTypeFilter, add: boolean) => {
     if (add) {
-      setMimeTypeFilters(mimeTypeFilters.concat(filter));
+      setMimeTypeFilters([...mimeTypeFilters, filter]);
     } else {
       const index = mimeTypeFilters.indexOf(selectedMimeTypeFilter!);
       const filters = [...mimeTypeFilters];
       filters[index] = filter;
       setMimeTypeFilters(filters);
     }
+    setChangedMimeTypeFilters([...changedMimeTypeFilters, filter]);
     setOpenMimeTypeFilterEditor(false);
     setSelectedMimeTypeFilter(undefined);
+  };
+
+  // Visually delete a filter and put this filter in deletedMimeTypeFilters
+  const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
+    setMimeTypeFilters(
+      mimeTypeFilters.filter(mimeTypeFilter => mimeTypeFilter !== filter)
+    );
+    // Only put filters that already have an id into this array
+    if (filter.id) {
+      setDeletedMimeTypeFilters([...deletedMimeTypeFilters, filter]);
+    }
   };
 
   const openMimeTypeFilterDialog = (filter?: MimeTypeFilter) => {
@@ -143,23 +189,56 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSelectedMimeTypeFilter(undefined);
   };
 
+  // Save all the changes to the Server
   const save = () => {
-    saveSearchSettingsToServer(searchSettings)
-      .then(() => batchUpdateOrAdd(mimeTypeFilters))
-      .then(data => {
-        setShowSuccess(true);
-      })
-      .catch(error => {
-        handleError(templateError(fromAxiosError(error)));
-      });
+    if (mimeTypeFilterchanged || filterVisibilityChanged) {
+      saveSearchSettingsToServer(searchSettings)
+        .catch(error => handleError(error))
+        .then(
+          (): Promise<any> =>
+            changedMimeTypeFilters.length
+              ? batchUpdateOrAdd(changedMimeTypeFilters).catch(error =>
+                  handleError(error)
+                )
+              : Promise.resolve()
+        )
+        .then(
+          (): Promise<any> =>
+            deletedMimeTypeFilters.length
+              ? batchDelete(deletedMimeTypeFilters).catch(error =>
+                  handleError(error)
+                )
+              : Promise.resolve()
+        )
+        .catch() // Errors have been handled and subsequent promises have skipped
+        .finally(() => {
+          getMimeTypeFilters();
+          getSearchSettings();
+          setChangesDetected(true);
+        });
+    } else {
+      setChangesDetected(false);
+    }
+
+    setShowSnackBar(true);
   };
 
-  const handleError = (error: TemplateUpdate) => {
-    updateTemplate(error);
+  const mimeTypeFilterchanged =
+    deletedMimeTypeFilters.length || changedMimeTypeFilters.length;
+
+  const filterVisibilityChanged =
+    initialOwnerFilter !== searchSettings.searchingDisableOwnerFilter ||
+    initialDateModifiedFilter !==
+      searchSettings.searchingDisableDateModifiedFilter;
+
+  const handleError = (error: AxiosError) => {
+    updateTemplate(templateError(fromAxiosError(error)));
+    throw error;
   };
 
   return (
     <>
+      {/* Owner filter and Date modified filter*/}
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={"Filter visibility"}>
           <SettingsListControl
@@ -192,6 +271,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </SettingsList>
       </Card>
 
+      {/* MIME type filters */}
       <Card className={classes.spacedCards}>
         <List
           subheader={
@@ -242,6 +322,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </CardActions>
       </Card>
 
+      {/* SAVE button*/}
       <Button
         color={"primary"}
         className={classes.floatingButton}
@@ -254,13 +335,19 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         {commonString.action.save}
       </Button>
 
+      {/* Snackbar */}
       <MessageInfo
-        title={searchingStrings.searchPageSettings.success}
-        open={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        variant={"success"}
+        title={
+          changesDetected
+            ? searchingStrings.searchPageSettings.success
+            : "You have no changes to save."
+        }
+        open={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+        variant={changesDetected ? "success" : "info"}
       />
 
+      {/* MIME type filter dialog */}
       <MimeTypeFilterEditor
         open={openMimeTypeFilterEditor}
         onClose={closeMimeTypeFilterDialog}
