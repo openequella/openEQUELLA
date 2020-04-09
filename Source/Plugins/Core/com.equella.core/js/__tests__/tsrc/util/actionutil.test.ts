@@ -1,4 +1,4 @@
-import { actionCreator, wrapAsyncWorker } from "../../util/actionutil";
+import { actionCreator, wrapAsyncWorker } from "../../../tsrc/util/actionutil";
 
 describe("actionutil", () => {
   describe("actionCreator", () => {

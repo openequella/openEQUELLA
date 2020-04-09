@@ -3,7 +3,7 @@ import {
   Sizes,
   prepLangStrings,
   initStrings
-} from "../../util/langstrings";
+} from "../../../tsrc/util/langstrings";
 
 describe("langstrings", () => {
   describe("formatSize", () => {
