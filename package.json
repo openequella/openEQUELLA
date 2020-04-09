@@ -67,7 +67,10 @@
     "overrides": [
       {
         "files": [
-          "Source/Plugins/Core/com.equella.core/js/tsrc/**/*.{ts,tsx}"
+          "Source/Plugins/Core/com.equella.core/js/tsrc/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__test__/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__stories__/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__mocks__/**/*.{ts,tsx}"
         ],
         "parserOptions": {
           "project": "Source/Plugins/Core/com.equella.core/js/tsconfig.json"
