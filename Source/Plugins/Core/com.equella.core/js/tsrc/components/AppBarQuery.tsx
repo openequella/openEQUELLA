@@ -18,14 +18,14 @@ const styles = (theme: Theme) =>
     queryWrapper: {
       position: "relative",
       fontFamily: theme.typography.fontFamily,
-      marginRight: theme.spacing.unit * 2,
-      marginLeft: theme.spacing.unit * 2,
+      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(2),
       borderRadius: 2,
       background: fade(theme.palette.common.white, 0.15),
       width: "400px"
     },
     queryIcon: {
-      width: theme.spacing.unit * 9,
+      width: theme.spacing(9),
       height: "100%",
       position: "absolute",
       pointerEvents: "none",
@@ -35,8 +35,8 @@ const styles = (theme: Theme) =>
     },
     queryField: {
       font: "inherit",
-      padding: theme.spacing.unit,
-      paddingLeft: theme.spacing.unit * 9,
+      padding: theme.spacing(1),
+      paddingLeft: theme.spacing(9),
       border: 0,
       display: "block",
       verticalAlign: "middle",

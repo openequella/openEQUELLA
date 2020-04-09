@@ -275,10 +275,10 @@ class ThemePage extends React.Component<
       <div>
         <CardContent className={classes.cardContent}>
           <FormControl>
-            <Typography variant={"display1"}>
+            <Typography variant={"h4"}>
               {strings.colourschemesettings.title}
             </Typography>
-            <Grid container spacing={16}>
+            <Grid container spacing={2}>
               <Grid item>
                 {this.colorPicker(
                   strings.colourschemesettings.primarycolour,
@@ -356,9 +356,7 @@ class ThemePage extends React.Component<
     return (
       <div>
         <CardContent className={classes.cardContent}>
-          <Typography variant={"display1"}>
-            {strings.logosettings.title}
-          </Typography>
+          <Typography variant={"h4"}>{strings.logosettings.title}</Typography>
           <Typography className={classes.labels} color={"textSecondary"}>
             {strings.logosettings.imagespeclabel}
           </Typography>
