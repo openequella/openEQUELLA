@@ -11,6 +11,7 @@ import com.tle.common.PathUtils;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
@@ -146,19 +147,13 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   public void testCreateSearchFilter() throws Exception {
     final String uri = searchFilterUri("");
 
+    ObjectNode jsonBody = mapper.createObjectNode();
+    jsonBody.put(FILTER_NAME, IMAGE_FILTER);
+    ArrayNode mimeTypes = jsonBody.putArray(FILTER_MIME_TYPES);
+    mimeTypes.add(JPEG);
+    mimeTypes.add(PNG);
     // Create a search filter
-    HttpResponse response =
-        postEntity(
-            null,
-            uri,
-            getToken(),
-            false,
-            FILTER_NAME,
-            IMAGE_FILTER,
-            FILTER_MIME_TYPES,
-            JPEG,
-            FILTER_MIME_TYPES,
-            PNG);
+    HttpResponse response = postEntity(jsonBody.toString(), uri, getToken(), false);
     assertEquals(response.getStatusLine().getStatusCode(), 201);
     JsonNode node = mapper.readTree(response.getEntity().getContent());
     newFilterId = node.get(FILTER_ID).asText();
@@ -168,28 +163,24 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(PNG, node.get(FILTER_MIME_TYPES).get(1).asText());
 
     // Create without filter name
-    response = postEntity(null, uri, getToken(), false, FILTER_MIME_TYPES, JPEG);
+    jsonBody.remove(FILTER_NAME);
+    response = postEntity(jsonBody.toString(), uri, getToken(), false);
     node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
     assertEquals("Filter name cannot be empty.", node.get("errors").get(0).get("message").asText());
 
     // Create without MIMEType
-    response = postEntity(null, uri, getToken(), false, FILTER_NAME, IMAGE_FILTER);
+    jsonBody.put(FILTER_NAME, IMAGE_FILTER);
+    jsonBody.remove(FILTER_MIME_TYPES);
+    response = postEntity(jsonBody.toString(), uri, getToken(), false);
     node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
     assertEquals("Need at least one MIME type.", node.get("errors").get(0).get("message").asText());
 
     // Create with bad MIMETypes
-    response =
-        postEntity(
-            null,
-            uri,
-            getToken(),
-            false,
-            FILTER_NAME,
-            IMAGE_FILTER,
-            FILTER_MIME_TYPES,
-            BAD_MIME_TYPE);
+    ArrayNode badMimeTypes = jsonBody.putArray(FILTER_MIME_TYPES);
+    badMimeTypes.add(BAD_MIME_TYPE);
+    response = postEntity(jsonBody.toString(), uri, getToken(), false);
     node = mapper.readTree(response.getEntity().getContent());
     assertEquals(400, response.getStatusLine().getStatusCode());
     assertEquals(
@@ -197,8 +188,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
         node.get("errors").get(0).get("message").asText());
 
     // Create without token
-    response =
-        postEntity(null, uri, null, false, FILTER_NAME, IMAGE_FILTER, FILTER_MIME_TYPES, JPEG);
+    response = postEntity(jsonBody.toString(), uri, null, false);
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
@@ -224,49 +214,39 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     final String uri = searchFilterUri(newFilterId);
 
     // Update filter
-    HttpResponse response =
-        putEntity(null, uri, getToken(), false, FILTER_NAME, PDF_FILTER, FILTER_MIME_TYPES, PDF);
+    ObjectNode jsonBody = mapper.createObjectNode();
+    jsonBody.put(FILTER_NAME, PDF_FILTER);
+    ArrayNode mimeTypes = jsonBody.putArray(FILTER_MIME_TYPES);
+    mimeTypes.add(PDF);
+    HttpResponse response = putEntity(jsonBody.toString(), uri, getToken(), false);
     JsonNode node = mapper.readTree(response.getEntity().getContent());
     assertEquals(200, response.getStatusLine().getStatusCode());
     assertEquals(PDF_FILTER, node.get(FILTER_NAME).asText());
     assertEquals(PDF, node.get(FILTER_MIME_TYPES).get(0).asText());
 
     // Update with a bad filter ID
-    response =
-        putEntity(
-            null,
-            searchFilterUri(BAD_FILTER_ID),
-            getToken(),
-            true,
-            FILTER_NAME,
-            IMAGE_FILTER,
-            FILTER_MIME_TYPES,
-            JPEG);
+    response = putEntity(jsonBody.toString(), searchFilterUri(BAD_FILTER_ID), getToken(), true);
     assertEquals(404, response.getStatusLine().getStatusCode());
 
     // Update without filter name
-    response = putEntity(null, uri, getToken(), true, FILTER_MIME_TYPES, JPEG);
+    jsonBody.remove(FILTER_NAME);
+    response = putEntity(jsonBody.toString(), uri, getToken(), true);
     assertEquals(400, response.getStatusLine().getStatusCode());
 
     // Update without MIMETypes
-    response = putEntity(null, uri, getToken(), true, FILTER_NAME, IMAGE_FILTER);
+    jsonBody.put(FILTER_NAME, IMAGE_FILTER);
+    jsonBody.remove(FILTER_MIME_TYPES);
+    response = putEntity(jsonBody.toString(), uri, getToken(), true);
     assertEquals(400, response.getStatusLine().getStatusCode());
 
     // Update with bad MIMETypes
-    response =
-        putEntity(
-            null,
-            uri,
-            getToken(),
-            true,
-            FILTER_NAME,
-            IMAGE_FILTER,
-            FILTER_MIME_TYPES,
-            BAD_MIME_TYPE);
+    ArrayNode badMimeTypes = jsonBody.putArray(FILTER_MIME_TYPES);
+    badMimeTypes.add(BAD_MIME_TYPE);
+    response = putEntity(jsonBody.toString(), uri, getToken(), true);
     assertEquals(400, response.getStatusLine().getStatusCode());
 
     // Update without token
-    response = putEntity(null, uri, null, true, FILTER_NAME, IMAGE_FILTER, FILTER_MIME_TYPES, JPEG);
+    response = putEntity(jsonBody.toString(), uri, null, true);
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 

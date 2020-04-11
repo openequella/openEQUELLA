@@ -104,10 +104,10 @@ class SearchFilterResource {
       "This endpoint is used to update a search filter. A JSON object representing the updated filter is returned if operation is successful.",
     response = classOf[SearchFilter]
   )
-  def updateSearchFilter(searchFilter: SearchFilter): Response = {
+  def updateSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID,
+                         searchFilter: SearchFilter): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-    val uuid           = UUID.fromString(searchFilter.getId)
 
     getFilterById(uuid, searchSettings) match {
       case Some(filter) =>
