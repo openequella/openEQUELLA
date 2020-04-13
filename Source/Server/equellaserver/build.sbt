@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200213-1.30.9",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200402-1.30.9",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
