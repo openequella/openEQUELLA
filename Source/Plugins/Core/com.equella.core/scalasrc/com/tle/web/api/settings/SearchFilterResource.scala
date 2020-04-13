@@ -30,7 +30,7 @@ import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
-import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
+import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -67,9 +67,10 @@ class SearchFilterResource {
   def getSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-    getFilterById(uuid, searchSettings) match {
+    val filterId       = uuid.toString
+    getFilterById(filterId, searchSettings) match {
       case Some(filter) => Response.ok().entity(filter).build()
-      case None         => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
+      case None         => ApiErrorResponse.resourceNotFound(uuidNotFound(filterId))
     }
   }
 
@@ -108,8 +109,9 @@ class SearchFilterResource {
                          searchFilter: SearchFilter): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
+    val filterId       = uuid.toString
 
-    getFilterById(uuid, searchSettings) match {
+    getFilterById(filterId, searchSettings) match {
       case Some(filter) =>
         validate(searchFilter) match {
           case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
@@ -119,7 +121,7 @@ class SearchFilterResource {
             updateSettings(searchSettings)
             Response.ok().entity(filter).build()
         }
-      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
+      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(filterId))
     }
   }
 
@@ -144,13 +146,13 @@ class SearchFilterResource {
             searchFilter.setId(UUID.randomUUID().toString)
             searchSettings.getFilters.add(searchFilter)
           } else {
-            val uuid = UUID.fromString(searchFilter.getId)
-            getFilterById(uuid, searchSettings) match {
+            val filterId = searchFilter.getId
+            getFilterById(filterId, searchSettings) match {
               case Some(filter) =>
                 filter.setMimeTypes(searchFilter.getMimeTypes)
                 filter.setName(searchFilter.getName)
               case None =>
-                return ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
+                return ApiErrorResponse.resourceNotFound(uuidNotFound(filterId))
             }
           }
       }
@@ -173,13 +175,13 @@ class SearchFilterResource {
       @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-
-    getFilterById(uuid, searchSettings) match {
+    val filterId       = uuid.toString
+    getFilterById(filterId, searchSettings) match {
       case Some(filter) =>
         searchSettings.getFilters.remove(filter)
         updateSettings(searchSettings)
         Response.ok().build()
-      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(uuid))
+      case None => ApiErrorResponse.resourceNotFound(uuidNotFound(filterId))
     }
   }
 
@@ -195,11 +197,11 @@ class SearchFilterResource {
     val errorMessages  = ArrayBuffer[String]()
 
     searchFilters.foreach(searchFilter => {
-      val uuid = UUID.fromString(searchFilter.getId)
-      getFilterById(uuid, searchSettings) match {
+      val filterId = searchFilter.getId
+      getFilterById(filterId, searchSettings) match {
         case Some(filter) =>
           searchSettings.getFilters.remove(filter)
-        case None => errorMessages += uuidNotFound(uuid)
+        case None => errorMessages += uuidNotFound(filterId)
       }
     })
 
@@ -211,12 +213,12 @@ class SearchFilterResource {
     }
   }
 
-  private def getFilterById(filterId: UUID,
+  private def getFilterById(filterId: String,
                             searchSettings: SearchSettings): Option[SearchFilter] = {
-    Option(searchSettings.getSearchFilter(filterId.toString))
+    Option(searchSettings.getSearchFilter(filterId))
   }
 
-  private def uuidNotFound(uuid: UUID) = s"No Search filters matching UUID: $uuid."
+  private def uuidNotFound(uuid: String) = s"No Search filters matching UUID: $uuid."
 
   private def validate(searchFilter: SearchFilter): Either[Array[String], Unit] = {
     val errorMessages = ArrayBuffer[String]()
