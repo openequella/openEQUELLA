@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     progress: {
       display: "flex",
-      marginTop: theme.spacing.unit * 4,
+      marginTop: theme.spacing(4),
       justifyContent: "center"
     }
   };
