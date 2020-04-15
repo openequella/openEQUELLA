@@ -23,7 +23,7 @@ import { fromAxiosError } from "../../../api/errors";
 interface MimeTypeFilterEditorProps {
   open: boolean;
   onClose: () => void;
-  addOrUpdate: (filter: MimeTypeFilter, add: boolean) => void;
+  addOrUpdate: (filter: MimeTypeFilter) => void;
   mimeTypeFilter?: MimeTypeFilter;
   updateTemplate: (update: TemplateUpdate) => void;
 }
@@ -79,14 +79,11 @@ const MimeTypeFilterEditor = ({
   };
 
   const onAddOrUpdate = () => {
-    addOrUpdate(
-      {
-        id: mimeTypeFilter?.id,
-        name: filterName,
-        mimeTypes: selectedMimeTypes
-      },
-      !mimeTypeFilter
-    );
+    addOrUpdate({
+      id: mimeTypeFilter?.id,
+      name: filterName,
+      mimeTypes: selectedMimeTypes
+    });
     onClose();
   };
 
