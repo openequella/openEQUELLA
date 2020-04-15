@@ -25,7 +25,7 @@ import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.settings.standard.SearchSettings.SearchFilter
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.{ApiErrorResponse, ApiBatchOperationResponse}
+import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
@@ -147,7 +147,9 @@ class SearchFilterResource {
             val filterId = UUID.randomUUID().toString
             searchFilter.setId(filterId)
             searchSettings.getFilters.add(searchFilter)
-            ApiBatchOperationResponse("New MIME type filter", 200, s"new filter ID: $filterId")
+            ApiBatchOperationResponse(filterId,
+                                      200,
+                                      s"A new filter has been created. ID: $filterId")
           } else {
             val filterId = searchFilter.getId
             getFilterById(filterId, searchSettings) match {
@@ -222,10 +224,10 @@ class SearchFilterResource {
     Option(searchSettings.getSearchFilter(filterId))
   }
 
-  private def uuidNotFound(uuid: String) = s"No Search filters matching UUID: $uuid."
+  private def uuidNotFound(uuid: String) = s"No Search filters matching UUID: $uuid"
 
   private def isFilterIdNull(id: String): String = id match {
-    case null => "New MIME type filter"
+    case null => ""
     case _    => id
   }
 

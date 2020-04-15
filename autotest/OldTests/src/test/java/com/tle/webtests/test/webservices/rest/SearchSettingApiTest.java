@@ -54,6 +54,10 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private final String BAD_MIME_TYPE = "image/bad";
 
   private String newFilterId = "";
+  private String secondeNewFilterId = "";
+
+  private String RESPONSE_STATUS = "status";
+  private String RESPONSE_MESSAGE = "message";
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
@@ -269,5 +273,118 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
 
   private String searchFilterUri(String filterId) {
     return PathUtils.urlPath(context.getBaseUrl(), API_SEARCH_FILTER_PATH, filterId);
+  }
+
+  @Test
+  public void testBatchUpdateSearchFilter() throws Exception {
+    final String uri = searchFilterUri("");
+
+    ArrayNode jsonBody = mapper.createArrayNode();
+    // The batch update endpoint supports creating and updating, so create one filter firstly
+    ObjectNode filterOne = mapper.createObjectNode();
+    filterOne.put(FILTER_NAME, IMAGE_FILTER);
+    ArrayNode filterOneMimeTypes = filterOne.putArray(FILTER_MIME_TYPES);
+    filterOneMimeTypes.add(JPEG);
+    jsonBody.add(filterOne);
+
+    HttpResponse response = putEntity(jsonBody.toString(), uri, getToken(), false);
+    JsonNode updateResults = mapper.readTree(response.getEntity().getContent());
+    JsonNode returnedFilterOne = updateResults.get(0);
+    newFilterId = returnedFilterOne.get(FILTER_ID).asText();
+    assertNotNull(newFilterId);
+    assertEquals(200, returnedFilterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "A new filter has been created. ID: " + newFilterId,
+        returnedFilterOne.get(RESPONSE_MESSAGE).asText());
+
+    // Now update this filter and create one more
+    filterOne.put(FILTER_NAME, PDF_FILTER);
+    filterOne.put(FILTER_ID, newFilterId);
+    filterOneMimeTypes.add(PDF);
+
+    ObjectNode filterTwo = mapper.createObjectNode();
+    filterTwo.put(FILTER_NAME, IMAGE_FILTER);
+    ArrayNode filterTwoMimeTypes = filterTwo.putArray(FILTER_MIME_TYPES);
+    filterTwoMimeTypes.add(JPEG);
+    filterTwoMimeTypes.add(PNG);
+    jsonBody.add(filterTwo);
+
+    response = putEntity(jsonBody.toString(), uri, getToken(), false);
+    updateResults = mapper.readTree(response.getEntity().getContent());
+    assertEquals(2, updateResults.size());
+
+    returnedFilterOne = updateResults.get(0);
+    assertEquals(200, returnedFilterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "MIME type filter " + newFilterId + " has been updated.",
+        returnedFilterOne.get(RESPONSE_MESSAGE).asText());
+
+    JsonNode returnedFilterTwo = updateResults.get(1);
+    secondeNewFilterId = returnedFilterTwo.get(FILTER_ID).asText();
+    assertNotNull(secondeNewFilterId);
+    assertEquals(200, returnedFilterTwo.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "A new filter has been created. ID: " + secondeNewFilterId,
+        returnedFilterTwo.get(RESPONSE_MESSAGE).asText());
+
+    // Update without filter name and MIME types
+    filterOne.remove(FILTER_NAME);
+    filterTwo.remove(FILTER_MIME_TYPES);
+
+    filterTwo.put(FILTER_ID, BAD_FILTER_ID);
+    response = putEntity(jsonBody.toString(), uri, getToken(), false);
+    updateResults = mapper.readTree(response.getEntity().getContent());
+    assertEquals(2, updateResults.size());
+
+    returnedFilterOne = updateResults.get(0);
+    assertEquals(400, returnedFilterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals("Filter name cannot be empty.", returnedFilterOne.get(RESPONSE_MESSAGE).asText());
+
+    returnedFilterTwo = updateResults.get(1);
+    assertEquals(400, returnedFilterTwo.get(RESPONSE_STATUS).asInt());
+    assertEquals("Need at least one MIME type.", returnedFilterTwo.get(RESPONSE_MESSAGE).asText());
+
+    // Update with invalid ID
+    filterOne.put(FILTER_NAME, PDF_FILTER);
+    filterOne.put(FILTER_ID, BAD_FILTER_ID);
+    response = putEntity(jsonBody.toString(), uri, getToken(), false);
+    updateResults = mapper.readTree(response.getEntity().getContent());
+    returnedFilterOne = updateResults.get(0);
+    assertEquals(404, returnedFilterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "No Search filters matching UUID: " + BAD_FILTER_ID,
+        returnedFilterOne.get(RESPONSE_MESSAGE).asText());
+  }
+
+  @Test(dependsOnMethods = "testBatchUpdateSearchFilter")
+  public void testBatchDeleteSearchFilter() throws Exception {
+    final String uri = searchFilterUri("");
+
+    // Delete the two filters created
+    HttpResponse response =
+        deleteResource(uri, getToken(), "ids", newFilterId, "ids", secondeNewFilterId);
+    JsonNode updateResults = mapper.readTree(response.getEntity().getContent());
+    assertEquals(2, updateResults.size());
+
+    JsonNode filterOne = updateResults.get(0);
+    assertEquals(200, filterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "MIME type filter " + newFilterId + " has been deleted.",
+        filterOne.get(RESPONSE_MESSAGE).asText());
+
+    JsonNode filterTwo = updateResults.get(1);
+    assertEquals(200, filterTwo.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "MIME type filter " + secondeNewFilterId + " has been deleted.",
+        filterTwo.get(RESPONSE_MESSAGE).asText());
+
+    // Delete again with the deleted IDs
+    response = deleteResource(uri, getToken(), "ids", newFilterId);
+    updateResults = mapper.readTree(response.getEntity().getContent());
+    filterOne = updateResults.get(0);
+    assertEquals(404, filterOne.get(RESPONSE_STATUS).asInt());
+    assertEquals(
+        "No Search filters matching UUID: " + newFilterId,
+        filterOne.get(RESPONSE_MESSAGE).asText());
   }
 }
