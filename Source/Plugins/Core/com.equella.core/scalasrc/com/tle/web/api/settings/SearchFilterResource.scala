@@ -25,15 +25,15 @@ import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.settings.standard.SearchSettings.SearchFilter
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.ApiErrorResponse
+import com.tle.web.api.{ApiErrorResponse, ApiBatchOperationResponse}
 import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
-import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces}
+import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.JavaConverters._
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 @NoCache
 @Path("settings/")
@@ -131,38 +131,41 @@ class SearchFilterResource {
     value = "Update multiple MIME type filters",
     notes =
       "This endpoint is used to update multipe MIME type filters. A JSON object representing a collection of updated filters is returned if operation is successful.",
-    response = classOf[SearchFilter],
+    response = classOf[ApiBatchOperationResponse],
     responseContainer = "List"
   )
   def batchUpdate(searchFilters: Array[SearchFilter]): Response = {
     val searchSettings = loadSettings(new SearchSettings)
-    val errorMessages  = ArrayBuffer[String]()
+    val batchResponses = ListBuffer[ApiBatchOperationResponse]()
 
     searchFilters.foreach(searchFilter => {
-      validate(searchFilter) match {
-        case Left(errors) => errorMessages ++= errors
+      val response = validate(searchFilter) match {
+        case Left(errors) =>
+          ApiBatchOperationResponse(isFilterIdNull(searchFilter.getId), 400, errors.mkString(""))
         case Right(_) =>
           if (searchFilter.getId == null) {
-            searchFilter.setId(UUID.randomUUID().toString)
+            val filterId = UUID.randomUUID().toString
+            searchFilter.setId(filterId)
             searchSettings.getFilters.add(searchFilter)
+            ApiBatchOperationResponse("New MIME type filter", 200, s"new filter ID: $filterId")
           } else {
             val filterId = searchFilter.getId
             getFilterById(filterId, searchSettings) match {
               case Some(filter) =>
                 filter.setMimeTypes(searchFilter.getMimeTypes)
                 filter.setName(searchFilter.getName)
+                ApiBatchOperationResponse(filterId,
+                                          200,
+                                          s"MIME type filter $filterId has been updated.")
               case None =>
-                return ApiErrorResponse.resourceNotFound(uuidNotFound(filterId))
+                ApiBatchOperationResponse(filterId, 404, uuidNotFound(filterId))
             }
           }
       }
+      batchResponses += response
     })
-    if (errorMessages.nonEmpty) {
-      ApiErrorResponse.badRequest(errorMessages: _*)
-    } else {
-      updateSettings(searchSettings)
-      Response.ok.entity(searchSettings.getFilters).build()
-    }
+    updateSettings(searchSettings)
+    Response.status(207).entity(batchResponses).build()
   }
 
   @DELETE
@@ -190,27 +193,28 @@ class SearchFilterResource {
   @ApiOperation(
     value = "Delete multiple MIME type filter",
     notes = "This endpoint is used to delete multiple MIME type filter.",
+    response = classOf[ApiBatchOperationResponse],
+    responseContainer = "List"
   )
-  def batchDelete(searchFilters: Array[SearchFilter]): Response = {
+  def batchDelete(
+      @ApiParam(value = "filter UUID") @QueryParam("ids") ids: Array[UUID]): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
-    val errorMessages  = ArrayBuffer[String]()
+    val batchResponses = ListBuffer[ApiBatchOperationResponse]()
 
-    searchFilters.foreach(searchFilter => {
-      val filterId = searchFilter.getId
-      getFilterById(filterId, searchSettings) match {
+    ids.foreach(id => {
+      val filterId = id.toString
+      val response = getFilterById(filterId, searchSettings) match {
         case Some(filter) =>
           searchSettings.getFilters.remove(filter)
-        case None => errorMessages += uuidNotFound(filterId)
+          ApiBatchOperationResponse(filterId, 200, s"MIME type filter $filterId has been deleted.")
+        case None => ApiBatchOperationResponse(filterId, 404, uuidNotFound(filterId))
       }
+      batchResponses += response
     })
 
-    if (errorMessages.nonEmpty) {
-      ApiErrorResponse.resourceNotFound(errorMessages: _*)
-    } else {
-      updateSettings(searchSettings)
-      Response.ok().build()
-    }
+    updateSettings(searchSettings)
+    Response.status(207).entity(batchResponses).build()
   }
 
   private def getFilterById(filterId: String,
@@ -219,6 +223,11 @@ class SearchFilterResource {
   }
 
   private def uuidNotFound(uuid: String) = s"No Search filters matching UUID: $uuid."
+
+  private def isFilterIdNull(id: String): String = id match {
+    case null => "New MIME type filter"
+    case _    => id
+  }
 
   private def validate(searchFilter: SearchFilter): Either[Array[String], Unit] = {
     val errorMessages = ArrayBuffer[String]()

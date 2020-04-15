@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { encodeQuery } from "../../../util/encodequery";
 
 export interface MimeTypeFilter {
   id?: string;
@@ -23,8 +24,8 @@ export const getMIMETypesFromServer = (): Promise<MimeTypeEntry[]> =>
 export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
   Axios.put(MIME_TYPE_FILTERS_URL, filters);
 
-export const batchDelete = (filters: MimeTypeFilter[]) =>
-  Axios.delete(MIME_TYPE_FILTERS_URL, { data: filters });
+export const batchDelete = (ids: string[]) =>
+  Axios.delete(`${MIME_TYPE_FILTERS_URL}/${encodeQuery({ ids: ids })}`);
 
 export const getMimeTypeDetail = (entry: MimeTypeEntry) => {
   const { mimeType, desc } = entry;

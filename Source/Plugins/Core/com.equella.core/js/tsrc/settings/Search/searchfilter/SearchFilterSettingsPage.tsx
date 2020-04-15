@@ -262,10 +262,11 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         )
         .then(
           (): Promise<any> =>
+            // Filters stored in 'deletedMimeTypeFilters' always have an id
             deletedMimeTypeFilters.length
-              ? batchDelete(deletedMimeTypeFilters).catch(error =>
-                  handleError(error)
-                )
+              ? batchDelete(
+                  deletedMimeTypeFilters.map(filter => filter.id!)
+                ).catch(error => handleError(error))
               : Promise.resolve()
         )
         .then(() => setShowSnackBar(true))
