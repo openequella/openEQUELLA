@@ -16,7 +16,12 @@ interface SettingsListControlProps {
 
 const useStyles = makeStyles({
   listItemText: {
-    maxWidth: "65%"
+    maxWidth: "40%"
+  },
+  secondaryAction: {
+    width: "400px",
+    display: "flex",
+    justifyContent: "flex-end"
   }
 });
 /*
@@ -42,7 +47,9 @@ export default function SettingsListControl({
         primary={primaryText}
         secondary={secondaryText}
       />
-      <ListItemSecondaryAction>{control}</ListItemSecondaryAction>
+      <ListItemSecondaryAction className={classes.secondaryAction}>
+        {control}
+      </ListItemSecondaryAction>
     </ListItem>
   );
 }
