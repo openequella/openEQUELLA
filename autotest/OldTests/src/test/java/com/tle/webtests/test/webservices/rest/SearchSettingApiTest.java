@@ -387,4 +387,11 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
         "No Search filters matching UUID: " + newFilterId,
         filterOne.get(RESPONSE_MESSAGE).asText());
   }
+
+  @Test
+  public void testRetrieveMimeTypes() throws Exception {
+    final JsonNode initialFilters =
+        getEntity(context.getBaseUrl() + "api/settings/mimetype", getToken());
+    assertEquals(153, initialFilters.size());
+  }
 }
