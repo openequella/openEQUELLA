@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/styles";
 interface SettingsListControlProps {
   divider?: boolean;
   primaryText: string;
-  secondaryText: string;
+  secondaryText: string | ReactNode;
   control: ReactNode;
 }
 
