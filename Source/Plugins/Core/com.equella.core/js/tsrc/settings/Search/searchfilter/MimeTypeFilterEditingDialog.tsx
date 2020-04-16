@@ -15,20 +15,40 @@ import {
 } from "./SearchFilterSettingsModule";
 import { useEffect, useState } from "react";
 import { commonString } from "../../../util/commonstrings";
-import { MimeTypeList } from "./MimeTypeList";
+import MimeTypeList from "./MimeTypeList";
 import { languageStrings } from "../../../util/langstrings";
 import { templateError, TemplateUpdate } from "../../../mainui/Template";
 import { fromAxiosError } from "../../../api/errors";
 
 interface MimeTypeFilterEditorProps {
+  /**
+   * If true, the dialog will be shown.
+   */
   open: boolean;
+  /**
+   * Fired when the dialog is closed.
+   */
   onClose: () => void;
+  /**
+   * Fired when clicking the ADD or OK button
+   * @param filter The filter that has been added or edited
+   */
   addOrUpdate: (filter: MimeTypeFilter) => void;
+  /**
+   * The filter to be edited, or undefined if the action is to add a new filter
+   */
   mimeTypeFilter?: MimeTypeFilter;
+  /**
+   * Update the LegacyContent template when required
+   * @param the template to be rendered
+   */
   updateTemplate: (update: TemplateUpdate) => void;
 }
 
-const MimeTypeFilterEditor = ({
+/**
+ * Component for showing a dialog where users can add/edit a MIME type filter
+ */
+const MimeTypeFilterEditingDialog = ({
   open,
   onClose,
   mimeTypeFilter,
@@ -50,6 +70,9 @@ const MimeTypeFilterEditor = ({
       .catch(error => updateTemplate(templateError(fromAxiosError(error))));
   }, []);
 
+  /**
+   * Clean up previously edited filter, depending on 'onClose'
+   */
   useEffect(() => {
     setFilterName(mimeTypeFilter ? mimeTypeFilter.name : "");
     setSelectedMimeTypes(mimeTypeFilter ? mimeTypeFilter.mimeTypes : []);
@@ -57,7 +80,7 @@ const MimeTypeFilterEditor = ({
 
   /**
    * If a MIME type is selected and it doesn't exist in the collection of selected MIME types,
-   * then add it to the collection;
+   * then add it to the collection.
    * if a MIME type is unselected and it exists in the collection of selected MIME types,
    * then remove it from the collection.
    */
@@ -73,10 +96,6 @@ const MimeTypeFilterEditor = ({
     },
     [selectedMimeTypes]
   );
-
-  const updateFilterName = (name: string) => {
-    setFilterName(name);
-  };
 
   const onAddOrUpdate = () => {
     addOrUpdate({
@@ -96,8 +115,8 @@ const MimeTypeFilterEditor = ({
     <Dialog
       open={open}
       onClose={onClose}
-      disableBackdropClick={true}
-      disableEscapeKeyDown={true}
+      disableBackdropClick
+      disableEscapeKeyDown
       fullWidth
     >
       <DialogTitle>{DIALOG_TITLE}</DialogTitle>
@@ -108,8 +127,7 @@ const MimeTypeFilterEditor = ({
           value={filterName}
           required
           fullWidth
-          helperText={searchFilterStrings.helptext}
-          onChange={event => updateFilterName(event.target.value)}
+          onChange={event => setFilterName(event.target.value)}
           error={!!filterName && !isNameValid}
         />
         <MimeTypeList
@@ -136,4 +154,4 @@ const MimeTypeFilterEditor = ({
   );
 };
 
-export default MimeTypeFilterEditor;
+export default MimeTypeFilterEditingDialog;
