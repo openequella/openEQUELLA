@@ -2,11 +2,9 @@ name: openEQUELLA CI
 
 on: [push]
 
-defaults:
-  runs-on: ubuntu-latest
-
 jobs:
   build_and_check:
+  runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up NVM
