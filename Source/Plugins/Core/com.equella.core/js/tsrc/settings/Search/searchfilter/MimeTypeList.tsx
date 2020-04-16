@@ -26,45 +26,44 @@ const useStyles = makeStyles({
 interface MimeTypeFilterListProps {
   entries: MimeTypeEntry[];
   onChange(check: boolean, mimeType: string): void;
-  selected?: string[];
+  selected: string[];
 }
 
-export const MimeTypeList = React.memo(
-  ({ entries, onChange, selected }: MimeTypeFilterListProps) => {
-    const classes = useStyles();
-    const searchFilterStrings =
-      languageStrings.settings.searching.searchfiltersettings;
+const MimeTypeList = ({
+  entries,
+  onChange,
+  selected
+}: MimeTypeFilterListProps) => {
+  const classes = useStyles();
+  const searchFilterStrings =
+    languageStrings.settings.searching.searchfiltersettings;
 
-    return (
-      <div className={classes.list}>
-        <List
-          subheader={
-            <Typography
-              variant={"subtitle2"}
-              color={"textSecondary"}
-              className={classes.listTitle}
-            >
-              {searchFilterStrings.mimetypelistlabel}
-            </Typography>
-          }
+  return (
+    <List
+      className={classes.list}
+      subheader={
+        <Typography
+          variant={"subtitle2"}
+          color={"textSecondary"}
+          className={classes.listTitle}
         >
-          {entries.map(entry => {
-            let checked = false;
-            if (selected && selected.indexOf(entry.mimeType) >= 0) {
-              checked = true;
-            }
-            return (
-              <ListItem key={entry.mimeType} className={classes.item}>
-                <Checkbox
-                  checked={checked}
-                  onChange={(_, checked) => onChange(checked, entry.mimeType)}
-                />
-                <ListItemText primary={getMimeTypeDetail(entry)} />
-              </ListItem>
-            );
-          })}
-        </List>
-      </div>
-    );
-  }
-);
+          {searchFilterStrings.mimetypelistlabel}
+        </Typography>
+      }
+    >
+      {entries.map((entry, index) => {
+        return (
+          <ListItem key={index} className={classes.item}>
+            <Checkbox
+              checked={selected.indexOf(entry.mimeType) >= 0}
+              onChange={(_, checked) => onChange(checked, entry.mimeType)}
+            />
+            <ListItemText primary={getMimeTypeDetail(entry)} />
+          </ListItem>
+        );
+      })}
+    </List>
+  );
+};
+
+export default React.memo(MimeTypeList);
