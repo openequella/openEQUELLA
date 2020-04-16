@@ -58,5 +58,21 @@ jobs:
           ./sbt headerCheck checkJavaCodeStyle
 
       - name: Build primary artefacts
+        shell: bash -l {0}
         run: |
           ./sbt installerZip writeLanguagePack writeScriptingJavadoc
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Installer
+          path: Installer/target/equella-installer*.zip
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Upgrader
+          path: Source/Server/equellaserver/target/tle-upgrade*.zip
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Other
+          path: target/*.zip
