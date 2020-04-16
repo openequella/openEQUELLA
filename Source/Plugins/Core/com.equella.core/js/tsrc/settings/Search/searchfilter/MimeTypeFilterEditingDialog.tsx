@@ -19,6 +19,7 @@ import MimeTypeList from "./MimeTypeList";
 import { languageStrings } from "../../../util/langstrings";
 import { templateError, TemplateUpdate } from "../../../mainui/Template";
 import { fromAxiosError } from "../../../api/errors";
+import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 
 interface MimeTypeFilterEditorProps {
   /**
@@ -87,11 +88,9 @@ const MimeTypeFilterEditingDialog = ({
   const updateMimeTypeSelections = React.useCallback(
     (checked: boolean, mimeType: string) => {
       if (checked && selectedMimeTypes.indexOf(mimeType) < 0) {
-        setSelectedMimeTypes([...selectedMimeTypes, mimeType]);
+        setSelectedMimeTypes(addElement(selectedMimeTypes, mimeType));
       } else if (!checked && selectedMimeTypes.indexOf(mimeType) > -1) {
-        setSelectedMimeTypes(
-          selectedMimeTypes.filter(selection => selection !== mimeType)
-        );
+        setSelectedMimeTypes(deleteElement(selectedMimeTypes, mimeType, 1));
       }
     },
     [selectedMimeTypes]

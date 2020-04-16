@@ -43,6 +43,11 @@ import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import { commonString } from "../../../util/commonstrings";
 import { fromAxiosError } from "../../../api/errors";
 import { AxiosError } from "axios";
+import {
+  addElement,
+  deleteElement,
+  replaceElement
+} from "../../../util/ImmutableArrayUtil";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -152,61 +157,37 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Visually add or update a filter;
-   * Add this filter into the collection of changed MIME type filters
+   * Visually add or update a filter.
+   * If 'selectedMimeTypeFilter' is undefined, then the action is adding a new filter, so add
+   * 'filter' to the 'mimeTypeFilters' and 'changedMimeTypeFilters'; otherwise replace 'selectedMimeTypeFilter'
+   * with 'filter'.
    */
   const addOrUpdateMimeTypeFilter = (filter: MimeTypeFilter) => {
-    // Update the list first
     if (!selectedMimeTypeFilter) {
-      setMimeTypeFilters([...mimeTypeFilters, filter]);
-      setChangedMimeTypeFilters([...changedMimeTypeFilters, filter]);
+      setMimeTypeFilters(addElement(mimeTypeFilters, filter));
+      setChangedMimeTypeFilters(addElement(changedMimeTypeFilters, filter));
     } else {
-      const index = mimeTypeFilters.indexOf(selectedMimeTypeFilter);
-      const filters = [...mimeTypeFilters];
-      filters[index] = filter;
-      setMimeTypeFilters(filters);
-    }
-
-    // Update the collection of changed MIME type filters
-    // if 'filter' comes from the editing of 'selectedMimeTypeFilter' and 'selectedMimeTypeFilter'
-    // exists in 'changedMimeTypeFilters', then replace 'selectedMimeTypeFilter' with 'filter';
-    // otherwise add 'filter' to 'changedMimeTypeFilters'
-    if (
-      selectedMimeTypeFilter &&
-      changedMimeTypeFilters.indexOf(selectedMimeTypeFilter) > -1
-    ) {
-      const index = changedMimeTypeFilters.indexOf(selectedMimeTypeFilter);
-      const filters = [...changedMimeTypeFilters];
-      filters[index] = filter;
-      setChangedMimeTypeFilters(filters);
-    } else {
-      setChangedMimeTypeFilters([...changedMimeTypeFilters, filter]);
+      setMimeTypeFilters(
+        replaceElement(mimeTypeFilters, selectedMimeTypeFilter, filter)
+      );
+      setChangedMimeTypeFilters(
+        replaceElement(changedMimeTypeFilters, selectedMimeTypeFilter, filter)
+      );
     }
   };
 
   /**
    * Visually delete a filter;
-   * Add this filter into the collection of deleted MIME type filters.
+   * Remove 'filter' from 'mimeTypeFilters' and 'changedMimeTypeFilters'.
+   * If the filter has an ID then add it to 'deletedMimeTypeFilters'
    */
   const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
-    // Update the list of filters
-    setMimeTypeFilters(
-      mimeTypeFilters.filter(mimeTypeFilter => mimeTypeFilter !== filter)
-    );
+    setMimeTypeFilters(deleteElement(mimeTypeFilters, filter, 1));
+    setChangedMimeTypeFilters(deleteElement(changedMimeTypeFilters, filter, 1));
 
     // Only put filters that already have an id into deletedMimeTypeFilters
     if (filter.id) {
-      setDeletedMimeTypeFilters([...deletedMimeTypeFilters, filter]);
-    }
-
-    // If this filter is also in changedMimeTypeFilters then remove it from changedMimeTypeFilters
-    const indexInChangedMimeTypeFilters = changedMimeTypeFilters.indexOf(
-      filter
-    );
-    if (indexInChangedMimeTypeFilters > -1) {
-      const filters = [...changedMimeTypeFilters];
-      filters.splice(indexInChangedMimeTypeFilters, 1);
-      setChangedMimeTypeFilters(filters);
+      setDeletedMimeTypeFilters(addElement(deletedMimeTypeFilters, filter));
     }
   };
 
