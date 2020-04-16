@@ -8,6 +8,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: NPM Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/.package-lock.json' }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: SBT Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt' }}
+          restore-keys: |
+            ${{ runner.os }}-sbt-
+
       - name: Set up NVM
         shell: bash -l {0}
         run: |
@@ -41,3 +57,6 @@ jobs:
           npm run check
           ./sbt headerCheck checkJavaCodeStyle
 
+      - name: Build primary artefacts
+        run: |
+          ./sbt installerZip writeLanguagePack writeScriptingJavadoc
