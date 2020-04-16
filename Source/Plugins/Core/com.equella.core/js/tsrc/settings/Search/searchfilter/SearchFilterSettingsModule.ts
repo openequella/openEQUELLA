@@ -35,9 +35,5 @@ export const getMimeTypeDetail = (entry: MimeTypeEntry) => {
   return mimeType;
 };
 
-export const vaidateMimeTypeName = (name: string | undefined): boolean => {
-  if (name?.trim()) {
-    return true;
-  }
-  return false;
-};
+export const vaidateMimeTypeName = (name: string | undefined): boolean =>
+  !!name?.trim();

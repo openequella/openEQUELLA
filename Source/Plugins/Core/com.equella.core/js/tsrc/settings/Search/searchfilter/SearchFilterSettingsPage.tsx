@@ -253,7 +253,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <SettingsListControl
             divider
             primaryText={searchFilterStrings.disableownerfilter}
-            secondaryText={""}
             control={
               <SettingsToggleSwitch
                 value={searchSettings.searchingDisableOwnerFilter}
@@ -269,7 +268,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           />
           <SettingsListControl
             primaryText={searchFilterStrings.disabledatemodifiedfilter}
-            secondaryText={""}
             control={
               <SettingsToggleSwitch
                 value={searchSettings.searchingDisableDateModifiedFilter}
