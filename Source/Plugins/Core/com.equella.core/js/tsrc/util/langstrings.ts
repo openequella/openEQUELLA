@@ -399,7 +399,9 @@ export const languageStrings = {
         save: "save Search filter configurations",
         filternamelabel: "Name",
         mimetypelistlabel: "MIME types *",
-        helptext: "This field is mandatory"
+        messagedialogtitle: "Search filter setting results",
+        messagedialogsubtitle:
+          "Some changes are not saved due to reasons listed below"
       }
     },
     ui: { name: "UI", desc: "UI settings" }

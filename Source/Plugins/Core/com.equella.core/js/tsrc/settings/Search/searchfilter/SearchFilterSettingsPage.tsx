@@ -41,13 +41,14 @@ import {
 } from "./SearchFilterSettingsModule";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import { commonString } from "../../../util/commonstrings";
-import { fromAxiosError } from "../../../api/errors";
+import { generateFromError } from "../../../api/errors";
 import { AxiosError } from "axios";
 import {
   addElement,
   deleteElement,
   replaceElement
 } from "../../../util/ImmutableArrayUtil";
+import MessageDialog from "../../../components/MessageDialog";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -107,6 +108,10 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [openMimeTypeFilterEditor, setOpenMimeTypeFilterEditor] = useState<
     boolean
   >(false);
+  const [openMessageDialog, setOpenMessageDialog] = useState<boolean>(false);
+  const [messageDialogMessages, setMessageDialogMessages] = useState<string[]>(
+    []
+  );
 
   useEffect(() => {
     updateTemplate(tp => ({
@@ -201,10 +206,11 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Save general Search setting only when the configuration of Owner filter or Date modified filter has been changed;
+   * Save general Search setting only when the configuration of Owner filter or Date modified filter has been changed.
    * Save MIME type filters only when they have been updated, delete or just created.
    */
   const save = () => {
+    const errorMessages: string[] = [];
     if (!mimeTypeFilterChanged && !generalSearchSettingChanged) {
       return;
     }
@@ -217,21 +223,29 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .then(
         (): Promise<any> =>
           changedMimeTypeFilters.length
-            ? batchUpdateOrAdd(changedMimeTypeFilters).catch(error =>
-                handleError(error)
-              )
+            ? batchUpdateOrAdd(changedMimeTypeFilters)
+                .then(messages => errorMessages.push(...messages))
+                .catch(error => handleError(error))
             : Promise.resolve()
       )
       .then(
         (): Promise<any> =>
-          // Filters stored in 'deletedMimeTypeFilters' always have an id
+          // Filters stored in 'deletedMimeTypeFilters' always have an ID
           deletedMimeTypeFilters.length
-            ? batchDelete(
-                deletedMimeTypeFilters.map(filter => filter.id!)
-              ).catch(error => handleError(error))
+            ? batchDelete(deletedMimeTypeFilters.map(filter => filter.id!))
+                .then(messages => errorMessages.push(...messages))
+                .catch(error => handleError(error))
             : Promise.resolve()
       )
-      .then(() => setShowSnackBar(true))
+      .then(() => {
+        // If the 207 response includes any non-2xx responses then display a dialog to show error messages.
+        if (errorMessages.length > 0) {
+          setMessageDialogMessages(errorMessages);
+          setOpenMessageDialog(true);
+        } else {
+          setShowSnackBar(true);
+        }
+      })
       .catch(() => {}) // Errors have been handled and subsequent promises have skipped
       .finally(() => {
         getMimeTypeFilters();
@@ -239,8 +253,8 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       });
   };
 
-  const handleError = (error: AxiosError) => {
-    updateTemplate(templateError(fromAxiosError(error)));
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
     // The reason for throwing an error again is to prevent subsequent REST calls
     throw new Error(error.message);
   };
@@ -338,6 +352,14 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         addOrUpdate={addOrUpdateMimeTypeFilter}
         mimeTypeFilter={selectedMimeTypeFilter}
         updateTemplate={updateTemplate}
+      />
+
+      <MessageDialog
+        open={openMessageDialog}
+        messages={messageDialogMessages}
+        title={searchFilterStrings.messagedialogtitle}
+        subtitle={searchFilterStrings.messagedialogsubtitle}
+        close={() => setOpenMessageDialog(false)}
       />
 
       {/* SAVE button*/}
