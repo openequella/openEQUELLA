@@ -40,7 +40,7 @@ jobs:
           echo "source $NVM_DIR/nvm.sh" >> "$HOME/.bash_profile"
 
       - name: Install NodeJS
-        shell: bash -l -eo pipefail {0}
+        shell: bash -l {0}
         run: |
           nvm install
 
