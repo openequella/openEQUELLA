@@ -115,5 +115,5 @@ jobs:
         uses: actions/upload-artifact@v2-preview
         with:
           name: ImportExportTools
-          path: build/libs/
+          path: import-export-tool/build/libs/
 
