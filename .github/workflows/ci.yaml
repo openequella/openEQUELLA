@@ -62,17 +62,15 @@ jobs:
         run: |
           ./sbt installerZip writeLanguagePack writeScriptingJavadoc
 
-      - uses: actions/upload-artifact@v2-preview
-        with:
-          name: Installer
-          path: Installer/target/equella-installer*.zip
+      - name: Package artefacts
+        run: |
+          tar cvf artefacts.tar \
+            Installer/target/equella-installer*.zip \
+            Source/Server/equellaserver/target/tle-upgrade*.zip \
+            target/*.zip
 
-      - uses: actions/upload-artifact@v2-preview
+      - name: Save primary artefacts
+        uses: actions/upload-artifact@v2-preview
         with:
-          name: Upgrader
-          path: Source/Server/equellaserver/target/tle-upgrade*.zip
-
-      - uses: actions/upload-artifact@v2-preview
-        with:
-          name: Other
-          path: target/*.zip
+          name: Artefacts
+          path: artefacts.tar
