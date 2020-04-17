@@ -29,13 +29,12 @@ import scala.collection.JavaConverters._
 case class MimeTypeDetail(mimeType: String, desc: String)
 
 @NoCache
-@Path("settings/")
+@Path("mimetype/")
 @Produces(value = Array("application/json"))
-@Api(value = "Settings")
+@Api(value = "Mimetype")
 class MimeTypeResource {
 
   @GET
-  @Path("mimetype")
   @ApiOperation(
     value = "List available MIME types",
     notes = "This endpoint is used to retrieve MIME types.",

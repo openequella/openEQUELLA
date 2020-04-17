@@ -17,7 +17,7 @@ export interface MimeTypeEntry {
 }
 
 const MIME_TYPE_FILTERS_URL = "api/settings/search/filter";
-const MIME_TYPE_URL = "api/settings/mimetype";
+const MIME_TYPE_URL = "api/mimetype";
 
 export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
   Axios.get(MIME_TYPE_FILTERS_URL).then(res => res.data);
