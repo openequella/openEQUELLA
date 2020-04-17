@@ -7,26 +7,19 @@ import {
 import { ContentIndex } from "../SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
-import { makeStyles } from "@material-ui/styles";
 
 export interface ContentIndexSettingProps {
   disabled: boolean;
   value: ContentIndex;
   setValue: (indexOption: ContentIndex) => void;
 }
-const useStyles = makeStyles({
-  select: {
-    width: "200px"
-  }
-});
 export default function ContentIndexSetting({
   disabled,
   value,
   setValue
 }: ContentIndexSettingProps) {
-  const searchPageSettingsStrings =
-    languageStrings.settings.searching.searchPageSettings;
-  const classes = useStyles();
+  const contentIndexSettingsStrings =
+    languageStrings.settings.searching.contentIndexSettings;
   return (
     <>
       <FormControl variant={"outlined"}>
@@ -36,17 +29,17 @@ export default function ContentIndexSetting({
           onChange={event => setValue(event.target.value as ContentIndex)}
           variant={"outlined"}
           value={value}
-          className={classes.select}
+          autoWidth={true}
           input={<OutlinedInput labelWidth={0} id={"_contentIndex"} />}
         >
           <MenuItem value={ContentIndex.OPTION_NONE}>
-            {searchPageSettingsStrings.relevance}
+            {contentIndexSettingsStrings.option.none}
           </MenuItem>
           <MenuItem value={ContentIndex.OPTION_WEBPAGE}>
-            {searchPageSettingsStrings.lastModified}
+            {contentIndexSettingsStrings.option.webPage}
           </MenuItem>
           <MenuItem value={ContentIndex.OPTION_SECONDARY}>
-            {searchPageSettingsStrings.dateCreated}
+            {contentIndexSettingsStrings.option.secondaryPage}
           </MenuItem>
         </Select>
       </FormControl>

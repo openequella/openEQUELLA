@@ -387,13 +387,14 @@ export const languageStrings = {
       },
       contentIndexSettings: {
         name: "Content indexing",
-        description: "Some content indexing stuff",
+        description: "Configure how web page attachments are indexed",
         save: "Save",
+        general: "General",
+        success: "Settings saved successfully.",
         option: {
-          none: "Do not index attached web pages",
-          webPage: "Index the linked web page only",
-          secondaryPage:
-            "Index the linked web page and any secondary linked web pages"
+          none: "Do not index",
+          webPage: "Web page only",
+          secondaryPage: "Web page and linked web pages"
         }
       }
     },

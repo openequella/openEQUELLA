@@ -17,8 +17,8 @@ import {
 import MessageInfo from "../../components/MessageInfo";
 import { Save } from "@material-ui/icons";
 import SettingsList from "../../components/SettingsList";
-import SettingsListControl from "tsrc/components/SettingsListControl";
-import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
+import SettingsListControl from "../../components/SettingsListControl";
+import ContentIndexSetting from "./components/ContentIndexSetting";
 
 const useStyles = makeStyles({
   floatingButton: {
@@ -72,19 +72,19 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   return (
     <>
       <Card className={classes.spacedCards}>
-        <SettingsList>
+        <SettingsList subHeading={contentIndexSettingsStrings.general}>
           <SettingsListControl
             divider
             primaryText={contentIndexSettingsStrings.name}
-            secondaryText={searchPageSettingsStrings.defaultSortOrderDesc}
+            secondaryText={contentIndexSettingsStrings.description}
             control={
-              <DefaultSortOrderSetting
+              <ContentIndexSetting
                 disabled={showError}
-                value={searchSettings.defaultSearchSort}
-                setValue={order =>
+                value={searchSettings.urlLevel}
+                setValue={level =>
                   setSearchSettings({
                     ...searchSettings,
-                    defaultSearchSort: order
+                    urlLevel: level
                   })
                 }
               />
