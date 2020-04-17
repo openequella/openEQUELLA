@@ -12,7 +12,7 @@ export interface SearchSettings {
   defaultSearchSort: SortOrder;
   authenticateFeedsByDefault: boolean;
 
-  urlLevel: ContentIndex;
+  urlLevel: number;
   titleBoost: number;
   descriptionBoost: number;
   attachmentBoost: number;
