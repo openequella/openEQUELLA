@@ -71,8 +71,9 @@ jobs:
           ./sbt installerZip writeLanguagePack writeScriptingJavadoc
 
       - name: Package artefacts
+        # We use --transform below to strip out the path for the files in the tar file
         run: |
-          tar cvf artefacts.tar \
+          tar cvf artefacts.tar --transform='s/.\+\///' \
             Installer/target/equella-installer*.zip \
             Source/Server/equellaserver/target/tle-upgrade*.zip \
             target/*.zip
