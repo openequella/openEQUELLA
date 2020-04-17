@@ -24,6 +24,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sbt-
 
+      - name: Ivy Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-ivy-
+
       - name: Set up NVM
         shell: bash -l {0}
         run: |
