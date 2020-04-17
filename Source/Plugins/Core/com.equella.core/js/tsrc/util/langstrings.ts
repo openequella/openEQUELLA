@@ -349,7 +349,7 @@ export const languageStrings = {
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     searching: {
       name: "Search",
-      desc: " Configure general Search page options",
+      desc: "Search settings",
       searchPageSettings: {
         name: "Search page settings",
         general: "General",
