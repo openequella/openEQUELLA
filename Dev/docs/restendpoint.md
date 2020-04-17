@@ -176,3 +176,30 @@ public class TestResource {
     }
 }
 ```
+## Batch operations
+
+If a REST request contains multiple resources, then the successful response code should be 207,  which provides status
+and messages for multiple independent operations.
+
+The response body is a list of JSON data in below structure  
+
+```json
+
+[{
+  "id": "2daeba28-ce4e-48d5-9de8-149be32f09c9",
+  "status": 200,
+  "message": "A new filter has been created. ID: 2daeba28-ce4e-48d5-9de8-149be32f09c9"
+ },
+ {
+   "id": "2daeba28-ce4e-48d5-9de8-149be32f0929",
+   "status": 400,
+   "message": "Filter name cannot be empty."
+  }
+]
+
+```
+For each operation, the result should be represented by this structure. The Scala case class 'ApiBatchOperationResponse'
+has been created for this purpose.
+
+In client-side, 'BatchOperationResponse.ts' has been created to help read the data. Also, the function
+'groupErrorMessages' can help retrieve non-2xx status and their messages.
