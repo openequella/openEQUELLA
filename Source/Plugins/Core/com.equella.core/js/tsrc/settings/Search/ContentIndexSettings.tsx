@@ -74,7 +74,6 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={contentIndexSettingsStrings.general}>
           <SettingsListControl
-            divider
             primaryText={contentIndexSettingsStrings.name}
             secondaryText={contentIndexSettingsStrings.description}
             control={
