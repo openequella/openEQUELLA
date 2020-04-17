@@ -51,19 +51,31 @@ jobs:
 
       - name: Install node dependencies (core)
         shell: bash -l {0}
+        working-directory: Source/Plugins/Core/com.equella.core/js 
         run: |
-          cd Source/Plugins/Core/com.equella.core/js && npm install-ci
+          npm ci
 
       - name: Install node dependencies (root)
         shell: bash -l {0}
         run: |
-          npm install-ci
+          npm ci
 
       - name: Run checks
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: |
           npm run check
           ./sbt headerCheck checkJavaCodeStyle
+
+      - name: Run unit tests (java/scala)
+        shell: bash -l -eo pipefail {0}
+        run: |
+          ./sbt test
+
+      - name: Run unit tests (javascript)
+        shell: bash -l -eo pipefail {0}
+        working-directory: Source/Plugins/Core/com.equella.core/js 
+        run: |
+          npm cit
 
       - name: Build primary artefacts
         shell: bash -l {0}
