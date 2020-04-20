@@ -1,7 +1,8 @@
 import * as React from "react";
-import MimeTypeFilterEditingDialog from "../../settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import { MimeTypeFilter } from "../../settings/Search/searchfilter/SearchFilterSettingsModule";
+
 import { shallow } from "enzyme";
+import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
+import { MimeTypeFilter } from "../../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
 
 describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
@@ -19,7 +20,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
     );
 
   describe("when filter is defined", () => {
-    test("should display 'OK' as the Save button text", () => {
+    it("should display 'OK' as the Save button text", () => {
       const component = renderDialog({
         id: "testing ID",
         name: "image filter",
@@ -31,7 +32,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   });
 
   describe("when filter is undefined", () => {
-    test("should display 'Add' as the Save button text", () => {
+    it("should display 'Add' as the Save button text", () => {
       const component = renderDialog();
       const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
       expect(saveButton.text()).toBe("Add");
@@ -39,7 +40,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   });
 
   describe("when filter name is empty", () => {
-    test("should disable the Save button", () => {
+    it("should disable the Save button", () => {
       const component = renderDialog();
       const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
       expect(saveButton.is("[disabled]")).toBeTruthy();
