@@ -3,7 +3,7 @@ import {
   Sizes,
   prepLangStrings,
   initStrings
-} from "../../util/langstrings";
+} from "../../../tsrc/util/langstrings";
 
 describe("langstrings", () => {
   describe("formatSize", () => {
@@ -54,7 +54,9 @@ describe("langstrings", () => {
     });
 
     describe("initStrings", () => {
-      expect(() => initStrings()).not.toThrowError();
+      it("should not throw an exception", () => {
+        expect(() => initStrings()).not.toThrow();
+      });
     });
   });
 });
