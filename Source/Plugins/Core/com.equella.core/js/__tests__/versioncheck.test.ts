@@ -35,9 +35,9 @@ describe("versioncheck", () => {
       const checkResult = createCheckResult("2020.1.0", mockData.mockReleases);
       expect(checkResult.newer).toBe(false);
 
-      expect(checkResult.newerReleases.majorUpdate).toBe(null);
-      expect(checkResult.newerReleases.minorUpdate).toBe(null);
-      expect(checkResult.newerReleases.patchUpdate).toBe(null);
+      expect(checkResult.newerReleases.majorUpdate).toBeNull();
+      expect(checkResult.newerReleases.minorUpdate).toBeNull();
+      expect(checkResult.newerReleases.patchUpdate).toBeNull();
     });
   });
 });

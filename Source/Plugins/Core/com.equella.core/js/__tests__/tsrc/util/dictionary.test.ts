@@ -1,4 +1,4 @@
-import { properties } from "../../util/dictionary";
+import { properties } from "../../../tsrc/util/dictionary";
 
 describe("dictionary", () => {
   describe("properties", () => {

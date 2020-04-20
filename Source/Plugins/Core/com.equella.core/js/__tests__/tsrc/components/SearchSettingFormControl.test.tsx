@@ -1,4 +1,4 @@
-import SearchSettingFormControl from "../../components/SearchSettingFormControl";
+import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
 import { TextField } from "@material-ui/core";
 import * as React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
