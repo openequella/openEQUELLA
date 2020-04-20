@@ -18,7 +18,7 @@ import MessageInfo from "../../components/MessageInfo";
 import { Save } from "@material-ui/icons";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
-import ContentIndexSetting from "./components/ContentIndexSetting";
+import WebPageIndexSetting from "./components/WebPageIndexSetting";
 
 const useStyles = makeStyles({
   floatingButton: {
@@ -77,7 +77,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
             primaryText={contentIndexSettingsStrings.name}
             secondaryText={contentIndexSettingsStrings.description}
             control={
-              <ContentIndexSetting
+              <WebPageIndexSetting
                 disabled={showError}
                 value={searchSettings.urlLevel}
                 setValue={level =>
