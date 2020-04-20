@@ -1,15 +1,20 @@
 import { List, ListSubheader } from "@material-ui/core";
 import * as React from "react";
+import { ReactNode } from "react";
 
 interface SettingsListProps {
+  /**
+   * Optional subheading. Appears above the list at the top left.
+   */
   subHeading?: string;
-  children: React.ReactNode;
+  /**
+   * The children of this component - should be zero or more SettingsListControls.
+   */
+  children: ReactNode;
 }
-/*
+/**
  * This component is used to define a settings list to be used in the page/settings/* pages.
- * The children of this components should be SettingsListControls.
- * @param subHeading  optional title of the settings list.
- * @param children    0 or more SettingsListControls representing the rows of this list.
+ *
  */
 export default function SettingsList({
   subHeading,
