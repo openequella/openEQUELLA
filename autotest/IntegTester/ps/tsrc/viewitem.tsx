@@ -1,7 +1,6 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "babel-polyfill";
-import { parse } from "query-string";
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { theme, useStyles } from "./theme";

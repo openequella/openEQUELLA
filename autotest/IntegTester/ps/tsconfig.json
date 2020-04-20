@@ -18,6 +18,7 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
+    "skipLibCheck": true,
     "baseUrl": "."
   },
   "include": ["tsrc/**/*"],
