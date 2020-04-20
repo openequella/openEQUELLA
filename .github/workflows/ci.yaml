@@ -117,3 +117,73 @@ jobs:
           name: ImportExportTools
           path: import-export-tool/build/libs/
 
+  functional_testing:
+    needs: build_and_check
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: equellatests
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    env:
+      AUTOTEST_CONFIG: autotest/travis.conf
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download installer
+        uses: actions/download-artifact@v1
+        with:
+          name: Artefacts
+
+     - name: Install OS dependencies
+        run: |
+          sudo apt-get install -y --no-install-recommends \
+            chromium-browser \
+            chromium-chromedriver \
+            ffmpeg \
+            libimage-exiftool-perl
+          # Setup ffmpeg to act like libav-tools
+          sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
+          sudo ln -s /usr/bin/ffplay /usr/bin/avplay
+          sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+ 
+      - name: Extract installer from build
+        working-directory: Artefacts
+        run: |
+          tar xvf artefacts.tar
+          mkdir -p Installer/target
+          mv equella-installer*.zip Installer/target
+
+      - name: Setup for tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            installEquella startEquella configureInstall setupForTests
+ 
+      - name: Run Scalacheck tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            Tests/test dumpCoverage
+ 
+      - name: Run Scalacheck tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            Tests/Serial/test dumpCoverage
