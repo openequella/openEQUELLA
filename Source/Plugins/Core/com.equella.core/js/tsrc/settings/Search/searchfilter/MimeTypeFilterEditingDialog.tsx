@@ -21,7 +21,7 @@ import { templateError, TemplateUpdate } from "../../../mainui/Template";
 import { fromAxiosError } from "../../../api/errors";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 
-interface MimeTypeFilterEditorProps {
+interface MimeTypeFilterEditingDialogProps {
   /**
    * If true, the dialog will be shown.
    */
@@ -55,7 +55,7 @@ const MimeTypeFilterEditingDialog = ({
   mimeTypeFilter,
   addOrUpdate,
   updateTemplate
-}: MimeTypeFilterEditorProps) => {
+}: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
 
@@ -64,6 +64,8 @@ const MimeTypeFilterEditingDialog = ({
   const [filterName, setFilterName] = useState<string>("");
   // Used to store the MIME types of a MIME type filter
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>([]);
+
+  const isNameValid = vaidateMimeTypeName(filterName);
 
   useEffect(() => {
     getMIMETypesFromServer()
@@ -105,11 +107,6 @@ const MimeTypeFilterEditingDialog = ({
     onClose();
   };
 
-  const isNameValid = vaidateMimeTypeName(filterName);
-  const DIALOG_TITLE = mimeTypeFilter
-    ? searchFilterStrings.edit
-    : searchFilterStrings.add;
-
   return (
     <Dialog
       open={open}
@@ -118,7 +115,9 @@ const MimeTypeFilterEditingDialog = ({
       disableEscapeKeyDown
       fullWidth
     >
-      <DialogTitle>{DIALOG_TITLE}</DialogTitle>
+      <DialogTitle>
+        {mimeTypeFilter ? searchFilterStrings.edit : searchFilterStrings.add}
+      </DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"

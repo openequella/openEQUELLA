@@ -5,7 +5,7 @@ export interface BatchOperationResponse {
 }
 
 /**
- * Group responses that have non 2xx codes and return their messages
+ * Group responses that have a 4xx or 5xx status code, and return their messages
  */
 export function groupErrorMessages(
   responses: BatchOperationResponse[]

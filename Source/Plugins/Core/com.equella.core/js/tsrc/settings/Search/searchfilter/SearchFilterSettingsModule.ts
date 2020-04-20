@@ -6,13 +6,29 @@ import {
 } from "../../../api/BatchOperationResponse";
 
 export interface MimeTypeFilter {
+  /**
+   * The unique ID a MIME type filter. It's generated on the Server.
+   * So it can be null if the filter is created but not saved.
+   */
   id?: string;
+  /**
+   * The name of a MIME type filter
+   */
   name: string;
+  /**
+   * A list of MIME types belonging to a MIME type filter
+   */
   mimeTypes: string[];
 }
 
 export interface MimeTypeEntry {
+  /**
+   * The name of a Mime type
+   */
   mimeType: string;
+  /**
+   * The description of a Mime type
+   */
   desc: string;
 }
 

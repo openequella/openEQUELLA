@@ -24,8 +24,18 @@ const useStyles = makeStyles({
 });
 
 interface MimeTypeFilterListProps {
+  /**
+   * A list of MIME types to be displayed
+   */
   entries: MimeTypeEntry[];
+  /**
+   * Fired when the value of each Checkbox is changed
+   */
   onChange(check: boolean, mimeType: string): void;
+
+  /**
+   * Checkboxes that are ticked
+   */
   selected: string[];
 }
 
