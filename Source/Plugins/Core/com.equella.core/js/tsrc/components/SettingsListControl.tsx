@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     maxWidth: "40%"
   },
   secondaryAction: {
-    width: "400px",
+    width: "55%",
     display: "flex",
     justifyContent: "flex-end"
   }
