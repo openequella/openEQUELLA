@@ -118,7 +118,7 @@ jobs:
           path: import-export-tool/build/libs/
 
   functional_testing:
-    #needs: build_and_check
+    needs: build_and_check
 
     runs-on: ubuntu-latest
 
