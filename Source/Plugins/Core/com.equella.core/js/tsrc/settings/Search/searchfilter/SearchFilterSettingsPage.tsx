@@ -351,7 +351,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         onClose={closeMimeTypeFilterDialog}
         addOrUpdate={addOrUpdateMimeTypeFilter}
         mimeTypeFilter={selectedMimeTypeFilter}
-        updateTemplate={updateTemplate}
+        handleError={handleError}
       />
 
       <MessageDialog

@@ -17,8 +17,6 @@ import { useEffect, useState } from "react";
 import { commonString } from "../../../util/commonstrings";
 import MimeTypeList from "./MimeTypeList";
 import { languageStrings } from "../../../util/langstrings";
-import { templateError, TemplateUpdate } from "../../../mainui/Template";
-import { fromAxiosError } from "../../../api/errors";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 
 interface MimeTypeFilterEditingDialogProps {
@@ -40,10 +38,9 @@ interface MimeTypeFilterEditingDialogProps {
    */
   mimeTypeFilter?: MimeTypeFilter;
   /**
-   * Update the LegacyContent template when required
-   * @param the template to be rendered
+   * Error handling
    */
-  updateTemplate: (update: TemplateUpdate) => void;
+  handleError: (error: Error) => void;
 }
 
 /**
@@ -54,7 +51,7 @@ const MimeTypeFilterEditingDialog = ({
   onClose,
   mimeTypeFilter,
   addOrUpdate,
-  updateTemplate
+  handleError
 }: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
@@ -70,7 +67,7 @@ const MimeTypeFilterEditingDialog = ({
   useEffect(() => {
     getMIMETypesFromServer()
       .then(mimeTypes => setMimeTypeEntries(mimeTypes))
-      .catch(error => updateTemplate(templateError(fromAxiosError(error))));
+      .catch(error => handleError(error));
   }, []);
 
   /**
@@ -135,10 +132,15 @@ const MimeTypeFilterEditingDialog = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button
+          id={"MimeTypeFilterEditingDialog_cancel"}
+          onClick={onClose}
+          color="primary"
+        >
           {commonString.action.cancel}
         </Button>
         <Button
+          id={"MimeTypeFilterEditingDialog_save"}
           onClick={onAddOrUpdate}
           color="primary"
           disabled={
