@@ -78,7 +78,7 @@ jobs:
         - cd Source/Plugins/Core/com.equella.core/js
         - npm install-ci
         - cd -
-        - autotest/IntegTester/ps
+        - cd autotest/IntegTester/ps
         - npm install-ci
         - cd -
         - npm install-ci
