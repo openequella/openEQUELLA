@@ -149,7 +149,7 @@ jobs:
         with:
           name: Artefacts
 
-     - name: Install OS dependencies
+      - name: Install OS dependencies
         run: |
           sudo apt-get install -y --no-install-recommends \
             chromium-browser \
