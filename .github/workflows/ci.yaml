@@ -168,11 +168,13 @@ jobs:
           name: Artefacts
  
       - name: Extract installer from build
-        working-directory: Artefacts
+        env:
+          DOWNLOAD_DIR: Artefacts
+          INSTALLER_DIR: Installer/target
         run: |
-          tar xvf artefacts.tar
-          mkdir -p Installer/target
-          mv equella-installer*.zip Installer/target
+          tar --directory $DOWNLOAD_DIR -xvf $DOWNLOAD_DIR/artefacts.tar
+          mkdir -p $INSTALLER_DIR
+          mv -v $DOWNLOAD_DIR/equella-installer*.zip $INSTALLER_DIR
 
       - name: Setup for tests
         run: |
