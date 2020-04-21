@@ -173,12 +173,14 @@ object SettingsList {
                                             "page/searchsettings",
                                             searchPrivProvider.isAuthorised)
 
-  val contentIndexingSettings = CoreSettingsPage("searchpage",
-                                                 Searching,
-                                                 "setting.contentindexing.title",
-                                                 "setting.contentindexing.desc",
-                                                 "page/contentindexsettings",
-                                                 searchPrivProvider.isAuthorised)
+  val contentIndexingSettings = CoreSettingsPage(
+    "contentindexing",
+    Searching,
+    "setting.contentindexing.title",
+    "setting.contentindexing.desc",
+    "page/contentindexsettings",
+    searchPrivProvider.isAuthorised
+  )
 
   val searchFilterSettings = CoreSettingsPage("searchpage",
                                               Searching,

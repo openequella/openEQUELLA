@@ -12,7 +12,7 @@ export interface SearchSettings {
   defaultSearchSort: SortOrder;
   authenticateFeedsByDefault: boolean;
 
-  urlLevel: number;
+  urlLevel: ContentIndex;
   titleBoost: number;
   descriptionBoost: number;
   attachmentBoost: number;
@@ -28,6 +28,12 @@ export enum SortOrder {
   DATECREATED = "DATECREATED",
   NAME = "NAME",
   RATING = "RATING"
+}
+
+export enum ContentIndex {
+  OPTION_NONE = 0,
+  OPTION_WEBPAGE = 1,
+  OPTION_SECONDARY = 2
 }
 
 export const SEARCH_SETTINGS_URL = "api/settings/search";

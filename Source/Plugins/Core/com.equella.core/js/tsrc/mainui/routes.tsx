@@ -10,6 +10,7 @@ import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
 import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
+import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 
 declare const bridge: Bridge;
 
@@ -57,6 +58,10 @@ export const routes = {
   SearchSettings: {
     path: "/page/searchsettings",
     render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />
+  },
+  ContentIndexSettings: {
+    path: "/page/contentindexsettings",
+    render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />
   },
   ViewItem: {
     to: function(uuid: string, version: number) {

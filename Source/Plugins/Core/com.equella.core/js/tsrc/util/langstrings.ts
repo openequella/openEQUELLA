@@ -384,6 +384,18 @@ export const languageStrings = {
         notFoundError: "Endpoint not found",
         notFoundErrorDesc: "Endpoint not found. Refresh to retry.",
         permissionsError: "You do not have permission to edit these settings."
+      },
+      contentIndexSettings: {
+        name: "Content indexing",
+        description: "Configure how web page attachments are indexed",
+        save: "Save",
+        general: "General",
+        success: "Settings saved successfully.",
+        option: {
+          none: "Do not index",
+          webPage: "Web page only",
+          secondaryPage: "Web page and linked web pages"
+        }
       }
     },
     ui: { name: "UI", desc: "UI settings" }
