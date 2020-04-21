@@ -402,6 +402,18 @@ export const languageStrings = {
         messagedialogtitle: "Search filter setting results",
         messagedialogsubtitle:
           "Some changes are not saved due to reasons listed below"
+      },
+      contentIndexSettings: {
+        name: "Content indexing",
+        description: "Configure how web page attachments are indexed",
+        save: "Save",
+        general: "General",
+        success: "Settings saved successfully.",
+        option: {
+          none: "Do not index",
+          webPage: "Web page only",
+          secondaryPage: "Web page and linked web pages"
+        }
       }
     },
     ui: { name: "UI", desc: "UI settings" }

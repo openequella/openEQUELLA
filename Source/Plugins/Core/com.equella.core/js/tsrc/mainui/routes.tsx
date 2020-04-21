@@ -11,6 +11,7 @@ import { Bridge } from "../api/bridge";
 import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
 import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
+import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 
 declare const bridge: Bridge;
 
@@ -59,9 +60,15 @@ export const routes = {
     path: "/page/searchsettings",
     render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />
   },
+
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
     render: (p: OEQRouteComponentProps<any>) => <SearchFilterPage {...p} />
+  },
+
+  ContentIndexSettings: {
+    path: "/page/contentindexsettings",
+    render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />
   },
   ViewItem: {
     to: function(uuid: string, version: number) {
