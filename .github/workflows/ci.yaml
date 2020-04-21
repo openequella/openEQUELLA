@@ -139,7 +139,7 @@ jobs:
           - 5432:5432
 
     env:
-      AUTOTEST_CONFIG: autotest/travis.conf
+      AUTOTEST_CONFIG: autotest/github-actions.conf
 
     steps:
       - name: Install OS dependencies
