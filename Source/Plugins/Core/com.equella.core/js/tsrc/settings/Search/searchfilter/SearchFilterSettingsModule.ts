@@ -12,22 +12,22 @@ export interface MimeTypeFilter {
    */
   id?: string;
   /**
-   * The name of a MIME type filter
+   * The name of a MIME type filter.
    */
   name: string;
   /**
-   * A list of MIME types belonging to a MIME type filter
+   * A list of MIME types belonging to a MIME type filter.
    */
   mimeTypes: string[];
 }
 
 export interface MimeTypeEntry {
   /**
-   * The name of a Mime type
+   * The name of a Mime type.
    */
   mimeType: string;
   /**
-   * The description of a Mime type
+   * The description of a Mime type.
    */
   desc: string;
 }
@@ -64,7 +64,7 @@ export const vaidateMimeTypeName = (name: string | undefined): boolean =>
   !!name?.trim();
 
 /**
- * Return a function which does reference comparison for two filters
+ * Return a function which does reference comparison for two filters.
  */
 export const filterComparator = (targetFilter: MimeTypeFilter) => {
   return (filter: MimeTypeFilter) => filter === targetFilter;

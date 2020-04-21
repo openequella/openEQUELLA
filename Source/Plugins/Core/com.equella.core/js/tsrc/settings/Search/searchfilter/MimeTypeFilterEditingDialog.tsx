@@ -29,22 +29,22 @@ interface MimeTypeFilterEditingDialogProps {
    */
   onClose: () => void;
   /**
-   * Fired when clicking the ADD or OK button
+   * Fired when clicking the ADD or OK button.
    * @param filter The filter that has been added or edited
    */
   addOrUpdate: (filter: MimeTypeFilter) => void;
   /**
-   * The filter to be edited, or undefined if the action is to add a new filter
+   * The filter to be edited, or undefined if the action is to add a new filter.
    */
   mimeTypeFilter?: MimeTypeFilter;
   /**
-   * Error handling
+   * Error handling.
    */
   handleError: (error: Error) => void;
 }
 
 /**
- * Component for showing a dialog where users can add/edit a MIME type filter
+ * Component that shows a dialog where users can add/edit a MIME type filter.
  */
 const MimeTypeFilterEditingDialog = ({
   open,
@@ -57,9 +57,9 @@ const MimeTypeFilterEditingDialog = ({
     languageStrings.settings.searching.searchfiltersettings;
 
   const [mimeTypeEntries, setMimeTypeEntries] = useState<MimeTypeEntry[]>([]);
-  // Used to store the name of a MIME type filter
+  // Used to store the name of a MIME type filter.
   const [filterName, setFilterName] = useState<string>("");
-  // Used to store the MIME types of a MIME type filter
+  // Used to store the MIME types of a MIME type filter.
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>([]);
 
   const isNameValid = vaidateMimeTypeName(filterName);
@@ -71,7 +71,7 @@ const MimeTypeFilterEditingDialog = ({
   }, []);
 
   /**
-   * Clean up previously edited filter, depending on 'onClose'
+   * Clean up previously edited filter, depending on 'onClose'.
    */
   useEffect(() => {
     setFilterName(mimeTypeFilter ? mimeTypeFilter.name : "");

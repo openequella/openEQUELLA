@@ -14,9 +14,9 @@ import {
   ListItemText,
   ListSubheader,
   IconButton,
-  List
+  List,
+  makeStyles
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -77,30 +77,30 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
 
-  // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter
+  // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter.
   const [searchSettings, setSearchSettings] = useState<SearchSettings>(
     defaultSearchSettings
   );
 
-  // Used to record the initial Search settings and compare if values are changed or not when saving
+  // Used to record the initial Search settings and compare if values are changed or not when saving.
   const [initialSearchSettings, setInitialSearchSettings] = useState<
     SearchSettings
   >(defaultSearchSettings);
 
-  // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted
+  // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted.
   const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
 
-  // changedMimeTypeFilters contains filters to be added or edited on the Server
+  // changedMimeTypeFilters contains filters to be added or edited on the Server.
   const [changedMimeTypeFilters, setChangedMimeTypeFilters] = useState<
     MimeTypeFilter[]
   >([]);
 
-  // deletedMimeTypeFilters contains filters to be deleted from the Server
+  // deletedMimeTypeFilters contains filters to be deleted from the Server.
   const [deletedMimeTypeFilters, setDeletedMimeTypeFilters] = useState<
     MimeTypeFilter[]
   >([]);
 
-  // selectedMimeTypeFilter refers to the filter to be edited in the dialog
+  // selectedMimeTypeFilter refers to the filter to be edited in the dialog.
   const [selectedMimeTypeFilter, setSelectedMimeTypeFilter] = useState<
     MimeTypeFilter | undefined
   >();
@@ -119,9 +119,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchFilterStrings.name)(tp),
       backRoute: routes.Settings.to
     }));
-  }, []);
-
-  useEffect(() => {
     getSearchSettings();
     getMimeTypeFilters();
   }, []);
@@ -136,7 +133,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchSettings.searchingDisableDateModifiedFilter;
 
   /**
-   * Fetch the general Search Settings from the Server;
+   * Fetch the general Search Settings from the Server.
    * Set the initial values of the Owner filter and Date modified filter to state.
    */
   const getSearchSettings = () => {
@@ -149,7 +146,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Fetch MIME type filters from the Server and set them to state;
+   * Fetch MIME type filters from the Server and set them to state.
    * Clear the two collections of changed and deleted MIME type filters.
    */
   const getMimeTypeFilters = () => {
@@ -191,9 +188,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Visually delete a filter;
+   * Visually delete a filter.
    * Remove 'filter' from 'mimeTypeFilters' and 'changedMimeTypeFilters'.
-   * If the filter has an ID then add it to 'deletedMimeTypeFilters'
+   * If the filter has an ID then add it to 'deletedMimeTypeFilters'.
    */
   const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
     setMimeTypeFilters(
@@ -243,7 +240,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )
       .then(
         (): Promise<any> =>
-          // Filters stored in 'deletedMimeTypeFilters' always have an ID
+          // Filters stored in 'deletedMimeTypeFilters' always have an ID.
           deletedMimeTypeFilters.length
             ? batchDelete(deletedMimeTypeFilters.map(filter => filter.id!))
                 .then(messages => errorMessages.push(...messages))
@@ -259,7 +256,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setShowSnackBar(true);
         }
       })
-      .catch(() => {}) // Errors have been handled and subsequent promises have skipped
+      .catch(() => {}) // Errors have been handled and subsequent promises have skipped.
       .finally(() => {
         getMimeTypeFilters();
         getSearchSettings();
@@ -268,13 +265,13 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
-    // The reason for throwing an error again is to prevent subsequent REST calls
+    // The reason for throwing an error again is to prevent subsequent REST calls.
     throw new Error(error.message);
   };
 
   return (
     <>
-      {/* Owner filter and Date modified filter*/}
+      {/* Owner filter and Date modified filter */}
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
           <SettingsListControl

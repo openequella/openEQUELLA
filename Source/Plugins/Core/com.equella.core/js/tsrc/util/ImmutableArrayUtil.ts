@@ -1,5 +1,5 @@
 /**
- * Return a new array concatenating the provided array and new element
+ * Return a new array concatenating the provided array and new element.
  */
 export function addElement<T>(objects: Array<T>, element: T): Array<T> {
   return [...objects, element];
