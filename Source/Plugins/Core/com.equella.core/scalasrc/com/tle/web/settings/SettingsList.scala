@@ -182,7 +182,7 @@ object SettingsList {
     searchPrivProvider.isAuthorised
   )
 
-  val searchFilterSettings = CoreSettingsPage("searchpage",
+  val searchFilterSettings = CoreSettingsPage("searchfilter",
                                               Searching,
                                               "setting.searchfilter.title",
                                               "setting.searchfilter.desc",

@@ -275,6 +275,7 @@ export const languageStrings = {
       cancel: "Cancel",
       undo: "Undo",
       add: "Add",
+      edit: "Edit",
       ok: "OK",
       discard: "Discard",
       select: "Select",
@@ -384,6 +385,23 @@ export const languageStrings = {
         notFoundError: "Endpoint not found",
         notFoundErrorDesc: "Endpoint not found. Refresh to retry.",
         permissionsError: "You do not have permission to edit these settings."
+      },
+      searchfiltersettings: {
+        name: "Search filter settings",
+        changesaved: "Search filter changes saved successfully",
+        mimetypefiltertitle: "Attachment MIME type filters",
+        visibilityconfigtitle: "Filter visibility",
+        disableownerfilter: "Disable Owner filter",
+        disabledatemodifiedfilter: "Disable Date modified filter",
+        edit: "Edit MIME type filter",
+        add: "Create new MIME type filter",
+        delete: "delete MIME type filter",
+        save: "save Search filter configurations",
+        filternamelabel: "Name",
+        mimetypelistlabel: "MIME types *",
+        messagedialogtitle: "Search filter setting results",
+        messagedialogsubtitle:
+          "Some changes are not saved due to reasons listed below"
       },
       contentIndexSettings: {
         name: "Content indexing",

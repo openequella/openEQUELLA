@@ -48,8 +48,12 @@ class SearchSettingsResource {
     value = "Update Search settings",
     notes = "This endpoint is used to update general search settings excluding search filters."
   )
-  def updateSearchSettings(settings: SearchSettings): Unit = {
+  def updateSearchSettings(newSettings: SearchSettings): Unit = {
     LegacyGuice.searchPrivProvider.checkAuthorised()
-    updateSettings(settings)
+
+    // The updated settings only include all general settings, so manually add search filters
+    val oldSettings = loadSettings(new SearchSettings)
+    newSettings.getFilters.addAll(oldSettings.getFilters)
+    updateSettings(newSettings)
   }
 }

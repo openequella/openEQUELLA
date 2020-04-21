@@ -19,7 +19,7 @@ interface SettingsListControlProps {
   /**
    * Text to appear on the bottom line(s) of the row.
    */
-  secondaryText: string;
+  secondaryText?: string;
   /**
    * The controllable component to be rendered on the right hand side of the row.
    */
