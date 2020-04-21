@@ -11,10 +11,10 @@ export function addElement<T>(objects: Array<T>, element: T): Array<T> {
  */
 export function replaceElement<T>(
   objects: Array<T>,
-  element: T,
+  comparator: (element: T) => void,
   replaceElement: T
 ): Array<T> {
-  const index = objects.indexOf(element);
+  const index = objects.findIndex(comparator);
   if (index < 0) {
     return addElement(objects, replaceElement);
   }
@@ -29,10 +29,10 @@ export function replaceElement<T>(
  */
 export function deleteElement<T>(
   objects: Array<T>,
-  element: T,
+  comparator: (element: T) => void,
   deleteCount: number
 ): Array<T> {
-  const index = objects.indexOf(element);
+  const index = objects.findIndex(comparator);
   if (index < 0) {
     return objects;
   }

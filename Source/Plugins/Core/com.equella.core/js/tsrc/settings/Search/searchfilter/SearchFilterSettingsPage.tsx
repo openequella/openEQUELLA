@@ -36,6 +36,7 @@ import MessageInfo from "../../../components/MessageInfo";
 import {
   batchDelete,
   batchUpdateOrAdd,
+  filterComparator,
   getMimeTypeFiltersFromServer,
   MimeTypeFilter
 } from "./SearchFilterSettingsModule";
@@ -173,10 +174,18 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       setChangedMimeTypeFilters(addElement(changedMimeTypeFilters, filter));
     } else {
       setMimeTypeFilters(
-        replaceElement(mimeTypeFilters, selectedMimeTypeFilter, filter)
+        replaceElement(
+          mimeTypeFilters,
+          filterComparator(selectedMimeTypeFilter),
+          filter
+        )
       );
       setChangedMimeTypeFilters(
-        replaceElement(changedMimeTypeFilters, selectedMimeTypeFilter, filter)
+        replaceElement(
+          changedMimeTypeFilters,
+          filterComparator(selectedMimeTypeFilter),
+          filter
+        )
       );
     }
   };
@@ -187,8 +196,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * If the filter has an ID then add it to 'deletedMimeTypeFilters'
    */
   const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
-    setMimeTypeFilters(deleteElement(mimeTypeFilters, filter, 1));
-    setChangedMimeTypeFilters(deleteElement(changedMimeTypeFilters, filter, 1));
+    setMimeTypeFilters(
+      deleteElement(mimeTypeFilters, filterComparator(filter), 1)
+    );
+    setChangedMimeTypeFilters(
+      deleteElement(changedMimeTypeFilters, filterComparator(filter), 1)
+    );
 
     // Only put filters that already have an id into deletedMimeTypeFilters
     if (filter.id) {

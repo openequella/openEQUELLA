@@ -62,3 +62,10 @@ export const getMimeTypeDetail = (entry: MimeTypeEntry) => {
 
 export const vaidateMimeTypeName = (name: string | undefined): boolean =>
   !!name?.trim();
+
+/**
+ * Return a function which does reference comparison for two filters
+ */
+export const filterComparator = (targetFilter: MimeTypeFilter) => {
+  return (filter: MimeTypeFilter) => filter === targetFilter;
+};

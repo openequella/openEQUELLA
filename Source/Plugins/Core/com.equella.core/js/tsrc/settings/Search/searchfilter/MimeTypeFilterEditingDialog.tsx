@@ -89,7 +89,13 @@ const MimeTypeFilterEditingDialog = ({
       if (checked && selectedMimeTypes.indexOf(mimeType) < 0) {
         setSelectedMimeTypes(addElement(selectedMimeTypes, mimeType));
       } else if (!checked && selectedMimeTypes.indexOf(mimeType) > -1) {
-        setSelectedMimeTypes(deleteElement(selectedMimeTypes, mimeType, 1));
+        setSelectedMimeTypes(
+          deleteElement(
+            selectedMimeTypes,
+            (type: string) => type === mimeType,
+            1
+          )
+        );
       }
     },
     [selectedMimeTypes]
