@@ -140,6 +140,7 @@ jobs:
 
     env:
       AUTOTEST_CONFIG: autotest/github-actions.conf
+      EQ_EXIFTOOL_PATH: /usr/bin/exiftool
 
     steps:
       - name: Install OS dependencies
