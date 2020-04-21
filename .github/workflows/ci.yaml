@@ -186,7 +186,23 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             Tests/test dumpCoverage
 
-      - name: Run Scalacheck tests
+      - name: Run Scalacheck serial tests
         run: |
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             Tests/Serial/test dumpCoverage
+
+      - name: Run TestNG tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            OldTests/test dumpCoverage
+
+      - name: Generate coverage report
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            coverageReport
+
+      - name: Save Coverage Report
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: CoverageReport
+          path: autotest/target/coverage-report/
