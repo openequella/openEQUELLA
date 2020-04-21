@@ -1,5 +1,5 @@
 import * as React from "react";
-import { boolean, number, text } from "@storybook/addon-knobs";
+import { text } from "@storybook/addon-knobs";
 import SettingsListControl from "../../tsrc/components/SettingsListControl";
 import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
 import { Mark, Slider } from "@material-ui/core";
@@ -25,31 +25,22 @@ const marks: Mark[] = [
 export const ListWithTwoItems = () => (
   <SettingsList subHeading={text("Sub Heading", "Sub Heading")}>
     <SettingsListControl
-      secondaryText={text("Item 1 Secondary Text", "Box for checking")}
+      secondaryText={"Box for checking"}
       control={
         <SettingsToggleSwitch
-          disabled={boolean("Item 1 Disabled", false)}
+          setValue={action("Checkbox")}
+          disabled={false}
           id={"toggle"}
-          setValue={action("Item 1 Value of checkbox changed")}
-          value={boolean("Item 1 Toggle state", false)}
         />
       }
-      divider={boolean("Item 1 divider", true)}
-      primaryText={text("Item 1 primaryText", "Checkbox")}
+      divider={true}
+      primaryText={"Checkbox"}
     />
     <SettingsListControl
-      secondaryText={text("Item 2 Secondary Text", "Slide for sliding")}
-      control={
-        <Slider
-          marks={marks}
-          onChangeCommitted={action("Item 2 Value of slider changed")}
-          min={number("Item 2 min", 0)}
-          max={number("Item 2 max", 7)}
-          step={null}
-        />
-      }
-      divider={boolean("Item 2 divider", false)}
-      primaryText={text("Item 2 primaryText", "SliderControl")}
+      secondaryText={"Slide for sliding"}
+      control={<Slider marks={marks} min={0} max={7} step={null} />}
+      divider={false}
+      primaryText={"SliderControl"}
     />
   </SettingsList>
 );

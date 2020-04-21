@@ -3,7 +3,7 @@ import { Switch } from "@material-ui/core";
 import * as React from "react";
 
 export interface SettingsToggleSwitchProps {
-  value: boolean;
+  value?: boolean;
   setValue: (value: boolean) => void;
   disabled?: boolean;
   label?: string;
