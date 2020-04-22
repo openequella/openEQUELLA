@@ -2,7 +2,7 @@ import {
   formatSize,
   Sizes,
   prepLangStrings,
-  initStrings
+  initStrings,
 } from "../../../tsrc/util/langstrings";
 
 describe("langstrings", () => {
@@ -10,7 +10,7 @@ describe("langstrings", () => {
     const strings: Sizes = {
       zero: "zero",
       one: "one",
-      more: "more"
+      more: "more",
     };
 
     it("should format zero", () => {
@@ -33,23 +33,23 @@ describe("langstrings", () => {
   describe("prepLangStrings", () => {
     it("should handle undefined bundle", () => {
       expect(prepLangStrings("example", { string: "test" })).toEqual({
-        string: "test"
+        string: "test",
       });
     });
 
     it("should handle bundle", () => {
       Object.defineProperty(global, "bundle", {
         value: { testPrefix: "example" },
-        writable: true
+        writable: true,
       });
 
       expect(prepLangStrings("testPrefix", { string: "test" })).toEqual({
-        string: "test"
+        string: "test",
       });
 
       Object.defineProperty(global, "bundle", {
         value: undefined,
-        writable: true
+        writable: true,
       });
     });
 

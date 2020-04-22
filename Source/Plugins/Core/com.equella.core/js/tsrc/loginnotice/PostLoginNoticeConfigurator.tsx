@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogContentText,
   Grid,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 import {
@@ -12,7 +12,7 @@ import {
   getPostLoginNotice,
   NotificationType,
   submitPostLoginNotice,
-  strings
+  strings,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
@@ -41,7 +41,7 @@ class PostLoginNoticeConfigurator extends React.Component<
     this.state = {
       postNotice: "",
       dbPostNotice: "",
-      clearStaged: false
+      clearStaged: false,
     };
   }
 
@@ -89,7 +89,7 @@ class PostLoginNoticeConfigurator extends React.Component<
       .then((response: AxiosResponse) => {
         this.setState({
           dbPostNotice: response.data,
-          postNotice: response.data
+          postNotice: response.data,
         });
       })
       .catch((error: AxiosError) => {
@@ -144,7 +144,7 @@ class PostLoginNoticeConfigurator extends React.Component<
               fullWidth
               inputProps={{ length: 12 }}
               placeholder={strings.postlogin.description}
-              onChange={e => this.handlePostTextFieldChange(e.target)}
+              onChange={(e) => this.handlePostTextFieldChange(e.target)}
               value={postNotice}
             />
           </Grid>

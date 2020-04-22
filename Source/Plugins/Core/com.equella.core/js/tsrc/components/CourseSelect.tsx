@@ -4,7 +4,7 @@ import {
   withStyles,
   Theme,
   createStyles,
-  WithStyles
+  WithStyles,
 } from "@material-ui/core/styles";
 import { Course, PagingResults } from "../api";
 import { TextField, MenuItem, Paper } from "@material-ui/core";
@@ -14,24 +14,24 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 const styles = (theme: Theme) =>
   createStyles({
     container: {
-      position: "relative"
+      position: "relative",
     },
     paper: {
       position: "absolute",
       zIndex: 1,
       marginTop: theme.spacing(1),
       left: 0,
-      right: 0
+      right: 0,
     },
     chip: {
-      margin: `${theme.spacing(0.5)}px ${theme.spacing(0.25)}px`
+      margin: `${theme.spacing(0.5)}px ${theme.spacing(0.25)}px`,
     },
     inputRoot: {
-      flexWrap: "wrap"
+      flexWrap: "wrap",
     },
     divider: {
-      height: theme.spacing(2)
-    }
+      height: theme.spacing(2),
+    },
   });
 
 interface CourseItemProps {
@@ -109,7 +109,7 @@ class CourseSelect extends React.Component<
     super(props);
     this.state = {
       suggestions: [],
-      inputValue: props.course ? props.course.name : ""
+      inputValue: props.course ? props.course.name : "",
     };
   }
 
@@ -139,7 +139,7 @@ class CourseSelect extends React.Component<
           highlightedIndex,
           inputValue,
           isOpen,
-          selectedItem
+          selectedItem,
         }) => (
           <div className={classes.container}>
             <TextField
@@ -148,7 +148,7 @@ class CourseSelect extends React.Component<
               placeholder={"Search on name and code..."}
               InputProps={...getInputProps({
                 onChange: this.handleInputChange,
-                onFocus: e => e.target.select()
+                onFocus: (e) => e.target.select(),
               })}
             />
             {isOpen && inputValue ? (

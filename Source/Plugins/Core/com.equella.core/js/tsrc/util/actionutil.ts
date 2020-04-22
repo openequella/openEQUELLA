@@ -22,7 +22,7 @@ export function wrapAsyncWorker<TParameters, TSuccess, TError>(
   ): Promise<TSuccess> {
     dispatch(asyncAction.started(params));
     return worker(params).then(
-      result => {
+      (result) => {
         dispatch(asyncAction.done({ params, result }));
         return result;
       },

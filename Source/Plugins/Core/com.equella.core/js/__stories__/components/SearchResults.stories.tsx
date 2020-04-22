@@ -5,7 +5,7 @@ import SearchResult from "../../tsrc/components/SearchResult";
 
 export default {
   title: "SearchResult",
-  component: SearchResult
+  component: SearchResult,
 };
 
 export const PrimaryTextOnly = () => (

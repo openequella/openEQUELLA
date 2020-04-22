@@ -9,7 +9,7 @@ import {
   ItemCommandResponse,
   Attachment,
   FileEntries,
-  ControlValidator
+  ControlValidator,
 } from "oeq-cloudproviders/controls";
 
 const wgxpath = require("wicked-good-xpath");
@@ -100,7 +100,7 @@ async function getState(wizid: string): Promise<VersionedItemState> {
   const res = await Axios.get<ItemStateJSON>(wizardUri("state"));
   const nextState = {
     ...res.data,
-    xml: parser.parseFromString(res.data.xml, "text/xml")
+    xml: parser.parseFromString(res.data.xml, "text/xml"),
   };
   return runListeners(nextState);
 }
@@ -114,13 +114,10 @@ async function putEdits(itemEdit: ItemEdit): Promise<ItemCommandResponses> {
 }
 
 function encodeFilepath(filepath: string): string {
-  return filepath
-    .split("/")
-    .map(encodeURIComponent)
-    .join("/");
+  return filepath.split("/").map(encodeURIComponent).join("/");
 }
 
-const observer = new MutationObserver(function() {
+const observer = new MutationObserver(function () {
   const liveElements = document.evaluate(
     "id('wizard-controls')//div[@data-clientupdate = 'true']",
     document,
@@ -132,7 +129,7 @@ const observer = new MutationObserver(function() {
   for (let i = 0; i < liveElements.snapshotLength; i++) {
     res.push(liveElements.snapshotItem(i) as Element);
   }
-  activeElements = activeElements.filter(e => {
+  activeElements = activeElements.filter((e) => {
     if (res.indexOf(e.element) == -1) {
       e.removed.unmount(e.element);
       return false;
@@ -142,7 +139,7 @@ const observer = new MutationObserver(function() {
 });
 observer.observe(document, {
   childList: true,
-  subtree: true
+  subtree: true,
 });
 
 let allValid = true;
@@ -153,21 +150,21 @@ $(window).bind("presubmit", () => {
   allValid = true;
   $("#cloudState").remove();
   $('<div id="cloudState"/>').appendTo("._hiddenstate");
-  let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
+  let editXmlFunc: (doc: XMLDocument) => XMLDocument = (x) => x;
   let xmlEdited = false;
   controlValidators.forEach(({ validator, ctrlId }) => {
     const valid = validator(
       (edit: (doc: XMLDocument) => XMLDocument) => {
         const oldXmlFunc = editXmlFunc;
-        editXmlFunc = d => edit(oldXmlFunc(d));
+        editXmlFunc = (d) => edit(oldXmlFunc(d));
         xmlEdited = true;
       },
-      required => {
+      (required) => {
         $("<input>")
           .attr({
             type: "hidden",
             name: `${ctrlId}_required`,
-            value: required.toString()
+            value: required.toString(),
           })
           .appendTo("#cloudState");
       }
@@ -180,7 +177,7 @@ $(window).bind("presubmit", () => {
     $("<input>")
       .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
       .appendTo("#cloudState");
-    currentState = currentState.then(state =>
+    currentState = currentState.then((state) =>
       runListeners({ ...state, xml: latestXml })
     );
   }
@@ -188,12 +185,12 @@ $(window).bind("presubmit", () => {
 
 function runListeners(state: VersionedItemState): VersionedItemState {
   latestXml = state.xml;
-  listeners.forEach(f => f(state));
+  listeners.forEach((f) => f(state));
   return state;
 }
 
 export const CloudControl: CloudControlRegisterImpl = {
-  register: function<T extends object>(
+  register: function <T extends object>(
     vendorId: string,
     controlType: string,
     mount: (params: ControlApi<T>) => void,
@@ -232,7 +229,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       newXml = transformState(newXml);
       xml = serializer.serializeToString(newXml);
     }
-    commandQueue.forEach(j => {
+    commandQueue.forEach((j) => {
       edits = edits.concat(j.commands);
       currentPromises.push(j);
     });
@@ -244,22 +241,24 @@ export const CloudControl: CloudControlRegisterImpl = {
     try {
       const responses = await putEdits({ xml, edits });
       let att = state.attachments;
-      const updateAttachments = function(change: ItemCommandResponse) {
+      const updateAttachments = function (change: ItemCommandResponse) {
         switch (change.type) {
           case "added":
             att.push(change.attachment);
             break;
           case "deleted":
-            att = att.filter(at => at.uuid != change.uuid);
+            att = att.filter((at) => at.uuid != change.uuid);
             break;
           case "edited":
-            const ind = att.findIndex(at => at.uuid == change.attachment.uuid);
+            const ind = att.findIndex(
+              (at) => at.uuid == change.attachment.uuid
+            );
             att[ind] = change.attachment;
             break;
         }
       };
 
-      currentPromises.forEach(f => {
+      currentPromises.forEach((f) => {
         const editResponses = responses.results.splice(0, f.commands.length);
         editResponses.forEach(updateAttachments);
         f.resolved(editResponses);
@@ -270,10 +269,10 @@ export const CloudControl: CloudControlRegisterImpl = {
         files: state.files,
         attachments: att,
         xml: newXml,
-        stateVersion: state.stateVersion
+        stateVersion: state.stateVersion,
       });
     } catch (err) {
-      currentPromises.forEach(p => p.rejected(err));
+      currentPromises.forEach((p) => p.rejected(err));
       return state;
     }
   },
@@ -293,13 +292,13 @@ export const CloudControl: CloudControlRegisterImpl = {
       if (transformState == null) transformState = edit;
       else {
         const oldf = transformState;
-        transformState = x => edit(oldf(x));
+        transformState = (x) => edit(oldf(x));
       }
       currentState = currentState.then(CloudControl.sendBatch);
     }
 
     function edits(edits: Array<ItemCommand>) {
-      return new Promise<ItemCommandResponse[]>(function(resolved, rejected) {
+      return new Promise<ItemCommandResponse[]>(function (resolved, rejected) {
         commandQueue.push({ commands: edits, resolved, rejected });
         currentState = currentState.then(CloudControl.sendBatch);
       });
@@ -310,7 +309,7 @@ export const CloudControl: CloudControlRegisterImpl = {
     function unsubscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.splice(listeners.indexOf(callback));
     }
-    return function<T extends object>(params: ControlParameters<T>) {
+    return function <T extends object>(params: ControlParameters<T>) {
       function stagingPath(name: string): string {
         return (
           "api/staging/" +
@@ -341,7 +340,7 @@ export const CloudControl: CloudControlRegisterImpl = {
         missingControl;
       activeElements.push({
         element: params.element,
-        removed: registration
+        removed: registration,
       });
       function providerUrl(serviceId: string) {
         return wizardUri(
@@ -357,11 +356,11 @@ export const CloudControl: CloudControlRegisterImpl = {
       }
       function deregisterValidator(validator: ControlValidator) {
         controlValidators.splice(
-          controlValidators.findIndex(v => v.validator === validator)
+          controlValidators.findIndex((v) => v.validator === validator)
         );
       }
 
-      currentState.then(state => {
+      currentState.then((state) => {
         const api = {
           ...state,
           ...params,
@@ -377,21 +376,21 @@ export const CloudControl: CloudControlRegisterImpl = {
           userId: wizardIds.userId,
           registerValidator,
           deregisterValidator,
-          apiVersion: { major: 1, minor: 0, patch: 0 }
+          apiVersion: { major: 1, minor: 0, patch: 0 },
         };
         registration.mount(api);
       });
     };
-  }
+  },
 };
 
 const missingControl: Registration = {
-  mount: params => {
+  mount: (params) => {
     const errText = $(
       `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${params.vendorId}_${params.controlType}"</p></div>`
     );
     $(params.element).append(errText);
     console.error("Parameters for failed cloud control", params);
   },
-  unmount: _ => {}
+  unmount: (_) => {},
 };

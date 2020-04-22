@@ -17,7 +17,7 @@ export const generateNewErrorID = (
     id: v4(),
     error_description: description,
     code,
-    error
+    error,
   };
 };
 
@@ -25,7 +25,7 @@ export const generateFromError = (error: Error): ErrorResponse => {
   return {
     id: v4(),
     error: error.name,
-    error_description: error.message
+    error_description: error.message,
   };
 };
 
@@ -35,7 +35,7 @@ export function fromAxiosResponse(
   if (typeof response.data == "object") {
     return { ...response.data, id: v4() };
   } else {
-    const [error, error_description] = (function() {
+    const [error, error_description] = (function () {
       switch (response.status) {
         case 404:
           return ["Not Found", ""];
@@ -47,7 +47,7 @@ export function fromAxiosResponse(
       id: v4(),
       error,
       error_description,
-      code: response.status
+      code: response.status,
     };
   }
 }

@@ -1,3 +1,3 @@
-exports.polyfill = function() {
+exports.polyfill = function () {
   require("sprintf-js");
 };

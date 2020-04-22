@@ -15,7 +15,7 @@ interface SchemaExtWorkers {
 }
 
 const actions: SchemaExtActions = {
-  citations: actionCreator.async<{}, string[], void>("LOAD_CITATIONS")
+  citations: actionCreator.async<{}, string[], void>("LOAD_CITATIONS"),
 };
 
 const workers: SchemaExtWorkers = {
@@ -24,9 +24,9 @@ const workers: SchemaExtWorkers = {
     (params): Promise<string[]> => {
       return axios
         .get<string[]>(`${Config.baseUrl}api/schema/citation`)
-        .then(res => res.data);
+        .then((res) => res.data);
     }
-  )
+  ),
 };
 
 const schemaService = extendedEntityService<
@@ -35,7 +35,7 @@ const schemaService = extendedEntityService<
   SchemaExtWorkers
 >("SCHEMA", actions, workers);
 schemaService.reducer
-  .case(actions.citations.started, state => {
+  .case(actions.citations.started, (state) => {
     return state;
   })
   .case(actions.citations.done, (state, success) => {

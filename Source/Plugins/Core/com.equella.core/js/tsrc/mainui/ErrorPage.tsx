@@ -2,12 +2,12 @@ import * as React from "react";
 import { ErrorResponse } from "../api/errors";
 import { CardContent, Card, makeStyles, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(t => ({
+const useStyles = makeStyles((t) => ({
   errorPage: {
     display: "flex",
     justifyContent: "center",
-    marginTop: t.spacing(8)
-  }
+    marginTop: t.spacing(8),
+  },
 }));
 
 interface ErrorPageProps {
@@ -15,7 +15,7 @@ interface ErrorPageProps {
 }
 
 export default React.memo(function ErrorPage({
-  error: { code, error, error_description }
+  error: { code, error, error_description },
 }: ErrorPageProps) {
   const classes = useStyles();
   return (

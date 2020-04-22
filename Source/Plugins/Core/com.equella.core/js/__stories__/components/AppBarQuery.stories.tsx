@@ -4,7 +4,7 @@ import AppBarQuery from "../../tsrc/components/AppBarQuery";
 
 export default {
   title: "AppBarQuery",
-  component: AppBarQuery
+  component: AppBarQuery,
 };
 
 export const QueryText = () => (
