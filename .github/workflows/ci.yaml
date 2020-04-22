@@ -8,7 +8,7 @@ on:
       - release/**
       - stable-*
     tags:
-      - *
+      - '**'
   pull_request:
     branches:
       - master
