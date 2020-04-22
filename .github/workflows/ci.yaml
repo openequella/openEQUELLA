@@ -69,6 +69,12 @@ jobs:
         run: |
           npm ci
 
+      - name: Install node dependencies (IntegTester)
+        shell: bash -l -eo pipefail {0}
+        working-directory: autotest/IntegTester/ps
+        run: |
+          npm ci
+
       - name: Install node dependencies (root)
         shell: bash -l -eo pipefail {0}
         run: |
