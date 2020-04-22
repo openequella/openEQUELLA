@@ -1,0 +1,259 @@
+name: openEQUELLA CI
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - release/**
+      - stable-*
+    tags:
+      - '**'
+  pull_request:
+    branches:
+      - master
+      - develop
+      - release/**
+      - stable-*
+
+jobs:
+  build_and_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: NPM Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: SBT Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-sbt-
+
+      - name: Ivy Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-ivy-
+
+      - name: Set up NVM
+        shell: bash -l {0}
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          echo "source $NVM_DIR/nvm.sh" >> "$HOME/.bash_profile"
+
+      - name: Install NodeJS
+        shell: bash -l {0}
+        run: |
+          nvm install
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Install node dependencies (core)
+        shell: bash -l -eo pipefail {0}
+        working-directory: Source/Plugins/Core/com.equella.core/js 
+        run: |
+          npm ci
+
+      - name: Install node dependencies (IntegTester)
+        shell: bash -l -eo pipefail {0}
+        working-directory: autotest/IntegTester/ps
+        run: |
+          npm ci
+
+      - name: Install node dependencies (root)
+        shell: bash -l -eo pipefail {0}
+        run: |
+          npm ci
+
+      - name: Run checks
+        shell: bash -l -eo pipefail {0}
+        run: |
+          npm run check
+          ./sbt headerCheck checkJavaCodeStyle
+
+      - name: Run unit tests (java/scala)
+        shell: bash -l -eo pipefail {0}
+        run: |
+          ./sbt test
+
+      - name: Run unit tests (javascript)
+        shell: bash -l -eo pipefail {0}
+        working-directory: Source/Plugins/Core/com.equella.core/js 
+        run: |
+          npm cit
+
+      - name: Build primary artefacts
+        shell: bash -l -eo pipefail {0}
+        run: |
+          ./sbt installerZip writeLanguagePack writeScriptingJavadoc
+
+      - name: Package artefacts
+        # We use --transform below to strip out the path for the files in the tar file
+        run: |
+          tar cvf artefacts.tar --transform='s/.\+\///' \
+            Installer/target/equella-installer*.zip \
+            Source/Server/equellaserver/target/tle-upgrade*.zip \
+            target/*.zip
+
+      - name: Save primary artefacts
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Artefacts
+          path: artefacts.tar
+
+  build_import_export_tool:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build
+        working-directory: import-export-tool
+        run: |
+          ./gradlew build
+
+      - name: Save primary artefacts
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: ImportExportTools
+          path: import-export-tool/build/libs/
+
+  functional_testing:
+    needs: build_and_check
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        newui: [true, false]
+
+    services:
+      postgres:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: equellatests
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    env:
+      AUTOTEST_CONFIG: autotest/github-actions.conf
+      EQ_EXIFTOOL_PATH: /usr/bin/exiftool
+      OLD_TEST_NEWUI: ${{ matrix.newui }}
+
+    steps:
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            chromium-browser \
+            chromium-chromedriver \
+            ffmpeg \
+            libimage-exiftool-perl
+          # Setup ffmpeg to act like libav-tools
+          sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
+          sudo ln -s /usr/bin/ffplay /usr/bin/avplay
+          sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: actions/checkout@v2
+
+      - name: Download installer
+        uses: actions/download-artifact@v1
+        with:
+          name: Artefacts
+ 
+      - name: Extract installer from build
+        env:
+          DOWNLOAD_DIR: Artefacts
+          INSTALLER_DIR: Installer/target
+        run: |
+          tar --directory $DOWNLOAD_DIR -xvf $DOWNLOAD_DIR/artefacts.tar
+          mkdir -p $INSTALLER_DIR
+          mv -v $DOWNLOAD_DIR/equella-installer*.zip $INSTALLER_DIR
+
+      - name: Setup for tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            installEquella startEquella configureInstall setupForTests
+
+      - name: Run Scalacheck tests
+        # We only need to run these once, so we focus on the New UI
+        if: matrix.newui
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            Tests/test Tests/Serial/test dumpCoverage
+
+      - name: Save Scalacheck results
+        if: matrix.newui && failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: ScalacheckReports
+          path: autotest/Tests/target/test-reports
+
+      - name: Run TestNG tests
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            OldTests/test dumpCoverage
+
+      - name: Save TestNG Reports
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: TestNGReports-new-${{ matrix.newui }}
+          path: autotest/OldTests/target/testng
+
+      - name: Save oEQ Logs
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: oEQLogs-new-${{ matrix.newui }}
+          path: autotest/equella-install/logs
+
+      - name: Save Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Screenshots-new-${{ matrix.newui }}
+          path: autotest/Tests/target/test-reports/screenshots
+
+      - name: Generate coverage report
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            coverageReport
+
+      - name: Save Coverage Report
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: CoverageReport-newui-${{ matrix.newui }}
+          path: autotest/target/coverage-report/

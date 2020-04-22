@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
-import { createRegistration, UpdateRegistration } from "./registration";
+import { createRegistration } from "./registration";
 import { theme, useStyles } from "./theme";
 
 interface QueryProps {
@@ -157,7 +157,7 @@ ReactDOM.render(
   <React.Fragment>
     <CssBaseline />
     <ThemeProvider theme={theme}>
-      <CloudProvider query={parse(location.search)} />
+      <CloudProvider query={parse(window.location.search)} />
     </ThemeProvider>
   </React.Fragment>,
   document.getElementById("app")

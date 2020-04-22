@@ -120,8 +120,8 @@ class CourseSelect extends React.Component<
     this.setState({ inputValue: courseToString(selectedItem) });
     this.props.onCourseSelect(selectedItem);
   };
-  handleInputChange = (event: any) => {
-    const inputValue = event.target.value;
+  handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const inputValue = event.currentTarget.value;
     this.setState({ inputValue });
     this.props.onCourseSelect(null);
   };

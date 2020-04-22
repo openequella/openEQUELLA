@@ -1,6 +1,7 @@
 import axios, { AxiosPromise } from "axios";
 import { Config } from "../config";
 import { languageStrings } from "../util/langstrings";
+import { BlobInfo } from "../components/RichTextEditor";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
@@ -60,7 +61,7 @@ export function unMarshallPreLoginNotice(
   };
 }
 
-export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
+export function uploadPreLoginNoticeImage(file: BlobInfo): AxiosPromise {
   const imageBlob: Blob = file.blob();
   const name: string = encodeURIComponent(file.filename());
   return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL + name, imageBlob, {
