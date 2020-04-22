@@ -30,7 +30,7 @@ export default React.memo(function JQueryDiv(props: JQueryDivProps) {
         if (e) {
           divElem.current = e;
           $(e).html(props.html);
-          if (props.script) (window as any).eval(props.script);
+          if (props.script) window.eval(props.script);
           if (props.afterHtml) props.afterHtml();
         }
       }}
