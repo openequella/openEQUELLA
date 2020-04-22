@@ -1,6 +1,7 @@
 # openEQUELLA
 
 [![Travis build](https://travis-ci.com/openequella/openEQUELLA.svg?branch=develop)](https://travis-ci.com/openequella/openEQUELLA)
+[![openEQUELLA CI](https://github.com/openequella/openEQUELLA/workflows/openEQUELLA%20CI/badge.svg?branch=develop)](https://github.com/openequella/openEQUELLA/actions?query=workflow%3A%22openEQUELLA+CI%22+branch%3Adevelop)
 
 openEQUELLA is a digital repository that provides a single platform to house your teaching and
 learning, research, media, and library content.
