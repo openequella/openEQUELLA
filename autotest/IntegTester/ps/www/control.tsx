@@ -60,9 +60,9 @@ function TestControl(p: ControlApi<MyConfig>) {
   const [queryString, setQueryString] = React.useState(
     "param1=single&param2=more&param2=than&param2=two"
   );
-  const [serviceResponse, setServiceResponse] = React.useState(null as
-    | null
-    | any);
+  const [serviceResponse, setServiceResponse] = React.useState<
+    string | JSON | null
+  >(null);
   const [postRequest, setPostRequest] = React.useState(true);
   const [indexText, setIndexText] = React.useState("");
   const [indexFiles, setIndexFiles] = React.useState<string[]>([]);
