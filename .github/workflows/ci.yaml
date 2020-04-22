@@ -188,14 +188,18 @@ jobs:
             installEquella startEquella configureInstall setupForTests
 
       - name: Run Scalacheck tests
+        # We only need to run these once, so we focus on the New UI
+        if: matrix.newui
         run: |
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-            Tests/test dumpCoverage
+            Tests/test Tests/Serial/test dumpCoverage
 
-      - name: Run Scalacheck serial tests
-        run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-            Tests/Serial/test dumpCoverage
+      - name: Save Scalacheck results
+        if: matrix.newui && failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: ScalacheckReports
+          path: autotest/Tests/target/test-reports
 
       - name: Run TestNG tests
         run: |
