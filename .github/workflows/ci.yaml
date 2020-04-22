@@ -122,6 +122,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        newui: [true, false]
+
     services:
       postgres:
         image: postgres:9.6
@@ -141,6 +145,7 @@ jobs:
     env:
       AUTOTEST_CONFIG: autotest/github-actions.conf
       EQ_EXIFTOOL_PATH: /usr/bin/exiftool
+      OLD_TEST_NEWUI: ${{ matrix.newui }}
 
     steps:
       - name: Install OS dependencies
@@ -205,5 +210,5 @@ jobs:
       - name: Save Coverage Report
         uses: actions/upload-artifact@v2-preview
         with:
-          name: CoverageReport
+          name: CoverageReport-newui-${{ matrix.newui }}
           path: autotest/target/coverage-report/
