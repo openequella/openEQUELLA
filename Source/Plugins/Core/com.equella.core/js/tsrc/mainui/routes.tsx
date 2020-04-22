@@ -36,47 +36,47 @@ export const routes = {
   NewCourse: { path: "/page/course/new", exact: true, component: EditCourse },
   EditCourse: {
     path: "/page/course/:uuid",
-    to: function(uuid: string) {
+    to: function (uuid: string) {
       return "/page/course/" + uuid;
     },
     render: (p: OEQRouteComponentProps<any>) => (
       <EditCourse {...p} uuid={p.match.params.uuid} />
-    )
+    ),
   },
   Settings: {
     path: "(/access/settings.do|/page/settings)",
     to: "/page/settings",
-    render: (p: OEQRouteComponentProps<any>) => <bridge.SettingsPage {...p} />
+    render: (p: OEQRouteComponentProps<any>) => <bridge.SettingsPage {...p} />,
   },
   Search: {
     path: "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <bridge.SearchPage {...p} />
+    render: (p: OEQRouteComponentProps<any>) => <bridge.SearchPage {...p} />,
   },
   ViewItem: {
-    to: function(uuid: string, version: number) {
+    to: function (uuid: string, version: number) {
       return `/items/${uuid}/${version}/`;
-    }
+    },
   },
   ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   LoginNoticeConfig: {
     path: "/page/loginconfiguration",
-    component: LoginNoticeConfigPage
+    component: LoginNoticeConfigPage,
   },
   CloudProviders: {
     path: "/page/cloudprovider",
-    component: CloudProviderListPage
+    component: CloudProviderListPage,
   },
   Notifications: {
-    to: "/access/notifications.do"
+    to: "/access/notifications.do",
   },
   TaskList: {
-    to: "/access/tasklist.do"
+    to: "/access/tasklist.do",
   },
   Logout: {
     // lack of '/' is significant
-    to: "logon.do?logout=true"
+    to: "logon.do?logout=true",
   },
   UserPreferences: {
-    to: "/access/user.do"
-  }
+    to: "/access/user.do",
+  },
 };

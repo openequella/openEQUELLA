@@ -5,7 +5,7 @@ import MessageInfo from "../../tsrc/components/MessageInfo";
 
 export default {
   title: "MessageInfo",
-  component: MessageInfo
+  component: MessageInfo,
 };
 
 export const DynamicVariant = () => (

@@ -4,10 +4,10 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles(t => ({
+const useStyles = makeStyles((t) => ({
   screenOptions: {
-    margin: 20
-  }
+    margin: 20,
+  },
 }));
 
 interface ScreenOptionsProps {
@@ -16,7 +16,7 @@ interface ScreenOptionsProps {
 }
 
 export default React.memo(function ScreenOptions({
-  optionsHtml
+  optionsHtml,
 }: ScreenOptionsProps) {
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
   const classes = useStyles();
@@ -24,7 +24,7 @@ export default React.memo(function ScreenOptions({
     <React.Fragment>
       <IconButton
         id="screenOptionsOpen"
-        onClick={e => setOptionsAnchor(e.currentTarget)}
+        onClick={(e) => setOptionsAnchor(e.currentTarget)}
         aria-label={languageStrings.screenoptions.description}
       >
         <MoreVertIcon />
@@ -36,7 +36,7 @@ export default React.memo(function ScreenOptions({
         container={document.getElementById("eqpageForm")}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         anchorEl={optionsAnchor}
-        onClose={_ => setOptionsAnchor(undefined)}
+        onClose={(_) => setOptionsAnchor(undefined)}
       >
         <JQueryDiv
           id="screenOptions"

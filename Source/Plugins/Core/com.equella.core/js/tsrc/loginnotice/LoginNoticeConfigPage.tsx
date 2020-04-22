@@ -10,7 +10,7 @@ import {
   Tabs,
   Theme,
   withStyles,
-  WithStyles
+  WithStyles,
 } from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
@@ -18,7 +18,7 @@ import { commonString } from "../util/commonstrings";
 import {
   templateDefaults,
   templateError,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../mainui/Template";
 import { routes } from "../mainui/routes";
 
@@ -40,8 +40,8 @@ const styles = (theme: Theme) =>
     floatingButton: {
       right: theme.spacing(2),
       bottom: theme.spacing(2),
-      position: "fixed"
-    }
+      position: "fixed",
+    },
   });
 
 class LoginNoticeConfigPage extends React.Component<
@@ -69,12 +69,12 @@ class LoginNoticeConfigPage extends React.Component<
     notifications: NotificationType.Save,
     notificationOpen: false,
     selectedTab: 0,
-    preventNav: false
+    preventNav: false,
   };
 
   componentDidMount() {
     const { classes, updateTemplate } = this.props;
-    updateTemplate(tp => ({
+    updateTemplate((tp) => ({
       ...templateDefaults(strings.title)(tp),
       backRoute: routes.Settings.to,
       fixedViewPort: true,
@@ -89,7 +89,7 @@ class LoginNoticeConfigPage extends React.Component<
           {commonString.action.save}
         </Button>
       ),
-      tabs: this.tabs()
+      tabs: this.tabs(),
     }));
   }
 
@@ -117,7 +117,7 @@ class LoginNoticeConfigPage extends React.Component<
 
   handleChangeTab = (event: React.ChangeEvent<{}>, selectedTab: number) => {
     this.setState({ selectedTab }, () =>
-      this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }))
+      this.props.updateTemplate((tp) => ({ ...tp, tabs: this.tabs() }))
     );
   };
 
