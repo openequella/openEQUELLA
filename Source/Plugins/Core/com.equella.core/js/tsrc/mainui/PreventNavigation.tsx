@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   Button,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 
@@ -25,7 +25,7 @@ interface NavAwayDialogProps {
 export const NavAwayDialog = React.memo(function NavAwayDialog({
   message,
   navigateConfirm,
-  open
+  open,
 }: NavAwayDialogProps) {
   return (
     <Dialog open={open}>
@@ -34,10 +34,10 @@ export const NavAwayDialog = React.memo(function NavAwayDialog({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={_ => navigateConfirm(false)}>
+        <Button color="secondary" onClick={(_) => navigateConfirm(false)}>
           {commonString.action.cancel}
         </Button>
-        <Button color="primary" onClick={_ => navigateConfirm(true)}>
+        <Button color="primary" onClick={(_) => navigateConfirm(true)}>
           {commonString.action.discard}
         </Button>
       </DialogActions>

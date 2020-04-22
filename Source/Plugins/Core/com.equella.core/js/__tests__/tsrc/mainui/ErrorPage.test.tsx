@@ -3,7 +3,7 @@ import { createMount } from "@material-ui/core/test-utils";
 import ErrorPage from "../../../tsrc/mainui/ErrorPage";
 
 jest.mock("@material-ui/core/styles", () => ({
-  makeStyles: () => () => ({ errorPage: "mock-classname" })
+  makeStyles: () => () => ({ errorPage: "mock-classname" }),
 }));
 
 describe("<ErrorPage />", () => {
@@ -34,7 +34,7 @@ describe("<ErrorPage />", () => {
           id: "mock-error",
           error: "example",
           code: 404,
-          error_description: "mock description"
+          error_description: "mock description",
         }}
       />
     );

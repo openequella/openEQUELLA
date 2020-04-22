@@ -13,7 +13,7 @@ import {
   Tab,
   Tabs,
   TextField,
-  Theme
+  Theme,
 } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
@@ -35,7 +35,7 @@ import {
   EditEntityDispatchProps,
   EditEntityProps,
   EditEntityStateProps,
-  entityStrings
+  entityStrings,
 } from "../entity";
 import { routes } from "../mainui/routes";
 import { templateDefaults, TemplateProps } from "../mainui/Template";
@@ -53,35 +53,35 @@ const styles = (theme: Theme) => {
   return {
     form: {
       display: "flex",
-      flexFlow: "row wrap"
+      flexFlow: "row wrap",
     },
     formControl: {
       margin: theme.spacing(1),
       flex: "1 1 40%",
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     formControl2: {
       margin: theme.spacing(1),
       flex: "2 1 100%",
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     body: {
       padding: theme.spacing(2),
       paddingBottom: footerHeight,
-      height: "100%"
+      height: "100%",
     },
     footer: {
-      minHeight: footerHeight
+      minHeight: footerHeight,
     },
     footerActions: {
       padding: "4px",
       paddingRight: "20px",
       display: "flex",
-      justifyContent: "flex-end"
+      justifyContent: "flex-end",
     },
     hiddenTab: {
-      display: "none"
-    }
+      display: "none",
+    },
   } as StyleRules;
 };
 
@@ -136,7 +136,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       changed: false,
       justSaved: false,
       errored: false,
-      editing: this.props.uuid ? true : false
+      editing: this.props.uuid ? true : false,
     };
     if (this.props.uuid) {
       this.props.loadEntity(this.props.uuid);
@@ -146,7 +146,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         name: "",
         description: "",
         type: "Internal",
-        versionSelection: "INSTITUTION_DEFAULT"
+        versionSelection: "INSTITUTION_DEFAULT",
       });
     }
     this.props.loadCitations();
@@ -163,12 +163,12 @@ class EditCourse extends React.Component<Props, EditCourseState> {
   };
 
   componentDidMount() {
-    this.props.updateTemplate(tp => ({
+    this.props.updateTemplate((tp) => ({
       ...templateDefaults(this.title())(tp),
       backRoute: routes.Courses.path,
       fixedViewPort: true,
       tabs: this.tabs(),
-      footer: this.footer()
+      footer: this.footer(),
     }));
   }
 
@@ -205,15 +205,15 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         students: students || undefined,
         security: this.state.editSecurity
           ? { rules: this.state.editSecurity() }
-          : this.props.entity.security
+          : this.props.entity.security,
       };
 
       const { saveEntity } = this.props;
       const thiss = this;
-      this.props.validateEntity(course).then(valErrors => {
+      this.props.validateEntity(course).then((valErrors) => {
         if (properties(valErrors).length === 0) {
           saveEntity(course)
-            .then(editedCourse => {
+            .then((editedCourse) => {
               // change the URL, but only if it's new
               thiss.updateChanged(false);
               thiss.setState({ justSaved: true });
@@ -221,7 +221,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 thiss.props.loadEntity(editedCourse.result.uuid!);
               }
             })
-            .catch(r => thiss.setState({ errored: true }));
+            .catch((r) => thiss.setState({ errored: true }));
         } else {
           thiss.setState({ activeTab: 0 }, thiss.updateTabs);
         }
@@ -274,11 +274,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
   }
 
   updateTabs() {
-    this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }));
+    this.props.updateTemplate((tp) => ({ ...tp, tabs: this.tabs() }));
   }
 
   updateFooter() {
-    this.props.updateTemplate(tp => ({ ...tp, footer: this.footer() }));
+    this.props.updateTemplate((tp) => ({ ...tp, footer: this.footer() }));
   }
 
   handleTabChange = (event: React.ChangeEvent<{}>, value: number) => {
@@ -291,7 +291,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       {
         canSave: e.canSave,
         changed: true,
-        editSecurity: e.getAcls
+        editSecurity: e.getAcls,
       },
       this.updateFooter
     );
@@ -303,7 +303,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     return (
       <Paper className={classes.footerActions}>
         <Button
-          component={p => <Link {...p} to={routes.Courses.path} />}
+          component={(p) => <Link {...p} to={routes.Courses.path} />}
           color="secondary"
         >
           {commonString.action.cancel}
@@ -320,9 +320,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
   }
 
   updateTitle() {
-    return this.props.updateTemplate(template => ({
+    return this.props.updateTemplate((template) => ({
       ...template,
-      title: this.title()
+      title: this.title(),
     }));
   }
 
@@ -332,7 +332,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       entity,
       citations,
       availablePrivileges,
-      classes
+      classes,
     } = this.props;
     const { AclEditor } = bridge;
     const typeval = strings.type;
@@ -359,7 +359,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       versionSelection,
       archived,
       security,
-      validationErrors
+      validationErrors,
     } = entity;
     const { justSaved, errored } = this.state;
     const vs = versionSelection ? versionSelection : "DEFAULT";
@@ -464,7 +464,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     input={<Input id="citation-inp" />}
                     onChange={() => this.handleChange("citation")}
                   >
-                    {citations.map(citation => (
+                    {citations.map((citation) => (
                       <MenuItem key={citation} value={citation}>
                         {citation}
                       </MenuItem>
@@ -581,7 +581,7 @@ function mapStateToProps(state: StoreState): EditCourseStateProps {
     loading: course.loading,
     entity: course.editingEntity,
     citations: schema.citations,
-    availablePrivileges: acl.nodes["COURSE_INFO"]
+    availablePrivileges: acl.nodes["COURSE_INFO"],
   };
 }
 
@@ -596,7 +596,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>): EditCourseDispatchProps {
     loadCitations: () => schemaService.workers.citations(dispatch, {}),
     listPrivileges: (node: string) =>
       aclService.workers.listPrivileges(dispatch, { node }),
-    validateEntity: (entity: Course) => workers.validate(dispatch, { entity })
+    validateEntity: (entity: Course) => workers.validate(dispatch, { entity }),
   };
 }
 

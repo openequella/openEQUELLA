@@ -4,14 +4,14 @@ import {
   TemplateUpdateProps,
   TemplateProps,
   FullscreenMode,
-  MenuMode
+  MenuMode,
 } from "./Template";
 import { Location, LocationDescriptor } from "history";
 import { ErrorResponse } from "../api/errors";
 import ScreenOptions from "./ScreenOptions";
 import {
   PageContent,
-  LegacyContentProps
+  LegacyContentProps,
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
 
@@ -36,14 +36,12 @@ export function templatePropsForLegacy({
   contentId,
   hideAppBar,
   fullscreenMode,
-  menuMode
+  menuMode,
 }: PageContent): TemplateProps {
   const soHtml = html["so"];
   const menuExtra = soHtml ? (
     <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
-  ) : (
-    undefined
-  );
+  ) : undefined;
   return {
     title,
     metaTags,
@@ -51,7 +49,7 @@ export function templatePropsForLegacy({
     fullscreenMode: fullscreenMode as FullscreenMode,
     menuMode: menuMode as MenuMode,
     menuExtra,
-    children: undefined
+    children: undefined,
   };
 }
 
@@ -62,23 +60,23 @@ export const LegacyPage = React.memo(
     location,
     updateTemplate,
     setPreventNavigation,
-    redirect
+    redirect,
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
 
     React.useEffect(() => {
       if (content) {
-        updateTemplate(tp => ({ ...tp, ...templatePropsForLegacy(content) }));
+        updateTemplate((tp) => ({ ...tp, ...templatePropsForLegacy(content) }));
       }
     }, [content]);
 
     React.useEffect(() => setPreventNavigation(shouldPreventNav), [
-      shouldPreventNav
+      shouldPreventNav,
     ]);
 
     const redirected = React.useCallback(
-      redir => {
+      (redir) => {
         const { href, external } = redir;
         if (external) {
           window.location.href = href;
@@ -89,7 +87,7 @@ export const LegacyPage = React.memo(
               ? { pathname: "/" + href, search: "" }
               : {
                   pathname: "/" + href.substr(0, ind),
-                  search: href.substr(ind)
+                  search: href.substr(ind),
                 };
           setPreventNavigation(false);
           redirect(redirloc);
@@ -111,20 +109,20 @@ export const LegacyPage = React.memo(
     );
 
     React.useEffect(() => {
-      legacyContent.setLegacyContentProps(p => ({
+      legacyContent.setLegacyContentProps((p) => ({
         ...p,
         enabled: true,
         pathname: location.pathname,
         search: location.search,
         locationKey: location.key,
         redirected,
-        onError
+        onError,
       }));
     }, [location, redirected, onError]);
 
     React.useEffect(
       () => () =>
-        legacyContent.setLegacyContentProps(p => ({ ...p, enabled: false })),
+        legacyContent.setLegacyContentProps((p) => ({ ...p, enabled: false })),
       []
     );
 

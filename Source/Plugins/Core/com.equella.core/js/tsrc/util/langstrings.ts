@@ -83,7 +83,7 @@ export const languageStrings = {
     cloudprovideravailable: {
       zero: "No cloud providers available",
       one: "%d cloud provider",
-      more: "%d cloud providers"
+      more: "%d cloud providers",
     },
     newcloudprovider: {
       title: "Register a new cloud provider",
@@ -93,14 +93,14 @@ export const languageStrings = {
       disclaimer: {
         text:
           "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
-        title: "Cloud provider disclaimer"
-      }
+        title: "Cloud provider disclaimer",
+      },
     },
     deletecloudprovider: {
       title: "Are you sure you want to delete cloud provider - '%s'?",
-      message: "It will be permanently deleted."
+      message: "It will be permanently deleted.",
     },
-    refreshed: "Completed refresh"
+    refreshed: "Completed refresh",
   },
   courseedit: {
     title: "Editing course - %s",
@@ -108,33 +108,33 @@ export const languageStrings = {
     tab: "Course details",
     name: {
       label: "Name",
-      help: "Course name, e.g. Advanced EQUELLA studies"
+      help: "Course name, e.g. Advanced EQUELLA studies",
     },
     description: {
       label: "Description",
-      help: "A brief description"
+      help: "A brief description",
     },
     code: {
       label: "Code",
-      help: "Course code, e.g. EQ101"
+      help: "Course code, e.g. EQ101",
     },
     type: {
       label: "Course Type",
       i: "Internal",
       e: "External",
-      s: "Staff"
+      s: "Staff",
     },
     department: {
-      label: "Department name"
+      label: "Department name",
     },
     citation: {
-      label: "Citation"
+      label: "Citation",
     },
     startdate: {
-      label: "Start date"
+      label: "Start date",
     },
     enddate: {
-      label: "End date"
+      label: "End date",
     },
     version: {
       label: "Version selection",
@@ -148,16 +148,16 @@ export const languageStrings = {
       defaultlatest:
         "User can choose, but default to be the latest live resource version",
       help:
-        "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
+        "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy",
     },
     students: {
-      label: "Unique individuals"
+      label: "Unique individuals",
     },
     archived: {
-      label: "Archived"
+      label: "Archived",
     },
     saved: "Successfully saved",
-    errored: "Save failed due to server error"
+    errored: "Save failed due to server error",
   },
   courses: {
     title: "Courses",
@@ -166,39 +166,39 @@ export const languageStrings = {
     coursesAvailable: {
       zero: "No courses available",
       one: "%d course",
-      more: "%d courses"
+      more: "%d courses",
     },
     includeArchived: "Include archived",
-    archived: "Archived"
+    archived: "Archived",
   },
   entity: {
     edit: {
       tab: {
-        permissions: "Permissions"
-      }
-    }
+        permissions: "Permissions",
+      },
+    },
   },
   loginnoticepage: {
     title: "Login notice editor",
     clear: {
       title: "Warning",
-      confirm: "Are you sure you want to clear this login notice?"
+      confirm: "Are you sure you want to clear this login notice?",
     },
     prelogin: {
-      label: "Before login notice"
+      label: "Before login notice",
     },
     postlogin: {
       label: "After login notice",
       description:
-        "Write a plaintext message to be displayed after login as an alert..."
+        "Write a plaintext message to be displayed after login as an alert...",
     },
     notifications: {
       saved: "Login notice saved successfully.",
       cleared: "Login notice cleared successfully.",
-      cancelled: "Cancelled changes to login notice."
+      cancelled: "Cancelled changes to login notice.",
     },
     errors: {
-      permissions: "You do not have permission to edit these settings."
+      permissions: "You do not have permission to edit these settings.",
     },
     scheduling: {
       title: "Schedule settings",
@@ -208,19 +208,19 @@ export const languageStrings = {
       alwayson: "On",
       disabled: "Off",
       endbeforestart: "End date must be after start date.",
-      expired: "This login notice has expired."
-    }
+      expired: "This login notice has expired.",
+    },
   },
   template: {
     navaway: {
       title: "You have unsaved changes",
-      content: "If you leave this page you will lose your changes."
+      content: "If you leave this page you will lose your changes.",
     },
     menu: {
       title: "My Account",
       logout: "Logout",
-      prefs: "My preferences"
-    }
+      prefs: "My preferences",
+    },
   },
   "com.equella.core": {
     title: "Settings",
@@ -228,17 +228,17 @@ export const languageStrings = {
     topbar: {
       link: {
         notifications: "Notifications",
-        tasks: "Tasks"
-      }
-    }
+        tasks: "Tasks",
+      },
+    },
   },
   searchconfigs: {
     title: "Search Configurations",
     configsAvailable: {
       zero: "No search configurations available",
       one: "%d configuration",
-      more: "%d configurations"
-    }
+      more: "%d configurations",
+    },
   },
   newuisettings: {
     title: "Theme Settings",
@@ -251,14 +251,14 @@ export const languageStrings = {
       sidebartextcolour: "Sidebar Text Colour",
       primarytextcolour: "Primary Text Colour",
       secondarytextcolour: "Secondary Text Colour",
-      sidebariconcolour: "Icon Colour"
+      sidebariconcolour: "Icon Colour",
     },
     logosettings: {
       alt: "Logo",
       title: "Logo Settings",
       imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
       current: "Current Logo: ",
-      nofileselected: "No file selected."
+      nofileselected: "No file selected.",
     },
     errors: {
       invalidimagetitle: "Image Processing Error",
@@ -266,8 +266,8 @@ export const languageStrings = {
         "Invalid image file. Please check the integrity of your file and try again.",
       nofiledescription: "Please select an image file to upload.",
       permissiontitle: "Permission Error",
-      permissiondescription: "You do not have permission to edit the settings."
-    }
+      permissiondescription: "You do not have permission to edit the settings.",
+    },
   },
   common: {
     action: {
@@ -288,11 +288,11 @@ export const languageStrings = {
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
       register: "Register",
-      refresh: "Refresh"
+      refresh: "Refresh",
     },
     users: "Users",
     groups: "Groups",
-    roles: "Roles"
+    roles: "Roles",
   },
   searchpage: {
     resultsAvailable: "results available",
@@ -303,12 +303,12 @@ export const languageStrings = {
       name: "Name",
       datemodified: "Date modifed",
       datecreated: "Date created",
-      rating: "Rating"
+      rating: "Rating",
     },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
-      selectTitle: "Select user to filter by"
+      selectTitle: "Select user to filter by",
     },
     filterLast: {
       label: "Modified within last",
@@ -319,35 +319,35 @@ export const languageStrings = {
       year: "Year",
       fiveyear: "Five years",
       week: "Week",
-      day: "Day"
-    }
+      day: "Day",
+    },
   },
   "com.equella.core.searching.search": {
-    title: "Search"
+    title: "Search",
   },
   "com.equella.core.comments": {
     anonymous: "Anonymous",
     commentmsg: "Comment",
-    entermsg: "Enter a comment"
+    entermsg: "Enter a comment",
   },
   uiconfig: {
     facet: {
       name: "Name",
       path: "Path",
-      title: "Search facets"
+      title: "Search facets",
     },
     enableNew: "Enable new UI",
     enableSearch: "Enable new search page",
-    themeSettingsButton: "Edit Theme Settings"
+    themeSettingsButton: "Edit Theme Settings",
   },
   settings: {
     general: { name: "General", desc: "General settings" },
     integration: {
       name: "Integrations",
-      desc: "Settings for integrating with external systems"
+      desc: "Settings for integrating with external systems",
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
-    ui: { name: "UI", desc: "UI settings" }
+    ui: { name: "UI", desc: "UI settings" },
   },
   adminconsoledownload: {
     title: "Administration Console",
@@ -356,17 +356,18 @@ export const languageStrings = {
         "The Administration Console is no longer accessed from this link. The Administration Console Package must be ",
       introTextTwo: "downloaded",
       introTextThree:
-        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console."
+        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console.",
     },
-    link: "https://github.com/apereo/openEQUELLA-admin-console-package/releases"
+    link:
+      "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
   },
   aclterms: {
     title: {
       ugr: "Select User / Group / Role",
       ip: "Select IP range",
       referrer: "HTTP referrer",
-      token: "Select shared secret"
-    }
+      token: "Select shared secret",
+    },
   },
   acleditor: {
     privilege: "Privilege",
@@ -382,7 +383,7 @@ export const languageStrings = {
       ugr: "User, Group or Role",
       ip: "IP Range",
       referrer: "HTTP Referrer",
-      token: "Shared secret"
+      token: "Shared secret",
     },
     notted: "NOT - ",
     not: "Not",
@@ -394,11 +395,11 @@ export const languageStrings = {
       and: "All match",
       or: "At least one match",
       notand: "Not all match",
-      notor: "None match"
+      notor: "None match",
     },
-    convertGroup: "Convert to group"
+    convertGroup: "Convert to group",
   },
   screenoptions: {
-    description: "Screen options"
-  }
+    description: "Screen options",
+  },
 };

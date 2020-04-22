@@ -18,7 +18,7 @@ export default React.memo(function JQueryDiv(props: JQueryDivProps) {
     []
   );
   const withoutOthers = {
-    ...props
+    ...props,
   };
   delete withoutOthers.afterHtml;
   delete withoutOthers.script;
@@ -26,7 +26,7 @@ export default React.memo(function JQueryDiv(props: JQueryDivProps) {
   return (
     <div
       {...withoutOthers}
-      ref={e => {
+      ref={(e) => {
         if (e) {
           divElem.current = e;
           $(e).html(props.html);

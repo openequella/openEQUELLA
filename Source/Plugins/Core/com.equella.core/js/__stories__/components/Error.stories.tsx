@@ -3,7 +3,7 @@ import Error from "../../tsrc/components/Error";
 
 export default {
   title: "Error",
-  component: Error
+  component: Error,
 };
 
 export const WithWarningMessage = () => (

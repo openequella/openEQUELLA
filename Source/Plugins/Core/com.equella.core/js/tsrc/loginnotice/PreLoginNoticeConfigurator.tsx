@@ -6,7 +6,7 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import {
   clearPreLoginNotice,
@@ -17,7 +17,7 @@ import {
   strings,
   submitPreLoginNotice,
   unMarshallPreLoginNotice,
-  uploadPreLoginNoticeImage
+  uploadPreLoginNoticeImage,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import RichTextEditor from "../components/RichTextEditor";
@@ -46,14 +46,14 @@ class PreLoginNoticeConfigurator extends React.Component<
         notice: "",
         scheduleSettings: ScheduleTypeSelection.ON,
         startDate: new Date(),
-        endDate: new Date()
+        endDate: new Date(),
       },
       db: {
         notice: "",
         scheduleSettings: ScheduleTypeSelection.ON,
         startDate: new Date(),
-        endDate: new Date()
-      }
+        endDate: new Date(),
+      },
     };
   }
 
@@ -64,7 +64,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           this.props.notify(NotificationType.Clear);
           this.setState(
             {
-              db: this.state.current
+              db: this.state.current,
             },
             () => this.setPreventNav()
           );
@@ -87,7 +87,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   setDBToValues = () => {
     this.setState(
       {
-        db: this.state.current
+        db: this.state.current,
       },
       () => this.setPreventNav()
     );
@@ -102,7 +102,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         if (preLoginNotice.notice != undefined) {
           this.setState({
             db: preLoginNotice,
-            current: preLoginNotice
+            current: preLoginNotice,
           });
         }
       })
@@ -123,7 +123,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   handleEditorChange = (html: string) => {
     this.setState(
       {
-        current: { ...this.state.current, notice: html }
+        current: { ...this.state.current, notice: html },
       },
       () => this.setPreventNav()
     );
@@ -221,8 +221,8 @@ class PreLoginNoticeConfigurator extends React.Component<
         current: {
           ...this.state.current,
           scheduleSettings:
-            ScheduleTypeSelection[value as ScheduleTypeSelection]
-        }
+            ScheduleTypeSelection[value as ScheduleTypeSelection],
+        },
       },
       () => this.setPreventNav()
     );
