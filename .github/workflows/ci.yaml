@@ -206,6 +206,27 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             OldTests/test dumpCoverage
 
+      - name: Save TestNG Reports
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: TestNGReports-new-${{ matrix.newui }}
+          path: autotest/OldTests/target/testng
+
+      - name: Save oEQ Logs
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: oEQLogs-new-${{ matrix.newui }}
+          path: autotest/equella-install/logs
+
+      - name: Save Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: Screenshots-new-${{ matrix.newui }}
+          path: autotest/Tests/target/test-reports/screenshots
+
       - name: Generate coverage report
         run: |
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
