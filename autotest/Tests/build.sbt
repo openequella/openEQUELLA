@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.3.6",
   "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.3.6",
   "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.3.6",
-  "org.apache.httpcomponents" % "httpclient"               % "4.5.10",
+  "org.apache.httpcomponents" % "httpclient"               % "4.5.12",
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis"       % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.55",
