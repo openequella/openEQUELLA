@@ -37,10 +37,6 @@ public class FacetedSearchClassification {
     return id;
   }
 
-  public void setId(long id) {
-    this.id = id;
-  }
-
   public void setInstitution_id(long institutionId) {
     this.institutionId = institutionId;
   }
