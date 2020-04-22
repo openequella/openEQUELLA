@@ -5981,6 +5981,9 @@
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="favouriteSearchSchemaObject">
     <parameter id="class" value="com.tle.core.favourites.bean.FavouriteSearch" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="facetedSearchClassificationObject">
+    <parameter id="class" value="com.tle.core.facetedsearch.bean.FacetedSearchClassification" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
