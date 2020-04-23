@@ -1,13 +1,18 @@
 package com.tle.core.facetedsearch.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.tle.beans.Institution;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AccessType;
+import org.hibernate.annotations.Index;
 
 @Entity
 @AccessType("field")
@@ -16,12 +21,15 @@ public class FacetedSearchClassification {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
 
-  @Column(nullable = false)
-  private long institutionId;
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "facetSearchClassificationInstitutionIndex")
+  @XStreamOmitField
+  private Institution institution;
 
-  @Column @JsonIgnore private Date dateCreated;
+  @Column private Date dateCreated;
 
-  @Column @JsonIgnore private Date dateModified;
+  @Column private Date dateModified;
 
   @Column(nullable = false)
   private String name;
@@ -33,12 +41,12 @@ public class FacetedSearchClassification {
 
   private int orderIndex;
 
-  public long getId() {
-    return id;
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
-  public void setInstitution_id(long institutionId) {
-    this.institutionId = institutionId;
+  public long getId() {
+    return id;
   }
 
   public Date getDateCreated() {
