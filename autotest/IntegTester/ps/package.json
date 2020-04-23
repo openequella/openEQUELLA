@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.6",
-    "mkdirp": "0.5.1",
+    "mkdirp": "0.5.5",
     "parcel-bundler": "1.12.2",
     "psc-package": "3.0.1",
     "pulp": "12.3.1",
