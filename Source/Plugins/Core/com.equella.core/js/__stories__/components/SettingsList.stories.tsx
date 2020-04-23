@@ -8,7 +8,7 @@ import SettingsList from "../../tsrc/components/SettingsList";
 
 export default {
   title: "SettingsList",
-  component: SettingsList
+  component: SettingsList,
 };
 
 const marks: Mark[] = [
@@ -19,7 +19,7 @@ const marks: Mark[] = [
   { label: "x1.5", value: 4 },
   { label: "x2", value: 5 },
   { label: "x4", value: 6 },
-  { label: "x8", value: 7 }
+  { label: "x8", value: 7 },
 ];
 
 export const ListWithTwoItems = () => (

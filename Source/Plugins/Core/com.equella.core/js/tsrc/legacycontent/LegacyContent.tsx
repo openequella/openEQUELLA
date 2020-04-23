@@ -94,7 +94,7 @@ export function submitRequest(
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
     vals
-  ).then(res => res.data);
+  ).then((res) => res.data);
 }
 
 export const LegacyContent = React.memo(function LegacyContent({
@@ -105,7 +105,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   redirected,
   render,
   search,
-  userUpdated
+  userUpdated,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const baseUrl = document.getElementsByTagName("base")[0].href;
@@ -117,7 +117,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   }
 
   function updatePageContent(content: LegacyContent, scrollTop: boolean) {
-    updateIncludes(content.js, content.css).then(extraCss => {
+    updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
         contentId: v4(),
@@ -126,7 +126,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           if (scrollTop) {
             document.documentElement.scrollTop = 0;
           }
-        }
+        },
       } as PageContent;
       if (content.userUpdated) {
         userUpdated();
@@ -143,7 +143,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     callback?: (response: SubmitResponse) => void
   ) {
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
-      .then(content => {
+      .then((content) => {
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
@@ -157,13 +157,13 @@ export const LegacyContent = React.memo(function LegacyContent({
           redirected({ href: content.href, external: true });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         onError({ error: fromAxiosResponse(error.response), fullScreen });
       });
   }
 
   function stdSubmit(validate: boolean) {
-    return function(command: string) {
+    return function (command: string) {
       if (window._trigger) {
         _trigger("presubmit");
         if (validate) {
@@ -203,13 +203,13 @@ export const LegacyContent = React.memo(function LegacyContent({
         includes: { js: string[]; css?: string[]; script: string },
         cb: () => void
       ) {
-        updateIncludes(includes.js, includes.css).then(_ => {
+        updateIncludes(includes.js, includes.css).then((_) => {
           window.eval(includes.script);
           cb();
         });
       },
-      updateForm: function(formUpdate: FormUpdate) {
-        setContent(content => {
+      updateForm: function (formUpdate: FormUpdate) {
+        setContent((content) => {
           if (content) {
             const newState = formUpdate.partial
               ? { ...content.state, ...formUpdate.state }
@@ -217,7 +217,7 @@ export const LegacyContent = React.memo(function LegacyContent({
             return { ...content, state: newState };
           } else return undefined;
         });
-      }
+      },
     };
   }, [pathname]);
 
@@ -287,7 +287,7 @@ function updateStylesheets(
         newCss.addEventListener("load", resolve, false);
         newCss.addEventListener(
           "error",
-          err => {
+          (err) => {
             console.error(`Failed to load css: ${newCss.href}`);
             resolve();
           },
@@ -298,7 +298,7 @@ function updateStylesheets(
       return lastLink;
     }
   }, [] as Promise<any>[]);
-  return Promise.all(cssPromises).then(_ => existingSheets);
+  return Promise.all(cssPromises).then((_) => existingSheets);
 }
 
 function deleteElements(elements: { [url: string]: HTMLElement }) {

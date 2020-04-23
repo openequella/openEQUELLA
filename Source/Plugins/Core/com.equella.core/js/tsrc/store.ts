@@ -26,7 +26,7 @@ const store = createStore<StoreState>(
   combineReducers({
     course: courseService.reducer,
     schema: schemaService.reducer,
-    acl: aclService.reducer
+    acl: aclService.reducer,
   }),
   composeEnhancers(applyMiddleware(thunkMiddleware, loggerMiddleware))
 );

@@ -9,14 +9,14 @@ export const fetchSettings = (
   token: CancelToken
 ): Promise<GeneralSetting[]> => {
   return Axios.get<GeneralSetting[]>(GET_SETTINGS_URL, {
-    cancelToken: token
-  }).then(res => res.data);
+    cancelToken: token,
+  }).then((res) => res.data);
 };
 
 export const fetchUISetting = (token: CancelToken): Promise<UISetting> => {
   return Axios.get<UISetting>(GET_UI_SETTINGS_URL, {
-    cancelToken: token
-  }).then(res => res.data);
+    cancelToken: token,
+  }).then((res) => res.data);
 };
 
 export const saveUISetting = (
@@ -26,7 +26,7 @@ export const saveUISetting = (
   return Axios.put(GET_UI_SETTINGS_URL, {
     newUI: {
       enabled: newUIEnabled,
-      newSearch: newSearchEnabled
-    }
+      newSearch: newSearchEnabled,
+    },
   });
 };

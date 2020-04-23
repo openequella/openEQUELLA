@@ -27,13 +27,13 @@ export enum SortOrder {
   DATEMODIFIED = "DATEMODIFIED",
   DATECREATED = "DATECREATED",
   NAME = "NAME",
-  RATING = "RATING"
+  RATING = "RATING",
 }
 
 export enum ContentIndex {
   OPTION_NONE = 0,
   OPTION_WEBPAGE = 1,
-  OPTION_SECONDARY = 2
+  OPTION_SECONDARY = 2,
 }
 
 export const SEARCH_SETTINGS_URL = "api/settings/search";
@@ -46,8 +46,8 @@ export const getSearchSettingsFromServer = () =>
       reject: (error: TemplateUpdate) => void
     ) => {
       Axios.get(SEARCH_SETTINGS_URL)
-        .then(response => resolve(response.data))
-        .catch(error => reject(templateError(fromAxiosError(error))));
+        .then((response) => resolve(response.data))
+        .catch((error) => reject(templateError(fromAxiosError(error))));
     }
   );
 
@@ -58,7 +58,7 @@ export const saveSearchSettingsToServer = (settings: SearchSettings) =>
         .then(() => {
           resolve();
         })
-        .catch(error => reject(templateError(fromAxiosError(error))));
+        .catch((error) => reject(templateError(fromAxiosError(error))));
     }
   );
 export const saveCloudSettingsToServer = (settings: CloudSettings) =>
@@ -68,7 +68,7 @@ export const saveCloudSettingsToServer = (settings: CloudSettings) =>
         .then(() => {
           resolve();
         })
-        .catch(error => reject(templateError(fromAxiosError(error))));
+        .catch((error) => reject(templateError(fromAxiosError(error))));
     }
   );
 
@@ -79,8 +79,8 @@ export const getCloudSettingsFromServer = () =>
       reject: (error: TemplateUpdate) => void
     ) => {
       Axios.get(CLOUD_SETTINGS_URL)
-        .then(response => resolve(response.data))
-        .catch(error => reject(templateError(fromAxiosError(error))));
+        .then((response) => resolve(response.data))
+        .catch((error) => reject(templateError(fromAxiosError(error))));
     }
   );
 
@@ -97,5 +97,5 @@ export const defaultSearchSettings: SearchSettings = {
   urlLevel: 0,
   titleBoost: 0,
   descriptionBoost: 0,
-  attachmentBoost: 0
+  attachmentBoost: 0,
 };

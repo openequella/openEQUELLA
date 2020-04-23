@@ -24,7 +24,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
       const component = renderDialog({
         id: "testing ID",
         name: "image filter",
-        mimeTypes: ["IMAGE/PNG", "IMAGE/JPEG"]
+        mimeTypes: ["IMAGE/PNG", "IMAGE/JPEG"],
       });
       const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
       expect(saveButton.text()).toBe("OK");

@@ -2,7 +2,7 @@ import {
   FormControl,
   MenuItem,
   OutlinedInput,
-  Select
+  Select,
 } from "@material-ui/core";
 import { ContentIndex } from "../SearchSettingsModule";
 import * as React from "react";
@@ -16,7 +16,7 @@ export interface WebPageIndexSettingProps {
 export default function WebPageIndexSetting({
   disabled,
   value,
-  setValue
+  setValue,
 }: WebPageIndexSettingProps) {
   const contentIndexSettingsStrings =
     languageStrings.settings.searching.contentIndexSettings;
@@ -26,7 +26,7 @@ export default function WebPageIndexSetting({
         <Select
           SelectDisplayProps={{ id: "_contentIndex" }}
           disabled={disabled}
-          onChange={event => setValue(event.target.value as ContentIndex)}
+          onChange={(event) => setValue(event.target.value as ContentIndex)}
           variant={"outlined"}
           value={value}
           autoWidth={true}

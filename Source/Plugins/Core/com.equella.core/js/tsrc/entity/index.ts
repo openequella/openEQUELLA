@@ -3,7 +3,7 @@ import { Dispatch } from "redux";
 import { Action, ActionCreator, AsyncActionCreators } from "typescript-fsa";
 import {
   ReducerBuilder,
-  reducerWithInitialState
+  reducerWithInitialState,
 } from "typescript-fsa-reducers";
 import { Entity } from "../api/Entity";
 import { Config } from "../config";
@@ -38,7 +38,7 @@ export function extendedEntityService<
   return {
     actions: actions,
     workers: workers,
-    reducer: entityReducerBuilder(baseActions)
+    reducer: entityReducerBuilder(baseActions),
   };
 }
 
@@ -154,7 +154,7 @@ function entityCrudActions<E extends Entity>(
     ),
     checkPrivs: actionCreator.async<{ privilege: string[] }, string[], void>(
       "CHECKPRIVS_" + entityType
-    )
+    ),
   };
 }
 
@@ -170,25 +170,25 @@ function entityWorkers<E extends Entity>(
       // FIXME: edit a specific locale:
       const postEntity = Object.assign({}, entity, {
         nameStrings: { en: entity.name },
-        descriptionStrings: { en: entity.description }
+        descriptionStrings: { en: entity.description },
       });
       if (entity.uuid) {
         const url = `${Config.baseUrl}api/${entityLower}/${entity.uuid}`;
         return axios
           .put<{}>(url, postEntity)
-          .then(_ => axios.get<E>(url))
-          .then(res => ({ result: res.data }));
+          .then((_) => axios.get<E>(url))
+          .then((res) => ({ result: res.data }));
       } else {
         return axios
           .post<{}>(`${Config.baseUrl}api/${entityLower}/`, postEntity)
-          .then(res => res.headers["location"])
-          .then(loc => axios.get<E>(loc))
-          .then(res => ({ result: res.data }));
+          .then((res) => res.headers["location"])
+          .then((loc) => axios.get<E>(loc))
+          .then((res) => ({ result: res.data }));
       }
     }
   );
 
-  const validate = function(entity: E): IDictionary<string> {
+  const validate = function (entity: E): IDictionary<string> {
     const errors = baseValidate(entity);
     if (extValidate) {
       extValidate(entity, errors);
@@ -206,7 +206,7 @@ function entityWorkers<E extends Entity>(
         const { uuid } = param;
         return axios
           .get<E>(`${Config.baseUrl}api/${entityLower}/${uuid}`)
-          .then(res => ({ result: res.data }));
+          .then((res) => ({ result: res.data }));
       }
     ),
     delete: wrapAsyncWorker(
@@ -215,7 +215,7 @@ function entityWorkers<E extends Entity>(
         const { uuid } = param;
         return axios
           .delete(`${Config.baseUrl}api/${entityLower}/${uuid}`)
-          .then(res => ({ uuid }));
+          .then((res) => ({ uuid }));
       }
     ),
     validate: wrapAsyncWorker(
@@ -231,9 +231,9 @@ function entityWorkers<E extends Entity>(
         const qs = encodeQuery({ privilege });
         return axios
           .get<string[]>(`${Config.baseUrl}api/acl/privilegecheck${qs}`)
-          .then(res => res.data);
+          .then((res) => res.data);
       }
-    )
+    ),
   };
 }
 
@@ -242,7 +242,7 @@ function entityReducerBuilder<E extends Entity>(
 ): ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>> {
   const initialEntityState: PartialEntityState<E> = {
     query: "",
-    loading: false
+    loading: false,
   };
 
   return reducerWithInitialState(initialEntityState)
@@ -269,7 +269,7 @@ function entityReducerBuilder<E extends Entity>(
     })
     .case(entityCrudActions.validate.done, (state, success) => {
       const editingEntity = Object.assign({}, state.editingEntity, {
-        validationErrors: success.result
+        validationErrors: success.result,
       });
       return { ...state, editingEntity };
     });

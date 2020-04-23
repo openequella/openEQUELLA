@@ -7,8 +7,8 @@ const styles = (theme: Theme) => {
   return {
     error: {
       padding: theme.spacing(3),
-      backgroundColor: "rgb(255, 220, 220)"
-    }
+      backgroundColor: "rgb(255, 220, 220)",
+    },
   };
 };
 

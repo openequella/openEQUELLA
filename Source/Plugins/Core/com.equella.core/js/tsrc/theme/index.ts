@@ -24,40 +24,40 @@ declare const themeSettings: IThemeSettings;
 const standardThemeSettings: ThemeOptions = {
   palette: {
     primary: {
-      main: themeSettings.primaryColor
+      main: themeSettings.primaryColor,
     },
     secondary: {
-      main: themeSettings.secondaryColor
+      main: themeSettings.secondaryColor,
     },
     background: {
-      default: themeSettings.backgroundColor
+      default: themeSettings.backgroundColor,
     },
     text: {
       primary: themeSettings.primaryTextColor,
-      secondary: themeSettings.menuTextColor
+      secondary: themeSettings.menuTextColor,
     },
     menu: {
       text: themeSettings.menuItemTextColor,
       icon: themeSettings.menuItemIconColor,
-      background: themeSettings.menuItemColor
-    }
+      background: themeSettings.menuItemColor,
+    },
   },
   typography: {
     useNextVariants: true,
-    fontSize: themeSettings.fontSize
-  }
+    fontSize: themeSettings.fontSize,
+  },
 } as ThemeOptions;
 
 export const autoTestOptions: ThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {
         transitions: {
-          create: () => "none"
-        }
+          create: () => "none",
+        },
       }
     : {};
 
 export const oeqTheme = createMuiTheme({
   ...standardThemeSettings,
-  ...autoTestOptions
+  ...autoTestOptions,
 });

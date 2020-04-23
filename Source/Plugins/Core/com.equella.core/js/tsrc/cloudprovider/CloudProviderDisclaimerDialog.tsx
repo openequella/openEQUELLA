@@ -6,7 +6,7 @@ import {
   DialogTitle,
   Theme,
   withStyles,
-  WithStyles
+  WithStyles,
 } from "@material-ui/core";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,8 +17,8 @@ const styles = (theme: Theme) =>
   createStyles({
     closeButton: {
       position: "absolute",
-      right: theme.spacing(1)
-    }
+      right: theme.spacing(1),
+    },
   });
 
 interface CloudProviderDisclaimerDialogProps extends WithStyles<typeof styles> {
