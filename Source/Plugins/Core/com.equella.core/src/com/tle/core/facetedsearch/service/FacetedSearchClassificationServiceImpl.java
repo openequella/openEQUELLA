@@ -6,6 +6,7 @@ import com.tle.core.guice.Bind;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind(FacetedSearchClassificationService.class)
 @Singleton
@@ -13,27 +14,30 @@ public class FacetedSearchClassificationServiceImpl implements FacetedSearchClas
   @Inject private FacetedSearchClassificationDao facetedSearchClassificationDao;
 
   @Override
-  public FacetedSearchClassification getClassificationById(long id) {
-    return facetedSearchClassificationDao.getClassificationById((id));
+  public FacetedSearchClassification getById(long id) {
+    return facetedSearchClassificationDao.findById(id);
   }
 
   @Override
-  public List getAllClassifications() {
-    return facetedSearchClassificationDao.getAllClassifications();
+  public List enumerateAll() {
+    return facetedSearchClassificationDao.enumerateAll();
   }
 
+  @Transactional
   @Override
-  public void addClassification(FacetedSearchClassification classification) {
-    facetedSearchClassificationDao.addFacetedSearchClassification(classification);
+  public void add(FacetedSearchClassification classification) {
+    facetedSearchClassificationDao.save(classification);
   }
 
+  @Transactional
   @Override
-  public void updateFacetedSearchClassification(FacetedSearchClassification classification) {
-    facetedSearchClassificationDao.updateFacetedSearchClassification(classification);
+  public void update(FacetedSearchClassification classification) {
+    facetedSearchClassificationDao.merge(classification);
   }
 
+  @Transactional
   @Override
-  public void deleteClassification(FacetedSearchClassification facetedSearchClassification) {
-    facetedSearchClassificationDao.deleteClassification(facetedSearchClassification);
+  public void delete(FacetedSearchClassification facetedSearchClassification) {
+    facetedSearchClassificationDao.delete(facetedSearchClassification);
   }
 }

@@ -4,13 +4,13 @@ import com.tle.core.facetedsearch.bean.FacetedSearchClassification;
 import java.util.List;
 
 public interface FacetedSearchClassificationService {
-  FacetedSearchClassification getClassificationById(long id);
+  FacetedSearchClassification getById(long id);
 
-  List getAllClassifications();
+  List enumerateAll();
 
-  void deleteClassification(FacetedSearchClassification facetedSearchClassification);
+  void delete(FacetedSearchClassification facetedSearchClassification);
 
-  void addClassification(FacetedSearchClassification facetedSearchClassification);
+  void add(FacetedSearchClassification facetedSearchClassification);
 
-  void updateFacetedSearchClassification(FacetedSearchClassification facetedSearchClassification);
+  void update(FacetedSearchClassification facetedSearchClassification);
 }
