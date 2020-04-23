@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   templateDefaults,
   TemplateUpdate,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
 import { Button, Card } from "@material-ui/core";
@@ -12,7 +12,7 @@ import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
-  SearchSettings
+  SearchSettings,
 } from "./SearchSettingsModule";
 import MessageInfo from "../../components/MessageInfo";
 import { Save } from "@material-ui/icons";
@@ -27,14 +27,14 @@ const useStyles = makeStyles({
     right: 0,
     marginTop: "80px",
     marginRight: "16px",
-    width: "calc(25% - 112px)"
+    width: "calc(25% - 112px)",
   },
   spacedCards: {
     margin: "16px",
     width: "75%",
     padding: "16px",
-    float: "left"
-  }
+    float: "left",
+  },
 });
 
 function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
@@ -49,13 +49,13 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   const classes = useStyles();
 
   React.useEffect(() => {
-    updateTemplate(tp => ({
+    updateTemplate((tp) => ({
       ...templateDefaults(contentIndexSettingsStrings.name)(tp),
-      backRoute: routes.Settings.to
+      backRoute: routes.Settings.to,
     }));
     getSearchSettingsFromServer()
       .then((settings: SearchSettings) => setSearchSettings(settings))
-      .catch(error => handleError(error));
+      .catch((error) => handleError(error));
   }, []);
 
   function handleError(error: TemplateUpdate) {
@@ -80,10 +80,10 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               <WebPageIndexSetting
                 disabled={showError}
                 value={searchSettings.urlLevel}
-                setValue={level =>
+                setValue={(level) =>
                   setSearchSettings({
                     ...searchSettings,
-                    urlLevel: level
+                    urlLevel: level,
                   })
                 }
               />

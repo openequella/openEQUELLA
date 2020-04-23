@@ -2,7 +2,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  FormLabel
+  FormLabel,
 } from "@material-ui/core";
 import * as React from "react";
 import { makeStyles } from "@material-ui/styles";
@@ -16,8 +16,8 @@ export interface SearchSettingFormControlProps {
 }
 const useStyles = makeStyles({
   formControlLabel: {
-    marginRight: 0
-  }
+    marginRight: 0,
+  },
 });
 export default function SearchSettingFormControl({
   title,
@@ -25,7 +25,7 @@ export default function SearchSettingFormControl({
   formHelperText,
   disabled,
   control,
-  onChange
+  onChange,
 }: SearchSettingFormControlProps) {
   const classes = useStyles();
   return (

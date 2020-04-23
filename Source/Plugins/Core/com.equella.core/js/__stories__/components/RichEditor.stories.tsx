@@ -13,7 +13,7 @@ import RichTextEditor from "../../tsrc/components/RichTextEditor";
  */
 export default {
   title: "RichTextEditor",
-  component: RichTextEditor
+  component: RichTextEditor,
 };
 
 export const WithHTMLInput = () => (

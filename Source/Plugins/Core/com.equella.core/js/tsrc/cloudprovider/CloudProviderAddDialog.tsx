@@ -11,7 +11,7 @@ import {
   Theme,
   Typography,
   WithStyles,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
@@ -21,11 +21,11 @@ import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 const styles = (theme: Theme) =>
   createStyles({
     disclaimerText: {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     link: {
-      cursor: "pointer"
-    }
+      cursor: "pointer",
+    },
   });
 
 interface CloudProviderAddDialogProps extends WithStyles<typeof styles> {
@@ -46,13 +46,13 @@ class CloudProviderAddDialog extends React.Component<
     super(props);
     this.state = {
       cloudProviderUrl: "",
-      disclaimerDialogOpen: false
+      disclaimerDialogOpen: false,
     };
   }
 
   handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      cloudProviderUrl: e.target.value
+      cloudProviderUrl: e.target.value,
     });
   };
 
@@ -67,13 +67,13 @@ class CloudProviderAddDialog extends React.Component<
 
   openDisclaimerDialog = () => {
     this.setState({
-      disclaimerDialogOpen: true
+      disclaimerDialogOpen: true,
     });
   };
 
   closeDisclaimerDialog = () => {
     this.setState({
-      disclaimerDialogOpen: false
+      disclaimerDialogOpen: false,
     });
   };
 

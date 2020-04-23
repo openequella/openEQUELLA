@@ -6,12 +6,12 @@ import { MimeTypeFilter } from "../../tsrc/settings/Search/searchfilter/SearchFi
 
 export default {
   title: "MimeTypeFilterDialog",
-  component: MimeTypeFilterEditingDialog
+  component: MimeTypeFilterEditingDialog,
 };
 export const mimeTypeFilter: MimeTypeFilter = {
   id: "f8eab6cf-98bc-4c5f-a9a2-8ecdd07533d0",
   name: "Image filter",
-  mimeTypes: ["image/png", "image/jpeg"]
+  mimeTypes: ["image/png", "image/jpeg"],
 };
 
 export const withFilterProvided = () => (

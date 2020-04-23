@@ -8,6 +8,6 @@ export interface SearchConfig {
 
 export function listAllConfigs(): Promise<SearchConfig[]> {
   return Axios.get(`${Config.baseUrl}api/searches/config`).then(
-    res => res.data
+    (res) => res.data
   );
 }

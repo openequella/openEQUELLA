@@ -9,13 +9,13 @@ export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image
 export enum NotificationType {
   Save,
   Clear,
-  Revert
+  Revert,
 }
 
 export enum ScheduleTypeSelection {
   OFF = "OFF",
   ON = "ON",
-  SCHEDULED = "SCHEDULED"
+  SCHEDULED = "SCHEDULED",
 }
 export interface PreLoginNotice {
   notice?: string;
@@ -57,7 +57,7 @@ export function unMarshallPreLoginNotice(
     notice: marshalled.notice,
     endDate: new Date(marshalled.endDate),
     startDate: new Date(marshalled.startDate),
-    scheduleSettings: marshalled.scheduleSettings
+    scheduleSettings: marshalled.scheduleSettings,
   };
 }
 
@@ -65,6 +65,6 @@ export function uploadPreLoginNoticeImage(file: BlobInfo): AxiosPromise {
   const imageBlob: Blob = file.blob();
   const name: string = encodeURIComponent(file.filename());
   return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL + name, imageBlob, {
-    headers: { "content-type": imageBlob.type }
+    headers: { "content-type": imageBlob.type },
   });
 }

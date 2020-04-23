@@ -6,7 +6,7 @@ import {
   Paper,
   Theme,
   Typography,
-  WithStyles
+  WithStyles,
 } from "@material-ui/core";
 import { StyleRules, withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
@@ -15,29 +15,29 @@ const styles = (theme: Theme) =>
   ({
     overall: {
       padding: theme.spacing(2),
-      height: "100%"
+      height: "100%",
     },
     results: {
       padding: theme.spacing(2),
-      position: "relative"
+      position: "relative",
     },
     resultHeader: {
       display: "flex",
-      justifyContent: "flex-end"
+      justifyContent: "flex-end",
     },
     resultText: {
-      flexGrow: 1
+      flexGrow: 1,
     },
     progress: {
       display: "flex",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     fab: {
       zIndex: 1000,
       position: "fixed",
       bottom: theme.spacing(2),
-      right: theme.spacing(5)
-    }
+      right: theme.spacing(5),
+    },
   } as StyleRules);
 
 interface EntityListProps extends WithStyles<typeof styles> {
@@ -58,7 +58,7 @@ class EntityList extends React.Component<EntityListProps, {}> {
       resultsText,
       resultsRight,
       children,
-      createOnClick
+      createOnClick,
     } = this.props;
     return (
       <div id={id} className={classes.overall}>

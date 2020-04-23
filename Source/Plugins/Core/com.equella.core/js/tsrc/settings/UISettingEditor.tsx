@@ -7,7 +7,7 @@ import {
   FormControl,
   FormControlLabel,
   Switch,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Link } from "react-router-dom";
@@ -22,14 +22,14 @@ const useStyles = makeStyles((theme: Theme) => {
     fab: {
       position: "absolute",
       bottom: 0,
-      right: 16
+      right: 16,
     },
     enableNewUIColumn: {
-      flexBasis: "33.3%"
+      flexBasis: "33.3%",
     },
     enableNewSearchColumn: {
-      flexBasis: "33.3%"
-    }
+      flexBasis: "33.3%",
+    },
   };
 });
 
@@ -49,12 +49,12 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   useEffect(() => {
     const cancelToken = axios.CancelToken.source();
     fetchUISetting(cancelToken.token)
-      .then(uiSetting => {
+      .then((uiSetting) => {
         const { enabled, newSearch } = uiSetting.newUI;
         setNewUIEnabled(enabled);
         setNewSearchEnabled(newSearch);
       })
-      .catch(error => {
+      .catch((error) => {
         if (axios.isCancel(error)) {
           return; // Request was cancelled
         }
@@ -69,10 +69,10 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   const setNewUI = (enabled: boolean) => {
     setNewUIEnabled(enabled);
     saveUISetting(enabled, newSearchEnabled)
-      .then(_ => {
+      .then((_) => {
         window.location.href = Config.baseUrl + "access/settings.do";
       })
-      .catch(error => {
+      .catch((error) => {
         handleError(error);
       });
   };
@@ -80,8 +80,8 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   const setNewSearch = (enabled: boolean) => {
     setNewSearchEnabled(enabled);
     saveUISetting(newUIEnabled, enabled)
-      .then(_ => refreshUser())
-      .catch(error => {
+      .then((_) => refreshUser())
+      .catch((error) => {
         handleError(error);
       });
   };

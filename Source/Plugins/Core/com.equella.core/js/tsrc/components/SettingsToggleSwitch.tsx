@@ -43,7 +43,7 @@ export default function SettingsToggleSwitch({
   formHelperText,
   value,
   setValue,
-  id
+  id,
 }: SettingsToggleSwitchProps) {
   return (
     <SearchSettingFormControl

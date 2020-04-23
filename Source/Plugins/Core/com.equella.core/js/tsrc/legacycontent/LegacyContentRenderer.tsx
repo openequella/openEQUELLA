@@ -3,10 +3,10 @@ import JQueryDiv from "./JQueryDiv";
 import { makeStyles } from "@material-ui/core";
 import { PageContent } from "./LegacyContent";
 
-const useStyles = makeStyles(t => ({
+const useStyles = makeStyles((t) => ({
   withPadding: {
-    padding: t.spacing(2)
-  }
+    padding: t.spacing(2),
+  },
 }));
 
 export function LegacyContentRenderer({
@@ -14,12 +14,12 @@ export function LegacyContentRenderer({
   fullscreenMode,
   html,
   menuMode,
-  script
+  script,
 }: PageContent) {
   const classes = useStyles();
 
   const { body, crumbs, upperbody } = html;
-  const extraClass = (function() {
+  const extraClass = (function () {
     switch (fullscreenMode) {
       case "YES":
       case "YES_WITH_TOOLBAR":

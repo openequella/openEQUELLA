@@ -4,8 +4,8 @@ import { createStyles, Paper, withStyles, WithStyles } from "@material-ui/core";
 const styles = createStyles({
   container: {
     margin: "8px",
-    padding: "8px"
-  }
+    padding: "8px",
+  },
 });
 
 class SettingsMenuContainer extends React.Component<WithStyles<typeof styles>> {

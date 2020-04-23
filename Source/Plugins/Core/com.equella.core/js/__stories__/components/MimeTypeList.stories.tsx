@@ -6,12 +6,12 @@ import { MimeTypeEntry } from "../../tsrc/settings/Search/searchfilter/SearchFil
 
 export default {
   title: "MimeTypeList",
-  component: MimeTypeList
+  component: MimeTypeList,
 };
 
 const defaultMimeTypes: MimeTypeEntry[] = [
   { mimeType: "image/png", desc: "This is a Image filter" },
-  { mimeType: "image/jpeg", desc: "This is a Image filter" }
+  { mimeType: "image/jpeg", desc: "This is a Image filter" },
 ];
 
 export const listOfMimeTypes = () => (
