@@ -3,7 +3,6 @@ package com.tle.webtests.test.webservices.rest;
 import static org.junit.Assert.assertEquals;
 
 import com.tle.common.Pair;
-import com.tle.webtests.test.files.Attachments;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.JsonNode;
@@ -31,7 +30,10 @@ public class FacetedSearchClassificationApiTest extends AbstractRestApiTest {
   @Override
   public void registerClients() throws Exception {
     super.registerClients();
-    JsonNode node = mapper.readTree(Attachments.get("facetedsearchclassification.json"));
+    JsonNode node =
+        mapper.readTree(
+            getClass().getClassLoader().getResource("facetedsearchclassification.json"));
+
     validClassification = (ObjectNode) node.get("valid");
     invalidClassification = (ObjectNode) node.get("invalid");
   }

@@ -34,7 +34,7 @@ import org.jboss.resteasy.annotations.cache.NoCache
 import scala.collection.mutable.ArrayBuffer
 
 @NoCache
-@Path("settings/")
+@Path("settings/facetedsearch/classification")
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class FacetedSearchClassificationResource {
@@ -42,7 +42,6 @@ class FacetedSearchClassificationResource {
   val privilegeChecker = LegacyGuice.searchPrivProvider
 
   @GET
-  @Path("facetedsearch/classification")
   @ApiOperation(
     value = "List faceted search classifications",
     notes = "This endpoint is used to retrieve faceted search classifications.",
@@ -56,13 +55,13 @@ class FacetedSearchClassificationResource {
   }
 
   @GET
-  @Path("facetedsearch/classification/{id}")
+  @Path("/{id}")
   @ApiOperation(
     value = "Retrieve one faceted search classification",
     notes = "This endpoint is used to retrieve one faceted search classification.",
     response = classOf[FacetedSearchClassification]
   )
-  def get(@ApiParam(value = "ID") @PathParam("id") id: Long): Response = {
+  def get(@ApiParam("ID") @PathParam("id") id: Long): Response = {
     privilegeChecker.checkAuthorised()
     Option(service.getById(id)) match {
       case Some(classification) => Response.ok().entity(classification).build()
@@ -71,7 +70,6 @@ class FacetedSearchClassificationResource {
   }
 
   @POST
-  @Path("facetedsearch/classification")
   @ApiOperation(
     value = "Add one faceted search classification",
     notes = "This endpoint is used to add one faceted search classification.",
@@ -91,13 +89,13 @@ class FacetedSearchClassificationResource {
   }
 
   @PUT
-  @Path("facetedsearch/classification/{id}")
+  @Path("/{id}")
   @ApiOperation(
     value = "Update one faceted search classification",
     notes = "This endpoint is used to update one faceted search classification.",
     response = classOf[FacetedSearchClassification]
   )
-  def update(@ApiParam(value = "ID") @PathParam("id") id: Long,
+  def update(@ApiParam("ID") @PathParam("id") id: Long,
              jsonBody: FacetedSearchClassification): Response = {
     privilegeChecker.checkAuthorised()
     Option(service.getById(id)) match {
@@ -118,7 +116,7 @@ class FacetedSearchClassificationResource {
   }
 
   @DELETE
-  @Path("facetedsearch/classification/{id}")
+  @Path("/{id}")
   @ApiOperation(
     value = "Delete one faceted search classification",
     notes = "This endpoint is used to delete one faceted search classifications.",
