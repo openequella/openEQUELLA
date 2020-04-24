@@ -45,7 +45,7 @@ allprojects {
     implementation fileTree(dir: '../Platform/Plugins/com.tle.platform.common/target/scala-2.12', include: ['*.jar'])
     implementation fileTree(dir: '../Source/Plugins/Platform/com.tle.platform.swing/target/scala-2.12', include: ['*.jar'])
     testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13'
   }
 }
 
