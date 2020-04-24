@@ -58,9 +58,10 @@ class Auth {
             @QueryParam("password") password: String): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
 
-    val us                                = LegacyGuice.userService
-    val wad                               = us.getWebAuthenticationDetails(req)
-    def lfr(messageKey: String): Response = loginFailedResponse(wad, username, messageKey)
+    val us  = LegacyGuice.userService
+    val wad = us.getWebAuthenticationDetails(req)
+    def lfr(messageKey: String): Response =
+      loginFailedResponse(wad, username, CurrentLocale.get(RESOURCE_HELPER.key(messageKey)))
 
     try {
       us.login(username, password, wad, true)
@@ -90,7 +91,6 @@ class Auth {
                           username: String,
                           message: String): Response = {
     LegacyGuice.auditLogService.logUserFailedAuthentication(username, wad)
-    val msg = CurrentLocale.get(RESOURCE_HELPER.key(message))
-    Response.status(401, msg).entity(msg).build()
+    Response.status(401, message).entity(message).build()
   }
 }
