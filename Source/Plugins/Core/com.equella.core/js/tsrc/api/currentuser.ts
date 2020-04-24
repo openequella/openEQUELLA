@@ -28,11 +28,11 @@ export const guestUser: UserData = {
   prefsEditable: false,
   counts: {
     tasks: 0,
-    notifications: 0
+    notifications: 0,
   },
-  menuGroups: []
+  menuGroups: [],
 };
 
 export function getCurrentUser(): Promise<UserData> {
-  return Axios.get<UserData>("api/content/currentuser").then(r => r.data);
+  return Axios.get<UserData>("api/content/currentuser").then((r) => r.data);
 }

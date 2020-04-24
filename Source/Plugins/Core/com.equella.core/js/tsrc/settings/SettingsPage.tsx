@@ -9,12 +9,12 @@ import {
   List,
   ListItem,
   ListItemText,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import {
   templateDefaults,
   templateError,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../mainui/Template";
 import { fetchSettings } from "./SettingsPageModule";
 import { GeneralSetting } from "./SettingsPageEntry";
@@ -34,16 +34,16 @@ const useStyles = makeStyles((theme: Theme) => {
     heading: {
       fontSize: theme.typography.pxToRem(15),
       flexBasis: "33.33%",
-      flexShrink: 0
+      flexShrink: 0,
     },
     secondaryHeading: {
-      fontSize: theme.typography.pxToRem(15)
+      fontSize: theme.typography.pxToRem(15),
     },
     progress: {
       display: "flex",
       marginTop: theme.spacing(4),
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   };
 });
 
@@ -66,11 +66,11 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     // Use a flag to prevent setting state when component is being unmounted
     const cancelToken = axios.CancelToken.source();
     fetchSettings(cancelToken.token)
-      .then(settings => {
+      .then((settings) => {
         setSettingGroups(groupMap(settings));
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         if (axios.isCancel(error)) {
           return; // Request was cancelled
         }
@@ -95,7 +95,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
    */
   const expansionPanelContent = ({
     category,
-    settings
+    settings,
   }: SettingGroup): ReactElement => {
     if (category.name === languageStrings.settings.ui.name) {
       return (
@@ -105,7 +105,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     return (
       <ExpansionPanelDetails>
         <List>
-          {settings.map(setting => (
+          {settings.map((setting) => (
             <ListItem key={setting.id}>
               <ListItemText
                 primary={settingLink(setting)}
@@ -149,27 +149,29 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
         open={adminDialogOpen}
         onClose={() => setAdminDialogOpen(false)}
       />
-      {// Display a circular Progress Bar or the Setting menu, depending on the state of 'loading'
-      loading ? (
-        <div className={classes.progress}>
-          <CircularProgress variant="indeterminate" />
-        </div>
-      ) : (
-        settingGroups.map(group => {
-          const { name, desc } = group.category;
-          return (
-            <ExpansionPanel key={name}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography className={classes.heading}>{name}</Typography>
-                <Typography className={classes.secondaryHeading}>
-                  {desc}
-                </Typography>
-              </ExpansionPanelSummary>
-              {expansionPanelContent(group)}
-            </ExpansionPanel>
-          );
-        })
-      )}
+      {
+        // Display a circular Progress Bar or the Setting menu, depending on the state of 'loading'
+        loading ? (
+          <div className={classes.progress}>
+            <CircularProgress variant="indeterminate" />
+          </div>
+        ) : (
+          settingGroups.map((group) => {
+            const { name, desc } = group.category;
+            return (
+              <ExpansionPanel key={name}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>{name}</Typography>
+                  <Typography className={classes.secondaryHeading}>
+                    {desc}
+                  </Typography>
+                </ExpansionPanelSummary>
+                {expansionPanelContent(group)}
+              </ExpansionPanel>
+            );
+          })
+        )
+      }
     </div>
   );
 };

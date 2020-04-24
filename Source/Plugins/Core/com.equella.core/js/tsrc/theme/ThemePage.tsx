@@ -12,7 +12,7 @@ import {
   createStyles,
   Grid,
   Snackbar,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
@@ -23,12 +23,12 @@ import { commonString } from "../util/commonstrings";
 import {
   generateFromError,
   generateNewErrorID,
-  ErrorResponse
+  ErrorResponse,
 } from "../api/errors";
 import {
   templateDefaults,
   TemplateUpdate,
-  templateError
+  templateError,
 } from "../mainui/Template";
 import { IThemeSettings } from ".";
 
@@ -44,29 +44,29 @@ const styles = createStyles({
   card: {
     marginTop: "16px",
     marginBottom: "16px",
-    overflow: "visible"
+    overflow: "visible",
   },
   fileName: {
     marginTop: "16px",
     marginBottom: "16px",
-    marginLeft: "4px"
+    marginLeft: "4px",
   },
   labels: {
-    marginBottom: "4px"
+    marginBottom: "4px",
   },
   input: {
-    display: "none"
+    display: "none",
   },
   cardContent: {
-    marginBottom: "4px"
+    marginBottom: "4px",
   },
   cardBottom: {
-    marginBottom: "16px"
+    marginBottom: "16px",
   },
   button: {
     marginTop: "8px",
-    marginBottom: "8px"
-  }
+    marginBottom: "8px",
+  },
 });
 
 interface ThemePageProps {
@@ -88,7 +88,7 @@ class ThemePage extends React.Component<
     logoToUpload: "",
     fileName: "",
     noFileNotification: false,
-    logoURL: logoURL
+    logoURL: logoURL,
   };
 
   componentDidMount = () => {
@@ -106,7 +106,7 @@ class ThemePage extends React.Component<
         menu: "#ffffff",
         menuIcon: "#000000",
         primaryText: "#000000",
-        secondaryText: "#444444"
+        secondaryText: "#444444",
       },
       () => this.submitTheme()
     );
@@ -121,7 +121,7 @@ class ThemePage extends React.Component<
       menuText: themeSettings.menuItemTextColor,
       menuIcon: themeSettings.menuItemIconColor,
       primaryText: themeSettings.primaryTextColor,
-      secondaryText: themeSettings.menuTextColor
+      secondaryText: themeSettings.menuTextColor,
     });
   };
 
@@ -168,7 +168,7 @@ class ThemePage extends React.Component<
       reader.onloadend = () => {
         this.setState({
           logoToUpload: file,
-          fileName: file.name
+          fileName: file.name,
         });
       };
     }
@@ -185,12 +185,12 @@ class ThemePage extends React.Component<
         menuItemTextColor: this.state.menuText,
         primaryTextColor: this.state.primaryText,
         menuTextColor: this.state.secondaryText,
-        fontSize: 14
+        fontSize: 14,
       })
       .then(() => {
         this.reload();
       })
-      .catch(error => {
+      .catch((error) => {
         this.handleError(error);
       });
   };
@@ -201,7 +201,7 @@ class ThemePage extends React.Component<
       .then(() => {
         this.reload();
       })
-      .catch(error => {
+      .catch((error) => {
         this.handleError(error);
       });
   };
@@ -213,7 +213,7 @@ class ThemePage extends React.Component<
         .then(() => {
           this.reload();
         })
-        .catch(error => {
+        .catch((error) => {
           this.handleError(error);
         });
     } else {
@@ -367,7 +367,7 @@ class ThemePage extends React.Component<
               className={classes.input}
               color={"textSecondary"}
               id="contained-button-file"
-              onChange={e => this.handleImageChange(e.target)}
+              onChange={(e) => this.handleImageChange(e.target)}
               type="file"
             />
             <label htmlFor="contained-button-file">
@@ -442,7 +442,7 @@ class ThemePage extends React.Component<
               onClick={this.handleNoFileNotificationClose}
             >
               <CloseIcon />
-            </IconButton>
+            </IconButton>,
           ]}
         />
       </div>

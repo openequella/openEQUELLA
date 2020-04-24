@@ -5,13 +5,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import {
   getMIMETypesFromServer,
   MimeTypeFilter,
   MimeTypeEntry,
-  vaidateMimeTypeName
+  vaidateMimeTypeName,
 } from "./SearchFilterSettingsModule";
 import { useEffect, useState } from "react";
 import { commonString } from "../../../util/commonstrings";
@@ -51,7 +51,7 @@ const MimeTypeFilterEditingDialog = ({
   onClose,
   mimeTypeFilter,
   addOrUpdate,
-  handleError
+  handleError,
 }: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
@@ -66,8 +66,8 @@ const MimeTypeFilterEditingDialog = ({
 
   useEffect(() => {
     getMIMETypesFromServer()
-      .then(mimeTypes => setMimeTypeEntries(mimeTypes))
-      .catch(error => handleError(error));
+      .then((mimeTypes) => setMimeTypeEntries(mimeTypes))
+      .catch((error) => handleError(error));
   }, []);
 
   /**
@@ -105,7 +105,7 @@ const MimeTypeFilterEditingDialog = ({
     addOrUpdate({
       id: mimeTypeFilter?.id,
       name: filterName,
-      mimeTypes: selectedMimeTypes
+      mimeTypes: selectedMimeTypes,
     });
     onClose();
   };
@@ -128,7 +128,7 @@ const MimeTypeFilterEditingDialog = ({
           value={filterName}
           required
           fullWidth
-          onChange={event => setFilterName(event.target.value)}
+          onChange={(event) => setFilterName(event.target.value)}
           error={!!filterName && !isNameValid}
         />
         <MimeTypeList

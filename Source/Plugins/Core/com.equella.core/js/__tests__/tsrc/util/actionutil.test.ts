@@ -16,7 +16,7 @@ describe("actionutil", () => {
       const action = actionFactory.started("payload");
       expect(action).toMatchObject({
         type: "example_STARTED",
-        payload: "payload"
+        payload: "payload",
       });
     });
   });

@@ -18,7 +18,7 @@ export function encodeQuery(params: {
       const paramValue = params[key];
       if (typeof paramValue != "undefined") {
         if (typeof paramValue == "object") {
-          paramValue.forEach(element => addOne(key, element));
+          paramValue.forEach((element) => addOne(key, element));
         } else {
           addOne(key, paramValue);
         }

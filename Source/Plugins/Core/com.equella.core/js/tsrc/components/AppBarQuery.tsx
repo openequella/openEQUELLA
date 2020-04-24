@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(2),
     borderRadius: 2,
     background: fade(theme.palette.common.white, 0.15),
-    width: "400px"
+    width: "400px",
   },
   queryIcon: {
     width: theme.spacing(9),
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     pointerEvents: "none",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   queryField: {
     font: "inherit",
@@ -42,13 +42,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: "none",
     margin: 0,
     color: "inherit",
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));
 
 const AppBarQuery: FunctionComponent<AppBarQueryProps> = ({
   onChange,
-  query
+  query,
 }: AppBarQueryProps) => {
   const classes = useStyles();
   const [searchText, setSearchText] = useState(query);

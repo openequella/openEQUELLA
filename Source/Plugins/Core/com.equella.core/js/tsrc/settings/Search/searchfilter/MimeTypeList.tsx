@@ -4,7 +4,7 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { getMimeTypeDetail, MimeTypeEntry } from "./SearchFilterSettingsModule";
 import { makeStyles } from "@material-ui/styles";
@@ -12,15 +12,15 @@ import { languageStrings } from "../../../util/langstrings";
 
 const useStyles = makeStyles({
   item: {
-    padding: 0
+    padding: 0,
   },
   list: {
     maxHeight: 400,
-    overflow: "auto"
+    overflow: "auto",
   },
   listTitle: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
 });
 
 interface MimeTypeFilterListProps {
@@ -41,7 +41,7 @@ interface MimeTypeFilterListProps {
 const MimeTypeList = ({
   entries,
   onChange,
-  selected
+  selected,
 }: MimeTypeFilterListProps) => {
   const classes = useStyles();
   const searchFilterStrings =

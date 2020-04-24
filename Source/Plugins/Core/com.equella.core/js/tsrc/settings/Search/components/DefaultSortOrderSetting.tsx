@@ -2,7 +2,7 @@ import {
   FormControl,
   MenuItem,
   OutlinedInput,
-  Select
+  Select,
 } from "@material-ui/core";
 import { SortOrder } from "../SearchSettingsModule";
 import * as React from "react";
@@ -16,13 +16,13 @@ export interface DefaultSortOrderSettingProps {
 }
 const useStyles = makeStyles({
   select: {
-    width: "200px"
-  }
+    width: "200px",
+  },
 });
 export default function DefaultSortOrderSetting({
   disabled,
   value,
-  setValue
+  setValue,
 }: DefaultSortOrderSettingProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
@@ -33,7 +33,7 @@ export default function DefaultSortOrderSetting({
         <Select
           SelectDisplayProps={{ id: "_sortOrder" }}
           disabled={disabled}
-          onChange={event => setValue(event.target.value as SortOrder)}
+          onChange={(event) => setValue(event.target.value as SortOrder)}
           variant={"outlined"}
           value={value}
           className={classes.select}

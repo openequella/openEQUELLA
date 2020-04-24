@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@material-ui/core";
 import { languageStrings } from "../util/langstrings";
 
@@ -16,7 +16,7 @@ interface AdminDownloadDialogProps {
 
 export default function AdminDownloadDialog({
   open,
-  onClose
+  onClose,
 }: AdminDownloadDialogProps) {
   const { ok } = languageStrings.common.action;
   const { link, text, title } = languageStrings.adminconsoledownload;

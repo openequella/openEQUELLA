@@ -4,7 +4,7 @@ import {
   Route,
   Prompt,
   RouteComponentProps,
-  Redirect
+  Redirect,
 } from "react-router";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -23,7 +23,7 @@ import { oeqTheme } from "../theme";
 import {
   LegacyContent,
   LegacyContentProps,
-  PageContent
+  PageContent,
 } from "../legacycontent/LegacyContent";
 import { getCurrentUser, UserData } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
@@ -42,7 +42,7 @@ declare const renderData:
     }
   | undefined;
 
-const beforeunload = function(e: Event) {
+const beforeunload = function (e: Event) {
   e.returnValue = ("Are you sure?" as unknown) as boolean;
   return "Are you sure?";
 };
@@ -74,17 +74,17 @@ function IndexPage() {
     userUpdated: refreshUser,
     redirected: () => {},
     onError: () => {},
-    render: () => <div />
+    render: () => <div />,
   });
 
   const [templateProps, setTemplateProps] = React.useState({
     title: "",
     fullscreenMode: "YES",
-    children: []
+    children: [],
   } as TemplateProps);
 
   const setPreventNavigation = React.useCallback(
-    prevent => {
+    (prevent) => {
       const message = prevent ? defaultNavMessage() : undefined;
       if (message) {
         window.addEventListener("beforeunload", beforeunload, false);
@@ -99,7 +99,7 @@ function IndexPage() {
   const nonBlankNavMsg = preventNavMessage ? preventNavMessage : "";
 
   const updateTemplate = React.useCallback((edit: TemplateUpdate) => {
-    setTemplateProps(tp => {
+    setTemplateProps((tp) => {
       const edited = edit(tp);
       return shallowEqual(edited, tp) ? tp : edited;
     });
@@ -114,7 +114,7 @@ function IndexPage() {
       updateTemplate,
       refreshUser,
       redirect: p.history.push,
-      setPreventNavigation
+      setPreventNavigation,
     };
   }
 
@@ -127,7 +127,7 @@ function IndexPage() {
             key={ind}
             exact={oeqRoute.exact}
             path={oeqRoute.path}
-            render={p => {
+            render={(p) => {
               const oeqProps = mkRouteProps(p);
               if (oeqRoute.component) {
                 return <oeqRoute.component {...oeqProps} />;
@@ -140,9 +140,9 @@ function IndexPage() {
     });
   }, [refreshUser]);
 
-  const errorCallback = React.useCallback(err => {
+  const errorCallback = React.useCallback((err) => {
     errorShowing.current = true;
-    setTemplateProps(p => ({ ...p, fullscreenMode: undefined }));
+    setTemplateProps((p) => ({ ...p, fullscreenMode: undefined }));
     setFullPageError(err);
   }, []);
 
@@ -159,7 +159,7 @@ function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          render={p => (
+          render={(p) => (
             <LegacyPage
               {...mkRouteProps(p)}
               errorCallback={errorCallback}
@@ -191,7 +191,7 @@ function IndexPage() {
       <NavAwayDialog
         open={Boolean(navAwayCallback)}
         message={nonBlankNavMsg}
-        navigateConfirm={confirm => {
+        navigateConfirm={(confirm) => {
           if (navAwayCallback) navAwayCallback.cb(confirm);
           if (confirm) setPreventNavMessage(undefined);
           setNavAwayCallback(undefined);
@@ -199,14 +199,14 @@ function IndexPage() {
       />
       <LegacyContent
         {...legacyContentProps}
-        render={content => {
+        render={(content) => {
           const tp = content
             ? templatePropsForLegacy(content)
             : {
                 ...templateProps,
                 fullscreenMode: legacyContentProps.enabled
                   ? templateProps.fullscreenMode
-                  : undefined
+                  : undefined,
               };
           const withErr = fullPageError
             ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
@@ -227,7 +227,7 @@ function IndexPage() {
   );
 }
 
-export default function() {
+export default function () {
   initStrings();
   if (typeof renderData !== "undefined") {
     startHeartbeat();
