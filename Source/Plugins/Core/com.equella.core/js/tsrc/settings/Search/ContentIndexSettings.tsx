@@ -89,6 +89,10 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
     });
   };
 
+  const getAriaLabel = (value: number, index: number): string => {
+    return boostVals[value].label as string;
+  };
+
   return (
     <>
       <Card className={classes.spacedCards}>
@@ -122,9 +126,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {
-                  return boostVals[value].label as string;
-                }}
+                getAriaValueText={getAriaLabel}
                 aria-label={contentIndexSettingsStrings.titleBoostingTitle}
                 value={searchSettings.titleBoost}
                 onChange={(event, value) =>
@@ -142,9 +144,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {
-                  return boostVals[value].label as string;
-                }}
+                getAriaValueText={getAriaLabel}
                 aria-label={contentIndexSettingsStrings.metaBoostingTitle}
                 value={searchSettings.descriptionBoost}
                 onChange={(event, value) =>
@@ -161,9 +161,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {
-                  return boostVals[value].label as string;
-                }}
+                getAriaValueText={getAriaLabel}
                 aria-label={contentIndexSettingsStrings.attachmentBoostingTitle}
                 value={searchSettings.attachmentBoost}
                 onChange={(event, value) =>
