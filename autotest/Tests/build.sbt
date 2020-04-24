@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.9",
+  "org.apache.commons"        % "commons-lang3"            % "3.10",
   "org.seleniumhq.selenium"   % "selenium-java"            % "3.141.59",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
