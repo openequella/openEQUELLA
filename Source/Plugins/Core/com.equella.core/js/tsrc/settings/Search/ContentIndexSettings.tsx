@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   templateDefaults,
   TemplateUpdate,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
 import { Button, Card, Mark, Slider } from "@material-ui/core";
@@ -12,7 +12,7 @@ import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
-  SearchSettings
+  SearchSettings,
 } from "./SearchSettingsModule";
 import MessageInfo from "../../components/MessageInfo";
 import { Save } from "@material-ui/icons";
@@ -27,14 +27,14 @@ const useStyles = makeStyles({
     right: 0,
     marginTop: "80px",
     marginRight: "16px",
-    width: "calc(25% - 112px)"
+    width: "calc(25% - 112px)",
   },
   spacedCards: {
     margin: "16px",
     width: "75%",
     padding: "16px",
-    float: "left"
-  }
+    float: "left",
+  },
 });
 
 function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
@@ -58,17 +58,17 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
     { label: "x1.5", value: 4 },
     { label: "x2", value: 5 },
     { label: "x4", value: 6 },
-    { label: "x8", value: 7 }
+    { label: "x8", value: 7 },
   ];
 
   React.useEffect(() => {
-    updateTemplate(tp => ({
+    updateTemplate((tp) => ({
       ...templateDefaults(contentIndexSettingsStrings.name)(tp),
-      backRoute: routes.Settings.to
+      backRoute: routes.Settings.to,
     }));
     getSearchSettingsFromServer()
       .then((settings: SearchSettings) => setSearchSettings(settings))
-      .catch(error => handleError(error));
+      .catch((error) => handleError(error));
   }, []);
 
   function handleError(error: TemplateUpdate) {
@@ -85,7 +85,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   const handleSliderChange = (newValue: number, prop: string) => {
     setSearchSettings({
       ...searchSettings,
-      [prop]: newValue
+      [prop]: newValue,
     });
   };
 
@@ -100,10 +100,10 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               <WebPageIndexSetting
                 disabled={showError}
                 value={searchSettings.urlLevel}
-                setValue={level =>
+                setValue={(level) =>
                   setSearchSettings({
                     ...searchSettings,
-                    urlLevel: level
+                    urlLevel: level,
                   })
                 }
               />
@@ -122,7 +122,9 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {return boostVals[value].label as string}}
+                getAriaValueText={(value, index): string => {
+                  return boostVals[value].label as string;
+                }}
                 aria-label={contentIndexSettingsStrings.titleBoostingTitle}
                 value={searchSettings.titleBoost}
                 onChange={(event, value) =>
@@ -140,7 +142,9 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {return boostVals[value].label as string}}
+                getAriaValueText={(value, index): string => {
+                  return boostVals[value].label as string;
+                }}
                 aria-label={contentIndexSettingsStrings.metaBoostingTitle}
                 value={searchSettings.descriptionBoost}
                 onChange={(event, value) =>
@@ -157,7 +161,9 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                 marks={boostVals}
                 min={0}
                 max={7}
-                getAriaValueText={(value, index): string => {return boostVals[value].label as string}}
+                getAriaValueText={(value, index): string => {
+                  return boostVals[value].label as string;
+                }}
                 aria-label={contentIndexSettingsStrings.attachmentBoostingTitle}
                 value={searchSettings.attachmentBoost}
                 onChange={(event, value) =>

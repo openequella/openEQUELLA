@@ -1,7 +1,7 @@
 import {
   ListItem,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
 } from "@material-ui/core";
 import * as React from "react";
 import { ReactNode } from "react";
@@ -29,13 +29,13 @@ interface SettingsListControlProps {
 const useStyles = makeStyles({
   listItemText: {
     maxWidth: "40%",
-    minHeight: "38px"
+    minHeight: "38px",
   },
   secondaryAction: {
     width: "55%",
     display: "flex",
-    justifyContent: "flex-end"
-  }
+    justifyContent: "flex-end",
+  },
 });
 
 /**
@@ -46,7 +46,7 @@ export default function SettingsListControl({
   divider,
   primaryText,
   secondaryText,
-  control
+  control,
 }: SettingsListControlProps) {
   const classes = useStyles();
   return (
