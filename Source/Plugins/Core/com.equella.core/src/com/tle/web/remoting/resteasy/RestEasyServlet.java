@@ -47,6 +47,7 @@ import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.web.api.searches.SearchConfigApi;
 import com.tle.web.api.settings.CloudSearchSettingsResource;
+import com.tle.web.api.settings.FacetedSearch.FacetedSearchClassificationResource;
 import com.tle.web.api.settings.MimeTypeResource;
 import com.tle.web.api.settings.SearchFilterResource;
 import com.tle.web.api.settings.SearchSettingsResource;
@@ -151,6 +152,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     classes.add(SelectionApi.class);
     registry.addSingletonResource(new SearchConfigApi());
     classes.add(SearchConfigApi.class);
+    registry.addSingletonResource(new FacetedSearchClassificationResource());
+    classes.add(FacetedSearchClassificationResource.class);
 
     ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
     providerFactory.registerProvider(SwaggerSerializers.class);

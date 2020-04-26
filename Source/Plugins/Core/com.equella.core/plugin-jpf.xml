@@ -5981,6 +5981,9 @@
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="favouriteSearchSchemaObject">
     <parameter id="class" value="com.tle.core.favourites.bean.FavouriteSearch" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="facetedSearchClassificationObject">
+    <parameter id="class" value="com.tle.core.facetedsearch.bean.FacetedSearchClassification" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
@@ -6022,6 +6025,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.CreateUserInfoBackupTable" />
     <parameter id="date" value="2019-09-25" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateFacetedSearchClassificationTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20202.CreateFacetedSearchClassificationTable" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.CreateFacetedSearchClassificationTable" />
+    <parameter id="date" value="2020-04-22" />
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
   </extension>
@@ -6058,6 +6066,15 @@
     <parameter id="selections">
       <parameter id="id" value="USERINFOBACKUP" />
       <parameter id="nameKey" value="institutions.tasks.userinfobackup" />
+    </parameter>
+  </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="FacetedSearchClassificationConverter">
+    <parameter id="id" value="FACETEDSEARCHCLASSIFICATION" />
+    <parameter id="class" value="bean:com.tle.core.facetedsearch.converter.FacetedSearchClassificationConverter" />
+    <parameter id="order" value="670" />
+    <parameter id="selections">
+      <parameter id="id" value="FACETEDSEARCHCLASSIFICATION" />
+      <parameter id="nameKey" value="institutions.tasks.facetedsearchclassification" />
     </parameter>
   </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="userConverter">
