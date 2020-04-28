@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Button,
+  Button
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 
@@ -16,6 +16,7 @@ interface ConfirmDialogProps {
   children?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
+  confirmButtonText?: string;
 }
 
 const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
@@ -24,6 +25,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   children,
   onCancel,
   onConfirm,
+  confirmButtonText
 }: ConfirmDialogProps) => {
   const { cancel, delete: del } = commonString.action;
   return (
@@ -49,7 +51,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
           id="confirm-delete"
           autoFocus
         >
-          {del}
+          {confirmButtonText ? confirmButtonText : del}
         </Button>
       </DialogActions>
     </Dialog>
