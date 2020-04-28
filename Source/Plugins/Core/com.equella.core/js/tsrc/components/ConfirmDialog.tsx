@@ -16,7 +16,7 @@ interface ConfirmDialogProps {
   children?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
-  confirmButtonText?: string;
+  confirmButtonText: string;
 }
 
 const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
@@ -27,7 +27,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   onConfirm,
   confirmButtonText
 }: ConfirmDialogProps) => {
-  const { cancel, delete: del } = commonString.action;
+  const { cancel } = commonString.action;
   return (
     <Dialog
       open={open}
@@ -42,16 +42,20 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="secondary" id="cancel-delete">
+        <Button
+          onClick={onCancel}
+          color="secondary"
+          id="confirm-dialog-cancel-button"
+        >
           {cancel}
         </Button>
         <Button
           onClick={onConfirm}
           color="primary"
-          id="confirm-delete"
+          id="confirm-dialog-confirm-button"
           autoFocus
         >
-          {confirmButtonText ? confirmButtonText : del}
+          {confirmButtonText}
         </Button>
       </DialogActions>
     </Dialog>

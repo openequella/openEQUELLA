@@ -5,7 +5,7 @@ import ConfirmDialog from "../../tsrc/components/ConfirmDialog";
 
 export default {
   title: "ConfirmDialog",
-  component: ConfirmDialog,
+  component: ConfirmDialog
 };
 
 export const ShowDialog = () => (
@@ -17,5 +17,6 @@ export const ShowDialog = () => (
     )}
     onCancel={action("cancel")}
     onConfirm={action("confirm")}
+    confirmButtonText={"ok"}
   />
 );
