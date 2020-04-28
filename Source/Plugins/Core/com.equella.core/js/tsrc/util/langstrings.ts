@@ -291,6 +291,10 @@ export const languageStrings = {
       register: "Register",
       refresh: "Refresh"
     },
+    result: {
+      success: "Saved successfully.",
+      fail: "Failed to save."
+    },
     users: "Users",
     groups: "Groups",
     roles: "Roles"
