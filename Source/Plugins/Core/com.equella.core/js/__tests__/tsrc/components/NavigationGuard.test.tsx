@@ -11,8 +11,8 @@ import ConfirmDialog from "../../../tsrc/components/ConfirmDialog";
  */
 jest.mock("react-router-dom", () => ({
   useHistory: () => ({
-    push: jest.fn()
-  })
+    push: jest.fn(),
+  }),
 }));
 
 describe("<NavigationGuard />", () => {

@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Button
+  Button,
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 
@@ -25,7 +25,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   children,
   onCancel,
   onConfirm,
-  confirmButtonText
+  confirmButtonText,
 }: ConfirmDialogProps) => {
   const { cancel } = commonString.action;
   return (

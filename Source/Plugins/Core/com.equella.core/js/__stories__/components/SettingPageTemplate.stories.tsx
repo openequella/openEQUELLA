@@ -5,7 +5,7 @@ import { Card } from "@material-ui/core";
 
 export default {
   title: "SettingPageTemplate",
-  component: SettingPageTemplate
+  component: SettingPageTemplate,
 };
 
 const onClose = action("Close snackbar");

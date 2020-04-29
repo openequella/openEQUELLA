@@ -14,8 +14,8 @@ const useStyles = makeStyles({
     right: 0,
     marginTop: "80px",
     marginRight: "16px",
-    width: "calc(25% - 112px)"
-  }
+    width: "calc(25% - 112px)",
+  },
 });
 
 interface SettingPageTemplateProps {
@@ -56,7 +56,7 @@ const SettingPageTemplate = ({
   snackBarOnClose,
   saveButtonDisabled,
   preventNavigation,
-  children
+  children,
 }: SettingPageTemplateProps) => {
   const classes = useStyles();
 

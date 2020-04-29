@@ -57,7 +57,7 @@ class SearchCourse extends React.Component<
       courses: [],
       searching: false,
       bottomVisible: true,
-      linkClicked: false
+      linkClicked: false,
     };
   }
 
@@ -73,7 +73,7 @@ class SearchCourse extends React.Component<
       searching,
       query,
       includeArchived,
-      courses
+      courses,
     } = this.state;
     if (resumptionToken && !searching && courses.length < MaxCourses) {
       this.doSearch(query, includeArchived, false);
@@ -87,15 +87,15 @@ class SearchCourse extends React.Component<
     const doReset = resumptionToken == undefined;
     const { bottomVisible } = this.state;
     this.setState({ searching: true });
-    searchCourses(q, includeArchived, 30, resumptionToken).then(sr => {
+    searchCourses(q, includeArchived, 30, resumptionToken).then((sr) => {
       if (sr.resumptionToken && bottomVisible)
         setTimeout(this.maybeKeepSearching, 250);
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         ...prevState,
         courses: doReset ? sr.results : prevState.courses.concat(sr.results),
         totalAvailable: sr.available,
         resumptionToken: sr.resumptionToken,
-        searching: false
+        searching: false,
       }));
     });
   };
@@ -114,9 +114,9 @@ class SearchCourse extends React.Component<
   };
 
   visiblityCheck = (bottomVisible: boolean) =>
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
-      bottomVisible: prevState.bottomVisible && bottomVisible
+      bottomVisible: prevState.bottomVisible && bottomVisible,
     }));
 
   componentWillUnmount() {
@@ -135,15 +135,15 @@ class SearchCourse extends React.Component<
   componentDidMount() {
     window.addEventListener("scroll", this.onScroll, false);
     this.doSearch("", false, true);
-    this.props.checkCreate().then(canCreate => this.setState({ canCreate }));
+    this.props.checkCreate().then((canCreate) => this.setState({ canCreate }));
     this.props.updateTemplate(templateDefaults(strings.title));
     this.updateQuery(this.state.query);
   }
 
   updateQuery(query: string) {
-    this.props.updateTemplate(tp => ({
+    this.props.updateTemplate((tp) => ({
       ...tp,
-      titleExtra: <AppBarQuery query={query} onChange={this.handleQuery} />
+      titleExtra: <AppBarQuery query={query} onChange={this.handleQuery} />,
     }));
   }
 
@@ -164,7 +164,7 @@ class SearchCourse extends React.Component<
       const { includeArchived, query } = this.state;
       this.props
         .deleteCourse(uuid)
-        .then(_ => this.doSearch(query, includeArchived, true));
+        .then((_) => this.doSearch(query, includeArchived, true));
     }
   };
 
@@ -174,7 +174,7 @@ class SearchCourse extends React.Component<
       canCreate,
       courses,
       totalAvailable,
-      searching
+      searching,
     } = this.state;
     return (
       <React.Fragment>
@@ -212,7 +212,7 @@ class SearchCourse extends React.Component<
           }
         >
           {this.state.linkClicked && <Redirect to={routes.NewCourse.path} />}
-          {courses.map(course => {
+          {courses.map((course) => {
             let onDelete;
             if (
               course.uuid &&
@@ -230,7 +230,7 @@ class SearchCourse extends React.Component<
             return (
               <SearchResult
                 key={course.uuid}
-                onClick={_ => {}}
+                onClick={(_) => {}}
                 to={routes.EditCourse.to(course.uuid!)}
                 primaryText={text}
                 secondaryText={course.description}
@@ -256,7 +256,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
     checkCreate: () =>
       workers
         .checkPrivs(dispatch, { privilege: ["CREATE_COURSE_INFO"] })
-        .then(p => p.indexOf("CREATE_COURSE_INFO") != -1)
+        .then((p) => p.indexOf("CREATE_COURSE_INFO") != -1),
   };
 }
 
