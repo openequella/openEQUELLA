@@ -113,8 +113,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
-	  registry.addSingletonResource(new Auth());
-	  classes.add(Auth.class);
+    registry.addSingletonResource(new Auth());
+    classes.add(Auth.class);
     registry.addSingletonResource(new CloudProviderApi());
     classes.add(CloudProviderApi.class);
     registry.addSingletonResource(new SettingsResource());
