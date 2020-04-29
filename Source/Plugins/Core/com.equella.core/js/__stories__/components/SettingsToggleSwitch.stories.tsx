@@ -5,7 +5,7 @@ import { action } from "@storybook/addon-actions";
 
 export default {
   title: "SettingsToggleSwitch",
-  component: SettingsToggleSwitch
+  component: SettingsToggleSwitch,
 };
 
 export const ToggleSwitchControl = () => (

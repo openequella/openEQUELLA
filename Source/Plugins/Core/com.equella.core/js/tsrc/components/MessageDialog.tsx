@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 
@@ -22,14 +22,14 @@ const MessageDialog = ({
   title,
   subtitle,
   messages,
-  close
+  close,
 }: MessageDialogProps) => {
   return (
     <Dialog open={open} onClose={close} fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{subtitle}</DialogContentText>
-        {messages.map(message => (
+        {messages.map((message) => (
           <Typography>{message}</Typography>
         ))}
       </DialogContent>

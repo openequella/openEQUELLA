@@ -9,5 +9,5 @@ export const Config: Config = {
   baseUrl:
     typeof document == "undefined"
       ? ""
-      : document.getElementsByTagName("base")[0].href
+      : document.getElementsByTagName("base")[0].href,
 };

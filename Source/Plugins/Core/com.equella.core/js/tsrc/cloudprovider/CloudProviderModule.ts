@@ -19,7 +19,7 @@ export function getCloudProviders(): Promise<
 > {
   return Axios.get<PagingResults<CloudProviderEntity>>(
     GET_CLOUD_PROVIDER_LIST_URL
-  ).then(res => res.data);
+  ).then((res) => res.data);
 }
 
 export function deleteCloudProvider(cloudProviderId: string): AxiosPromise {
@@ -36,13 +36,13 @@ export function registerCloudProviderInit(
   cloudProviderUrl: string
 ): Promise<CloudProviderInitResponse> {
   const params = {
-    url: cloudProviderUrl
+    url: cloudProviderUrl,
   };
   return Axios.post<CloudProviderInitResponse>(
     POST_CLOUD_PROVIDER_REGISTER_INIT_URL,
     null,
     {
-      params: params
+      params: params,
     }
-  ).then(res => res.data);
+  ).then((res) => res.data);
 }

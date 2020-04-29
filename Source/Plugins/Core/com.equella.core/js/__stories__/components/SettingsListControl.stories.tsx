@@ -7,7 +7,7 @@ import { action } from "@storybook/addon-actions";
 
 export default {
   title: "SettingsListControl",
-  component: SettingsListControl
+  component: SettingsListControl,
 };
 
 const marks: Mark[] = [
@@ -18,7 +18,7 @@ const marks: Mark[] = [
   { label: "x1.5", value: 4 },
   { label: "x2", value: 5 },
   { label: "x4", value: 6 },
-  { label: "x8", value: 7 }
+  { label: "x8", value: 7 },
 ];
 
 export const ToggleSwitchControl = () => (

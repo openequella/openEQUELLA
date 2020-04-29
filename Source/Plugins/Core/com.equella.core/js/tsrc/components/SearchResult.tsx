@@ -6,7 +6,7 @@ import {
   Theme,
   WithStyles,
   withStyles,
-  createStyles
+  createStyles,
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -17,19 +17,19 @@ import { Link } from "react-router-dom";
 const styles = (theme: Theme) =>
   createStyles({
     searchResultContent: {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     itemThumb: {
       maxWidth: "88px",
       maxHeight: "66px",
-      marginRight: "12px"
+      marginRight: "12px",
     },
     displayNode: {
-      padding: 0
+      padding: 0,
     },
     details: {
-      marginTop: theme.spacing(1)
-    }
+      marginTop: theme.spacing(1),
+    },
   });
 
 export interface SearchResultExtraDetail {
@@ -55,7 +55,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
       <Typography
         color="primary"
         variant="subtitle1"
-        component={p => (
+        component={(p) => (
           <Link {...p} to={to}>
             {this.props.primaryText}
           </Link>

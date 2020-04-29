@@ -8,7 +8,7 @@ interface LegacyFormProps {
 
 export function LegacyForm({ children, state }: LegacyFormProps) {
   return (
-    <form name="eqForm" id="eqpageForm" onSubmit={e => e.preventDefault()}>
+    <form name="eqForm" id="eqpageForm" onSubmit={(e) => e.preventDefault()}>
       <div style={{ display: "none" }} className="_hiddenstate">
         {Object.keys(state).map((k, i) => {
           return (

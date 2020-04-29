@@ -1,7 +1,7 @@
 import {
   addElement,
   deleteElement,
-  replaceElement
+  replaceElement,
 } from "../../../tsrc/util/ImmutableArrayUtil";
 import { MimeTypeFilter } from "../../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
 
@@ -29,7 +29,7 @@ describe("ImmutableArrayUtil", () => {
 
   describe("create new arrays of objects", () => {
     const testingArray: MimeTypeFilter[] = [
-      { id: "1", name: "PNG Image filter", mimeTypes: ["image/png"] }
+      { id: "1", name: "PNG Image filter", mimeTypes: ["image/png"] },
     ];
     let newArray: MimeTypeFilter[] = [];
     const comparator = (filter: MimeTypeFilter) =>
@@ -37,7 +37,7 @@ describe("ImmutableArrayUtil", () => {
     const videoFilter: MimeTypeFilter = {
       id: "2",
       name: "Video filter",
-      mimeTypes: ["video/mp4"]
+      mimeTypes: ["video/mp4"],
     };
 
     it("should add a new filter", () => {
@@ -49,12 +49,12 @@ describe("ImmutableArrayUtil", () => {
       const gifFilter = {
         id: "3",
         name: "GIF Image filter",
-        mimeTypes: ["image/gif"]
+        mimeTypes: ["image/gif"],
       };
       newArray = replaceElement(testingArray, comparator, gifFilter);
       expect(newArray).toHaveLength(1);
       expect(
-        newArray.some(filter => filter.name === "GIF Image filter")
+        newArray.some((filter) => filter.name === "GIF Image filter")
       ).toBeTruthy();
     });
 

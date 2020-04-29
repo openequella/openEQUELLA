@@ -39,9 +39,9 @@ export function searchCourses(
     length,
     archived: includeArchived,
     resumption,
-    privilege: ["EDIT_COURSE_INFO", "DELETE_COURSE_INFO"]
+    privilege: ["EDIT_COURSE_INFO", "DELETE_COURSE_INFO"],
   });
   return Axios.get<PagingResults<Course>>(
     `${Config.baseUrl}api/course${qs}`
-  ).then(res => res.data);
+  ).then((res) => res.data);
 }

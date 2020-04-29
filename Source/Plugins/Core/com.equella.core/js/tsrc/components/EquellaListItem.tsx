@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import {
   ListItem,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
 } from "@material-ui/core";
 
 interface EquellaListItemProps {
@@ -21,7 +21,7 @@ class EquellaListItem extends React.Component<EquellaListItemProps> {
       listItemPrimaryText,
       icon,
       listItemSecondText,
-      secondaryAction
+      secondaryAction,
     } = this.props;
 
     return (

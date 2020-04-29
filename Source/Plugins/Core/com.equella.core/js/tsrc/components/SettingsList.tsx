@@ -18,7 +18,7 @@ interface SettingsListProps {
  */
 export default function SettingsList({
   subHeading,
-  children
+  children,
 }: SettingsListProps) {
   return (
     <List

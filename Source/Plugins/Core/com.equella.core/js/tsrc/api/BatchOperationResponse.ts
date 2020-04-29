@@ -11,6 +11,6 @@ export function groupErrorMessages(
   responses: BatchOperationResponse[]
 ): string[] {
   return responses
-    .filter(response => response.status >= 400)
-    .map(response => response.message);
+    .filter((response) => response.status >= 400)
+    .map((response) => response.message);
 }

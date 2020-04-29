@@ -22,13 +22,13 @@ class ListSearchConfigs extends React.Component<
   constructor(props: SearchConfigsProps) {
     super(props);
     this.state = {
-      searchConfigs: null
+      searchConfigs: null,
     };
   }
 
   componentDidMount() {
     listAllConfigs()
-      .then(searchConfigs => this.setState({ searchConfigs }))
+      .then((searchConfigs) => this.setState({ searchConfigs }))
       .catch(handleUnexpectedApiError(this));
     this.props.updateTemplate(templateDefaults(strings.title));
   }
@@ -50,10 +50,10 @@ class ListSearchConfigs extends React.Component<
       >
         {!searchConfigs
           ? null
-          : searchConfigs.map(sc => (
+          : searchConfigs.map((sc) => (
               <SearchResult
                 to={routes.Search.path}
-                onClick={e => e}
+                onClick={(e) => e}
                 primaryText={sc.name}
               />
             ))}

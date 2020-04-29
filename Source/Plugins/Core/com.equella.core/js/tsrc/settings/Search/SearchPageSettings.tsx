@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   templateDefaults,
   TemplateUpdate,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
 import { Button, Card } from "@material-ui/core";
@@ -15,7 +15,7 @@ import {
   getSearchSettingsFromServer,
   saveCloudSettingsToServer,
   saveSearchSettingsToServer,
-  SearchSettings
+  SearchSettings,
 } from "./SearchSettingsModule";
 import MessageInfo from "../../components/MessageInfo";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
@@ -31,14 +31,14 @@ const useStyles = makeStyles({
     right: 0,
     marginTop: "80px",
     marginRight: "16px",
-    width: "calc(25% - 112px)"
+    width: "calc(25% - 112px)",
   },
   spacedCards: {
     margin: "16px",
     width: "75%",
     padding: "16px",
-    float: "left"
-  }
+    float: "left",
+  },
 });
 
 function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
@@ -46,7 +46,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     defaultSearchSettings
   );
   const [cloudSettings, setCloudSettings] = React.useState<CloudSettings>({
-    disabled: false
+    disabled: false,
   });
   const [showError, setShowError] = React.useState<boolean>(false);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
@@ -56,9 +56,9 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   const classes = useStyles();
 
   React.useEffect(() => {
-    updateTemplate(tp => ({
+    updateTemplate((tp) => ({
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
-      backRoute: routes.Settings.to
+      backRoute: routes.Settings.to,
     }));
     getSearchSettingsFromServer()
       .then((settings: SearchSettings) => setSearchSettings(settings))
@@ -67,7 +67,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
           setCloudSettings(settings)
         )
       )
-      .catch(error => handleError(error));
+      .catch((error) => handleError(error));
   }, []);
 
   function handleError(error: TemplateUpdate) {
@@ -95,10 +95,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               <DefaultSortOrderSetting
                 disabled={showError}
                 value={searchSettings.defaultSearchSort}
-                setValue={order =>
+                setValue={(order) =>
                   setSearchSettings({
                     ...searchSettings,
-                    defaultSearchSort: order
+                    defaultSearchSort: order,
                   })
                 }
               />
@@ -112,10 +112,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={searchSettings.searchingShowNonLiveCheckbox}
-                setValue={value =>
+                setValue={(value) =>
                   setSearchSettings({
                     ...searchSettings,
-                    searchingShowNonLiveCheckbox: value
+                    searchingShowNonLiveCheckbox: value,
                   })
                 }
                 disabled={showError}
@@ -131,10 +131,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={searchSettings.authenticateFeedsByDefault}
-                setValue={value =>
+                setValue={(value) =>
                   setSearchSettings({
                     ...searchSettings,
-                    authenticateFeedsByDefault: value
+                    authenticateFeedsByDefault: value,
                   })
                 }
                 disabled={showError}
@@ -149,7 +149,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={cloudSettings.disabled}
-                setValue={value =>
+                setValue={(value) =>
                   setCloudSettings({ ...cloudSettings, disabled: value })
                 }
                 disabled={showError}
@@ -169,10 +169,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={searchSettings.searchingDisableGallery}
-                setValue={value =>
+                setValue={(value) =>
                   setSearchSettings({
                     ...searchSettings,
-                    searchingDisableGallery: value
+                    searchingDisableGallery: value,
                   })
                 }
                 disabled={showError}
@@ -187,10 +187,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={searchSettings.searchingDisableVideos}
-                setValue={value =>
+                setValue={(value) =>
                   setSearchSettings({
                     ...searchSettings,
-                    searchingDisableVideos: value
+                    searchingDisableVideos: value,
                   })
                 }
                 disabled={showError}
@@ -204,10 +204,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             control={
               <SettingsToggleSwitch
                 value={searchSettings.fileCountDisabled}
-                setValue={value =>
+                setValue={(value) =>
                   setSearchSettings({
                     ...searchSettings,
-                    fileCountDisabled: value
+                    fileCountDisabled: value,
                   })
                 }
                 disabled={showError}
