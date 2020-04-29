@@ -33,7 +33,10 @@ describe("<NavigationGuard />", () => {
   });
 
   it("should show ConfirmDialog when route is going to change", () => {
-    // Assert when route change event is triggered.
+    // The dialog is closed.
+    expect(component.exists("h2")).not.toBe(true);
+
+    // The dialog is open when route change event is triggered.
     history.listen(() => {
       expect(component.find("h2").text()).toBe("Close without saving?");
     });
