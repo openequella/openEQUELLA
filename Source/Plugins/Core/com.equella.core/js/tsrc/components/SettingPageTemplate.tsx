@@ -1,11 +1,11 @@
 import * as React from "react";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { Button } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "./MessageInfo";
 import { makeStyles } from "@material-ui/core/styles";
-import NavigationGuard from "./NavigationGuard";
+import { NavigationGuard } from "./NavigationGuard";
 
 const useStyles = makeStyles({
   floatingButton: {
@@ -59,22 +59,6 @@ const SettingPageTemplate = ({
   children
 }: SettingPageTemplateProps) => {
   const classes = useStyles();
-
-  /**
-   * Handle 'beforeunload' event when preventing navigation is required.
-   * Do not handel this event when this component will unmount.
-   */
-  useEffect(() => {
-    window.onbeforeunload = () => {
-      if (preventNavigation) {
-        return true;
-      }
-      return;
-    };
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [preventNavigation]);
 
   return (
     <>

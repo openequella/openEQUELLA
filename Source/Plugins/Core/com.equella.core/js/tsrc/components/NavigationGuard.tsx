@@ -6,6 +6,18 @@ import { Location } from "history";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 
+/**
+ * Prevent navigations triggered by Browsers' behaviours when this's required.
+ */
+export const blockNavigationWithBrowser = (preventNavigation: boolean) => {
+  window.onbeforeunload = () => {
+    if (preventNavigation) {
+      return true;
+    }
+    return;
+  };
+};
+
 interface Props {
   /**
    * A condition when navigation should be prevented.
@@ -13,7 +25,7 @@ interface Props {
   when: boolean;
 }
 
-const NavigationGuard = ({ when }: Props) => {
+export const NavigationGuard = ({ when }: Props) => {
   const history = useHistory();
   const { message, title } = languageStrings.navigationguard;
 
@@ -29,6 +41,17 @@ const NavigationGuard = ({ when }: Props) => {
       history.push(navigateTo.pathname);
     }
   }, [confirmedNavigation, navigateTo]);
+
+  /**
+   * Handle 'beforeunload' event when preventing navigation is required.
+   * Do not handel this event when this component will unmount.
+   */
+  useEffect(() => {
+    blockNavigationWithBrowser(when);
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [when]);
 
   /**
    * Show a dialog to let user confirm and save the next location.
@@ -67,5 +90,3 @@ const NavigationGuard = ({ when }: Props) => {
     </>
   );
 };
-
-export default NavigationGuard;
