@@ -81,8 +81,8 @@ class Auth {
       "This is to logout sessions which were setup with the /api/auth/login endpoint, and will do so based on the JSESSIONID cookie."
   )
   def logout(@Context req: HttpServletRequest): Response = {
+    LegacyGuice.userSessionService.reenableSessionUse()
     val us = LegacyGuice.userService
-    us.logoutURI(CurrentUser.getUserState, null)
     us.logoutToGuest(us.getWebAuthenticationDetails(req), false)
     Response.ok().build()
   }
