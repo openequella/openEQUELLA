@@ -182,6 +182,15 @@ object SettingsList {
     searchPrivProvider.isAuthorised
   )
 
+  val facetedSearchSettings = CoreSettingsPage(
+    "facetedsearch",
+    Searching,
+    "setting.facetedsearch.title",
+    "setting.facetedsearch.desc",
+    "page/facetedsearchsettings",
+    searchPrivProvider.isAuthorised
+  )
+
   val searchFilterSettings = CoreSettingsPage("searchfilter",
                                               Searching,
                                               "setting.searchfilter.title",
@@ -221,6 +230,7 @@ object SettingsList {
     loginNoticeSettings,
     searchPageSettings,
     contentIndexingSettings,
+    facetedSearchSettings,
     searchFilterSettings,
     cloudProviderSettings,
     CoreSettingsPage("shortcuts",
