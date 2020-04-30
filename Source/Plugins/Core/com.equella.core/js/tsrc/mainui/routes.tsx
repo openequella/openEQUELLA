@@ -11,10 +11,7 @@ import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
 import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
 import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
-
-const LoginNoticeConfigPage = React.lazy(() =>
-  import("../loginnotice/LoginNoticeConfigPage")
-);
+import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 
 declare const bridge: Bridge;
 
