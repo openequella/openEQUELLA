@@ -5,7 +5,7 @@ import {
   TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import { Button, Card } from "@material-ui/core";
+import { Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -17,12 +17,12 @@ import {
   saveSearchSettingsToServer,
   SearchSettings,
 } from "./SearchSettingsModule";
-import MessageInfo from "../../components/MessageInfo";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
-import { Save } from "@material-ui/icons";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
+import SettingPageTemplate from "../../components/SettingPageTemplate";
+import { shallowEqual } from "shallow-equal-object";
 
 const useStyles = makeStyles({
   floatingButton: {
@@ -48,6 +48,16 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   const [cloudSettings, setCloudSettings] = React.useState<CloudSettings>({
     disabled: false,
   });
+
+  const [initialSearchSettings, setInitialSearchSettings] = React.useState<
+    SearchSettings
+  >(defaultSearchSettings);
+  const [initialCloudSettings, setInitialCloudSettings] = React.useState<
+    CloudSettings
+  >({
+    disabled: false,
+  });
+
   const [showError, setShowError] = React.useState<boolean>(false);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
 
@@ -55,20 +65,32 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
 
+  const changesUnsaved =
+    initialCloudSettings.disabled !== cloudSettings.disabled ||
+    !shallowEqual(searchSettings, initialSearchSettings);
+
   React.useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
+    getSettings();
+  }, []);
+
+  function getSettings() {
     getSearchSettingsFromServer()
-      .then((settings: SearchSettings) => setSearchSettings(settings))
+      .then((settings: SearchSettings) => {
+        setSearchSettings(settings);
+        setInitialSearchSettings(settings);
+      })
       .then(() =>
-        getCloudSettingsFromServer().then((settings: CloudSettings) =>
-          setCloudSettings(settings)
-        )
+        getCloudSettingsFromServer().then((settings: CloudSettings) => {
+          setCloudSettings(settings);
+          setInitialCloudSettings(settings);
+        })
       )
       .catch((error) => handleError(error));
-  }, []);
+  }
 
   function handleError(error: TemplateUpdate) {
     setShowError(true);
@@ -79,11 +101,18 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
-      .catch((error: TemplateUpdate) => handleError(error));
+      .catch((error: TemplateUpdate) => handleError(error))
+      .finally(() => getSettings());
   }
 
   return (
-    <>
+    <SettingPageTemplate
+      onSave={handleSubmitButton}
+      saveButtonDisabled={!changesUnsaved}
+      snackbarOpen={showSuccess}
+      snackBarOnClose={() => setShowSuccess(false)}
+      preventNavigation={changesUnsaved}
+    >
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={searchPageSettingsStrings.general}>
           {/*Default Sort Order*/}
@@ -217,27 +246,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
           />
         </SettingsList>
       </Card>
-      {/*Save Button*/}
-      <Button
-        color={"primary"}
-        id={"_saveButton"}
-        disabled={showError}
-        className={classes.floatingButton}
-        variant="contained"
-        onClick={handleSubmitButton}
-        size="large"
-      >
-        <Save />
-        {searchPageSettingsStrings.save}
-      </Button>
-      {/*Snackbar*/}
-      <MessageInfo
-        title={searchPageSettingsStrings.success}
-        open={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        variant={"success"}
-      />
-    </>
+    </SettingPageTemplate>
   );
 }
 
