@@ -266,7 +266,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       snackBarOnClose={() => setShowSnackBar(false)}
       preventNavigation={changesUnsaved}
     >
-      {/* Owner filter and Date modified filter */}
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
           <SettingsListControl
@@ -302,7 +301,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           />
         </SettingsList>
       </Card>
-      {/* MIME type filters */}
+
       <Card className={classes.spacedCards}>
         <List
           subheader={
@@ -348,7 +347,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </IconButton>
         </CardActions>
       </Card>
-      {/* MIME type filter dialog */}
+
       <MimeTypeFilterEditingDialog
         open={openMimeTypeFilterEditor}
         onClose={closeMimeTypeFilterDialog}
@@ -356,6 +355,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         mimeTypeFilter={selectedMimeTypeFilter}
         handleError={handleError}
       />
+
       <MessageDialog
         open={openMessageDialog}
         messages={messageDialogMessages}

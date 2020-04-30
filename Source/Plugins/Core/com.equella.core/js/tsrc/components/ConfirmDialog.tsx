@@ -11,11 +11,29 @@ import {
 import { commonString } from "../util/commonstrings";
 
 interface ConfirmDialogProps {
+  /**
+   * Open the dialog when true.
+   */
   open: boolean;
+  /**
+   * The title of the dialog.
+   */
   title: string;
+  /**
+   * Contents displayed in the dialog.
+   */
   children?: ReactNode;
+  /**
+   * Fired when click the Confirm button.
+   */
   onConfirm: () => void;
+  /**
+   * Fired when click the Cancel button.
+   */
   onCancel: () => void;
+  /**
+   * The text of the Confirm button.
+   */
   confirmButtonText: string;
 }
 
