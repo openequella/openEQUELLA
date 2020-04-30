@@ -29,6 +29,7 @@ const SaveButton = ({ onSave, saveButtonDisabled }: SaveButtonProps) => {
   const classes = useStyles();
   return (
     <Button
+      id={"_saveButton"}
       color={"primary"}
       className={classes.floatingButton}
       variant={"contained"}
