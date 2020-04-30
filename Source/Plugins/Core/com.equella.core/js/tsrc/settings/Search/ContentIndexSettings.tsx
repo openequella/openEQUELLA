@@ -5,7 +5,7 @@ import {
   TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import { Button, Card } from "@material-ui/core";
+import { Button, Card, Mark, Slider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -46,7 +46,20 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
 
   const contentIndexSettingsStrings =
     languageStrings.settings.searching.contentIndexSettings;
+
+  const markStrings = contentIndexSettingsStrings.sliderMarks;
   const classes = useStyles();
+
+  const boostVals: Mark[] = [
+    { label: markStrings.off, value: 0 },
+    { label: "x0.25", value: 1 },
+    { label: "x0.5", value: 2 },
+    { label: markStrings.noBoost, value: 3 },
+    { label: "x1.5", value: 4 },
+    { label: "x2", value: 5 },
+    { label: "x4", value: 6 },
+    { label: "x8", value: 7 },
+  ];
 
   React.useEffect(() => {
     updateTemplate((tp) => ({
@@ -69,6 +82,17 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
       .catch((error: TemplateUpdate) => handleError(error));
   }
 
+  const handleSliderChange = (newValue: number, prop: string) => {
+    setSearchSettings({
+      ...searchSettings,
+      [prop]: newValue,
+    });
+  };
+
+  const getAriaLabel = (value: number, index: number): string => {
+    return boostVals[value].label as string;
+  };
+
   return (
     <>
       <Card className={classes.spacedCards}>
@@ -85,6 +109,63 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                     ...searchSettings,
                     urlLevel: level,
                   })
+                }
+              />
+            }
+          />
+        </SettingsList>
+      </Card>
+      <Card className={classes.spacedCards}>
+        <SettingsList subHeading={contentIndexSettingsStrings.boosting}>
+          <SettingsListControl
+            primaryText={contentIndexSettingsStrings.titleBoostingTitle}
+            divider
+            control={
+              <Slider
+                disabled={showError}
+                marks={boostVals}
+                min={0}
+                max={7}
+                getAriaValueText={getAriaLabel}
+                aria-label={contentIndexSettingsStrings.titleBoostingTitle}
+                value={searchSettings.titleBoost}
+                onChange={(event, value) =>
+                  handleSliderChange(value as number, "titleBoost")
+                }
+              />
+            }
+          />
+          <SettingsListControl
+            primaryText={contentIndexSettingsStrings.metaBoostingTitle}
+            divider
+            control={
+              <Slider
+                disabled={showError}
+                marks={boostVals}
+                min={0}
+                max={7}
+                getAriaValueText={getAriaLabel}
+                aria-label={contentIndexSettingsStrings.metaBoostingTitle}
+                value={searchSettings.descriptionBoost}
+                onChange={(event, value) =>
+                  handleSliderChange(value as number, "descriptionBoost")
+                }
+              />
+            }
+          />
+          <SettingsListControl
+            primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
+            control={
+              <Slider
+                disabled={showError}
+                marks={boostVals}
+                min={0}
+                max={7}
+                getAriaValueText={getAriaLabel}
+                aria-label={contentIndexSettingsStrings.attachmentBoostingTitle}
+                value={searchSettings.attachmentBoost}
+                onChange={(event, value) =>
+                  handleSliderChange(value as number, "attachmentBoost")
                 }
               />
             }

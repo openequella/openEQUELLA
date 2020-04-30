@@ -5,13 +5,13 @@ import { TemplateUpdate } from "./Template";
 import SearchCourse from "../course/SearchCourse";
 import EditCourse from "../course/EditCourse";
 import ThemePage from "../theme/ThemePage";
-import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
 import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
 import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
 import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
+import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 
 declare const bridge: Bridge;
 

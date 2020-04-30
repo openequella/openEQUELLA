@@ -20,9 +20,10 @@ import {
   uploadPreLoginNoticeImage,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
-import RichTextEditor from "../components/RichTextEditor";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import { DateTimePicker } from "material-ui-pickers";
+
+const RichTextEditor = React.lazy(() => import("../components/RichTextEditor"));
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -234,11 +235,13 @@ class PreLoginNoticeConfigurator extends React.Component<
       <SettingsMenuContainer>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <RichTextEditor
-              htmlInput={this.state.db.notice}
-              onStateChange={this.handleEditorChange}
-              imageUploadCallBack={uploadPreLoginNoticeImage}
-            />
+            <React.Suspense fallback={<div>Loading editor...</div>}>
+              <RichTextEditor
+                htmlInput={this.state.db.notice}
+                onStateChange={this.handleEditorChange}
+                imageUploadCallBack={uploadPreLoginNoticeImage}
+              />
+            </React.Suspense>
           </Grid>
           <Grid item>
             <ScheduleSettings />

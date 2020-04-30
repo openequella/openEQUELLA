@@ -409,10 +409,18 @@ export const languageStrings = {
         save: "Save",
         general: "General",
         success: "Settings saved successfully.",
+        boosting: "Search terms boosting",
+        titleBoostingTitle: "Title",
+        metaBoostingTitle: "Other metadata",
+        attachmentBoostingTitle: "Attachment content",
         option: {
           none: "Do not index",
           webPage: "Web page only",
           secondaryPage: "Web page and linked web pages",
+        },
+        sliderMarks: {
+          off: "Off",
+          noBoost: "No boost",
         },
       },
     },
