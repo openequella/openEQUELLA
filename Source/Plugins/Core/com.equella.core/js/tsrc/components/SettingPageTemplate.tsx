@@ -1,22 +1,9 @@
 import * as React from "react";
 import { ReactNode } from "react";
-import { Button } from "@material-ui/core";
-import { Save } from "@material-ui/icons";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "./MessageInfo";
-import { makeStyles } from "@material-ui/core/styles";
 import { NavigationGuard } from "./NavigationGuard";
-
-const useStyles = makeStyles({
-  floatingButton: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    marginTop: "80px",
-    marginRight: "16px",
-    width: "calc(25% - 112px)",
-  },
-});
+import SaveButton from "./SaveButton";
 
 interface SettingPageTemplateProps {
   /**
@@ -58,27 +45,11 @@ const SettingPageTemplate = ({
   preventNavigation,
   children,
 }: SettingPageTemplateProps) => {
-  const classes = useStyles();
-
   return (
     <>
       {children}
+      <SaveButton onSave={onSave} saveButtonDisabled={saveButtonDisabled} />
 
-      {/* SAVE button*/}
-      <Button
-        color={"primary"}
-        className={classes.floatingButton}
-        variant={"contained"}
-        size={"large"}
-        onClick={onSave}
-        aria-label={commonString.action.save}
-        disabled={saveButtonDisabled}
-      >
-        <Save />
-        {commonString.action.save}
-      </Button>
-
-      {/* Snackbar */}
       <MessageInfo
         title={commonString.result.success}
         open={snackbarOpen}

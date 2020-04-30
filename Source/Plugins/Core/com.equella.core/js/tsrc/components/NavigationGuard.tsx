@@ -20,11 +20,16 @@ export const blockNavigationWithBrowser = (preventNavigation: boolean) => {
 
 interface Props {
   /**
-   * A condition when navigation should be prevented.
+   * Show a dialog if true, when route is going to change.
    */
   when: boolean;
 }
 
+/**
+ * Use 'Prompt' provided by react-router to prevent navigation and
+ * show 'ConfirmDialog'.
+ * Also prevent navigations triggered by Browsers' behaviours.
+ */
 export const NavigationGuard = ({ when }: Props) => {
   const history = useHistory();
   const { message, title } = languageStrings.navigationguard;
@@ -44,7 +49,7 @@ export const NavigationGuard = ({ when }: Props) => {
 
   /**
    * Handle 'beforeunload' event when preventing navigation is required.
-   * Do not handel this event when this component will unmount.
+   * Do not handle this event when this component will unmount.
    */
   useEffect(() => {
     blockNavigationWithBrowser(when);
