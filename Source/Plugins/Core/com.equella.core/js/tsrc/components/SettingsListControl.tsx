@@ -29,6 +29,7 @@ interface SettingsListControlProps {
 const useStyles = makeStyles({
   listItemText: {
     maxWidth: "40%",
+    minHeight: "38px",
   },
   secondaryAction: {
     width: "55%",
