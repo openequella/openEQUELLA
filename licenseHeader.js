@@ -15,7 +15,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import bridge from "../output/Bridge";
-import main from "../tsrc/mainui";
-bridge.main();
-main();
