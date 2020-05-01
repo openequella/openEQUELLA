@@ -5,7 +5,7 @@ import MessageInfo from "./MessageInfo";
 import { NavigationGuard } from "./NavigationGuard";
 import SaveButton from "./SaveButton";
 
-interface SettingPageTemplateProps {
+export interface SettingPageTemplateProps {
   /**
    * Fired when the Save button is clicked.
    */
