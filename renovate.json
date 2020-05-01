@@ -49,6 +49,10 @@
       "groupName": "Apache Tomcat packages"
     },
     {
+      "packagePatterns": ["^org.http4s:http4s"],
+      "groupName": "http4s packages"
+    },
+    {
       "packagePatterns": ["^org.slf4j"],
       "groupName": "SLF4J packages"
     },
