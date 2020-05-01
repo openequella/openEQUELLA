@@ -18,7 +18,7 @@ export const blockNavigationWithBrowser = (preventNavigation: boolean) => {
   };
 };
 
-interface Props {
+export interface NavigationGuardProps {
   /**
    * Show a dialog if true, when route is going to change.
    */
@@ -30,7 +30,7 @@ interface Props {
  * show 'ConfirmDialog'.
  * Also prevent navigations triggered by Browsers' behaviours.
  */
-export const NavigationGuard = ({ when }: Props) => {
+export const NavigationGuard = ({ when }: NavigationGuardProps) => {
   const history = useHistory();
   const { message, title } = languageStrings.navigationguard;
 

@@ -5,14 +5,15 @@ import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSetti
 import SettingsList from "../../../tsrc/components/SettingsList";
 import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
 import { Slider } from "@material-ui/core";
-import { SettingPageTemplateProps } from "../../../tsrc/components/SettingPageTemplate";
+import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 
 /**
- * Mock the default export of SettingPageTemplate as there is no need to include it in this test.
+ * Mock NavigationGuard as there is no need to include it in this test.
  */
-jest.mock("../../../tsrc/components/SettingPageTemplate", () => ({
-  default: ({ children }: SettingPageTemplateProps) => {
-    return <div>{children}</div>;
+
+jest.mock("../../../tsrc/components/NavigationGuard", () => ({
+  NavigationGuard: (props: NavigationGuardProps) => {
+    return <div />;
   },
 }));
 
