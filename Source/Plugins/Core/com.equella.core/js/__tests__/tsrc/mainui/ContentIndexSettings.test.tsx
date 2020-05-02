@@ -5,6 +5,17 @@ import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSetti
 import SettingsList from "../../../tsrc/components/SettingsList";
 import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
 import { Slider } from "@material-ui/core";
+import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
+
+/**
+ * Mock NavigationGuard as there is no need to include it in this test.
+ */
+
+jest.mock("../../../tsrc/components/NavigationGuard", () => ({
+  NavigationGuard: (props: NavigationGuardProps) => {
+    return <div />;
+  },
+}));
 
 describe("Content Index Settings Page", () => {
   jest

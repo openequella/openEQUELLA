@@ -13,6 +13,7 @@ import { formatSize, languageStrings } from "../util/langstrings";
 import EntityList from "../components/EntityList";
 import { templateDefaults, TemplateProps } from "../mainui/Template";
 import { routes } from "../mainui/routes";
+import { commonString } from "../util/commonstrings";
 import VisibilitySensor = require("react-visibility-sensor");
 
 interface SearchCourseProps {
@@ -183,6 +184,7 @@ class SearchCourse extends React.Component<
             title={sprintf(strings.sure, this.state.deleteDetails.name)}
             onConfirm={this.handleDelete}
             onCancel={this.handleClose}
+            confirmButtonText={commonString.action.delete}
           >
             {strings.confirmDelete}
           </ConfirmDialog>

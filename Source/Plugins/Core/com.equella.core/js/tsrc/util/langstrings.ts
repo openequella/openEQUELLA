@@ -291,6 +291,10 @@ export const languageStrings = {
       register: "Register",
       refresh: "Refresh",
     },
+    result: {
+      success: "Saved successfully.",
+      fail: "Failed to save.",
+    },
     users: "Users",
     groups: "Groups",
     roles: "Roles",
@@ -479,5 +483,10 @@ export const languageStrings = {
   },
   screenoptions: {
     description: "Screen options",
+  },
+  navigationguard: {
+    title: "Close without saving?",
+    message:
+      "You have unsaved changes. Are you sure you want to leave this page without saving?",
   },
 };

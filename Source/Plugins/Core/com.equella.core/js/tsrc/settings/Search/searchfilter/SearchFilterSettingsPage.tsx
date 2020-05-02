@@ -6,7 +6,6 @@ import {
 } from "../../../mainui/Template";
 import { routes } from "../../../mainui/routes";
 import {
-  Button,
   Card,
   CardActions,
   ListItem,
@@ -31,8 +30,6 @@ import {
   saveSearchSettingsToServer,
   SearchSettings,
 } from "../SearchSettingsModule";
-import { Save } from "@material-ui/icons";
-import MessageInfo from "../../../components/MessageInfo";
 import {
   batchDelete,
   batchUpdateOrAdd,
@@ -41,7 +38,6 @@ import {
   MimeTypeFilter,
 } from "./SearchFilterSettingsModule";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
-import { commonString } from "../../../util/commonstrings";
 import { generateFromError } from "../../../api/errors";
 import { AxiosError } from "axios";
 import {
@@ -50,6 +46,7 @@ import {
   replaceElement,
 } from "../../../util/ImmutableArrayUtil";
 import MessageDialog from "../../../components/MessageDialog";
+import SettingPageTemplate from "../../../components/SettingPageTemplate";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -61,14 +58,6 @@ const useStyles = makeStyles({
   cardAction: {
     display: "flex",
     justifyContent: "flex-end",
-  },
-  floatingButton: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    marginTop: "80px",
-    marginRight: "16px",
-    width: "calc(25% - 112px)",
   },
 });
 
@@ -132,6 +121,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     initialSearchSettings.searchingDisableDateModifiedFilter !==
       searchSettings.searchingDisableDateModifiedFilter;
 
+  const changesUnsaved = !!mimeTypeFilterChanged || generalSearchSettingChanged;
   /**
    * Fetch the general Search Settings from the Server.
    * Set the initial values of the Owner filter and Date modified filter to state.
@@ -268,10 +258,14 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // The reason for throwing an error again is to prevent subsequent REST calls.
     throw new Error(error.message);
   };
-
   return (
-    <>
-      {/* Owner filter and Date modified filter */}
+    <SettingPageTemplate
+      onSave={save}
+      saveButtonDisabled={!changesUnsaved}
+      snackbarOpen={showSnackBar}
+      snackBarOnClose={() => setShowSnackBar(false)}
+      preventNavigation={changesUnsaved}
+    >
       <Card className={classes.spacedCards}>
         <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
           <SettingsListControl
@@ -308,7 +302,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </SettingsList>
       </Card>
 
-      {/* MIME type filters */}
       <Card className={classes.spacedCards}>
         <List
           subheader={
@@ -355,7 +348,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </CardActions>
       </Card>
 
-      {/* MIME type filter dialog */}
       <MimeTypeFilterEditingDialog
         open={openMimeTypeFilterEditor}
         onClose={closeMimeTypeFilterDialog}
@@ -371,28 +363,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         subtitle={searchFilterStrings.messagedialogsubtitle}
         close={() => setOpenMessageDialog(false)}
       />
-
-      {/* SAVE button*/}
-      <Button
-        color={"primary"}
-        className={classes.floatingButton}
-        variant="contained"
-        size="large"
-        onClick={save}
-        aria-label={searchFilterStrings.save}
-      >
-        <Save />
-        {commonString.action.save}
-      </Button>
-
-      {/* Snackbar */}
-      <MessageInfo
-        title={searchFilterStrings.changesaved}
-        open={showSnackBar}
-        onClose={() => setShowSnackBar(false)}
-        variant={"success"}
-      />
-    </>
+    </SettingPageTemplate>
   );
 };
 

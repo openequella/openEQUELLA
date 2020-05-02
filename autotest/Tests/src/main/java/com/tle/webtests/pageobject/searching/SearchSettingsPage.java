@@ -149,7 +149,7 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
     ((JavascriptExecutor) driver).executeScript("arguments[0].click();", save);
     waiter.until(
         ExpectedConditions.presenceOfElementLocated(
-            By.xpath("//span[text()='Settings saved successfully.']")));
+            By.xpath("//span[text()='Saved successfully.']")));
     return get();
   }
 

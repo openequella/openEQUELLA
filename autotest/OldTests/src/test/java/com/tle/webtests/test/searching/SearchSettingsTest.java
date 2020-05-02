@@ -107,7 +107,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   public void testShowNonLive() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setOrder(SearchSettingsPage.Order.RANK).save();
     ssp.includeNonLive(true).save();
 
     SearchPage searchPage = new SearchPage(context).load();
@@ -182,7 +181,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     soapService.login("AutoTest", "automated");
 
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    ssp.setGenerateAuthFeeds(false).save();
 
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
