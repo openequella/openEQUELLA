@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.10.2"
+val jacksonVersion   = "2.10.3"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.54"
 val SwaggerVersion   = "1.5.24"
@@ -57,9 +57,9 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200213-1.30.9",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200402-1.30.9",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
-  "com.google.code.gson"         % "gson"                        % "1.7.2",
+  "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
   "com.google.guava"             % "guava"                       % "18.0",
   "com.google.inject"            % "guice"                       % "3.0",
@@ -174,7 +174,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.2",
+  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
@@ -197,7 +197,7 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.2",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.2.1",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
@@ -236,7 +236,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
   "io.bit3"                % "jsass"                     % "5.3.0",
-  "io.github.classgraph"   % "classgraph"                % "4.8.65"
+  "io.github.classgraph"   % "classgraph"                % "4.8.78"
 )
 
 libraryDependencies ++= {
