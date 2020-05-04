@@ -147,7 +147,7 @@ jobs:
     strategy:
       matrix:
         newui: [true, false]
-      fast-fail: false
+      fail-fast: false
 
     services:
       postgres:
