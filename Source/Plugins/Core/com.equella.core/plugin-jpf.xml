@@ -68,7 +68,6 @@
     <import plugin-id="com.tle.web.remoting" />
     <import plugin-id="com.tle.web.remoting.rest" />
     <import plugin-id="com.tle.web.remoting.soap" />
-    <import plugin-id="com.tle.web.search" />
     <import plugin-id="com.tle.web.searching" />
     <import plugin-id="com.tle.web.sections" />
     <import plugin-id="com.tle.web.sections.equella" />
