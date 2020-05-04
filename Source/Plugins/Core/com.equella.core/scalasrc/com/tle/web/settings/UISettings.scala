@@ -56,4 +56,7 @@ object UISettingsJava {
     UISettings.getUISettings.map(_.getOrElse(UISettings.defaultSettings))
   }
 
+  def updateUISettings(in: UISettings): Unit = RunWithDB.executeWithPostCommit(
+    SettingsDB.ensureEditSystem(UISettings.setUISettings(in))
+  )
 }
