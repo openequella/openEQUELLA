@@ -25,7 +25,7 @@ val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.11.3"
 val sttpVersion      = "1.7.2"
 val fs2Version       = "1.0.5"
-val jsassVersion     = "5.3.0"
+val jsassVersion     = "5.10.3"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -235,7 +235,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"            % "rhino"                     % "1.7R4",
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-  "io.bit3"                % "jsass"                     % "5.3.0",
+  "io.bit3"                % "jsass"                     % "5.10.3",
   "io.github.classgraph"   % "classgraph"                % "4.8.78"
 )
 
