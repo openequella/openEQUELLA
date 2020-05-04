@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.typesafe"           % "config"                % "1.4.0",
-  "org.jacoco"             % "org.jacoco.report"     % "0.7.9",
+  "org.jacoco"             % "org.jacoco.report"     % "0.8.5",
   "org.jdom"               % "jdom2"                 % "2.0.6",
   "org.apache.axis2"       % "axis2-kernel"          % "1.6.2",
   "org.apache.axis2"       % "axis2-java2wsdl"       % "1.6.2",
