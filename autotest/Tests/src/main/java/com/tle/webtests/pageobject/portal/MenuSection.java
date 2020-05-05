@@ -42,7 +42,9 @@ public class MenuSection extends AbstractPage<MenuSection> {
   }
 
   private WebElement findLink(String title) {
-    return driver.findElement(linkByText(title));
+    By textLink = linkByText(title);
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(textLink));
+    return driver.findElement(textLink);
   }
 
   public <T extends AbstractPage<T>> T clickMenu(String title, T page) {
