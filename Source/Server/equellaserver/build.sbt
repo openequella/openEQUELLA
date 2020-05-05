@@ -192,7 +192,7 @@ libraryDependencies ++= Seq(
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.2_spec" % "1.0.2.Final",
   "org.jboss.logging"                    % "jboss-logging"                  % "3.3.2.Final",
-  "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.1.0.Final",
+  "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"                    % "jboss-logging-processor"        % "2.1.0.Final",
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.2",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
