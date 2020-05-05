@@ -46,7 +46,9 @@ public class MenuSection extends AbstractPage<MenuSection> {
   }
 
   public <T extends AbstractPage<T>> T clickMenu(String title, T page) {
-    findLink(title).click();
+    WebElement link = findLink(title);
+    page.getWaiter().until(ExpectedConditions.elementToBeClickable(link));
+    link.click();
     return page.get();
   }
 
