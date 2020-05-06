@@ -444,6 +444,15 @@ export const languageStrings = {
           noBoost: "No boost",
         },
       },
+      facetedsearchsetting: {
+        name: "Faceted search classifications",
+        add: "Create Faceted search classification",
+        classification: {
+          name: "Classification name",
+          schemanode: "Schema node",
+          categorynumber: "Default number of categories",
+        },
+      },
     },
     ui: { name: "UI", desc: "UI settings" },
   },
