@@ -340,22 +340,7 @@ object SettingsList {
                      "setting.title",
                      "setting.description",
                      "access/portaladmin.do",
-                     portletWebService.canAdminister),
-    CoreSettingsPage(
-      "courses",
-      Integration,
-      "courses.title",
-      "courses.description",
-      "page/course",
-      () =>
-        !aclManager
-          .filterNonGrantedPrivileges(CourseInfoService.PRIV_CREATE_COURSE,
-                                      CourseInfoService.PRIV_EDIT_COURSE)
-          .isEmpty
-    )
-
-//    CoreSettingsPage("schemas", "entities", "schemas.title", "schemas.description",
-//      "page/schema", () => true),
+                     portletWebService.canAdminister)
   )
 
   def anyEditable = allSettings.exists(_.isEditable)

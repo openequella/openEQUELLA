@@ -22,7 +22,6 @@
     "compileps": "pulp build",
     "bundleps": "npm-run-all compileps && npm-run-all --parallel bundleps:*",
     "bundleps:main": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Bridge --main Bridge -o entrybuild/target/main.js\"",
-    "bundleps:selection": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m OEQ.SelectionUI.Main --main OEQ.SelectionUI.Main -o entrybuild/target/selection.js\"",
     "bundleps:uploadlist": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Uploads.UploadList --main Uploads.UploadList -o entrybuild/target/uploadlist.js\"",
     "bundleps:langbundle": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Tools.GenLangStrings --main Tools.GenLangStrings -o target/genlang.js\"",
     "test": "jest test",
