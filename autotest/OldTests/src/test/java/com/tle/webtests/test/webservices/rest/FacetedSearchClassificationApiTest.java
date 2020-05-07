@@ -6,6 +6,7 @@ import com.tle.common.Pair;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -72,6 +73,20 @@ public class FacetedSearchClassificationApiTest extends AbstractRestApiTest {
     assertEquals(404, response.getStatusLine().getStatusCode());
   }
 
+  @Test(dependsOnMethods = "testDeleteClassification")
+  public void testBatchUpdateClassification() throws Exception {
+    String uri = context.getBaseUrl() + API_PATH;
+    ArrayNode jsonBody = mapper.createArrayNode();
+    jsonBody.add(validClassification);
+    jsonBody.add(invalidClassification);
+    HttpResponse response = putEntity(jsonBody.toString(), uri, getToken(), false);
+    assertEquals(207, response.getStatusLine().getStatusCode());
+
+    JsonNode result = mapper.readTree(response.getEntity().getContent());
+    assertEquals(200, result.get(0).get("status").asInt());
+    assertEquals(400, result.get(1).get("status").asInt());
+  }
+
   @Test(dependsOnMethods = "testUpdateClassification")
   public void testDeleteClassification() throws Exception {
     HttpResponse response = deleteResource(validPath(), getToken());
@@ -79,6 +94,21 @@ public class FacetedSearchClassificationApiTest extends AbstractRestApiTest {
 
     response = deleteResource(invalidPath(), getToken());
     assertEquals(404, response.getStatusLine().getStatusCode());
+  }
+
+  @Test(dependsOnMethods = "testBatchUpdateClassification")
+  public void testBatchDeleteClassification() throws Exception {
+    String uri = context.getBaseUrl() + API_PATH;
+    final JsonNode classification = getEntity(uri, getToken());
+    classificationId = classification.get(0).get("id").asLong();
+
+    HttpResponse response =
+        deleteResource(uri, getToken(), "ids", classificationId, "ids", invalidId);
+    assertEquals(207, response.getStatusLine().getStatusCode());
+
+    JsonNode result = mapper.readTree(response.getEntity().getContent());
+    assertEquals(200, result.get(0).get("status").asInt());
+    assertEquals(404, result.get(1).get("status").asInt());
   }
 
   private String validPath() {

@@ -19,3 +19,9 @@
 package com.tle.web.api
 
 case class ApiBatchOperationResponse(id: String, status: Int, message: String)
+
+object ApiBatchOperationResponse {
+  def apply(id: Long, status: Int, message: String): ApiBatchOperationResponse = {
+    ApiBatchOperationResponse(id.toString, status, message)
+  }
+}
