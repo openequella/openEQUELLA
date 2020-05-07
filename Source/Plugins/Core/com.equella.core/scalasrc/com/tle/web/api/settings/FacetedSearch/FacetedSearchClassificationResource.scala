@@ -24,14 +24,14 @@ import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.facetedsearch.bean.FacetedSearchClassification
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.ApiErrorResponse
+import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
-import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces}
+import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 @NoCache
 @Path("settings/facetedsearch/classification")
@@ -115,13 +115,56 @@ class FacetedSearchClassificationResource {
     }
   }
 
+  @PUT
+  @ApiOperation(
+    value = "Update multiple faceted search classifications",
+    notes = "This endpoint is used to update multiple faceted search classifications.",
+    response = classOf[ApiBatchOperationResponse],
+    responseContainer = "List"
+  )
+  def batchUpdate(jsonBody: Array[FacetedSearchClassification]): Response = {
+    privilegeChecker.checkAuthorised()
+    val batchResponses = ListBuffer[ApiBatchOperationResponse]()
+
+    jsonBody.foreach(newClassification => {
+      val id = newClassification.getId
+      val response = validate(newClassification) match {
+        case Left(errors) =>
+          ApiBatchOperationResponse(id, 400, errors.mkString(""))
+        case Right(_) =>
+          if (id == 0) {
+            newClassification.setDateCreated(new Date())
+            newClassification.setDateModified(new Date())
+            newClassification.setInstitution(CurrentInstitution.get)
+            service.add(newClassification)
+            ApiBatchOperationResponse(id, 200, s"A new classification has been created.")
+          } else {
+            Option(service.getById(id)) match {
+              case Some(oldClassification) =>
+                oldClassification.setName(newClassification.getName)
+                oldClassification.setMaxResults(newClassification.getMaxResults)
+                oldClassification.setOrderIndex(newClassification.getOrderIndex)
+                oldClassification.setSchemaNode(newClassification.getSchemaNode)
+                oldClassification.setDateModified(new Date())
+                service.update(oldClassification)
+                ApiBatchOperationResponse(id, 200, s"Classification $id has been updated.")
+              case None =>
+                ApiBatchOperationResponse(id, 404, notFound(id))
+            }
+          }
+      }
+      batchResponses += response
+    })
+    Response.status(207).entity(batchResponses).build()
+  }
+
   @DELETE
   @Path("/{id}")
   @ApiOperation(
     value = "Delete one faceted search classification",
     notes = "This endpoint is used to delete one faceted search classifications.",
   )
-  def delete(@ApiParam(value = "ID") @PathParam("id") id: Long): Response = {
+  def delete(@ApiParam("ID") @PathParam("id") id: Long): Response = {
     privilegeChecker.checkAuthorised()
     Option(service.getById(id)) match {
       case Some(classification) =>
@@ -129,6 +172,29 @@ class FacetedSearchClassificationResource {
         Response.ok().build()
       case None => ApiErrorResponse.resourceNotFound(notFound(id))
     }
+  }
+
+  @DELETE
+  @ApiOperation(
+    value = "Delete multiple faceted search classifications",
+    notes = "This endpoint is used to delete multiple faceted search classifications.",
+    response = classOf[ApiBatchOperationResponse],
+    responseContainer = "List"
+  )
+  def batchDelete(@QueryParam("ids") ids: Array[Long]): Response = {
+    privilegeChecker.checkAuthorised()
+    val batchResponses = ListBuffer[ApiBatchOperationResponse]()
+    ids.foreach(id => {
+      val response = Option(service.getById(id)) match {
+        case Some(classification) =>
+          service.delete(classification)
+          ApiBatchOperationResponse(id, 200, s"Classification $id has been deleted.")
+        case None => ApiBatchOperationResponse(id, 404, notFound(id))
+      }
+      batchResponses += response
+    })
+
+    Response.status(207).entity(batchResponses).build()
   }
 
   private def notFound(id: Long) = s"No Faceted Search classification matching ID: $id."
