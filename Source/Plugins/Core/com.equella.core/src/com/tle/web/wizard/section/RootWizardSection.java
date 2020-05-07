@@ -54,6 +54,7 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.viewurl.ItemSectionInfo;
+import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardExceptionHandler;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
@@ -302,8 +303,8 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 
   void validateMandatoryFields(SectionInfo info, WizardState state) {
     PagesSection ps = info.lookupSection(PagesSection.class);
-    wizardService
-        .getWizardPages(state)
+    wizardService.getWizardPages(state).stream()
+        .filter(WebWizardPage::isViewable)
         .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
   }
 }
