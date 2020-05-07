@@ -305,11 +305,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     PagesSection ps = info.lookupSection(PagesSection.class);
     wizardService
         .getWizardPages(state)
-        .forEach(
-            p -> {
-              if (p.isViewable()) {
-                wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true);
-              }
-            });
+        .stream().filter(WebWizardPage::isViewable)
+        .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
   }
 }
