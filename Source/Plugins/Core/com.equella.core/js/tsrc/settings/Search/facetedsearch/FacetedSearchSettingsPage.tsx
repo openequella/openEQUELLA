@@ -36,18 +36,15 @@ import {
 } from "@material-ui/core";
 import { languageStrings } from "../../../util/langstrings";
 import {
-  addFlags,
   batchUpdateOrAdd,
-  ModifiedClassification,
-  FacetedSearchClassification,
-  getClassificationsFromServer,
-  removeFlags,
+  FacetWithFlags,
+  getFacetsFromServer,
   getHighestOrderIndex,
 } from "./FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
-import ClassificationDialog from "./ClassificationDialog";
+import FacetDialog from "./FacetDialog";
 import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
 import { addElement } from "../../../util/ImmutableArrayUtil";
@@ -69,77 +66,71 @@ const useStyles = makeStyles({
 });
 
 /**
- * A page for setting Faceted search classifications.
+ * A page for setting Faceted search facets.
  */
 const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const facetedsearchsettingStrings =
     languageStrings.settings.searching.facetedsearchsetting;
   const classes = useStyles();
 
-  // Show the snackbar when all the status of a 207 response is 2xx.
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-  // Show a message dialog when a 207 response includes any status that's 4xx.
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
   const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
-
   const [showEditingDialog, setShowEditingDialog] = useState<boolean>(false);
-  const [classifications, setClassifications] = useState<
-    ModifiedClassification[]
-  >([]);
+  const [facets, setFacets] = useState<FacetWithFlags[]>([]);
 
-  const addOrEditQueue = classifications
-    .filter((classification) => classification.changed)
-    .map((classification) => removeFlags(classification));
-  const changesUnsaved = addOrEditQueue.length > 0;
+  const listOfUpdates: FacetWithFlags[] = facets.filter(
+    (facet) => facet.updated
+  );
+  const changesUnsaved = listOfUpdates.length > 0;
 
   /**
-   * Update the page title and back route, and get a list of classifications.
+   * Update the page title and back route, and get a list of facets.
    */
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(facetedsearchsettingStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-    getClassifications();
+    getFacets();
   }, []);
 
-  const getClassifications = () => {
-    getClassificationsFromServer().then((classifications) => {
-      setClassifications(
-        classifications.map((classification) => {
-          return addFlags(classification, false, false, false);
+  /**
+   * Get facets from the Server and add boolean flags on them.
+   */
+  const getFacets = () => {
+    getFacetsFromServer().then((facets) => {
+      setFacets(
+        facets.map((facet) => {
+          return { ...facet, updated: false, deleted: false, dirty: false };
         })
       );
     });
   };
 
   /**
-   * Save classifications in the queue to the Server.
+   * Save updated/deleted facets to the Server.
    * Show the message dialog if any error message is received otherwise show snackbar.
    */
   const save = () => {
-    const errorMessages: string[] = [];
-    batchUpdateOrAdd(addOrEditQueue)
+    batchUpdateOrAdd(listOfUpdates)
       .then((messages) => {
-        errorMessages.push(...messages);
-        if (errorMessages.length > 0) {
-          setResultMessagesMessages(errorMessages);
+        if (messages.length > 0) {
+          setResultMessagesMessages(messages);
           setShowResultDialog(true);
         } else {
           setShowSnackBar(true);
         }
       })
       .catch((error) => handleError(error))
-      .finally(() => getClassifications());
+      .finally(() => getFacets());
   };
 
   /**
-   * Visually add/update a classification
+   * Visually add/update a facet.
    */
-  const addOrEdit = (classification: FacetedSearchClassification) => {
-    setClassifications(
-      addElement(classifications, addFlags(classification, true, false, true))
-    );
+  const addOrEdit = (facet: FacetWithFlags) => {
+    setFacets(addElement(facets, facet));
   };
 
   /**
@@ -166,12 +157,12 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             </ListSubheader>
           }
         >
-          {classifications
-            .filter((classification) => !classification.deleted)
-            .map((classification, index) => {
+          {facets
+            .filter((facet) => !facet.deleted)
+            .map((facet, index) => {
               return (
                 <ListItem divider={true} key={index}>
-                  <ListItemText primary={classification.name} />
+                  <ListItemText primary={facet.name} />
                   <ListItemSecondaryAction>
                     <IconButton color={"secondary"}>
                       <EditIcon />
@@ -196,13 +187,13 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </CardActions>
       </Card>
 
-      <ClassificationDialog
+      <FacetDialog
         addOrEdit={addOrEdit}
         open={showEditingDialog}
         onClose={() => setShowEditingDialog(false)}
         handleError={handleError}
-        classification={undefined}
-        highestOrderIndex={getHighestOrderIndex(classifications)}
+        facet={undefined}
+        highestOrderIndex={getHighestOrderIndex(facets)}
       />
 
       <MessageDialog

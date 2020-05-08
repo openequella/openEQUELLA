@@ -28,11 +28,11 @@ import { commonString } from "../../../util/commonstrings";
 import { languageStrings } from "../../../util/langstrings";
 import { useEffect, useState } from "react";
 import {
-  FacetedSearchClassification,
-  validateClassificationFields,
+  FacetWithFlags,
+  validateFacetFields,
 } from "./FacetedSearchSettingsModule";
 
-interface ClassificationDialogProps {
+interface facetDialogProps {
   /**
    * If true, the dialog will be shown.
    */
@@ -44,11 +44,11 @@ interface ClassificationDialogProps {
   /**
    * Fired when click the ADD button.
    */
-  addOrEdit: (classification: FacetedSearchClassification) => void;
+  addOrEdit: (facet: FacetWithFlags) => void;
   /**
-   * The classification to be edited; undefined if the action is to add a new one.
+   * The facet to be edited; undefined if the action is to add a new one.
    */
-  classification?: FacetedSearchClassification;
+  facet?: FacetWithFlags;
   /**
    * Error handling.
    */
@@ -60,35 +60,35 @@ interface ClassificationDialogProps {
 }
 
 /**
- * A dialog for adding/editing a Faceted search classification
+ * A dialog for adding/editing a facet
  */
-const ClassificationDialog = ({
+const FacetDialog = ({
   open,
   onClose,
   addOrEdit,
   handleError,
-  classification,
+  facet,
   highestOrderIndex,
-}: ClassificationDialogProps) => {
+}: facetDialogProps) => {
   const {
     facetedsearchsetting: facetedSearchSettingStrings,
   } = languageStrings.settings.searching;
-  const { classification: classificationStrings } = facetedSearchSettingStrings;
+  const { facetfields: facetFieldStrings } = facetedSearchSettingStrings;
 
   const [name, setName] = useState<string>("");
   const [schemaNode, setSchemaNode] = useState<string>("");
   const [maxResults, setMaxResults] = useState<number | undefined>();
 
-  const isNameInvalid = validateClassificationFields(name);
-  const isSchemaNodeInvalid = validateClassificationFields(schemaNode);
+  const isNameInvalid = validateFacetFields(name);
+  const isSchemaNodeInvalid = validateFacetFields(schemaNode);
 
   /**
    * Initialise textfields' values, depending on 'onClose'.
    */
   useEffect(() => {
-    setName(classification ? classification.name : "");
-    setSchemaNode(classification ? classification.schemaNode : "");
-    setMaxResults(classification ? classification.maxResults : undefined);
+    setName(facet?.name ?? "");
+    setSchemaNode(facet?.schemaNode ?? "");
+    setMaxResults(facet?.maxResults);
   }, [onClose]);
 
   const onAddOrEdit = () => {
@@ -97,6 +97,9 @@ const ClassificationDialog = ({
       schemaNode: schemaNode,
       maxResults: maxResults,
       orderIndex: highestOrderIndex + 1,
+      updated: true,
+      deleted: false,
+      dirty: true,
     });
     onClose();
   };
@@ -113,7 +116,7 @@ const ClassificationDialog = ({
       <DialogContent>
         <TextField
           margin="dense"
-          label={classificationStrings.name}
+          label={facetFieldStrings.name}
           value={name}
           required
           fullWidth
@@ -122,7 +125,7 @@ const ClassificationDialog = ({
         />
         <TextField
           margin="dense"
-          label={classificationStrings.schemanode}
+          label={facetFieldStrings.schemanode}
           value={schemaNode}
           required
           fullWidth
@@ -132,7 +135,7 @@ const ClassificationDialog = ({
         <TextField
           type={"number"}
           margin="dense"
-          label={classificationStrings.categorynumber}
+          label={facetFieldStrings.categorynumber}
           value={maxResults}
           fullWidth
           onChange={(event) => {
@@ -157,4 +160,4 @@ const ClassificationDialog = ({
   );
 };
 
-export default ClassificationDialog;
+export default FacetDialog;

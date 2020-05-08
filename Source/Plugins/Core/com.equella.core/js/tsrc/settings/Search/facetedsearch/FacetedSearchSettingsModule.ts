@@ -22,101 +22,79 @@ import {
   groupErrorMessages,
 } from "../../../api/BatchOperationResponse";
 
-export interface FacetedSearchClassification {
+export interface Facet {
   /**
-   * Name of a classification
+   * Name of a facet
    */
   name: string;
   /**
-   * Schema node of a classification
+   * Schema node of a facet
    */
   schemaNode: string;
   /**
-   * The number of category of a classification; Being undefined means the number is unlimited.
+   * The number of category of a facet; Being undefined means the number is unlimited.
    */
   maxResults?: number;
   /**
-   * Used for re-ordering classifications.
+   * Used for re-ordering facets.
    */
   orderIndex: number;
 }
 
-export interface ModifiedClassification extends FacetedSearchClassification {
+export interface FacetWithFlags extends Facet {
   /**
-   * A flag indicating creating or updating this classification on the Server.
+   * A flag indicating a facet has been visually updated/created.
    */
-  changed: boolean;
+  updated: boolean;
   /**
-   * A flag indicating deleting this classification from the Server.
+   * A flag indicating a facet has been visually deleted.
    */
   deleted: boolean;
   /**
-   * A flag indication if a classification hasn't been saved to the Server.
+   * A flag indication if a facet does not exist on the Server.
    */
   dirty: boolean;
 }
 
 const FACETED_SEARCH_API_URL = "api/settings/facetedsearch/classification";
 
-export const getClassificationsFromServer = (): Promise<
-  FacetedSearchClassification[]
-> => Axios.get(FACETED_SEARCH_API_URL).then((res) => res.data);
+export const getFacetsFromServer = (): Promise<Facet[]> =>
+  Axios.get(FACETED_SEARCH_API_URL).then((res) => res.data);
 
-export const batchUpdateOrAdd = (
-  classifitioncas: FacetedSearchClassification[]
-) =>
+/**
+ * Remove the boolean flags and then save to the Server.
+ */
+export const batchUpdateOrAdd = (facets: FacetWithFlags[]) =>
   Axios.put<BatchOperationResponse[]>(
     FACETED_SEARCH_API_URL,
-    classifitioncas
+    facets.map((facet) => removeFlags(facet))
   ).then((res) => groupErrorMessages(res.data));
 
 /**
  * Validate if trimmed name or schema node is empty.
  * Return true if they are invalid.
  */
-export const validateClassificationFields = (field: string): boolean => {
+export const validateFacetFields = (field: string): boolean => {
   return !field?.trim();
 };
 
 /**
- * Convert an instace of FacetedSearchClassification to an instace of ModifiedClassification.
+ * Remove unneeded boolean fields.
  */
-export const addFlags = (
-  classification: FacetedSearchClassification,
-  changed: boolean,
-  deleted: boolean,
-  dirty: boolean
-): ModifiedClassification =>
-  Object.assign(classification, {
-    changed: changed,
-    deleted: deleted,
-    dirty: dirty,
-  });
-
-/**
- * Convert an instace of ModifiedClassification to an instace of FacetedSearchClassification.
- */
-export const removeFlags = (classification: ModifiedClassification) => {
-  delete classification.deleted;
-  delete classification.changed;
-  delete classification.dirty;
-  return classification;
+export const removeFlags = (facet: FacetWithFlags): Facet => {
+  delete facet.deleted;
+  delete facet.updated;
+  delete facet.dirty;
+  return facet;
 };
 
 /**
- * Given a list of classifications, find the one that has the highest order index.
+ * Given a list of facets, return the highest order index.
+ * If the list is empty then return -1.
  */
-export const getHighestOrderIndex = (
-  classifications: ModifiedClassification[]
-) => {
-  const classification = classifications.reduce((prev, current) => {
-    return prev.orderIndex > current.orderIndex ? prev : current;
-  }, defaultClassifion);
-  return classification.orderIndex;
-};
-
-const defaultClassifion: FacetedSearchClassification = {
-  name: "",
-  schemaNode: "",
-  orderIndex: -1,
+export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
+  if (facets.length == 0) {
+    return -1;
+  }
+  return Math.max(...facets.map((facet) => facet.orderIndex));
 };

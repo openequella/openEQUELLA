@@ -443,9 +443,9 @@ export const languageStrings = {
         },
       },
       facetedsearchsetting: {
-        name: "Faceted search classifications",
-        add: "Create Faceted search classification",
-        classification: {
+        name: "Faceted search settings",
+        add: "Create facet",
+        facetfields: {
           name: "Classification name",
           schemanode: "Schema node",
           categorynumber: "Default number of categories",
