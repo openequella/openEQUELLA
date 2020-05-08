@@ -311,6 +311,7 @@ export const languageStrings = {
     result: {
       success: "Saved successfully.",
       fail: "Failed to save.",
+      errors: "Some changes are not saved due to errors listed below",
     },
     users: "Users",
     groups: "Groups",
@@ -420,9 +421,6 @@ export const languageStrings = {
         save: "save Search filter configurations",
         filternamelabel: "Name",
         mimetypelistlabel: "MIME types *",
-        messagedialogtitle: "Search filter setting results",
-        messagedialogsubtitle:
-          "Some changes are not saved due to reasons listed below",
       },
       contentIndexSettings: {
         name: "Content indexing",

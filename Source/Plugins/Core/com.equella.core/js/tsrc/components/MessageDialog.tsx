@@ -30,14 +30,12 @@ import { commonString } from "../util/commonstrings";
 interface MessageDialogProps {
   open: boolean;
   title: string;
-  subtitle: string;
   messages: string[];
   close: () => void;
 }
 const MessageDialog = ({
   open,
   title,
-  subtitle,
   messages,
   close,
 }: MessageDialogProps) => {
@@ -45,10 +43,11 @@ const MessageDialog = ({
     <Dialog open={open} onClose={close} fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{subtitle}</DialogContentText>
-        {messages.map((message) => (
-          <Typography>{message}</Typography>
-        ))}
+        <DialogContentText>
+          {messages.map((message) => (
+            <Typography>{message}</Typography>
+          ))}
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={close} color="primary">

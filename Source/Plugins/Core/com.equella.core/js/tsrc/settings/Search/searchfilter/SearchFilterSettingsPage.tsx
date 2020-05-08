@@ -64,6 +64,7 @@ import {
 } from "../../../util/ImmutableArrayUtil";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import { commonString } from "../../../util/commonstrings";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -376,8 +377,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <MessageDialog
         open={openMessageDialog}
         messages={messageDialogMessages}
-        title={searchFilterStrings.messagedialogtitle}
-        subtitle={searchFilterStrings.messagedialogsubtitle}
+        title={commonString.result.errors}
         close={() => setOpenMessageDialog(false)}
       />
     </SettingPageTemplate>
