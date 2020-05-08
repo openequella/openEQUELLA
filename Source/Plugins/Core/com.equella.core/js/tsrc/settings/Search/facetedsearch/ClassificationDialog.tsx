@@ -26,7 +26,7 @@ import {
 } from "@material-ui/core";
 import { commonString } from "../../../util/commonstrings";
 import { languageStrings } from "../../../util/langstrings";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FacetedSearchClassification,
   validateClassificationFields,
@@ -53,6 +53,10 @@ interface ClassificationDialogProps {
    * Error handling.
    */
   handleError: (error: Error) => void;
+  /**
+   * Current highest order index.
+   */
+  highestOrderIndex: number;
 }
 
 /**
@@ -64,6 +68,7 @@ const ClassificationDialog = ({
   addOrEdit,
   handleError,
   classification,
+  highestOrderIndex,
 }: ClassificationDialogProps) => {
   const {
     facetedsearchsetting: facetedSearchSettingStrings,
@@ -72,13 +77,27 @@ const ClassificationDialog = ({
 
   const [name, setName] = useState<string>("");
   const [schemaNode, setSchemaNode] = useState<string>("");
-  const [maxResults, setMaxResults] = useState<number>();
+  const [maxResults, setMaxResults] = useState<number | undefined>();
 
   const isNameInvalid = validateClassificationFields(name);
   const isSchemaNodeInvalid = validateClassificationFields(schemaNode);
 
-  const onAdd = () => {
-    addOrEdit({ name: name, schemaNode: schemaNode, maxResults: maxResults });
+  /**
+   * Initialise textfields' values, depending on 'onClose'.
+   */
+  useEffect(() => {
+    setName(classification ? classification.name : "");
+    setSchemaNode(classification ? classification.schemaNode : "");
+    setMaxResults(classification ? classification.maxResults : undefined);
+  }, [onClose]);
+
+  const onAddOrEdit = () => {
+    addOrEdit({
+      name: name,
+      schemaNode: schemaNode,
+      maxResults: maxResults,
+      orderIndex: highestOrderIndex + 1,
+    });
     onClose();
   };
 
@@ -116,7 +135,10 @@ const ClassificationDialog = ({
           label={classificationStrings.categorynumber}
           value={maxResults}
           fullWidth
-          onChange={(event) => setMaxResults(parseInt(event.target.value))}
+          onChange={(event) => {
+            const value = event.target.value;
+            setMaxResults(value ? parseInt(value) : undefined);
+          }}
         />
       </DialogContent>
       <DialogActions>
@@ -124,7 +146,7 @@ const ClassificationDialog = ({
           {commonString.action.cancel}
         </Button>
         <Button
-          onClick={onAdd}
+          onClick={onAddOrEdit}
           color="primary"
           disabled={isNameInvalid || isSchemaNodeInvalid}
         >

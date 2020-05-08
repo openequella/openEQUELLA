@@ -35,7 +35,15 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { languageStrings } from "../../../util/langstrings";
-import { FacetedSearchClassification } from "./FacetedSearchSettingsModule";
+import {
+  addFlags,
+  batchUpdateOrAdd,
+  ModifiedClassification,
+  FacetedSearchClassification,
+  getClassificationsFromServer,
+  removeFlags,
+  getHighestOrderIndex,
+} from "./FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -44,6 +52,8 @@ import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
 import { addElement } from "../../../util/ImmutableArrayUtil";
 import { generateFromError } from "../../../api/errors";
+import MessageDialog from "../../../components/MessageDialog";
+import { commonString } from "../../../util/commonstrings";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -66,30 +76,70 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     languageStrings.settings.searching.facetedsearchsetting;
   const classes = useStyles();
 
+  // Show the snackbar when all the status of a 207 response is 2xx.
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  // Show a message dialog when a 207 response includes any status that's 4xx.
+  const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
+  const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
 
-  // A list of Classifications displayed in this page, including unsaved changes.
+  const [showEditingDialog, setShowEditingDialog] = useState<boolean>(false);
   const [classifications, setClassifications] = useState<
-    FacetedSearchClassification[]
+    ModifiedClassification[]
   >([]);
 
+  const addOrEditQueue = classifications
+    .filter((classification) => classification.changed)
+    .map((classification) => removeFlags(classification));
+  const changesUnsaved = addOrEditQueue.length > 0;
+
+  /**
+   * Update the page title and back route, and get a list of classifications.
+   */
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(facetedsearchsettingStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
+    getClassifications();
   }, []);
 
+  const getClassifications = () => {
+    getClassificationsFromServer().then((classifications) => {
+      setClassifications(
+        classifications.map((classification) => {
+          return addFlags(classification, false, false, false);
+        })
+      );
+    });
+  };
+
+  /**
+   * Save classifications in the queue to the Server.
+   * Show the message dialog if any error message is received otherwise show snackbar.
+   */
   const save = () => {
-    // No implementation until required REST endpoints are completed.
+    const errorMessages: string[] = [];
+    batchUpdateOrAdd(addOrEditQueue)
+      .then((messages) => {
+        errorMessages.push(...messages);
+        if (errorMessages.length > 0) {
+          setResultMessagesMessages(errorMessages);
+          setShowResultDialog(true);
+        } else {
+          setShowSnackBar(true);
+        }
+      })
+      .catch((error) => handleError(error))
+      .finally(() => getClassifications());
   };
 
   /**
    * Visually add/update a classification
    */
-  const addOrUpdate = (classification: FacetedSearchClassification) => {
-    setClassifications(addElement(classifications, classification));
+  const addOrEdit = (classification: FacetedSearchClassification) => {
+    setClassifications(
+      addElement(classifications, addFlags(classification, true, false, true))
+    );
   };
 
   /**
@@ -103,10 +153,10 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <SettingPageTemplate
       onSave={save}
-      saveButtonDisabled={false}
+      saveButtonDisabled={!changesUnsaved}
       snackbarOpen={showSnackBar}
       snackBarOnClose={() => setShowSnackBar(false)}
-      preventNavigation={false}
+      preventNavigation={changesUnsaved}
     >
       <Card className={classes.spacedCards}>
         <List
@@ -116,26 +166,28 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             </ListSubheader>
           }
         >
-          {classifications.map((classification, index) => {
-            return (
-              <ListItem divider={true} key={index}>
-                <ListItemText primary={classification.name} />
-                <ListItemSecondaryAction>
-                  <IconButton color={"secondary"}>
-                    <EditIcon />
-                  </IconButton>
-                  |
-                  <IconButton color="secondary">
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })}
+          {classifications
+            .filter((classification) => !classification.deleted)
+            .map((classification, index) => {
+              return (
+                <ListItem divider={true} key={index}>
+                  <ListItemText primary={classification.name} />
+                  <ListItemSecondaryAction>
+                    <IconButton color={"secondary"}>
+                      <EditIcon />
+                    </IconButton>
+                    |
+                    <IconButton color="secondary">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              );
+            })}
         </List>
         <CardActions className={classes.cardAction}>
           <IconButton
-            onClick={() => setOpenDialog(true)}
+            onClick={() => setShowEditingDialog(true)}
             aria-label={facetedsearchsettingStrings.add}
             color={"primary"}
           >
@@ -145,11 +197,19 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Card>
 
       <ClassificationDialog
-        addOrEdit={addOrUpdate}
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        addOrEdit={addOrEdit}
+        open={showEditingDialog}
+        onClose={() => setShowEditingDialog(false)}
         handleError={handleError}
         classification={undefined}
+        highestOrderIndex={getHighestOrderIndex(classifications)}
+      />
+
+      <MessageDialog
+        open={showResultDialog}
+        messages={resultMessages}
+        title={commonString.result.errors}
+        close={() => setShowResultDialog(false)}
       />
     </SettingPageTemplate>
   );
