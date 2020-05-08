@@ -93,9 +93,9 @@ const FacetDialog = ({
 
   const onAddOrEdit = () => {
     addOrEdit({
-      name: name,
-      schemaNode: schemaNode,
-      maxResults: maxResults,
+      name,
+      schemaNode,
+      maxResults,
       orderIndex: highestOrderIndex + 1,
       updated: true,
       deleted: false,
