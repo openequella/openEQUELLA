@@ -34,7 +34,7 @@ import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
-import com.tle.web.settings.{NewUISettings, UISettings, UISettingsJava}
+import com.tle.web.settings.UISettings
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 
@@ -144,14 +144,6 @@ object RenderNewTemplate {
       if (DebugSettings.isDevMode) parseEntryHtml(htmlPage)
       else htmlBundleCache.computeIfAbsent(htmlPage, parseEntryHtml)
     context.preRender(scriptPreRender)
-
-    val newUISettings = UISettingsJava.getUISettings.newUI
-    // When new layout is to be rendered but New UI is still not enabled,
-    // update UI setting to enable New UI.
-    if (isNewLayout(context) && !newUISettings.enabled) {
-      UISettingsJava.updateUISettings(
-        UISettings(NewUISettings(enabled = true, newSearch = newUISettings.newSearch)))
-    }
     renderReact(context, viewFactory, renderData, body.body().toString)
   }
 

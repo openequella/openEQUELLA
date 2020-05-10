@@ -19,8 +19,6 @@ import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { LocationDescriptor } from "history";
 import { TemplateUpdate } from "./Template";
-import SearchCourse from "../course/SearchCourse";
-import EditCourse from "../course/EditCourse";
 import ThemePage from "../theme/ThemePage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import { Bridge } from "../api/bridge";
@@ -53,17 +51,6 @@ export interface OEQRoute {
 }
 
 export const routes = {
-  Courses: { path: "/page/course", exact: true, component: SearchCourse },
-  NewCourse: { path: "/page/course/new", exact: true, component: EditCourse },
-  EditCourse: {
-    path: "/page/course/:uuid",
-    to: function (uuid: string) {
-      return "/page/course/" + uuid;
-    },
-    render: (p: OEQRouteComponentProps<any>) => (
-      <EditCourse {...p} uuid={p.match.params.uuid} />
-    ),
-  },
   Settings: {
     path: "(/access/settings.do|/page/settings)",
     to: "/page/settings",

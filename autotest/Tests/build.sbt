@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
   "axis"       % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.55",
 //  "jpf" % "jpf-tools" % "1.0.5",
-  "org.jacoco"       % "org.jacoco.report"         % "0.7.9",
+  "org.jacoco"       % "org.jacoco.report"         % "0.8.5",
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.4.0",

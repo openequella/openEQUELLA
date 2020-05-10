@@ -22,7 +22,7 @@ val SwaggerVersion   = "1.5.24"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
-val jsoupVersion     = "1.11.3"
+val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
 val fs2Version       = "1.0.5"
 val jsassVersion     = "5.10.3"
@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200402-1.30.9",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200423-1.30.9",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
@@ -191,9 +191,9 @@ libraryDependencies ++= Seq(
   "org.javassist"                        % "javassist"                      % "3.18.2-GA",
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.2_spec" % "1.0.2.Final",
-  "org.jboss.logging"                    % "jboss-logging"                  % "3.3.2.Final",
-  "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.1.0.Final",
-  "org.jboss.logging"                    % "jboss-logging-processor"        % "2.1.0.Final",
+  "org.jboss.logging"                    % "jboss-logging"                  % "3.4.1.Final",
+  "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
+  "org.jboss.logging"                    % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.2",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
@@ -232,7 +232,7 @@ libraryDependencies ++= Seq(
   ),
   "xml-resolver"           % "xml-resolver"              % "1.2",
   "org.scala-sbt"          %% "io"                       % "1.1.0",
-  "org.mozilla"            % "rhino"                     % "1.7R4",
+  "org.mozilla"            % "rhino"                     % "1.7.12",
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
   "io.bit3"                % "jsass"                     % "5.10.3",
