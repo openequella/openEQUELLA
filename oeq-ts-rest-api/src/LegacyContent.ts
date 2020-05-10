@@ -41,7 +41,7 @@ export const getCurrentUserDetails = (
   apiBasePath: string
 ): Promise<CurrentUserDetails> => {
   return axios
-    .get(apiBasePath + '/content/currentuser')
+    .get<CurrentUserDetails>(apiBasePath + '/content/currentuser')
     .then((response: AxiosResponse<CurrentUserDetails>) => response.data)
     .catch((error: AxiosError | Error) => {
       throw repackageError(error);
