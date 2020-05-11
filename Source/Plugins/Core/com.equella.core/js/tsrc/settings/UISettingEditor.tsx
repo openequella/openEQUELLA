@@ -67,8 +67,8 @@ const UISettingEditor = (props: UISettingEditorProps) => {
     let cleanupTriggered = false;
     fetchUISetting()
       .then((uiSetting) => {
-        if( !cleanupTriggered ) {
-          const {enabled, newSearch} = uiSetting.newUI;
+        if (!cleanupTriggered) {
+          const { enabled, newSearch } = uiSetting.newUI;
           setNewUIEnabled(enabled);
           setNewSearchEnabled(newSearch);
         }

@@ -83,7 +83,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
     let cleanupTriggered = false;
     fetchSettings()
       .then((settings) => {
-        if( !cleanupTriggered ) {
+        if (!cleanupTriggered) {
           setSettingGroups(groupMap(settings));
           setLoading(false);
         }

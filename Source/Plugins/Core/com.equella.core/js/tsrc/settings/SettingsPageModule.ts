@@ -15,21 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Config} from "../config";
+import { Config } from "../config";
 import * as OEQ from "oeq";
 
 const API_BASE_URL = `${Config.baseUrl}api`;
 
-export const fetchSettings = (): Promise<OEQ.Settings.GeneralSetting[]> => OEQ.Settings.getGeneralSettings(API_BASE_URL);
+export const fetchSettings = (): Promise<OEQ.Settings.GeneralSetting[]> =>
+  OEQ.Settings.getGeneralSettings(API_BASE_URL);
 
-export const fetchUISetting = (): Promise<OEQ.Settings.UISettings> => OEQ.Settings.getUiSettings(API_BASE_URL);
+export const fetchUISetting = (): Promise<OEQ.Settings.UISettings> =>
+  OEQ.Settings.getUiSettings(API_BASE_URL);
 
 export const saveUISetting = (
   newUIEnabled: boolean,
   newSearchEnabled: boolean
-): Promise<void> => OEQ.Settings.updateUiSettings(API_BASE_URL, {
-  newUI: {
-    newSearch: newSearchEnabled,
-    enabled: newUIEnabled
-  }
-})
+): Promise<void> =>
+  OEQ.Settings.updateUiSettings(API_BASE_URL, {
+    newUI: {
+      newSearch: newSearchEnabled,
+      enabled: newUIEnabled,
+    },
+  });
