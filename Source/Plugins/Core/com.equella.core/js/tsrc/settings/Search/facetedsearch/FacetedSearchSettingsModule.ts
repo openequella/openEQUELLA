@@ -71,7 +71,7 @@ export const batchUpdateOrAdd = (facets: FacetWithFlags[]) =>
  * Return true if they are invalid.
  */
 export const validateFacetFields = (field: string): boolean => {
-  return !field?.trim();
+  return !field.trim();
 };
 
 /**
