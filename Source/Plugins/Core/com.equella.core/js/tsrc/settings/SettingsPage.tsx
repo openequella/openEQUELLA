@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as React from "react";
-import axios from "axios";
 import {
   Theme,
   ExpansionPanel,
@@ -34,7 +33,6 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { fetchSettings } from "./SettingsPageModule";
-import { GeneralSetting } from "./SettingsPageEntry";
 import { languageStrings } from "../util/langstrings";
 import MUILink from "@material-ui/core/Link";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -45,6 +43,7 @@ import { ReactElement, useEffect, useState } from "react";
 import UISettingEditor from "./UISettingEditor";
 import { generateFromError } from "../api/errors";
 import { groupMap, SettingGroup } from "./SettingGroups";
+import * as OEQ from "oeq";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -81,22 +80,22 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
 
   useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
-    const cancelToken = axios.CancelToken.source();
-    fetchSettings(cancelToken.token)
+    let cleanupTriggered = false;
+    fetchSettings()
       .then((settings) => {
-        setSettingGroups(groupMap(settings));
-        setLoading(false);
+        if( !cleanupTriggered ) {
+          setSettingGroups(groupMap(settings));
+          setLoading(false);
+        }
       })
       .catch((error) => {
-        if (axios.isCancel(error)) {
-          return; // Request was cancelled
-        }
         handleError(error);
         setLoading(false);
       });
 
     return () => {
-      cancelToken.cancel();
+      cleanupTriggered = true;
+      // cancelToken.cancel();
     };
   }, []);
 
@@ -140,7 +139,7 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
    * @param {GeneralSetting} setting - A oEQ general setting
    * @returns {ReactElement} A link to the setting's page
    */
-  const settingLink = (setting: GeneralSetting): ReactElement => {
+  const settingLink = (setting: OEQ.Settings.GeneralSetting): ReactElement => {
     let link = <div />;
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;

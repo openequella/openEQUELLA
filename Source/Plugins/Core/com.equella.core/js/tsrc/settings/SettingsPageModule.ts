@@ -15,35 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios, { AxiosPromise, CancelToken } from "axios";
-import { GeneralSetting, UISetting } from "./SettingsPageEntry";
-import { Config } from "../config";
+import {Config} from "../config";
+import * as OEQ from "oeq";
 
-const GET_SETTINGS_URL = `${Config.baseUrl}api/settings`;
-const GET_UI_SETTINGS_URL = `${GET_SETTINGS_URL}/ui`;
+const API_BASE_URL = `${Config.baseUrl}api`;
 
-export const fetchSettings = (
-  token: CancelToken
-): Promise<GeneralSetting[]> => {
-  return Axios.get<GeneralSetting[]>(GET_SETTINGS_URL, {
-    cancelToken: token,
-  }).then((res) => res.data);
-};
+export const fetchSettings = (): Promise<OEQ.Settings.GeneralSetting[]> => OEQ.Settings.getGeneralSettings(API_BASE_URL);
 
-export const fetchUISetting = (token: CancelToken): Promise<UISetting> => {
-  return Axios.get<UISetting>(GET_UI_SETTINGS_URL, {
-    cancelToken: token,
-  }).then((res) => res.data);
-};
+export const fetchUISetting = (): Promise<OEQ.Settings.UISettings> => OEQ.Settings.getUiSettings(API_BASE_URL);
 
 export const saveUISetting = (
   newUIEnabled: boolean,
   newSearchEnabled: boolean
-): AxiosPromise => {
-  return Axios.put(GET_UI_SETTINGS_URL, {
-    newUI: {
-      enabled: newUIEnabled,
-      newSearch: newSearchEnabled,
-    },
-  });
-};
+): Promise<void> => OEQ.Settings.updateUiSettings(API_BASE_URL, {
+  newUI: {
+    newSearch: newSearchEnabled,
+    enabled: newUIEnabled
+  }
+})
