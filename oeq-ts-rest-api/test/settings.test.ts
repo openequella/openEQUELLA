@@ -1,6 +1,6 @@
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
-import { GeneralSettings, UISettings } from '../src/Settings';
+import { GeneralSetting, UISettings } from '../src/Settings';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
@@ -9,7 +9,7 @@ afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 test('Able to retrieve general settings', () =>
   OEQ.Settings.getGeneralSettings(
     TC.API_PATH
-  ).then((settings: GeneralSettings[]) =>
+  ).then((settings: GeneralSetting[]) =>
     expect(settings.length).toBeGreaterThan(0)
   ));
 

@@ -1,6 +1,6 @@
 import { GET, PUT } from './AxiosInstance';
 
-export interface GeneralSettings {
+export interface GeneralSetting {
   id: string;
   group: string;
   name: string;
@@ -28,8 +28,8 @@ const UI_SETTINGS_PATH = `${SETTINGS_ROOT_PATH}/ui`;
  */
 export const getGeneralSettings = (
   apiBasePath: string
-): Promise<GeneralSettings[]> =>
-  GET<GeneralSettings[]>(apiBasePath + SETTINGS_ROOT_PATH);
+): Promise<GeneralSetting[]> =>
+  GET<GeneralSetting[]>(apiBasePath + SETTINGS_ROOT_PATH);
 
 /**
  * Retrieve the general UI settings for oEQ.
