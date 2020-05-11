@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "npm run build:codegen && tsdx build",
+    "build": "tsdx build",
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "prepare": "tsdx build"
