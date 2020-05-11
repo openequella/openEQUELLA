@@ -1,7 +1,7 @@
 import { AxiosResponse, AxiosError } from 'axios';
 import { repackageError } from './Errors';
 
-import axios from './AxiosInstance';
+import axios, { PUT } from './AxiosInstance';
 import { CookieJar } from 'tough-cookie';
 
 /**
@@ -50,16 +50,10 @@ export const login = (
 export const logout = (
   apiBasePath: string,
   clearCookies?: boolean
-): Promise<void> => {
-  return axios
-    .put(apiBasePath + '/auth/logout')
-    .then(() => {
-      if (clearCookies) {
-        console.log('Clearning all cookies.');
-        (axios.defaults.jar as CookieJar).removeAllCookiesSync();
-      }
-    })
-    .catch((error: AxiosError | Error) => {
-      throw repackageError(error);
-    });
-};
+): Promise<void> =>
+  PUT(apiBasePath + '/auth/logout').then(() => {
+    if (clearCookies) {
+      console.log('Clearing all cookies.');
+      (axios.defaults.jar as CookieJar).removeAllCookiesSync();
+    }
+  });
