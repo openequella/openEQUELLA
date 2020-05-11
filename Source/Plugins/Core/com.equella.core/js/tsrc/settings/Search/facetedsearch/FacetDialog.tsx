@@ -32,7 +32,7 @@ import {
   validateFacetFields,
 } from "./FacetedSearchSettingsModule";
 
-interface facetDialogProps {
+interface FacetDialogProps {
   /**
    * If true, the dialog will be shown.
    */
@@ -44,7 +44,11 @@ interface facetDialogProps {
   /**
    * Fired when click the ADD button.
    */
-  addOrEdit: (facet: FacetWithFlags) => void;
+  addOrEdit: (
+    name: string,
+    schemaNode: string,
+    maxResults: number | undefined
+  ) => void;
   /**
    * The facet to be edited; undefined if the action is to add a new one.
    */
@@ -53,10 +57,6 @@ interface facetDialogProps {
    * Error handling.
    */
   handleError: (error: Error) => void;
-  /**
-   * Current highest order index.
-   */
-  highestOrderIndex: number;
 }
 
 /**
@@ -68,8 +68,7 @@ const FacetDialog = ({
   addOrEdit,
   handleError,
   facet,
-  highestOrderIndex,
-}: facetDialogProps) => {
+}: FacetDialogProps) => {
   const {
     facetedsearchsetting: facetedSearchSettingStrings,
   } = languageStrings.settings.searching;
@@ -92,15 +91,7 @@ const FacetDialog = ({
   }, [onClose]);
 
   const onAddOrEdit = () => {
-    addOrEdit({
-      name,
-      schemaNode,
-      maxResults,
-      orderIndex: highestOrderIndex + 1,
-      updated: true,
-      deleted: false,
-      dirty: true,
-    });
+    addOrEdit(name, schemaNode, maxResults);
     onClose();
   };
 
@@ -133,15 +124,16 @@ const FacetDialog = ({
           error={!!schemaNode && isSchemaNodeInvalid}
         />
         <TextField
-          type={"number"}
+          type="number"
           margin="dense"
           label={facetFieldStrings.categorynumber}
           value={maxResults}
           fullWidth
-          onChange={(event) => {
-            const value = event.target.value;
-            setMaxResults(value ? parseInt(value) : undefined);
-          }}
+          onChange={(event) =>
+            setMaxResults(
+              event.target.value ? parseInt(event.target.value) : undefined
+            )
+          }
         />
       </DialogContent>
       <DialogActions>

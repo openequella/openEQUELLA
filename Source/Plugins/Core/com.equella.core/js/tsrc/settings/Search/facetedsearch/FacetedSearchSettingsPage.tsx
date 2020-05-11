@@ -22,7 +22,7 @@ import {
   TemplateUpdateProps,
 } from "../../../mainui/Template";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import {
   Card,
   CardActions,
@@ -102,7 +102,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     getFacetsFromServer().then((facets) => {
       setFacets(
         facets.map((facet) => {
-          return { ...facet, updated: false, deleted: false, dirty: false };
+          return { ...facet, updated: false, deleted: false };
         })
       );
     });
@@ -129,7 +129,19 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * Visually add/update a facet.
    */
-  const addOrEdit = (facet: FacetWithFlags) => {
+  const addOrEdit = (
+    name: string,
+    schemaNode: string,
+    maxResults: number | undefined
+  ) => {
+    const facet = {
+      name,
+      schemaNode,
+      maxResults,
+      orderIndex: getHighestOrderIndex(facets) + 1,
+      updated: true,
+      deleted: false,
+    };
     setFacets(addElement(facets, facet));
   };
 
@@ -141,6 +153,43 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     throw new Error(error.message);
   };
 
+  /**
+   * Only renders a ListItem for each non-deleted facet.
+   */
+  const facetListItems: ReactElement[] = facets
+    .filter((facet) => !facet.deleted)
+    .map((facet, index) => {
+      return (
+        <ListItem divider={true} key={index}>
+          <ListItemText primary={facet.name} />
+          <ListItemSecondaryAction>
+            <IconButton color={"secondary"}>
+              <EditIcon />
+            </IconButton>
+            |
+            <IconButton color="secondary">
+              <DeleteIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      );
+    });
+
+  /**
+   * A list display configured facets.
+   */
+  const facetList: ReactElement = (
+    <List
+      subheader={
+        <ListSubheader disableGutters>
+          {facetedsearchsettingStrings.name}
+        </ListSubheader>
+      }
+    >
+      {facetListItems}
+    </List>
+  );
+
   return (
     <SettingPageTemplate
       onSave={save}
@@ -150,32 +199,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       preventNavigation={changesUnsaved}
     >
       <Card className={classes.spacedCards}>
-        <List
-          subheader={
-            <ListSubheader disableGutters>
-              {facetedsearchsettingStrings.name}
-            </ListSubheader>
-          }
-        >
-          {facets
-            .filter((facet) => !facet.deleted)
-            .map((facet, index) => {
-              return (
-                <ListItem divider={true} key={index}>
-                  <ListItemText primary={facet.name} />
-                  <ListItemSecondaryAction>
-                    <IconButton color={"secondary"}>
-                      <EditIcon />
-                    </IconButton>
-                    |
-                    <IconButton color="secondary">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              );
-            })}
-        </List>
+        {facetList}
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => setShowEditingDialog(true)}
@@ -192,8 +216,6 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         open={showEditingDialog}
         onClose={() => setShowEditingDialog(false)}
         handleError={handleError}
-        facet={undefined}
-        highestOrderIndex={getHighestOrderIndex(facets)}
       />
 
       <MessageDialog

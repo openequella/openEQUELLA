@@ -50,10 +50,6 @@ export interface FacetWithFlags extends Facet {
    * A flag indicating a facet has been visually deleted.
    */
   deleted: boolean;
-  /**
-   * A flag indication if a facet does not exist on the Server.
-   */
-  dirty: boolean;
 }
 
 const FACETED_SEARCH_API_URL = "api/settings/facetedsearch/classification";
@@ -84,7 +80,6 @@ export const validateFacetFields = (field: string): boolean => {
 export const removeFlags = (facet: FacetWithFlags): Facet => {
   delete facet.deleted;
   delete facet.updated;
-  delete facet.dirty;
   return facet;
 };
 
