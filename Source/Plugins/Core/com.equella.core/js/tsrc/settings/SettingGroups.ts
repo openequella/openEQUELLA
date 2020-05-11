@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { languageStrings } from "../util/langstrings";
-import * as OEQ from "oeq";
+import * as OEQ from "@openequella/rest-api-client";
 
 interface SettingCategory {
   name: string;

@@ -43,7 +43,7 @@ import { ReactElement, useEffect, useState } from "react";
 import UISettingEditor from "./UISettingEditor";
 import { generateFromError } from "../api/errors";
 import { groupMap, SettingGroup } from "./SettingGroups";
-import * as OEQ from "oeq";
+import * as OEQ from "@openequella/rest-api-client";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

@@ -1,4 +1,5 @@
 {
+  "name": "@openequella/rest-api-client",
   "version": "2020.2.0-Alpha",
   "license": "Apache-2.0",
   "main": "dist/index.js",
@@ -29,11 +30,10 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "oeq-ts-rest-api",
-  "module": "dist/oeq-ts-rest-api.esm.js",
+  "module": "dist/oeq-rest-api-client.esm.js",
   "dependencies": {
-    "axios-cookiejar-support": "1.0.0",
     "axios": "0.19.2",
+    "axios-cookiejar-support": "1.0.0",
     "tough-cookie": "4.0.0"
   },
   "devDependencies": {

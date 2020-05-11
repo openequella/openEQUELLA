@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Config } from "../config";
-import * as OEQ from "oeq";
+import * as OEQ from "@openequella/rest-api-client";
 
 const API_BASE_URL = `${Config.baseUrl}api`;
 
