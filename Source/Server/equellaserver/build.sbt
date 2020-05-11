@@ -194,7 +194,7 @@ libraryDependencies ++= Seq(
   "org.jboss.logging"                    % "jboss-logging"                  % "3.4.1.Final",
   "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"                    % "jboss-logging-processor"        % "2.2.1.Final",
-  "org.reactivestreams"                  % "reactive-streams"               % "1.0.2",
+  "org.reactivestreams"                  % "reactive-streams"               % "1.0.3",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.4",
