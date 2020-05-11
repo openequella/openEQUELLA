@@ -15,9 +15,7 @@ Runs the project in development/watch mode. Your project will be rebuilt upon ch
 special logger for you convenience. Error messages are pretty printed and formatted for
 compatibility VS Code's Problems tab.
 
-<img
-src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif"
-width="600" />
+![npm start example](https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif)
 
 Your library will be rebuilt if you make edits.
 
@@ -26,9 +24,7 @@ Your library will be rebuilt if you make edits.
 Bundles the package to the `dist` folder.  The package is optimized and bundled with Rollup into
 multiple formats (CommonJS, UMD, and ES Module).
 
-<img
-src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif"
-width="600" />
+![npm build example](https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif)
 
 ## Implementation Considerations
 
