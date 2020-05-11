@@ -58,9 +58,9 @@ public class EditInWizard extends WizardCommand {
     moderationService.setEditing(info, true);
     // validate mandatory fields when moderating items
     PagesSection ps = info.lookupSection(PagesSection.class);
-    for (WebWizardPage page : winfo.getWizardState().getPages()) {
-      wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
-    }
+    winfo.getWizardState().getPages().stream()
+        .filter(WebWizardPage::isViewable)
+        .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
     info.forceRedirect();
   }
 
