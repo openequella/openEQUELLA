@@ -15,9 +15,7 @@ Runs the project in development/watch mode. Your project will be rebuilt upon ch
 special logger for you convenience. Error messages are pretty printed and formatted for
 compatibility VS Code's Problems tab.
 
-<img
-src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif"
-width="600" />
+![npm start example](https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif)
 
 Your library will be rebuilt if you make edits.
 
