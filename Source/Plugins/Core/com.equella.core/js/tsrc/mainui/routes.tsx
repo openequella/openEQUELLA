@@ -27,6 +27,7 @@ import SettingsPage from "../settings/SettingsPage";
 import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
 import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
+import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
 
 declare const bridge: Bridge;
 
@@ -64,15 +65,19 @@ export const routes = {
     path: "/page/searchsettings",
     render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />,
   },
-
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
     render: (p: OEQRouteComponentProps<any>) => <SearchFilterPage {...p} />,
   },
-
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
     render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />,
+  },
+  FacetedSearchSetting: {
+    path: "/page/facetedsearchsettings",
+    render: (p: OEQRouteComponentProps<any>) => (
+      <FacetedSearchSettingsPage {...p} />
+    ),
   },
   ViewItem: {
     to: function (uuid: string, version: number) {
