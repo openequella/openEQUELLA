@@ -16,6 +16,7 @@
     "build": "rollup --config",
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "prepare": "rollup --config"
   },
   "peerDependencies": {},
