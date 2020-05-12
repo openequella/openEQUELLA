@@ -4,7 +4,7 @@ This module provides a code generated SDK for access to the openEQUELLA REST API
 
 ## Local Development
 
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx) but the subsequently
+This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx) but then subsequently
 tweaked (especially for Jest and Eslint).
 
 Below is a list of commands you may find useful.
