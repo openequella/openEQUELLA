@@ -12,11 +12,11 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
+    "start": "rollup --config --watch",
+    "build": "rollup --config",
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "tsdx build"
+    "prepare": "npm build"
   },
   "peerDependencies": {},
   "husky": {
@@ -30,19 +30,24 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "module": "dist/oeq-rest-api-client.esm.js",
   "dependencies": {
     "axios": "0.19.2",
     "axios-cookiejar-support": "1.0.0",
     "tough-cookie": "4.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "@rollup/plugin-json": "^4.0.3",
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "@rollup/plugin-typescript": "^4.1.1",
     "@types/tough-cookie": "4.0.0",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
     "eslint": "^6.8.0",
     "husky": "4.2.5",
-    "tsdx": "0.13.2",
+    "rollup": "2.9.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "tslib": "1.11.2",
     "typescript": "3.8.3"
   }
