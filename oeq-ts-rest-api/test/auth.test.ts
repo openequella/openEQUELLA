@@ -20,7 +20,7 @@ test('An attempt to login with bad credentials fails', () => {
   );
 });
 
-test("That having login, we're able to properly log out.", () =>
+test("That having logged in, we're able to properly log out.", () =>
   OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD)
     .then(() => OEQ.LegacyContent.getCurrentUserDetails(TC.API_PATH))
     .then((userDetails: OEQ.LegacyContent.CurrentUserDetails) =>

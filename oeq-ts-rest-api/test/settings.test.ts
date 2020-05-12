@@ -6,7 +6,7 @@ beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
-test('Able to retrieve general settings', () =>
+test("That we're able to retrieve general settings", () =>
   OEQ.Settings.getGeneralSettings(
     TC.API_PATH
   ).then((settings: GeneralSetting[]) =>
