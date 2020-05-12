@@ -145,7 +145,7 @@ const FacetDialog = ({
           color="primary"
           disabled={isNameInvalid || isSchemaNodeInvalid}
         >
-          {commonString.action.add}
+          {facet ? commonString.action.ok : commonString.action.add}
         </Button>
       </DialogActions>
     </Dialog>
