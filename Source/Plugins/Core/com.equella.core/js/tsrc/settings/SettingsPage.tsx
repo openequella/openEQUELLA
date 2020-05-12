@@ -95,7 +95,6 @@ const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
 
     return () => {
       cleanupTriggered = true;
-      // cancelToken.cancel();
     };
   }, []);
 
