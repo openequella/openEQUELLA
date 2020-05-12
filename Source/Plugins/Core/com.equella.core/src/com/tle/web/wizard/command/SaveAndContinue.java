@@ -69,9 +69,7 @@ public class SaveAndContinue extends WizardCommand {
     }
     wizardService.reloadSaveAndContinue(state);
     // validate mandatory fields after reloading
-    pageList.stream()
-        .filter(WebWizardPage::isViewable)
-        .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
+    validateMandatoryFields(info, state);
     moderationService.setEditing(info, true);
   }
 
