@@ -4,7 +4,12 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   clearMocks: true,
-  coverageDirectory: "coverage",
-  preset: "ts-jest",
-  testEnvironment: "node",
+  coverageDirectory: 'coverage',
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  globals: {
+    'ts-jest': {
+      compiler: 'ttypescript',
+    },
+  },
 };

@@ -1,4 +1,5 @@
 import { GET } from './AxiosInstance';
+import { is } from 'typescript-is';
 
 export interface ItemCounts {
   tasks: number;
@@ -19,7 +20,7 @@ export interface CurrentUserDetails {
   username: string;
   firstName: string;
   lastName: string;
-  emailAddress: string;
+  emailAddress?: string;
   accessibilityMode: boolean;
   autoLoggedIn: boolean;
   guest: boolean;
@@ -37,4 +38,6 @@ export interface CurrentUserDetails {
 export const getCurrentUserDetails = (
   apiBasePath: string
 ): Promise<CurrentUserDetails> =>
-  GET<CurrentUserDetails>(apiBasePath + '/content/currentuser');
+  GET<CurrentUserDetails>(apiBasePath + '/content/currentuser', (data) =>
+    is<CurrentUserDetails>(data)
+  );

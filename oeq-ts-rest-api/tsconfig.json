@@ -1,8 +1,9 @@
 {
   "include": ["src", "types"],
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "module": "ES6",
+    "lib": ["ES6"],
+    "target": "ES6",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
@@ -19,6 +20,9 @@
       "*": ["src/*", "node_modules/*"]
     },
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "plugins": [
+      { "transform": "typescript-is/lib/transform-inline/transformer" }
+    ]
   }
 }

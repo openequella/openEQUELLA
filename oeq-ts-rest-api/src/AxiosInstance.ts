@@ -13,10 +13,18 @@ const catchHandler = (error: AxiosError | Error): never => {
   throw repackageError(error);
 };
 
-export const GET = <T>(path: string): Promise<T> =>
+export const GET = <T>(
+  path: string,
+  validator?: (data: unknown) => boolean
+): Promise<T> =>
   axios
     .get<T>(path)
     .then((response: AxiosResponse<T>) => {
+      if (validator && !validator(response.data)) {
+        // If a validator is provided, but it fails to validate the provided data...
+        throw new Error('Data format mismatch with data received from server.');
+      }
+
       return response.data;
     })
     .catch(catchHandler);
