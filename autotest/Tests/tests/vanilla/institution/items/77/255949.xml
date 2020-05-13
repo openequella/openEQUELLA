@@ -1,0 +1,80 @@
+<com.tle.beans.item.Item>
+  <id>255949</id>
+  <uuid>3ae88eb2-2572-4486-bbd4-bd2fe0aeffb6</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2005-10-03 16:28:37.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-07-15 10:28:21.0</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-05-13 12:04:21.127</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>PERSONAL</status>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>255956</id>
+      <uuid>1a89363c-106f-44ae-ba68-d6b10121974c</uuid>
+      <url>titration02.gif</url>
+      <description>titration02.gif</description>
+      <value1>1</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6b356e2e-e6a0-235a-5730-15ad1d8ad630"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>255953</id>
+    <start class="sql-timestamp">2011-08-30 12:05:11.15</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>255954</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>255955</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>titration02.gif</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>255950</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>255951</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This item is used by Titration.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>22213</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

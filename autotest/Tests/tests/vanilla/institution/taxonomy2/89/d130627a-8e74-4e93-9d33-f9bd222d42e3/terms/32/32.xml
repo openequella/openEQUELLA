@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257105</id>
+  <uuid>5fdb0ca6-0ccd-4835-984c-1e92c2685aef</uuid>
+  <value>Airmanship and Professionalism</value>
+  <valueHash>5aaecea4f5b4b5c3760d77cdf65dd4ec</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\Aviation 2\Airmanship and Professionalism</fullValue>
+  <parent>
+    <id>257104</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

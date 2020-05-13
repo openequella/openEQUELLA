@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257108</id>
+  <uuid>7c15144a-aac3-48c1-8f4b-0d6ea5c9784b</uuid>
+  <value>BAK Meteorology</value>
+  <valueHash>bfd62c58fbe017c9faf015017ab3541c</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\BAK Meteorology</fullValue>
+  <parent>
+    <id>257103</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

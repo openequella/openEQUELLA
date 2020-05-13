@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257131</id>
+  <uuid>ac6ae2fa-3a4a-4d93-9894-7fa1fe1f430e</uuid>
+  <value>Module 01</value>
+  <valueHash>7ec8f3dd3d63b2c7058789080dc7fcd7</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\Study Guide and Reference Books\Module 01</fullValue>
+  <parent>
+    <id>257130</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

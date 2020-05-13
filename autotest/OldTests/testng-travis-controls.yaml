@@ -4,6 +4,7 @@ threadCount: 1
 tests:
   - name: ContributionControls
     classes:
+      - com.tle.webtests.test.contribute.bugs.VisibilityScriptingBugTest
       - com.tle.webtests.test.contribute.controls.AllControlsTest
       - com.tle.webtests.test.contribute.controls.BannedExtensionTest
       - com.tle.webtests.test.contribute.controls.FileSizeRestrictionTest
