@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257136</id>
+  <uuid>efef571f-d21c-4bc3-9a72-e138236ef054</uuid>
+  <value>RPL Flight Breifings</value>
+  <valueHash>29b481c1da9cb3347b5d1bcc140df283</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\RPL Flight Breifings</fullValue>
+  <parent>
+    <id>257099</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

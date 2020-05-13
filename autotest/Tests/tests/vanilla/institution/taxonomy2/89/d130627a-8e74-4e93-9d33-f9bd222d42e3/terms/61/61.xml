@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257134</id>
+  <uuid>a97b9e5c-16cb-454d-a556-0c6bb0a9aab2</uuid>
+  <value>NVFR Flight Breifings</value>
+  <valueHash>391245fc855d22b594d1d454f3d478e6</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\NVFR Flight Breifings</fullValue>
+  <parent>
+    <id>257099</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

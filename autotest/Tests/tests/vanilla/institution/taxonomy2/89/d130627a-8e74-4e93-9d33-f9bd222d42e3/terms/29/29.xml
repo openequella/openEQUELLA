@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257102</id>
+  <uuid>5227fc87-124a-4550-94c7-a094c3f2e703</uuid>
+  <value>CPL Flight Breifings</value>
+  <valueHash>a8758e343177a5e3312dc29577229c84</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\CPL Flight Breifings</fullValue>
+  <parent>
+    <id>257099</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
