@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6086</id>
+  <id>255751</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>ogg</string>
     <string>ogv</string>
+    <string>ogg</string>
   </extensions>
   <type>video/ogg</type>
   <description>Video</description>

@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>5959</id>
+  <id>255661</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>pps</string>
     <string>ppt</string>
+    <string>pps</string>
   </extensions>
   <type>application/powerpoint</type>
   <description>MS Powerpoint</description>

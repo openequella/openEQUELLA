@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257112</id>
+  <uuid>ef9afa12-44f9-4314-81c8-beadb7d61bf0</uuid>
+  <value>3. Taxi and Take-off</value>
+  <valueHash>58616315ece624e66a84a3a8cbe31dea</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Aerodynamics\3. Taxi and Take-off</fullValue>
+  <parent>
+    <id>257109</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

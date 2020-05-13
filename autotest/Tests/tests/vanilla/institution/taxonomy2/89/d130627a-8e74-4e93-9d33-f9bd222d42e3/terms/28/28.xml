@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257101</id>
+  <uuid>10117429-5bb5-4b92-8242-693eb7a2e7da</uuid>
+  <value>Advanced Flight Breifings</value>
+  <valueHash>9e01c0214e19dc7933010fa0c29bbfe7</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Advanced Flight Breifings</fullValue>
+  <parent>
+    <id>257099</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
