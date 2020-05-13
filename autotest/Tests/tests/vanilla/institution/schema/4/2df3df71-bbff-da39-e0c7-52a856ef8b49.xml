@@ -1,16 +1,16 @@
 <com.tle.beans.entity.Schema>
-  <id>994</id>
+  <id>255502</id>
   <uuid>2df3df71-bbff-da39-e0c7-52a856ef8b49</uuid>
   <owner>a2720e4c-2fc0-1b97-275e-bf88bab34030</owner>
   <dateModified class="sql-timestamp">2008-06-12 14:08:12.657</dateModified>
   <dateCreated class="sql-timestamp">2008-06-12 14:08:12.657</dateCreated>
   <description>
-    <id>213512</id>
+    <id>255503</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213311</id>
+          <id>255504</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>System schema for storing My Content collection</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>213513</id>
+    <id>255505</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213312</id>
+          <id>255506</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>My Content</text>

@@ -1,0 +1,81 @@
+<com.tle.beans.item.Item>
+  <id>256529</id>
+  <uuid>bedaa06d-c278-a683-26c7-01e18b108049</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-07 11:42:40.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-07 11:42:40.0</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-05-13 12:04:21.127</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>8340</id>
+      <url>http://boorah/dev/vanilla/item/image/df2f19c4-1aba-c8ec-dc62-311bb01de2ad/1/sqrroot.gif</url>
+      <urlHash>8ab44f3f170f7c00630b041941d4b681</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.lang.IllegalArgumentException: Invalid URL</message>
+      <tries>7</tries>
+      <lastChecked class="sql-timestamp">2020-04-30 23:14:12.235</lastChecked>
+      <lastIndexed class="sql-timestamp">2020-04-30 23:14:12.235</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>256533</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.397</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>256534</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>256535</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Root temp</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>256530</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>256531</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>l</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>5998</id>
+  <id>255775</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>cdf</string>
     <string>nc</string>
+    <string>cdf</string>
   </extensions>
   <type>application/x-netcdf</type>
   <attributes>

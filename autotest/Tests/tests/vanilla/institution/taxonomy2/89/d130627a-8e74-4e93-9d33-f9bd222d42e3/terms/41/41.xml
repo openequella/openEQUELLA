@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257114</id>
+  <uuid>5435e9b6-2ec6-442f-ad72-d11606bdbe38</uuid>
+  <value>5. Thrust and Power</value>
+  <valueHash>204a80e15067d77ecc8efbcd0dbdfa2f</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Aerodynamics\5. Thrust and Power</fullValue>
+  <parent>
+    <id>257109</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

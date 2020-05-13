@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6097</id>
+  <id>255652</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>emf</string>
     <string>wmf</string>
+    <string>emf</string>
   </extensions>
   <type>windows/metafile</type>
   <attributes>

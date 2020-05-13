@@ -1,16 +1,16 @@
 <com.tle.beans.entity.FederatedSearch>
-  <id>1023</id>
+  <id>255637</id>
   <uuid>ebd38e44-078f-e4d0-c304-7a152d38838e</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <name>
-    <id>213559</id>
+    <id>255638</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213357</id>
+          <id>255639</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>State library of Tasmania</text>
@@ -21,24 +21,24 @@
   </name>
   <attributes>
     <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>username</key>
-      <value>guest</value>
-    </com.tle.beans.entity.BaseEntity_-Attribute>
-    <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>database</key>
-      <value>cl_default</value>
-    </com.tle.beans.entity.BaseEntity_-Attribute>
-    <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>port</key>
-      <value>210</value>
+      <key>host</key>
+      <value>asimov.ecc.tased.edu.au</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
     <com.tle.beans.entity.BaseEntity_-Attribute>
       <key>xslt</key>
       <value>federated_search_metadata.xslt</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
     <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>host</key>
-      <value>asimov.ecc.tased.edu.au</value>
+      <key>port</key>
+      <value>210</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>database</key>
+      <value>cl_default</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>guest</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
   </attributes>
   <systemType>false</systemType>

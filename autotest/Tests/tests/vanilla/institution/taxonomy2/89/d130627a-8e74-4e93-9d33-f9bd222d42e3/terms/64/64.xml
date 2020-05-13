@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257137</id>
+  <uuid>6b313bb1-475a-4f88-a595-0b6d960e416c</uuid>
+  <value>1. Long Breifings to First Solo</value>
+  <valueHash>5e50ba355f124dcff2c9cc70ce0c83e9</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\RPL Flight Breifings\1. Long Breifings to First Solo</fullValue>
+  <parent>
+    <id>257136</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
