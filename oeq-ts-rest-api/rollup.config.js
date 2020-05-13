@@ -1,4 +1,3 @@
-import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 import ttypescript from 'ttypescript';
 import typescript from 'rollup-plugin-typescript2';
@@ -20,7 +19,6 @@ export default {
     }
   ],
   plugins: [
-    commonjs({ include: 'node_modules/**' }),
     typescript({ typescript: ttypescript, clean: true }),
   ],
 };
