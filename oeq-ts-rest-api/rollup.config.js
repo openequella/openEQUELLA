@@ -1,20 +1,28 @@
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import resolve from '@rollup/plugin-node-resolve';
+import pkg from './package.json';
 import ttypescript from 'ttypescript';
-import typescript from '@rollup/plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 
 export default {
   input: 'src/index.ts',
-  output: {
-    dir: 'dist',
-    format: 'es',
-    sourcemap: true,
-  },
+  output: [
+    {
+      file: pkg.main,
+      format: 'cjs',
+      exports: 'named',
+      sourcemap: true
+    },
+    {
+      file: pkg.module,
+      format: 'es',
+      exports: 'named',
+      sourcemap: true
+    }
+  ],
   plugins: [
     commonjs({ include: 'node_modules/**' }),
     json(),
-    resolve({ preferBuiltins: false, modulesOnly: true }),
-    typescript({ typescript: ttypescript }), // so Rollup can convert TypeScript to JavaScript
+    typescript({ typescript: ttypescript, clean: true }),
   ],
 };
