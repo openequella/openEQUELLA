@@ -429,7 +429,7 @@
   </entry>
   <entry>
     <string>ui</string>
-    <string>{&quot;newUI&quot;:{&quot;enabled&quot;:true,&quot;newSearch&quot;:false}}</string>
+    <string>{&quot;newUI&quot;:{&quot;enabled&quot;:false,&quot;newSearch&quot;:false}}</string>
   </entry>
   <entry>
     <string>harvester.skipdrm</string>
