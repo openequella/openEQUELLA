@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257143</id>
+  <uuid>6a112d13-8d88-46d2-8afa-2cbd8c48f979</uuid>
+  <value>MEA50218</value>
+  <valueHash>5d32bb472c9a8b140dac4cd3172f42e4</valueHash>
+  <fullValue>Diploma in Aeroskills Mechanical\MEA50218</fullValue>
+  <parent>
+    <id>257142</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

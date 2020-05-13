@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257107</id>
+  <uuid>8f99fb5f-336f-4b2a-80f7-d67f771754d7</uuid>
+  <value>BAK Aircraft General Knowledge</value>
+  <valueHash>a9e4ae0d3cea350246238e1713c2ff80</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\BAK Aircraft General Knowledge</fullValue>
+  <parent>
+    <id>257103</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

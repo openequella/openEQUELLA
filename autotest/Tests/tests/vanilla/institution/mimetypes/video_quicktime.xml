@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6087</id>
+  <id>255779</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>mov</string>
     <string>qt</string>
+    <string>mov</string>
   </extensions>
   <type>video/quicktime</type>
   <description>Video</description>

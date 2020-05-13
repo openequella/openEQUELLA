@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257095</id>
+  <uuid>89b1bc92-0c04-4195-9848-d7e4c119b2ef</uuid>
+  <value>MEA41318</value>
+  <valueHash>49e6a2c101aaf14a85ab7ee70509e96e</valueHash>
+  <fullValue>Cert IV in Aeroskills Structures\MEA41318</fullValue>
+  <parent>
+    <id>257094</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

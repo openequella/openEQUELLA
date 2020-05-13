@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6081</id>
+  <id>255705</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>sgm</string>
     <string>sgml</string>
+    <string>sgm</string>
   </extensions>
   <type>text/x-sgml</type>
   <attributes>

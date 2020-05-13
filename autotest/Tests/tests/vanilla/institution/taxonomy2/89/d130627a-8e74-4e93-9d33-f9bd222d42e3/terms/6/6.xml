@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257079</id>
+  <uuid>00fc6c35-c86a-4421-9415-3bfa15baeef9</uuid>
+  <value>MEA20518</value>
+  <valueHash>a0fa85bb25229dc88caa6d945fedb4ec</valueHash>
+  <fullValue>Cert II in Aircraft Line Maintenance\MEA20518</fullValue>
+  <parent>
+    <id>257077</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

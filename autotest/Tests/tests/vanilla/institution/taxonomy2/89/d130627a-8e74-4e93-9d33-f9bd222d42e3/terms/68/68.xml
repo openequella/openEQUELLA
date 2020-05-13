@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257141</id>
+  <uuid>9b024056-9eef-4673-ac68-8cd230f726be</uuid>
+  <value>AVI50415</value>
+  <valueHash>e2cd2728d380c880a3a8bfd6f81f3caf</valueHash>
+  <fullValue>Diploma Aviation Instrument Rating\AVI50415</fullValue>
+  <parent>
+    <id>257140</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

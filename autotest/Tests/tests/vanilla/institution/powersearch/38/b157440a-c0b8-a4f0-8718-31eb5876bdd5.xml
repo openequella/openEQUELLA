@@ -1,16 +1,16 @@
 <com.tle.beans.entity.PowerSearch>
-  <id>1024</id>
+  <id>255640</id>
   <uuid>b157440a-c0b8-a4f0-8718-31eb5876bdd5</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <description>
-    <id>213560</id>
+    <id>255641</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213358</id>
+          <id>255642</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Created automatically by upgrade scripts</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>213561</id>
+    <id>255643</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213359</id>
+          <id>255644</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Plan</text>
