@@ -9,28 +9,37 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.testng.annotations.Test;
 
+/**
+ * This is a test to ensure that GH issue #1678 has not regressed.
+ *
+ * @see <a href="https://github.com/openequella/openEQUELLA/issues/1678">GitHub Issue 1678</a>
+ */
 @TestInstitution("vanilla")
 public class VisibilityScriptingBugTest extends AbstractCleanupTest {
-
   private static final String METADATA_INPUT_USER = "cpddm";
   private static final String TOGGLE_USER = "csme";
-  private static final String ADMIN_USER = "TLE_ADMINISTRATOR";
   private static final String PASS = "tle010";
+
   private static final String COLLECTION = "Test Wizard Issue";
   private static final String ITEM_NAME = "VisibilityScriptingBugTest - Lost Metadata Test Item 1";
+
   private static final Date DATE = new Date(1589256742342L);
-  private static final String DATE_AS_STRING = "2020-05-12";
-  private static final String EMAIL = "test@test.com";
-  private static final String DROPDOWN = "List 2";
+  private static final String DATE_AS_STRING = new SimpleDateFormat("yyyy-MM-dd").format(DATE);
+
   private static final String CHECKBOX = "one";
+  private static final String DROPDOWN = "List 2";
+  private static final String EMAIL = "test@test.com";
+  private static final String ROLE = "System Administrator";
+
   private static final String RADIO1 = "Radio 1";
+  private static final String RADIO2 = "Yes";
   private static final String SHUFFLE1 = "Shuffle 1";
   private static final String SHUFFLE2 = "Shuffle 2";
-  private static final String ROLE = "System Administrator";
-  private static final String RADIO2 = "Yes";
+
   private static final String XML_PATH = "item/itembody/";
   private static final String ROLE_ID = "ROLE_SYSTEM_ADMINISTRATOR";
   private static final String USER_ID = "4026b550-9a1f-4521-9b56-9ec737c02526";
