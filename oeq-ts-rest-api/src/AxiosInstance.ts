@@ -1,6 +1,6 @@
 import Axios, { AxiosResponse, AxiosError } from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
-import tough from 'tough-cookie';
+import * as tough from 'tough-cookie';
 import { repackageError } from './Errors';
 
 // So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
