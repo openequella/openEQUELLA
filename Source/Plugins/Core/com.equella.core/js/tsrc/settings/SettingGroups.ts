@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { languageStrings } from "../util/langstrings";
-import { GeneralSetting } from "./SettingsPageEntry";
+import * as OEQ from "@openequella/rest-api-client";
 
 interface SettingCategory {
   name: string;
@@ -25,7 +25,7 @@ interface SettingCategory {
 
 export interface SettingGroup {
   category: SettingCategory;
-  settings: GeneralSetting[];
+  settings: OEQ.Settings.GeneralSetting[];
 }
 
 /**
@@ -33,7 +33,9 @@ export interface SettingGroup {
  * @param {GeneralSetting[]} settings
  * @returns SettingGroup[] A array of SettingGroup which includes a category and settings of the category
  */
-export const groupMap = (settings: GeneralSetting[]): SettingGroup[] => {
+export const groupMap = (
+  settings: OEQ.Settings.GeneralSetting[]
+): SettingGroup[] => {
   const settingCategories: { [key: string]: SettingCategory } =
     languageStrings.settings;
 

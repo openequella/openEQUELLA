@@ -31,7 +31,6 @@ import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { Config } from "../config";
-import axios from "axios";
 import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -64,22 +63,22 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
 
   useEffect(() => {
-    const cancelToken = axios.CancelToken.source();
-    fetchUISetting(cancelToken.token)
+    // Use a flag to prevent setting state when component is being unmounted
+    let cleanupTriggered = false;
+    fetchUISetting()
       .then((uiSetting) => {
-        const { enabled, newSearch } = uiSetting.newUI;
-        setNewUIEnabled(enabled);
-        setNewSearchEnabled(newSearch);
+        if (!cleanupTriggered) {
+          const { enabled, newSearch } = uiSetting.newUI;
+          setNewUIEnabled(enabled);
+          setNewSearchEnabled(newSearch);
+        }
       })
       .catch((error) => {
-        if (axios.isCancel(error)) {
-          return; // Request was cancelled
-        }
         handleError(error);
       });
 
     return () => {
-      cancelToken.cancel();
+      cleanupTriggered = true;
     };
   }, []);
 
