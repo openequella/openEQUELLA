@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6028</id>
+  <id>255656</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>xyz</string>
     <string>pdb</string>
+    <string>xyz</string>
   </extensions>
   <type>chemical/x-pdb</type>
   <attributes/>

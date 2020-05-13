@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257116</id>
+  <uuid>b07420e8-3c73-41cd-89c5-65cc683357ef</uuid>
+  <value>7. Climbing and Descending</value>
+  <valueHash>9345d82af72f23fedb85fd9ffb457d33</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Aerodynamics\7. Climbing and Descending</fullValue>
+  <parent>
+    <id>257109</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

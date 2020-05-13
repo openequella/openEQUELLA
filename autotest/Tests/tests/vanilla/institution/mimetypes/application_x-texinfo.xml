@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6008</id>
+  <id>255761</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>texi</string>
     <string>texinfo</string>
+    <string>texi</string>
   </extensions>
   <type>application/x-texinfo</type>
   <attributes>

@@ -21,11 +21,17 @@ package com.tle.web.wizard.impl;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.js.JSCallable;
+import com.tle.web.wizard.WebWizardPage;
+import com.tle.web.wizard.WizardService;
+import com.tle.web.wizard.WizardState;
+import com.tle.web.wizard.section.PagesSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
+import javax.inject.Inject;
 
 public abstract class WizardCommand {
   private final String name;
   private final String value;
+  @Inject private WizardService wizardService;
 
   public WizardCommand(String name, String value) {
     this.name = name;
@@ -69,4 +75,11 @@ public abstract class WizardCommand {
   }
 
   public abstract boolean isEnabled(SectionInfo info, WizardSectionInfo winfo);
+
+  public void validateMandatoryFields(SectionInfo info, WizardState state) {
+    PagesSection ps = info.lookupSection(PagesSection.class);
+    wizardService.getWizardPages(state).stream()
+        .filter(WebWizardPage::isViewable)
+        .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
+  }
 }

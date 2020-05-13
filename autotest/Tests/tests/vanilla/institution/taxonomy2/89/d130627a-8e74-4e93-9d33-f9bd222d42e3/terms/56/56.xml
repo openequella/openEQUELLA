@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257129</id>
+  <uuid>5b8a96ff-6654-44a9-880f-26728ea79863</uuid>
+  <value>Ground Theory Radio</value>
+  <valueHash>1f8a1336b6972df4e3f9fd788b8565fd</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\Ground Theory Radio</fullValue>
+  <parent>
+    <id>257103</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

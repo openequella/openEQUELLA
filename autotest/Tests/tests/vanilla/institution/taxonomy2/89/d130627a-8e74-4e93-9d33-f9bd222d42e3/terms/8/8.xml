@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257081</id>
+  <uuid>7704585b-6952-4931-b22f-c3a5cc72223c</uuid>
+  <value>AVI20216</value>
+  <valueHash>b920fc26fc7a633918d482d13c3415a2</valueHash>
+  <fullValue>Cert II in Aviation Ground Operations and Service\AVI20216</fullValue>
+  <parent>
+    <id>257080</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

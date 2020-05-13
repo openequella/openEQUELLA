@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1014</id>
+  <id>255605</id>
   <uuid>8e3caf16-f3cb-b3dd-d403-e5eb8d545fff</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-06-22 15:06:22.3</dateModified>
   <dateCreated class="sql-timestamp">2009-06-22 15:05:31.03</dateCreated>
   <name>
-    <id>213548</id>
+    <id>255606</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213347</id>
+          <id>255607</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>DRM Test Collection</text>
@@ -26,7 +26,7 @@
   <wizardcategory>DRM Tests</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>464</id>
+    <id>255608</id>
     <itemMetadataRules/>
     <wizard>
       <pages>
@@ -110,9 +110,9 @@
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
-                  <java.util.Collections_-SingletonSet>
-                    <element class="string">fileHandler</element>
-                  </java.util.Collections_-SingletonSet>
+                  <singleton-set>
+                    <string>fileHandler</string>
+                  </singleton-set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -132,13 +132,13 @@
           <container>
             <networks serialization="custom">
               <unserializable-parents/>
-              <tree-set>
+              <sorted-set>
                 <default/>
                 <com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
                   <caseInsensitive>true</caseInsensitive>
                 </com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
                 <int>0</int>
-              </tree-set>
+              </sorted-set>
             </networks>
             <purpose>false</purpose>
             <count>0</count>
@@ -146,13 +146,13 @@
           <contributor>
             <networks serialization="custom">
               <unserializable-parents/>
-              <tree-set>
+              <sorted-set>
                 <default/>
                 <com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
                   <caseInsensitive>true</caseInsensitive>
                 </com.dytech.edge.wizard.beans.DRMPage_-NetworkSet_-1>
                 <int>0</int>
-              </tree-set>
+              </sorted-set>
             </networks>
             <sector>false</sector>
             <attribution>false</attribution>

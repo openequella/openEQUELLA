@@ -1,15 +1,15 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6012</id>
+  <id>255659</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>t</string>
-    <string>tr</string>
     <string>roff</string>
+    <string>tr</string>
+    <string>t</string>
   </extensions>
   <type>application/x-troff</type>
   <attributes>

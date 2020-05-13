@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257122</id>
+  <uuid>1eecace6-197b-4efb-bf2c-e1f60b8c0277</uuid>
+  <value>CPL Human Factors</value>
+  <valueHash>8a59bd50423e71a2708dc63b6b55df5a</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Human Factors</fullValue>
+  <parent>
+    <id>257103</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
