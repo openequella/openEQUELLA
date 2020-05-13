@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1004</id>
+  <id>255597</id>
   <uuid>08e6c019-2298-96f6-79b4-100cf8a827c2</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-06-02 12:06:23.653</dateModified>
   <dateCreated class="sql-timestamp">2009-06-02 11:19:07.96</dateCreated>
   <name>
-    <id>213529</id>
+    <id>255598</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213328</id>
+          <id>255599</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Simple Controls Collection</text>
@@ -26,7 +26,7 @@
   <wizardcategory>Automated Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>454</id>
+    <id>255600</id>
     <itemMetadataRules/>
     <wizard>
       <pages>

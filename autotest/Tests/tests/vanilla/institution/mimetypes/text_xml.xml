@@ -1,16 +1,16 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>6082</id>
+  <id>255651</id>
   <institution>
-    <id>41</id>
+    <id>255467</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>sty</string>
-    <string>cat</string>
-    <string>ent</string>
     <string>xml</string>
+    <string>ent</string>
+    <string>cat</string>
+    <string>sty</string>
   </extensions>
   <type>text/xml</type>
   <attributes>

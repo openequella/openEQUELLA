@@ -1,0 +1,81 @@
+<com.tle.beans.item.Item>
+  <id>255825</id>
+  <uuid>0098a135-12a0-e5fa-21ea-59a3a5eec828</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:01:17.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:56:17.0</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-05-13 12:04:21.127</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>7853</id>
+      <url>http://boorah/dev/vanilla/item/image/cc90bf6f-c525-1c7a-64f6-ddde6382ae7c/1/vectordi.gif</url>
+      <urlHash>fcbe2045f189c6ab162cfe745278480a</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.lang.IllegalArgumentException: Invalid URL</message>
+      <tries>7</tries>
+      <lastChecked class="sql-timestamp">2020-04-30 23:14:12.235</lastChecked>
+      <lastIndexed class="sql-timestamp">2020-04-30 23:14:12.235</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>255829</id>
+    <start class="sql-timestamp">2011-08-30 12:05:07.78</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>255830</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>255831</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Vector Differential (Del)</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>255826</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>255827</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Vector differential symbol.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

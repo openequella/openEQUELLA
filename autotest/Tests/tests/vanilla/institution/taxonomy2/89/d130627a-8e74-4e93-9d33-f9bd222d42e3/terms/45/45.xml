@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257118</id>
+  <uuid>eae7d4d1-cc0c-4b5e-a976-109c2868f567</uuid>
+  <value>9. Stalling and Spinning</value>
+  <valueHash>ba4eb25873bde9548aa388e627b7fe46</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Aerodynamics\9. Stalling and Spinning</fullValue>
+  <parent>
+    <id>257109</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
