@@ -213,7 +213,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     .filter((facet) => !facet.deleted)
     .map((facet, index) => {
       return (
-        <ListItem divider key={index}>
+        <ListItem divider key={facet.id ?? facet.name + index}>
           <ListItemText primary={facet.name} />
           <ListItemSecondaryAction>
             <IconButton
