@@ -18,7 +18,7 @@
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "rollup --config"
+    "prepare": "npm run build"
   },
   "peerDependencies": {},
   "prettier": {

@@ -19,7 +19,6 @@
       "*": ["src/*", "node_modules/*"]
     },
     "jsx": "react",
-    "esModuleInterop": true,
     "plugins": [
       { "transform": "typescript-is/lib/transform-inline/transformer" }
     ]
