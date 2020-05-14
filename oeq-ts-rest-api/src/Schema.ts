@@ -102,6 +102,12 @@ export const listSchemas = (
   );
 };
 
+/**
+ * Get details of a specific schema as specified by the provided UUID.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param uuid UUID of the schema to be retrieved.
+ */
 export const getSchema = (
   apiBasePath: string,
   uuid: string
