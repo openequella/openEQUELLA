@@ -134,6 +134,7 @@ const FacetDialog = ({
               event.target.value ? parseInt(event.target.value) : undefined
             )
           }
+          helperText={"Leave blank to display all categories"}
         />
       </DialogContent>
       <DialogActions>
