@@ -7,14 +7,6 @@ export interface Citation {
   transformation: string;
 }
 
-export interface SchemaNode {
-  children: Record<string, SchemaNode>;
-  indexed: boolean;
-  field: boolean;
-  nested: boolean;
-  type: string;
-}
-
 export interface Schema extends Common.BaseEntity {
   namePath: string;
   descriptionPath: string;

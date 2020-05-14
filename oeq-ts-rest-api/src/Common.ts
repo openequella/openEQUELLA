@@ -54,14 +54,6 @@ export interface PagedResult<T> {
 }
 
 /**
- * Helper function for a standard validator for BaseEntity instances via typescript-is.
- *
- * @param instance An instance to validate.
- */
-export const isBaseEntity = (instance: unknown): boolean =>
-  is<BaseEntity>(instance);
-
-/**
  * Helper function for a standard validator for BaseEntity  instances wrapped in a PagedResult
  * via typescript-is.
  *
