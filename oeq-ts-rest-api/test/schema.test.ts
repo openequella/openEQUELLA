@@ -35,15 +35,28 @@ describe('Retrieving schemas', () => {
   });
 });
 
-it('Should be possible to retrieve a known schema', () => {
-  expect.assertions(2);
-  const targetUuid = '71a27a31-d6b0-4681-b124-6db410ed420b';
+describe('Retrieval of a specific schema', () => {
+  it('Should be possible to retrieve a known schema', () => {
+    expect.assertions(2);
+    const targetUuid = '71a27a31-d6b0-4681-b124-6db410ed420b';
 
-  return OEQ.Schema.getSchema(TC.API_PATH, targetUuid).then(
-    (result: EquellaSchema) => {
-      expect(result.uuid).toBe(targetUuid);
-      // Better make sure we got a schema
-      expect(result.definition).toBeTruthy();
-    }
-  );
+    return OEQ.Schema.getSchema(TC.API_PATH, targetUuid).then(
+      (result: EquellaSchema) => {
+        expect(result.uuid).toBe(targetUuid);
+        // Better make sure we got a schema
+        expect(result.definition).toBeTruthy();
+      }
+    );
+  });
+
+  it('Should result in a 404 when attempting to retrieve an unknown UUID', () => {
+    expect.assertions(2);
+
+    return OEQ.Schema.getSchema(TC.API_PATH, 'fake-uuid').catch(
+      (error: OEQ.Errors.ApiError) => {
+        expect(error.status).toBe(404);
+        expect(error.errorResponse).toBeTruthy();
+      }
+    );
+  });
 });
