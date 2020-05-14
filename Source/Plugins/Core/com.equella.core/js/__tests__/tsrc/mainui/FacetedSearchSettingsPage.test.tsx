@@ -115,21 +115,21 @@ describe("<FacetedSearchSettingsPage />", () => {
       expect(getListItems()).toHaveLength(2);
     });
 
-    describe("when click an Edit button", () => {
+    describe("when an Edit button is clicked", () => {
       it("should show a dialog", async () => {
         openDialog(false);
         expect(component.find(FacetDialog).prop("open")).toBeTruthy();
       });
     });
 
-    describe("when click the Add button", () => {
+    describe("when the Add button is clicked", () => {
       it("should show a dialog", async () => {
         openDialog(true);
         expect(component.find(FacetDialog).prop("open")).toBeTruthy();
       });
     });
 
-    describe("when click a delete button", () => {
+    describe("when a delete button is clicked", () => {
       it("should remove a facet from the list and enable the Save button", () => {
         deleteFacet();
         const items = getListItems();
@@ -138,7 +138,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       });
     });
 
-    describe("when edit a facet through the dialog", () => {
+    describe("when a facet is edited through the dialog", () => {
       it("should show the updated facet and enable the Save button", () => {
         openDialog(false);
         updateFacet(false);
@@ -149,7 +149,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       });
     });
 
-    describe("when add a new facet through the dialog", () => {
+    describe("when a new facet is added through the dialog", () => {
       it("should add the facet to the list and enable the Save button", () => {
         openDialog(true);
         updateFacet(true);
@@ -160,7 +160,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       });
     });
 
-    describe("when the Save button is enabled and click it", () => {
+    describe("when the Save button is enabled and clicked", () => {
       const makeChanges = () => {
         deleteFacet();
         openDialog(true);

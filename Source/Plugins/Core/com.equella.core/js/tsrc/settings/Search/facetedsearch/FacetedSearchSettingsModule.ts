@@ -25,7 +25,7 @@ import { encodeQuery } from "../../../util/encodequery";
 
 export interface Facet {
   /**
-   * ID of a facet; being undefined means this facet is dirty.
+   * ID of a facet; being undefined means this facet is dirty(i.e., not saved to the server).
    */
   id?: number;
   /**
@@ -63,7 +63,7 @@ export const getFacetsFromServer = (): Promise<Facet[]> =>
   Axios.get(FACETED_SEARCH_API_URL).then((res) => res.data);
 
 /**
- * Remove the boolean flags and then save to the Server.
+ * * * Remove the flags and then save to the server.
  */
 export const batchUpdateOrAdd = (facets: FacetWithFlags[]): Promise<string[]> =>
   Axios.put<BatchOperationResponse[]>(

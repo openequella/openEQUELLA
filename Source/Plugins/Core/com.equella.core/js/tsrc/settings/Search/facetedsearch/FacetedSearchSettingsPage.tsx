@@ -106,7 +106,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   /**
-   * Get facets from the Server and add boolean flags on them.
+   * Get facets from the server and add flags to them.
    */
   const getFacets = () => {
     getFacetsFromServer()
@@ -121,8 +121,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Save updated/deleted facets to the Server.
-   * Show the message dialog if any error message is received otherwise show snackbar.
+   * Save updated/deleted facets to the server.
+   * Show the message dialog if any error message is received. Otherwise, show snackbar.
    */
   const save = () => {
     const errorMessages: string[] = [];
