@@ -15,7 +15,7 @@
   "scripts": {
     "start": "rollup --config --watch",
     "build": "rollup --config",
-    "test": "jest",
+    "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "prepare": "npm run build"

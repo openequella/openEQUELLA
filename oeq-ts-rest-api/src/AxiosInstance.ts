@@ -15,10 +15,11 @@ const catchHandler = (error: AxiosError | Error): never => {
 
 export const GET = <T>(
   path: string,
-  validator?: (data: unknown) => boolean
+  validator?: (data: unknown) => boolean,
+  queryParams?: object
 ): Promise<T> =>
   axios
-    .get<T>(path)
+    .get<T>(path, {params: queryParams})
     .then((response: AxiosResponse<T>) => {
       if (validator && !validator(response.data)) {
         // If a validator is provided, but it fails to validate the provided data...
