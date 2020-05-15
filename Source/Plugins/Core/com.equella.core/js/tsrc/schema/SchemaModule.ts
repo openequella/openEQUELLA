@@ -21,6 +21,28 @@ import { Config } from "../config";
 const API_BASE_URL = `${Config.baseUrl}api`;
 
 /**
+ * A minimal representation of a node within an oEQ schema.
+ *
+ * If a node has no/undefined 'parent' then it is the root. If a node has no/undefined
+ * children then it is a leaf node.
+ *
+ * Technically leaf nodes typically have a type (e.g. text) however that information
+ * (along with some other bits) are not retained in this representation. However it can be
+ * retrieved via the REST API.
+ */
+export class SchemaNode {
+  name: string;
+  parent?: SchemaNode;
+  children?: SchemaNode[];
+
+  constructor(name: string, parent?: SchemaNode, children?: SchemaNode[]) {
+    this.name = name;
+    this.parent = parent;
+    this.children = children;
+  }
+}
+
+/**
  * Provides a simple Map<string,string> summary of available schemas, where K is the UUID
  * and V is the schema's name.
  *
@@ -38,4 +60,50 @@ export const schemaListSummary = (): Promise<Map<string, string>> =>
         prev.set(curr.uuid, curr.name),
       new Map<string, string>()
     )
+  );
+
+/**
+ * Recursive helper function to build a simple outline of the structure of an oEQ schema.
+ *
+ * @param definition Typically something like a Record<string,any> returned via the REST API
+ * @param name The name to be used for the next new node.
+ * @param parent Mainly for recursive calls to provide back linking to the parents.
+ */
+const buildSchemaTree = (
+  definition: any,
+  name: string,
+  parent?: SchemaNode
+): SchemaNode => {
+  const node = new SchemaNode(name, parent);
+  node.children = Object.keys(definition)
+    .filter((childName: string) => typeof definition[childName] === "object")
+    .map((childName: string) =>
+      buildSchemaTree(definition[childName], childName, node)
+    );
+
+  return node;
+};
+
+/**
+ * A function to provide a structural outline of a schema. On success returns an oEQ schema
+ * rooted with the standard <xml> root - which oEQ typically drops when capturing schema
+ * paths.
+ *
+ * Any request type errors will result in ApiError. If it is found that the root is not the
+ * standard singular <xml> then a basic Error will be thrown.
+ *
+ * @param uuid The UUID of the schema to retrieve from the server via REST API.
+ */
+export const schemaTree = (uuid: string): Promise<SchemaNode> =>
+  OEQ.Schema.getSchema(API_BASE_URL, uuid).then(
+    (schema: OEQ.Schema.EquellaSchema) => {
+      const elements = Object.keys(schema.definition);
+      const standardRoot = "xml";
+      if (elements.length !== 1 && elements[0] !== standardRoot) {
+        throw new Error(
+          "Received schema does not start with the standard <xml> root element."
+        );
+      }
+      return buildSchemaTree(schema.definition[standardRoot], standardRoot);
+    }
   );
