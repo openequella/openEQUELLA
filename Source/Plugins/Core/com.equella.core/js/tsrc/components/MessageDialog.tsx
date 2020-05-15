@@ -21,7 +21,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Typography,
 } from "@material-ui/core";
@@ -43,11 +42,9 @@ const MessageDialog = ({
     <Dialog open={open} onClose={close} fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          {messages.map((message) => (
-            <Typography>{message}</Typography>
-          ))}
-        </DialogContentText>
+        {messages.map((message, index) => (
+          <Typography key={message + index}>{message}</Typography>
+        ))}
       </DialogContent>
       <DialogActions>
         <Button onClick={close} color="primary">

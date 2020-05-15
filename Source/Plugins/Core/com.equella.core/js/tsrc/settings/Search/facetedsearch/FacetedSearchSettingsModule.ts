@@ -21,14 +21,19 @@ import {
   BatchOperationResponse,
   groupErrorMessages,
 } from "../../../api/BatchOperationResponse";
+import { encodeQuery } from "../../../util/encodequery";
 
 export interface Facet {
   /**
-   * Name of a facet
+   * ID of a facet; being undefined means this facet is dirty(i.e., not saved to the server).
+   */
+  id?: number;
+  /**
+   * Name of a facet.
    */
   name: string;
   /**
-   * Schema node of a facet
+   * Schema node of a facet.
    */
   schemaNode: string;
   /**
@@ -58,13 +63,20 @@ export const getFacetsFromServer = (): Promise<Facet[]> =>
   Axios.get(FACETED_SEARCH_API_URL).then((res) => res.data);
 
 /**
- * Remove the boolean flags and then save to the Server.
+ * * * Remove the flags and then save to the server.
  */
-export const batchUpdateOrAdd = (facets: FacetWithFlags[]) =>
+export const batchUpdateOrAdd = (facets: FacetWithFlags[]): Promise<string[]> =>
   Axios.put<BatchOperationResponse[]>(
     FACETED_SEARCH_API_URL,
     facets.map((facet) => removeFlags(facet))
   ).then((res) => groupErrorMessages(res.data));
+
+export const batchDelete = (ids: string[]): Promise<string[]> =>
+  Axios.delete<BatchOperationResponse[]>(
+    `${FACETED_SEARCH_API_URL}/${encodeQuery({ ids: ids })}`
+  ).then((res) => {
+    return groupErrorMessages(res.data);
+  });
 
 /**
  * Validate if trimmed name or schema node is empty.
@@ -92,4 +104,8 @@ export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
     return -1;
   }
   return Math.max(...facets.map((facet) => facet.orderIndex));
+};
+
+export const facetComparator = (target: FacetWithFlags) => {
+  return (facet: FacetWithFlags) => facet === target;
 };

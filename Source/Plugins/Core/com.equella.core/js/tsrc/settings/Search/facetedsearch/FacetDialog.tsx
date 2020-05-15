@@ -134,6 +134,7 @@ const FacetDialog = ({
               event.target.value ? parseInt(event.target.value) : undefined
             )
           }
+          helperText={"Leave blank to display all categories"}
         />
       </DialogContent>
       <DialogActions>
@@ -145,7 +146,7 @@ const FacetDialog = ({
           color="primary"
           disabled={isNameInvalid || isSchemaNodeInvalid}
         >
-          {commonString.action.add}
+          {facet ? commonString.action.ok : commonString.action.add}
         </Button>
       </DialogActions>
     </Dialog>

@@ -36,7 +36,9 @@ import {
 } from "@material-ui/core";
 import { languageStrings } from "../../../util/langstrings";
 import {
+  batchDelete,
   batchUpdateOrAdd,
+  facetComparator,
   FacetWithFlags,
   getFacetsFromServer,
   getHighestOrderIndex,
@@ -47,7 +49,11 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import FacetDialog from "./FacetDialog";
 import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
-import { addElement } from "../../../util/ImmutableArrayUtil";
+import {
+  addElement,
+  deleteElement,
+  replaceElement,
+} from "../../../util/ImmutableArrayUtil";
 import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
@@ -78,11 +84,17 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
   const [showEditingDialog, setShowEditingDialog] = useState<boolean>(false);
   const [facets, setFacets] = useState<FacetWithFlags[]>([]);
+  const [currentFacet, setCurrentFacet] = useState<
+    FacetWithFlags | undefined
+  >();
 
   const listOfUpdates: FacetWithFlags[] = facets.filter(
-    (facet) => facet.updated
+    (facet) => facet.updated && !facet.deleted
   );
-  const changesUnsaved = listOfUpdates.length > 0;
+  const listOfDeleted: FacetWithFlags[] = facets.filter(
+    (facet) => facet.deleted
+  );
+  const changesUnsaved = listOfUpdates.length > 0 || listOfDeleted.length > 0;
 
   /**
    * Update the page title and back route, and get a list of facets.
@@ -96,27 +108,38 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   /**
-   * Get facets from the Server and add boolean flags on them.
+   * Get facets from the server and add flags to them.
    */
   const getFacets = () => {
-    getFacetsFromServer().then((facets) => {
-      setFacets(
-        facets.map((facet) => {
-          return { ...facet, updated: false, deleted: false };
-        })
-      );
-    });
+    getFacetsFromServer()
+      .then((facets) =>
+        setFacets(
+          facets.map((facet) => {
+            return { ...facet, updated: false, deleted: false };
+          })
+        )
+      )
+      .catch((error: Error) => handleError(error));
   };
 
   /**
-   * Save updated/deleted facets to the Server.
-   * Show the message dialog if any error message is received otherwise show snackbar.
+   * Save updated/deleted facets to the server.
+   * Show the message dialog if any error message is received. Otherwise, show snackbar.
    */
   const save = () => {
-    batchUpdateOrAdd(listOfUpdates)
+    const updatePromise: Promise<string[]> = listOfUpdates.length
+      ? batchUpdateOrAdd(listOfUpdates)
+      : Promise.resolve([]);
+
+    const deletePromise: Promise<string[]> = listOfDeleted.length
+      ? batchDelete(listOfDeleted.map((facet) => facet.id!.toString()))
+      : Promise.resolve([]);
+
+    Promise.all([updatePromise, deletePromise])
       .then((messages) => {
-        if (messages.length > 0) {
-          setResultMessagesMessages(messages);
+        const errorMessages = messages.flat();
+        if (errorMessages.length > 0) {
+          setResultMessagesMessages(errorMessages);
           setShowResultDialog(true);
         } else {
           setShowSnackBar(true);
@@ -134,15 +157,46 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     schemaNode: string,
     maxResults: number | undefined
   ) => {
-    const facet = {
-      name,
-      schemaNode,
-      maxResults,
-      orderIndex: getHighestOrderIndex(facets) + 1,
-      updated: true,
-      deleted: false,
-    };
-    setFacets(addElement(facets, facet));
+    let newFacet: FacetWithFlags;
+    if (currentFacet) {
+      newFacet = {
+        ...currentFacet,
+        name,
+        schemaNode,
+        maxResults,
+        updated: true,
+      };
+      setFacets(
+        replaceElement(facets, facetComparator(currentFacet), newFacet)
+      );
+    } else {
+      newFacet = {
+        name,
+        schemaNode,
+        maxResults,
+        orderIndex: getHighestOrderIndex(facets) + 1,
+        updated: true,
+        deleted: false,
+      };
+      setFacets(addElement(facets, newFacet));
+    }
+  };
+
+  /**
+   * Visually delete a facet.
+   * If ID is available, then update the delete flag; otherwise simply remove this facet from state.
+   */
+  const deleteFacet = (facet: FacetWithFlags) => {
+    if (facet.id) {
+      setFacets(
+        replaceElement(facets, facetComparator(facet), {
+          ...facet,
+          deleted: true,
+        })
+      );
+      return;
+    }
+    setFacets(deleteElement(facets, facetComparator(facet), 1));
   };
 
   /**
@@ -150,7 +204,6 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
-    throw new Error(error.message);
   };
 
   /**
@@ -160,14 +213,20 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     .filter((facet) => !facet.deleted)
     .map((facet, index) => {
       return (
-        <ListItem divider key={index}>
+        <ListItem divider key={facet.id ?? facet.name + index}>
           <ListItemText primary={facet.name} />
           <ListItemSecondaryAction>
-            <IconButton color={"secondary"}>
+            <IconButton
+              color={"secondary"}
+              onClick={() => {
+                setShowEditingDialog(true);
+                setCurrentFacet(facet);
+              }}
+            >
               <EditIcon />
             </IconButton>
             |
-            <IconButton color="secondary">
+            <IconButton color="secondary" onClick={() => deleteFacet(facet)}>
               <DeleteIcon />
             </IconButton>
           </ListItemSecondaryAction>
@@ -202,7 +261,10 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         {facetList}
         <CardActions className={classes.cardAction}>
           <IconButton
-            onClick={() => setShowEditingDialog(true)}
+            onClick={() => {
+              setCurrentFacet(undefined);
+              setShowEditingDialog(true);
+            }}
             aria-label={facetedsearchsettingStrings.add}
             color={"primary"}
           >
@@ -216,6 +278,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         open={showEditingDialog}
         onClose={() => setShowEditingDialog(false)}
         handleError={handleError}
+        facet={currentFacet}
       />
 
       <MessageDialog
