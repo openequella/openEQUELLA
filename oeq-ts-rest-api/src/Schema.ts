@@ -79,7 +79,7 @@ const SCHEMA_ROOT_PATH = '/schema';
  */
 export const listSchemas = (
   apiBasePath: string,
-  params: ListSchemaParams | null
+  params?: ListSchemaParams
 ): Promise<Common.PagedResult<Common.BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Schema definition, otherwise
   // it's the bare minimum of BaseEntity.

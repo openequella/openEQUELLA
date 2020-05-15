@@ -10,7 +10,7 @@ describe('Retrieving schemas', () => {
   it('should be possible get schemas with no params', () => {
     expect.assertions(2);
 
-    return OEQ.Schema.listSchemas(TC.API_PATH, null).then(
+    return OEQ.Schema.listSchemas(TC.API_PATH).then(
       (pagedResult: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>) => {
         expect(pagedResult.length).toBeGreaterThan(0);
         expect(pagedResult.length).toEqual(pagedResult.results.length);
