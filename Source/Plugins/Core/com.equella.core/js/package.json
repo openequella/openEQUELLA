@@ -84,7 +84,7 @@
     "@types/lodash": "4.14.150",
     "@types/luxon": "1.15.1",
     "@types/node": "12.12.38",
-    "@types/react": "16.9.34",
+    "@types/react": "16.9.35",
     "@types/react-autosuggest": "9.3.13",
     "@types/react-color": "2.17.0",
     "@types/react-dom": "16.9.7",
