@@ -30,16 +30,10 @@ const API_BASE_URL = `${Config.baseUrl}api`;
  * (along with some other bits) are not retained in this representation. However it can be
  * retrieved via the REST API.
  */
-export class SchemaNode {
+export interface SchemaNode {
   name: string;
   parent?: SchemaNode;
   children?: SchemaNode[];
-
-  constructor(name: string, parent?: SchemaNode, children?: SchemaNode[]) {
-    this.name = name;
-    this.parent = parent;
-    this.children = children;
-  }
 }
 
 /**
@@ -69,12 +63,12 @@ export const schemaListSummary = (): Promise<Map<string, string>> =>
  * @param name The name to be used for the next new node.
  * @param parent Mainly for recursive calls to provide back linking to the parents.
  */
-const buildSchemaTree = (
+export const buildSchemaTree = (
   definition: any,
   name: string,
   parent?: SchemaNode
 ): SchemaNode => {
-  const node = new SchemaNode(name, parent);
+  const node: SchemaNode = { name: name, parent: parent };
   node.children = Object.keys(definition)
     .filter((childName: string) => typeof definition[childName] === "object")
     .map((childName: string) =>
@@ -107,3 +101,25 @@ export const schemaTree = (uuid: string): Promise<SchemaNode> =>
       return buildSchemaTree(schema.definition[standardRoot], standardRoot);
     }
   );
+
+/**
+ * Helper function to generate node path string from a node.
+ *
+ * @param node The node to generate a path for.
+ * @param stripXml Whether to include the leading /xml - although returned in schemas, not typically used in paths.
+ */
+export const pathForNode = (node: SchemaNode, stripXml = true): string => {
+  let path = "";
+  let currentNode: SchemaNode | undefined = node;
+  while (currentNode) {
+    path = `/${currentNode.name}${path}`;
+    currentNode = currentNode.parent;
+  }
+
+  // Minor optimisation to chop the prefix off at the end
+  if (stripXml) {
+    path = path.substring(4);
+  }
+
+  return path;
+};

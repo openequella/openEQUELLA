@@ -44,3 +44,21 @@ describe("SchemaModule", () => {
       expect(copyrightNode.children?.length).toEqual(14);
     }));
 });
+
+describe("pathForNode", () => {
+  const schemaDefinition = {
+    child1: { child2: { child3: { _type: "text" } } },
+  };
+  const testSchema = SchemaModule.buildSchemaTree(schemaDefinition, "xml");
+  const testNode = testSchema.children![0].children![0].children![0];
+
+  it("should correctly generate an oEQ path by default", () =>
+    expect(SchemaModule.pathForNode(testNode)).toEqual(
+      "/child1/child2/child3"
+    ));
+
+  it("should correctly include the XML prefix if desired", () =>
+    expect(SchemaModule.pathForNode(testNode, false)).toEqual(
+      "/xml/child1/child2/child3"
+    ));
+});
