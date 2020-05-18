@@ -22,6 +22,7 @@ import {
   groupErrorMessages,
 } from "../../../api/BatchOperationResponse";
 import { encodeQuery } from "../../../util/encodequery";
+import * as lodash from "lodash";
 
 export interface Facet {
   /**
@@ -96,16 +97,73 @@ export const removeFlags = (facet: FacetWithFlags): Facet => {
 };
 
 /**
- * Given a list of facets, return the highest order index.
+ * Given a list of facets, return the highest order index of non-deleted facets.
  * If the list is empty then return -1.
  */
 export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
   if (facets.length == 0) {
     return -1;
   }
-  return Math.max(...facets.map((facet) => facet.orderIndex));
+  return Math.max(
+    ...facets.filter((facet) => !facet.deleted).map((facet) => facet.orderIndex)
+  );
 };
 
 export const facetComparator = (target: FacetWithFlags) => {
   return (facet: FacetWithFlags) => facet === target;
+};
+
+/**
+ * Reorder a list of facets, excluding deleted ones.
+ * Firstly, update order index and the 'updated' flag of the dragged facet.
+ * Secondly, remove this facet from the list.
+ * Thirdly, update properties of facets in the dragged and dropped range.
+ * Lastly, insert the dragged facet to the list at its new place.
+ *
+ * For example, in a array of five facets [f1, f2, f3, f4, f5] where indexes are from 0 - 4,
+ * moving f2 to the end of the array results in that f2'index becomes 4 and indexes of f3, f4 and f5
+ * become 1, 2 and 3, respectively. f1' index keeps 0.
+ *
+ * Given the same array, moving f5 to the second position of the array results in that
+ * f5's index become 1 and indexes of f2, f3 and f4 become 2, 3 and 4, respectively. f1' index keeps 0.
+ *
+ * @param facets List of facets.
+ * @param startIndex Current index of the dragged facet.
+ * @param endIndex  New index of the dragged facet.
+ */
+export const reorder = (
+  facets: FacetWithFlags[],
+  startIndex: number,
+  endIndex: number
+): FacetWithFlags[] => {
+  const filterFacetsByOrderRange = (facet: FacetWithFlags) => {
+    if (startIndex < endIndex) {
+      return facet.orderIndex > startIndex && facet.orderIndex <= endIndex;
+    }
+    return facet.orderIndex >= endIndex && facet.orderIndex < startIndex;
+  };
+  // Deep copy to avoid mutating objects of the original array.
+  const copiedFacets: FacetWithFlags[] = lodash.cloneDeep(facets);
+  // Deleted facets do not need reordering so leave them alone for now.
+  const deletedFacets = copiedFacets.filter((facets) => facets.deleted);
+  const nonDeletedFacets = copiedFacets.filter((facet) => !facet.deleted);
+  // Update the dragged facet.
+  const draggedFacet = nonDeletedFacets[startIndex];
+  draggedFacet.updated = true;
+  draggedFacet.orderIndex = draggedFacet.orderIndex + (endIndex - startIndex);
+  // Remove it from its original place.
+  nonDeletedFacets.splice(startIndex, 1);
+  // Update facets within the range
+  nonDeletedFacets
+    .filter((facet) => filterFacetsByOrderRange(facet))
+    .forEach((facet) => {
+      facet.updated = true;
+      facet.orderIndex =
+        facet.orderIndex -
+        Math.abs(endIndex - startIndex) / (endIndex - startIndex);
+    });
+  // Insert the dragged one to the list at its new place.
+  nonDeletedFacets.splice(endIndex, 0, draggedFacet);
+  // Combine deleted and non-deleted and return.
+  return nonDeletedFacets.concat(deletedFacets);
 };

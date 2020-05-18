@@ -29,7 +29,7 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemSecondaryAction,
+  ListItemIcon,
   ListItemText,
   ListSubheader,
   makeStyles,
@@ -42,6 +42,7 @@ import {
   FacetWithFlags,
   getFacetsFromServer,
   getHighestOrderIndex,
+  reorder,
 } from "./FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -57,6 +58,15 @@ import {
 import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableProvided,
+  DraggableProvided,
+} from "react-beautiful-dnd";
+import * as lodash from "lodash";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -108,15 +118,17 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   /**
-   * Get facets from the server and add flags to them.
+   * Get facets from the server, sort them by order index, and add flags to them.
    */
   const getFacets = () => {
     getFacetsFromServer()
       .then((facets) =>
         setFacets(
-          facets.map((facet) => {
-            return { ...facet, updated: false, deleted: false };
-          })
+          facets
+            .sort((prev, current) => prev.orderIndex - current.orderIndex)
+            .map((facet) => {
+              return { ...facet, updated: false, deleted: false };
+            })
         )
       )
       .catch((error: Error) => handleError(error));
@@ -184,19 +196,31 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Visually delete a facet.
-   * If ID is available, then update the delete flag; otherwise simply remove this facet from state.
+   * Firstly, if ID is available, then update the delete flag. Otherwise, remove this facet from state.
+   * Secondly, based on the deleted facet's order index, decrement higher ones by 1.
+   *
+   * For example, given an array like [f1, f2, f3, f4], removing f2 results in decrementing
+   * the order indexes of f3 and f4 by 1 so there are no gaps between each order indexe.
    */
-  const deleteFacet = (facet: FacetWithFlags) => {
-    if (facet.id) {
-      setFacets(
-        replaceElement(facets, facetComparator(facet), {
-          ...facet,
+  const deleteFacet = (deletedfacet: FacetWithFlags) => {
+    // Delete or update a facet depending on its id, and assign the returned array to a new const.
+    const updatedFacets = deletedfacet.id
+      ? replaceElement(facets, facetComparator(deletedfacet), {
+          ...deletedfacet,
           deleted: true,
         })
-      );
-      return;
-    }
-    setFacets(deleteElement(facets, facetComparator(facet), 1));
+      : deleteElement(facets, facetComparator(deletedfacet), 1);
+    // 'updatedFacets' is basically a shallow copied and modified array.
+    // So do a deep copy in order not to mutate objects.
+    const copiedFacets = lodash.cloneDeep(updatedFacets);
+    // update order index and the 'updated' flag.
+    copiedFacets
+      .filter((facet) => facet.orderIndex > deletedfacet.orderIndex)
+      .forEach((facet) => {
+        facet.orderIndex--;
+        facet.updated = true;
+      });
+    setFacets(copiedFacets);
   };
 
   /**
@@ -207,46 +231,84 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Only renders a ListItem for each non-deleted facet.
+   * Fired when a dragged facet is dropped.
+   */
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const reorderedFacets = reorder(
+      facets,
+      result.source.index,
+      result.destination.index
+    );
+    setFacets(reorderedFacets);
+  };
+
+  /**
+   * Render a Draggable area which renders a ListItem for each non-deleted facet.
    */
   const facetListItems: ReactElement[] = facets
     .filter((facet) => !facet.deleted)
     .map((facet, index) => {
+      const id = facet.id ?? facet.name + index;
       return (
-        <ListItem divider key={facet.id ?? facet.name + index}>
-          <ListItemText primary={facet.name} />
-          <ListItemSecondaryAction>
-            <IconButton
-              color={"secondary"}
-              onClick={() => {
-                setShowEditingDialog(true);
-                setCurrentFacet(facet);
-              }}
+        <Draggable key={id} draggableId={id.toString()} index={index}>
+          {(draggable: DraggableProvided) => (
+            <ListItem
+              ref={draggable.innerRef}
+              {...draggable.draggableProps}
+              {...draggable.dragHandleProps}
+              divider
             >
-              <EditIcon />
-            </IconButton>
-            |
-            <IconButton color="secondary" onClick={() => deleteFacet(facet)}>
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
+              <ListItemText primary={facet.name} />
+              <ListItemIcon>
+                <IconButton
+                  color={"secondary"}
+                  onClick={() => {
+                    setShowEditingDialog(true);
+                    setCurrentFacet(facet);
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+              </ListItemIcon>
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => deleteFacet(facet)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+          )}
+        </Draggable>
       );
     });
 
   /**
-   * A list display configured facets.
+   * Render a Droppable area which includes a list of configured facets.
    */
   const facetList: ReactElement = (
-    <List
-      subheader={
-        <ListSubheader disableGutters>
-          {facetedsearchsettingStrings.name}
-        </ListSubheader>
-      }
-    >
-      {facetListItems}
-    </List>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="droppableFacetList">
+        {(droppable: DroppableProvided) => (
+          <List
+            ref={droppable.innerRef}
+            subheader={
+              <ListSubheader disableGutters>
+                {facetedsearchsettingStrings.name}
+              </ListSubheader>
+            }
+            {...droppable.droppableProps}
+          >
+            {facetListItems}
+            {droppable.placeholder}
+          </List>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 
   return (
