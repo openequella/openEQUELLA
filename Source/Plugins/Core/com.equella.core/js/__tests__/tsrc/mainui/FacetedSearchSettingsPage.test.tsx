@@ -24,6 +24,7 @@ import { act } from "react-dom/test-utils";
 import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
 import MessageInfo from "../../../tsrc/components/MessageInfo";
 import MessageDialog from "../../../tsrc/components/MessageDialog";
+import { Draggable } from "react-beautiful-dnd";
 
 const mockFacets: FacetedSearchSettingsModule.Facet[] = [
   {
@@ -77,7 +78,7 @@ describe("<FacetedSearchSettingsPage />", () => {
   });
   afterEach(() => jest.clearAllMocks());
 
-  const getListItems = () => component.find(".MuiListItem-container");
+  const getListItems = () => component.find(Draggable);
   const getSaveButton = () => component.find("#_saveButton").hostNodes();
   const deleteFacet = () => {
     const deleteButton = getListItems().at(0).find("button").at(1);
