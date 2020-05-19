@@ -42,6 +42,7 @@ import {
   FacetWithFlags,
   getFacetsFromServer,
   getHighestOrderIndex,
+  removeFacetFromList,
   reorder,
 } from "./FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
@@ -50,11 +51,7 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import FacetDialog from "./FacetDialog";
 import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
-import {
-  addElement,
-  deleteElement,
-  replaceElement,
-} from "../../../util/ImmutableArrayUtil";
+import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
@@ -66,7 +63,6 @@ import {
   DroppableProvided,
   DraggableProvided,
 } from "react-beautiful-dnd";
-import * as lodash from "lodash";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -124,11 +120,9 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     getFacetsFromServer()
       .then((facets) =>
         setFacets(
-          facets
-            .sort((prev, current) => prev.orderIndex - current.orderIndex)
-            .map((facet) => {
-              return { ...facet, updated: false, deleted: false };
-            })
+          facets.map((facet) => {
+            return { ...facet, updated: false, deleted: false };
+          })
         )
       )
       .catch((error: Error) => handleError(error));
@@ -196,31 +190,9 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Visually delete a facet.
-   * Firstly, if ID is available, then update the delete flag. Otherwise, remove this facet from state.
-   * Secondly, based on the deleted facet's order index, decrement higher ones by 1.
-   *
-   * For example, given an array like [f1, f2, f3, f4], removing f2 results in decrementing
-   * the order indexes of f3 and f4 by 1 so there are no gaps between each order indexe.
    */
   const deleteFacet = (deletedfacet: FacetWithFlags) => {
-    // Delete or update a facet depending on its id, and assign the returned array to a new const.
-    const updatedFacets = deletedfacet.id
-      ? replaceElement(facets, facetComparator(deletedfacet), {
-          ...deletedfacet,
-          deleted: true,
-        })
-      : deleteElement(facets, facetComparator(deletedfacet), 1);
-    // 'updatedFacets' is basically a shallow copied and modified array.
-    // So do a deep copy in order not to mutate objects.
-    const copiedFacets = lodash.cloneDeep(updatedFacets);
-    // update order index and the 'updated' flag.
-    copiedFacets
-      .filter((facet) => facet.orderIndex > deletedfacet.orderIndex)
-      .forEach((facet) => {
-        facet.orderIndex--;
-        facet.updated = true;
-      });
-    setFacets(copiedFacets);
+    setFacets(removeFacetFromList(facets, deletedfacet));
   };
 
   /**
@@ -250,10 +222,15 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const facetListItems: ReactElement[] = facets
     .filter((facet) => !facet.deleted)
+    .sort((prev, current) => prev.orderIndex - current.orderIndex)
     .map((facet, index) => {
-      const id = facet.id ?? facet.name + index;
+      const key = facet.id ?? facet.name + index;
       return (
-        <Draggable key={id} draggableId={id.toString()} index={index}>
+        <Draggable
+          key={key}
+          draggableId={key.toString()}
+          index={facet.orderIndex}
+        >
           {(draggable: DraggableProvided) => (
             <ListItem
               ref={draggable.innerRef}

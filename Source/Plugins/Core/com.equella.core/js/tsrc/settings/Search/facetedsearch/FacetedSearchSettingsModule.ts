@@ -22,7 +22,6 @@ import {
   groupErrorMessages,
 } from "../../../api/BatchOperationResponse";
 import { encodeQuery } from "../../../util/encodequery";
-import * as lodash from "lodash";
 
 export interface Facet {
   /**
@@ -115,11 +114,6 @@ export const facetComparator = (target: FacetWithFlags) => {
 
 /**
  * Reorder a list of facets, excluding deleted ones.
- * Firstly, update order index and the 'updated' flag of the dragged facet.
- * Secondly, remove this facet from the list.
- * Thirdly, update properties of facets in the dragged and dropped range.
- * Lastly, insert the dragged facet to the list at its new place.
- *
  * For example, in a array of five facets [f1, f2, f3, f4, f5] where indexes are from 0 - 4,
  * moving f2 to the end of the array results in that f2'index becomes 4 and indexes of f3, f4 and f5
  * become 1, 2 and 3, respectively. f1' index keeps 0.
@@ -135,35 +129,48 @@ export const reorder = (
   facets: FacetWithFlags[],
   startIndex: number,
   endIndex: number
-): FacetWithFlags[] => {
-  const filterFacetsByOrderRange = (facet: FacetWithFlags) => {
-    if (startIndex < endIndex) {
-      return facet.orderIndex > startIndex && facet.orderIndex <= endIndex;
+): FacetWithFlags[] =>
+  facets.map((facet) => {
+    let newOrderIndex = 0;
+    if (facet.deleted) {
+      return { ...facet };
     }
-    return facet.orderIndex >= endIndex && facet.orderIndex < startIndex;
-  };
-  // Deep copy to avoid mutating objects of the original array.
-  const copiedFacets: FacetWithFlags[] = lodash.cloneDeep(facets);
-  // Deleted facets do not need reordering so leave them alone for now.
-  const deletedFacets = copiedFacets.filter((facets) => facets.deleted);
-  const nonDeletedFacets = copiedFacets.filter((facet) => !facet.deleted);
-  // Update the dragged facet.
-  const draggedFacet = nonDeletedFacets[startIndex];
-  draggedFacet.updated = true;
-  draggedFacet.orderIndex = draggedFacet.orderIndex + (endIndex - startIndex);
-  // Remove it from its original place.
-  nonDeletedFacets.splice(startIndex, 1);
-  // Update facets within the range
-  nonDeletedFacets
-    .filter((facet) => filterFacetsByOrderRange(facet))
-    .forEach((facet) => {
-      facet.updated = true;
-      facet.orderIndex =
-        facet.orderIndex -
-        Math.abs(endIndex - startIndex) / (endIndex - startIndex);
-    });
-  // Insert the dragged one to the list at its new place.
-  nonDeletedFacets.splice(endIndex, 0, draggedFacet);
-  // Combine deleted and non-deleted and return.
-  return nonDeletedFacets.concat(deletedFacets);
+
+    if (facet.orderIndex === startIndex) {
+      newOrderIndex = endIndex;
+    } else if (facet.orderIndex > startIndex && facet.orderIndex <= endIndex) {
+      newOrderIndex = facet.orderIndex - 1;
+    } else if (facet.orderIndex >= endIndex && facet.orderIndex < startIndex) {
+      newOrderIndex = facet.orderIndex + 1;
+    } else {
+      return { ...facet };
+    }
+
+    return { ...facet, orderIndex: newOrderIndex, updated: true };
+  });
+
+/**
+ * Remove a facet from the given list and update order indexes of facets that have a higher order index.
+ * And return a new array which keep non-deleted facets and those deleted but having an ID back to state.
+ *
+ * For example, given an array like [f1, f2, f3, f4], removing f2 results in decrementing
+ * the order indexes of f3 and f4 by 1.
+ */
+export const removeFacetFromList = (
+  facets: FacetWithFlags[],
+  deletedFacet: FacetWithFlags
+) => {
+  return facets
+    .map((facet) => {
+      if (facet.orderIndex === deletedFacet.orderIndex) {
+        return { ...facet, deleted: true };
+      }
+
+      if (facet.orderIndex > deletedFacet.orderIndex) {
+        return { ...facet, orderIndex: facet.orderIndex - 1, updated: true };
+      }
+
+      return { ...facet };
+    })
+    .filter((facet) => !facet.deleted || (facet.deleted && !!facet.id));
 };
