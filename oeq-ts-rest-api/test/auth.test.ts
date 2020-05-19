@@ -13,7 +13,7 @@ test("That we're able to login", async () => {
 });
 
 test('An attempt to login with bad credentials fails', () => {
-  expect(
+  await expect(
     OEQ.Auth.login(TC.API_PATH, 'fakeusername', 'fakepassword')
   ).rejects.toHaveProperty('status', 401);
 });

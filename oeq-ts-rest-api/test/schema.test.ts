@@ -13,7 +13,7 @@ describe('Retrieving schemas', () => {
     return OEQ.Schema.listSchemas(TC.API_PATH).then(
       (pagedResult: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>) => {
         expect(pagedResult.length).toBeGreaterThan(0);
-        expect(pagedResult.length).toEqual(pagedResult.results.length);
+        expect(pagedResult).toHaveLength(pagedResult.results.length);
       }
     );
   });
@@ -27,7 +27,7 @@ describe('Retrieving schemas', () => {
       full: true,
     }).then((pagedResult: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>) => {
       const result = pagedResult as OEQ.Common.PagedResult<EquellaSchema>;
-      expect(result.results.length).toBe(howMany);
+      expect(result.results).toHaveLength(howMany);
       // confirm that `full` returned additional information
       expect(result.results[0].createdDate).toBeTruthy();
       expect(result.results[0].definition).toBeTruthy();
