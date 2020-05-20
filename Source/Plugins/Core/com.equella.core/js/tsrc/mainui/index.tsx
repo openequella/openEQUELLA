@@ -218,11 +218,20 @@ function IndexPage() {
               {routeSwitch(content)}
             </Template>
           );
-          return !content || content.noForm ? (
-            template
-          ) : (
-            <LegacyForm state={content.state}>{template}</LegacyForm>
-          );
+          const render = () => {
+            if (!content || content.noForm) {
+              return template;
+            } else {
+              const { form } = content.html;
+              return (
+                <>
+                  <LegacyForm state={content.state}>{template}</LegacyForm>
+                  {form && <div dangerouslySetInnerHTML={{ __html: form }} />}
+                </>
+              );
+            }
+          };
+          return render();
         }}
       />
     </BrowserRouter>
