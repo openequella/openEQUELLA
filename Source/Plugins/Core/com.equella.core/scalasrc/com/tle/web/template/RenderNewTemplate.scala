@@ -61,17 +61,18 @@ object RenderNewTemplate {
   }
 
   def parseEntryHtml(filename: String): (PreRenderable, Document) = {
-    val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
+    val reactJsPath = "reactjs/"
+    val inpStream   = getClass.getResourceAsStream(s"/web/$reactJsPath$filename")
     if (inpStream == null) sys.error(s"Failed to find $filename react html bundle")
     val htmlDoc = Jsoup.parse(inpStream, "UTF-8", "")
     inpStream.close()
-    val links   = htmlDoc.getElementsByTag("link").asScala
-    val scripts = htmlDoc.getElementsByTag("script").asScala
-    scripts.foreach { e =>
-      if (e.hasAttr("src")) {
-        e.attr("src", r.url(e.attr("src")))
+    htmlDoc.getElementsByTag("script").asScala.foreach { e =>
+      val srcAttrKey = "src"
+      if (e.hasAttr(srcAttrKey)) {
+        e.attr(srcAttrKey, r.url(reactJsPath + e.attr(srcAttrKey)))
       }
     }
+    val links = htmlDoc.getElementsByTag("link").asScala
     val prerender: PreRenderable = info => {
       info.preRender(JQueryCore.PRERENDER)
       supportIEPolyFills(info)
