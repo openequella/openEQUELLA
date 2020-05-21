@@ -106,6 +106,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   }
 
   function handleSubmitButton() {
+    console.log(searchSettings);
     saveSearchSettingsToServer(searchSettings)
       .then(() => setShowSuccess(true))
       .catch((error: TemplateUpdate) => handleError(error))
