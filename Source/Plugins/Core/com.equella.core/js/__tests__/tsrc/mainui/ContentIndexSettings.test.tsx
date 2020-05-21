@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
 import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule"; // eslint-disable-line
-import SettingsList from "../../../tsrc/components/SettingsList";
-import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
+//import SettingsList from "../../../tsrc/components/SettingsList";
+//import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
 import { Slider } from "@material-ui/core";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
+import { act } from "react-dom/test-utils";
 
 /**
  * Mock NavigationGuard as there is no need to include it in this test.
@@ -34,56 +35,88 @@ jest.mock("../../../tsrc/components/NavigationGuard", () => ({
   },
 }));
 
-describe("Content Index Settings Page", () => {
-  jest
-    .spyOn(SearchSettingsModule, "getSearchSettingsFromServer")
-    .mockImplementation(() =>
-      Promise.resolve(SearchSettingsModule.defaultSearchSettings)
+const mockGetSearchSettingsFromServer = jest.spyOn(
+  SearchSettingsModule,
+  "getSearchSettingsFromServer"
+);
+
+const mockSaveSearchSettingsToServer = jest.spyOn(
+  SearchSettingsModule,
+  "saveSearchSettingsToServer"
+);
+
+describe("<ContentIndexSettingsPage />", () => {
+  let component: ReactWrapper;
+  beforeEach(async () => {
+    const getSearchSettingsPromise = mockGetSearchSettingsFromServer.mockImplementation(
+      () => Promise.resolve(SearchSettingsModule.defaultSearchSettings)
     );
-
-  const renderComponent = () =>
-    mount(<ContentIndexSettings updateTemplate={jest.fn()} />);
-
-  describe("When content indexing settings page page is loaded", () => {
-    const component = renderComponent();
-    const listControls = component.find(SettingsList);
-    const defaultVals = SearchSettingsModule.defaultSearchSettings;
-
-    it("Should fetch the search settings", () => {
-      expect(
-        SearchSettingsModule.getSearchSettingsFromServer
-      ).toHaveBeenCalledTimes(1);
+    component = mount(<ContentIndexSettings updateTemplate={jest.fn()} />);
+    await act(async () => {
+      await getSearchSettingsPromise;
     });
+  });
+  afterEach(() => jest.clearAllMocks());
 
-    it("Should display the default values", () => {
-      expect(listControls.length).toBeGreaterThanOrEqual(2);
+  const getSaveButton = () => component.find("#_saveButton").hostNodes();
 
-      //content indexing stuff
-      const contentIndex = listControls.find(WebPageIndexSetting);
+  let modifiedSearchSettings = {
+    ...SearchSettingsModule.defaultSearchSettings,
+  };
+  modifiedSearchSettings.titleBoost = 3;
+  modifiedSearchSettings.descriptionBoost = 4;
+  modifiedSearchSettings.attachmentBoost = 6;
 
-      expect(contentIndex.prop("value")).toEqual(defaultVals.urlLevel);
+  it("Should fetch the default search settings", () => {
+    expect(
+      SearchSettingsModule.getSearchSettingsFromServer
+    ).toHaveBeenCalledTimes(1);
+  });
 
-      //boosting
-      const titleBoostSlider = listControls
-        .findWhere((c) => c.prop("primaryText") === "Title")
-        .find(Slider);
+  it("Should save the changes made", () => {
+    const makeChanges = async () => {
+      const titleBoostSlider = component.find(Slider).at(0);
 
-      expect(titleBoostSlider.prop("value")).toEqual(defaultVals.titleBoost);
+      const metaBoostSlider = component.find(Slider).at(1);
 
-      const metadataBoostSlider = listControls
-        .findWhere((c) => c.prop("primaryText") === "Other metadata")
-        .find(Slider);
-
-      expect(metadataBoostSlider.prop("value")).toEqual(
-        defaultVals.descriptionBoost
+      const attachBoostSlider = component.find(Slider).at(2);
+      act(
+        async () =>
+          await attachBoostSlider.props().onChange!(
+            {} as any,
+            modifiedSearchSettings.attachmentBoost
+          )
       );
-
-      const attachmentBoostSlider = listControls
-        .findWhere((c) => c.prop("primaryText") === "Attachment content")
-        .find(Slider);
-      expect(attachmentBoostSlider.prop("value")).toEqual(
-        defaultVals.attachmentBoost
+      act(
+        async () =>
+          await metaBoostSlider.props().onChange!(
+            {} as any,
+            modifiedSearchSettings.descriptionBoost
+          )
       );
-    });
+      act(
+        async () =>
+          await titleBoostSlider.props().onChange!(
+            {} as any,
+            modifiedSearchSettings.titleBoost
+          )
+      );
+    };
+
+    const save = async (errorsReturned: boolean) => {
+      const updatePromise = mockSaveSearchSettingsToServer.mockResolvedValueOnce(
+        errorsReturned ? ["Failed to update"] : []
+      );
+      getSaveButton().simulate("click");
+      await act(async () => {
+        await updatePromise;
+      });
+    };
+    makeChanges();
+    save(false);
+
+    expect(mockSaveSearchSettingsToServer).toHaveBeenCalledWith(
+      modifiedSearchSettings
+    );
   });
 });
