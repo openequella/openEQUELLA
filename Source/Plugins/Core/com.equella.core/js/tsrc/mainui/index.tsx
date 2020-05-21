@@ -26,6 +26,7 @@ import {
   LegacyContentProps,
   PageContent
 } from "../legacycontent/LegacyContent";
+import HtmlParser from "react-html-parser";
 import { getCurrentUser } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
@@ -108,9 +109,7 @@ function IndexPage() {
   }, []);
   const oeqRoutes: { [key: string]: OEQRoute } = routes;
 
-  function mkRouteProps(
-    p: RouteComponentProps<any>
-  ): OEQRouteComponentProps<any> {
+  function mkRouteProps(p: RouteComponentProps<any>): OEQRouteComponentProps {
     return {
       ...p,
       updateTemplate,
@@ -226,7 +225,7 @@ function IndexPage() {
               return (
                 <>
                   <LegacyForm state={content.state}>{template}</LegacyForm>
-                  {form && <div dangerouslySetInnerHTML={{ __html: form }} />}
+                  {form && HtmlParser(form)}
                 </>
               );
             }

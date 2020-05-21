@@ -448,7 +448,7 @@ class LegacyContentApi {
         info.preventGET()
         info.getRootRenderContext.setRootResultListener(new LegacyResponseListener(info))
         LegacyContentController.execute(info)
-        val r = redirectResponse(info)
+        redirectResponse(info)
           .orElse(renderedResponse(info))
           .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc =>
             ajaxResponse(info, arc)))
@@ -456,7 +456,6 @@ class LegacyContentApi {
             info.setRendered()
             Response.ok(req.getAttribute(LegacyContentKey))
           }
-        r
       }
     )
   }
@@ -493,19 +492,18 @@ class LegacyContentApi {
             context,
             wrapBody(context, tr.getNamedResult(context, "body")))
           val form = context.getForm
-          val formString: String =
-            if (form.getAction != null) {
-              SectionUtils.renderToString(context, form)
-            } else ""
-
+          val formString: Option[String] = Option(form.getAction) match {
+            case Some(action) => Some(SectionUtils.renderToString(context, form))
+            case None         => None
+          }
           val upperbody =
             SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
           val scrops = renderScreenOptions(context)
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
             Some("body"                                          -> body),
-            Some("form"                                          -> formString),
             Option(upperbody).filter(_.nonEmpty).map("upperbody" -> _),
+            formString.map("form"                                -> _),
             scrops.map("so"                                      -> _),
             crumbs.map("crumbs"                                  -> _)
           ).flatten.toMap
