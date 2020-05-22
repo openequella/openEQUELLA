@@ -27,12 +27,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.Institution;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ViewableItemType;
 import com.tle.common.Check;
@@ -44,19 +40,16 @@ import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
+import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.blackboard.BlackboardRestAppContext;
-import com.tle.core.connectors.blackboard.BlackboardRestUserContext;
 import com.tle.core.connectors.blackboard.beans.*;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
-import com.tle.core.connectors.exception.LmsRequiresAuthenticationException;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
-import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.HttpService;
@@ -72,8 +65,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -93,7 +84,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(BlackboardRESTConnectorService.class) + ".";
 
-  private static final String API_ROOT = "/learn/api/public/v1";
+  private static final String API_ROOT_V1 = "/learn/api/public/v1/";
 
   private static final byte[] SHAREPASS =
       new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};
@@ -102,12 +93,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
   @Inject private ConnectorService connectorService;
-  @Inject private EncryptionService encryptionService;
   @Inject private UserSessionService userSessionService;
   @Inject private InstitutionService institutionService;
-
-  private static final String TOKEN_KEY = "TOKEN";
-  private InstitutionCache<LoadingCache<String, LoadingCache<String, String>>> tokenCache;
+  @Inject private AuditLogService auditService;
 
   private static final ObjectMapper jsonMapper = new ObjectMapper();
   private static final ObjectMapper prettyJsonMapper = new ObjectMapper();
@@ -128,130 +116,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     Logger.getLogger("org.apache.commons.httpclient.HttpMethodDirector").setLevel(Level.ERROR);
   }
 
-  @Inject
-  public void setInstitutionService(InstitutionService service) {
-    LOGGER.trace("Preparing to setup institution service for Blackboard REST cache");
-
-    tokenCache =
-        service.newInstitutionAwareCache(
-            new CacheLoader<Institution, LoadingCache<String, LoadingCache<String, String>>>() {
-              @Override
-              public LoadingCache<String, LoadingCache<String, String>> load(Institution key) {
-                // MaximumSize is set to 200, which would allow for 200 Blackboard REST connectors,
-                // which should be more than enough for anyone.
-                return CacheBuilder.newBuilder()
-                    .maximumSize(200)
-                    .expireAfterAccess(60, TimeUnit.MINUTES)
-                    .build(
-                        new CacheLoader<String, LoadingCache<String, String>>() {
-                          @Override
-                          public LoadingCache<String, String> load(final String connectorUuid)
-                              throws Exception {
-                            // BB tokens last one hour, so no point holding onto it longer than
-                            // that. Of course, we need to handle the case
-                            // where we are still holding onto an expired token.
-                            LOGGER.trace(
-                                "Loading Blackboard REST cache for connector ["
-                                    + connectorUuid
-                                    + "]");
-                            return CacheBuilder.newBuilder()
-                                .expireAfterWrite(60, TimeUnit.MINUTES)
-                                .build(
-                                    new CacheLoader<String, String>() {
-                                      @Override
-                                      public String load(String fixedKey) {
-                                        // fixedKey is ignored. It's always TOKEN
-                                        final Connector connector =
-                                            connectorService.getByUuid(connectorUuid);
-                                        final String apiKey =
-                                            connector.getAttribute(
-                                                BlackboardRESTConnectorConstants.FIELD_API_KEY);
-                                        final String apiSecret =
-                                            encryptionService.decrypt(
-                                                connector.getAttribute(
-                                                    BlackboardRESTConnectorConstants
-                                                        .FIELD_API_SECRET));
-                                        final String b64 =
-                                            new Base64()
-                                                .encode((apiKey + ":" + apiSecret).getBytes())
-                                                .replace("\n", "")
-                                                .replace("\r", "");
-                                        try {
-                                          // TODO is there a better way to get the previous token
-                                          // here?
-                                          final Request req =
-                                              new Request(
-                                                  PathUtils.urlPath(
-                                                      connector.getServerUrl(),
-                                                      "learn/api/public/v1/oauth2/token?refresh_token="
-                                                          + tokenCache
-                                                              .getCache()
-                                                              .get(connectorUuid)
-                                                              .getUnchecked(TOKEN_KEY)
-                                                          + "&redirect_uri="
-                                                          + institutionService.institutionalise(
-                                                              BlackboardRESTConnectorConstants
-                                                                  .AUTH_URL)));
-                                          req.setMethod(Request.Method.POST);
-                                          req.setMimeType("application/x-www-form-urlencoded");
-                                          req.addHeader("Authorization", "Basic " + b64);
-                                          req.setBody("grant_type=client_credentials");
-
-                                          try (final Response resp =
-                                              httpService.getWebContent(
-                                                  req, configService.getProxyDetails())) {
-                                            if (resp.isOk()) {
-                                              final Token token =
-                                                  jsonMapper.readValue(resp.getBody(), Token.class);
-                                              LOGGER.warn(
-                                                  "Gathered Blackboard access token for ["
-                                                      + connectorUuid
-                                                      + "]");
-                                              return token.getAccessToken();
-                                            } else {
-                                              final ErrorResponse bbErr =
-                                                  jsonMapper.readValue(
-                                                      resp.getBody(), ErrorResponse.class);
-                                              LOGGER.warn(
-                                                  "Unable to gather Blackboard access token for ["
-                                                      + connectorUuid
-                                                      + "] - Code ["
-                                                      + resp.getCode()
-                                                      + "] - Msg ["
-                                                      + resp.getMessage()
-                                                      + "] - Body ["
-                                                      + resp.getBody()
-                                                      + "]");
-                                              throw new AuthenticationException(
-                                                  "Unable to authenticate with Blackboard - "
-                                                      + bbErr.getErrorDescription());
-                                            }
-                                          } catch (Exception e) {
-                                            LOGGER.warn(
-                                                "Unable to gather Blackboard access token for ["
-                                                    + connectorUuid
-                                                    + "] - "
-                                                    + e.getMessage(),
-                                                e);
-                                            throw Throwables.propagate(e);
-                                          }
-                                        } catch (Exception e) {
-                                          LOGGER.warn(
-                                              "Unable to gather Blackboard access token for ["
-                                                  + connectorUuid
-                                                  + "] - "
-                                                  + e.getMessage(),
-                                              e);
-                                          throw Throwables.propagate(e);
-                                        }
-                                      }
-                                    });
-                          }
-                        });
-              }
-            });
-  }
-
   @Override
   protected ViewableItemType getViewableItemType() {
     return ViewableItemType.GENERIC;
@@ -270,9 +134,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   @Override
   public boolean isRequiresAuthentication(Connector connector) {
     try {
-      getUserContext(connector);
+      getToken(connector);
+      getUserId(connector);
+		LOGGER.debug("User session doesn't require auth for connector [" + connector.getUuid() + "]");
       return false;
-    } catch (LmsRequiresAuthenticationException ex) {
+    } catch (AuthenticationException ex) {
+		LOGGER.debug("User session requires auth for connector [" + connector.getUuid() + "]");
       return true;
     }
   }
@@ -300,8 +167,10 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       String forwardUrl,
       @Nullable String postfixKey,
       String connectorUuid) {
+	  LOGGER.trace("Requesting auth url for [" + connectorUuid + "]");
     final ObjectMapper mapper = new ObjectMapper();
     final ObjectNode stateJson = mapper.createObjectNode();
+    final String fUrl = institutionService.getInstitutionUrl() + "/api/connector/" +
     stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
     if (postfixKey != null) {
       stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_POSTFIX_KEY, postfixKey);
@@ -315,6 +184,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
                   institutionService.institutionalise(BlackboardRESTConnectorConstants.AUTH_URL)),
               encrypt(mapper.writeValueAsString(stateJson)));
     } catch (JsonProcessingException e) {
+		LOGGER.trace("Unable to provide the auth url for [" + connectorUuid + "]");
       throw Throwables.propagate(e);
     }
     return uri.toString();
@@ -332,32 +202,28 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       String username,
       boolean editableOnly,
       boolean archived,
-      boolean management)
-      throws LmsUserNotFoundException {
+      boolean management) {
     final List<ConnectorCourse> list = new ArrayList<>();
 
-    // FIXME: courses for current user...?
-    // TODO - since v3400.8.0, this endpoint should use v2
-    String url = API_ROOT + "/courses";
-    /*
-    if( !archived )
-    {
-    	url += "&active=true";
-    }*/
+    String url = API_ROOT_V1 + "users/" + getUserIdType() + getUserId(connector) + "/courses?fields=course";
+
     final List<Course> allCourses = new ArrayList<>();
 
-    // TODO: a more generic way of doing paged results. Contents also does paging
-    Courses courses = sendBlackboardData(connector, url, Courses.class, null, Request.Method.GET);
-    allCourses.addAll(courses.getResults());
+    // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
+    CoursesByUser courses = sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
+    for(CourseByUser cbu : courses.getResults()) {
+		allCourses.add(cbu.getCourse());
+	}
     Paging paging = courses.getPaging();
 
     while (paging != null && paging.getNextPage() != null) {
       // FIXME: construct nextUrl from the base URL we know about and the relative URL from
       // getNextPage
       final String nextUrl = paging.getNextPage();
-      courses = sendBlackboardData(connector, nextUrl, Courses.class, null, Request.Method.GET);
-      allCourses.addAll(courses.getResults());
-      paging = courses.getPaging();
+      courses = sendBlackboardData(connector, nextUrl, CoursesByUser.class, null, Request.Method.GET);
+		for(CourseByUser cbu : courses.getResults()) {
+			allCourses.add(cbu.getCourse());
+		}paging = courses.getPaging();
     }
 
     for (Course course : allCourses) {
@@ -377,7 +243,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private Course getCourseBean(Connector connector, String courseID) {
     // FIXME: courses for current user...?
     // TODO - since v3400.8.0, this endpoint should use v2
-    String url = API_ROOT + "/courses/" + courseID;
+    String url = API_ROOT_V1 + "courses/" + courseID;
 
     final Course course =
         sendBlackboardData(connector, url, Course.class, null, Request.Method.GET);
@@ -387,7 +253,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private Content getContentBean(Connector connector, String courseID, String folderID) {
     // FIXME: courses for current user...?
     // TODO - since v3400.8.0, this endpoint should use v2
-    String url = API_ROOT + "/courses/" + courseID + "/contents/" + folderID;
+    String url = API_ROOT_V1 + "courses/" + courseID + "/contents/" + folderID;
 
     final Content folder =
         sendBlackboardData(connector, url, Content.class, null, Request.Method.GET);
@@ -399,7 +265,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
     // FIXME: courses for current user...?
-    final String url = API_ROOT + "/courses/" + courseId + "/contents";
+    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents";
 
     return retrieveFolders(connector, url, username, courseId, management);
   }
@@ -409,7 +275,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, String folderId, boolean management)
       throws LmsUserNotFoundException {
     // FIXME: courses for current user...?
-    final String url = API_ROOT + "/courses/" + courseId + "/contents/" + folderId + "/children/";
+    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children/";
 
     return retrieveFolders(connector, url, username, courseId, management);
   }
@@ -417,7 +283,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private List<ConnectorFolder> retrieveFolders(
       Connector connector, String url, String username, String courseId, boolean management) {
     final List<ConnectorFolder> list = new ArrayList<>();
-
+// FIXME: courses for current user...?
     final Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
     final ConnectorCourse course = new ConnectorCourse(courseId);
@@ -431,7 +297,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         if (content.getAvailability() != null) {
           cc.setAvailable(Availability.YES.equals(content.getAvailability().getAvailable()));
         } else {
-          // FIXME:  Is this an appropriate default?
           cc.setAvailable(false);
         }
         cc.setName(content.getTitle());
@@ -452,7 +317,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       IItem<?> item,
       SelectedResource selectedResource)
       throws LmsUserNotFoundException {
-    final String url = API_ROOT + "/courses/" + courseId + "/contents/" + folderId + "/children";
+    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children";
 
     final Integration.LmsLinkInfo linkInfo = getLmsLink(item, selectedResource);
     final Integration.LmsLink lmsLink = linkInfo.getLmsLink();
@@ -480,9 +345,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     content.setAvailability(availability);
 
     sendBlackboardData(connector, url, null, content, Request.Method.POST);
-    LOGGER.trace("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
+    LOGGER.debug("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
     ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-    // CB:  Is there a better way to get the name of the folder and the course?
+    // TODO CB:  Is there a better way to get the name of the folder and the course?
     // AH:  Unfortunately not.  We could cache them, but it probably isn't worth the additional
     // complexity
     Content folder = getContentBean(connector, courseId, folderId);
@@ -550,6 +415,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public ConnectorTerminology getConnectorTerminology() {
+	  LOGGER.debug("Requesting Bb REST connector terminology");
     final ConnectorTerminology terms = new ConnectorTerminology();
     terms.setShowArchived(getKey("finduses.showarchived"));
     terms.setShowArchivedLocations(getKey("finduses.showarchived.courses"));
@@ -631,28 +497,32 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       if (body.length() > 0) {
         request.addHeader("Content-Type", "application/json");
       }
-      if (LOGGER.isTraceEnabled()) {
-        LOGGER.trace("Sending " + prettyJson(body));
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Sending " + prettyJson(body));
       }
       // attach cached token. (Cache knows how to get a new one)
-      request.addHeader("Authorization", "Bearer " + getToken(connector.getUuid()));
+	  final String authHeaderValue = "Bearer " + getToken(connector);
+      LOGGER.trace("Setting Authorization header to [" + authHeaderValue + "].  Connector [" + connector.getUuid() + "]");
+      request.addHeader("Authorization", authHeaderValue);
 
       try (Response response =
           httpService.getWebContent(request, configService.getProxyDetails())) {
         final String responseBody = response.getBody();
+        captureBlackboardRateLimitMetrics(uri.toString(), response);
         final int code = response.getCode();
-        if (LOGGER.isTraceEnabled()) {
-          LOGGER.trace("Received from Blackboard (" + code + "):");
-          LOGGER.trace(prettyJson(responseBody));
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Received from Blackboard (" + code + "):");
+          LOGGER.debug(prettyJson(responseBody));
         }
         if (code == 401 && firstTime) {
           // Unauthorized request.  Retry once to obtain a new token (assumes the current token is
           // expired)
-          LOGGER.trace(
+          LOGGER.debug(
               "Received a 401 from Blackboard.  Token for connector ["
                   + connector.getUuid()
                   + "] is likely expired.  Retrying...");
-          tokenCache.getCache().get(connector.getUuid()).invalidate(TOKEN_KEY);
+          setToken(connector, null);
+          setUserId(connector, null);
           return sendBlackboardData(connector, path, returnType, data, method, false);
         }
         if (code >= 300) {
@@ -665,9 +535,19 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         }
         return null;
       }
-    } catch (ExecutionException | IOException ex) {
+    } catch (IOException ex) {
       throw Throwables.propagate(ex);
     }
+  }
+
+  private void captureBlackboardRateLimitMetrics(String url, Response response) {
+  	final String xrlLimit = response.getHeader("X-Rate-Limit-Limit");
+  	final String xrlRemaining = response.getHeader("X-Rate-Limit-Remaining");
+  	final String xrlReset = response.getHeader("X-Rate-Limit-Reset");
+  	LOGGER.debug("X-Rate-Limit-Limit = [" + xrlLimit + "]");
+	LOGGER.debug("X-Rate-Limit-Remaining = [" + xrlRemaining + "]");
+  	LOGGER.debug("X-Rate-Limit-Reset = [" + xrlReset + "]");
+  	auditService.logExternalConnectorUsed(url, xrlLimit, xrlRemaining, xrlReset);
   }
 
   @Nullable
@@ -679,27 +559,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       return prettyJsonMapper.writeValueAsString(prettyJsonMapper.readTree(json));
     } catch (IOException io) {
       return json;
-    }
-  }
-
-  private String getToken(String connectorUuid) {
-    //    try {
-    // final String cachedToken = tokenCache.getCache().get(connectorUuid).getUnchecked(TOKEN_KEY);
-    final String cachedToken = userSessionService.getAttribute(connectorUuid);
-    if (cachedToken == null) {
-      throw new AuthenticationException("User was not able to obtain REST auth token.");
-    }
-    return cachedToken;
-    //    } catch (ExecutionException e) {
-    //      throw Throwables.propagate(e);
-    //    }
-  }
-
-  public void setToken(String connectorUuid, String token) {
-    try {
-      tokenCache.getCache().get(connectorUuid).put(TOKEN_KEY, token);
-    } catch (ExecutionException e) {
-      throw Throwables.propagate(e);
     }
   }
 
@@ -723,33 +582,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return new BlackboardRestAppContext(appId, appKey, serverUrl);
   }
 
-  private BlackboardRestUserContext getUserContext(Connector connector) {
-    BlackboardRestUserContext userContext =
-        userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_CONTEXT);
-    if (userContext == null) {
-      final String userId =
-          userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
-      if (userId == null) {
-        throw new LmsRequiresAuthenticationException(
-            "No Blackboard user ID associated with session");
-      }
-
-      final String userKey =
-          userSessionService.getAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_KEY);
-
-      final BlackboardRestAppContext appContext = getAppContext(connector);
-      userContext = appContext.createUserContext(userId, userKey);
-      userSessionService.setAttribute(
-          BlackboardRESTConnectorConstants.SESSION_KEY_USER_CONTEXT, userContext);
-
-      userSessionService.removeAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
-      userSessionService.removeAttribute(BlackboardRESTConnectorConstants.SESSION_KEY_USER_KEY);
-    }
-    return userContext;
-  }
-
   @Override
   public String encrypt(String data) {
+	  LOGGER.debug("Encrypting data");
     if (!Check.isEmpty(data)) {
       try {
         SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
@@ -770,6 +605,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public String decrypt(String encryptedData) {
+	  LOGGER.debug("Decrypting data");
     if (!Check.isEmpty(encryptedData)) {
       try {
         byte[] bytes = new Base64().decode(encryptedData);
@@ -784,4 +620,50 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
     return encryptedData;
   }
+
+  public String getToken(Connector connector) {
+	  return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
+  }
+
+  public String getUserId(Connector connector) {
+  	return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+  }
+
+  public String getUserIdType() {
+	// According to the Bb Support team, accessing the REST APIs in this manner should always return a userid as a uuid
+  	return "uuid:";
+  }
+
+	public void setToken(Connector connector, String token) {
+		setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN, token);
+	}
+
+	public void setUserId(Connector connector, String userId) {
+		setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
+	}
+
+  private String getCachedSessionValue(Connector connector, String key) {
+	final String cachedValue = userSessionService.getAttribute(connector.getUuid()+key);
+	if (cachedValue == null) {
+	  LOGGER.debug("No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
+	  throw new AuthenticationException("User was not able to obtain REST auth " + key + ".");
+	}
+	  logSensitiveDetails("Found a user session " + key + " for Bb REST connector [" + connector.getUuid() + "]", " - value [" + cachedValue + "]");
+	  return cachedValue;
+  }
+
+
+	private void setCachedSessionValue(Connector connector, String key, String value) {
+		logSensitiveDetails("Setting user session " + key + " for Bb REST connector [" + connector.getUuid() + "]", " to [" + value + "]");
+		userSessionService.setAttribute(connector.getUuid()+key, value);
+	}
+
+	private void logSensitiveDetails(String msg, String sensitiveMsg) {
+		if(LOGGER.isTraceEnabled()) {
+			// NOTE:  Use with care - exposes sensitive details.  Only to be used for investigations
+			LOGGER.trace(msg + sensitiveMsg);
+		} else {
+  			LOGGER.debug(msg);
+		}
+	}
 }
