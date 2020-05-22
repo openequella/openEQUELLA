@@ -49,10 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
-/**
- * Served up at /blackboardrestauth
- *
- */
+/** Served up at /blackboardrestauth */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
@@ -74,7 +71,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-	  LOGGER.trace("Requesting OAuth Sign-on");
+    LOGGER.trace("Requesting OAuth Sign-on");
     String postfixKey = "";
     String connectorUuid = "";
     String forwardUrl = null;
@@ -130,13 +127,13 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
     req2.setBody("grant_type=authorization_code");
     try (final Response resp2 = httpService.getWebContent(req2, configService.getProxyDetails())) {
       if (resp2.isOk()) {
-		  LOGGER.trace("Blackboard response: " + resp2.getBody());
-		  final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
+        LOGGER.trace("Blackboard response: " + resp2.getBody());
+        final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
         LOGGER.warn("Gathered Blackboard access token for [" + connectorUuid + "]");
- 	    blackboardRestConnectorService.setToken(connector, tokenJson.getAccessToken());
-		blackboardRestConnectorService.setUserId(connector, tokenJson.getUserId());
+        blackboardRestConnectorService.setToken(connector, tokenJson.getAccessToken());
+        blackboardRestConnectorService.setUserId(connector, tokenJson.getUserId());
 
-	  } else {
+      } else {
         final ErrorResponse bbErr = jsonMapper.readValue(resp2.getBody(), ErrorResponse.class);
         LOGGER.warn(
             "Unable to gather Blackboard access token for ["
