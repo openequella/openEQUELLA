@@ -7,11 +7,7 @@
 
 <@css "blackboardconnector.css" />
 
-<@setting label='' help=b.key('bb.editor.help.installmodule')>
-	<hr>
-</@setting>
-
-<@ajax.div id="blackboardsetup">
+<@ajax.div id="blackboardrestsetup">
 
 	<#include "/com.tle.web.connectors@/field/serverurl.ftl" />
 

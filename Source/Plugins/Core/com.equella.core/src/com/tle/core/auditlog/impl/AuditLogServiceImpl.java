@@ -50,6 +50,7 @@ public class AuditLogServiceImpl implements AuditLogService {
   private static final String ENTITY_CATEGORY = "ENTITY";
   private static final String SEARCH_CATEGORY = "SEARCH";
   private static final String ITEM_CATEGORY = "ITEM";
+  private static final String EXTERNAL_CONN_CATEGORY = "EXTERNAL_CONNECTOR";
 
   private static final String CREATED_TYPE = "CREATED";
   private static final String MODIFIED_TYPE = "MODIFIED";
@@ -59,6 +60,8 @@ public class AuditLogServiceImpl implements AuditLogService {
   private static final String SUMMARY_VIEWED_TYPE = "SUMMARY_VIEWED";
 
   private static final String SEARCH_FEDERATED_TYPE = "FEDERATED";
+
+  private static final String USED_TYPE = "USED";
 
   private static final String TRUNCED = "...";
 
@@ -197,7 +200,12 @@ public class AuditLogServiceImpl implements AuditLogService {
         null);
   }
 
-  private void logEntityGeneric(String type, long entityId) {
+	@Override
+	public void logExternalConnectorUsed(String d1, String d2, String d3, String d4) {
+		logGeneric(EXTERNAL_CONN_CATEGORY, USED_TYPE, d1, d2, d3, d4);
+	}
+
+	private void logEntityGeneric(String type, long entityId) {
     logGeneric(ENTITY_CATEGORY, type, CurrentUser.getUserID(), Long.toString(entityId), null, null);
   }
 

@@ -50,11 +50,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 /**
- * Served up at /blackboardauth
+ * Served up at /blackboardrestauth
  *
- * <p>TODO - taken from D2L auth code
- *
- * @author Aaron
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -77,10 +74,10 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+	  LOGGER.trace("Requesting OAuth Sign-on");
     String postfixKey = "";
     String connectorUuid = "";
     String forwardUrl = null;
-    String token = null;
     String state = req.getParameter(STATE_CALLBACK_PARAMETER);
 
     if (state != null) {
@@ -106,7 +103,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
     String code = req.getParameter("code");
     sessionService.setAttribute(BlackboardRESTConnectorConstants.SESSION_CODE + postfixKey, code);
 
-    // TODO, ask for the token.
+    // Ask for the token.
     final Connector connector = connectorService.getByUuid(connectorUuid);
     final String apiKey = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY);
     final String apiSecret =
@@ -133,10 +130,13 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
     req2.setBody("grant_type=authorization_code");
     try (final Response resp2 = httpService.getWebContent(req2, configService.getProxyDetails())) {
       if (resp2.isOk()) {
-        final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
+		  LOGGER.trace("Blackboard response: " + resp2.getBody());
+		  final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
         LOGGER.warn("Gathered Blackboard access token for [" + connectorUuid + "]");
-        token = tokenJson.getAccessToken();
-      } else {
+ 	    blackboardRestConnectorService.setToken(connector, tokenJson.getAccessToken());
+		blackboardRestConnectorService.setUserId(connector, tokenJson.getUserId());
+
+	  } else {
         final ErrorResponse bbErr = jsonMapper.readValue(resp2.getBody(), ErrorResponse.class);
         LOGGER.warn(
             "Unable to gather Blackboard access token for ["
@@ -160,9 +160,6 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
           e);
       throw Throwables.propagate(e);
     }
-    blackboardRestConnectorService.setToken(connectorUuid, token);
-
-    sessionService.setAttribute(BlackboardRESTConnectorConstants.SESSION_TOKEN + postfixKey, token);
 
     // close dialog OR redirect...
     if (forwardUrl != null) {
