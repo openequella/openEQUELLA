@@ -134,7 +134,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
   public void testAttachmentViewCount() {
     final String linkAttachment = "https://www.google.com/";
 
-    final String imgAlt = "img[alt=\"Google\"]";
+    final String imgAlt = "input[value=\"Google Search\"]";
     logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
 
     final WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION3);
