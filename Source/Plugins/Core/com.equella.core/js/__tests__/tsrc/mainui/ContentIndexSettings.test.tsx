@@ -52,7 +52,7 @@ describe("<ContentIndexSettingsPage />", () => {
   });
   afterEach(() => jest.clearAllMocks());
   const getSaveButton = () => component.find("#_saveButton").hostNodes();
-  let modifiedSearchSettings = {
+  const modifiedSearchSettings = {
     ...SearchSettingsModule.defaultSearchSettings,
   };
   modifiedSearchSettings.urlLevel = 2;
@@ -64,14 +64,12 @@ describe("<ContentIndexSettingsPage />", () => {
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
   });
-  it("Should save the changes made", () => {
-    const save = async (errorsReturned: boolean) => {
-      const updatePromise = mockSaveSearchSettingsToServer.mockResolvedValueOnce(
-        errorsReturned ? ["Failed to update"] : []
-      );
-      getSaveButton().simulate("click");
-      await act(async () => {
-        await updatePromise;
+  it("Should save the changes made", async () => {
+    const updateSlider = (sliderIndex: number, modifiedValue: number) => {
+      act(() => {
+        component.update();
+        const slider = component.find(Slider).at(sliderIndex);
+        slider.props().onChange!({} as any, modifiedValue);
       });
     };
     act(() => {
@@ -79,31 +77,11 @@ describe("<ContentIndexSettingsPage />", () => {
       const webPageIndexSetting = component.find(WebPageIndexSetting);
       webPageIndexSetting.props().setValue!(modifiedSearchSettings.urlLevel);
     });
-    act(() => {
-      component.update();
-      const titleBoostSlider = component.find(Slider).at(0);
-      titleBoostSlider.props().onChange!(
-        {} as any,
-        modifiedSearchSettings.titleBoost
-      );
-    });
-    act(() => {
-      component.update();
-      const metaBoostSlider = component.find(Slider).at(1);
-      metaBoostSlider.props().onChange!(
-        {} as any,
-        modifiedSearchSettings.descriptionBoost
-      );
-    });
-    act(() => {
-      component.update();
-      const attachBoostSlider = component.find(Slider).at(2);
-      attachBoostSlider.props().onChange!(
-        {} as any,
-        modifiedSearchSettings.attachmentBoost
-      );
-    });
-    save(false);
+    updateSlider(0, modifiedSearchSettings.titleBoost);
+    updateSlider(1, modifiedSearchSettings.descriptionBoost);
+    updateSlider(2, modifiedSearchSettings.attachmentBoost);
+
+    getSaveButton().simulate("click");
     expect(mockSaveSearchSettingsToServer).toHaveBeenCalledWith(
       modifiedSearchSettings
     );
