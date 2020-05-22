@@ -29,7 +29,7 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemSecondaryAction,
+  ListItemIcon,
   ListItemText,
   ListSubheader,
   makeStyles,
@@ -42,6 +42,8 @@ import {
   FacetWithFlags,
   getFacetsFromServer,
   getHighestOrderIndex,
+  removeFacetFromList,
+  reorder,
 } from "./FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -49,14 +51,18 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import FacetDialog from "./FacetDialog";
 import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
-import {
-  addElement,
-  deleteElement,
-  replaceElement,
-} from "../../../util/ImmutableArrayUtil";
+import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableProvided,
+  DraggableProvided,
+} from "react-beautiful-dnd";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -108,7 +114,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   /**
-   * Get facets from the server and add flags to them.
+   * Get facets from the server, sort them by order index, and add flags to them.
    */
   const getFacets = () => {
     getFacetsFromServer()
@@ -184,19 +190,9 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Visually delete a facet.
-   * If ID is available, then update the delete flag; otherwise simply remove this facet from state.
    */
-  const deleteFacet = (facet: FacetWithFlags) => {
-    if (facet.id) {
-      setFacets(
-        replaceElement(facets, facetComparator(facet), {
-          ...facet,
-          deleted: true,
-        })
-      );
-      return;
-    }
-    setFacets(deleteElement(facets, facetComparator(facet), 1));
+  const deleteFacet = (deletedfacet: FacetWithFlags) => {
+    setFacets(removeFacetFromList(facets, deletedfacet.orderIndex));
   };
 
   /**
@@ -207,46 +203,89 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Only renders a ListItem for each non-deleted facet.
+   * Fired when a dragged facet is dropped.
+   */
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const reorderedFacets = reorder(
+      facets,
+      result.source.index,
+      result.destination.index
+    );
+    setFacets(reorderedFacets);
+  };
+
+  /**
+   * Render a Draggable area which renders a ListItem for each non-deleted facet.
    */
   const facetListItems: ReactElement[] = facets
     .filter((facet) => !facet.deleted)
+    .sort((prev, current) => prev.orderIndex - current.orderIndex)
     .map((facet, index) => {
+      const key = facet.id ?? facet.name + index;
       return (
-        <ListItem divider key={facet.id ?? facet.name + index}>
-          <ListItemText primary={facet.name} />
-          <ListItemSecondaryAction>
-            <IconButton
-              color={"secondary"}
-              onClick={() => {
-                setShowEditingDialog(true);
-                setCurrentFacet(facet);
-              }}
+        <Draggable
+          key={key}
+          draggableId={key.toString()}
+          index={facet.orderIndex}
+        >
+          {(draggable: DraggableProvided) => (
+            <ListItem
+              ref={draggable.innerRef}
+              {...draggable.draggableProps}
+              {...draggable.dragHandleProps}
+              divider
             >
-              <EditIcon />
-            </IconButton>
-            |
-            <IconButton color="secondary" onClick={() => deleteFacet(facet)}>
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
+              <ListItemText primary={facet.name} />
+              <ListItemIcon>
+                <IconButton
+                  color={"secondary"}
+                  onClick={() => {
+                    setShowEditingDialog(true);
+                    setCurrentFacet(facet);
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+              </ListItemIcon>
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => deleteFacet(facet)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+          )}
+        </Draggable>
       );
     });
 
   /**
-   * A list display configured facets.
+   * Render a Droppable area which includes a list of configured facets.
    */
   const facetList: ReactElement = (
-    <List
-      subheader={
-        <ListSubheader disableGutters>
-          {facetedsearchsettingStrings.name}
-        </ListSubheader>
-      }
-    >
-      {facetListItems}
-    </List>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="droppableFacetList">
+        {(droppable: DroppableProvided) => (
+          <List
+            ref={droppable.innerRef}
+            subheader={
+              <ListSubheader disableGutters>
+                {facetedsearchsettingStrings.name}
+              </ListSubheader>
+            }
+            {...droppable.droppableProps}
+          >
+            {facetListItems}
+            {droppable.placeholder}
+          </List>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 
   return (

@@ -96,16 +96,84 @@ export const removeFlags = (facet: FacetWithFlags): Facet => {
 };
 
 /**
- * Given a list of facets, return the highest order index.
+ * Given a list of facets, return the highest order index of non-deleted facets.
  * If the list is empty then return -1.
  */
 export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
   if (facets.length == 0) {
     return -1;
   }
-  return Math.max(...facets.map((facet) => facet.orderIndex));
+  return Math.max(
+    ...facets.filter((facet) => !facet.deleted).map((facet) => facet.orderIndex)
+  );
 };
 
 export const facetComparator = (target: FacetWithFlags) => {
   return (facet: FacetWithFlags) => facet === target;
+};
+
+/**
+ * Reorder a list of facets, excluding deleted ones.
+ * For example, in a array of five facets [f1, f2, f3, f4, f5] where indexes are from 0 - 4,
+ * moving f2 to the end of the array results in that f2'index becomes 4 and indexes of f3, f4 and f5
+ * become 1, 2 and 3, respectively. f1' index keeps 0.
+ *
+ * Given the same array, moving f5 to the second position of the array results in that
+ * f5's index become 1 and indexes of f2, f3 and f4 become 2, 3 and 4, respectively. f1' index keeps 0.
+ *
+ * @param facets List of facets.
+ * @param startIndex Current index of the dragged facet.
+ * @param endIndex  New index of the dragged facet.
+ */
+export const reorder = (
+  facets: FacetWithFlags[],
+  startIndex: number,
+  endIndex: number
+): FacetWithFlags[] =>
+  facets.map((facet) => {
+    let newOrderIndex = 0;
+    if (facet.deleted) {
+      return { ...facet };
+    }
+
+    if (facet.orderIndex === startIndex) {
+      newOrderIndex = endIndex;
+    } else if (facet.orderIndex > startIndex && facet.orderIndex <= endIndex) {
+      newOrderIndex = facet.orderIndex - 1;
+    } else if (facet.orderIndex >= endIndex && facet.orderIndex < startIndex) {
+      newOrderIndex = facet.orderIndex + 1;
+    } else {
+      return { ...facet };
+    }
+
+    return { ...facet, orderIndex: newOrderIndex, updated: true };
+  });
+
+/**
+ * Remove a facet from the given list and update order indexes of facets that have a higher order index.
+ * And return a new array which keeps the non-deleted facets and flags the deleted ones back to server.
+ *
+ * For example, given an array like [f1, f2, f3, f4], removing f2 results in decrementing
+ * the order indexes of f3 and f4 by 1.
+ *
+ * @param facets List of facets
+ * @param deletedOrderIndex Order index of the deleted facet.
+ */
+export const removeFacetFromList = (
+  facets: FacetWithFlags[],
+  deletedOrderIndex: number
+): FacetWithFlags[] => {
+  return facets
+    .map((facet) => {
+      if (facet.orderIndex === deletedOrderIndex) {
+        return { ...facet, deleted: true };
+      }
+
+      if (facet.orderIndex > deletedOrderIndex) {
+        return { ...facet, orderIndex: facet.orderIndex - 1, updated: true };
+      }
+
+      return { ...facet };
+    })
+    .filter((facet) => !facet.deleted || (facet.deleted && !!facet.id));
 };
