@@ -200,12 +200,12 @@ public class AuditLogServiceImpl implements AuditLogService {
         null);
   }
 
-	@Override
-	public void logExternalConnectorUsed(String d1, String d2, String d3, String d4) {
-		logGeneric(EXTERNAL_CONN_CATEGORY, USED_TYPE, d1, d2, d3, d4);
-	}
+  @Override
+  public void logExternalConnectorUsed(String d1, String d2, String d3, String d4) {
+    logGeneric(EXTERNAL_CONN_CATEGORY, USED_TYPE, d1, d2, d3, d4);
+  }
 
-	private void logEntityGeneric(String type, long entityId) {
+  private void logEntityGeneric(String type, long entityId) {
     logGeneric(ENTITY_CATEGORY, type, CurrentUser.getUserID(), Long.toString(entityId), null, null);
   }
 

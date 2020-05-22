@@ -44,10 +44,9 @@ import org.apache.log4j.Logger;
 public class BlackboardRESTConnectorEditor
     extends AbstractConnectorEditorSection<
         BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel> {
-	private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorEditor.class);
+  private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorEditor.class);
 
   @Inject private EncryptionService encryptionService;
-
 
   @Component(name = "ak", stateful = false)
   private TextField apiKey;
@@ -79,13 +78,13 @@ public class BlackboardRESTConnectorEditor
     return new Connector(BlackboardRESTConnectorConstants.CONNECTOR_TYPE);
   }
 
-	@Override
-	protected void customValidate(SectionInfo info, ConnectorEditingBean connector,
-		Map<String, Object> errors) {
-		// no op
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors) {
+    // no op
+  }
 
-	@Override
+  @Override
   protected void customLoad(SectionInfo info, ConnectorEditingBean connector) {
     apiKey.setValue(info, connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY));
     apiSecret.setValue(
@@ -115,7 +114,7 @@ public class BlackboardRESTConnectorEditor
     return apiSecret;
   }
 
-public class BlackboardRESTConnectorEditorModel
+  public class BlackboardRESTConnectorEditorModel
       extends AbstractConnectorEditorSection<
               BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel>
           .AbstractConnectorEditorModel {}
