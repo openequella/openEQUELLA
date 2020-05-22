@@ -236,6 +236,4 @@ public class BlackboardRestUserContext implements Serializable {
     }
     return RESULT_UNKNOWN;
   }
-
-
 }

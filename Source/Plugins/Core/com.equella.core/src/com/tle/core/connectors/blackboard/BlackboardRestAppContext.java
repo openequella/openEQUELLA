@@ -25,12 +25,12 @@ import java.net.URLEncoder;
 
 public class BlackboardRestAppContext {
   private static final String STATE_PARAMETER = "state";
-	private static final String VALUE_CODE = "code";
-	private static final String FIELD_REDIRECT_URI = "redirect_uri";
-	private static final String FIELD_RESPONSE_TYPE = "response_type";
-	private static final String FIELD_CLIENT_ID = "client_id";
-	private static final String FIELD_SCOPE = "scope";
-	private static final String VALUE_READ_WRITE_DELETE = "read write delete";
+  private static final String VALUE_CODE = "code";
+  private static final String FIELD_REDIRECT_URI = "redirect_uri";
+  private static final String FIELD_RESPONSE_TYPE = "response_type";
+  private static final String FIELD_CLIENT_ID = "client_id";
+  private static final String FIELD_SCOPE = "scope";
+  private static final String VALUE_READ_WRITE_DELETE = "read write delete";
 
   private final String _appId;
   private final String _appKey;
