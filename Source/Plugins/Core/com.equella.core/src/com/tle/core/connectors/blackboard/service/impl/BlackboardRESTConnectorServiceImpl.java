@@ -136,10 +136,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     try {
       getToken(connector);
       getUserId(connector);
-		LOGGER.debug("User session does not require auth for connector [" + connector.getUuid() + "]");
+      LOGGER.debug(
+          "User session does not require auth for connector [" + connector.getUuid() + "]");
       return false;
     } catch (AuthenticationException ex) {
-		LOGGER.debug("User session requires auth for connector [" + connector.getUuid() + "]");
+      LOGGER.debug("User session requires auth for connector [" + connector.getUuid() + "]");
       return true;
     }
   }
@@ -167,11 +168,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       String forwardUrl,
       @Nullable String postfixKey,
       String connectorUuid) {
-	  LOGGER.trace("Requesting auth url for [" + connectorUuid + "]");
+    LOGGER.trace("Requesting auth url for [" + connectorUuid + "]");
     final ObjectMapper mapper = new ObjectMapper();
     final ObjectNode stateJson = mapper.createObjectNode();
-    final String fUrl = institutionService.getInstitutionUrl() + "/api/connector/" +
-    stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
+    final String fUrl =
+        institutionService.getInstitutionUrl()
+            + "/api/connector/"
+            + stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_FORWARD_URL, forwardUrl);
     if (postfixKey != null) {
       stateJson.put(BlackboardRESTConnectorConstants.STATE_KEY_POSTFIX_KEY, postfixKey);
     }
@@ -184,7 +187,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
                   institutionService.institutionalise(BlackboardRESTConnectorConstants.AUTH_URL)),
               encrypt(mapper.writeValueAsString(stateJson)));
     } catch (JsonProcessingException e) {
-		LOGGER.trace("Unable to provide the auth url for [" + connectorUuid + "]");
+      LOGGER.trace("Unable to provide the auth url for [" + connectorUuid + "]");
       throw Throwables.propagate(e);
     }
     return uri.toString();
@@ -205,25 +208,29 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       boolean management) {
     final List<ConnectorCourse> list = new ArrayList<>();
 
-    String url = API_ROOT_V1 + "users/" + getUserIdType() + getUserId(connector) + "/courses?fields=course";
+    String url =
+        API_ROOT_V1 + "users/" + getUserIdType() + getUserId(connector) + "/courses?fields=course";
 
     final List<Course> allCourses = new ArrayList<>();
 
     // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
-    CoursesByUser courses = sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
-    for(CourseByUser cbu : courses.getResults()) {
-		allCourses.add(cbu.getCourse());
-	}
+    CoursesByUser courses =
+        sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
+    for (CourseByUser cbu : courses.getResults()) {
+      allCourses.add(cbu.getCourse());
+    }
     Paging paging = courses.getPaging();
 
     while (paging != null && paging.getNextPage() != null) {
       // FIXME: construct nextUrl from the base URL we know about and the relative URL from
       // getNextPage
       final String nextUrl = paging.getNextPage();
-      courses = sendBlackboardData(connector, nextUrl, CoursesByUser.class, null, Request.Method.GET);
-		for(CourseByUser cbu : courses.getResults()) {
-			allCourses.add(cbu.getCourse());
-		}paging = courses.getPaging();
+      courses =
+          sendBlackboardData(connector, nextUrl, CoursesByUser.class, null, Request.Method.GET);
+      for (CourseByUser cbu : courses.getResults()) {
+        allCourses.add(cbu.getCourse());
+      }
+      paging = courses.getPaging();
     }
 
     for (Course course : allCourses) {
@@ -283,7 +290,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private List<ConnectorFolder> retrieveFolders(
       Connector connector, String url, String username, String courseId, boolean management) {
     final List<ConnectorFolder> list = new ArrayList<>();
-// FIXME: courses for current user...?
+    // FIXME: courses for current user...?
     final Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
     final ConnectorCourse course = new ConnectorCourse(courseId);
@@ -415,7 +422,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public ConnectorTerminology getConnectorTerminology() {
-	  LOGGER.debug("Requesting Bb REST connector terminology");
+    LOGGER.debug("Requesting Bb REST connector terminology");
     final ConnectorTerminology terms = new ConnectorTerminology();
     terms.setShowArchived(getKey("finduses.showarchived"));
     terms.setShowArchivedLocations(getKey("finduses.showarchived.courses"));
@@ -501,8 +508,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         LOGGER.debug("Sending " + prettyJson(body));
       }
       // attach cached token. (Cache knows how to get a new one)
-	  final String authHeaderValue = "Bearer " + getToken(connector);
-      LOGGER.trace("Setting Authorization header to [" + authHeaderValue + "].  Connector [" + connector.getUuid() + "]");
+      final String authHeaderValue = "Bearer " + getToken(connector);
+      LOGGER.trace(
+          "Setting Authorization header to ["
+              + authHeaderValue
+              + "].  Connector ["
+              + connector.getUuid()
+              + "]");
       request.addHeader("Authorization", authHeaderValue);
 
       try (Response response =
@@ -541,13 +553,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private void captureBlackboardRateLimitMetrics(String url, Response response) {
-  	final String xrlLimit = response.getHeader("X-Rate-Limit-Limit");
-  	final String xrlRemaining = response.getHeader("X-Rate-Limit-Remaining");
-  	final String xrlReset = response.getHeader("X-Rate-Limit-Reset");
-  	LOGGER.debug("X-Rate-Limit-Limit = [" + xrlLimit + "]");
-	LOGGER.debug("X-Rate-Limit-Remaining = [" + xrlRemaining + "]");
-  	LOGGER.debug("X-Rate-Limit-Reset = [" + xrlReset + "]");
-  	auditService.logExternalConnectorUsed(url, xrlLimit, xrlRemaining, xrlReset);
+    final String xrlLimit = response.getHeader("X-Rate-Limit-Limit");
+    final String xrlRemaining = response.getHeader("X-Rate-Limit-Remaining");
+    final String xrlReset = response.getHeader("X-Rate-Limit-Reset");
+    LOGGER.debug("X-Rate-Limit-Limit = [" + xrlLimit + "]");
+    LOGGER.debug("X-Rate-Limit-Remaining = [" + xrlRemaining + "]");
+    LOGGER.debug("X-Rate-Limit-Reset = [" + xrlReset + "]");
+    auditService.logExternalConnectorUsed(url, xrlLimit, xrlRemaining, xrlReset);
   }
 
   @Nullable
@@ -584,7 +596,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public String encrypt(String data) {
-	  LOGGER.debug("Encrypting data");
+    LOGGER.debug("Encrypting data");
     if (!Check.isEmpty(data)) {
       try {
         SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
@@ -605,7 +617,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public String decrypt(String encryptedData) {
-	  LOGGER.debug("Decrypting data");
+    LOGGER.debug("Decrypting data");
     if (!Check.isEmpty(encryptedData)) {
       try {
         byte[] bytes = new Base64().decode(encryptedData);
@@ -622,48 +634,53 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   public String getToken(Connector connector) {
-	  return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
+    return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
   }
 
   public String getUserId(Connector connector) {
-  	return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+    return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
   }
 
   public String getUserIdType() {
-	// According to the Bb Support team, accessing the REST APIs in this manner should always return a userid as a uuid
-  	return "uuid:";
+    // According to the Bb Support team, accessing the REST APIs in this manner should always return
+    // a userid as a uuid
+    return "uuid:";
   }
 
-	public void setToken(Connector connector, String token) {
-		setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN, token);
-	}
+  public void setToken(Connector connector, String token) {
+    setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN, token);
+  }
 
-	public void setUserId(Connector connector, String userId) {
-		setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
-	}
+  public void setUserId(Connector connector, String userId) {
+    setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
+  }
 
   private String getCachedSessionValue(Connector connector, String key) {
-	final String cachedValue = userSessionService.getAttribute(connector.getUuid()+key);
-	if (cachedValue == null) {
-	  LOGGER.debug("No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
-	  throw new AuthenticationException("User was not able to obtain REST auth " + key + ".");
-	}
-	  logSensitiveDetails("Found a user session " + key + " for Bb REST connector [" + connector.getUuid() + "]", " - value [" + cachedValue + "]");
-	  return cachedValue;
+    final String cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
+    if (cachedValue == null) {
+      LOGGER.debug(
+          "No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
+      throw new AuthenticationException("User was not able to obtain REST auth " + key + ".");
+    }
+    logSensitiveDetails(
+        "Found a user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",
+        " - value [" + cachedValue + "]");
+    return cachedValue;
   }
 
+  private void setCachedSessionValue(Connector connector, String key, String value) {
+    logSensitiveDetails(
+        "Setting user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",
+        " to [" + value + "]");
+    userSessionService.setAttribute(connector.getUuid() + key, value);
+  }
 
-	private void setCachedSessionValue(Connector connector, String key, String value) {
-		logSensitiveDetails("Setting user session " + key + " for Bb REST connector [" + connector.getUuid() + "]", " to [" + value + "]");
-		userSessionService.setAttribute(connector.getUuid()+key, value);
-	}
-
-	private void logSensitiveDetails(String msg, String sensitiveMsg) {
-		if(LOGGER.isTraceEnabled()) {
-			// NOTE:  Use with care - exposes sensitive details.  Only to be used for investigations
-			LOGGER.trace(msg + sensitiveMsg);
-		} else {
-  			LOGGER.debug(msg);
-		}
-	}
+  private void logSensitiveDetails(String msg, String sensitiveMsg) {
+    if (LOGGER.isTraceEnabled()) {
+      // NOTE:  Use with care - exposes sensitive details.  Only to be used for investigations
+      LOGGER.trace(msg + sensitiveMsg);
+    } else {
+      LOGGER.debug(msg);
+    }
+  }
 }

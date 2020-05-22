@@ -21,14 +21,15 @@ package com.tle.core.connectors.blackboard;
 @SuppressWarnings("nls")
 public final class BlackboardRESTConnectorConstants {
 
-  //public static final String AUTHENTICATION_SERVICE_URI_PATH = "/learn/api/public/v1/oauth2/token";
+  // public static final String AUTHENTICATION_SERVICE_URI_PATH =
+  // "/learn/api/public/v1/oauth2/token";
   public static final String AUTHENTICATIONCODE_SERVICE_URI_PATH =
       "/learn/api/public/v1/oauth2/authorizationcode";
 
-//  public static final String SESSION_KEY_USER_CONTEXT = "BbRest.UserContext";
-//  public static final String SESSION_KEY_ADMIN_USER_CONTEXT = "BbRest.AdminUserContext";
+  //  public static final String SESSION_KEY_USER_CONTEXT = "BbRest.UserContext";
+  //  public static final String SESSION_KEY_ADMIN_USER_CONTEXT = "BbRest.AdminUserContext";
   public static final String SESSION_KEY_USER_ID = "BbRest.UserId";
-//  public static final String SESSION_KEY_USER_KEY = "BbRest.UserKey";
+  //  public static final String SESSION_KEY_USER_KEY = "BbRest.UserKey";
   public static final String SESSION_CODE = "BbRest.Code";
   public static final String SESSION_TOKEN = "BbRest.Token";
 
@@ -37,8 +38,8 @@ public final class BlackboardRESTConnectorConstants {
   public static final String FIELD_API_KEY = "apiKey";
   public static final String FIELD_API_SECRET = "apiSecret";
 
-//  public static final String FIELD_APP_ID = "appId";
-//  public static final String FIELD_APP_KEY = "appKey";
+  //  public static final String FIELD_APP_ID = "appId";
+  //  public static final String FIELD_APP_KEY = "appKey";
 
   public static final String STATE_KEY_FORWARD_URL = "forwardUrl";
   public static final String STATE_KEY_POSTFIX_KEY = "postfixKey";
