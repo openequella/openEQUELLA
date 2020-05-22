@@ -136,7 +136,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     try {
       getToken(connector);
       getUserId(connector);
-		LOGGER.debug("User session doesn't require auth for connector [" + connector.getUuid() + "]");
+		LOGGER.debug("User session does not require auth for connector [" + connector.getUuid() + "]");
       return false;
     } catch (AuthenticationException ex) {
 		LOGGER.debug("User session requires auth for connector [" + connector.getUuid() + "]");
