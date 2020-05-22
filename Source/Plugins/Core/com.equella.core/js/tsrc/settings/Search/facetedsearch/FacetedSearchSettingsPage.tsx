@@ -192,7 +192,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Visually delete a facet.
    */
   const deleteFacet = (deletedfacet: FacetWithFlags) => {
-    setFacets(removeFacetFromList(facets, deletedfacet));
+    setFacets(removeFacetFromList(facets, deletedfacet.orderIndex));
   };
 
   /**

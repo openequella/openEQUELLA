@@ -151,22 +151,25 @@ export const reorder = (
 
 /**
  * Remove a facet from the given list and update order indexes of facets that have a higher order index.
- * And return a new array which keep non-deleted facets and those deleted but having an ID back to state.
+ * And return a new array which keeps the non-deleted facets and flags the deleted ones back to server.
  *
  * For example, given an array like [f1, f2, f3, f4], removing f2 results in decrementing
  * the order indexes of f3 and f4 by 1.
+ *
+ * @param facets List of facets
+ * @param deletedOrderIndex Order index of the deleted facet.
  */
 export const removeFacetFromList = (
   facets: FacetWithFlags[],
-  deletedFacet: FacetWithFlags
-) => {
+  deletedOrderIndex: number
+): FacetWithFlags[] => {
   return facets
     .map((facet) => {
-      if (facet.orderIndex === deletedFacet.orderIndex) {
+      if (facet.orderIndex === deletedOrderIndex) {
         return { ...facet, deleted: true };
       }
 
-      if (facet.orderIndex > deletedFacet.orderIndex) {
+      if (facet.orderIndex > deletedOrderIndex) {
         return { ...facet, orderIndex: facet.orderIndex - 1, updated: true };
       }
 

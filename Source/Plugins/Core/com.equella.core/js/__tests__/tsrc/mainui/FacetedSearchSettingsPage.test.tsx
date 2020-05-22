@@ -203,7 +203,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     });
   });
 
-  it("should update order indexes when reorder facets", () => {
+  it("should update order indexes when facets are reordered", () => {
     // Given the mocked facets, reorder the second one and third one.
     const reorderFacets = FacetedSearchSettingsModule.reorder(
       mockFacetsWithFlags,
@@ -225,7 +225,7 @@ describe("<FacetedSearchSettingsPage />", () => {
   });
 
   describe("when remove a facet", () => {
-    // Add a new mock facet which does not have no ID.
+    // Add a new mock facet which does not have an ID.
     const newFacet: FacetWithFlags = {
       name: "mocked facet4",
       schemaNode: "item/age",
@@ -235,16 +235,16 @@ describe("<FacetedSearchSettingsPage />", () => {
       deleted: false,
     };
     mockFacetsWithFlags.push(newFacet);
-    it("should keep this facet in state if this facet has an ID", () => {
+    it("should keep this facet in state if it has an ID", () => {
       const facetToRemove = mockFacetsWithFlags[1];
       // Remove the second facet which has an ID.
       const updatedFacets = FacetedSearchSettingsModule.removeFacetFromList(
         mockFacetsWithFlags,
-        facetToRemove
+        facetToRemove.orderIndex
       );
       // The total number of facets stored in state should keep 4.
       expect(updatedFacets).toHaveLength(4);
-      // The first facet' order index keeps 0.
+      // The first facet's order index keeps 0.
       expect(
         updatedFacets.filter(
           (f) => f.id === 1 && !f.updated && f.orderIndex === 0
@@ -261,11 +261,11 @@ describe("<FacetedSearchSettingsPage />", () => {
         updatedFacets.filter((f) => !f.id && f.updated && f.orderIndex === 2)
       ).toHaveLength(1);
     });
-    it("should remove this facet from state if this facet does not have an ID", () => {
+    it("should remove this facet from state if it does not have an ID", () => {
       // Remove the last one.
       const updatedFacets = FacetedSearchSettingsModule.removeFacetFromList(
         mockFacetsWithFlags,
-        newFacet
+        newFacet.orderIndex
       );
       // The total number of facets stored in state should change to 3.
       expect(updatedFacets).toHaveLength(3);
