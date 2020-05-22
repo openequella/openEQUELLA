@@ -17,34 +17,28 @@
  */
 import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
-import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
 import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule"; // eslint-disable-line
-//import SettingsList from "../../../tsrc/components/SettingsList";
-//import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
+import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
 import { Slider } from "@material-ui/core";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { act } from "react-dom/test-utils";
-
+import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
 /**
  * Mock NavigationGuard as there is no need to include it in this test.
  */
-
 jest.mock("../../../tsrc/components/NavigationGuard", () => ({
   NavigationGuard: (props: NavigationGuardProps) => {
     return <div />;
   },
 }));
-
 const mockGetSearchSettingsFromServer = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
-
 const mockSaveSearchSettingsToServer = jest.spyOn(
   SearchSettingsModule,
   "saveSearchSettingsToServer"
 );
-
 describe("<ContentIndexSettingsPage />", () => {
   let component: ReactWrapper;
   beforeEach(async () => {
@@ -57,52 +51,20 @@ describe("<ContentIndexSettingsPage />", () => {
     });
   });
   afterEach(() => jest.clearAllMocks());
-
   const getSaveButton = () => component.find("#_saveButton").hostNodes();
-
   let modifiedSearchSettings = {
     ...SearchSettingsModule.defaultSearchSettings,
   };
-  modifiedSearchSettings.titleBoost = 3;
-  modifiedSearchSettings.descriptionBoost = 4;
+  modifiedSearchSettings.urlLevel = 2;
+  modifiedSearchSettings.titleBoost = 4;
+  modifiedSearchSettings.descriptionBoost = 5;
   modifiedSearchSettings.attachmentBoost = 6;
-
   it("Should fetch the default search settings", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
   });
-
   it("Should save the changes made", () => {
-    const makeChanges = async () => {
-      const titleBoostSlider = component.find(Slider).at(0);
-
-      const metaBoostSlider = component.find(Slider).at(1);
-
-      const attachBoostSlider = component.find(Slider).at(2);
-      act(
-        async () =>
-          await attachBoostSlider.props().onChange!(
-            {} as any,
-            modifiedSearchSettings.attachmentBoost
-          )
-      );
-      act(
-        async () =>
-          await metaBoostSlider.props().onChange!(
-            {} as any,
-            modifiedSearchSettings.descriptionBoost
-          )
-      );
-      act(
-        async () =>
-          await titleBoostSlider.props().onChange!(
-            {} as any,
-            modifiedSearchSettings.titleBoost
-          )
-      );
-    };
-
     const save = async (errorsReturned: boolean) => {
       const updatePromise = mockSaveSearchSettingsToServer.mockResolvedValueOnce(
         errorsReturned ? ["Failed to update"] : []
@@ -112,9 +74,36 @@ describe("<ContentIndexSettingsPage />", () => {
         await updatePromise;
       });
     };
-    makeChanges();
+    act(() => {
+      component.update();
+      const webPageIndexSetting = component.find(WebPageIndexSetting);
+      webPageIndexSetting.props().setValue!(modifiedSearchSettings.urlLevel);
+    });
+    act(() => {
+      component.update();
+      const titleBoostSlider = component.find(Slider).at(0);
+      titleBoostSlider.props().onChange!(
+        {} as any,
+        modifiedSearchSettings.titleBoost
+      );
+    });
+    act(() => {
+      component.update();
+      const metaBoostSlider = component.find(Slider).at(1);
+      metaBoostSlider.props().onChange!(
+        {} as any,
+        modifiedSearchSettings.descriptionBoost
+      );
+    });
+    act(() => {
+      component.update();
+      const attachBoostSlider = component.find(Slider).at(2);
+      attachBoostSlider.props().onChange!(
+        {} as any,
+        modifiedSearchSettings.attachmentBoost
+      );
+    });
     save(false);
-
     expect(mockSaveSearchSettingsToServer).toHaveBeenCalledWith(
       modifiedSearchSettings
     );
