@@ -22,9 +22,11 @@ import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.connectors.entity.Connector;
+import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -54,6 +56,7 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
 
   @Inject private ConnectorService connectorService;
   @Inject private ConnectorRepositoryService repositoryService;
+	@Inject private UserSessionService userSessionService;
 
   @ViewFactory private FreemarkerFactory view;
 
@@ -67,10 +70,10 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
   @Override
   protected SectionRenderable getRenderableContents(RenderContext context) {
     final Model model = getModel(context);
+	  String forwardUrl =
+		  new BookmarkAndModify(context, events.getNamedModifier("finishedAuth")).getHref();
 
-    final String forwardUrl =
-        new BookmarkAndModify(context, events.getNamedModifier("finishedAuth")).getHref();
-    try {
+	  try {
       final String authUrl;
       if (authUrlCallable != null) {
         authUrl = authUrlCallable.getAuthorisationUrl(context, forwardUrl);
@@ -80,8 +83,14 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
           throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
         }
         final Connector connector = connectorService.getByUuid(connectorUuid);
+        if(connector.getLmsType().equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+        	model.setShowNewTabLauncher(true);
+			forwardUrl =
+				new BookmarkAndModify(context, events.getNamedModifier("finishedAuthNewTab")).getHref();
+        }
+
         authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
-      }
+	  }
       LOGGER.trace("Setting authUrl to [" + authUrl + "].");
       model.setAuthUrl(authUrl);
     } catch (Exception e) {
@@ -99,18 +108,18 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
 
   @EventHandlerMethod
   public void finishedAuth(SectionInfo info) {
-    //		final Model model = getModel(info);
-    //		final String connectorUuid = model.getConnectorUuid();
-    //		if( connectorUuid == null )
-    //		{
-    //			throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
-    //		}
-    //		final Connector connector = connectorService.getByUuid(connectorUuid);
-    //		repositoryService.finishedAuthorisation(connector);
-
-    // Close the dialog
-    closeDialog(info, parentCallback, (Object) null);
+	  LOGGER.trace("Finishing up the auth sequence.");
+	  closeDialog(info, parentCallback, (Object) null);
   }
+
+	@EventHandlerMethod
+	public void finishedAuthNewTab(SectionInfo info) {
+		LOGGER.trace("Finishing up the auth sequence via new tab.");
+		// Dialog is on a different tab, not able to close it.
+		// This is just a workaround until this flow is converted to
+		// the modern UI and we are done with FTL.
+		getModel(info).setShowReceipt(true);
+	}
 
   @Override
   public String getWidth() {
@@ -146,6 +155,12 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
 
     private String authUrl;
 
+    // Default behavior
+    private boolean showNewTabLauncher = false;
+
+    // Default behavior
+	private boolean showReceipt = false;
+
     public String getConnectorUuid() {
       return connectorUuid;
     }
@@ -161,5 +176,21 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     public void setAuthUrl(String authUrl) {
       this.authUrl = authUrl;
     }
+
+    public void setShowNewTabLauncher(boolean b) {
+    	this.showNewTabLauncher = b;
+	}
+
+	public boolean isShowNewTabLauncher() {
+    	return this.showNewTabLauncher;
+	}
+
+	  public void setShowReceipt(boolean showReceipt) {
+		  this.showReceipt = showReceipt;
+	  }
+
+	  public boolean isShowReceipt() {
+		  return showReceipt;
+	  }
   }
 }

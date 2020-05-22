@@ -19,6 +19,7 @@
 package com.tle.core.connectors.blackboard.service;
 
 import com.tle.annotation.Nullable;
+import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 
 public interface BlackboardRESTConnectorService extends ConnectorRepositoryImplementation {
@@ -52,5 +53,7 @@ public interface BlackboardRESTConnectorService extends ConnectorRepositoryImple
 
   String decrypt(String encryptedData);
 
-  void setToken(String connectorUuid, String token);
+  void setToken(Connector connector, String value);
+
+  void setUserId(Connector connector, String value);
 }

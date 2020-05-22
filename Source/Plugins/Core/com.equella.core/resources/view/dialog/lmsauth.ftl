@@ -4,28 +4,24 @@
 <@css "auth.css" />
 
 <div id="auth_container">
-  <p>This auth launch needs to happen in a new tab! </p>
+  <#if m.showReceipt >
+    <p>${b.key('export.authorization.newtab.receipt')}</p>
+  <#else>
+    <#if m.showNewTabLauncher >
+      <p>${b.key('export.authorization.newtab.description')}</p>
 
-    <button onclick="newTabAuth()">
-      Open new tab for auth
-  </button>
+      <button onclick="newTabAuth()" class="btn btn-equella">
+          ${b.key('export.authorization.newtab.launch')}
+      </button>
 
-    <script>
-        function newTabAuth() {
-            window.open(
-              "${m.authUrl}", "_blank");
-        }
-    </script>
-
-    <button onclick="newTabAuth()">
-      Open new tab for auth
-  </button>
-
-    <script>
-        function newTabAuth() {
-            window.open(
-              "${m.authUrl}", "_blank");
-        }
-    </script>
-	<iframe frameBorder="0" src="${m.authUrl?html}"></iframe>
+        <script>
+            function newTabAuth() {
+                window.open(
+                  "${m.authUrl}", "_blank");
+            }
+        </script>
+    <#else>
+      <iframe frameBorder="0" src="${m.authUrl?html}"></iframe>
+    </#if>
+	</#if>
 </div>
