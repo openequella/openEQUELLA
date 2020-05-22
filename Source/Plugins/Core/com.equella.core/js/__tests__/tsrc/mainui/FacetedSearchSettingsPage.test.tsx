@@ -211,17 +211,11 @@ describe("<FacetedSearchSettingsPage />", () => {
       2
     );
     // The second facet's order index should be changed from 1 to 2.
-    expect(
-      reorderFacets.filter((f) => f.id === 2 && f.updated && f.orderIndex === 2)
-    ).toHaveLength(1);
+    expect(reorderFacets.find((f) => f.id === 2)!.orderIndex).toEqual(2);
     // The third facet's order index should be changed from 2 to 1.
-    expect(
-      reorderFacets.filter((f) => f.id === 3 && f.updated && f.orderIndex === 1)
-    ).toHaveLength(1);
+    expect(reorderFacets.find((f) => f.id === 3)!.orderIndex).toEqual(1);
     // The first facet's order index keeps unchanged.
-    expect(
-      reorderFacets.filter((f) => f.id === 1 && f.orderIndex === 0)
-    ).toHaveLength(1);
+    expect(reorderFacets.find((f) => f.id === 1)!.orderIndex).toEqual(0);
   });
 
   describe("when remove a facet", () => {
@@ -245,21 +239,11 @@ describe("<FacetedSearchSettingsPage />", () => {
       // The total number of facets stored in state should keep 4.
       expect(updatedFacets).toHaveLength(4);
       // The first facet's order index keeps 0.
-      expect(
-        updatedFacets.filter(
-          (f) => f.id === 1 && !f.updated && f.orderIndex === 0
-        )
-      ).toHaveLength(1);
+      expect(updatedFacets.find((f) => f.id === 1)!.orderIndex).toEqual(0);
       // The third facet's order index is 1 now.
-      expect(
-        updatedFacets.filter(
-          (f) => f.id === 3 && f.updated && f.orderIndex === 1
-        )
-      ).toHaveLength(1);
+      expect(updatedFacets.find((f) => f.id === 3)!.orderIndex).toEqual(1);
       // The fourth facet's order index is updated to 2 although it does not have an ID.
-      expect(
-        updatedFacets.filter((f) => !f.id && f.updated && f.orderIndex === 2)
-      ).toHaveLength(1);
+      expect(updatedFacets.find((f) => !f.id)!.orderIndex).toEqual(2);
     });
     it("should remove this facet from state if it does not have an ID", () => {
       // Remove the last one.
