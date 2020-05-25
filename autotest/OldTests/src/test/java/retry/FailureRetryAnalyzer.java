@@ -1,13 +1,13 @@
 package retry;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 public class FailureRetryAnalyzer implements IRetryAnalyzer {
   int currentRetry = 0;
-  Logger LOGGER = Logger.getLogger(FailureRetryAnalyzer.class.getName());
+  Logger LOGGER = LoggerFactory.getLogger(FailureRetryAnalyzer.class.getName());
 
   @Override
   public boolean retry(ITestResult result) {
@@ -24,10 +24,9 @@ public class FailureRetryAnalyzer implements IRetryAnalyzer {
   }
 
   private void logRetryInfo(ITestResult result, int maxRetryCount) {
-    LOGGER.warning("Test with retry analyser failed.\n\n");
     // print failure stack trace
-    LOGGER.log(Level.WARNING, result.getThrowable().getMessage(), result.getThrowable());
-    LOGGER.warning(
+    LOGGER.debug("Stack trace of failure to be retried:", result.getThrowable());
+    LOGGER.warn(
         String.format(
             "Running retry %d/%d for test '%s' in class %s",
             currentRetry,
