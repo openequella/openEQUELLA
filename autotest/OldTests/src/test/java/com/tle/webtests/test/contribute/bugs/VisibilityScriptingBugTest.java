@@ -10,6 +10,7 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
+import retry.MaxRetryCount;
 
 /**
  * This is a test to ensure that GH issue #1678 has not regressed.
@@ -29,6 +30,7 @@ public class VisibilityScriptingBugTest extends AbstractCleanupTest {
 
   private static final String XML_PATH = "item/";
 
+  @MaxRetryCount(5)
   @Test
   public void testLostMetadataBug() {
     // Login as cpddm and begin contribution to 'Test Wizard Issue' collection.
