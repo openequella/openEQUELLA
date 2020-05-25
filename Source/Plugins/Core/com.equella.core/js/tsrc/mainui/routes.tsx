@@ -28,6 +28,7 @@ import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettin
 import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
+import SearchPage from "../search/SearchPage";
 
 declare const bridge: Bridge;
 
@@ -59,7 +60,7 @@ export const routes = {
   },
   Search: {
     path: "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <bridge.SearchPage {...p} />,
+    render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
   },
   SearchSettings: {
     path: "/page/searchsettings",
