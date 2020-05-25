@@ -1,16 +1,16 @@
 <com.tle.beans.entity.Schema>
-  <id>255499</id>
+  <id>993</id>
   <uuid>2859a529-d4d4-ad99-9157-1db457ee2313</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <name>
-    <id>255500</id>
+    <id>213511</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>255501</id>
+          <id>213310</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Plan</text>

@@ -1,5 +1,5 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>256751</id>
+  <id>57</id>
   <uuid>c93ad696-860f-d5ef-231f-2778682044a3</uuid>
   <listPosition>0</listPosition>
   <advancedSearch entityclass="com.tle.beans.entity.PowerSearch" uuid="b157440a-c0b8-a4f0-8718-31eb5876bdd5"/>
@@ -15,12 +15,12 @@
   <inhIdefs/>
   <inhSchemas/>
   <name>
-    <id>256754</id>
+    <id>213795</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>256755</id>
+          <id>213593</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Browse Activity Plans</text>
@@ -30,12 +30,12 @@
     </strings>
   </name>
   <shortDescription>
-    <id>256758</id>
+    <id>213797</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>256759</id>
+          <id>213595</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>This topic area is a temporary place holder allowing you to browse all activity plans.</text>
@@ -45,12 +45,12 @@
     </strings>
   </shortDescription>
   <longDescription>
-    <id>256752</id>
+    <id>213794</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>256753</id>
+          <id>213592</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>This topic area is a temporary place holder allowing you to browse all activity plans.</text>
@@ -60,12 +60,12 @@
     </strings>
   </longDescription>
   <subtopicsSectionName>
-    <id>256760</id>
+    <id>213798</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>256761</id>
+          <id>213596</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Subtopics</text>
@@ -75,12 +75,12 @@
     </strings>
   </subtopicsSectionName>
   <resultsSectionName>
-    <id>256756</id>
+    <id>213796</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>256757</id>
+          <id>213594</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Results</text>

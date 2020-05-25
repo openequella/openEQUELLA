@@ -1,16 +1,16 @@
 <com.tle.common.workflow.Workflow>
-  <id>255485</id>
+  <id>992</id>
   <uuid>7d5697cf-c3e1-4eee-8854-3d3579bb93af</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2011-08-30 11:21:19.54</dateModified>
   <dateCreated class="sql-timestamp">2011-08-30 11:21:19.54</dateCreated>
   <name>
-    <id>255486</id>
+    <id>213508</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>255487</id>
+          <id>213307</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>TestWorkflow</text>
@@ -25,15 +25,15 @@
   <movelive>false</movelive>
   <nodes>
     <com.tle.common.workflow.node.WorkflowItem>
-      <id>255488</id>
+      <id>47</id>
       <uuid>dade706c-6559-4129-8fbb-c788aa9d4dc3</uuid>
       <name>
-        <id>255489</id>
+        <id>213509</id>
         <strings>
           <entry>
             <string>en</string>
             <com.tle.beans.entity.LanguageString>
-              <id>255490</id>
+              <id>213308</id>
               <locale>en</locale>
               <priority>1</priority>
               <text>CheckThisOut</text>
@@ -44,15 +44,15 @@
       </name>
       <rejectPoint>false</rejectPoint>
       <parent class="com.tle.common.workflow.node.SerialNode">
-        <id>255491</id>
+        <id>48</id>
         <uuid>13305dcd-4f2d-4f2f-95c9-ad7b29485885</uuid>
         <name>
-          <id>255492</id>
+          <id>213510</id>
           <strings>
             <entry>
               <string>en_AU</string>
               <com.tle.beans.entity.LanguageString>
-                <id>255493</id>
+                <id>213309</id>
                 <locale>en_AU</locale>
                 <priority>2</priority>
                 <text>Start</text>

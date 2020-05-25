@@ -1,16 +1,16 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255718</id>
+  <id>5992</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>skp</string>
-    <string>skd</string>
-    <string>skt</string>
     <string>skm</string>
+    <string>skt</string>
+    <string>skd</string>
+    <string>skp</string>
   </extensions>
   <type>application/x-koan</type>
   <attributes>

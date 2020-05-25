@@ -1,16 +1,16 @@
 <com.tle.beans.entity.Schema>
-  <id>255494</id>
+  <id>997</id>
   <uuid>53c44192-c632-0f1e-99f6-59f111917e21</uuid>
   <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
   <dateModified class="sql-timestamp">2009-03-05 15:42:31.483</dateModified>
   <dateCreated class="sql-timestamp">2009-03-05 15:42:31.483</dateCreated>
   <description>
-    <id>255495</id>
+    <id>213517</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>255496</id>
+          <id>213316</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Add as required</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>255497</id>
+    <id>213518</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>255498</id>
+          <id>213317</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Test Schema</text>

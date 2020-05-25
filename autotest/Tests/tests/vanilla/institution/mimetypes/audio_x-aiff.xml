@@ -1,15 +1,15 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255674</id>
+  <id>6019</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>aifc</string>
-    <string>aiff</string>
     <string>aif</string>
+    <string>aiff</string>
+    <string>aifc</string>
   </extensions>
   <type>audio/x-aiff</type>
   <description>Audio</description>

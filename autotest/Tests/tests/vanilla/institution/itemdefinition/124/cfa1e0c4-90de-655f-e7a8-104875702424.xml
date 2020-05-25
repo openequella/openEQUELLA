@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>255515</id>
+  <id>1003</id>
   <uuid>cfa1e0c4-90de-655f-e7a8-104875702424</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-03-20 11:00:55.143</dateModified>
   <dateCreated class="sql-timestamp">2009-03-20 11:00:04.283</dateCreated>
   <name>
-    <id>255516</id>
+    <id>213528</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>255517</id>
+          <id>213327</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Browse By Collection</text>
@@ -26,7 +26,7 @@
   <wizardcategory>General Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>255518</id>
+    <id>453</id>
     <itemMetadataRules/>
     <wizard>
       <pages>

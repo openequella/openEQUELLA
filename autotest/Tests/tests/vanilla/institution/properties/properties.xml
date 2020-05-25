@@ -20,12 +20,12 @@
     <string>col_after</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.6.name</string>
-    <string>Content Searcher Role</string>
-  </entry>
-  <entry>
     <string>htmleditor.toolbar.rows.1.buttons.13</string>
     <string>|</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.6.name</string>
+    <string>Content Searcher Role</string>
   </entry>
   <entry>
     <string>htmleditor.toolbar.rows.1.buttons.14</string>
@@ -156,20 +156,12 @@
     <string>image</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.10.name</string>
-    <string>csme</string>
-  </entry>
-  <entry>
     <string>cache.timeslots.1.type</string>
     <string>weekday</string>
   </entry>
   <entry>
     <string>attachment.filetypes.20.extension</string>
     <string>.html</string>
-  </entry>
-  <entry>
-    <string>wrapper.role.roles.9.id</string>
-    <string>c2c5d18a-6f48-4b01-b734-691c8c68606a</string>
   </entry>
   <entry>
     <string>wrapper.sharepass.enabled</string>
@@ -198,10 +190,6 @@
   <entry>
     <string>login.auto.username</string>
     <string>AutoLogin</string>
-  </entry>
-  <entry>
-    <string>wrapper.role.roles.10.expression</string>
-    <string>U:4026b550-9a1f-4521-9b56-9ec737c02526 </string>
   </entry>
   <entry>
     <string>attachment.filetypes.5.icon</string>
@@ -244,16 +232,16 @@
     <string>sup</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.2.name</string>
-    <string>Reporting User Role</string>
-  </entry>
-  <entry>
     <string>freetext.urlharvest.level</string>
     <string>0</string>
   </entry>
   <entry>
     <string>htmleditor.toolbar.rows.0.buttons.17</string>
     <string>|</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.name</string>
+    <string>Reporting User Role</string>
   </entry>
   <entry>
     <string>htmleditor.toolbar.rows.0.buttons.10</string>
@@ -364,16 +352,16 @@
     <string>fontselect</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.4.id</string>
-    <string>ROLE_CONTENT_CONTRIBUTOR</string>
-  </entry>
-  <entry>
     <string>htmleditor.toolbar.rows.2.buttons.13</string>
     <string>spellchecker</string>
   </entry>
   <entry>
     <string>scheduler.jobs.Daily Tasks</string>
     <string>0 0 1 * * ?</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.4.id</string>
+    <string>ROLE_CONTENT_CONTRIBUTOR</string>
   </entry>
   <entry>
     <string>htmleditor.toolbar.rows.2.buttons.12</string>
@@ -472,24 +460,24 @@
     <string>false</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.1.name</string>
-    <string>System Administrator</string>
-  </entry>
-  <entry>
     <string>urlchecker.timeout</string>
     <string>3</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.name</string>
+    <string>System Administrator</string>
   </entry>
   <entry>
     <string>user.quota.quotas.0.expression</string>
     <string>U:ba83e201-b30e-2a44-c258-ad73fb2d1bad </string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.2.id</string>
-    <string>ROLE_REPORTING_USER</string>
-  </entry>
-  <entry>
     <string>urlchecker.warnings</string>
     <string>1</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.id</string>
+    <string>ROLE_REPORTING_USER</string>
   </entry>
   <entry>
     <string>attachment.filetypes.13.extension</string>
@@ -589,7 +577,7 @@
   </entry>
   <entry>
     <string>wrapper.role.roles.1.expression</string>
-    <string>U:b09a4042-b091-87ed-eba9-6fb3c0fbe9a6 U:4026b550-9a1f-4521-9b56-9ec737c02526 OR </string>
+    <string>U:b09a4042-b091-87ed-eba9-6fb3c0fbe9a6 </string>
   </entry>
   <entry>
     <string>cache.timeslots.0.end</string>
@@ -652,12 +640,12 @@
     <string>|</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.8.expression</string>
-    <string>T:sso_ip T:sso_group OR </string>
-  </entry>
-  <entry>
     <string>file.types.4.extension.4</string>
     <string>dcr</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.8.expression</string>
+    <string>T:sso_ip T:sso_group OR </string>
   </entry>
   <entry>
     <string>file.types.3.extension.1</string>
@@ -676,12 +664,12 @@
     <string>swf</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.2.expression</string>
-    <string>G:e91205b0-684e-51e2-a1be-3ab646aa98dd </string>
-  </entry>
-  <entry>
     <string>file.types.4.extension.0</string>
     <string>swa</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.expression</string>
+    <string>G:e91205b0-684e-51e2-a1be-3ab646aa98dd </string>
   </entry>
   <entry>
     <string>file.types.5.extension.1</string>
@@ -704,12 +692,12 @@
     <string>0 0 19 * * ?</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.5.name</string>
-    <string>Content Assembler Role</string>
-  </entry>
-  <entry>
     <string>icons.items.16</string>
     <string>/icons/courses/maths2.jpg</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.5.name</string>
+    <string>Content Assembler Role</string>
   </entry>
   <entry>
     <string>file.types.5.extension.0</string>
@@ -730,10 +718,6 @@
   <entry>
     <string>icons.items.10</string>
     <string>/icons/courses/cd1.jpg</string>
-  </entry>
-  <entry>
-    <string>wrapper.role.roles.10.id</string>
-    <string>b2bedb09-14e8-466c-9118-5d1f0458b1b8</string>
   </entry>
   <entry>
     <string>attachment.filetypes.18.extension</string>
@@ -804,12 +788,12 @@
     <string></string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.1.id</string>
-    <string>ROLE_SYSTEM_ADMINISTRATOR</string>
-  </entry>
-  <entry>
     <string>htmleditor.toolbar.rows.0.buttons.5</string>
     <string>justifyleft</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.id</string>
+    <string>ROLE_SYSTEM_ADMINISTRATOR</string>
   </entry>
   <entry>
     <string>htmleditor.toolbar.rows.0.buttons.6</string>
@@ -880,16 +864,12 @@
     <string>undo</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.7.name</string>
-    <string>IP Address Role</string>
-  </entry>
-  <entry>
     <string>htmleditor.toolbar.rows.1.buttons.5</string>
     <string>copy</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.6.id</string>
-    <string>ROLE_CONTENT_SEARCHER</string>
+    <string>wrapper.role.roles.7.name</string>
+    <string>IP Address Role</string>
   </entry>
   <entry>
     <string>file.types.1.extension.0</string>
@@ -898,6 +878,10 @@
   <entry>
     <string>htmleditor.toolbar.rows.1.buttons.4</string>
     <string>cut</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.6.id</string>
+    <string>ROLE_CONTENT_SEARCHER</string>
   </entry>
   <entry>
     <string>file.types.0.extension.3</string>
@@ -988,12 +972,12 @@
     <string>${uuid}/${version}</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.7.id</string>
-    <string>7a8a691c-a351-9ce4-8500-7785dfebc943</string>
-  </entry>
-  <entry>
     <string>thumbnail.size</string>
     <string>150</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.7.id</string>
+    <string>7a8a691c-a351-9ce4-8500-7785dfebc943</string>
   </entry>
   <entry>
     <string>cache.timeslots.0.type</string>
@@ -1032,20 +1016,16 @@
     <string>.bmp</string>
   </entry>
   <entry>
-    <string>wrapper.role.enabled</string>
-    <string>true</string>
-  </entry>
-  <entry>
     <string>htmleditor.toolbar.rows.2.buttons.9</string>
     <string>|</string>
   </entry>
   <entry>
-    <string>attachment.filetypes.1.extension</string>
-    <string>.xls</string>
+    <string>wrapper.role.enabled</string>
+    <string>true</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.9.expression</string>
-    <string>U:c2d0f0b2-6187-4e51-adc9-3d845b76ee14 </string>
+    <string>attachment.filetypes.1.extension</string>
+    <string>.xls</string>
   </entry>
   <entry>
     <string>mail.transport.protocol</string>
@@ -1240,10 +1220,6 @@
     <string></string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.9.name</string>
-    <string>cpddm</string>
-  </entry>
-  <entry>
     <string>attachment.filetypes.1.icon</string>
     <string>icons/XLSDocSmall.gif</string>
   </entry>
@@ -1293,19 +1269,19 @@
   </entry>
   <entry>
     <string>wrapper.role.roles.0.expression</string>
-    <string>G:e91205b0-684e-51e2-a1be-3ab646aa98dd U:4026b550-9a1f-4521-9b56-9ec737c02526 OR </string>
+    <string>G:e91205b0-684e-51e2-a1be-3ab646aa98dd </string>
   </entry>
   <entry>
     <string>token.timeout</string>
     <string>30</string>
   </entry>
   <entry>
-    <string>wrapper.role.roles.0.id</string>
-    <string>ROLE_SYSTEM_DESIGNER</string>
-  </entry>
-  <entry>
     <string>icons.items.25</string>
     <string>/icons/courses/science2.jpg</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.id</string>
+    <string>ROLE_SYSTEM_DESIGNER</string>
   </entry>
   <entry>
     <string>icons.items.24</string>
