@@ -12,8 +12,6 @@
   <buildVersion>2020.2.0 (2020.2.0-Alpha.OSE)</buildVersion>
   <serverURL>http://sammy-dell:8080/vanilla/</serverURL>
   <flags>
-    <string>NO_ITEMSATTACHMENTS</string>
-    <string>NO_ITEMS</string>
     <string>NO_AUDITLOGS</string>
   </flags>
   <xmlMigrations>
