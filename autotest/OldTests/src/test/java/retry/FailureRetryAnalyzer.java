@@ -15,7 +15,6 @@ public class FailureRetryAnalyzer implements IRetryAnalyzer {
         result.getMethod().getConstructorOrMethod().getMethod().getAnnotation(RetryTest.class);
     int maxRetryCount = (failureRetryCount == null) ? 0 : failureRetryCount.value();
     if (++currentRetry > maxRetryCount) {
-      currentRetry = 0;
       return false;
     } else {
       logRetryInfo(result, maxRetryCount);
