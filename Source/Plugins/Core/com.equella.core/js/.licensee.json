@@ -1,6 +1,13 @@
 {
   "licenses": {
-    "spdx": ["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0"]
+    "spdx": [
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC",
+      "MIT",
+      "Unlicense"
+    ]
   },
   "corrections": false
 }
