@@ -1,11 +1,11 @@
 <list>
   <com.tle.beans.Language>
-    <id>30</id>
+    <id>312200</id>
     <language>en</language>
     <country></country>
     <variant></variant>
     <institution>
-      <id>41</id>
+      <id>310528</id>
       <uniqueId>0</uniqueId>
       <quota>0.0</quota>
       <enabled>true</enabled>

@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1010</id>
+  <id>310591</id>
   <uuid>2f6bd1b8-6ddb-3b7c-554c-646617b1dad7</uuid>
   <owner></owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <description>
-    <id>213540</id>
+    <id>310592</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213339</id>
+          <id>310593</id>
           <locale>en</locale>
           <priority>1</priority>
           <bundle reference="../../../.."/>
@@ -19,12 +19,12 @@
     </strings>
   </description>
   <name>
-    <id>213541</id>
+    <id>310594</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213340</id>
+          <id>310595</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>SYSTEM: Folder</text>
@@ -38,7 +38,7 @@
   <disabled>false</disabled>
   <reviewperiod>1</reviewperiod>
   <slow>
-    <id>460</id>
+    <id>310596</id>
     <wizard>
       <pages/>
       <allowNonSequentialNavigation>false</allowNonSequentialNavigation>

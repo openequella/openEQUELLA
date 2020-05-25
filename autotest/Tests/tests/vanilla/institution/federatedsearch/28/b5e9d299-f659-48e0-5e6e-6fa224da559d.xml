@@ -1,16 +1,16 @@
 <com.tle.beans.entity.FederatedSearch>
-  <id>1022</id>
+  <id>310706</id>
   <uuid>b5e9d299-f659-48e0-5e6e-6fa224da559d</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <name>
-    <id>213558</id>
+    <id>310707</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213356</id>
+          <id>310708</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>ANU Library</text>

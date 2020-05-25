@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1015</id>
+  <id>310615</id>
   <uuid>5eafc9ff-cad1-7290-2bd5-bd0cb7c193ee</uuid>
   <owner></owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <description>
-    <id>213549</id>
+    <id>310616</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213348</id>
+          <id>310617</id>
           <locale>en</locale>
           <priority>1</priority>
           <bundle reference="../../../.."/>
@@ -19,12 +19,12 @@
     </strings>
   </description>
   <name>
-    <id>213550</id>
+    <id>310618</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213349</id>
+          <id>310619</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>SYSTEM: Templates</text>
@@ -38,7 +38,7 @@
   <disabled>false</disabled>
   <reviewperiod>1</reviewperiod>
   <slow>
-    <id>465</id>
+    <id>310620</id>
     <wizard>
       <pages/>
       <allowNonSequentialNavigation>false</allowNonSequentialNavigation>

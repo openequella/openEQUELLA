@@ -1,7 +1,7 @@
 <list>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</userID>
       <preferenceID>hide.login.notice</preferenceID>
     </key>
@@ -9,7 +9,7 @@
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>ba83e201-b30e-2a44-c258-ad73fb2d1bad</userID>
       <preferenceID>hide.login.notice</preferenceID>
     </key>
@@ -17,21 +17,21 @@
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</userID>
       <preferenceID>language.code</preferenceID>
     </key>
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>ba83e201-b30e-2a44-c258-ad73fb2d1bad</userID>
       <preferenceID>language.code</preferenceID>
     </key>
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</userID>
       <preferenceID>notification.period</preferenceID>
     </key>
@@ -39,7 +39,7 @@
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>ba83e201-b30e-2a44-c258-ad73fb2d1bad</userID>
       <preferenceID>notification.period</preferenceID>
     </key>
@@ -47,7 +47,7 @@
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</userID>
       <preferenceID>watched.item.definitions</preferenceID>
     </key>
@@ -55,7 +55,7 @@
   </com.tle.beans.UserPreference>
   <com.tle.beans.UserPreference>
     <key>
-      <institution>41</institution>
+      <institution>310528</institution>
       <userID>ba83e201-b30e-2a44-c258-ad73fb2d1bad</userID>
       <preferenceID>watched.item.definitions</preferenceID>
     </key>

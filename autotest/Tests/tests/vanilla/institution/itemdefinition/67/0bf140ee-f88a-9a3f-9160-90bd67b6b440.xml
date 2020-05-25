@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1008</id>
+  <id>310633</id>
   <uuid>0bf140ee-f88a-9a3f-9160-90bd67b6b440</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-04-09 12:54:45.223</dateModified>
   <dateCreated class="sql-timestamp">2009-04-09 12:52:01.097</dateCreated>
   <description>
-    <id>213536</id>
+    <id>310634</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213335</id>
+          <id>310635</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Collection to add youtube, googlebook and itunes controls</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>213537</id>
+    <id>310636</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213336</id>
+          <id>310637</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Generic Wizard Collection</text>
@@ -41,7 +41,7 @@
   <wizardcategory>Automated Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>458</id>
+    <id>310638</id>
     <itemMetadataRules/>
     <wizard>
       <pages>
@@ -132,9 +132,9 @@
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
-                  <java.util.Collections_-SingletonSet>
-                    <element class="string">googleBookHandler</element>
-                  </java.util.Collections_-SingletonSet>
+                  <singleton-set>
+                    <string>googleBookHandler</string>
+                  </singleton-set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>

@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>1006</id>
+  <id>310681</id>
   <uuid>ef19a911-0b3c-85ed-efd9-a56e56edcf37</uuid>
   <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
   <dateModified class="sql-timestamp">2011-09-21 11:05:27.583</dateModified>
   <dateCreated class="sql-timestamp">2009-03-05 15:45:07.78</dateCreated>
   <description>
-    <id>213532</id>
+    <id>310682</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213331</id>
+          <id>310683</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Collection for adding items to enable automated testing. </text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>213533</id>
+    <id>310684</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213332</id>
+          <id>310685</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Generic Testing Collection</text>
@@ -41,7 +41,7 @@
   <wizardcategory>Automated Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>456</id>
+    <id>310686</id>
     <itemMetadataRules/>
     <wizard>
       <pages>
@@ -204,9 +204,9 @@
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
-                  <java.util.Collections_-SingletonSet>
-                    <element class="string">fileHandler</element>
-                  </java.util.Collections_-SingletonSet>
+                  <singleton-set>
+                    <string>fileHandler</string>
+                  </singleton-set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -254,9 +254,9 @@
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
-                  <java.util.Collections_-SingletonSet>
-                    <element class="string">fileHandler</element>
-                  </java.util.Collections_-SingletonSet>
+                  <singleton-set>
+                    <string>fileHandler</string>
+                  </singleton-set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>

@@ -1,16 +1,16 @@
 <com.tle.common.customlinks.entity.CustomLink>
-  <id>1016</id>
+  <id>310687</id>
   <uuid>06d53d52-6fab-4548-a1c6-861d6c83b650</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2010-09-20 11:40:43.227</dateModified>
   <dateCreated class="sql-timestamp">2010-09-20 11:40:43.227</dateCreated>
   <name>
-    <id>213551</id>
+    <id>310688</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>213350</id>
+          <id>310689</id>
           <locale>en</locale>
           <priority>0</priority>
           <text>Test Role Link</text>
