@@ -11,7 +11,7 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
   public void transform(
       ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
     if (testMethod == null) return;
-    MaxRetryCount maxRetryCount = testMethod.getAnnotation(MaxRetryCount.class);
+    RetryTest maxRetryCount = testMethod.getAnnotation(RetryTest.class);
     if (maxRetryCount == null) return;
     annotation.setRetryAnalyzer(FailureRetryAnalyzer.class);
   }
