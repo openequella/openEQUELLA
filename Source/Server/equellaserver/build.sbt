@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.10.3"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.54"
+val TomcatVersion    = "8.5.55"
 val SwaggerVersion   = "1.5.24"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -194,7 +194,7 @@ libraryDependencies ++= Seq(
   "org.jboss.logging"                    % "jboss-logging"                  % "3.4.1.Final",
   "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"                    % "jboss-logging-processor"        % "2.2.1.Final",
-  "org.reactivestreams"                  % "reactive-streams"               % "1.0.2",
+  "org.reactivestreams"                  % "reactive-streams"               % "1.0.3",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.4",
@@ -204,7 +204,7 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
   ),
-  "org.ow2.asm" % "asm" % "5.0.3",
+  "org.ow2.asm" % "asm" % "5.2",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",

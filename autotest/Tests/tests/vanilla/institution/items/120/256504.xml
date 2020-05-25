@@ -1,0 +1,81 @@
+<com.tle.beans.item.Item>
+  <id>256504</id>
+  <uuid>f6ec517d-c43c-3d2b-b7ce-a5bccae43dca</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 15:49:18.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 15:48:53.0</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-05-13 12:04:21.127</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>8560</id>
+      <url>http://boorah/dev/vanilla/item/image/75adb444-bd92-e46f-d130-56864f447116/1/changein.gif</url>
+      <urlHash>6b5c92115f00d5abf07ae7f618b74d50</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.lang.IllegalArgumentException: Invalid URL</message>
+      <tries>7</tries>
+      <lastChecked class="sql-timestamp">2020-04-30 23:14:12.236</lastChecked>
+      <lastIndexed class="sql-timestamp">2020-04-30 23:14:12.236</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>256508</id>
+    <start class="sql-timestamp">2011-08-30 12:05:08.973</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>256509</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>256510</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Delta</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>256505</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>256506</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Capital delta.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>257123</id>
+  <uuid>f4b06c69-ed8d-4d42-94db-b2c8ed051c37</uuid>
+  <value>CPL Meteorology</value>
+  <valueHash>9a2c0132e6e1e4aa77b23b581df371ce</valueHash>
+  <fullValue>Diploma Aviation Commercial Pilots Licence\AVI50215\Ground School Breifings\CPL Meteorology</fullValue>
+  <parent>
+    <id>257103</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
