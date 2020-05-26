@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>310681</id>
+  <id>255609</id>
   <uuid>ef19a911-0b3c-85ed-efd9-a56e56edcf37</uuid>
   <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
   <dateModified class="sql-timestamp">2011-09-21 11:05:27.583</dateModified>
   <dateCreated class="sql-timestamp">2009-03-05 15:45:07.78</dateCreated>
   <description>
-    <id>310682</id>
+    <id>255610</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310683</id>
+          <id>255611</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Collection for adding items to enable automated testing. </text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>310684</id>
+    <id>255612</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310685</id>
+          <id>255613</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Generic Testing Collection</text>
@@ -41,7 +41,7 @@
   <wizardcategory>Automated Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>310686</id>
+    <id>255614</id>
     <itemMetadataRules/>
     <wizard>
       <pages>

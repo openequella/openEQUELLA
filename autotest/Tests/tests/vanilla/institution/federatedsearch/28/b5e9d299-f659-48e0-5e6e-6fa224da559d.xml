@@ -1,16 +1,16 @@
 <com.tle.beans.entity.FederatedSearch>
-  <id>310706</id>
+  <id>255634</id>
   <uuid>b5e9d299-f659-48e0-5e6e-6fa224da559d</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <name>
-    <id>310707</id>
+    <id>255635</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310708</id>
+          <id>255636</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>ANU Library</text>
@@ -21,24 +21,24 @@
   </name>
   <attributes>
     <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>username</key>
-      <value>guest</value>
-    </com.tle.beans.entity.BaseEntity_-Attribute>
-    <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>database</key>
-      <value>innopac</value>
-    </com.tle.beans.entity.BaseEntity_-Attribute>
-    <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>port</key>
-      <value>210</value>
+      <key>host</key>
+      <value>library.anu.edu.au</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
     <com.tle.beans.entity.BaseEntity_-Attribute>
       <key>xslt</key>
       <value>federated_search_metadata.xslt</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
     <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>host</key>
-      <value>library.anu.edu.au</value>
+      <key>port</key>
+      <value>210</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>database</key>
+      <value>innopac</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>guest</value>
     </com.tle.beans.entity.BaseEntity_-Attribute>
   </attributes>
   <systemType>false</systemType>

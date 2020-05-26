@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>310633</id>
+  <id>255567</id>
   <uuid>0bf140ee-f88a-9a3f-9160-90bd67b6b440</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-04-09 12:54:45.223</dateModified>
   <dateCreated class="sql-timestamp">2009-04-09 12:52:01.097</dateCreated>
   <description>
-    <id>310634</id>
+    <id>255568</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310635</id>
+          <id>255569</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Collection to add youtube, googlebook and itunes controls</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>310636</id>
+    <id>255570</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310637</id>
+          <id>255571</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Generic Wizard Collection</text>
@@ -41,7 +41,7 @@
   <wizardcategory>Automated Testing</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>310638</id>
+    <id>255572</id>
     <itemMetadataRules/>
     <wizard>
       <pages>

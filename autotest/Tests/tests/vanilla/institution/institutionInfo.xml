@@ -1,7 +1,7 @@
 <com.tle.core.institution.convert.InstitutionInfo>
   <institution>
-    <id>310528</id>
-    <uniqueId>194</uniqueId>
+    <id>255467</id>
+    <uniqueId>129</uniqueId>
     <quota>0.0</quota>
     <name>Vanilla 3.1 Setup</name>
     <filestoreId>vanilla</filestoreId>
@@ -11,9 +11,7 @@
   </institution>
   <buildVersion>2020.2.0 (2020.2.0-Alpha.OSE)</buildVersion>
   <serverURL>http://sammy-dell:8080/vanilla/</serverURL>
-  <flags>
-    <string>NO_AUDITLOGS</string>
-  </flags>
+  <flags/>
   <xmlMigrations>
     <string>com.tle.core.institution.migration.v41.EnsureItemFolder</string>
     <string>com.tle.web.echo.migration.AddEchoMimeTypeXmlMigration</string>

@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>310671</id>
+  <id>255605</id>
   <uuid>8e3caf16-f3cb-b3dd-d403-e5eb8d545fff</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-06-22 15:06:22.3</dateModified>
   <dateCreated class="sql-timestamp">2009-06-22 15:05:31.03</dateCreated>
   <name>
-    <id>310672</id>
+    <id>255606</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310673</id>
+          <id>255607</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>DRM Test Collection</text>
@@ -26,7 +26,7 @@
   <wizardcategory>DRM Tests</wizardcategory>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>310674</id>
+    <id>255608</id>
     <itemMetadataRules/>
     <wizard>
       <pages>

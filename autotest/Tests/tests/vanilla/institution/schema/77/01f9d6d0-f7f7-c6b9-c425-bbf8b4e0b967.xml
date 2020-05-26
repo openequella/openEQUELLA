@@ -1,16 +1,16 @@
 <com.tle.beans.entity.Schema>
-  <id>310576</id>
+  <id>255510</id>
   <uuid>01f9d6d0-f7f7-c6b9-c425-bbf8b4e0b967</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2009-06-02 11:39:59.827</dateModified>
   <dateCreated class="sql-timestamp">2009-06-02 10:40:54.067</dateCreated>
   <description>
-    <id>310577</id>
+    <id>255511</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310578</id>
+          <id>255512</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>For wizard control tests only</text>
@@ -20,12 +20,12 @@
     </strings>
   </description>
   <name>
-    <id>310579</id>
+    <id>255513</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310580</id>
+          <id>255514</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Control Test Schema</text>

@@ -1,16 +1,16 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>310627</id>
+  <id>255561</id>
   <uuid>2869da6f-e43a-586d-2ad9-ff055e32cb33</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
   <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
   <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
   <description>
-    <id>310628</id>
+    <id>255562</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310629</id>
+          <id>255563</id>
           <locale>en</locale>
           <priority>1</priority>
           <bundle reference="../../../.."/>
@@ -19,12 +19,12 @@
     </strings>
   </description>
   <name>
-    <id>310630</id>
+    <id>255564</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>310631</id>
+          <id>255565</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Plan</text>
@@ -39,7 +39,7 @@
   <schema entityclass="com.tle.beans.entity.Schema" uuid="2859a529-d4d4-ad99-9157-1db457ee2313"/>
   <reviewperiod>365</reviewperiod>
   <slow>
-    <id>310632</id>
+    <id>255566</id>
     <wizard>
       <name>Temporary Wizard Name</name>
       <pages>
