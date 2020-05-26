@@ -18,10 +18,11 @@
 
 package com.tle.core.connectors.blackboard.beans;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Course {
+public class Course implements Serializable {
   private String id;
   private String uuid;
   private String externalId;
@@ -168,7 +169,7 @@ public class Course {
   }
 
   @XmlRootElement
-  public static class Enrollment {
+  public static class Enrollment implements Serializable {
     private String type; // InstructorLed
 
     public String getType() {
@@ -181,7 +182,7 @@ public class Course {
   }
 
   @XmlRootElement
-  public static class Locale {
+  public static class Locale implements Serializable {
     private Boolean force;
 
     public Boolean getForce() {
