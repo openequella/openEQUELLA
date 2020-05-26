@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255789</id>
+  <id>6090</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>asf</string>
     <string>asx</string>
+    <string>asf</string>
   </extensions>
   <type>video/x-ms-asf</type>
   <description>Video</description>

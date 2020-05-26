@@ -1,15 +1,15 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255677</id>
+  <id>6071</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>shtml</string>
-    <string>htm</string>
     <string>html</string>
+    <string>htm</string>
+    <string>shtml</string>
   </extensions>
   <type>text/html</type>
   <description>HTML Document</description>
