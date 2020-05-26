@@ -58,7 +58,9 @@ interface CloudControlRegisterImpl extends CloudControlRegister {
   createRender: <T extends object = object>(
     data: WizardIds
   ) => (params: ControlApi<T>) => void;
+
   forceReload(): void;
+
   sendBatch(state: VersionedItemState): Promise<VersionedItemState>;
 }
 
@@ -320,12 +322,15 @@ export const CloudControl: CloudControlRegisterImpl = {
         currentState = currentState.then(CloudControl.sendBatch);
       });
     }
+
     function subscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.push(callback);
     }
+
     function unsubscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.splice(listeners.indexOf(callback));
     }
+
     return function <T extends object>(params: ControlParameters<T>) {
       function stagingPath(name: string): string {
         return (
@@ -335,14 +340,17 @@ export const CloudControl: CloudControlRegisterImpl = {
           encodeFilepath(name)
         );
       }
+
       function uploadFile(name: string, file: File): Promise<void> {
         return Axios.put(stagingPath(name), file).then(
           CloudControl.forceReload
         );
       }
+
       function deleteFile(name: string): Promise<void> {
         return Axios.delete(stagingPath(name)).then(CloudControl.forceReload);
       }
+
       function registerNotification() {
         Axios.post(
           wizardUri(
@@ -350,6 +358,7 @@ export const CloudControl: CloudControlRegisterImpl = {
           )
         );
       }
+
       params.element.setAttribute("data-clientupdate", "true");
 
       const registration =
@@ -359,6 +368,7 @@ export const CloudControl: CloudControlRegisterImpl = {
         element: params.element,
         removed: registration,
       });
+
       function providerUrl(serviceId: string) {
         return wizardUri(
           "provider/" +
@@ -371,6 +381,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       function registerValidator(validator: ControlValidator) {
         controlValidators.push({ validator, ctrlId: params.ctrlId });
       }
+
       function deregisterValidator(validator: ControlValidator) {
         controlValidators.splice(
           controlValidators.findIndex((v) => v.validator === validator)

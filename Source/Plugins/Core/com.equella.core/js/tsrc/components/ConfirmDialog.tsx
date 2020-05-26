@@ -28,11 +28,30 @@ import {
 import { commonString } from "../util/commonstrings";
 
 interface ConfirmDialogProps {
+  /**
+   * Open the dialog when true.
+   */
   open: boolean;
+  /**
+   * The title of the dialog.
+   */
   title: string;
+  /**
+   * Contents displayed in the dialog.
+   */
   children?: ReactNode;
+  /**
+   * Fired when click the Confirm button.
+   */
   onConfirm: () => void;
+  /**
+   * Fired when click the Cancel button.
+   */
   onCancel: () => void;
+  /**
+   * The text of the Confirm button.
+   */
+  confirmButtonText: string;
 }
 
 const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
@@ -41,8 +60,9 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   children,
   onCancel,
   onConfirm,
+  confirmButtonText,
 }: ConfirmDialogProps) => {
-  const { cancel, delete: del } = commonString.action;
+  const { cancel } = commonString.action;
   return (
     <Dialog
       open={open}
@@ -57,16 +77,20 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="secondary" id="cancel-delete">
+        <Button
+          onClick={onCancel}
+          color="secondary"
+          id="confirm-dialog-cancel-button"
+        >
           {cancel}
         </Button>
         <Button
           onClick={onConfirm}
           color="primary"
-          id="confirm-delete"
+          id="confirm-dialog-confirm-button"
           autoFocus
         >
-          {del}
+          {confirmButtonText}
         </Button>
       </DialogActions>
     </Dialog>

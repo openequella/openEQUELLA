@@ -47,6 +47,11 @@ import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.web.api.searches.SearchConfigApi;
+import com.tle.web.api.settings.CloudSearchSettingsResource;
+import com.tle.web.api.settings.FacetedSearch.FacetedSearchClassificationResource;
+import com.tle.web.api.settings.MimeTypeResource;
+import com.tle.web.api.settings.SearchFilterResource;
+import com.tle.web.api.settings.SearchSettingsResource;
 import com.tle.web.api.settings.SettingsResource;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.api.wizard.WizardApi;
@@ -119,6 +124,14 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     classes.add(CloudProviderApi.class);
     registry.addSingletonResource(new SettingsResource());
     classes.add(SettingsResource.class);
+    registry.addSingletonResource(new SearchSettingsResource());
+    classes.add(SearchSettingsResource.class);
+    registry.addSingletonResource(new CloudSearchSettingsResource());
+    classes.add(CloudSearchSettingsResource.class);
+    registry.addSingletonResource(new SearchFilterResource());
+    classes.add(SearchFilterResource.class);
+    registry.addSingletonResource(new MimeTypeResource());
+    classes.add(MimeTypeResource.class);
     registry.addSingletonResource(new LanguageResource());
     classes.add(LanguageResource.class);
     registry.addSingletonResource(new UserQueryResource());
@@ -142,6 +155,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     classes.add(SelectionApi.class);
     registry.addSingletonResource(new SearchConfigApi());
     classes.add(SearchConfigApi.class);
+    registry.addSingletonResource(new FacetedSearchClassificationResource());
+    classes.add(FacetedSearchClassificationResource.class);
 
     ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
     providerFactory.registerProvider(SwaggerSerializers.class);

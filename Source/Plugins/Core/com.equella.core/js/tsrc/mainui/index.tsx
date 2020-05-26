@@ -32,7 +32,6 @@ import { Provider } from "react-redux";
 import store from "../store";
 import { routes, OEQRoute, OEQRouteComponentProps } from "./routes";
 import { shallowEqual } from "shallow-equal-object";
-import { Bridge } from "../api/bridge";
 import { startHeartbeat } from "../util/heartbeat";
 import { NavAwayDialog, defaultNavMessage } from "./PreventNavigation";
 import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
@@ -47,8 +46,7 @@ import { getCurrentUser, UserData } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
 import { LegacyForm } from "../legacycontent/LegacyForm";
-
-declare const bridge: Bridge;
+import SettingsPage from "../settings/SettingsPage";
 
 const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
   .pathname;
@@ -262,10 +260,7 @@ export default function () {
     ReactDOM.render(
       <BrowserRouter basename={basePath} forceRefresh>
         <ThemeProvider theme={oeqTheme}>
-          <bridge.SettingsPage
-            refreshUser={() => {}}
-            updateTemplate={(_) => {}}
-          />
+          <SettingsPage refreshUser={() => {}} updateTemplate={() => {}} />
         </ThemeProvider>
       </BrowserRouter>,
       document.getElementById("settingsPage")

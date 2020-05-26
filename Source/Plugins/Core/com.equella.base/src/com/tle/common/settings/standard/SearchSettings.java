@@ -18,6 +18,7 @@
 
 package com.tle.common.settings.standard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyDataList;
@@ -55,6 +56,12 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.disableVideos")
   private boolean searchingDisableVideos;
 
+  @Property(key = "search.disableOwnerFilter")
+  private boolean searchingDisableOwnerFilter;
+
+  @Property(key = "search.disableDateModifiedFilter")
+  private boolean searchingDisableDateModifiedFilter;
+
   @Property(key = "gallery.filecount.disabled")
   private boolean fileCountDisabled;
 
@@ -73,6 +80,10 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.defaultsort")
   private String defaultSearchSort;
 
+  // The REST endpoints for this was split into two - one for general search settings,
+  // and one for filters - so we don't want this included in the general search
+  // settings.
+  @JsonIgnore
   @PropertyDataList(key = SEARCH + ".filters", type = SearchFilter.class)
   private final List<SearchFilter> filters =
       new ArrayList<SearchFilter>() {
@@ -220,5 +231,21 @@ public class SearchSettings implements ConfigurationProperties {
 
   public void setFileCountDisabled(boolean fileCountDisabled) {
     this.fileCountDisabled = fileCountDisabled;
+  }
+
+  public boolean isSearchingDisableOwnerFilter() {
+    return searchingDisableOwnerFilter;
+  }
+
+  public void setSearchingDisableOwnerFilter(boolean searchingDisableOwnerFilter) {
+    this.searchingDisableOwnerFilter = searchingDisableOwnerFilter;
+  }
+
+  public boolean isSearchingDisableDateModifiedFilter() {
+    return searchingDisableDateModifiedFilter;
+  }
+
+  public void setSearchingDisableDateModifiedFilter(boolean searchingDisableDateModifiedFilter) {
+    this.searchingDisableDateModifiedFilter = searchingDisableDateModifiedFilter;
   }
 }

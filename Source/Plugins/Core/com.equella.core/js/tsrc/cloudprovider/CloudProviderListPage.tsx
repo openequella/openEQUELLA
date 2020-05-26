@@ -176,6 +176,7 @@ class CloudProviderListPage extends React.Component<
             )}
             onConfirm={this.confirmDeleteCloudProvider}
             onCancel={this.cancelDeleteCloudProvider}
+            confirmButtonText={commonString.action.delete}
           >
             {cloudProviderLangStrings.deletecloudprovider.message}
           </ConfirmDialog>
@@ -220,7 +221,7 @@ class CloudProviderListPage extends React.Component<
                 {cloudProvider.description} -{" "}
                 <a
                   href="javascript:void"
-                  onClick={(_) => this.refreshProvider(cloudProvider)}
+                  onClick={() => this.refreshProvider(cloudProvider)}
                 >
                   {commonString.action.refresh}
                 </a>

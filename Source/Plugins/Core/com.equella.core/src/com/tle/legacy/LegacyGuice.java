@@ -27,6 +27,7 @@ import com.tle.core.activation.service.ActivationService;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
+import com.tle.core.facetedsearch.service.FacetedSearchClassificationService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
@@ -36,6 +37,7 @@ import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
+import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
@@ -206,6 +208,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static EncryptionService encryptionService;
 
+  @Inject public static MimeTypeService mimeTypeService;
+
   @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
 
   @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
@@ -215,6 +219,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ViewItemUrlFactory viewItemUrlFactory;
 
   @Inject public static AccessibilityModeService accessibilityModeService;
+
+  @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
 
   @Override
   protected void configure() {

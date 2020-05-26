@@ -145,6 +145,13 @@ public class SearchPage
     return new PowerSearchPage(this).get();
   }
 
+  public boolean isImagesLinkAvailable() {
+    return driver
+            .findElements(By.xpath("//div[@id='result-type-select']/a[@title = 'Images']"))
+            .size()
+        > 0;
+  }
+
   public String getSelectedWithin() {
     return getSelectedContainer().findElement(By.className("selectedtext")).getText();
   }

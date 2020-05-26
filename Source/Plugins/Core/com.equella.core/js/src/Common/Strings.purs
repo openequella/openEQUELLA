@@ -1,4 +1,4 @@
-module Common.Strings where 
+module Common.Strings where
 
 foreign import languageStrings :: { cp :: { title :: String
         , cloudprovideravailable :: { zero :: String
@@ -209,6 +209,9 @@ foreign import languageStrings :: { cp :: { title :: String
               , ui :: { name :: String
                       , desc :: String
                       }
+              , searching :: { name :: String
+                             , desc :: String
+                             }
               }
 , aclterms :: { title :: { ugr :: String
                          , ip :: String

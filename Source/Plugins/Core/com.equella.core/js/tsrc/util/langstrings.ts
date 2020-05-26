@@ -292,6 +292,7 @@ export const languageStrings = {
       cancel: "Cancel",
       undo: "Undo",
       add: "Add",
+      edit: "Edit",
       ok: "OK",
       discard: "Discard",
       select: "Select",
@@ -306,6 +307,11 @@ export const languageStrings = {
       revertchanges: "Revert Changes",
       register: "Register",
       refresh: "Refresh",
+    },
+    result: {
+      success: "Saved successfully.",
+      fail: "Failed to save.",
+      errors: "Some changes are not saved due to errors listed below",
     },
     users: "Users",
     groups: "Groups",
@@ -364,9 +370,92 @@ export const languageStrings = {
       desc: "Settings for integrating with external systems",
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
+    searching: {
+      name: "Search",
+      desc: "Search settings",
+      searchPageSettings: {
+        name: "Search page settings",
+        general: "General",
+        defaultSortOrder: "Default sort order",
+        defaultSortOrderDesc:
+          "The default order that search results are ordered by on the search page",
+        relevance: "Relevance",
+        lastModified: "Date last modified",
+        dateCreated: "Date created",
+        title: "Title",
+        userRating: "User rating",
+        allowNonLive: "Non-live results",
+        allowNonLiveLabel:
+          "Show the 'Include results that are not live' checkbox",
+        authFeed: "Authenticated feeds",
+        authFeedLabel: "Generate authenticated RSS and Atom feed links ",
+        gallery: "Gallery",
+        galleryViews: "Gallery views",
+        disableImages: "Disable Images",
+        disableImagesDesc: "Removes Images link from results box",
+        disableVideos: "Disable Videos",
+        disableVideosDesc: "Removes Videos link from results box",
+        disableFileCount: "Disable File Count",
+        disableFileCountDesc:
+          "Removes the file count that displays on each thumbnail in the Images and Videos views",
+        cloudSearching: "Cloud searching",
+        cloudSearchingLabel:
+          "Do not show cloud results when performing searches.",
+        disableCloud: "Disable cloud searching",
+        save: "Save",
+        success: "Settings saved successfully.",
+        notFoundError: "Endpoint not found",
+        notFoundErrorDesc: "Endpoint not found. Refresh to retry.",
+        permissionsError: "You do not have permission to edit these settings.",
+      },
+      searchfiltersettings: {
+        name: "Search filter settings",
+        changesaved: "Search filter changes saved successfully",
+        mimetypefiltertitle: "Attachment MIME type filters",
+        visibilityconfigtitle: "Filter visibility",
+        disableownerfilter: "Disable Owner filter",
+        disabledatemodifiedfilter: "Disable Date modified filter",
+        edit: "Edit MIME type filter",
+        add: "Create new MIME type filter",
+        delete: "delete MIME type filter",
+        save: "save Search filter configurations",
+        filternamelabel: "Name",
+        mimetypelistlabel: "MIME types *",
+      },
+      contentIndexSettings: {
+        name: "Content indexing",
+        description: "Configure how web page attachments are indexed",
+        save: "Save",
+        general: "General",
+        success: "Settings saved successfully.",
+        boosting: "Search terms boosting",
+        titleBoostingTitle: "Title",
+        metaBoostingTitle: "Other metadata",
+        attachmentBoostingTitle: "Attachment content",
+        option: {
+          none: "Do not index",
+          webPage: "Web page only",
+          secondaryPage: "Web page and linked web pages",
+        },
+        sliderMarks: {
+          off: "Off",
+          noBoost: "No boost",
+        },
+      },
+      facetedsearchsetting: {
+        name: "Faceted search settings",
+        add: "Create facet",
+        facetfields: {
+          name: "Classification name",
+          schemanode: "Schema node",
+          categorynumber: "Default number of categories",
+        },
+      },
+    },
     ui: { name: "UI", desc: "UI settings" },
   },
   adminconsoledownload: {
+    id: "adminconsole",
     title: "Administration Console",
     text: {
       introTextOne:
@@ -418,5 +507,10 @@ export const languageStrings = {
   },
   screenoptions: {
     description: "Screen options",
+  },
+  navigationguard: {
+    title: "Close without saving?",
+    message:
+      "You have unsaved changes. Are you sure you want to leave this page without saving?",
   },
 };

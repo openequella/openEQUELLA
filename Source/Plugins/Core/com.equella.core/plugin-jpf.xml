@@ -68,7 +68,6 @@
     <import plugin-id="com.tle.web.remoting" />
     <import plugin-id="com.tle.web.remoting.rest" />
     <import plugin-id="com.tle.web.remoting.soap" />
-    <import plugin-id="com.tle.web.search" />
     <import plugin-id="com.tle.web.searching" />
     <import plugin-id="com.tle.web.sections" />
     <import plugin-id="com.tle.web.sections.equella" />
@@ -197,7 +196,6 @@
     <parameter id="class" value="com.tle.web.resources.ResourcesModule" />
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
-    <parameter id="class" value="com.tle.web.search.guice.SearchSettingsModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SkinnySearchModule" />
@@ -307,10 +305,6 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="cloudItemServlet">
     <parameter id="bean" value="bean:com.tle.web.cloud.view.servlet.CloudItemServlet" />
     <parameter id="url-pattern" value="/cloud/*" />
-  </extension>
-  <extension plugin-id="com.tle.web.search" point-id="searchSetting" id="cloudSetting">
-    <parameter id="bean" value="bean:com.tle.web.cloud.settings.section.CloudSettingsSection" />
-    <parameter id="order" value="1000" />
   </extension>
   <extension plugin-id="com.tle.web.searching" point-id="searchTab" id="cloudResultsTab">
     <parameter id="bean" value="bean:com.tle.web.cloud.search.CloudResultsTab" />
@@ -3731,10 +3725,6 @@
     <parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
     <parameter id="listenerClass" value="com.tle.web.portal.events.PortletsUpdatedEventListener" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searchingSettings">
-    <parameter id="path" value="/access/searchsettings.do" />
-    <parameter id="root" value="bean:/access/searchsettings" />
-  </extension>
   <extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="selectSearchResult">
     <parameter id="bean" value="bean:com.tle.web.search.selection.SelectItemListExtension" />
     <parameter id="applies" value="standard" />
@@ -5981,6 +5971,9 @@
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="favouriteSearchSchemaObject">
     <parameter id="class" value="com.tle.core.favourites.bean.FavouriteSearch" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="facetedSearchClassificationObject">
+    <parameter id="class" value="com.tle.core.facetedsearch.bean.FacetedSearchClassification" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
@@ -6022,6 +6015,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.CreateUserInfoBackupTable" />
     <parameter id="date" value="2019-09-25" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateFacetedSearchClassificationTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20202.CreateFacetedSearchClassificationTable" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.CreateFacetedSearchClassificationTable" />
+    <parameter id="date" value="2020-04-22" />
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
   </extension>
@@ -6058,6 +6056,15 @@
     <parameter id="selections">
       <parameter id="id" value="USERINFOBACKUP" />
       <parameter id="nameKey" value="institutions.tasks.userinfobackup" />
+    </parameter>
+  </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="FacetedSearchClassificationConverter">
+    <parameter id="id" value="FACETEDSEARCHCLASSIFICATION" />
+    <parameter id="class" value="bean:com.tle.core.facetedsearch.converter.FacetedSearchClassificationConverter" />
+    <parameter id="order" value="670" />
+    <parameter id="selections">
+      <parameter id="id" value="FACETEDSEARCHCLASSIFICATION" />
+      <parameter id="nameKey" value="institutions.tasks.facetedsearchclassification" />
     </parameter>
   </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="userConverter">

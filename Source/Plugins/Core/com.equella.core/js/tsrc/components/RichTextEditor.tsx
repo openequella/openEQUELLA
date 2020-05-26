@@ -18,7 +18,8 @@
 import * as React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { baseURL } from "tinymce";
+import { Config } from "../config";
+
 require("tinymce/tinymce");
 require("tinymce/themes/silver/theme");
 require("tinymce/plugins/anchor");
@@ -55,6 +56,14 @@ require("tinymce/plugins/toc");
 require("tinymce/plugins/visualblocks");
 require("tinymce/plugins/visualchars");
 require("tinymce/plugins/wordcount");
+
+declare const renderData:
+  | {
+      baseResources: string;
+      newUI: boolean;
+      autotestMode: boolean;
+    }
+  | undefined;
 
 // from https://github.com/tinymce/tinymce/blob/26b948ac85b75991ab9e50d0affdf4f5c0b34f65/modules/tinymce/src/core/main/ts/api/file/BlobCache.ts#L31-L39
 export interface BlobInfo {
@@ -115,6 +124,11 @@ class RichTextEditor extends React.Component<
   };
 
   render() {
+    const skinUrl =
+      Config.baseUrl +
+      renderData?.baseResources +
+      "reactjs/tinymce/skins/ui/oxide";
+
     return (
       this.state.ready && (
         <Editor
@@ -127,7 +141,7 @@ class RichTextEditor extends React.Component<
             paste_data_images: true,
             relative_urls: false,
             skin: "oxide",
-            skin_url: `${baseURL}/tinymce/skins/ui/oxide`,
+            skin_url: skinUrl,
             media_dimensions: false,
           }}
           toolbar={
