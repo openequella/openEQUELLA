@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255745</id>
+  <id>6084</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>mp4</string>
     <string>m4v</string>
+    <string>mp4</string>
   </extensions>
   <type>video/mp4</type>
   <description>Video</description>
