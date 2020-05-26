@@ -199,6 +199,17 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return null;
   }
 
+  /**
+   * Requests courses the user has access to from Blackboard and caches them (per user & connector)
+   *
+   * @param connector
+   * @param username
+   * @param editableOnly If true as list of courses that the user can add content to should be
+   *     returned. If false then ALL courses will be returned.
+   * @param archived
+   * @param management Is this for manage resources?
+   * @return
+   */
   @Override
   public List<ConnectorCourse> getCourses(
       Connector connector,
@@ -206,7 +217,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       boolean editableOnly,
       boolean archived,
       boolean management) {
-    final List<ConnectorCourse> list = new ArrayList<>();
 
     String url =
         API_ROOT_V1 + "users/" + getUserIdType() + getUserId(connector) + "/courses?fields=course";
@@ -233,9 +243,18 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       paging = courses.getPaging();
     }
 
+    setCachedCourses(connector, allCourses);
+
+    return getWrappedCachedCourses(connector, archived);
+  }
+
+  private List<ConnectorCourse> getWrappedCachedCourses(
+      Connector connector, boolean includeArchived) {
+    final List<ConnectorCourse> list = new ArrayList<>();
+    final List<Course> allCourses = getCachedCourses(connector);
     for (Course course : allCourses) {
       // Display all courses if the archived flag is set, otherwise, just the 'available' ones
-      if (archived || Availability.YES.equals(course.getAvailability().getAvailable())) {
+      if (includeArchived || Availability.YES.equals(course.getAvailability().getAvailable())) {
         final ConnectorCourse cc = new ConnectorCourse(course.getId());
         cc.setCourseCode(course.getCourseId());
         cc.setName(course.getName());
@@ -243,7 +262,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         list.add(cc);
       }
     }
-
     return list;
   }
 
@@ -271,7 +289,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   public List<ConnectorFolder> getFoldersForCourse(
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
-    // FIXME: courses for current user...?
     final String url = API_ROOT_V1 + "courses/" + courseId + "/contents";
 
     return retrieveFolders(connector, url, username, courseId, management);
@@ -281,7 +298,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   public List<ConnectorFolder> getFoldersForFolder(
       Connector connector, String username, String courseId, String folderId, boolean management)
       throws LmsUserNotFoundException {
-    // FIXME: courses for current user...?
     final String url = API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children/";
 
     return retrieveFolders(connector, url, username, courseId, management);
@@ -290,7 +306,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private List<ConnectorFolder> retrieveFolders(
       Connector connector, String url, String username, String courseId, boolean management) {
     final List<ConnectorFolder> list = new ArrayList<>();
-    // FIXME: courses for current user...?
     final Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
     final ConnectorCourse course = new ConnectorCourse(courseId);
@@ -507,6 +522,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Sending " + prettyJson(body));
       }
+
       // attach cached token. (Cache knows how to get a new one)
       final String authHeaderValue = "Bearer " + getToken(connector);
       LOGGER.trace(
@@ -515,6 +531,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
               + "].  Connector ["
               + connector.getUuid()
               + "]");
+
       request.addHeader("Authorization", authHeaderValue);
 
       try (Response response =
@@ -655,12 +672,44 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
   }
 
+  public void setCachedCourses(Connector connector, List<Course> courses) {
+    final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
+    LOGGER.debug(
+        "Setting user session "
+            + key
+            + " for Bb REST connector ["
+            + connector.getUuid()
+            + "] - number of cached courses ["
+            + courses.size()
+            + "]");
+    userSessionService.setAttribute(connector.getUuid() + key, courses);
+  }
+
+  public List<Course> getCachedCourses(Connector connector) {
+    final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
+    final List<Course> cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
+    if (cachedValue == null) {
+      LOGGER.debug(
+          "No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
+      throw new AuthenticationException("User was not able to obtain cached " + key + ".");
+    }
+    LOGGER.debug(
+        "Found a user session "
+            + key
+            + " for Bb REST connector ["
+            + connector.getUuid()
+            + "] - number of courses returned ["
+            + cachedValue.size()
+            + "]");
+    return cachedValue;
+  }
+
   private String getCachedSessionValue(Connector connector, String key) {
     final String cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
     if (cachedValue == null) {
       LOGGER.debug(
           "No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
-      throw new AuthenticationException("User was not able to obtain REST auth " + key + ".");
+      throw new AuthenticationException("User was not able to obtain cached " + key + ".");
     }
     logSensitiveDetails(
         "Found a user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",

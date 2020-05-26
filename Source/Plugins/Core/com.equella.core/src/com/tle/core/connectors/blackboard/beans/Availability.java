@@ -18,10 +18,11 @@
 
 package com.tle.core.connectors.blackboard.beans;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Availability {
+public class Availability implements Serializable {
   public static final String YES = "Yes";
   public static final String NO = "No";
   private String available; // Yes
