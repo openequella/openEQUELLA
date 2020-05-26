@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255748</id>
+  <id>6048</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>tiff</string>
     <string>tif</string>
+    <string>tiff</string>
   </extensions>
   <type>image/tiff</type>
   <description>Image</description>
