@@ -21,7 +21,6 @@ import { LocationDescriptor } from "history";
 import { TemplateUpdate } from "./Template";
 import ThemePage from "../theme/ThemePage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
-import { Bridge } from "../api/bridge";
 import SearchPageSettings from "../settings/Search/SearchPageSettings";
 import SettingsPage from "../settings/SettingsPage";
 import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
@@ -29,8 +28,6 @@ import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import SearchPage from "../search/SearchPage";
-
-declare const bridge: Bridge;
 
 export interface OEQRouteComponentProps<T = any>
   extends RouteComponentProps<T> {
