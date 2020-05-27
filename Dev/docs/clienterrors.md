@@ -3,8 +3,7 @@
 Handling of unexpected errors such as network problems & server errors can be painful,
 so the `Template` component has a property for displaying them:
 
-`errorResponse` in `TemplateProps` in [Template.purs](../../Source/Plugins/Core/com.equella.core/js/src/MainUI/Template.purs) or [Template.ts](../../Source/Plugins/Core/com.equella.cor
-e/js/tsrc/mainui/Template.tsx)
+`errorResponse` in `TemplateProps` [Template.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/mainui/Template.tsx)
 
 Exceptions thrown from REST API's are converted into `ErrorResponse` JSON objects and HTTP status codes
 by the [RestEasyExceptionMapper](../../Source/Plugins/Core/com.equella.core/src/com/tle/web/remoting/resteasy/RestEasyExceptionMapper.java)

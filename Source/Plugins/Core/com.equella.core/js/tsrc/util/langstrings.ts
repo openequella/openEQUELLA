@@ -318,6 +318,8 @@ export const languageStrings = {
     roles: "Roles",
   },
   searchpage: {
+    title: "Search",
+    subtitle: "Search results",
     resultsAvailable: "results available",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
