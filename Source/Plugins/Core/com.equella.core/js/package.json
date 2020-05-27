@@ -62,7 +62,6 @@
     "redux-thunk": "2.2.0",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
-    "test": "^0.6.0",
     "timeago-react": "2.0.1",
     "tinymce": "5.1.6",
     "typescript-fsa": "2.5.0",
