@@ -24,6 +24,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import retry.RetryTest;
 
 @TestInstitution("fiveo")
 public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
@@ -41,6 +42,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     return control.attachNameWaiter(name, false);
   }
 
+  @RetryTest
   @Test
   public void packageOnly() {
     String itemName = context.getFullName("package");
@@ -82,6 +84,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
         Attachments.get(filename), MessageFormat.format("{0}{1}", expectedError, filename));
   }
 
+  @RetryTest
   @Test
   public void qtiPackageOnly() {
     String itemName = context.getFullName("QTI package only");
@@ -106,6 +109,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     wizard.save().publish();
   }
 
+  @RetryTest
   @Test
   public void scormPackageOnly() {
     String itemName = context.getFullName("SCORM package only");
@@ -130,6 +134,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     wizard.save().publish();
   }
 
+  @RetryTest
   @Test
   public void allowedPackagesOnly() {
     String itemName = context.getFullName("QTI and SCORM package only");
@@ -158,6 +163,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     wizard.save().publish();
   }
 
+  @RetryTest
   @Test
   public void zipOnly() {
     String itemName = context.getFullName("zip");
@@ -178,6 +184,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertFalse(attachments.attachmentExists("google2.jpg"));
   }
 
+  @RetryTest
   @Test
   public void packageTest() {
     String itemName = context.getFullName("a package");
@@ -201,6 +208,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertFalse(wizard.save().publish().hasAttachmentsSection());
   }
 
+  @RetryTest
   @Test
   public void cancelPackageTest() {
     String itemName = context.getFullName("a canceled package");
@@ -220,6 +228,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
    * DTEC-14847 - Ensure that if a new node is created, "Multiple resources" checked but no
    * resources selected for the tabs, then everything still keeps going without error.
    */
+  @RetryTest
   @Test
   public void checkNoErrorForEmptyTabs() {
     String itemName = context.getFullName("check no error for empty tabs");
@@ -244,6 +253,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
    * Redmine #5767 - Putting a double-quote in the name of a node cuts off everything after it. Try
    * doing lots of quote-y things and ensure they work as expected.
    */
+  @RetryTest
   @Test
   public void quotesInNodeNames() {
     String itemName = context.getFullName("quote check");
@@ -264,6 +274,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertTrue(attachments.attachmentExists("2 single ' quotes'"));
   }
 
+  @RetryTest
   @Test
   public void navigation() {
     String itemName = context.getFullName("navigation");
@@ -323,6 +334,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
             .isVerified());
   }
 
+  @RetryTest
   @Test
   public void packageNavigation() {
     String itemName = context.getFullName("package navigation");
@@ -340,6 +352,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertTrue(viewer.selectedAttachmentContainsText("Look at shots 1 and 2 from the Feature."));
   }
 
+  @RetryTest
   @Test
   public void modifyingNavigation() {
     String itemName = context.getFullName("navigation modification");
@@ -438,6 +451,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
   }
 
   /** DTEC-14857 */
+  @RetryTest
   @Test
   public void reordering() {
     String itemName = context.getFullName("reordering");
