@@ -23,7 +23,7 @@ import {
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
 import { Card, Mark, Slider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
   defaultSearchSettings,

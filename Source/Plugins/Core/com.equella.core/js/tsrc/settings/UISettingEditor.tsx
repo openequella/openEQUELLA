@@ -19,34 +19,31 @@ import * as React from "react";
 import { fetchUISetting, saveUISetting } from "./SettingsPageModule";
 import {
   ExpansionPanelDetails,
-  Theme,
   Button,
   FormControl,
   FormControlLabel,
   Switch,
   Grid,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { Config } from "../config";
 import { useEffect, useState } from "react";
 
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    fab: {
-      position: "absolute",
-      bottom: 0,
-      right: 16,
-    },
-    enableNewUIColumn: {
-      flexBasis: "33.3%",
-    },
-    enableNewSearchColumn: {
-      flexBasis: "33.3%",
-    },
-  };
+const useStyles = makeStyles({
+  fab: {
+    position: "absolute",
+    bottom: 0,
+    right: 16,
+  },
+  enableNewUIColumn: {
+    flexBasis: "33.3%",
+  },
+  enableNewSearchColumn: {
+    flexBasis: "33.3%",
+  },
 });
 
 interface UISettingEditorProps {
