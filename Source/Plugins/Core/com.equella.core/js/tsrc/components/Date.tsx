@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Typography, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import * as timeago from "timeago.js";
+import { DateTime } from "luxon";
 
 const useStyles = makeStyles({
   dateModified: {
@@ -37,8 +37,9 @@ export interface DateProps {
 }
 export default function Date({ displayRelative, date }: DateProps) {
   const classes = useStyles();
-  let primaryDate = date.toLocaleString();
-  let hoverDate = timeago.format(date);
+  const luxDate = DateTime.fromJSDate(date);
+  let primaryDate = luxDate.toLocaleString(DateTime.DATETIME_MED);
+  let hoverDate = luxDate.toRelative() || "undefined";
 
   if (displayRelative) {
     //swap 'em around
