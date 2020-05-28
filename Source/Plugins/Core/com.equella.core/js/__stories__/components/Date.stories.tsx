@@ -16,37 +16,22 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Typography, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import * as moment from "moment";
+import { boolean, date } from "@storybook/addon-knobs";
+import { Date as DateDisplay } from "../../tsrc/components/Date";
 
-const useStyles = makeStyles({
-  dateModified: {
-    display: "inline-block",
-  },
-});
-export interface DateModifiedDisplayProps {
-  displayRelative: boolean;
-  date: Date;
+export default {
+  title: "DateDisplay",
+  component: DateDisplay,
+};
+
+function dateKnob(name: string) {
+  const timestamp = date(name);
+  return new Date(timestamp);
 }
-export default function DateModifiedDisplay({
-  displayRelative,
-  date,
-}: DateModifiedDisplayProps) {
-  const classes = useStyles();
-  let primaryDate = moment(date).format("lll");
-  let hoverDate = moment(date).fromNow();
 
-  if (displayRelative) {
-    //swap 'em around
-    [primaryDate, hoverDate] = [hoverDate, primaryDate];
-  }
-
-  return (
-    <Tooltip title={hoverDate}>
-      <Typography className={classes.dateModified} variant="subtitle1">
-        {primaryDate}
-      </Typography>
-    </Tooltip>
-  );
-}
+export const dateDisplay = () => (
+  <DateDisplay
+    displayRelative={boolean("Relative date", false)}
+    date={dateKnob("Date")}
+  />
+);

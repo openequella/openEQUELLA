@@ -16,22 +16,35 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { boolean, date } from "@storybook/addon-knobs";
-import DateModifiedDisplay from "../../tsrc/components/DateModifiedDisplay";
+import { Typography, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+import * as timeago from "timeago.js";
 
-export default {
-  title: "DateModifiedDisplay",
-  component: DateModifiedDisplay,
-};
-
-function dateKnob(name: string) {
-  const timestamp = date(name);
-  return new Date(timestamp);
+const useStyles = makeStyles({
+  dateModified: {
+    display: "inline-block",
+  },
+});
+export interface DateProps {
+  displayRelative: boolean;
+  date: Date;
 }
+export default function Date({ displayRelative, date }: DateProps) {
+  const classes = useStyles();
+  let primaryDate = date.toLocaleString();
+  let hoverDate = timeago.format(date);
 
-export const listOfMimeTypes = () => (
-  <DateModifiedDisplay
-    displayRelative={boolean("Relative date", false)}
-    date={dateKnob("Date")}
-  />
-);
+  if (displayRelative) {
+    //swap 'em around
+    [primaryDate, hoverDate] = [hoverDate, primaryDate];
+  }
+
+  return (
+    <Tooltip title={hoverDate}>
+      <Typography className={classes.dateModified} variant="subtitle1">
+        {primaryDate}
+      </Typography>
+    </Tooltip>
+  );
+}
+export { Date };
