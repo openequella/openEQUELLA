@@ -24,6 +24,7 @@ tests:
       - com.tle.webtests.test.searching.indexing.AutomaticIndexingTest
       - com.tle.webtests.test.searching.indexing.FileIndexingTest
       - com.tle.webtests.test.searching.hierarchy.HierarchyTopicTest
+      - com.tle.webtests.test.contribute.bugs.VisibilityScriptingBugTest
       - com.tle.webtests.test.contribute.controls.AllControlsTest
       - com.tle.webtests.test.contribute.controls.BannedExtensionTest
       - com.tle.webtests.test.contribute.controls.FileSizeRestrictionTest

@@ -1,7 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="EQUELLA testing" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
-	<suite-files>
+  <listeners>
+    <listener class-name="retry.TestAnnotationTransformer"/>
+  </listeners>
+  <suite-files>
 		<suite-file path="./testng-local-searching.xml"/>
 		<suite-file path="./testng-local-contribution.xml"/>
 		<suite-file path="./testng-local-viewing.xml"/>
