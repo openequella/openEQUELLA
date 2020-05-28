@@ -56,4 +56,6 @@ public interface BlackboardRESTConnectorService extends ConnectorRepositoryImple
   void setToken(Connector connector, String value);
 
   void setUserId(Connector connector, String value);
+
+  void removeCachedCoursesForConnector(Connector connector);
 }

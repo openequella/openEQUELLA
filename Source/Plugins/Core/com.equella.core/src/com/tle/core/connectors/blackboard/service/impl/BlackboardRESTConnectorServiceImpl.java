@@ -85,6 +85,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       AbstractPluginService.getMyPluginId(BlackboardRESTConnectorService.class) + ".";
 
   private static final String API_ROOT_V1 = "/learn/api/public/v1/";
+  private static final String API_ROOT_V3 = "/learn/api/public/v3/";
 
   private static final byte[] SHAREPASS =
       new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};
@@ -217,35 +218,45 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       boolean editableOnly,
       boolean archived,
       boolean management) {
+    if (!isCoursesCached(connector)) {
+      String url =
+          API_ROOT_V1
+              + "users/"
+              + getUserIdType()
+              + getUserId(connector)
+              + "/courses?fields=course";
 
-    String url =
-        API_ROOT_V1 + "users/" + getUserIdType() + getUserId(connector) + "/courses?fields=course";
+      final List<Course> allCourses = new ArrayList<>();
 
-    final List<Course> allCourses = new ArrayList<>();
-
-    // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
-    CoursesByUser courses =
-        sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
-    for (CourseByUser cbu : courses.getResults()) {
-      allCourses.add(cbu.getCourse());
-    }
-    Paging paging = courses.getPaging();
-
-    while (paging != null && paging.getNextPage() != null) {
-      // FIXME: construct nextUrl from the base URL we know about and the relative URL from
-      // getNextPage
-      final String nextUrl = paging.getNextPage();
-      courses =
-          sendBlackboardData(connector, nextUrl, CoursesByUser.class, null, Request.Method.GET);
+      // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
+      CoursesByUser courses =
+          sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
       for (CourseByUser cbu : courses.getResults()) {
         allCourses.add(cbu.getCourse());
       }
-      paging = courses.getPaging();
+      Paging paging = courses.getPaging();
+
+      while (paging != null && paging.getNextPage() != null) {
+        courses =
+            sendBlackboardData(
+                connector, paging.getNextPage(), CoursesByUser.class, null, Request.Method.GET);
+        for (CourseByUser cbu : courses.getResults()) {
+          allCourses.add(cbu.getCourse());
+        }
+        paging = courses.getPaging();
+      }
+
+      setCachedCourses(connector, allCourses);
     }
-
-    setCachedCourses(connector, allCourses);
-
     return getWrappedCachedCourses(connector, archived);
+  }
+
+  private boolean isCoursesCached(Connector connector) {
+    try {
+      return getCachedCourses(connector) != null;
+    } catch (AuthenticationException ae) {
+      return false;
+    }
   }
 
   private List<ConnectorCourse> getWrappedCachedCourses(
@@ -266,9 +277,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private Course getCourseBean(Connector connector, String courseID) {
-    // FIXME: courses for current user...?
-    // TODO - since v3400.8.0, this endpoint should use v2
-    String url = API_ROOT_V1 + "courses/" + courseID;
+    String url = API_ROOT_V3 + "courses/" + courseID;
 
     final Course course =
         sendBlackboardData(connector, url, Course.class, null, Request.Method.GET);
@@ -276,8 +285,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private Content getContentBean(Connector connector, String courseID, String folderID) {
-    // FIXME: courses for current user...?
-    // TODO - since v3400.8.0, this endpoint should use v2
     String url = API_ROOT_V1 + "courses/" + courseID + "/contents/" + folderID;
 
     final Content folder =
@@ -291,20 +298,21 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       throws LmsUserNotFoundException {
     final String url = API_ROOT_V1 + "courses/" + courseId + "/contents";
 
-    return retrieveFolders(connector, url, username, courseId, management);
+    return retrieveFolders(connector, url, courseId, management);
   }
 
   @Override
   public List<ConnectorFolder> getFoldersForFolder(
-      Connector connector, String username, String courseId, String folderId, boolean management)
-      throws LmsUserNotFoundException {
+      Connector connector, String username, String courseId, String folderId, boolean management) {
+    // Username not needed to since we authenticate via 3LO.
+
     final String url = API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children/";
 
-    return retrieveFolders(connector, url, username, courseId, management);
+    return retrieveFolders(connector, url, courseId, management);
   }
 
   private List<ConnectorFolder> retrieveFolders(
-      Connector connector, String url, String username, String courseId, boolean management) {
+      Connector connector, String url, String courseId, boolean management) {
     final List<ConnectorFolder> list = new ArrayList<>();
     final Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
@@ -369,13 +377,19 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     sendBlackboardData(connector, url, null, content, Request.Method.POST);
     LOGGER.debug("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
     ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-    // TODO CB:  Is there a better way to get the name of the folder and the course?
-    // AH:  Unfortunately not.  We could cache them, but it probably isn't worth the additional
-    // complexity
+    // TODO If folders end up being cached, pull the folder name from the cache.
     Content folder = getContentBean(connector, courseId, folderId);
     cf.setName(folder.getTitle());
-    Course course = getCourseBean(connector, courseId);
-    cf.getCourse().setName(course.getName());
+    final Course cachedCourse = getCachedCourse(connector, courseId);
+    if (cachedCourse == null) {
+      // This should never happen since the course will always be cached prior to adding content to
+      // it
+      final Course course = getCourseBean(connector, courseId);
+      cf.getCourse().setName(course.getName());
+    } else {
+      cf.getCourse().setName(cachedCourse.getName());
+    }
+
     return cf;
   }
 
@@ -550,8 +564,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
               "Received a 401 from Blackboard.  Token for connector ["
                   + connector.getUuid()
                   + "] is likely expired.  Retrying...");
-          setToken(connector, null);
-          setUserId(connector, null);
+          removeCachedValuesForConnector(connector);
           return sendBlackboardData(connector, path, returnType, data, method, false);
         }
         if (code >= 300) {
@@ -658,7 +671,17 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
   }
 
-  public String getUserIdType() {
+  private void removeCachedValuesForConnector(Connector connector) {
+    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
+    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+    removeCachedCoursesForConnector(connector);
+  }
+
+  public void removeCachedCoursesForConnector(Connector connector) {
+    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_COURSES);
+  }
+
+  private String getUserIdType() {
     // According to the Bb Support team, accessing the REST APIs in this manner should always return
     // a userid as a uuid
     return "uuid:";
@@ -672,7 +695,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
   }
 
-  public void setCachedCourses(Connector connector, List<Course> courses) {
+  private void setCachedCourses(Connector connector, List<Course> courses) {
     final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
     LOGGER.debug(
         "Setting user session "
@@ -682,10 +705,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
             + "] - number of cached courses ["
             + courses.size()
             + "]");
+
     userSessionService.setAttribute(connector.getUuid() + key, courses);
   }
 
-  public List<Course> getCachedCourses(Connector connector) {
+  private List<Course> getCachedCourses(Connector connector) {
     final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
     final List<Course> cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
     if (cachedValue == null) {
@@ -702,6 +726,16 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
             + cachedValue.size()
             + "]");
     return cachedValue;
+  }
+
+  private Course getCachedCourse(Connector connector, String courseId) {
+    final List<Course> cache = getCachedCourses(connector);
+    for (Course c : cache) {
+      if (c.getId().equals(courseId)) {
+        return c;
+      }
+    }
+    return null;
   }
 
   private String getCachedSessionValue(Connector connector, String key) {
@@ -722,6 +756,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         "Setting user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",
         " to [" + value + "]");
     userSessionService.setAttribute(connector.getUuid() + key, value);
+  }
+
+  private void removeCachedSessionValue(Connector connector, String key) {
+    LOGGER.debug(
+        "Removing user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
+    userSessionService.removeAttribute(connector.getUuid() + key);
   }
 
   private void logSensitiveDetails(String msg, String sensitiveMsg) {
