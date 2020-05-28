@@ -8,7 +8,7 @@
     "format:ts": "eslint --fix \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
-    "check:license": "cd Source/Plugins/Core/com.equella.core/js && licensee --production --errors-only || true && cd -",
+    "check:license": "cd Source/Plugins/Core/com.equella.core/js && licensee --production --errors-only && cd -",
     "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
     "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
     "check:ts-types-source": "tsc --noEmit --project \"Source/Plugins/Core/com.equella.core/js/tsconfig.json\"",

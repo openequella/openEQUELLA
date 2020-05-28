@@ -1,6 +1,7 @@
 {
   "licenses": {
     "spdx": [
+      "0BSD",
       "Apache-2.0",
       "BSD-2-Clause",
       "BSD-3-Clause",
@@ -9,5 +10,13 @@
       "Unlicense"
     ]
   },
+  "ignore": [
+    {
+      "prefix": "oeq-cloudproviders"
+    },
+    {
+      "prefix": "tinymce"
+    }
+  ],
   "corrections": false
 }
