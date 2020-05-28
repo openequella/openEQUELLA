@@ -26,7 +26,13 @@ const useStyles = makeStyles({
   },
 });
 export interface DateProps {
+  /**
+   * If true, relative date will be used as primary display. Timestamp will be displayed as tooltip on hover
+   */
   displayRelative: boolean;
+  /**
+   * UTC Date/Time. It will be formatted and displayed on-screen based on user's locale
+   */
   date: Date;
 }
 export default function Date({ displayRelative, date }: DateProps) {
