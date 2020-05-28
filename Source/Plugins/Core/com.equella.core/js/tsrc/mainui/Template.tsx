@@ -24,29 +24,29 @@ import AccountIcon from "@material-ui/icons/AccountCircle";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import {
-  CssBaseline,
-  Theme,
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Hidden,
-  Tooltip,
-  Menu,
-  MenuItem,
   Badge,
+  CssBaseline,
+  Divider,
   Drawer,
-  ListItem,
+  Hidden,
   Icon,
+  IconButton,
   List,
+  ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useTheme,
 } from "@material-ui/core";
 import luxonUtils from "@date-io/luxon";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import { languageStrings } from "../util/langstrings";
-import { UserData, guestUser, MenuItem as MI } from "../api/currentuser";
+import { guestUser, MenuItem as MI, UserData } from "../api/currentuser";
 import MessageInfo from "../components/MessageInfo";
 import { Link } from "react-router-dom";
 import { LocationDescriptor } from "history";
@@ -297,7 +297,7 @@ export const Template = React.memo(function Template({
   // Record what customised meta tags have been added into <head>
   const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
-  const classes = useStyles();
+  const classes = useStyles(useTheme());
 
   React.useEffect(() => {
     if (errorResponse) {
