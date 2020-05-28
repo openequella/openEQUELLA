@@ -1,1 +1,0 @@
-<xml>			<item global="true" myitem="true">								<name>Subscript</name>				<description>Subscript for equations</description>								<itemstatus>live</itemstatus>												<itembody>					<html>    x&lt;sub&gt;5&lt;/sub&gt;</html>				</itembody>																				<keywords/>			</item>		</xml>

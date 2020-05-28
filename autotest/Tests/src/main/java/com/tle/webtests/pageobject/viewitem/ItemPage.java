@@ -102,6 +102,11 @@ public abstract class ItemPage<T extends ItemPage<T>> extends AbstractPage<T> {
     return clickAction("Edit this version", new WizardPageTab(context, 0));
   }
 
+  // for testing collections that don't start you at the first page
+  public WizardPageTab edit(int pageNum) {
+    return clickAction("Edit this version", new WizardPageTab(context, pageNum));
+  }
+
   public ModerationHistoryPage history() {
     return clickAction("Moderation history", new ModerationHistoryPage(context));
   }
@@ -284,6 +289,13 @@ public abstract class ItemPage<T extends ItemPage<T>> extends AbstractPage<T> {
   public T unlockItem() {
     WaitingPageObject<T> updateWaiter = updateWaiter();
     driver.findElement(By.xpath("//button[text()='Discard editing']")).click();
+    acceptConfirmation();
+    return updateWaiter.get();
+  }
+
+  public T unlockAfterLogout() {
+    WaitingPageObject<T> updateWaiter = updateWaiter();
+    driver.findElement(By.xpath("//button[text()='Unlock']")).click();
     acceptConfirmation();
     return updateWaiter.get();
   }

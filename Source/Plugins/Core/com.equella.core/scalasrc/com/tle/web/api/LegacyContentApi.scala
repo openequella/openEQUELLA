@@ -474,6 +474,11 @@ class LegacyContentApi {
           val body = SectionUtils.renderToString(
             context,
             wrapBody(context, tr.getNamedResult(context, "body")))
+          val form = context.getForm
+          val formString: Option[String] = Option(form.getAction) match {
+            case Some(action) => Some(SectionUtils.renderToString(context, form))
+            case None         => None
+          }
           val upperbody =
             SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
           val scrops = renderScreenOptions(context)
@@ -481,6 +486,7 @@ class LegacyContentApi {
           Iterable(
             Some("body"                                          -> body),
             Option(upperbody).filter(_.nonEmpty).map("upperbody" -> _),
+            formString.map("form"                                -> _),
             scrops.map("so"                                      -> _),
             crumbs.map("crumbs"                                  -> _)
           ).flatten.toMap
