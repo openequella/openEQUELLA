@@ -63,6 +63,10 @@
     {
       "packagePatterns": ["^com.softwaremill.sttp"],
       "groupName": "Scala HTTP packages"
+    },
+    {
+      "packageNames": ["@types/tough-cookie"],
+      "rangeStrategy": "replace"
     }
   ]
 }
