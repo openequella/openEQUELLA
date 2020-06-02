@@ -22,6 +22,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   TextField,
 } from "@material-ui/core";
 import { commonString } from "../../../util/commonstrings";
@@ -31,6 +32,7 @@ import {
   FacetWithFlags,
   validateFacetFields,
 } from "./FacetedSearchSettingsModule";
+import SchemaSelector from "../../SchemaSelector";
 
 interface FacetDialogProps {
   /**
@@ -102,40 +104,53 @@ const FacetDialog = ({
       disableBackdropClick
       disableEscapeKeyDown
       fullWidth
+      maxWidth={"lg"}
     >
       <DialogTitle>{facetedSearchSettingStrings.add}</DialogTitle>
       <DialogContent>
-        <TextField
-          margin="dense"
-          label={facetFieldStrings.name}
-          value={name}
-          required
-          fullWidth
-          onChange={(event) => setName(event.target.value)}
-          error={!!name && isNameInvalid}
-        />
-        <TextField
-          margin="dense"
-          label={facetFieldStrings.schemanode}
-          value={schemaNode}
-          required
-          fullWidth
-          onChange={(event) => setSchemaNode(event.target.value)}
-          error={!!schemaNode && isSchemaNodeInvalid}
-        />
-        <TextField
-          type="number"
-          margin="dense"
-          label={facetFieldStrings.categorynumber}
-          value={maxResults}
-          fullWidth
-          onChange={(event) =>
-            setMaxResults(
-              event.target.value ? parseInt(event.target.value) : undefined
-            )
-          }
-          helperText={"Leave blank to display all categories"}
-        />
+        <Grid container direction={"row"} spacing={1}>
+          <Grid item>
+            <TextField
+              margin="dense"
+              label={facetFieldStrings.name}
+              value={name}
+              required
+              fullWidth
+              onChange={(event) => setName(event.target.value)}
+              error={!!name && isNameInvalid}
+            />
+
+            <TextField
+              margin="dense"
+              label={facetFieldStrings.schemanode}
+              value={schemaNode}
+              required
+              fullWidth
+              onChange={(event) => setSchemaNode(event.target.value)}
+              error={!!schemaNode && isSchemaNodeInvalid}
+            />
+            <TextField
+              type="number"
+              margin="dense"
+              label={facetFieldStrings.categorynumber}
+              value={maxResults}
+              fullWidth
+              onChange={(event) =>
+                setMaxResults(
+                  event.target.value ? parseInt(event.target.value) : undefined
+                )
+              }
+              helperText={"Leave blank to display all categories"}
+            />
+          </Grid>
+          <Grid item>
+            <SchemaSelector
+              setSchemaNode={(node) => {
+                setSchemaNode(node);
+              }}
+            />
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

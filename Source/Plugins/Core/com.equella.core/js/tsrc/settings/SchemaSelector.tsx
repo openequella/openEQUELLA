@@ -16,44 +16,82 @@
  * limitations under the License.
  */
 import React from "react";
-import SchemaNodeSelector, { SchemaNode } from "./SchemaNodeSelector";
-import { MenuItem, Select } from "@material-ui/core";
+import { Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
+import {
+  schemaListSummary,
+  SchemaNode,
+  schemaTree,
+} from "../schema/SchemaModule";
+import SchemaNodeSelector from "../settings/SchemaNodeSelector";
 
-interface SchemaSelectorProps {}
+interface SchemaSelectorProps {
+  setSchemaNode: (node: string) => void;
+}
+
 /**
  * This component defines a schema selector, for selecting a schema and then a node within.
  * When a schema is selected, it will display that schema within a SchemaNodeSelector.
  */
-export default function SchemaSelector({}: SchemaSelectorProps) {
-  const [schemaList, setSchemaList] = React.useState();
-  const [selectedSchema, setSelectedSchema] = React.useState();
-  const [schemaTree, setSchemaTree] = React.useState<SchemaNode | undefined>();
-  const [schemaNode, setSchemaNode] = React.useState<string | undefined>();
+export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
+  const [selectedSchema, setSelectedSchema] = React.useState<
+    string | undefined
+  >(undefined);
+  const [schema, setSchema] = React.useState<SchemaNode>();
+  const [schemaList, setSchemaList] = React.useState<JSX.Element[]>([]);
   React.useEffect(() => {
-    getSchemaList().then((res) => {
-      setSchemaList(res.data);
+    schemaListSummary().then((schemas) => {
+      const elementList: JSX.Element[] = [
+        <MenuItem value={undefined}>Select a schema...</MenuItem>,
+      ];
+      for (const [uuid, name] of schemas) {
+        elementList.push(
+          <MenuItem id={uuid} value={uuid}>
+            {name}
+          </MenuItem>
+        );
+      }
+      setSchemaList(elementList);
     });
-    //getSchemaList
   }, []);
+
   React.useEffect(() => {
-    getSchema(selectedSchema).then((res) => setSchemaTree(res.data));
-    //populate schemaNodeSelector
+    if (selectedSchema && selectedSchema !== "") {
+      schemaTree(selectedSchema).then((tree) => setSchema(tree));
+    } else {
+      setSchema(undefined);
+      setSchemaNode("");
+    }
   }, [selectedSchema]);
 
-  if (schemaTree) {
-    return (
-      <SchemaNodeSelector tree={schemaTree} setSelectedNode={setSchemaNode} />
-    );
-  } else if (schemaList) {
-    return (
-      <Select>
-        {schemaList.map((schema) => (
-          <MenuItem id={schema.id} value={schema.name}>
-            {schema.name}
-          </MenuItem>
-        ))}
-      </Select>
-    );
-  }
-  return <div />;
+  return (
+    <Grid container direction={"column"} spacing={1}>
+      <Grid item>
+        {schemaList && (
+          <>
+            <Select
+              style={{ width: "620px" }}
+              fullWidth
+              label={
+                <InputLabel shrink id="select-label">
+                  Schema
+                </InputLabel>
+              }
+              value={selectedSchema}
+              displayEmpty
+              onChange={(event) => {
+                setSelectedSchema(event.target.value as string | undefined);
+              }}
+            >
+              {schemaList}
+            </Select>
+          </>
+        )}
+      </Grid>
+      <Grid item>
+        {schema && (
+          <SchemaNodeSelector tree={schema} setSelectedNode={setSchemaNode} />
+        )}
+      </Grid>
+    </Grid>
+  );
 }
