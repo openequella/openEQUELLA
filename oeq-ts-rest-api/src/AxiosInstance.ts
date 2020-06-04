@@ -2,6 +2,7 @@ import Axios, { AxiosResponse, AxiosError } from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import * as tough from 'tough-cookie';
 import { repackageError } from './Errors';
+import {stringify} from "querystring";
 
 // So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
 // the oEQ security is based on JSESSIONID cookies currently this is key.
@@ -19,7 +20,7 @@ export const GET = <T>(
   queryParams?: object
 ): Promise<T> =>
   axios
-    .get<T>(path, {params: queryParams})
+    .get<T>(path, {params: queryParams, paramsSerializer: params => stringify(params)}, )
     .then((response: AxiosResponse<T>) => {
       if (validator && !validator(response.data)) {
         // If a validator is provided, but it fails to validate the provided data...
