@@ -38,6 +38,14 @@ import com.tle.web.api.search.model.{SearchResultAttachment, SearchParam, Search
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
+/**
+  * This object provides functions that help validate a variety of search criteria(e.g.
+  * the UUID of a collection and the UUID of an advanced search) and create an instance
+  * of search and search-related objects.
+  *
+  * It also provides functions that can convert EquellaItemBean and AttachmentBean to
+  * SearchResultItem and SearchResultAttachment, respectively.
+  */
 object SearchHelper {
 
   /**
@@ -67,10 +75,15 @@ object SearchHelper {
     }
 
     val dynaCollectionQuery = handleDynaCollection(params.dynaCollection)
-    val whereQuery          = handleWhereClause(params.whereClause)
+    val whereQuery = Option(params.whereClause) match {
+      case Some(where) => WhereParser.parse(where)
+      case None        => null
+    }
+    // If dynaCollectionQuery is not empty then combine it with whereQuery, and then assign it to freeTextQuery.
+    // Otherwise, just assign whereQuery to freeTextQuery.
     val freeTextQuery = dynaCollectionQuery match {
-      case Some(q) => q.add(whereQuery.orNull)
-      case None    => whereQuery.orNull
+      case Some(q) => q.add(whereQuery)
+      case None    => whereQuery
     }
     search.setFreeTextQuery(freeTextQuery)
 
@@ -99,18 +112,6 @@ object SearchHelper {
   }
 
   /**
-    * Return a free text query based on what where clause is provided.
-    * @param whereClause A where clause which is added to the search SQL.
-    * @return An option which wraps an instance of FreeTextBooleanQuery.
-    */
-  def handleWhereClause(whereClause: String): Option[FreeTextBooleanQuery] = {
-    if (Check.isEmpty(whereClause)) {
-      return None
-    }
-    Some(WhereParser.parse(whereClause))
-  }
-
-  /**
     * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
     * @param date The string to parse.
     * @return An option which wraps an instace of Date.
@@ -131,7 +132,7 @@ object SearchHelper {
     * @param list A list of strings to convert
     * @return An option which wraps a list of ItemStatus.
     */
-  def handleItemStatus(list: Array[String]): Option[java.util.List[ItemStatus]] = {
+  def handleItemStatus(list: Array[ItemStatus]): Option[java.util.List[ItemStatus]] = {
     if (list.isEmpty) {
       return None
     }
@@ -139,7 +140,7 @@ object SearchHelper {
     val itemStatusList = list
       .map(s => {
         try {
-          ItemStatus.valueOf(s.toUpperCase())
+          ItemStatus.valueOf(s.toString.toUpperCase)
         } catch {
           case _: IllegalArgumentException =>
             throw new BadRequestException(s"Invalid Item status: $s")
@@ -201,19 +202,19 @@ object SearchHelper {
     val bean         = itemKeyAndBean._2
     val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
     SearchResultItem(
-      key.getUuid,
-      Option(bean.getName),
-      Option(bean.getDescription),
-      bean.getStatus,
-      bean.getCreatedDate,
-      bean.getModifiedDate,
-      bean.getCollection.getUuid,
+      uuid = key.getUuid,
+      name = Option(bean.getName),
+      description = Option(bean.getDescription),
+      status = bean.getStatus,
+      createdDate = bean.getCreatedDate,
+      modifiedDate = bean.getModifiedDate,
+      collectionId = bean.getCollection.getUuid,
       commentCount,
-      convertToAttachment(bean.getAttachments),
-      bean.getThumbnail,
-      bean.getDisplayFields.asScala.toList,
-      Option(bean.getDisplayOptions),
-      getLinksFromBean(bean)
+      attachments = convertToAttachment(bean.getAttachments),
+      thumbnail = bean.getThumbnail,
+      displayFields = bean.getDisplayFields.asScala.toList,
+      displayOptions = Option(bean.getDisplayOptions),
+      links = getLinksFromBean(bean)
     )
   }
 

@@ -18,9 +18,14 @@
 
 package com.tle.web.api.search.model
 
+import com.tle.beans.item.ItemStatus
 import io.swagger.annotations.ApiParam
 import javax.ws.rs.{DefaultValue, QueryParam}
 
+/**
+  * This class is typically used with @BeanParam in order to aggregate lots of Search parameters instead of
+  * having a long list of parameters.
+  */
 class SearchParam {
   @ApiParam("Query string")
   @QueryParam("query")
@@ -57,11 +62,9 @@ class SearchParam {
   @QueryParam("whereClause")
   var whereClause: String = _
 
-  @ApiParam(value = "Filter by item status.",
-            allowableValues =
-              "DRAFT,LIVE,REJECTED,MODERATING,ARCHIVED,SUSPENDED,DELETED,REVIEW,PERSONAL")
+  @ApiParam(value = "Filter by item status.")
   @QueryParam("status")
-  var status: Array[String] = _
+  var status: Array[ItemStatus] = _
 
   @ApiParam("An ISO date format (yyyy-MM-dd)")
   @QueryParam("modifiedBefore")
