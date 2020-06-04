@@ -65,7 +65,7 @@ object SearchHelper {
     val collectionUuids = handleCollections(params.advancedSearch, params.collections)
     search.setCollectionUuids(collectionUuids.orNull)
 
-    val itemStatus = handleItemStatus(params.status)
+    val itemStatus = if (params.status.isEmpty) None else Some(params.status.toList.asJava)
     search.setItemStatuses(itemStatus.orNull)
 
     val modifiedBefore = handleModifiedDate(params.modifiedBefore)
@@ -125,30 +125,6 @@ object SearchHelper {
     } catch {
       case _: ParseException => throw new BadRequestException(s"Invalid date: $date")
     }
-  }
-
-  /**
-    * Convert a list of strings to another list of ItemStatus.
-    * @param list A list of strings to convert
-    * @return An option which wraps a list of ItemStatus.
-    */
-  def handleItemStatus(list: Array[ItemStatus]): Option[java.util.List[ItemStatus]] = {
-    if (list.isEmpty) {
-      return None
-    }
-
-    val itemStatusList = list
-      .map(s => {
-        try {
-          ItemStatus.valueOf(s.toString.toUpperCase)
-        } catch {
-          case _: IllegalArgumentException =>
-            throw new BadRequestException(s"Invalid Item status: $s")
-        }
-      })
-      .toList
-      .asJava
-    Some(itemStatusList)
   }
 
   /**
