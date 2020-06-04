@@ -133,6 +133,7 @@ tests:
       - com.tle.webtests.test.webservices.rest.TaxonomyApiTest
       - com.tle.webtests.test.webservices.rest.UserGroupManagementApiTest
       - io.github.openequella.rest.AuthApiTest
+      - io.github.openequella.rest.Search2ApiTest
       - com.tle.webtests.test.webservices.soap.Soap51Test
       - com.tle.webtests.test.webservices.soap.SoapServicesTest
       - com.tle.webtests.test.webservices.OAIEndpointTest
