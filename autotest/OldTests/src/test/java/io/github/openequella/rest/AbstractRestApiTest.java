@@ -40,7 +40,6 @@ public class AbstractRestApiTest {
   }
 
   protected HttpMethod buildLoginMethod(String username, String password) {
-
     final String loginEndpoint = AUTH_API_ENDPOINT + "/login";
     final NameValuePair[] queryVals = {
       new NameValuePair("username", username), new NameValuePair("password", password)
