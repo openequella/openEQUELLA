@@ -2,7 +2,7 @@ import Axios, { AxiosResponse, AxiosError } from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import * as tough from 'tough-cookie';
 import { repackageError } from './Errors';
-import {stringify} from "querystring";
+import {stringify} from 'query-string';
 
 // So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
 // the oEQ security is based on JSESSIONID cookies currently this is key.
