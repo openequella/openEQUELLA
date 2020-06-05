@@ -18,12 +18,12 @@ on:
       - stable-*
       - component/**
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build_and_check:
     runs-on: ubuntu-latest
-
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -125,9 +125,6 @@ jobs:
   build_import_export_tool:
     runs-on: ubuntu-latest
 
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
       - uses: actions/checkout@v2
 
@@ -177,7 +174,6 @@ jobs:
       AUTOTEST_CONFIG: autotest/github-actions.conf
       EQ_EXIFTOOL_PATH: /usr/bin/exiftool
       OLD_TEST_NEWUI: ${{ matrix.newui }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Install OS dependencies
