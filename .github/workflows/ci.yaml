@@ -9,7 +9,7 @@ on:
       - stable-*
       - component/**
     tags:
-      - '**'
+      - "**"
   pull_request:
     branches:
       - master
@@ -67,7 +67,7 @@ jobs:
 
       - name: Install node dependencies (core)
         shell: bash -l -eo pipefail {0}
-        working-directory: Source/Plugins/Core/com.equella.core/js 
+        working-directory: Source/Plugins/Core/com.equella.core/js
         run: |
           npm ci
 
@@ -95,7 +95,7 @@ jobs:
 
       - name: Run unit tests (javascript)
         shell: bash -l -eo pipefail {0}
-        working-directory: Source/Plugins/Core/com.equella.core/js 
+        working-directory: Source/Plugins/Core/com.equella.core/js
         run: |
           npm cit
 
@@ -169,6 +169,7 @@ jobs:
       AUTOTEST_CONFIG: autotest/github-actions.conf
       EQ_EXIFTOOL_PATH: /usr/bin/exiftool
       OLD_TEST_NEWUI: ${{ matrix.newui }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Install OS dependencies
@@ -195,7 +196,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: Artefacts
- 
+
       - name: Extract installer from build
         env:
           DOWNLOAD_DIR: Artefacts

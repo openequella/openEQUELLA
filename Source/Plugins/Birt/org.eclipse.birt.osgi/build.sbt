@@ -3,13 +3,14 @@ import Path.flat
 lazy val BirtOsgi      = config("birtosgi")
 lazy val CustomCompile = config("compile") extend BirtOsgi
 
+
 libraryDependencies := Seq(
   "com.github.equella.reporting" % "birt-osgi" % "3.7.2" artifacts Artifact("birt-osgi",
                                                                             Artifact.DefaultType,
                                                                             "zip"),
-  "com.github.equella.reporting" % "reporting-common"                               % "6.5",
-  "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
-  "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",
+  "com.github.openequella" % "reporting-common"                               % "2020.2.0.2020052905",
+  "com.github.openequella" % "reporting-oda"                                  % "2020.2.0.2020052905",
+  "com.github.openequella" % "reporting-oda-connectors"                       % "2020.2.0.2020052905",
   "org.apache.commons"           % "com.springsource.org.apache.commons.httpclient" % "3.1.0",
   "org.apache.commons"           % "com.springsource.org.apache.commons.logging"    % "1.1.1",
   "org.apache.commons"           % "com.springsource.org.apache.commons.codec"      % "1.6.0",
@@ -21,6 +22,12 @@ libraryDependencies := Seq(
 resolvers += Resolver.url("my-test-repo",
                           url("http://repository.springsource.com/ivy/bundles/external/"))(
   Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
+//resolvers += Resolver.url("github",
+//                          url("https://maven.pkg.github.com/openEQUELLA/openEQUELLA-reporting-plugin"))(
+//  Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
+githubTokenSource := TokenSource.GitConfig("github.token")
+resolvers += Resolver.githubPackages("openEQUELLA", "openEQUELLA-reporting-plugins")
+
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 
