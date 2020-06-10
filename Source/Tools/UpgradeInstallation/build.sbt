@@ -5,7 +5,7 @@ libraryDependencies ++= Seq(
   "log4j"            % "log4j"          % "1.2.17",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
-  "commons-io"            % "commons-io"            % "2.6",
+  "commons-io"            % "commons-io"            % "2.7",
   "commons-lang"          % "commons-lang"          % "2.6"
 )
 
