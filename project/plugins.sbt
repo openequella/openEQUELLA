@@ -9,6 +9,8 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
 addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
+
+addSbtPlugin("nl.codestar" % "sbt-findsecbugs" % "0.16")
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
 
