@@ -405,6 +405,7 @@ export const Template = React.memo(function Template({
         component={(p) => {
           const props = {
             ...p,
+            rel: item.newWindow ? "noopener noreferrer" : undefined,
             target: item.newWindow ? "_blank" : undefined,
             onClick: () => setNavMenuOpen(false),
           };
