@@ -108,7 +108,7 @@
     "babel-loader": "8.1.0",
     "combined-stream2": "1.1.2",
     "cross-env": "5.2.1",
-    "cross-spawn": "6.0.5",
+    "cross-spawn": "7.0.3",
     "css-vars-ponyfill": "1.17.2",
     "envify": "4.1.0",
     "enzyme": "3.11.0",
