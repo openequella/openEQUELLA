@@ -40,7 +40,6 @@ export default function Date({ displayRelative, date }: DateProps) {
   const luxDate = DateTime.fromJSDate(date);
   let primaryDate = luxDate.toLocaleString(DateTime.DATETIME_MED);
   let hoverDate = luxDate.toRelative() || "undefined";
-
   if (displayRelative) {
     //swap 'em around
     [primaryDate, hoverDate] = [hoverDate, primaryDate];
@@ -48,10 +47,14 @@ export default function Date({ displayRelative, date }: DateProps) {
 
   return (
     <Tooltip title={hoverDate}>
-      <Typography className={classes.dateModified} variant="subtitle1">
+      <Typography
+        className={classes.dateModified}
+        component="span"
+        variant="body1"
+      >
         {primaryDate}
       </Typography>
     </Tooltip>
   );
 }
-export { Date };
+export { Date as DateDisplay };
