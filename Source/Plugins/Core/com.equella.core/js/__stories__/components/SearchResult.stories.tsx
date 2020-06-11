@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import SearchResult from "../../tsrc/search/components/SearchResult";
-import image from "./thumb.jpg";
+//import image from "./thumb.jpg";
 
 export default {
   title: "SerachResult",
@@ -68,7 +68,7 @@ const attachSearchObj = {
       links: {
         view:
           "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-        thumbnail: image,
+        thumbnail: "./thumb.jpg",
       },
     },
   ],
@@ -106,7 +106,7 @@ const customMetaSearchObj = {
       links: {
         view:
           "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-        thumbnail: image,
+        thumbnail: "./thumb.jpg",
       },
     },
   ],
