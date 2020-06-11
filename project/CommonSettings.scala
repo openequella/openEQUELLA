@@ -35,7 +35,7 @@ object CommonSettings extends AutoPlugin {
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
     lazy val log4jCustom     = LocalProject("com_tle_log4j")
     lazy val xstreamDep      = "com.thoughtworks.xstream" % "xstream" % "1.4.11.1"
-    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.2.12"
+    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.2.14"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8"
   }
 
