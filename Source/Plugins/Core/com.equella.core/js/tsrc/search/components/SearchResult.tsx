@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { SyntheticEvent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import {
@@ -105,7 +106,7 @@ export default function SearchResult({
     displayOptions.standardOpen
   );
 
-  const handleAttachmentPanelClick = (event) => {
+  const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     event.stopPropagation();
     setAttachExpanded(!attachExapanded);
   };
