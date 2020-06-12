@@ -29,7 +29,7 @@ import {
   ListItemIcon,
   Collapse,
 } from "@material-ui/core";
-import { DateDisplay } from "../../components/Date";
+import { Date as DateDisplay } from "../../components/Date";
 import {
   InsertDriveFile,
   ExpandMore,

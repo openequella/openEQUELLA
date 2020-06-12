@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import { boolean, date } from "@storybook/addon-knobs";
-import { DateDisplay } from "../../tsrc/components/Date";
+import { Date as DateDisplay } from "../../tsrc/components/Date";
 
 export default {
   title: "DateDisplay",
