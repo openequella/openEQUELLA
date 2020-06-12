@@ -22,8 +22,8 @@ resolvers += Resolver.url("my-test-repo",
                           url("http://repository.springsource.com/ivy/bundles/external/"))(
   Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
 
-githubTokenSource := TokenSource.GitConfig("github.token")
-resolvers += Resolver.githubPackages("openEQUELLA", "openEQUELLA-reporting-plugins")
+//resolvers += Resolver.url("ossrh",
+//  url(""))
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 

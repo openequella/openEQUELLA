@@ -18,9 +18,6 @@ on:
       - stable-*
       - component/**
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   build_and_check:
     runs-on: ubuntu-latest
