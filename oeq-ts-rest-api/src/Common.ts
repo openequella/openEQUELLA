@@ -45,6 +45,18 @@ export interface BaseEntity {
   links: Record<string, string>;
 }
 
+export enum ItemStatus {
+  DRAFT = "DRAFT",
+  LIVE = "LIVE",
+  REJECTED = "REJECTED",
+  MODERATING = "MODERATING",
+  ARCHIVED = "ARCHIVED",
+  SUSPENDED = "SUSPENDED",
+  DELETED = "DELETED",
+  REVIEW = "REVIEW",
+  PERSONAL = "PERSONAL",
+}
+
 export interface PagedResult<T> {
   start: number;
   length: number;

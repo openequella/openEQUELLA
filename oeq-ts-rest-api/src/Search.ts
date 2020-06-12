@@ -41,7 +41,7 @@ export interface SearchParams {
   /**
    * Item status.
    */
-  status?: ItemStatus[];
+  status?: Common.ItemStatus[];
   /**
    * A date before which items are modified. Date format (yyyy-MM-dd).
    */
@@ -60,20 +60,8 @@ export interface SearchParams {
   dynaCollection?: string;
 }
 
-export enum ItemStatus {
-  DRAFT = "DRAFT",
-  LIVE = "LIVE",
-  REJECTED = "REJECTED",
-  MODERATING = "MODERATING",
-  ARCHIVED = "ARCHIVED",
-  SUSPENDED = "SUSPENDED",
-  DELETED = "DELETED",
-  REVIEW = "REVIEW",
-  PERSONAL = "PERSONAL",
-}
-
 /**
- * Type of item's display fields.
+ * Details of an additional field to display as part of search results - server side configurable in collections.
  */
 export interface DisplayFields {
   /**
@@ -91,7 +79,7 @@ export interface DisplayFields {
 }
 
 /**
- * Type of item's display options.
+ * How an item should be displayed as configured per institution via the search result display template.
  */
 export interface DisplayOptions {
   /**
@@ -113,11 +101,11 @@ export interface DisplayOptions {
 }
 
 /**
- * Type of search result attachment.
+ * Summary of an attachment associated with an item returned in a search result.
  */
-export interface SearchResultAttachment {
+export interface Attachment {
   /**
-   * Attachment type.
+   * Attachment type, e.g. "file", "url", "package", "scorm", etc.
    */
   attachmentType: string;
   /**
@@ -161,11 +149,11 @@ export interface SearchResultItem {
   /**
    * The date when item is created.
    */
-  createdDate: string;
+  createdDate: Date;
   /**
    * The last date when item is modified.
    */
-  modifiedDate: string;
+  modifiedDate: Date;
   /**
    * The ID of item's collection.
    */
@@ -177,7 +165,7 @@ export interface SearchResultItem {
   /**
    * Item's attachments.
    */
-  attachments: SearchResultAttachment[];
+  attachments: Attachment[];
   /**
    * Item's thumbnail.
    */
@@ -200,6 +188,9 @@ const SEARCH2_API_PATH = '/search2';
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
  */
 export const search = (apiBasePath: string, params?: SearchParams): Promise<Common.PagedResult<SearchResultItem>> => {
   return GET<Common.PagedResult<SearchResultItem>>(
