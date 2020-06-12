@@ -1,6 +1,7 @@
 import * as Common from './Common';
 import { is } from 'typescript-is';
 import {GET} from './AxiosInstance';
+import * as Utils from './Utils';
 
 /**
  * Type of query parameters that can be used in a search.
@@ -196,6 +197,7 @@ export const search = (apiBasePath: string, params?: SearchParams): Promise<Comm
   return GET<Common.PagedResult<SearchResultItem>>(
     apiBasePath + SEARCH2_API_PATH,
     (data) => is<Common.PagedResult<SearchResultItem>>(data),
-    params
+    params,
+    (data) => Utils.convertDateFields(["createdDate", "modifiedDate"], data, true)
   );
 };
