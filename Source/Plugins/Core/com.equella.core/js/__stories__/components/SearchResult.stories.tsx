@@ -17,7 +17,6 @@
  */
 import * as React from "react";
 import SearchResult from "../../tsrc/search/components/SearchResult";
-//import image from "./thumb.jpg";
 
 export default {
   title: "SerachResult",
