@@ -234,7 +234,7 @@ libraryDependencies ++= Seq(
   "org.scala-sbt"          %% "io"                       % "1.1.0",
   "org.mozilla"            % "rhino"                     % "1.7.12",
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
   "io.github.classgraph"   % "classgraph"                % "4.8.85"
 )
