@@ -114,13 +114,11 @@ export default function SearchResult({
   const thumbnail = (disableThumb: boolean) => {
     if (attachments.length > 0 && !disableThumb) {
       return (
-        <>
-          <img
-            className={classes.thumbnail}
-            src={attachments[0].links.thumbnail}
-            alt={attachments[0].description}
-          />
-        </>
+        <img
+          className={classes.thumbnail}
+          src={attachments[0].links.thumbnail}
+          alt={attachments[0].description}
+        />
       );
     } else {
       return (
@@ -149,43 +147,39 @@ export default function SearchResult({
 
   const customDisplayMetadata = displayFields.map((element: any) => {
     return (
-      <>
-        <ListItem disableGutters dense>
-          <Typography
-            component="span"
-            variant="body2"
-            className={classes.heading}
-            color="textPrimary"
-          >
-            {element.name}
-          </Typography>
-          <Typography
-            component="span"
-            variant="body2"
-            className={classes.inline}
-            color="textPrimary"
-            dangerouslySetInnerHTML={{ __html: element.html }}
-          ></Typography>
-        </ListItem>
-      </>
+      <ListItem disableGutters dense>
+        <Typography
+          component="span"
+          variant="body2"
+          className={classes.heading}
+          color="textPrimary"
+        >
+          {element.name}
+        </Typography>
+        <Typography
+          component="span"
+          variant="body2"
+          className={classes.inline}
+          color="textPrimary"
+          dangerouslySetInnerHTML={{ __html: element.html }}
+        ></Typography>
+      </ListItem>
     );
   });
 
   const generateAttachmentList = () => {
     const attachmentsList = attachments.map((attachment: any) => {
       return (
-        <>
-          <ListItem
-            key={attachment.id || attachment.uuid}
-            button
-            className={classes.nested}
-          >
-            <ListItemIcon>
-              <InsertDriveFile />
-            </ListItemIcon>
-            <ListItemText color="primary" primary={attachment.description} />
-          </ListItem>
-        </>
+        <ListItem
+          key={attachment.id || attachment.uuid}
+          button
+          className={classes.nested}
+        >
+          <ListItemIcon>
+            <InsertDriveFile />
+          </ListItemIcon>
+          <ListItemText color="primary" primary={attachment.description} />
+        </ListItem>
       );
     });
 
@@ -209,7 +203,7 @@ export default function SearchResult({
           </Collapse>
         </List>
       );
-    else return null;
+    return null;
   };
 
   return (
