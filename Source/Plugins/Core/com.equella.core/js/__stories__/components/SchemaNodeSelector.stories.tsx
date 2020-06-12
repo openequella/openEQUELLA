@@ -16,52 +16,11 @@
  * limitations under the License.
  */
 import * as React from "react";
-import SchemaNodeSelector, {
-  SchemaNode,
-} from "../../tsrc/settings/SchemaNodeSelector";
-import v4 from "uuid/v4";
+import SchemaNodeSelector from "../../tsrc/settings/SchemaNodeSelector";
 import { action } from "@storybook/addon-actions";
+import { boolean } from "@storybook/addon-knobs";
+import { testSchema } from "../../__mocks__/schemaSelectorDataMock";
 
-const testSchema: SchemaNode = {
-  id: v4(),
-  label: "schemaRoot",
-  children: [
-    {
-      id: v4(),
-      label: "schemaChild1",
-      children: [
-        {
-          id: v4(),
-          label: "schemaGrandChild1",
-        },
-        {
-          id: v4(),
-          label: "schemaGrandChild2",
-        },
-      ],
-    },
-    {
-      id: v4(),
-      label: "schemaChild2",
-    },
-    {
-      id: v4(),
-      label: "schemaChild3",
-      children: [
-        {
-          id: v4(),
-          label: "schemaGrandChild3",
-          children: [
-            {
-              id: v4(),
-              label: "schemaGreatGrandChild1",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
 export default {
   title: "SchemaNodeSelector",
   component: SchemaNodeSelector,
@@ -71,5 +30,6 @@ export const SchemaNodeSelectorComponent = () => (
   <SchemaNodeSelector
     setSelectedNode={action("Node Selected")}
     tree={testSchema}
+    expandControls={boolean("Show expand controls?", false)}
   />
 );
