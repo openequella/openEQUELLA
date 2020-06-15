@@ -17,6 +17,8 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { Config } from "../config";
+import { TreeItem } from "@material-ui/lab";
+import * as React from "react";
 
 const API_BASE_URL = `${Config.baseUrl}api`;
 
@@ -122,4 +124,44 @@ export const pathForNode = (node: SchemaNode, stripXml = true): string => {
   }
 
   return path;
+};
+
+/**
+ * Recursive helper function to get a list of all possible xml paths from a given SchemaNode.
+ * @param nodes The schema to generate paths for.
+ * @param paths Used by the recursive algorithm to build up the returned list.
+ *          When passing in initially, leave as a blank array.
+ * @param stripXml Passed into pathForNode. Whether to include the leading /xml.
+ *
+ */
+export const getAllPaths = (
+  nodes: SchemaNode,
+  paths: string[],
+  stripXml = true
+) => {
+  paths.push(pathForNode(nodes, stripXml));
+  nodes.children?.forEach((childNode) => {
+    paths.concat(getAllPaths(childNode, paths, stripXml));
+  });
+
+  return paths;
+};
+
+/**
+ * Recursive helper function that converts a SchemaNode into a corresponding Material UI
+ * TreeItem tree.
+ * @param nodes The node to generate a TreeItem for.
+ */
+export const renderTree = (nodes: SchemaNode) => {
+  return (
+    <TreeItem
+      key={nodes.name}
+      nodeId={pathForNode(nodes, false)}
+      label={nodes.name}
+    >
+      {Array.isArray(nodes.children)
+        ? nodes.children.map((node) => renderTree(node))
+        : null}
+    </TreeItem>
+  );
 };
