@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.10.3"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.55"
+val TomcatVersion    = "8.5.56"
 val SwaggerVersion   = "1.5.24"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -72,7 +72,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.12.2",
+  "com.rometools"             % "rome"                  % "1.13.1",
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
@@ -85,7 +85,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.2.2",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.6",
+  "commons-io"                % "commons-io"            % "2.7",
   "commons-lang"              % "commons-lang"          % "2.6",
   "dom4j"                     % "dom4j"                 % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
@@ -231,12 +231,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"           % "xml-resolver"              % "1.2",
-  "org.scala-sbt"          %% "io"                       % "1.1.0",
+  "org.scala-sbt"          %% "io"                       % "1.3.4",
   "org.mozilla"            % "rhino"                     % "1.7.12",
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.78"
+  "io.github.classgraph"   % "classgraph"                % "4.8.86"
 )
 
 libraryDependencies ++= {

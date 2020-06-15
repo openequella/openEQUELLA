@@ -1,6 +1,5 @@
 # openEQUELLA
 
-[![Travis build](https://travis-ci.com/openequella/openEQUELLA.svg?branch=develop)](https://travis-ci.com/openequella/openEQUELLA)
 [![openEQUELLA CI](https://github.com/openequella/openEQUELLA/workflows/openEQUELLA%20CI/badge.svg?branch=develop)](https://github.com/openequella/openEQUELLA/actions?query=workflow%3A%22openEQUELLA+CI%22+branch%3Adevelop)
 
 openEQUELLA is a digital repository that provides a single platform to house your teaching and
@@ -38,7 +37,7 @@ Below you'll find further information for developers wishing to work with the so
 
 In ubuntu:
 
-```
+```bash
 ~$ sudo apt-get install git
 ```
 
@@ -52,7 +51,7 @@ This guide assumes you have SSH capabilities. Be sure to add your public SSH key
 
 In ubuntu:
 
-```
+```bash
 ~$ echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
 ~$ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
 ~$ sudo apt-get update
@@ -74,7 +73,7 @@ Oracle is the recommended and historically the supported vendor of Java to run o
 
 In ubuntu:
 
-```
+```bash
 ~$ sudo add-apt-repository ppa:webupd8team/java
 ~$ sudo apt-get update
 ~$ sudo apt-get install oracle-java8-installer
@@ -89,7 +88,7 @@ _Note: For ubuntu follow the install from Unix Source instructions:_
 
 To confirm the installation directory in Ubuntu for the openEquella installer, run the command:
 
-```
+```bash
 ~$ whereis convert
 ```
 
@@ -99,13 +98,13 @@ When installing in Windows, check “Install Legacy Utilities (e.g. convert)”.
 
 In ubuntu:
 
-```
+```bash
 ~$ sudo apt-get install libav-tools
 ```
 
 To confirm the installation directory in Ubuntu for the openEquella installer, run the command:
 
-```
+```bash
 ~$ whereis avconv
 ```
 
@@ -121,7 +120,7 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 
 **Git Clone**
 
-```
+```bash
 ~$ git clone git@github.com:openequella/openEQUELLA.git
 ```
 
