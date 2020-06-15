@@ -16,24 +16,43 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   TextField,
 } from "@material-ui/core";
 import { commonString } from "../../../util/commonstrings";
 import { languageStrings } from "../../../util/langstrings";
-import { useEffect, useState } from "react";
 import {
   FacetWithFlags,
   validateFacetFields,
 } from "./FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 
+const useStyles = makeStyles((theme: Theme) => {
+  return {
+    dialogPaper: {
+      width: "45%",
+      height: "90%",
+      maxHeight: "none",
+      maxWidth: "none",
+      margin: theme.spacing(2),
+      padding: theme.spacing(1),
+      overflowY: "hidden",
+    },
+    dialog: {
+      overflowY: "hidden",
+    },
+    root: {
+      flexGrow: 1,
+    },
+  };
+});
 interface FacetDialogProps {
   /**
    * If true, the dialog will be shown.
@@ -83,6 +102,7 @@ const FacetDialog = ({
   const isNameInvalid = validateFacetFields(name);
   const isSchemaNodeInvalid = validateFacetFields(schemaNode);
 
+  const classes = useStyles();
   /**
    * Initialise textfields' values, depending on 'onClose'.
    */
@@ -103,54 +123,47 @@ const FacetDialog = ({
       onClose={onClose}
       disableBackdropClick
       disableEscapeKeyDown
-      fullWidth
-      maxWidth={"lg"}
+      className={classes.dialog}
+      classes={{ paper: classes.dialogPaper }}
     >
       <DialogTitle>{facetedSearchSettingStrings.add}</DialogTitle>
       <DialogContent>
-        <Grid container direction={"row"} spacing={1}>
-          <Grid item>
-            <TextField
-              margin="dense"
-              label={facetFieldStrings.name}
-              value={name}
-              required
-              fullWidth
-              onChange={(event) => setName(event.target.value)}
-              error={!!name && isNameInvalid}
-            />
-
-            <TextField
-              margin="dense"
-              label={facetFieldStrings.schemanode}
-              value={schemaNode}
-              required
-              fullWidth
-              onChange={(event) => setSchemaNode(event.target.value)}
-              error={!!schemaNode && isSchemaNodeInvalid}
-            />
-            <TextField
-              type="number"
-              margin="dense"
-              label={facetFieldStrings.categorynumber}
-              value={maxResults}
-              fullWidth
-              onChange={(event) =>
-                setMaxResults(
-                  event.target.value ? parseInt(event.target.value) : undefined
-                )
-              }
-              helperText={"Leave blank to display all categories"}
-            />
-          </Grid>
-          <Grid item>
-            <SchemaSelector
-              setSchemaNode={(node) => {
-                setSchemaNode(node);
-              }}
-            />
-          </Grid>
-        </Grid>
+        <TextField
+          margin="dense"
+          label={facetFieldStrings.name}
+          value={name}
+          required
+          fullWidth
+          onChange={(event) => setName(event.target.value)}
+          error={!!name && isNameInvalid}
+        />
+        <TextField
+          type="number"
+          margin="dense"
+          label={facetFieldStrings.categorynumber}
+          value={maxResults}
+          fullWidth
+          onChange={(event) =>
+            setMaxResults(
+              event.target.value ? parseInt(event.target.value) : undefined
+            )
+          }
+          helperText={"Leave blank to display all categories"}
+        />
+        <TextField
+          margin="dense"
+          label={facetFieldStrings.schemanode}
+          value={schemaNode}
+          required
+          fullWidth
+          error={!!schemaNode && validateFacetFields(schemaNode)}
+        />
+        <SchemaSelector
+          setSchemaNode={(node) => {
+            setSchemaNode(node);
+          }}
+        />
+        {/*</div>*/}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
