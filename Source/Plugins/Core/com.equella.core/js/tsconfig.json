@@ -9,7 +9,6 @@
     "allowJs": true,
     "checkJs": true,
     "downlevelIteration": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "jsx": "react",
     "moduleResolution": "node",
