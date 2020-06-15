@@ -19,13 +19,13 @@ import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import { FacetWithFlags } from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { act } from "react-dom/test-utils";
 import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
 import MessageInfo from "../../../tsrc/components/MessageInfo";
 import MessageDialog from "../../../tsrc/components/MessageDialog";
 import { Draggable } from "react-beautiful-dnd";
-import { FacetWithFlags } from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
 
 const mockFacets: FacetedSearchSettingsModule.Facet[] = [
   {
@@ -101,7 +101,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     fields.at(0).simulate("change", {
       target: { value: action === Actions.Add ? "new facet" : "updated facet" },
     });
-    fields.at(1).simulate("change", { target: { value: "item/name/first" } });
+    fields.at(2).simulate("change", { target: { value: "item/name/first" } });
     const button = component
       .findWhere(
         (node) =>

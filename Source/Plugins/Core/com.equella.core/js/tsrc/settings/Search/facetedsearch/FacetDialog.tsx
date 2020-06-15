@@ -154,6 +154,9 @@ const FacetDialog = ({
           margin="dense"
           label={facetFieldStrings.schemanode}
           value={schemaNode}
+          onChange={(event) => {
+            setSchemaNode(event.target.value);
+          }}
           required
           fullWidth
           error={!!schemaNode && validateFacetFields(schemaNode)}
