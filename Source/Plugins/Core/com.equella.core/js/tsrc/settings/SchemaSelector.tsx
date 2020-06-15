@@ -52,13 +52,13 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       const elementList: JSX.Element[] = [
         <MenuItem value={undefined}>{strings.selectaschema}</MenuItem>,
       ];
-      for (const [uuid, name] of schemas) {
+      schemas.forEach((name, uuid) => {
         elementList.push(
           <MenuItem id={uuid} value={uuid}>
             {name}
           </MenuItem>
         );
-      }
+      });
       setSchemaList(elementList);
     });
   }, []);
