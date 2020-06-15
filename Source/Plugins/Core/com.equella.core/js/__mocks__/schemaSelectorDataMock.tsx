@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import { SchemaNode } from "../tsrc/schema/SchemaModule";
+import { TreeItem } from "@material-ui/lab";
+import * as React from "react";
 
 export const testSchema: SchemaNode = {
   name: "schemaRoot",
@@ -70,3 +72,13 @@ export const testSchema: SchemaNode = {
     },
   ],
 };
+
+export const jsxOutput = (
+  <TreeItem key="xml" label="xml" nodeId="/xml">
+    <TreeItem label="child1" nodeId="/xml/child1">
+      <TreeItem label="child2" nodeId="/xml/child1/child2">
+        <TreeItem label="child3" nodeId="/xml/child1/child2/child3" />
+      </TreeItem>
+    </TreeItem>
+  </TreeItem>
+);
