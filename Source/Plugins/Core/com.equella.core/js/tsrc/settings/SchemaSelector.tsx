@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
+import * as React from "react";
 import { Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import {
   schemaListSummary,
@@ -38,6 +38,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   >(undefined);
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<JSX.Element[]>([]);
+  const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
   React.useEffect(() => {
     schemaListSummary().then((schemas) => {
       const elementList: JSX.Element[] = [
@@ -59,39 +60,48 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       schemaTree(selectedSchema).then((tree) => setSchema(tree));
     } else {
       setSchema(undefined);
-      setSchemaNode("");
     }
   }, [selectedSchema]);
 
+  React.useEffect(() => {
+    if (schemaNodePath !== "") {
+      setSchemaNode(schemaNodePath);
+    }
+  }, [schemaNodePath]);
   return (
-    <Grid container direction={"column"} spacing={1}>
-      <Grid item>
-        {schemaList && (
-          <>
-            <Select
-              style={{ width: "620px" }}
-              fullWidth
-              label={
-                <InputLabel shrink id="select-label">
-                  Schema
-                </InputLabel>
-              }
-              value={selectedSchema}
-              displayEmpty
-              onChange={(event) => {
-                setSelectedSchema(event.target.value as string | undefined);
-              }}
-            >
-              {schemaList}
-            </Select>
-          </>
-        )}
-      </Grid>
-      <Grid item>
-        {schema && (
-          <SchemaNodeSelector tree={schema} setSelectedNode={setSchemaNode} />
-        )}
-      </Grid>
+    <Grid container direction={"column"} spacing={0}>
+      <>
+        <Grid item>
+          {schemaList && (
+            <>
+              <Select
+                fullWidth
+                label={
+                  <InputLabel shrink id="select-label">
+                    Schema
+                  </InputLabel>
+                }
+                value={selectedSchema}
+                displayEmpty
+                onChange={(event) => {
+                  setSelectedSchema(event.target.value as string | undefined);
+                }}
+              >
+                {schemaList}
+              </Select>
+            </>
+          )}
+        </Grid>
+        <Grid item>
+          {schema && (
+            <SchemaNodeSelector
+              expandControls
+              tree={schema}
+              setSelectedNode={setSchemaNodePath}
+            />
+          )}
+        </Grid>
+      </>
     </Grid>
   );
 }

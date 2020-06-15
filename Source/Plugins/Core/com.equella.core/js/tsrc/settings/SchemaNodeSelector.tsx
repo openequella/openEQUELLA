@@ -16,13 +16,30 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { TreeItem, TreeView } from "@material-ui/lab";
+import { TreeView } from "@material-ui/lab";
 import { Add, Remove } from "@material-ui/icons";
-import { pathForNode, SchemaNode } from "../schema/SchemaModule";
+import { getAllPaths, renderTree, SchemaNode } from "../schema/SchemaModule";
+import { Button, Grid } from "@material-ui/core";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme: Theme) => {
+  return {
+    treeView: {
+      flexGrow: 1,
+      maxHeight: "30vh",
+      overflowY: "auto",
+      width: "100%",
+    },
+    button: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
+  };
+});
 
 interface SchemaNodeSelectorProps {
   /**
-   * The schema tree this component will display. Made up of SchemaNodes objects which contain an id, a label and child SchemaNodes.
+   * The schema tree this component will display.
    */
   tree: SchemaNode | undefined;
   /**
@@ -30,61 +47,70 @@ interface SchemaNodeSelectorProps {
    * @param node The path of the selected node.
    */
   setSelectedNode: (node: string) => void;
+  /**
+   * If present, expand all/collapse all buttons will be available.
+   */
+  expandControls?: boolean;
 }
-const getAllPaths = (nodes: SchemaNode, paths: string[]) => {
-  paths.push(pathForNode(nodes, false));
-  nodes.children?.forEach((childNode) => {
-    paths.concat(getAllPaths(childNode, paths));
-  });
-  return paths;
-};
-const renderTree = (nodes: SchemaNode) => {
-  return (
-    <TreeItem
-      key={nodes.name}
-      nodeId={pathForNode(nodes, false)}
-      label={nodes.name}
-    >
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => renderTree(node))
-        : null}
-    </TreeItem>
-  );
-};
+
 /**
  * This component defines a schema node selector, for the display of a schema and selection of its nodes. The schema itself passed into this should be of type SchemaNode.
  */
 export default function SchemaNodeSelector({
   setSelectedNode,
   tree,
+  expandControls,
 }: SchemaNodeSelectorProps) {
   const [selectedNode, setSelected] = React.useState("");
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [renderedTree, setRenderedTree] = React.useState<JSX.Element>(<div />);
+  const classes = useStyles();
   React.useEffect(() => {
     if (tree !== undefined) {
       setRenderedTree(renderTree(tree));
-      setExpanded(getAllPaths(tree, []));
+      setExpanded([]);
       setSelectedNode("");
     }
   }, [tree]);
 
   return (
-    <TreeView
-      style={{ maxHeight: "350px", overflowY: "scroll", width: "620px" }}
-      defaultExpandIcon={<Add />}
-      defaultCollapseIcon={<Remove />}
-      selected={selectedNode}
-      expanded={expanded}
-      onNodeToggle={(event, paths) => {
-        setExpanded(paths);
-      }}
-      onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
-        setSelected(nodePath);
-        setSelectedNode(nodePath);
-      }}
-    >
-      {renderedTree}
-    </TreeView>
+    <>
+      {expandControls && (
+        <Grid container direction={"row"} wrap={"nowrap"} justify={"flex-end"}>
+          <Grid item>
+            <Button
+              className={classes.button}
+              size={"small"}
+              onClick={() => setExpanded(getAllPaths(tree!, [], false))}
+            >
+              {"Expand All"}
+            </Button>
+            <Button
+              className={classes.button}
+              size={"small"}
+              onClick={() => setExpanded([])}
+            >
+              {"Collapse All"}
+            </Button>
+          </Grid>
+        </Grid>
+      )}
+      <TreeView
+        className={classes.treeView}
+        defaultExpandIcon={<Add />}
+        defaultCollapseIcon={<Remove />}
+        selected={selectedNode}
+        expanded={expanded}
+        onNodeToggle={(event, paths) => {
+          setExpanded(paths);
+        }}
+        onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
+          setSelected(nodePath);
+          setSelectedNode(nodePath);
+        }}
+      >
+        {renderedTree}
+      </TreeView>
+    </>
   );
 }
