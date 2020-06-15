@@ -14,6 +14,12 @@ describe("Convert date fields", () => {
       today: Date;
     };
   }
+  interface InvalidDate {
+    dates: {
+      yesterday: undefined;
+      today: undefined;
+    };
+  }
 
   it("should convert valid date strings to objects of Date", () => {
     const validDates: StringDate = {
@@ -23,19 +29,18 @@ describe("Convert date fields", () => {
       }
     };
 
-    const dates = OEQ.Utils.convertDateFields<StringDate>(["yesterday", "today"], validDates, false);
+    const dates = OEQ.Utils.convertDateFields<StandardDate>(validDates, ["yesterday", "today"] );
     expect(is<StandardDate>(dates)).toBe(true);
   });
 
-  it("should keep the object unchanged if date strings are invalid", () => {
+  it("should return undefined for fields that have invalid date strings", () => {
     const invalidDates: StringDate = {
       dates: {
         yesterday: "hello",
         today: "world",
       }
     };
-    const dates = OEQ.Utils.convertDateFields<StringDate>(["yesterday", "today"], invalidDates, false);
-    expect(dates).toEqual(invalidDates);
-    expect(is<StringDate>(dates)).toBe(true);
+    const dates = OEQ.Utils.convertDateFields<StandardDate>(invalidDates, ["yesterday", "today"] );
+    expect(is<InvalidDate>(dates)).toBe(true);
   })
 });

@@ -1,29 +1,40 @@
 import * as Lodash from "lodash";
 
 /**
- * Return a copied object of which types of specified fields are converted to Date.
- * @param fields Names of fields that need type conversion.
- * @param data The object to be processed. Nested objects will be processed, too.
- * @param cloneData True if deep clone is required.
+ * Performs inplace conversion of specified fields with supplied converter.
+ *
+ * @param input The object to be processed.
+ * @param targetFields List of the names of fields to convert.
+ * @param recursive True if processing nested objects is required.
+ * @param converter A function converting fields' type.
  */
-export const convertDateFields = <T>(fields: string[], data: T, cloneData: boolean): unknown => {
-  const clonedData: T = cloneData? Lodash.cloneDeep(data) : data;
-  const results: [string, any][] = Object.entries(clonedData);
+const convertFields = <T, R>(input: unknown, targetFields: string[], recursive: boolean, converter: (value: T) => R): void => {
+  const entries: [string, any][] = Object.entries(input as any);
 
-  results.forEach(([key, value]) => {
-    if(typeof value === "object"){
-      // Don't need to deep clone nested objects again.
-      convertDateFields(fields, value, false);
+  entries.forEach(([field, value]) => {
+    if(typeof value === "object" && recursive) {
+      convertFields(value, targetFields, recursive, converter);
     }
-    else{
-      fields.forEach(field => {
-        // Convert when a date string can be parsed to Date.
-        if(field === key && !isNaN(Date.parse(value))){
-          (clonedData as any)[field] = new Date(value)
+    else {
+      targetFields.forEach( targetField => {
+        if(field === targetField) {
+          (input as any)[field] = isNaN(Date.parse(value))? undefined: converter(value);
         }
-      })
+      });
     }
-  });
-
-  return clonedData;
+  })
 };
+
+/**
+ * Return a clone of the provided object with specified fields converted to type Date. A deep clone
+ * will be undertaken, and so nested fields with matching names will also be converted.
+ *
+ * @param input The object to be processed.
+ * @param fields List of the names of fields to convert.
+ */
+export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
+  const inputClone: any = Lodash.cloneDeep(input);
+  convertFields(inputClone, fields, true, (value: string) => new Date( value));
+  return inputClone;
+};
+

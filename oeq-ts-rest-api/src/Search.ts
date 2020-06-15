@@ -198,6 +198,6 @@ export const search = (apiBasePath: string, params?: SearchParams): Promise<Comm
     apiBasePath + SEARCH2_API_PATH,
     (data) => is<Common.PagedResult<SearchResultItem>>(data),
     params,
-    (data) => Utils.convertDateFields(["createdDate", "modifiedDate"], data, true)
+    (data) => Utils.convertDateFields<Common.PagedResult<SearchResultItem>>(data, ["createdDate", "modifiedDate"] )
   );
 };
