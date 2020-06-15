@@ -23,14 +23,20 @@ import {
   schemaTree,
 } from "../schema/SchemaModule";
 import SchemaNodeSelector from "../settings/SchemaNodeSelector";
+import { languageStrings } from "../util/langstrings";
 
 interface SchemaSelectorProps {
+  /**
+   * Callback function triggered upon selection of a node.
+   * @param node  Path of the selected node.
+   */
   setSchemaNode: (node: string) => void;
 }
 
 /**
  * This component defines a schema selector, for selecting a schema and then a node within.
  * When a schema is selected, it will display that schema within a SchemaNodeSelector.
+ *
  */
 export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [selectedSchema, setSelectedSchema] = React.useState<
@@ -39,10 +45,12 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<JSX.Element[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
+  const strings =
+    languageStrings.settings.searching.facetedsearchsetting.schemaselector;
   React.useEffect(() => {
     schemaListSummary().then((schemas) => {
       const elementList: JSX.Element[] = [
-        <MenuItem value={undefined}>Select a schema...</MenuItem>,
+        <MenuItem value={undefined}>{strings.selectaschema}</MenuItem>,
       ];
       for (const [uuid, name] of schemas) {
         elementList.push(
@@ -78,7 +86,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
                 fullWidth
                 label={
                   <InputLabel shrink id="select-label">
-                    Schema
+                    {strings.schema}
                   </InputLabel>
                 }
                 value={selectedSchema}

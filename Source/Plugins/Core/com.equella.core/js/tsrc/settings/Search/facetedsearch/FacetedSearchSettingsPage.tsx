@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { ReactElement, useEffect, useState } from "react";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../../../mainui/Template";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
-import { ReactElement, useState } from "react";
 import {
   Card,
   CardActions,
@@ -49,7 +49,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import FacetDialog from "./FacetDialog";
-import { useEffect } from "react";
 import { routes } from "../../../mainui/routes";
 import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { generateFromError } from "../../../api/errors";
@@ -57,11 +56,11 @@ import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
 import {
   DragDropContext,
-  Droppable,
   Draggable,
-  DropResult,
-  DroppableProvided,
   DraggableProvided,
+  Droppable,
+  DroppableProvided,
+  DropResult,
 } from "react-beautiful-dnd";
 
 const useStyles = makeStyles({
@@ -275,7 +274,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             ref={droppable.innerRef}
             subheader={
               <ListSubheader disableGutters>
-                {facetedsearchsettingStrings.name}
+                {facetedsearchsettingStrings.subheading}
               </ListSubheader>
             }
             {...droppable.droppableProps}

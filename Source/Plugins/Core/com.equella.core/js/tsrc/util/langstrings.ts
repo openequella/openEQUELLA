@@ -444,11 +444,25 @@ export const languageStrings = {
       },
       facetedsearchsetting: {
         name: "Faceted search settings",
-        add: "Create facet",
+        subheading: "Classifications",
+        add: "Create classification",
+        edit: "Edit classification",
         facetfields: {
           name: "Classification name",
+          namehelper: "Enter name to display in the Refine search panel",
           schemanode: "Schema node",
+          schemanodehelper:
+            "The categories will be generated from the selected node",
           categorynumber: "Default number of categories",
+          categorynumberhelper: "Leave blank to display all categories",
+        },
+        schemaselector: {
+          schema: "Schema",
+          selectaschema: "Select a schema...",
+          nodeselector: {
+            expandall: "Expand All",
+            collapseall: "Collapse All",
+          },
         },
       },
     },

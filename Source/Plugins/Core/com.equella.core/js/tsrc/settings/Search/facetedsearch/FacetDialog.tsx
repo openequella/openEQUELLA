@@ -126,12 +126,17 @@ const FacetDialog = ({
       className={classes.dialog}
       classes={{ paper: classes.dialogPaper }}
     >
-      <DialogTitle>{facetedSearchSettingStrings.add}</DialogTitle>
+      <DialogTitle>
+        {facet
+          ? facetedSearchSettingStrings.edit
+          : facetedSearchSettingStrings.add}
+      </DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
           label={facetFieldStrings.name}
           value={name}
+          helperText={facetFieldStrings.namehelper}
           required
           fullWidth
           onChange={(event) => setName(event.target.value)}
@@ -148,12 +153,13 @@ const FacetDialog = ({
               event.target.value ? parseInt(event.target.value) : undefined
             )
           }
-          helperText={"Leave blank to display all categories"}
+          helperText={facetFieldStrings.categorynumberhelper}
         />
         <TextField
           margin="dense"
           label={facetFieldStrings.schemanode}
           value={schemaNode}
+          helperText={facetFieldStrings.schemanodehelper}
           onChange={(event) => {
             setSchemaNode(event.target.value);
           }}
@@ -166,7 +172,6 @@ const FacetDialog = ({
             setSchemaNode(node);
           }}
         />
-        {/*</div>*/}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

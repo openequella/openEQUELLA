@@ -21,6 +21,7 @@ import { Add, Remove } from "@material-ui/icons";
 import { getAllPaths, renderTree, SchemaNode } from "../schema/SchemaModule";
 import { Button, Grid } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
+import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -65,6 +66,9 @@ export default function SchemaNodeSelector({
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [renderedTree, setRenderedTree] = React.useState<JSX.Element>(<div />);
   const classes = useStyles();
+  const strings =
+    languageStrings.settings.searching.facetedsearchsetting.schemaselector
+      .nodeselector;
   React.useEffect(() => {
     if (tree !== undefined) {
       setRenderedTree(renderTree(tree));
@@ -83,14 +87,14 @@ export default function SchemaNodeSelector({
               size={"small"}
               onClick={() => setExpanded(getAllPaths(tree!, [], false))}
             >
-              {"Expand All"}
+              {strings.expandall}
             </Button>
             <Button
               className={classes.button}
               size={"small"}
               onClick={() => setExpanded([])}
             >
-              {"Collapse All"}
+              {strings.collapseall}
             </Button>
           </Grid>
         </Grid>
