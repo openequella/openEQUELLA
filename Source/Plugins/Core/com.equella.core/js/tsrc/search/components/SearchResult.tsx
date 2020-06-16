@@ -129,7 +129,7 @@ export default function SearchResult({
 
   const itemMetadata = (
     <div className={classes.additionalDetails}>
-      <Typography component="span" variant="body1" className={classes.status}>
+      <Typography component="span" className={classes.status}>
         {status}
       </Typography>
       <Divider
@@ -138,7 +138,7 @@ export default function SearchResult({
         variant="middle"
         orientation="vertical"
       />
-      <Typography component="span" variant="body1">
+      <Typography component="span">
         {searchResultStrings.dateModified}&nbsp;
         <DateDisplay displayRelative date={new Date(modifiedDate)} />
       </Typography>
@@ -218,7 +218,7 @@ export default function SearchResult({
         primary={name}
         secondary={
           <>
-            <Typography className={classes.itemDescription} variant="body1">
+            <Typography className={classes.itemDescription}>
               {description}
             </Typography>
             <List disablePadding>{customDisplayMetadata}</List>
