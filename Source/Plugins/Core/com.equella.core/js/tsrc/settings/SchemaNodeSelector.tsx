@@ -58,8 +58,8 @@ interface SchemaNodeSelectorProps {
  * This component defines a schema node selector, for the display of a schema and selection of its nodes. The schema itself passed into this should be of type SchemaNode.
  */
 export default function SchemaNodeSelector({
-  setSelectedNode,
   tree,
+  setSelectedNode,
   expandControls,
 }: SchemaNodeSelectorProps) {
   const [selectedNode, setSelected] = React.useState("");
@@ -70,7 +70,7 @@ export default function SchemaNodeSelector({
     languageStrings.settings.searching.facetedsearchsetting.schemaselector
       .nodeselector;
   React.useEffect(() => {
-    if (tree !== undefined) {
+    if (tree) {
       setRenderedTree(renderTree(tree));
       setExpanded([]);
       setSelectedNode("");
@@ -89,6 +89,8 @@ export default function SchemaNodeSelector({
             >
               {strings.expandall}
             </Button>
+          </Grid>
+          <Grid item>
             <Button
               className={classes.button}
               size={"small"}

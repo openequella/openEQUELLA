@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { ReactElement } from "react";
 import { Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import {
   schemaListSummary,
@@ -43,14 +44,16 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
     string | undefined
   >(undefined);
   const [schema, setSchema] = React.useState<SchemaNode>();
-  const [schemaList, setSchemaList] = React.useState<JSX.Element[]>([]);
+  const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
   const strings =
     languageStrings.settings.searching.facetedsearchsetting.schemaselector;
   React.useEffect(() => {
     schemaListSummary().then((schemas) => {
       const elementList: JSX.Element[] = [
-        <MenuItem value={undefined}>{strings.selectaschema}</MenuItem>,
+        <MenuItem id={strings.selectaschema} value={undefined}>
+          {strings.selectaschema}
+        </MenuItem>,
       ];
       schemas.forEach((name, uuid) => {
         elementList.push(
@@ -64,7 +67,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   }, []);
 
   React.useEffect(() => {
-    if (selectedSchema && selectedSchema !== "") {
+    if (selectedSchema?.trim()) {
       schemaTree(selectedSchema).then((tree) => setSchema(tree));
     } else {
       setSchema(undefined);
@@ -72,7 +75,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   }, [selectedSchema]);
 
   React.useEffect(() => {
-    if (schemaNodePath !== "") {
+    if (schemaNodePath?.trim()) {
       setSchemaNode(schemaNodePath);
     }
   }, [schemaNodePath]);
@@ -81,23 +84,21 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       <>
         <Grid item>
           {schemaList && (
-            <>
-              <Select
-                fullWidth
-                label={
-                  <InputLabel shrink id="select-label">
-                    {strings.schema}
-                  </InputLabel>
-                }
-                value={selectedSchema}
-                displayEmpty
-                onChange={(event) => {
-                  setSelectedSchema(event.target.value as string | undefined);
-                }}
-              >
-                {schemaList}
-              </Select>
-            </>
+            <Select
+              fullWidth
+              label={
+                <InputLabel shrink id="select-label">
+                  {strings.schema}
+                </InputLabel>
+              }
+              value={selectedSchema}
+              displayEmpty
+              onChange={(event) => {
+                setSelectedSchema(event.target.value as string | undefined);
+              }}
+            >
+              {schemaList}
+            </Select>
           )}
         </Grid>
         <Grid item>
