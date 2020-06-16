@@ -249,14 +249,6 @@ export const languageStrings = {
       },
     },
   },
-  searchconfigs: {
-    title: "Search Configurations",
-    configsAvailable: {
-      zero: "No search configurations available",
-      one: "%d configuration",
-      more: "%d configurations",
-    },
-  },
   newuisettings: {
     title: "Theme Settings",
     colourschemesettings: {
