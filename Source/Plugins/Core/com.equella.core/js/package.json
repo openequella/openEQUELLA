@@ -123,7 +123,7 @@
     "parcel-bundler": "1.12.4",
     "psc-package": "3.0.1",
     "pulp": "12.3.1",
-    "purescript": "0.12.0",
+    "purescript": "0.13.8",
     "rewire": "5.0.0",
     "storybook-react-router": "1.0.8",
     "ts-jest": "26.1.0",
