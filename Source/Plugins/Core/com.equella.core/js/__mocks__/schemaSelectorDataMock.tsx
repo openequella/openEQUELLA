@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SchemaNode } from "../tsrc/schema/SchemaModule";
+import { buildSchemaTree, SchemaNode } from "../tsrc/schema/SchemaModule";
 import { TreeItem } from "@material-ui/lab";
 import * as React from "react";
 
@@ -72,6 +72,13 @@ export const testSchema: SchemaNode = {
     },
   ],
 };
+const schemaDefinition = {
+  child1: {
+    _type: "text",
+    child2: { _type: "text", child3: { _type: "text" } },
+  },
+};
+export const testSchemaNode = buildSchemaTree(schemaDefinition, "xml");
 
 export const jsxOutput = (
   <TreeItem key="xml" label="xml" nodeId="/xml">
