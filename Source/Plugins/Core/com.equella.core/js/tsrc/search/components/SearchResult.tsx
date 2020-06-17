@@ -227,12 +227,7 @@ export default function SearchResult({
   };
 
   return (
-    <ListItem
-      onClick={onClick}
-      alignItems="flex-start"
-      button={true}
-      key={uuid}
-    >
+    <ListItem onClick={onClick} alignItems="flex-start" button key={uuid}>
       {thumbnail(displayOptions.disableThumbnail)}
       <ListItemText
         primary={name}
