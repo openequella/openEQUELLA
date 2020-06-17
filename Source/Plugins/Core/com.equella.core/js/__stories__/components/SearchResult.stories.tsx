@@ -18,6 +18,8 @@
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../tsrc/search/components/SearchResult";
+import { action } from "@storybook/addon-actions";
+import { object } from "@storybook/addon-knobs";
 
 export default {
   title: "SerachResult",
@@ -26,21 +28,21 @@ export default {
 
 export const BasicSearchResultComponent = () => (
   <SearchResult
-    resultData={mockData.basicSearchObj}
-    onClick={() => alert("result clicked")}
+    resultData={object("resultData", mockData.basicSearchObj)}
+    onClick={action("onClick")}
   />
 );
 
 export const AttachmentSearchResultComponent = () => (
   <SearchResult
-    resultData={mockData.attachSearchObj}
-    onClick={() => alert("result clicked")}
+    resultData={object("resultData", mockData.attachSearchObj)}
+    onClick={action("onClick")}
   />
 );
 
 export const CustomMetadataSearchResultComponent = () => (
   <SearchResult
-    resultData={mockData.customMetaSearchObj}
-    onClick={() => alert("result clicked")}
+    resultData={object("resultData", mockData.customMetaSearchObj)}
+    onClick={action("onClick")}
   />
 );
