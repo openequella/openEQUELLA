@@ -183,6 +183,7 @@ export default function SearchResult({
   });
 
   const generateAttachmentList = () => {
+    //TODO: replace this any with an Attachment type
     const attachmentsList = attachments.map((attachment: any) => {
       return (
         <ListItem

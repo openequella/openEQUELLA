@@ -47,11 +47,7 @@ export default function Date({ displayRelative, date }: DateProps) {
 
   return (
     <Tooltip title={hoverDate}>
-      <Typography
-        className={classes.dateModified}
-        component="span"
-        variant="body1"
-      >
+      <Typography className={classes.dateModified} component="span">
         {primaryDate}
       </Typography>
     </Tooltip>
