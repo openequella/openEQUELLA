@@ -1,5 +1,4 @@
-import * as Lodash from "lodash";
-
+import { cloneDeep } from 'lodash'
 /**
  * Performs inplace conversion of specified fields with supplied converter.
  *
@@ -16,11 +15,9 @@ const convertFields = <T, R>(input: unknown, targetFields: string[], recursive: 
       convertFields(value, targetFields, recursive, converter);
     }
     else {
-      targetFields.forEach( targetField => {
-        if(field === targetField) {
-          (input as any)[field] = isNaN(Date.parse(value))? undefined: converter(value);
-        }
-      });
+      targetFields
+        .filter(targetField => targetField === field)
+        .forEach(targetField => (input as any)[targetField] = converter(value))
     }
   })
 };
@@ -33,8 +30,11 @@ const convertFields = <T, R>(input: unknown, targetFields: string[], recursive: 
  * @param fields List of the names of fields to convert.
  */
 export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
-  const inputClone: any = Lodash.cloneDeep(input);
-  convertFields(inputClone, fields, true, (value: string) => new Date( value));
+  const inputClone: any = cloneDeep(input);
+  convertFields(inputClone,
+    fields,
+    true,
+    (value: string) => isNaN(Date.parse(value))? undefined: new Date( value));
   return inputClone;
 };
 
