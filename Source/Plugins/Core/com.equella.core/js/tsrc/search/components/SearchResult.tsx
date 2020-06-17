@@ -115,14 +115,19 @@ export default function SearchResult({
   );
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
-    //prevents the SearchResult onClick from firing when attachment panel is clicked
+    /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
     setAttachExpanded(!attachExapanded);
   };
-
-  const thumbnail = (disableThumb: boolean) => {
+  /**
+   * @param {boolean} disableThumb - controls if item thumbnail is displayed
+   * @return {JSX.Element} image JSX element is returned if item contains attachments, and thumbnail is not disabled.
+   * Otherwise, return a placeholder icon, to ensure a consistent layout
+   */
+  const thumbnail = (disableThumb: boolean): JSX.Element => {
+    let result: any;
     if (attachments.length > 0 && !disableThumb) {
-      return (
+      result = (
         <img
           className={classes.thumbnail}
           src={attachments[0].links.thumbnail}
@@ -130,10 +135,11 @@ export default function SearchResult({
         />
       );
     } else {
-      return (
+      result = (
         <Subject className={classes.placeholderThumbnail} fontSize="large" />
       );
     }
+    return result;
   };
 
   const itemMetadata = (
