@@ -50,19 +50,15 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
     languageStrings.settings.searching.facetedsearchsetting.schemaselector;
   React.useEffect(() => {
     schemaListSummary().then((schemas) => {
-      const elementList: JSX.Element[] = [
-        <MenuItem id={strings.selectaschema} value={undefined}>
-          {strings.selectaschema}
-        </MenuItem>,
-      ];
-      schemas.forEach((name, uuid) => {
-        elementList.push(
+      const defaultListItem = [[undefined, strings.selectaschema]];
+      const schemaArray = defaultListItem.concat(Array.from(schemas));
+      setSchemaList(
+        schemaArray.map(([uuid, name]) => (
           <MenuItem id={uuid} value={uuid}>
             {name}
           </MenuItem>
-        );
-      });
-      setSchemaList(elementList);
+        ))
+      );
     });
   }, []);
 
