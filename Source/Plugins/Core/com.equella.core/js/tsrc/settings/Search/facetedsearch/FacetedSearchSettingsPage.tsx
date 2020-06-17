@@ -274,7 +274,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             ref={droppable.innerRef}
             subheader={
               <ListSubheader disableGutters>
-                {facetedsearchsettingStrings.subheading}
+                {facetedsearchsettingStrings.subHeading}
               </ListSubheader>
             }
             {...droppable.droppableProps}

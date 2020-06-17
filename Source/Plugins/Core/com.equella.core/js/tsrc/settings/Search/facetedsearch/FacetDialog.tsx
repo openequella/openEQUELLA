@@ -136,7 +136,7 @@ const FacetDialog = ({
           margin="dense"
           label={facetFieldStrings.name}
           value={name}
-          helperText={facetFieldStrings.namehelper}
+          helperText={facetFieldStrings.nameHelper}
           required
           fullWidth
           onChange={(event) => setName(event.target.value)}
@@ -145,7 +145,7 @@ const FacetDialog = ({
         <TextField
           type="number"
           margin="dense"
-          label={facetFieldStrings.categorynumber}
+          label={facetFieldStrings.categoryNumber}
           value={maxResults}
           fullWidth
           onChange={(event) =>
@@ -153,13 +153,13 @@ const FacetDialog = ({
               event.target.value ? parseInt(event.target.value) : undefined
             )
           }
-          helperText={facetFieldStrings.categorynumberhelper}
+          helperText={facetFieldStrings.categoryNumberHelper}
         />
         <TextField
           margin="dense"
-          label={facetFieldStrings.schemanode}
+          label={facetFieldStrings.schemaNode}
           value={schemaNode}
-          helperText={facetFieldStrings.schemanodehelper}
+          helperText={facetFieldStrings.schemaNodeHelper}
           onChange={(event) => {
             setSchemaNode(event.target.value);
           }}

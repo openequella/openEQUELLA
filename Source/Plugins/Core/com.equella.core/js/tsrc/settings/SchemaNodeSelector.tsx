@@ -86,8 +86,8 @@ export default function SchemaNodeSelector({
   const [renderedTree, setRenderedTree] = React.useState<JSX.Element>(<div />);
   const classes = useStyles();
   const strings =
-    languageStrings.settings.searching.facetedsearchsetting.schemaselector
-      .nodeselector;
+    languageStrings.settings.searching.facetedsearchsetting.schemaSelector
+      .nodeSelector;
   React.useEffect(() => {
     if (tree) {
       setRenderedTree(renderTree(tree));
@@ -106,7 +106,7 @@ export default function SchemaNodeSelector({
               size={"small"}
               onClick={() => setExpanded(getAllPaths(tree!, [], false))}
             >
-              {strings.expandall}
+              {strings.expandAll}
             </Button>
           </Grid>
           <Grid item>
@@ -115,7 +115,7 @@ export default function SchemaNodeSelector({
               size={"small"}
               onClick={() => setExpanded([])}
             >
-              {strings.collapseall}
+              {strings.collapseAll}
             </Button>
           </Grid>
         </Grid>
