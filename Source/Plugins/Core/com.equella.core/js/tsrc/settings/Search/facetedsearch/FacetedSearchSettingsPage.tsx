@@ -33,6 +33,7 @@ import {
   ListItemText,
   ListSubheader,
   makeStyles,
+  Typography,
 } from "@material-ui/core";
 import { languageStrings } from "../../../util/langstrings";
 import {
@@ -273,9 +274,14 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <List
             ref={droppable.innerRef}
             subheader={
-              <ListSubheader disableGutters>
-                {facetedsearchsettingStrings.subHeading}
-              </ListSubheader>
+              <>
+                <ListSubheader disableGutters>
+                  {facetedsearchsettingStrings.subHeading}
+                </ListSubheader>
+                <Typography variant={"caption"}>
+                  {facetedsearchsettingStrings.explanationText}
+                </Typography>
+              </>
             }
             {...droppable.droppableProps}
           >

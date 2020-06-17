@@ -445,6 +445,8 @@ export const languageStrings = {
       facetedsearchsetting: {
         name: "Faceted search settings",
         subHeading: "Classifications",
+        explanationText:
+          "A classification (schema node) and its categories (unique values found within the selected schema node across all items matching search criteria) displays in the Refine search panel of the Search page. The number of matches per category is shown, and users can click on a category to view results.",
         add: "Create classification",
         edit: "Edit classification",
         facetfields: {
