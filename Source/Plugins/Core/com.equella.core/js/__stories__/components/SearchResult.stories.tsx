@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../tsrc/search/components/SearchResult";
 
 export default {
@@ -23,142 +24,23 @@ export default {
   component: SearchResult,
 };
 
-const basicSearchObj = {
-  uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
-  name: "Little Larry",
-  description: "A description of a bird",
-  status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
-  collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
-  commentCount: 0,
-  attachments: [],
-  thumbnail: "default",
-  displayFields: [],
-  displayOptions: {
-    attachmentType: "STRUCTURED",
-    disableThumbnail: false,
-    standardOpen: true,
-    integrationOpen: true,
-  },
-  links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-  },
-};
-
-const attachSearchObj = {
-  uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
-  name: "Little Larry",
-  description: "A description of a bird",
-  status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
-  collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
-  commentCount: 0,
-  attachments: [
-    {
-      attachmentType: "file",
-      id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-      description: "config.json",
-      preview: false,
-      links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-        thumbnail: "./thumb.jpg",
-      },
-    },
-  ],
-  thumbnail: "default",
-  displayFields: [],
-  displayOptions: {
-    attachmentType: "STRUCTURED",
-    disableThumbnail: false,
-    standardOpen: true,
-    integrationOpen: true,
-  },
-  links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-  },
-};
-
-const customMetaSearchObj = {
-  uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
-  name: "Little Larry",
-  description: "A description of a bird",
-  status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
-  collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
-  commentCount: 0,
-  attachments: [
-    {
-      attachmentType: "file",
-      id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-      description: "config.json",
-      preview: false,
-      links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-        thumbnail: "./thumb.jpg",
-      },
-    },
-  ],
-  thumbnail: "default",
-  displayFields: [
-    {
-      type: "node",
-      name: "Collection",
-      html: "cats, bobs, flerps",
-    },
-    {
-      type: "node",
-      name: "Url metadata",
-      html:
-        '<a href="http://www.abc.net.au/news">http://www.abc.net.au/news</a>',
-    },
-    {
-      type: "node",
-      name: "date metadata",
-      html: "02 June 2020",
-    },
-  ],
-  displayOptions: {
-    attachmentType: "STRUCTURED",
-    disableThumbnail: false,
-    standardOpen: true,
-    integrationOpen: true,
-  },
-  links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-  },
-};
-
 export const BasicSearchResultComponent = () => (
   <SearchResult
-    resultData={basicSearchObj}
+    resultData={mockData.basicSearchObj}
     onClick={() => alert("result clicked")}
   />
 );
 
 export const AttachmentSearchResultComponent = () => (
   <SearchResult
-    resultData={attachSearchObj}
+    resultData={mockData.attachSearchObj}
     onClick={() => alert("result clicked")}
   />
 );
 
 export const CustomMetadataSearchResultComponent = () => (
   <SearchResult
-    resultData={customMetaSearchObj}
+    resultData={mockData.customMetaSearchObj}
     onClick={() => alert("result clicked")}
   />
 );
