@@ -19,7 +19,6 @@ import * as SchemaModule from "../../../tsrc/schema/SchemaModule";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
 import * as OEQ from "@openequella/rest-api-client";
-import { jsxOutput } from "../../../__mocks__/schemaSelectorDataMock";
 
 jest.mock("@openequella/rest-api-client");
 (OEQ.Schema.listSchemas as jest.Mock<
@@ -89,20 +88,5 @@ describe("getAllPaths", () => {
       "/child1/child2",
       "/child1/child2/child3",
     ]);
-  });
-});
-describe("renderTree", () => {
-  const schemaDefinition = {
-    child1: {
-      _type: "text",
-      child2: { _type: "text", child3: { _type: "text" } },
-    },
-  };
-
-  const testSchema = SchemaModule.buildSchemaTree(schemaDefinition, "xml");
-  const rendered = SchemaModule.renderTree(testSchema);
-
-  it("should render the tree into nested TreeItem components correctly", () => {
-    expect(rendered.toString()).toEqual(jsxOutput.toString());
   });
 });
