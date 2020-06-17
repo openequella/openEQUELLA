@@ -27,13 +27,14 @@ import {
   Divider,
   List,
   ListItemIcon,
-  Collapse,
+  ExpansionPanelSummary,
+  ExpansionPanel,
+  ExpansionPanelDetails,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
 import {
   InsertDriveFile,
   ExpandMore,
-  ExpandLess,
   AttachFile,
   Subject,
 } from "@material-ui/icons";
@@ -69,6 +70,13 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     nested: {
       paddingLeft: theme.spacing(4),
+    },
+    attachmentExpander: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+    attachmentIcon: {
+      paddingRight: theme.spacing(2),
     },
   };
 });
@@ -107,6 +115,7 @@ export default function SearchResult({
   );
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
+    //prevents the SearchResult onClick from firing when attachment panel is clicked
     event.stopPropagation();
     setAttachExpanded(!attachExapanded);
   };
@@ -185,23 +194,23 @@ export default function SearchResult({
 
     if (attachmentsList.length > 0)
       return (
-        <List component="div">
-          <ListItem
-            button
-            onClick={(event) => handleAttachmentPanelClick(event)}
-          >
-            <ListItemIcon>
-              <AttachFile />
-            </ListItemIcon>
-            <ListItemText primary={searchResultStrings.attachments} />
-            {attachExapanded ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={attachExapanded} timeout="auto" unmountOnExit>
+        <ExpansionPanel
+          className={classes.attachmentExpander}
+          expanded={attachExapanded}
+          onClick={(event) => handleAttachmentPanelClick(event)}
+        >
+          <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+            <AttachFile className={classes.attachmentIcon} />
+            <Typography className={classes.attachmentHeading}>
+              {searchResultStrings.attachments}
+            </Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
             <List component="div" disablePadding>
               {attachmentsList}
             </List>
-          </Collapse>
-        </List>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       );
     return null;
   };
