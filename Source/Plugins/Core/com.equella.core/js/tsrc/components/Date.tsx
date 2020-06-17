@@ -26,7 +26,7 @@ const useStyles = makeStyles({
   },
 });
 export interface DateProps {
-  /**Date
+  /**
    * If true, relative date will be used as primary display. Timestamp will be displayed as tooltip on hover
    */
   displayRelative: boolean;
