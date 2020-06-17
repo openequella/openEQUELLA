@@ -12,7 +12,7 @@ test("That we're able to login", async () => {
   expect(userDetails).toHaveProperty('id', TC.USERNAME);
 });
 
-test('An attempt to login with bad credentials fails', () => {
+test('An attempt to login with bad credentials fails', async () => {
   await expect(
     OEQ.Auth.login(TC.API_PATH, 'fakeusername', 'fakepassword')
   ).rejects.toHaveProperty('status', 401);
