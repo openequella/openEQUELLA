@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { TreeView } from "@material-ui/lab";
+import { TreeItem, TreeView } from "@material-ui/lab";
 import { Add, Remove } from "@material-ui/icons";
-import { getAllPaths, renderTree, SchemaNode } from "../schema/SchemaModule";
+import { getAllPaths, pathForNode, SchemaNode } from "../schema/SchemaModule";
 import { Button, Grid } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { languageStrings } from "../util/langstrings";
@@ -53,6 +53,25 @@ interface SchemaNodeSelectorProps {
    */
   expandControls?: boolean;
 }
+
+/**
+ * Recursive helper function that converts a SchemaNode into a corresponding Material UI
+ * TreeItem tree.
+ * @param nodes The node to generate a TreeItem for.
+ */
+export const renderTree = (nodes: SchemaNode) => {
+  return (
+    <TreeItem
+      key={nodes.name}
+      nodeId={pathForNode(nodes, false)}
+      label={nodes.name}
+    >
+      {Array.isArray(nodes.children)
+        ? nodes.children.map((node) => renderTree(node))
+        : null}
+    </TreeItem>
+  );
+};
 
 /**
  * This component defines a schema node selector, for the display of a schema and selection of its nodes. The schema itself passed into this should be of type SchemaNode.
