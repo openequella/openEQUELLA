@@ -27,7 +27,7 @@ export const login = (
     })
     .then((response: AxiosResponse) => {
       const cookies = response.headers['set-cookie'] as Array<string>;
-      const sessionIdCookie = cookies?.find(c => c.startsWith('JSESSIONID'));
+      const sessionIdCookie = cookies?.find((c) => c.startsWith('JSESSIONID'));
       const sessionId = sessionIdCookie?.substring(
         sessionIdCookie.indexOf('=') + 1,
         sessionIdCookie.indexOf(';')

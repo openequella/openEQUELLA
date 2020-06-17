@@ -55,7 +55,7 @@ export interface ListSchemaParams {
  *
  * @param instance An instance to validate.
  */
-export const isEquellaSchema = (instance: unknown): boolean =>
+export const isEquellaSchema = (instance: unknown): instance is EquellaSchema =>
   is<EquellaSchema>(instance);
 
 /**
@@ -64,7 +64,9 @@ export const isEquellaSchema = (instance: unknown): boolean =>
  *
  * @param instance An instance to validate.
  */
-export const isPagedEquellaSchema = (instance: unknown): boolean =>
+export const isPagedEquellaSchema = (
+  instance: unknown
+): instance is Common.PagedResult<EquellaSchema> =>
   is<Common.PagedResult<EquellaSchema>>(instance);
 
 const SCHEMA_ROOT_PATH = '/schema';
