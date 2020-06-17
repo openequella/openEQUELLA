@@ -98,7 +98,7 @@ export default function SearchResult({
   const classes = useStyles();
 
   const searchResultStrings = languageStrings.searchpage.searchresult;
-
+  //TODO: do the destructuring in function argument list when Search Result typings have been merged in.
   const {
     name,
     uuid,
@@ -201,9 +201,7 @@ export default function SearchResult({
         >
           <ExpansionPanelSummary expandIcon={<ExpandMore />}>
             <AttachFile className={classes.attachmentIcon} />
-            <Typography className={classes.attachmentHeading}>
-              {searchResultStrings.attachments}
-            </Typography>
+            <Typography>{searchResultStrings.attachments}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <List component="div" disablePadding>
