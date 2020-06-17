@@ -19,6 +19,7 @@ import * as React from "react";
 import { SyntheticEvent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
+import ReactHtmlParser from "react-html-parser";
 import {
   ListItem,
   Theme,
@@ -176,8 +177,13 @@ export default function SearchResult({
           variant="body2"
           className={classes.inline}
           color="textPrimary"
-          dangerouslySetInnerHTML={{ __html: element.html }}
-        ></Typography>
+        >
+          {
+            /**Custom metadata can contain html tags, we should make sure that is
+          preserved */
+            ReactHtmlParser(element.html)
+          }
+        </Typography>
       </ListItem>
     );
   });
