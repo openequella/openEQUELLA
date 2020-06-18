@@ -18,7 +18,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 val jacksonVersion   = "2.10.3"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.56"
-val SwaggerVersion   = "1.5.24"
+val SwaggerVersion   = "1.6.1"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
@@ -76,7 +76,7 @@ libraryDependencies ++= Seq(
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"                %% "swagger-scala-module" % "1.0.5",
+  "io.swagger"                %% "swagger-scala-module" % "1.0.6",
   "com.zaxxer"                % "HikariCP"              % "2.7.9",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.14",
