@@ -1,9 +1,12 @@
 {
   "extends": ["config:base", ":masterIssue"],
-  "prConcurrentLimit": 10,
-  "rebaseStalePrs": false,
-  "prHourlyLimit": 1,
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 2,
   "packageRules": [
+    {
+      "depTypeList": ["devDependencies"],
+      "automerge": true
+    },
     {
       "packagePatterns": ["^com.fasterxml.jackson"],
       "groupName": "Jackson (XML) packages"
