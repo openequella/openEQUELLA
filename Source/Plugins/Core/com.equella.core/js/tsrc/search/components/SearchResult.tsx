@@ -122,10 +122,10 @@ export default function SearchResult({
   };
   /**
    * @param {boolean} disableThumb - controls if item thumbnail is displayed
-   * @return {JSX.Element} image JSX element is returned if item contains attachments, and thumbnail is not disabled.
+   * @return {ReactElement} image JSX element is returned if item contains attachments, and thumbnail is not disabled.
    * Otherwise, return a placeholder icon, to ensure a consistent layout
    */
-  const thumbnail = (disableThumb: boolean): JSX.Element => {
+  const thumbnail = (disableThumb: boolean): React.ReactElement => {
     let result: any;
     if (attachments.length > 0 && !disableThumb) {
       result = (
@@ -243,7 +243,7 @@ export default function SearchResult({
           </>
         }
         primaryTypographyProps={{ color: "primary", variant: "h6" }}
-        secondaryTypographyProps={{ component: "div" }}
+        secondaryTypographyProps={{ component: "section" }}
       />
     </ListItem>
   );
