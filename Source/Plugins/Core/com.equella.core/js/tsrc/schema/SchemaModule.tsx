@@ -135,12 +135,11 @@ export const getAllPaths = (
   nodes: SchemaNode,
   stripXml = true,
   paths: string[] = []
-): string[] => {
-  return paths
+): string[] =>
+  paths
     .concat(pathForNode(nodes, stripXml))
     .concat(
       nodes.children?.flatMap((childNode) =>
         getAllPaths(childNode, stripXml, paths)
       ) ?? []
     );
-};
