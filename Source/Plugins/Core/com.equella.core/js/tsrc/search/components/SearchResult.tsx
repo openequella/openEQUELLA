@@ -39,6 +39,11 @@ import {
   AttachFile,
   Subject,
 } from "@material-ui/icons";
+import {
+  SearchResultItem,
+  Attachment,
+  DisplayFields,
+} from "@openequella/rest-api-client/dist/Search";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -83,24 +88,14 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 export interface SearchResultProps {
-  /**
-   * A json representation of the SearchResult data. TODO: Properly type this when search2 endpoint is merged
-   */
-  resultData: any;
+  resultData: SearchResultItem;
   /**
    * Function will be invoked when the SearchResult list item is clicked
    */
   onClick: () => void;
 }
 export default function SearchResult({
-  resultData,
-  onClick,
-}: SearchResultProps) {
-  const classes = useStyles();
-
-  const searchResultStrings = languageStrings.searchpage.searchresult;
-  //TODO: do the destructuring in function argument list when Search Result typings have been merged in.
-  const {
+  resultData: {
     name,
     uuid,
     description,
@@ -109,10 +104,15 @@ export default function SearchResult({
     status,
     displayOptions,
     attachments,
-  } = resultData;
+  },
+  onClick,
+}: SearchResultProps) {
+  const classes = useStyles();
+
+  const searchResultStrings = languageStrings.searchpage.searchresult;
 
   const [attachExapanded, setAttachExpanded] = React.useState(
-    displayOptions.standardOpen
+    displayOptions?.standardOpen ?? false
   );
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
@@ -161,7 +161,7 @@ export default function SearchResult({
     </div>
   );
 
-  const customDisplayMetadata = displayFields.map((element: any) => {
+  const customDisplayMetadata = displayFields.map((element: DisplayFields) => {
     return (
       <ListItem disableGutters dense>
         <Typography
@@ -190,13 +190,9 @@ export default function SearchResult({
 
   const generateAttachmentList = () => {
     //TODO: replace this any with an Attachment type
-    const attachmentsList = attachments.map((attachment: any) => {
+    const attachmentsList = attachments.map((attachment: Attachment) => {
       return (
-        <ListItem
-          key={attachment.id || attachment.uuid}
-          button
-          className={classes.nested}
-        >
+        <ListItem key={attachment.id} button className={classes.nested}>
           <ListItemIcon>
             <InsertDriveFile />
           </ListItemIcon>
@@ -228,7 +224,7 @@ export default function SearchResult({
 
   return (
     <ListItem onClick={onClick} alignItems="flex-start" button key={uuid}>
-      {thumbnail(displayOptions.disableThumbnail)}
+      {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
         primary={name}
         secondary={

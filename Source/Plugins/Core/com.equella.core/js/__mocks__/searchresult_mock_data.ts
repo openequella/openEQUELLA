@@ -15,13 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const basicSearchObj = {
+
+import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
+
+const basicSearchObj: SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
+  createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
+  modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
   attachments: [],
@@ -41,13 +44,13 @@ const basicSearchObj = {
   },
 };
 
-const attachSearchObj = {
+const attachSearchObj: SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
+  createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
+  modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
   attachments: [
@@ -79,13 +82,13 @@ const attachSearchObj = {
   },
 };
 
-const customMetaSearchObj = {
+const customMetaSearchObj: SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",
-  createdDate: "2020-05-26T13:24:00.889+10:00",
-  modifiedDate: "2020-05-26T12:45:06.857+10:00",
+  createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
+  modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
   attachments: [
