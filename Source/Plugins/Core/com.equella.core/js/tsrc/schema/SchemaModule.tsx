@@ -133,12 +133,14 @@ export const pathForNode = (node: SchemaNode, stripXml = true): string => {
  */
 export const getAllPaths = (
   nodes: SchemaNode,
-  paths: string[],
-  stripXml = true
+  stripXml = true,
+  paths: string[] = []
 ): string[] => {
-  return paths.concat(pathForNode(nodes, stripXml)).concat(
-    nodes.children?.flatMap((childNode) => {
-      return getAllPaths(childNode, paths, stripXml);
-    }) ?? []
-  );
+  return paths
+    .concat(pathForNode(nodes, stripXml))
+    .concat(
+      nodes.children?.flatMap((childNode) =>
+        getAllPaths(childNode, stripXml, paths)
+      ) ?? []
+    );
 };

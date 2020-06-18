@@ -72,7 +72,7 @@ describe("getAllPaths", () => {
   };
   const testSchema = SchemaModule.buildSchemaTree(schemaDefinition, "xml");
   it("should correctly generate the list of full paths", () => {
-    const paths = SchemaModule.getAllPaths(testSchema, [], false);
+    const paths = SchemaModule.getAllPaths(testSchema, false);
     expect(paths).toEqual([
       "/xml",
       "/xml/child1",
@@ -81,7 +81,7 @@ describe("getAllPaths", () => {
     ]);
   });
   it("should correctly generate the list of xml stripped paths", () => {
-    const paths = SchemaModule.getAllPaths(testSchema, [], true);
+    const paths = SchemaModule.getAllPaths(testSchema);
     expect(paths).toEqual([
       "",
       "/child1",
