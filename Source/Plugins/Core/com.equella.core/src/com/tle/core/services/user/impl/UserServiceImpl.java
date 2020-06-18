@@ -133,8 +133,8 @@ public class UserServiceImpl
   private boolean useXForwardedFor;
 
   @Override
-  public UserInfoBackup findUserInfoBackup(String username) {
-    return userInfoBackupDao.findUserInfoBackup(username);
+  public UserInfoBackup findUserInfoBackup(String userUniqueId) {
+    return userInfoBackupDao.findUserInfoBackup(userUniqueId);
   }
 
   @Transactional

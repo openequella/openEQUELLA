@@ -1,15 +1,15 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255682</id>
+  <id>5985</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>dxr</string>
-    <string>dir</string>
     <string>dcr</string>
+    <string>dir</string>
+    <string>dxr</string>
   </extensions>
   <type>application/x-director</type>
   <attributes>

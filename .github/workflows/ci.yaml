@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: NPM Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-npm-
 
       - name: SBT Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.sbt
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-sbt-
 
       - name: Ivy Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.ivy2/cache
           key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
@@ -113,7 +113,7 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: Artefacts
           path: artefacts.tar
@@ -134,7 +134,7 @@ jobs:
           ./gradlew build
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: ImportExportTools
           path: import-export-tool/build/libs/
@@ -219,7 +219,7 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: ScalacheckReports
           path: autotest/Tests/target/test-reports
@@ -231,21 +231,21 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: TestNGReports-new-${{ matrix.newui }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: oEQLogs-new-${{ matrix.newui }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: Screenshots-new-${{ matrix.newui }}
           path: autotest/Tests/target/test-reports/screenshots
@@ -256,7 +256,7 @@ jobs:
             coverageReport
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v2.0.1
         with:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: autotest/target/coverage-report/

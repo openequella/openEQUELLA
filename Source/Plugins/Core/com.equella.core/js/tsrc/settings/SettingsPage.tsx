@@ -37,7 +37,7 @@ import { languageStrings } from "../util/langstrings";
 import MUILink from "@material-ui/core/Link";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
 import { ReactElement, useEffect, useState } from "react";
 import UISettingEditor from "./UISettingEditor";

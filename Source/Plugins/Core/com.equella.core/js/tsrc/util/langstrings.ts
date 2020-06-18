@@ -249,14 +249,6 @@ export const languageStrings = {
       },
     },
   },
-  searchconfigs: {
-    title: "Search Configurations",
-    configsAvailable: {
-      zero: "No search configurations available",
-      one: "%d configuration",
-      more: "%d configurations",
-    },
-  },
   newuisettings: {
     title: "Theme Settings",
     colourschemesettings: {
@@ -446,11 +438,27 @@ export const languageStrings = {
       },
       facetedsearchsetting: {
         name: "Faceted search settings",
-        add: "Create facet",
+        subHeading: "Classifications",
+        explanationText:
+          "Classifications and their categories display in the Refine search panel of the Search page.",
+        add: "Create classification",
+        edit: "Edit classification",
         facetfields: {
           name: "Classification name",
-          schemanode: "Schema node",
-          categorynumber: "Default number of categories",
+          nameHelper: "Enter name to display in the Refine search panel",
+          schemaNode: "Schema node",
+          schemaNodeHelper:
+            "The categories will be generated from the selected node",
+          categoryNumber: "Default number of categories",
+          categoryNumberHelper: "Leave blank to display all categories",
+        },
+        schemaSelector: {
+          schema: "Schema",
+          selectASchema: "Select a schema...",
+          nodeSelector: {
+            expandAll: "Expand All",
+            collapseAll: "Collapse All",
+          },
         },
       },
     },

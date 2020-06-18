@@ -24,7 +24,7 @@ import {
 import { SortOrder } from "../SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;

@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255694</id>
+  <id>6018</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>mpga</string>
     <string>mp2</string>
+    <string>mpga</string>
   </extensions>
   <type>audio/mpeg</type>
   <description>Audio</description>

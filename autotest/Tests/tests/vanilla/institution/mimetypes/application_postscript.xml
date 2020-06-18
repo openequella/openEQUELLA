@@ -1,15 +1,15 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255744</id>
+  <id>5958</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>ps</string>
-    <string>eps</string>
     <string>ai</string>
+    <string>eps</string>
+    <string>ps</string>
   </extensions>
   <type>application/postscript</type>
   <attributes>
