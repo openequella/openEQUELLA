@@ -35,7 +35,7 @@
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.47",
     "@tinymce/tinymce-react": "3.3.2",
-    "axios": "0.19.0",
+    "axios": "0.19.2",
     "create-react-class": "15.6.3",
     "downshift": "2.2.3",
     "es6-object-assign": "1.1.0",
