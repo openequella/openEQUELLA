@@ -39,11 +39,7 @@ import {
   AttachFile,
   Subject,
 } from "@material-ui/icons";
-import {
-  SearchResultItem,
-  Attachment,
-  DisplayFields,
-} from "@openequella/rest-api-client/dist/Search";
+import * as OEQ from "@openequella/rest-api-client";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -88,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 export interface SearchResultProps {
-  resultData: SearchResultItem;
+  resultData: OEQ.Search.SearchResultItem;
   /**
    * Function will be invoked when the SearchResult list item is clicked
    */
@@ -161,45 +157,49 @@ export default function SearchResult({
     </div>
   );
 
-  const customDisplayMetadata = displayFields.map((element: DisplayFields) => {
-    return (
-      <ListItem disableGutters dense>
-        <Typography
-          component="span"
-          variant="body2"
-          className={classes.heading}
-          color="textPrimary"
-        >
-          {element.name}
-        </Typography>
-        <Typography
-          component="span"
-          variant="body2"
-          className={classes.inline}
-          color="textPrimary"
-        >
-          {
-            /**Custom metadata can contain html tags, we should make sure that is
+  const customDisplayMetadata = displayFields.map(
+    (element: OEQ.Search.DisplayFields) => {
+      return (
+        <ListItem disableGutters dense>
+          <Typography
+            component="span"
+            variant="body2"
+            className={classes.heading}
+            color="textPrimary"
+          >
+            {element.name}
+          </Typography>
+          <Typography
+            component="span"
+            variant="body2"
+            className={classes.inline}
+            color="textPrimary"
+          >
+            {
+              /**Custom metadata can contain html tags, we should make sure that is
           preserved */
-            ReactHtmlParser(element.html)
-          }
-        </Typography>
-      </ListItem>
-    );
-  });
+              ReactHtmlParser(element.html)
+            }
+          </Typography>
+        </ListItem>
+      );
+    }
+  );
 
   const generateAttachmentList = () => {
     //TODO: replace this any with an Attachment type
-    const attachmentsList = attachments.map((attachment: Attachment) => {
-      return (
-        <ListItem key={attachment.id} button className={classes.nested}>
-          <ListItemIcon>
-            <InsertDriveFile />
-          </ListItemIcon>
-          <ListItemText color="primary" primary={attachment.description} />
-        </ListItem>
-      );
-    });
+    const attachmentsList = attachments.map(
+      (attachment: OEQ.Search.Attachment) => {
+        return (
+          <ListItem key={attachment.id} button className={classes.nested}>
+            <ListItemIcon>
+              <InsertDriveFile />
+            </ListItemIcon>
+            <ListItemText color="primary" primary={attachment.description} />
+          </ListItem>
+        );
+      }
+    );
 
     if (attachmentsList.length > 0)
       return (

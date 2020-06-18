@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
+import * as OEQ from "@openequella/rest-api-client";
 
-const basicSearchObj: SearchResultItem = {
+const basicSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
@@ -44,7 +44,7 @@ const basicSearchObj: SearchResultItem = {
   },
 };
 
-const attachSearchObj: SearchResultItem = {
+const attachSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
@@ -82,7 +82,7 @@ const attachSearchObj: SearchResultItem = {
   },
 };
 
-const customMetaSearchObj: SearchResultItem = {
+const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   name: "Little Larry",
   description: "A description of a bird",
