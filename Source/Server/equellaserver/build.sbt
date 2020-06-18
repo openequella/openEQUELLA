@@ -210,15 +210,15 @@ libraryDependencies ++= Seq(
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
   "org.slf4j"           % "slf4j-api"              % "1.7.30",
   "org.slf4j"           % "slf4j-log4j12"          % "1.7.30",
-  "org.springframework" % "spring-aop"             % "2.5.5",
-  "org.springframework" % "spring-context"         % "2.5.5",
+  "org.springframework" % "spring-aop"             % "2.5.6",
+  "org.springframework" % "spring-context"         % "2.5.6",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % "2.5.5",
-  "org.springframework" % "spring-tx"   % "2.5.5",
-  "org.springframework" % "spring-web"  % "2.5.5",
+  "org.springframework" % "spring-jdbc" % "2.5.6",
+  "org.springframework" % "spring-tx"   % "2.5.6",
+  "org.springframework" % "spring-web"  % "2.5.6",
 //  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
 //    ExclusionRule(organization = "jasperreports", name = "jasperreports")
 //    ),
