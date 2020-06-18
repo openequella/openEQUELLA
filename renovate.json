@@ -1,7 +1,6 @@
 {
   "extends": ["config:base", ":masterIssue"],
   "prConcurrentLimit": 20,
-  "rebaseStalePrs": false,
   "prHourlyLimit": 2,
   "packageRules": [
     {
