@@ -20,6 +20,10 @@ import { Config } from "../config";
 
 const API_BASE_URL = `${Config.baseUrl}api`;
 
+/**
+ * A function that does a search with specified search criteria and returns a list of Items.
+ * @param params Search criteria.
+ */
 export const searchItems = (
   params?: OEQ.Search.SearchParams
 ): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> =>
