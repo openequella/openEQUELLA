@@ -22,7 +22,7 @@ import {
   ReducerBuilder,
   reducerWithInitialState,
 } from "typescript-fsa-reducers";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { actionCreator, wrapAsyncWorker } from "../util/actionutil";
 import { IDictionary } from "../util/dictionary";
 
@@ -76,7 +76,7 @@ function aclWorkers(actions: AclActions): AclWorkers {
       (param): Promise<{ node: string; result: string[] }> => {
         const { node } = param;
         return axios
-          .get<string[]>(`${Config.baseUrl}api/acl/privileges?node=${node}`)
+          .get<string[]>(`${API_BASE_URL}/acl/privileges?node=${node}`)
           .then((res) => ({ node, result: res.data }));
       }
     ),

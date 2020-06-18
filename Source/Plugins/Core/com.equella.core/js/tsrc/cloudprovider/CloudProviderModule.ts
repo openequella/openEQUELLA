@@ -17,13 +17,13 @@
  */
 import { PagingResults } from "../api";
 import Axios, { AxiosPromise } from "axios";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import { languageStrings } from "../util/langstrings";
 
-export const GET_CLOUD_PROVIDER_LIST_URL = `${Config.baseUrl}api/cloudprovider`;
-export const BASE_CLOUD_PROVIDER_URL = `${Config.baseUrl}api/cloudprovider/provider`;
-export const POST_CLOUD_PROVIDER_REGISTER_INIT_URL = `${Config.baseUrl}api/cloudprovider/register/init`;
+export const GET_CLOUD_PROVIDER_LIST_URL = `${API_BASE_URL}/cloudprovider`;
+export const BASE_CLOUD_PROVIDER_URL = `${API_BASE_URL}/cloudprovider/provider`;
+export const POST_CLOUD_PROVIDER_REGISTER_INIT_URL = `${API_BASE_URL}/cloudprovider/register/init`;
 
 export const cloudProviderLangStrings = languageStrings.cp;
 

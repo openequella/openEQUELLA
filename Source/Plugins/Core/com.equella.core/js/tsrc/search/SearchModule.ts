@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Config } from "../config";
-
-const API_BASE_URL = `${Config.baseUrl}api`;
+import { API_BASE_URL } from "../config";
 
 /**
  * A function that does a search with specified search criteria and returns a list of Items.
