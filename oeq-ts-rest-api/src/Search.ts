@@ -1,7 +1,7 @@
 import * as Common from './Common';
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
-import * as Utils from './Utils';
+import { toValidDate } from 'Utils';
 
 /**
  * Type of query parameters that can be used in a search.
@@ -130,7 +130,7 @@ export interface Attachment {
 /**
  * Type of search result item.
  */
-export interface SearchResultItem {
+interface BaseSearchResultItem {
   /**
    * Item's unique ID.
    */
@@ -147,14 +147,6 @@ export interface SearchResultItem {
    * Item's status
    */
   status: string;
-  /**
-   * The date when item is created.
-   */
-  createdDate: Date;
-  /**
-   * The last date when item is modified.
-   */
-  modifiedDate: Date;
   /**
    * The ID of item's collection.
    */
@@ -185,6 +177,28 @@ export interface SearchResultItem {
   links: Record<string, string>;
 }
 
+interface SearchResultItemFromApi extends BaseSearchResultItem {
+  /**
+   * The date when item is created.
+   */
+  createdDate: string;
+  /**
+   * The last date when item is modified.
+   */
+  modifiedDate: string;
+}
+
+export interface SearchResultItem extends BaseSearchResultItem {
+  /**
+   * The date when item is created.
+   */
+  createdDate: Date;
+  /**
+   * The last date when item is modified.
+   */
+  modifiedDate: Date;
+}
+
 const SEARCH2_API_PATH = '/search2';
 
 /**
@@ -197,15 +211,17 @@ export const search = (
   apiBasePath: string,
   params?: SearchParams
 ): Promise<Common.PagedResult<SearchResultItem>> => {
-  return GET<Common.PagedResult<SearchResultItem>>(
+  return GET<Common.PagedResult<SearchResultItemFromApi>>(
     apiBasePath + SEARCH2_API_PATH,
-    (data): data is Common.PagedResult<SearchResultItem> =>
-      is<Common.PagedResult<SearchResultItem>>(data),
-    params,
-    (data) =>
-      Utils.convertDateFields<Common.PagedResult<SearchResultItem>>(data, [
-        'createdDate',
-        'modifiedDate',
-      ])
-  );
+    (data): data is Common.PagedResult<SearchResultItemFromApi> =>
+      is<Common.PagedResult<SearchResultItemFromApi>>(data),
+    params
+  ).then(({ results, ...rest }) => ({
+    ...rest,
+    results: results.map(({ createdDate, modifiedDate, ...rest }) => ({
+      ...rest,
+      createdDate: toValidDate(createdDate),
+      modifiedDate: toValidDate(modifiedDate),
+    })),
+  }));
 };

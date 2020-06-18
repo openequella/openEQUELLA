@@ -30,8 +30,6 @@ export interface BaseEntityReadOnly {
 
 export interface BaseEntity {
   uuid: string;
-  // Attempted to use Date here, but it broke checks with typescript-is. But Date could be used
-  // post processing
   modifiedDate?: string;
   createdDate?: string;
   owner?: User;

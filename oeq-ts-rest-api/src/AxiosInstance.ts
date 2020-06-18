@@ -25,16 +25,14 @@ const catchHandler = (error: AxiosError | Error): never => {
 export const GET = <T>(
   path: string,
   validator: (data: unknown) => data is T,
-  queryParams?: Parameters<typeof stringify>[0],
-  transformer?: (data: unknown) => T
+  queryParams?: Parameters<typeof stringify>[0]
 ): Promise<T> =>
   axios
     .get(path, {
       params: queryParams,
       paramsSerializer: (params) => stringify(params),
     })
-    .then(({ data: rawData }: AxiosResponse<unknown>) => {
-      const data = transformer ? transformer(rawData) : rawData;
+    .then(({ data }: AxiosResponse<unknown>) => {
       if (!validator(data)) {
         throw new TypeError(
           `Data format mismatch with data received from server, on request to: "${path}"`
