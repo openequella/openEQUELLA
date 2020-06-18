@@ -123,3 +123,23 @@ export const pathForNode = (node: SchemaNode, stripXml = true): string => {
 
   return path;
 };
+
+/**
+ * Recursive helper function to get a list of all possible xml paths from a given SchemaNode.
+ * @param nodes The schema to generate paths for.
+ * @param paths Used by the recursive algorithm to build up the returned list.
+ *          When passing in initially, leave as a blank array.
+ * @param stripXml Passed into pathForNode. Whether to include the leading /xml.
+ */
+export const getAllPaths = (
+  nodes: SchemaNode,
+  stripXml = true,
+  paths: string[] = []
+): string[] =>
+  paths
+    .concat(pathForNode(nodes, stripXml))
+    .concat(
+      nodes.children?.flatMap((childNode) =>
+        getAllPaths(childNode, stripXml, paths)
+      ) ?? []
+    );

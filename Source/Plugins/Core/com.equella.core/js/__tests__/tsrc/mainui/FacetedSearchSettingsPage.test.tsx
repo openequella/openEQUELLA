@@ -19,13 +19,16 @@ import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import { FacetWithFlags } from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { act } from "react-dom/test-utils";
+import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
+import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
 import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
 import MessageInfo from "../../../tsrc/components/MessageInfo";
 import MessageDialog from "../../../tsrc/components/MessageDialog";
 import { Draggable } from "react-beautiful-dnd";
-import { FacetWithFlags } from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import * as OEQ from "@openequella/rest-api-client";
 
 const mockFacets: FacetedSearchSettingsModule.Facet[] = [
   {
@@ -50,6 +53,14 @@ const mockFacets: FacetedSearchSettingsModule.Facet[] = [
     orderIndex: 2,
   },
 ];
+
+jest.mock("@openequella/rest-api-client");
+(OEQ.Schema.listSchemas as jest.Mock<
+  Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
+>).mockResolvedValue(getSchemasResp);
+(OEQ.Schema.getSchema as jest.Mock<
+  Promise<OEQ.Schema.EquellaSchema>
+>).mockResolvedValue(getSchemaUuidResp);
 
 const mockFacetsWithFlags: FacetWithFlags[] = mockFacets.map((f) => {
   return { ...f, updated: false, deleted: false };
@@ -101,7 +112,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     fields.at(0).simulate("change", {
       target: { value: action === Actions.Add ? "new facet" : "updated facet" },
     });
-    fields.at(1).simulate("change", { target: { value: "item/name/first" } });
+    fields.at(2).simulate("change", { target: { value: "item/name/first" } });
     const button = component
       .findWhere(
         (node) =>

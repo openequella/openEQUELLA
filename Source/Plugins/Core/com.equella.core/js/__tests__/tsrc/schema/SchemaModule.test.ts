@@ -62,3 +62,31 @@ describe("pathForNode", () => {
       "/xml/child1/child2/child3"
     ));
 });
+
+describe("getAllPaths", () => {
+  const schemaDefinition = {
+    child1: {
+      _type: "text",
+      child2: { _type: "text", child3: { _type: "text" } },
+    },
+  };
+  const testSchema = SchemaModule.buildSchemaTree(schemaDefinition, "xml");
+  it("should correctly generate the list of full paths", () => {
+    const paths = SchemaModule.getAllPaths(testSchema, false);
+    expect(paths).toEqual([
+      "/xml",
+      "/xml/child1",
+      "/xml/child1/child2",
+      "/xml/child1/child2/child3",
+    ]);
+  });
+  it("should correctly generate the list of xml stripped paths", () => {
+    const paths = SchemaModule.getAllPaths(testSchema);
+    expect(paths).toEqual([
+      "",
+      "/child1",
+      "/child1/child2",
+      "/child1/child2/child3",
+    ]);
+  });
+});
