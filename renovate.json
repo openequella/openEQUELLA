@@ -5,6 +5,10 @@
   "prHourlyLimit": 2,
   "packageRules": [
     {
+      "depTypeList": ["devDependencies"],
+      "automerge": true
+    },
+    {
       "packagePatterns": ["^com.fasterxml.jackson"],
       "groupName": "Jackson (XML) packages"
     },
