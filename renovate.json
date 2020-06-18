@@ -1,8 +1,8 @@
 {
   "extends": ["config:base", ":masterIssue"],
-  "prConcurrentLimit": 10,
+  "prConcurrentLimit": 20,
   "rebaseStalePrs": false,
-  "prHourlyLimit": 1,
+  "prHourlyLimit": 2,
   "packageRules": [
     {
       "packagePatterns": ["^com.fasterxml.jackson"],
