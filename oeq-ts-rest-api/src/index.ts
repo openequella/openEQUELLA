@@ -5,3 +5,5 @@ export * as Errors from './Errors';
 export * as Schema from './Schema';
 export * as Security from './Security';
 export * as Settings from './Settings';
+export * as Search from './Search';
+export * as Utils from './Utils';
