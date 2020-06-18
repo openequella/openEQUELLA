@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 import axios, { AxiosPromise } from "axios";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { languageStrings } from "../util/langstrings";
 import { BlobInfo } from "../components/RichTextEditor";
 
-export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
-export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
+export const PRE_LOGIN_NOTICE_API_URL = `${API_BASE_URL}/preloginnotice`;
+export const POST_LOGIN_NOTICE_API_URL = `${API_BASE_URL}/postloginnotice`;
 export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image/`;
 export enum NotificationType {
   Save,

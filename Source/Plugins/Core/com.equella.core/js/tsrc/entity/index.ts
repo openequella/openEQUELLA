@@ -23,7 +23,7 @@ import {
   reducerWithInitialState,
 } from "typescript-fsa-reducers";
 import { Entity } from "../api/Entity";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { actionCreator, wrapAsyncWorker } from "../util/actionutil";
 import { IDictionary } from "../util/dictionary";
 import { encodeQuery } from "../util/encodequery";
@@ -190,14 +190,14 @@ function entityWorkers<E extends Entity>(
         descriptionStrings: { en: entity.description },
       });
       if (entity.uuid) {
-        const url = `${Config.baseUrl}api/${entityLower}/${entity.uuid}`;
+        const url = `${API_BASE_URL}/${entityLower}/${entity.uuid}`;
         return axios
           .put<{}>(url, postEntity)
           .then((_) => axios.get<E>(url))
           .then((res) => ({ result: res.data }));
       } else {
         return axios
-          .post<{}>(`${Config.baseUrl}api/${entityLower}/`, postEntity)
+          .post<{}>(`${API_BASE_URL}/${entityLower}/`, postEntity)
           .then((res) => res.headers["location"])
           .then((loc) => axios.get<E>(loc))
           .then((res) => ({ result: res.data }));
@@ -222,7 +222,7 @@ function entityWorkers<E extends Entity>(
       (param): Promise<{ result: E }> => {
         const { uuid } = param;
         return axios
-          .get<E>(`${Config.baseUrl}api/${entityLower}/${uuid}`)
+          .get<E>(`${API_BASE_URL}/${entityLower}/${uuid}`)
           .then((res) => ({ result: res.data }));
       }
     ),
@@ -231,7 +231,7 @@ function entityWorkers<E extends Entity>(
       (param): Promise<{ uuid: string }> => {
         const { uuid } = param;
         return axios
-          .delete(`${Config.baseUrl}api/${entityLower}/${uuid}`)
+          .delete(`${API_BASE_URL}/${entityLower}/${uuid}`)
           .then((res) => ({ uuid }));
       }
     ),
@@ -247,7 +247,7 @@ function entityWorkers<E extends Entity>(
         const { privilege } = param;
         const qs = encodeQuery({ privilege });
         return axios
-          .get<string[]>(`${Config.baseUrl}api/acl/privilegecheck${qs}`)
+          .get<string[]>(`${API_BASE_URL}/acl/privilegecheck${qs}`)
           .then((res) => res.data);
       }
     ),

@@ -15,15 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// MUST end in /
-//export const INST_URL = 'http://localhost:8080/reports/';
+import * as OEQ from "@openequella/rest-api-client";
+import { API_BASE_URL } from "../config";
 
-interface Config {
-  baseUrl: string;
-}
-
-export const Config: Config = {
-  baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
-};
-
-export const API_BASE_URL = `${Config.baseUrl}api`;
+/**
+ * A function that does a search with specified search criteria and returns a list of Items.
+ * @param params Search criteria.
+ */
+export const searchItems = (
+  params?: OEQ.Search.SearchParams
+): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> =>
+  OEQ.Search.search(API_BASE_URL, params);

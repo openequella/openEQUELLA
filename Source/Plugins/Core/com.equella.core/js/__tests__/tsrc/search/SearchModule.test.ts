@@ -15,15 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// MUST end in /
-//export const INST_URL = 'http://localhost:8080/reports/';
+import * as OEQ from "@openequella/rest-api-client";
+import * as SearchModule from "../../../tsrc/search/SearchModule";
+import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
-interface Config {
-  baseUrl: string;
-}
+jest.mock("@openequella/rest-api-client");
+(OEQ.Search.search as jest.Mock<
+  Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>>
+>).mockResolvedValue(getSearchResult);
 
-export const Config: Config = {
-  baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
-};
-
-export const API_BASE_URL = `${Config.baseUrl}api`;
+describe("SearchModule", () => {
+  it("should provide an list of items", async () => {
+    const searchResult = await SearchModule.searchItems();
+    expect(searchResult.available).toBe(4);
+    expect(searchResult.results).toHaveLength(4);
+  });
+});
