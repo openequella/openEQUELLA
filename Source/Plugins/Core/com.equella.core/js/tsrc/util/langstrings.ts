@@ -315,6 +315,10 @@ export const languageStrings = {
     resultsAvailable: "results available",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
+    searchresult: {
+      attachments: "Attachments",
+      dateModified: "Modified",
+    },
     order: {
       relevance: "Relevance",
       name: "Name",
