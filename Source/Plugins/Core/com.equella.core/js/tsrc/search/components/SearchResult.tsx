@@ -187,7 +187,6 @@ export default function SearchResult({
   );
 
   const generateAttachmentList = () => {
-    //TODO: replace this any with an Attachment type
     const attachmentsList = attachments.map(
       (attachment: OEQ.Search.Attachment) => {
         return (
