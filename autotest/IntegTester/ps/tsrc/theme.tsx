@@ -1,16 +1,30 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import "babel-polyfill";
 import { Theme, createMuiTheme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { deepOrange, deepPurple } from "@material-ui/core/colors";
 
 export const theme = createMuiTheme({
   palette: {
     primary: deepOrange,
-    secondary: deepPurple
+    secondary: deepPurple,
   },
-  typography: {
-    useNextVariants: true
-  }
 });
 
 export const useStyles = makeStyles((theme: Theme) => {
@@ -18,20 +32,20 @@ export const useStyles = makeStyles((theme: Theme) => {
     content: {
       display: "flex",
       flexDirection: "column",
-      flexGrow: 1
+      flexGrow: 1,
     },
     root: {
       height: "100vh",
       display: "flex",
-      flexDirection: "column"
+      flexDirection: "column",
     },
     body: {
-      margin: theme.spacing.unit * 2
+      margin: theme.spacing(2),
     },
     textField: {
-      marginLeft: theme.spacing.unit,
-      marginRight: theme.spacing.unit,
-      width: 300
-    }
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      width: 300,
+    },
   };
 });

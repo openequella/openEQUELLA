@@ -8,7 +8,7 @@ inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.9.3"
 val http4sVersion = "0.20.0-M6"
-val catsVersion   = "1.1.0"
+val catsVersion   = "1.6.1"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -41,7 +41,7 @@ libraryDependencies ++= Seq(
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.4.0",
   "org.slf4j"        % "slf4j-simple"              % "1.7.30",
-  "org.scalacheck"   %% "scalacheck"               % "1.13.5" % "test,serial",
+  "org.scalacheck"   %% "scalacheck"               % "1.14.3" % "test,serial",
   "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,

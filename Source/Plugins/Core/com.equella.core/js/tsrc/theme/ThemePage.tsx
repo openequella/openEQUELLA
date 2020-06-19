@@ -34,7 +34,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
 import axios, { AxiosError } from "axios";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { languageStrings } from "../util/langstrings";
 import { commonString } from "../util/commonstrings";
 import {
@@ -193,7 +193,7 @@ class ThemePage extends React.Component<
 
   submitTheme = () => {
     axios
-      .put(`${Config.baseUrl}api/theme/settings/`, {
+      .put(`${API_BASE_URL}/theme/settings/`, {
         primaryColor: this.state.primary,
         secondaryColor: this.state.secondary,
         backgroundColor: this.state.background,
@@ -214,7 +214,7 @@ class ThemePage extends React.Component<
 
   resetLogo = () => {
     axios
-      .delete(`${Config.baseUrl}api/theme/logo/`)
+      .delete(`${API_BASE_URL}/theme/logo/`)
       .then(() => {
         this.reload();
       })
@@ -226,7 +226,7 @@ class ThemePage extends React.Component<
   submitLogo = () => {
     if (this.state.logoToUpload != "") {
       axios
-        .put(`${Config.baseUrl}api/theme/logo/`, this.state.logoToUpload)
+        .put(`${API_BASE_URL}/theme/logo/`, this.state.logoToUpload)
         .then(() => {
           this.reload();
         })

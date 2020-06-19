@@ -15,10 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import * as OEQ from "@openequella/rest-api-client";
-
-const API_BASE_URL = `${Config.baseUrl}api`;
 
 export const fetchSettings = (): Promise<OEQ.Settings.GeneralSetting[]> =>
   OEQ.Settings.getGeneralSettings(API_BASE_URL);

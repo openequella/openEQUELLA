@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255729</id>
+  <id>6025</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>ram</string>
     <string>rm</string>
+    <string>ram</string>
   </extensions>
   <type>audio/x-pn-realaudio</type>
   <description>Audio</description>

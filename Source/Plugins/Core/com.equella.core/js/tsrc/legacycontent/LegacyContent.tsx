@@ -19,7 +19,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 
 declare global {
   interface Window {
@@ -276,7 +276,7 @@ function updateStylesheets(
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const sheets = _sheets
     ? _sheets.map(resolveUrl)
-    : [resolveUrl(`${Config.baseUrl}api/theme/legacy.css`)];
+    : [resolveUrl(`${API_BASE_URL}/theme/legacy.css`)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert")!;
   const head = doc.getElementsByTagName("head")[0];

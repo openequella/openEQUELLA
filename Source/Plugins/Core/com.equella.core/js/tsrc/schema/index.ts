@@ -19,7 +19,7 @@ import axios from "axios";
 import { Dispatch } from "redux";
 import { AsyncActionCreators } from "typescript-fsa";
 import { Schema } from "../api";
-import { Config } from "../config";
+import { API_BASE_URL } from "../config";
 import { EntityState, extendedEntityService } from "../entity/index";
 import { actionCreator, wrapAsyncWorker } from "../util/actionutil";
 
@@ -40,7 +40,7 @@ const workers: SchemaExtWorkers = {
     actions.citations,
     (params): Promise<string[]> => {
       return axios
-        .get<string[]>(`${Config.baseUrl}api/schema/citation`)
+        .get<string[]>(`${API_BASE_URL}/schema/citation`)
         .then((res) => res.data);
     }
   ),

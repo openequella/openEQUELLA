@@ -25,3 +25,5 @@ interface Config {
 export const Config: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };
+
+export const API_BASE_URL = `${Config.baseUrl}api`;

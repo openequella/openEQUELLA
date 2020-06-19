@@ -1,14 +1,14 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255681</id>
+  <id>6001</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>fla</string>
     <string>swf</string>
+    <string>fla</string>
   </extensions>
   <type>application/x-shockwave-flash</type>
   <attributes>

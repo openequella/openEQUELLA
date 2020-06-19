@@ -1,19 +1,19 @@
 <com.tle.beans.mime.MimeEntry>
-  <id>255763</id>
+  <id>5954</id>
   <institution>
-    <id>255467</id>
+    <id>41</id>
     <uniqueId>0</uniqueId>
     <quota>0.0</quota>
     <enabled>true</enabled>
   </institution>
   <extensions class="list">
-    <string>bin</string>
-    <string>dms</string>
-    <string>lha</string>
-    <string>lzh</string>
-    <string>exe</string>
-    <string>class</string>
     <string>a</string>
+    <string>class</string>
+    <string>exe</string>
+    <string>lzh</string>
+    <string>lha</string>
+    <string>dms</string>
+    <string>bin</string>
   </extensions>
   <type>application/octet-stream</type>
   <attributes>

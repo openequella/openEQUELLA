@@ -42,6 +42,7 @@ import {
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
+import HtmlParser from "react-html-parser";
 import { getCurrentUser, UserData } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
@@ -123,9 +124,7 @@ function IndexPage() {
   }, []);
   const oeqRoutes: { [key: string]: OEQRoute } = routes;
 
-  function mkRouteProps(
-    p: RouteComponentProps<any>
-  ): OEQRouteComponentProps<any> {
+  function mkRouteProps(p: RouteComponentProps<any>): OEQRouteComponentProps {
     return {
       ...p,
       updateTemplate,
@@ -233,11 +232,20 @@ function IndexPage() {
               {routeSwitch(content)}
             </Template>
           );
-          return !content || content.noForm ? (
-            template
-          ) : (
-            <LegacyForm state={content.state}>{template}</LegacyForm>
-          );
+          const render = () => {
+            if (!content || content.noForm) {
+              return template;
+            } else {
+              const { form } = content.html;
+              return (
+                <>
+                  <LegacyForm state={content.state}>{template}</LegacyForm>
+                  {form && HtmlParser(form)}
+                </>
+              );
+            }
+          };
+          return render();
         }}
       />
     </BrowserRouter>
