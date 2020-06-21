@@ -42,7 +42,7 @@ libraryDependencies ++= Seq(
   "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
   "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
   "axis"                           % "axis"                           % "1.4",
-  "cglib"                          % "cglib"                          % "2.2.2",
+  "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
   "com.fasterxml.jackson.module"   %% "jackson-module-scala"          % jacksonVersion,
