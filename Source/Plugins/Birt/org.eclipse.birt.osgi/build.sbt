@@ -5,7 +5,6 @@ lazy val CustomCompile = config("compile") extend BirtOsgi
 
 libraryDependencies := Seq(
   "com.github.openequella" % "birt-framework" % "4.6.0.20160607212201" artifacts Artifact("birt-framework",
-                                                                            Artifact.DefaultType,
                                                                             "zip"),
   "com.github.openequella"   % "reporting-common"                               % "2020.2.0.2020052905",
   "com.github.openequella"   % "reporting-oda"                                  % "2020.2.0.2020052905",
