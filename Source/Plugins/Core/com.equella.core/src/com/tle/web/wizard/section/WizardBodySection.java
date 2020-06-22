@@ -278,8 +278,13 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
       Decorations decorations = Decorations.getDecorations(context);
       decorations.addContentBodyClasses(cssClass);
     }
+
+    // To make the Navigation bar stick to top of the page, Old UI uses Bootstrap affix
+    // whereas New UI adds a CSS style.
     if (!RenderNewTemplate.isNewLayout(context)) {
       model.getFixedDiv().getTagState().addReadyStatements(WizardJSLibrary.AffixDiv);
+    } else {
+      model.getFixedDiv().addClasses("rightNav");
     }
     return viewFactory.createTemplateResult("wizard/body.ftl", context);
   }
