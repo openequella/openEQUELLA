@@ -48,9 +48,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchResultItems, setSearchResultItems] = useState<
     OEQ.Search.SearchResultItem[]
   >([]);
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>(
-    defaultSearchSettings
-  );
 
   /**
    * What is done in this hook include: updating the page title, retrieving search settings, and
@@ -61,11 +58,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSearchSettings(settings);
-      search({
-        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-      });
+    search({
+      status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
     });
   }, []);
 
