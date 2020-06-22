@@ -61,14 +61,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    getSearchSettingsFromServer()
-      .then((settings: SearchSettings) => {
-        setSearchSettings(settings);
-        search({
-          status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-        });
-      })
-      .catch((error: Error) => handleError(error));
+    getSearchSettingsFromServer().then((settings: SearchSettings) => {
+      setSearchSettings(settings);
+      search({
+        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+      });
+    });
   }, []);
 
   const handleError = (error: Error) => {
@@ -80,11 +78,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * @param params Search criteria
    */
   const search = (params?: OEQ.Search.SearchParams): void => {
-    searchItems(
-      params
-    ).then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
-      setSearchResultItems(items.results)
-    );
+    searchItems(params)
+      .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
+        setSearchResultItems(items.results)
+      )
+      .catch((error: Error) => handleError(error));
   };
 
   /**
