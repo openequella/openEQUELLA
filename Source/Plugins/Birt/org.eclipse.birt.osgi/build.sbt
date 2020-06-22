@@ -4,8 +4,9 @@ lazy val BirtOsgi      = config("birtosgi")
 lazy val CustomCompile = config("compile") extend BirtOsgi
 
 libraryDependencies := Seq(
-  "com.github.openequella" % "birt-framework" % "4.6.0.20160607212201" artifacts Artifact("birt-framework",
-                                                                            "zip"),
+  "com.github.openequella" % "birt-framework" % "4.6.0.20160607212201" artifacts Artifact(
+    "birt-framework",
+    "zip"),
   "com.github.openequella"   % "reporting-common"                               % "2020.2.0.2020052905",
   "com.github.openequella"   % "reporting-oda"                                  % "2020.2.0.2020052905",
   "com.github.openequella"   % "reporting-oda-connectors"                       % "2020.2.0.2020052905",
@@ -17,10 +18,6 @@ libraryDependencies := Seq(
   "javax.xml.stream"         % "com.springsource.javax.xml.stream"              % "1.0.1"
 ).map(_ % BirtOsgi)
 
-//resolvers += Resolver.url("my-test-repo",
-//                          url("http://repository.springsource.com/ivy/bundles/external/"))(
-//  Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
-
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 
 resourceGenerators in Compile += Def.task {
@@ -30,7 +27,10 @@ resourceGenerators in Compile += Def.task {
   val outPlugins = baseBirt / "plugins"
   val ur         = update.value
   val pluginJars =
-    Classpaths.managedJars(BirtOsgi, Set("jar"), ur).files.filter((file) => file.getName.endsWith(".jar") && !file.getName.endsWith("zip.jar"))
+    Classpaths
+      .managedJars(BirtOsgi, Set("jar"), ur)
+      .files
+      .filter((file) => file.getName.endsWith(".jar") && !file.getName.endsWith("zip.jar"))
   val unzipped       = IO.unzip(ur.select(artifact = artifactFilter(classifier = "zip")).head, baseBirt)
   val copied         = IO.copy(pluginJars.pair(flat(outPlugins), errorIfNone = false))
   val birtManifest   = baseDirectory.value / "birt-MANIFEST.MF"
