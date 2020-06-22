@@ -35,11 +35,6 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import { searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
-import {
-  defaultSearchSettings,
-  getSearchSettingsFromServer,
-  SearchSettings,
-} from "../settings/Search/SearchSettingsModule";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
 
@@ -50,8 +45,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >([]);
 
   /**
-   * What is done in this hook include: updating the page title, retrieving search settings, and
-   * doing a default search.
+   * Update the page title and do a default search.
    */
   useEffect(() => {
     updateTemplate((tp) => ({

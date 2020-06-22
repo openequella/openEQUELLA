@@ -126,11 +126,11 @@ export interface Attachment {
    */
   links: {
     /**
-     * The URL of viewing this attachment.
+     * The URL for viewing this attachment.
      */
     view: string;
     /**
-     * The URL of viewing this attachment's thumbnail.
+     * The URL for viewing this attachment's thumbnail.
      */
     thumbnail: string;
   };
@@ -193,11 +193,11 @@ export interface SearchResultItem {
    */
   links: {
     /**
-     * The URL of viewing this item.
+     * The URL for viewing this item.
      */
     view: string;
     /**
-     * The REST API path used to get details of this item.
+     * The REST API path used to get this item's details.
      */
     self: string;
   };
