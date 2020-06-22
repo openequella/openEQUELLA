@@ -94,7 +94,7 @@
     "@types/react-html-parser": "2.0.1",
     "@types/react-dom": "16.9.8",
     "@types/react-redux": "5.0.21",
-    "@types/react-router": "5.1.7",
+    "@types/react-router": "5.1.8",
     "@types/react-router-dom": "5.1.5",
     "@types/react-swipeable-views": "0.12.2",
     "@types/react-test-renderer": "16.9.2",
