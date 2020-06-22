@@ -158,9 +158,9 @@ export default function SearchResult({
   );
 
   const customDisplayMetadata = displayFields.map(
-    (element: OEQ.Search.DisplayFields) => {
+    (element: OEQ.Search.DisplayFields, index: number) => {
       return (
-        <ListItem disableGutters dense>
+        <ListItem disableGutters dense key={element.name + index}>
           <Typography
             component="span"
             variant="body2"
@@ -225,7 +225,7 @@ export default function SearchResult({
     <ListItem onClick={onClick} alignItems="flex-start" button key={uuid}>
       {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
-        primary={name}
+        primary={name ?? uuid}
         secondary={
           <>
             <Typography className={classes.itemDescription}>

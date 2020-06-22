@@ -16,63 +16,115 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps,
+} from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
 import {
-  Card,
   IconButton,
   List,
   ListItem,
-  ListItemText,
   ListSubheader,
   TextField,
+  Grid,
+  Card,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import { searchItems } from "./SearchModule";
+import * as OEQ from "@openequella/rest-api-client";
+import {
+  defaultSearchSettings,
+  getSearchSettingsFromServer,
+  SearchSettings,
+} from "../settings/Search/SearchSettingsModule";
+import SearchResult from "./components/SearchResult";
+import { generateFromError } from "../api/errors";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
-  const placeholderData: string[] = [
-    "item1",
-    "item2",
-    "item3",
-    "item4",
-    "item5",
-  ];
+  const [searchResultItems, setSearchResultItems] = useState<
+    OEQ.Search.SearchResultItem[]
+  >([]);
+  const [searchSettings, setSearchSettings] = useState<SearchSettings>(
+    defaultSearchSettings
+  );
 
+  /**
+   * What is done in this hook include: updating the page title, retrieving search settings, and
+   * doing a default search.
+   */
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
+
+    getSearchSettingsFromServer()
+      .then((settings: SearchSettings) => {
+        setSearchSettings(settings);
+        search({
+          status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+        });
+      })
+      .catch((error: Error) => handleError(error));
   }, []);
 
-  const searchResults = placeholderData.map((data: string) => {
-    return (
-      <ListItem>
-        <ListItemText primary={data} />
-      </ListItem>
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  };
+
+  /**
+   * Search items with specified search criteria.
+   * @param params Search criteria
+   */
+  const search = (params?: OEQ.Search.SearchParams): void => {
+    searchItems(
+      params
+    ).then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
+      setSearchResultItems(items.results)
     );
-  });
+  };
+
+  /**
+   * A SearchResult that represents one of the search result items.
+   */
+  const searchResults = searchResultItems.map(
+    (item: OEQ.Search.SearchResultItem) => (
+      <ListItem key={item.uuid}>
+        <SearchResult
+          resultData={item}
+          onClick={() => (window.location.href = item.links.view)}
+        />
+      </ListItem>
+    )
+  );
+
+  /**
+   * A list that consists of search result items.
+   */
   const searchResultList = (
-    <List
-      subheader={
-        <ListSubheader disableGutters>{searchStrings.subtitle}</ListSubheader>
-      }
-    >
+    <List subheader={<ListSubheader>{searchStrings.subtitle}</ListSubheader>}>
       {searchResults}
     </List>
   );
 
   return (
-    <>
-      <Card>
-        <IconButton>
-          <SearchIcon fontSize={"large"} />
-        </IconButton>
-        <TextField />
-      </Card>
-      <Card>{searchResultList}</Card>
-    </>
+    <Grid container direction={"column"} spacing={2}>
+      <Grid item xs={9}>
+        <Card>
+          <IconButton>
+            <SearchIcon fontSize={"large"} />
+          </IconButton>
+          <TextField />
+        </Card>
+      </Grid>
+
+      <Grid item xs={9}>
+        <Card>{searchResultList}</Card>
+      </Grid>
+    </Grid>
   );
 };
 
