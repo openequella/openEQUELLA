@@ -848,6 +848,23 @@ a[title="move-down"]:before {
   width: 476px;
 }
 
+@media only screen and (max-width: 768px) {
+  .wizard-layout .indent0 .shuffle-box-inner select{
+    width: 30%;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1200px) {
+  .wizard-layout .indent0 .shuffle-box-inner select{
+    width: 38%;
+  }
+}
+@media only screen and (min-width: 1201px) {
+  .wizard-layout .indent0 .shuffle-box-inner select{
+    width: 45%;
+  }
+}
+
 .wizard-layout .indent1 .shuffle-box-inner select {
   width: 236px;
 }
