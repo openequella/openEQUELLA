@@ -87,8 +87,13 @@
 					</div>
 				</div>
 			</div>
-			
-			
+
+			<#if m.courseCaching>
+        <div class="button-strip">
+				  <@render s.refreshCourseCacheButton />
+			  </div>
+			</#if>
+
 			<div class="button-strip">
 				<@render s.publishButton />
 			</div>

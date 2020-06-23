@@ -32,6 +32,12 @@ public class Token {
   @JsonProperty("expires_in")
   private Integer expiresIn;
 
+  @JsonProperty("scope")
+  private String scope;
+
+  @JsonProperty("user_id")
+  private String userId;
+
   public String getAccessToken() {
     return accessToken;
   }
@@ -54,5 +60,21 @@ public class Token {
 
   public void setExpiresIn(Integer expiresIn) {
     this.expiresIn = expiresIn;
+  }
+
+  public String getScope() {
+    return scope;
+  }
+
+  public void setScope(String scope) {
+    this.scope = scope;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
 }
