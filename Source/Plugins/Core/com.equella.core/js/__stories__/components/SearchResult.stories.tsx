@@ -18,8 +18,7 @@
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../tsrc/search/components/SearchResult";
-import { action } from "@storybook/addon-actions";
-import { object } from "@storybook/addon-knobs";
+import { number, object, text } from "@storybook/addon-knobs";
 
 export default {
   title: "SerachResult",
@@ -28,21 +27,93 @@ export default {
 
 export const BasicSearchResultComponent = () => (
   <SearchResult
-    resultData={object("resultData", mockData.basicSearchObj)}
-    onClick={action("onClick")}
+    name={text("name", mockData.basicSearchObj.name!)}
+    uuid={text("uuid", mockData.basicSearchObj.uuid)}
+    description={text("description", mockData.basicSearchObj.description!)}
+    displayFields={object("display fields", [
+      ...mockData.basicSearchObj.displayFields,
+    ])}
+    modifiedDate={object("modified date", mockData.basicSearchObj.modifiedDate)}
+    createdDate={object("created date", mockData.basicSearchObj.createdDate)}
+    status={text("item status", mockData.basicSearchObj.status)}
+    displayOptions={object(
+      "display options",
+      mockData.basicSearchObj.displayOptions
+    )}
+    attachments={object("attachments", [
+      ...mockData.basicSearchObj.attachments,
+    ])}
+    links={object("links", mockData.basicSearchObj.links)}
+    collectionId={text("collection ID", mockData.basicSearchObj.collectionId)}
+    commentCount={number("comment count", mockData.basicSearchObj.commentCount)}
+    thumbnail={text("thumbnail", mockData.basicSearchObj.thumbnail)}
   />
 );
 
 export const AttachmentSearchResultComponent = () => (
   <SearchResult
-    resultData={object("resultData", mockData.attachSearchObj)}
-    onClick={action("onClick")}
+    name={text("name", mockData.attachSearchObj.name!)}
+    uuid={text("uuid", mockData.attachSearchObj.uuid)}
+    description={text("description", mockData.attachSearchObj.description!)}
+    displayFields={object("display fields", [
+      ...mockData.attachSearchObj.displayFields,
+    ])}
+    modifiedDate={object(
+      "modified date",
+      mockData.attachSearchObj.modifiedDate
+    )}
+    createdDate={object("created date", mockData.attachSearchObj.createdDate)}
+    status={text("item status", mockData.attachSearchObj.status)}
+    displayOptions={object(
+      "display options",
+      mockData.attachSearchObj.displayOptions
+    )}
+    attachments={object("attachments", [
+      ...mockData.attachSearchObj.attachments,
+    ])}
+    links={object("links", mockData.attachSearchObj.links)}
+    collectionId={text("collection ID", mockData.attachSearchObj.collectionId)}
+    commentCount={number(
+      "comment count",
+      mockData.attachSearchObj.commentCount
+    )}
+    thumbnail={text("thumbnail", mockData.attachSearchObj.thumbnail)}
   />
 );
 
 export const CustomMetadataSearchResultComponent = () => (
   <SearchResult
-    resultData={object("resultData", mockData.customMetaSearchObj)}
-    onClick={action("onClick")}
+    name={text("name", mockData.customMetaSearchObj.name!)}
+    uuid={text("uuid", mockData.customMetaSearchObj.uuid)}
+    description={text("description", mockData.customMetaSearchObj.description!)}
+    displayFields={object("display fields", [
+      ...mockData.customMetaSearchObj.displayFields,
+    ])}
+    modifiedDate={object(
+      "modified date",
+      mockData.customMetaSearchObj.modifiedDate
+    )}
+    createdDate={object(
+      "created date",
+      mockData.customMetaSearchObj.createdDate
+    )}
+    status={text("item status", mockData.customMetaSearchObj.status)}
+    displayOptions={object(
+      "display options",
+      mockData.customMetaSearchObj.displayOptions
+    )}
+    attachments={object("attachments", [
+      ...mockData.customMetaSearchObj.attachments,
+    ])}
+    links={object("links", mockData.customMetaSearchObj.links)}
+    collectionId={text(
+      "collection ID",
+      mockData.customMetaSearchObj.collectionId
+    )}
+    commentCount={number(
+      "comment count",
+      mockData.customMetaSearchObj.commentCount
+    )}
+    thumbnail={text("thumbnail", mockData.customMetaSearchObj.thumbnail)}
   />
 );
