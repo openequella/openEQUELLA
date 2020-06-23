@@ -94,11 +94,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   return (
-    <Grid container direction={"column"} spacing={2}>
+    <Grid container direction="column" spacing={2}>
       <Grid item xs={9}>
         <Card>
           <IconButton>
-            <SearchIcon fontSize={"large"} />
+            <SearchIcon fontSize="large" />
           </IconButton>
           <TextField />
         </Card>
