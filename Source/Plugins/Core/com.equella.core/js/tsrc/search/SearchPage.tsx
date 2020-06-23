@@ -79,10 +79,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchResults = searchResultItems.map(
     (item: OEQ.Search.SearchResultItem) => (
       <ListItem key={item.uuid}>
-        <SearchResult
-          resultData={item}
-          onClick={() => (window.location.href = item.links.view)}
-        />
+        <SearchResult {...item} />
       </ListItem>
     )
   );

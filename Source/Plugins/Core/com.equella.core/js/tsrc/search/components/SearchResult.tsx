@@ -83,26 +83,17 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-export interface SearchResultProps {
-  resultData: OEQ.Search.SearchResultItem;
-  /**
-   * Function will be invoked when the SearchResult list item is clicked
-   */
-  onClick: () => void;
-}
 export default function SearchResult({
-  resultData: {
-    name,
-    uuid,
-    description,
-    displayFields,
-    modifiedDate,
-    status,
-    displayOptions,
-    attachments,
-  },
-  onClick,
-}: SearchResultProps) {
+  name,
+  uuid,
+  description,
+  displayFields,
+  modifiedDate,
+  status,
+  displayOptions,
+  attachments,
+  links,
+}: OEQ.Search.SearchResultItem) {
   const classes = useStyles();
 
   const searchResultStrings = languageStrings.searchpage.searchresult;
@@ -222,10 +213,10 @@ export default function SearchResult({
   };
 
   return (
-    <ListItem onClick={onClick} alignItems="flex-start" button key={uuid}>
+    <ListItem alignItems="flex-start" key={uuid}>
       {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
-        primary={name ?? uuid}
+        primary={<a href={links.view}> {name ?? uuid} </a>}
         secondary={
           <>
             <Typography className={classes.itemDescription}>
