@@ -193,11 +193,19 @@ const SEARCH2_API_PATH = '/search2';
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param params Query parameters as search criteria.
  */
-export const search = (apiBasePath: string, params?: SearchParams): Promise<Common.PagedResult<SearchResultItem>> => {
+export const search = (
+  apiBasePath: string,
+  params?: SearchParams
+): Promise<Common.PagedResult<SearchResultItem>> => {
   return GET<Common.PagedResult<SearchResultItem>>(
     apiBasePath + SEARCH2_API_PATH,
-    (data) => is<Common.PagedResult<SearchResultItem>>(data),
+    (data): data is Common.PagedResult<SearchResultItem> =>
+      is<Common.PagedResult<SearchResultItem>>(data),
     params,
-    (data) => Utils.convertDateFields<Common.PagedResult<SearchResultItem>>(data, ["createdDate", "modifiedDate"] )
+    (data) =>
+      Utils.convertDateFields<Common.PagedResult<SearchResultItem>>(data, [
+        'createdDate',
+        'modifiedDate',
+      ])
   );
 };

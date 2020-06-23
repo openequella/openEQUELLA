@@ -46,15 +46,15 @@ export interface BaseEntity {
 }
 
 export enum ItemStatus {
-  DRAFT = "DRAFT",
-  LIVE = "LIVE",
-  REJECTED = "REJECTED",
-  MODERATING = "MODERATING",
-  ARCHIVED = "ARCHIVED",
-  SUSPENDED = "SUSPENDED",
-  DELETED = "DELETED",
-  REVIEW = "REVIEW",
-  PERSONAL = "PERSONAL",
+  DRAFT = 'DRAFT',
+  LIVE = 'LIVE',
+  REJECTED = 'REJECTED',
+  MODERATING = 'MODERATING',
+  ARCHIVED = 'ARCHIVED',
+  SUSPENDED = 'SUSPENDED',
+  DELETED = 'DELETED',
+  REVIEW = 'REVIEW',
+  PERSONAL = 'PERSONAL',
 }
 
 export interface PagedResult<T> {
@@ -71,5 +71,6 @@ export interface PagedResult<T> {
  *
  * @param instance An instance to validate.
  */
-export const isPagedBaseEntity = (instance: unknown): boolean =>
-  is<PagedResult<BaseEntity>>(instance);
+export const isPagedBaseEntity = (
+  instance: unknown
+): instance is PagedResult<BaseEntity> => is<PagedResult<BaseEntity>>(instance);

@@ -30,8 +30,9 @@ const UI_SETTINGS_PATH = `${SETTINGS_ROOT_PATH}/ui`;
 export const getGeneralSettings = (
   apiBasePath: string
 ): Promise<GeneralSetting[]> =>
-  GET<GeneralSetting[]>(apiBasePath + SETTINGS_ROOT_PATH, (data) =>
-    is<GeneralSetting[]>(data)
+  GET<GeneralSetting[]>(
+    apiBasePath + SETTINGS_ROOT_PATH,
+    (data): data is GeneralSetting[] => is<GeneralSetting[]>(data)
   );
 
 /**
@@ -40,7 +41,7 @@ export const getGeneralSettings = (
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const getUiSettings = (apiBasePath: string): Promise<UISettings> =>
-  GET<UISettings>(apiBasePath + UI_SETTINGS_PATH, (data) =>
+  GET<UISettings>(apiBasePath + UI_SETTINGS_PATH, (data): data is UISettings =>
     is<UISettings>(data)
   );
 

@@ -38,6 +38,7 @@ export interface CurrentUserDetails {
 export const getCurrentUserDetails = (
   apiBasePath: string
 ): Promise<CurrentUserDetails> =>
-  GET<CurrentUserDetails>(apiBasePath + '/content/currentuser', (data) =>
-    is<CurrentUserDetails>(data)
+  GET<CurrentUserDetails>(
+    apiBasePath + '/content/currentuser',
+    (data): data is CurrentUserDetails => is<CurrentUserDetails>(data)
   );

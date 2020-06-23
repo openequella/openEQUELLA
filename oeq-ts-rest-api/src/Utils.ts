@@ -37,4 +37,3 @@ export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
     (value: string) => isNaN(Date.parse(value))? undefined: new Date( value));
   return inputClone;
 };
-
