@@ -83,26 +83,17 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-export interface SearchResultProps {
-  resultData: OEQ.Search.SearchResultItem;
-  /**
-   * Function will be invoked when the SearchResult list item is clicked
-   */
-  onClick: () => void;
-}
 export default function SearchResult({
-  resultData: {
-    name,
-    uuid,
-    description,
-    displayFields,
-    modifiedDate,
-    status,
-    displayOptions,
-    attachments,
-  },
-  onClick,
-}: SearchResultProps) {
+  name,
+  uuid,
+  description,
+  displayFields,
+  modifiedDate,
+  status,
+  displayOptions,
+  attachments,
+  links,
+}: OEQ.Search.SearchResultItem) {
   const classes = useStyles();
 
   const searchResultStrings = languageStrings.searchpage.searchresult;
@@ -158,9 +149,9 @@ export default function SearchResult({
   );
 
   const customDisplayMetadata = displayFields.map(
-    (element: OEQ.Search.DisplayFields) => {
+    (element: OEQ.Search.DisplayFields, index: number) => {
       return (
-        <ListItem disableGutters dense>
+        <ListItem disableGutters dense key={element.name + index}>
           <Typography
             component="span"
             variant="body2"
@@ -222,10 +213,10 @@ export default function SearchResult({
   };
 
   return (
-    <ListItem onClick={onClick} alignItems="flex-start" button key={uuid}>
+    <ListItem alignItems="flex-start" key={uuid}>
       {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
-        primary={name}
+        primary={<a href={links.view}> {name ?? uuid} </a>}
         secondary={
           <>
             <Typography className={classes.itemDescription}>

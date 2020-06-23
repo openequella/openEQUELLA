@@ -124,7 +124,16 @@ export interface Attachment {
   /**
    * Links to the attachment.
    */
-  links: Record<string, string>;
+  links: {
+    /**
+     * The URL for viewing this attachment.
+     */
+    view: string;
+    /**
+     * The URL for viewing this attachment's thumbnail.
+     */
+    thumbnail: string;
+  };
 }
 
 /**
@@ -182,7 +191,16 @@ export interface SearchResultItem {
   /**
    * Links to an item.
    */
-  links: Record<string, string>;
+  links: {
+    /**
+     * The URL for viewing this item.
+     */
+    view: string;
+    /**
+     * The REST API path used to get this item's details.
+     */
+    self: string;
+  };
 }
 
 const SEARCH2_API_PATH = '/search2';
