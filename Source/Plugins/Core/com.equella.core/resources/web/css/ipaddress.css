@@ -1,8 +1,8 @@
-div.ip-input input[type="number"]{
-	width: 40px;
-	margin: 5px;
+div.ip-input input[type="number"] {
+  width: 40px;
+  margin: 5px;
 }
 
-div.ip-input{
-	font-size: 14px;
+div.ip-input {
+  font-size: 14px;
 }

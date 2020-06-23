@@ -1,59 +1,56 @@
 /* Copied from repeater */
 .mycontent-actions-layout #col1 .editor,
-.mypagesmodal .editor 
-{
-	border: 1px solid #8F8B7E;
-	margin: 10px 0;
-	padding: 5px 19px 9px !important;
+.mypagesmodal .editor {
+  border: 1px solid #8f8b7e;
+  margin: 10px 0;
+  padding: 5px 19px 9px !important;
 }
 
 /* repeater indent1 */
-.mycontent-actions-layout #col1 .editor INPUT[type=text],
-.mycontent-actions-layout #col1 .editor TEXTAREA
-{
-	width: 542px;
+.mycontent-actions-layout #col1 .editor INPUT[type="text"],
+.mycontent-actions-layout #col1 .editor TEXTAREA {
+  width: 542px;
 }
 
 /* .area FIELDSET H3 */
-.mycontent-actions-layout #col1 .editor LEGEND,.mypagesmodal .editor LEGEND
-	{
-	color: #f38c00;
-	font-size: 14px;
-	padding-left: 5px;
-	padding-right: 5px;
+.mycontent-actions-layout #col1 .editor LEGEND,
+.mypagesmodal .editor LEGEND {
+  color: #f38c00;
+  font-size: 14px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .mypagesmodal .control:first-child {
-	margin-top: 15px;
+  margin-top: 15px;
 }
 
 .mypagesmodal .control {
-	margin: 0 0 15px;
+  margin: 0 0 15px;
 }
 
 /* repeater indent1 */
-.mypagesmodal .editor INPUT[type=text],
-.mypagesmodal .editor TEXTAREA 
-{
-	width: 685px;
+.mypagesmodal .editor INPUT[type="text"],
+.mypagesmodal .editor TEXTAREA {
+  width: 685px;
 }
 
 .mypagesmodal .scrapbooklink {
-	margin-left: 1em;
+  margin-left: 1em;
 }
 
 .action-button.save-scrapbook-page {
-	background-image: url("../images/button-save-changes.ltr.png")
+  background-image: url("../images/button-save-changes.ltr.png");
 }
 
 .preview-control .control:first-child {
-	margin: 0px;
+  margin: 0px;
 }
 
 .preview-control .settingRow .settingLabel {
-    float: left;
-    line-height: 20px;
-    padding-top: 6px;
-    text-align: left;
-    width: auto;
+  float: left;
+  line-height: 20px;
+  padding-top: 6px;
+  text-align: left;
+  width: auto;
 }

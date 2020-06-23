@@ -1,110 +1,107 @@
 #moderate {
-	width: 923px;
-	float: left;
-	background-color: #F1F1F1;
-	border: none;
-	padding: 15px 15px;
-	color: #4B4842;
+  width: 923px;
+  float: left;
+  background-color: #f1f1f1;
+  border: none;
+  padding: 15px 15px;
+  color: #4b4842;
 
-	font-size: 14px;
+  font-size: 14px;
 }
 
 #moderate a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
-#moderate a:hover,#moderate a:focus {
-	text-decoration: underline;
+#moderate a:hover,
+#moderate a:focus {
+  text-decoration: underline;
 }
 
 #moderate .task-name {
-	float: left;
+  float: left;
 }
 
 #moderate #moderate-controls {
-	float: right;
-	margin-top: 10px;
+  float: right;
+  margin-top: 10px;
 }
 
-#moderate-controls a+a, #moderate-controls a+span, #moderate-controls span+a {
-	margin-left: 2em;
+#moderate-controls a + a,
+#moderate-controls a + span,
+#moderate-controls span + a {
+  margin-left: 2em;
 }
 
 #moderate .task-description {
-	font-size: 12px;
-	line-height: 1.5;
-	margin: 4px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 4px 0;
 }
 
 #moderate .comments-label {
-	font-size: 12px;
-	margin-top: 1em;
+  font-size: 12px;
+  margin-top: 1em;
 }
 
 #moderate .details {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 #moderate .detail {
-	padding-top: 2px;
-	padding-bottom: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
-#moderate-allmods
-{
-	width: 500px;
-	padding: 5px;
+#moderate-allmods {
+  width: 500px;
+  padding: 5px;
 }
 
-#moderate-allmods ul
-{
-	list-style: disc;
-	margin-top: 4px;
-	padding-left: 2.5em;
+#moderate-allmods ul {
+  list-style: disc;
+  margin-top: 4px;
+  padding-left: 2.5em;
 }
 
 .detail-label {
-	display: inline-block;
-	width: 100px;
-	font-weight: bold;
+  display: inline-block;
+  width: 100px;
+  font-weight: bold;
 }
 
-.moddialog-list
-{
-	padding: 8px;
+.moddialog-list {
+  padding: 8px;
 }
 
-#comments-dialog
-{
-	height: 320px;
-	overflow-y: auto;
+#comments-dialog {
+  height: 320px;
+  overflow-y: auto;
 }
 
-#comments-dialog .comments-middle
-{
-	padding-right: 5px;
+#comments-dialog .comments-middle {
+  padding-right: 5px;
 }
 
 #moderation-comments {
-	margin-top: 8px;
-	max-height: 120px;
-	overflow-y: auto;
-	border: 1px solid lightgrey;
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid lightgrey;
 }
 
 #wizard-major-actions .action-button.view {
-	background-image: url("../images/button-rhs-view.ltr.png");
+  background-image: url("../images/button-rhs-view.ltr.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
-	background-image: url("../images/moderate-approve.ltr.png");
+  background-image: url("../images/moderate-approve.ltr.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
-	background-image: url("../images/moderate-reject.ltr.png");
+  background-image: url("../images/moderate-reject.ltr.png");
 }
 
-.moderate-label
-{
-    font-size: 17px;
+.moderate-label {
+  font-size: 17px;
 }

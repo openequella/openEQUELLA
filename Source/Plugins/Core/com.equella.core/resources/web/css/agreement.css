@@ -1,16 +1,16 @@
 .area.agreement-standard {
-	height: 95px;
+  height: 95px;
 }
 
 .area.agreement-standard.integration {
-	height: 185px;
+  height: 185px;
 }
 
 .area.agreement-custom {
-	height:215px;
-	overflow-y: auto;
+  height: 215px;
+  overflow-y: auto;
 }
 
- #copyright-agreement H3 {
- 	text-align: center;
- }
+#copyright-agreement H3 {
+  text-align: center;
+}

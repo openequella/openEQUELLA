@@ -1,11 +1,11 @@
 .action-button.viewMetadata {
-	background-image: url("../images/button-rhs-view.ltr.png");
+  background-image: url("../images/button-rhs-view.ltr.png");
 }
 
 .action-button.approve {
-	background-image: url("../images/moderate-approve.ltr-sml.png");
+  background-image: url("../images/moderate-approve.ltr-sml.png");
 }
 
 .action-button.reject {
-	background-image: url("../images/moderate-reject.ltr-sml.png");
+  background-image: url("../images/moderate-reject.ltr-sml.png");
 }

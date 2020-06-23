@@ -1,13 +1,11 @@
-.emailfield
-{
-	width: 340px;
+.emailfield {
+  width: 340px;
 }
 
-.noemailwarning
-{
-	background-color: #FDD;
-	padding: 5px;
-	display: block;
-	color: red;
-	text-align: center;
+.noemailwarning {
+  background-color: #fdd;
+  padding: 5px;
+  display: block;
+  color: red;
+  text-align: center;
 }

@@ -1,66 +1,65 @@
 div.editor-container .CodeMirror {
-	height: 300px;
-	line-height: 1.2em;
-	font-size: 13px;
+  height: 300px;
+  line-height: 1.2em;
+  font-size: 13px;
 }
 
 div.editor-container .CodeMirror-gutter {
-	height: 300px;
+  height: 300px;
 }
 
-div.load-action button.dropdown-toggle{
-	position: absolute;
-	right: 0px;
+div.load-action button.dropdown-toggle {
+  position: absolute;
+  right: 0px;
 }
 
-div.load-action ul.dropdown-menu
-{
-	top: 22px;
+div.load-action ul.dropdown-menu {
+  top: 22px;
 }
 
 button.validate {
-	float: right;
-	margin-top: 8px;
-	margin-right: 0px;
+  float: right;
+  margin-top: 8px;
+  margin-right: 0px;
 }
 
 div.editor-container {
-	border-style: solid;
-	border-width: 1px;
-	border-color: #C3BFAC;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #c3bfac;
 }
 
 #errormessage pre {
-	color: red;
-	font-weight: bold;
-	font-size: 15px;
-	padding-left: 30px;
+  color: red;
+  font-weight: bold;
+  font-size: 15px;
+  padding-left: 30px;
 }
 
 #okmessage pre {
-	color: #5bb75b;
-	font-weight: bold;
-	font-size: 15px;
-	padding-left: 30px;
-	padding-top: 4px;
+  color: #5bb75b;
+  font-weight: bold;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-top: 4px;
 }
 
 #validationstatus.fail span {
-	background: url(../images/fail.png) no-repeat;
+  background: url(../images/fail.png) no-repeat;
 }
 
 #validationstatus.ok span {
-	background: url(../images/ok.png) no-repeat;
+  background: url(../images/ok.png) no-repeat;
 }
 
 #validationstatus span {
-	width: 24px;
-	height: 24px;
-	float: left;
-	padding-right: 5px;
+  width: 24px;
+  height: 24px;
+  float: left;
+  padding-right: 5px;
 }
 
 div.load-action {
-	float: right;
-	top: -27px;
+  float: right;
+  top: -27px;
 }

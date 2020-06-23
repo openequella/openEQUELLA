@@ -1,12 +1,10 @@
 @import url("query.css");
 
-.repo-onecol #searchform #searchform-query
-{
-	margin: 0 0 0 3px;
+.repo-onecol #searchform #searchform-query {
+  margin: 0 0 0 3px;
 }
 
-.repo-onecol #searchform #searchform-search
-{
-	left: auto;
-	right: 590px;
+.repo-onecol #searchform #searchform-search {
+  left: auto;
+  right: 590px;
 }

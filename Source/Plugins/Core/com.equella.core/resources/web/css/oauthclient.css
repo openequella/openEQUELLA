@@ -1,28 +1,24 @@
-.wide .settingRow.usernameScriptRow TEXTAREA
-{
-	width: 430px;
-	margin-left: 25px;
+.wide .settingRow.usernameScriptRow TEXTAREA {
+  width: 430px;
+  margin-left: 25px;
 }
-.wide .settingRow.usernameScriptRow .settingHelp
-{
-	margin-left: 25px;
+.wide .settingRow.usernameScriptRow .settingHelp {
+  margin-left: 25px;
 }
 
-.wide .settingRow.exportableByRow
-{
-	margin-top: 1em;
+.wide .settingRow.exportableByRow {
+  margin-top: 1em;
 }
 
-INPUT[type='checkbox'] + LABEL
-{
-	margin-left: 1em;
+INPUT[type="checkbox"] + LABEL {
+  margin-left: 1em;
 }
 
-INPUT[type='radio'] {
-	margin-right: 7px;
+INPUT[type="radio"] {
+  margin-right: 7px;
 }
 
 input[readonly="readonly"] {
-	color: grey; 
-	background-color: #F0F0F0;
+  color: grey;
+  background-color: #f0f0f0;
 }

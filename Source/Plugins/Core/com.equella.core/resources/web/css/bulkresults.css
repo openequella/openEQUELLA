@@ -1,69 +1,70 @@
 #bulk-help {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .action-button.execute-action {
-	background-image: url("../images/execute.ltr.png");
+  background-image: url("../images/execute.ltr.png");
 }
 
 .action-button.moderate-action {
-	background-image: url("../images/moderate.ltr.png");
+  background-image: url("../images/moderate.ltr.png");
 }
 
-.failedmsg .status,.simpleopsmessage {
-	color: red;
-	font-style: italic;
+.failedmsg .status,
+.simpleopsmessage {
+  color: red;
+  font-style: italic;
 }
 
 td.itemname {
-	width: 50%;
+  width: 50%;
 }
 
 td.status {
-	width: 50%;
+  width: 50%;
 }
 
 #bulkresults_container {
-	height: 380px;
-	overflow-y: scroll;
+  height: 380px;
+  overflow-y: scroll;
 }
 
 #bulkresults_container table.bulkresults_resultlist {
-	width: 98%;
+  width: 98%;
 }
 
 #bulkresults_inner {
-	height: 382px;
+  height: 382px;
 }
 
 #bulkresults_showing {
-	float: right;
+  float: right;
 }
 
 select.bulkactions {
-	width: 550px;
+  width: 550px;
 }
 
 #fancybox-inner {
-	overflow: visible !important;
+  overflow: visible !important;
 }
 
 #bulkdialog td.unselect {
-	width: 10%;
+  width: 10%;
 }
 
 #bulkdialog td.label {
-	width: 90%;
+  width: 90%;
 }
 
-#bulk-selection+hr {
-	display: none;
+#bulk-selection + hr {
+  display: none;
 }
 
 pre.preview-error {
-	color: red;
-	font-weight: bold;
-	font-size: 15px;
-	padding-top: 30px;
-	word-wrap: break-word;
+  color: red;
+  font-weight: bold;
+  font-size: 15px;
+  padding-top: 30px;
+  word-wrap: break-word;
 }

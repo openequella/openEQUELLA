@@ -1,55 +1,58 @@
 .mycontent-layout #col1 {
-	width: 750px;
+  width: 750px;
 }
 
 .mycontent-actions-layout #col1 {
-	width: 664px;
+  width: 664px;
 }
 
-.mycontent-layout #col1 .control,.mycontent-actions-layout #col1 .control
-	{
-	margin: 25px 0;
+.mycontent-layout #col1 .control,
+.mycontent-actions-layout #col1 .control {
+  margin: 25px 0;
 }
 
-.mycontent-layout #col1 .control.ctrlinvalid,.mycontent-actions-layout #col1 .control.ctrlinvalid
-	{
-	background-color: #FDD;
-	padding: 10px;
-	position: relative;
-	left: -10px;
+.mycontent-layout #col1 .control.ctrlinvalid,
+.mycontent-actions-layout #col1 .control.ctrlinvalid {
+  background-color: #fdd;
+  padding: 10px;
+  position: relative;
+  left: -10px;
 }
 
-.mycontent-layout #col1 .ctrlmandatory,.mycontent-layout #col1 .ctrlinvalidmessage,.mycontent-actions-layout #col1 .ctrlmandatory,.mycontent-actions-layout #col1 .ctrlinvalidmessage
-	{
-	color: red;
-	text-align: center;
+.mycontent-layout #col1 .ctrlmandatory,
+.mycontent-layout #col1 .ctrlinvalidmessage,
+.mycontent-actions-layout #col1 .ctrlmandatory,
+.mycontent-actions-layout #col1 .ctrlinvalidmessage {
+  color: red;
+  text-align: center;
 }
 
-.mycontent-actions-layout #col1 input[type=text] {
-	width: 574px;
+.mycontent-actions-layout #col1 input[type="text"] {
+  width: 574px;
 }
 
-.mycontent-layout #col1 input[type=text] {
-	width: 668px;
+.mycontent-layout #col1 input[type="text"] {
+  width: 668px;
 }
 
-.mycontent-layout #col1 p,.mycontent-actions-layout #col1 p {
-	margin: 4px 0;
+.mycontent-layout #col1 p,
+.mycontent-actions-layout #col1 p {
+  margin: 4px 0;
 }
 
 .mycontent-actions-layout #col2 {
-	width: 221px;
+  width: 221px;
 }
 
 .mycontent-actions-layout #col2 .minoractions {
-	text-align: right;
-	margin: 10px 0;
+  text-align: right;
+  margin: 10px 0;
 }
 
 .mycontent-actions-layout #col2 .minoractions a {
-	color: #045F7F;
+  color: #045f7f;
 }
 
 .mycontent-actions-layout #col2 .minoractions span {
-	padding: 0 5px;
+  padding: 0 5px;
 }

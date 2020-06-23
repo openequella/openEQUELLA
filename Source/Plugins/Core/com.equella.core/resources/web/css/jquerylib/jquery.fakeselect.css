@@ -1,22 +1,22 @@
 div.fakeselect {
-	border: solid 1px grey;
-	overflow: auto;
+  border: solid 1px grey;
+  overflow: auto;
 }
 
 div.fakeselect ul {
-	font-family: sans;
-	font-size: 12px;
+  font-family: sans;
+  font-size: 12px;
 
-	list-style: none;
-	margin: 0;
-	padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 div.fakeselect ul li {
-	padding: 2px;
-	border-bottom: 1px solid #CCC;
+  padding: 2px;
+  border-bottom: 1px solid #ccc;
 }
 
 div.fakeselect ul li.selected {
-	background-color: #FF5;
+  background-color: #ff5;
 }

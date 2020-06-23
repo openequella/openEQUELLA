@@ -1,104 +1,91 @@
-body.oauth
-{
-	background-color: #0a84ac;
+body.oauth {
+  background-color: #0a84ac;
 }
 
-.usernamepwd
-{
-	margin: 5px;
+.usernamepwd {
+  margin: 5px;
 }
 
-.usernamepwd label
-{
-	display: block;
-	width: 70px;
-	float: left;
-	text-align: right;
-	padding-right: 20px;
-	line-height: 20px;
+.usernamepwd label {
+  display: block;
+  width: 70px;
+  float: left;
+  text-align: right;
+  padding-right: 20px;
+  line-height: 20px;
 }
 
-.usernamepwd .fixedusername
-{
-	line-height: 20px;
-	font-weight: bold;
+.usernamepwd .fixedusername {
+  line-height: 20px;
+  font-weight: bold;
 }
 
-.buttons
-{
-	margin-top: 10px;
-	margin-left: 45px;
+.buttons {
+  margin-top: 10px;
+  margin-left: 45px;
 }
 
-.buttons *
-{
-	margin-right: 5px;
+.buttons * {
+  margin-right: 5px;
 }
 
-#oauth_topbar
-{
-	background: #C9C3AA;
-	border-bottom: 1px solid #7C786C;
-	border-top: 1px solid #FEFEFE;
-	height: 36px;
+#oauth_topbar {
+  background: #c9c3aa;
+  border-bottom: 1px solid #7c786c;
+  border-top: 1px solid #fefefe;
+  height: 36px;
 }
 
-#oauthdialog.oauthpage #oauth_wrap
-{
-	background: url(../../com.tle.web.sections.equella/images/body-bg.ltr.gif) 0 0 repeat-x;
-	min-height: 800px;
+#oauthdialog.oauthpage #oauth_wrap {
+  background: url(../../com.tle.web.sections.equella/images/body-bg.ltr.gif) 0 0
+    repeat-x;
+  min-height: 800px;
 }
 
-#oauth_wrap
-{
-	background-color: #0a84ac;
+#oauth_wrap {
+  background-color: #0a84ac;
 }
 
-#oauth_content
-{
-	background-color: #f1f1f1;
-	padding: 10px;
+#oauth_content {
+  background-color: #f1f1f1;
+  padding: 10px;
 }
 
-#oauthdialog.oauthpage #oauth_main, #oauthdialog.oauthpage #oauth_topbarcontent
-{
-	max-width: 640px;
-	margin: auto;
+#oauthdialog.oauthpage #oauth_main,
+#oauthdialog.oauthpage #oauth_topbarcontent {
+  max-width: 640px;
+  margin: auto;
 }
 
-#oauth_topbarcontent
-{
-	background: url(../../com.tle.web.sections.equella/images/logo-small.png) no-repeat;
-    font-size: 13px;
-    font-weight: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 100%;
+#oauth_topbarcontent {
+  background: url(../../com.tle.web.sections.equella/images/logo-small.png)
+    no-repeat;
+  font-size: 13px;
+  font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 100%;
 }
 
-#oauth_title
-{
-	margin-left: 100px;
-	line-height: 36px;
+#oauth_title {
+  margin-left: 100px;
+  line-height: 36px;
 }
 
-#oauth_main h2
-{
-	font-size: 150%;
-	margin-bottom: 20px;
+#oauth_main h2 {
+  font-size: 150%;
+  margin-bottom: 20px;
 }
 
-.oauth_error
-{
-	background-color: #FFDDDD;
-    border: #E4BAB6 1px solid;
-    border-radius: 5px 5px 5px 5px;
-    margin-bottom: 15px;
-    padding: 10px;
+.oauth_error {
+  background-color: #ffdddd;
+  border: #e4bab6 1px solid;
+  border-radius: 5px 5px 5px 5px;
+  margin-bottom: 15px;
+  padding: 10px;
 }
 
-.alreadyloggedon
-{
-	font-size: 120%;
+.alreadyloggedon {
+  font-size: 120%;
 }

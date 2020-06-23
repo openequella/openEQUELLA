@@ -1,15 +1,11 @@
-DIV.addbannedext
-{
-	height: 80px;
+DIV.addbannedext {
+  height: 80px;
 }
 
-DIV.addbannedext DIV.settingLabel
-{
-	width: 140px;
+DIV.addbannedext DIV.settingLabel {
+  width: 140px;
 }
 
-DIV.addbannedext DIV.settingField
-{
-	width: 260px;
+DIV.addbannedext DIV.settingField {
+  width: 260px;
 }
-
