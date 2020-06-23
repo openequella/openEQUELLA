@@ -34,9 +34,6 @@ public final class BlackboardRESTConnectorConstants {
   public static final String FIELD_API_KEY = "apiKey";
   public static final String FIELD_API_SECRET = "apiSecret";
 
-  //  public static final String FIELD_APP_ID = "appId";
-  //  public static final String FIELD_APP_KEY = "appKey";
-
   public static final String STATE_KEY_FORWARD_URL = "forwardUrl";
   public static final String STATE_KEY_POSTFIX_KEY = "postfixKey";
 

@@ -25,9 +25,8 @@ import java.net.URLEncoder;
 
 public class BlackboardRestAppContext {
   private static final String STATE_PARAMETER = "state";
-  private static final String VALUE_CODE = "code";
   private static final String FIELD_REDIRECT_URI = "redirect_uri";
-  private static final String FIELD_RESPONSE_TYPE = "response_type";
+  private static final String KEY_VALUE_RESPONSE_TYPE_CODE = "response_type=code";
   private static final String FIELD_CLIENT_ID = "client_id";
   private static final String FIELD_SCOPE = "scope";
   private static final String VALUE_READ_WRITE_DELETE = "read write delete";
@@ -69,7 +68,7 @@ public class BlackboardRestAppContext {
 
   private String buildAuthenticationCodeUriQueryString(URI callbackUri, @Nullable String state) {
     String callbackUriString = callbackUri.toString();
-    String result = FIELD_RESPONSE_TYPE + "=" + VALUE_CODE;
+    String result = KEY_VALUE_RESPONSE_TYPE_CODE;
     result += "&" + FIELD_REDIRECT_URI + "=" + callbackUriString;
     result += "&" + FIELD_CLIENT_ID + "=" + _appId;
     result += "&" + FIELD_SCOPE + "=" + URLEncoder.encode(VALUE_READ_WRITE_DELETE);

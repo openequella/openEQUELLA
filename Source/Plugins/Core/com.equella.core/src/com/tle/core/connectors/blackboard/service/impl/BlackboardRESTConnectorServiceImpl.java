@@ -87,8 +87,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private static final String API_ROOT_V1 = "/learn/api/public/v1/";
   private static final String API_ROOT_V3 = "/learn/api/public/v3/";
 
+  // Used to encrypt and decrypt state information (such as connector uuid)
+  // during the integration flows. Actual values are not important.
+  // TODO expose as a user configuration.
   private static final byte[] SHAREPASS =
-      new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};
+      new byte[] {45, 12, -112, 2, 89, 97, 19, 74, 0, 24, -118, -2, 5, 108, 92, 7};
   private static final IvParameterSpec INITVEC = new IvParameterSpec("thisis16byteslog".getBytes());
 
   @Inject private HttpService httpService;

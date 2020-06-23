@@ -27,7 +27,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.PathUtils;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
-import com.tle.core.connectors.blackboard.beans.ErrorResponse;
 import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.service.ConnectorService;
@@ -40,6 +39,7 @@ import com.tle.core.services.http.Response;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.AuthenticationException;
+import com.tle.web.oauth.response.ErrorResponse;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -112,7 +112,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
             .replace("\n", "")
             .replace("\r", "");
 
-    final Request req2 =
+    final Request oauthReq =
         new Request(
             PathUtils.urlPath(
                 connector.getServerUrl(),
@@ -121,11 +121,12 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
                     + "&redirect_uri="
                     + institutionService.institutionalise(
                         BlackboardRESTConnectorConstants.AUTH_URL)));
-    req2.setMethod(Request.Method.POST);
-    req2.setMimeType("application/x-www-form-urlencoded");
-    req2.addHeader("Authorization", "Basic " + b64);
-    req2.setBody("grant_type=authorization_code");
-    try (final Response resp2 = httpService.getWebContent(req2, configService.getProxyDetails())) {
+    oauthReq.setMethod(Request.Method.POST);
+    oauthReq.setMimeType("application/x-www-form-urlencoded");
+    oauthReq.addHeader("Authorization", "Basic " + b64);
+    oauthReq.setBody("grant_type=authorization_code");
+    try (final Response resp2 =
+        httpService.getWebContent(oauthReq, configService.getProxyDetails())) {
       if (resp2.isOk()) {
         LOGGER.trace("Blackboard response: " + resp2.getBody());
         final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);

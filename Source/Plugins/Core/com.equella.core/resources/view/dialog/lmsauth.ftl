@@ -17,7 +17,7 @@
         <script>
             function newTabAuth() {
                 window.open(
-                  "${m.authUrl}", "_blank");
+                  "${m.authUrl}", "_blank", "noopener,noreferrer");
             }
         </script>
     <#else>

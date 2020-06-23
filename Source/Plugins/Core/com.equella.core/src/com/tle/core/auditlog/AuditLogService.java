@@ -83,7 +83,13 @@ public interface AuditLogService {
 
   void logItemPurged(Item item);
 
-  void logExternalConnectorUsed(String d1, String d2, String d3, String d4);
+  // Note:  This is specific to the Blackboard REST connector,
+  // however, no other connector uses the audit log yet.  Maybe need to refactor in  the future
+  void logExternalConnectorUsed(
+      String externalConnectorUrl,
+      String requestLimit,
+      String requestRemaining,
+      String timeToReset);
 
   void logGeneric(
       String category, String type, String data1, String data2, String data3, String data4);

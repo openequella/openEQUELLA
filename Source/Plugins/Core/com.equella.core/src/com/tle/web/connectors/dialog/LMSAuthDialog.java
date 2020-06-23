@@ -178,8 +178,8 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
       this.authUrl = authUrl;
     }
 
-    public void setShowNewTabLauncher(boolean b) {
-      this.showNewTabLauncher = b;
+    public void setShowNewTabLauncher(boolean showNewTabLauncher) {
+      this.showNewTabLauncher = showNewTabLauncher;
     }
 
     public boolean isShowNewTabLauncher() {
