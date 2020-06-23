@@ -849,18 +849,19 @@ a[title="move-down"]:before {
 }
 
 @media only screen and (max-width: 768px) {
-  .wizard-layout .indent0 .shuffle-box-inner select{
+  .wizard-layout .indent0 .shuffle-box-inner select {
     width: 30%;
   }
 }
 
 @media only screen and (min-width: 769px) and (max-width: 1200px) {
-  .wizard-layout .indent0 .shuffle-box-inner select{
+  .wizard-layout .indent0 .shuffle-box-inner select {
     width: 38%;
   }
 }
+
 @media only screen and (min-width: 1201px) {
-  .wizard-layout .indent0 .shuffle-box-inner select{
+  .wizard-layout .indent0 .shuffle-box-inner select {
     width: 45%;
   }
 }
@@ -2671,6 +2672,7 @@ Contribution wizard styling
   width: 221px;
   top: 55px;
 }
+
 .wizard-layout .rightNav {
   position: fixed;
   margin-top: 66px;
