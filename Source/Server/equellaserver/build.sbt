@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.0"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.56"
+val TomcatVersion    = "9.0.36"
 val SwaggerVersion   = "1.6.1"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
