@@ -82,7 +82,7 @@ libraryDependencies ++= Seq(
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.2.2",
-  "commons-discovery"         % "commons-discovery"     % "0.5",
+  "commons-discovery"         % "commons-discovery"     % "20040218.194635",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.7",
   "commons-lang"              % "commons-lang"          % "2.6",

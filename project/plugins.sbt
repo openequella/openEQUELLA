@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"       % "axis2-codegen"         % "1.6.2",
   "org.apache.axis2"       % "axis2-xmlbeans"        % "1.6.2",
   "commons-logging"        % "commons-logging"       % "1.2",
-  "commons-discovery"      % "commons-discovery"     % "0.5",
+  "commons-discovery"      % "commons-discovery"     % "20040218.194635",
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.14",
