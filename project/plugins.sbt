@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "commons-logging"        % "commons-logging"       % "1.2",
   "commons-discovery"      % "commons-discovery"     % "0.5",
   "commons-configuration"  % "commons-configuration" % "1.10",
-  "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
+  "commons-beanutils"      % "commons-beanutils"     % "20030211.134440",
   "commons-codec"          % "commons-codec"         % "1.14",
   "org.slf4j"              % "slf4j-nop"             % "1.7.30",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
