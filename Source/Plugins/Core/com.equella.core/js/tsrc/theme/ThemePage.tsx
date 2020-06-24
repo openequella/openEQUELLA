@@ -59,8 +59,6 @@ export const strings = languageStrings.newuisettings;
 
 const styles = createStyles({
   card: {
-    marginTop: "16px",
-    marginBottom: "16px",
     overflow: "visible",
   },
   fileName: {
