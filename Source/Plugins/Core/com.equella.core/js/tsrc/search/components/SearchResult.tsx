@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) => {
       marginBottom: theme.spacing(2),
     },
     attachmentIcon: {
-      paddingRight: theme.spacing(2),
+      marginRight: theme.spacing(2),
     },
   };
 });
