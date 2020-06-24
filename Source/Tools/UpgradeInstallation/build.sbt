@@ -6,7 +6,7 @@ libraryDependencies ++= Seq(
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
   "commons-io"            % "commons-io"            % "2.7",
-  "commons-lang"          % "commons-lang"          % "2.6"
+  "commons-lang"          % "commons-lang"          % "20030203.000129"
 )
 
 excludeDependencies ++= Seq(
