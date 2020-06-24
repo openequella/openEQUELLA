@@ -1,18 +1,17 @@
 @import url("richdropdown.css");
 
 .richcontainer {
-	right: -250px;
+  right: -250px;
 }
 
 .rishdropdown ul {
-	float: right;
+  float: right;
 }
 
-.selectedtext{
-	padding: 1px 0 1px 20px;
+.selectedtext {
+  padding: 1px 0 1px 20px;
 }
-
 
 .selectedcontainer {
-	background-position: 5px 5px;
+  background-position: 5px 5px;
 }

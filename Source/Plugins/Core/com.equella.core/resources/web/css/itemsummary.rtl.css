@@ -1,15 +1,15 @@
 @import url("itemsummary.css");
 
 .itemsummary-layout #col1 .selectitem {
-	text-align: left;
+  text-align: left;
 }
 
 .action-button.select {
-	background-image: url("../images/addselected.rtl.png");
-	background-position: right 0;
+  background-image: url("../images/addselected.rtl.png");
+  background-position: right 0;
 }
 
 .action-button.unselect {
-	background-image: url("../images/removeselected.rtl.png");
-	background-position: right 0;
+  background-image: url("../images/removeselected.rtl.png");
+  background-position: right 0;
 }

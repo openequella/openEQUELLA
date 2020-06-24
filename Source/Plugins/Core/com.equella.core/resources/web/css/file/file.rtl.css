@@ -1,19 +1,19 @@
 @import url("file.css");
 
 .universalresourcedialog.fileHandler .progressbar {
-	float: right;
-	margin: 0 0 0 10px;
+  float: right;
+  margin: 0 0 0 10px;
 }
 
 .universalresourcedialog.fileHandler .file-upload-progress {
-	float: left;
+  float: left;
 }
 
 .universalresourcedialog.fileHandler .progress-bar {
-	float: right;
-	margin: 0 0 0 10px;
+  float: right;
+  margin: 0 0 0 10px;
 }
 
-.universalresourcedialog.fileHandler .progress-bar+A {
-	float: left;
+.universalresourcedialog.fileHandler .progress-bar + A {
+  float: left;
 }

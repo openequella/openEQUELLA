@@ -1,18 +1,15 @@
-#bulkresults_inner #lms-tree-container
-{
-	max-height: 230px
+#bulkresults_inner #lms-tree-container {
+  max-height: 230px;
 }
 
-#bulkresults_inner h3.selectlocations
-{
-	margin-top: 0px;
+#bulkresults_inner h3.selectlocations {
+  margin-top: 0px;
 }
 
-P.error
-{
-	background-color: #FFDDDD;
-    display: block;
-    padding: 5px;
-    color: red;
-    text-align: center;
+P.error {
+  background-color: #ffdddd;
+  display: block;
+  padding: 5px;
+  color: red;
+  text-align: center;
 }

@@ -1,15 +1,12 @@
-.favouritesearch .mandatory 
-{
-	text-align: right;
+.favouritesearch .mandatory {
+  text-align: right;
 }
 
-.favouritesearch .mandatorysymbol 
-{
-	color: red;
+.favouritesearch .mandatorysymbol {
+  color: red;
 }
 
-.favouritesearch .addButton 
-{
-	float:right;
-	margin: 6px 0;
+.favouritesearch .addButton {
+  float: right;
+  margin: 6px 0;
 }

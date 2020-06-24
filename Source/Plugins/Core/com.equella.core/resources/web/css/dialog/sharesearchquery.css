@@ -1,27 +1,22 @@
-.sharesearchquery .sharefield
-{
-	width: 416px;
+.sharesearchquery .sharefield {
+  width: 416px;
 }
 
-.sharesearchquery .sharefield.email
-{
-	border-radius: 4px 0 0 4px;
-    border-right: medium none;
-    height: 14px;
+.sharesearchquery .sharefield.email {
+  border-radius: 4px 0 0 4px;
+  border-right: medium none;
+  height: 14px;
 }
 
-.sharesearchquery .error 
-{
-	color: red;
-	padding-left: 20px;
+.sharesearchquery .error {
+  color: red;
+  padding-left: 20px;
 }
 
-.sharesearchquery .input-append button 
-{
-	height: 24px;
+.sharesearchquery .input-append button {
+  height: 24px;
 }
 
-.sharesearchquery p.message 
-{
-	color:#468847;
+.sharesearchquery p.message {
+  color: #468847;
 }

@@ -5,16 +5,22 @@
     "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
-    "format:ts": "eslint --fix \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
+    "format:scss": "prettier --write ${npm_package_config_stylesheet_glob}",
+    "format:ts": "eslint --fix ${npm_package_config_typescript_glob}",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
     "check:license": "cd Source/Plugins/Core/com.equella.core/js && licensee --production --errors-only && cd -",
     "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
-    "check:ts": "eslint \"Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}\"",
+    "check:scss": "prettier --check ${npm_package_config_stylesheet_glob}",
+    "check:ts": "eslint ${npm_package_config_typescript_glob}",
     "check:ts-types-source": "tsc --noEmit --project \"Source/Plugins/Core/com.equella.core/js/tsconfig.json\"",
     "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/ps/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*"
+  },
+  "config": {
+    "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
+    "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "2.24.0",
@@ -49,6 +55,7 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --fix",
+    "*.{css,scss}": "prettier --write",
     "*.java": "google-java-format --replace",
     "*.{scala,sbt}": "scalafmt"
   },

@@ -1,9 +1,7 @@
-.settingRow .settingLabel 
-{
-	width:130px;
+.settingRow .settingLabel {
+  width: 130px;
 }
 
-.settingRow .settingField 
-{
-	width:375px;
+.settingRow .settingField {
+  width: 375px;
 }

@@ -1,155 +1,129 @@
-.infobox
-{
-	margin-top: 1em;
-	margin-bottom: 1em;
+.infobox {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
-.twentyspaced
-{
-	margin: 20px 0 20px 0;
+.twentyspaced {
+  margin: 20px 0 20px 0;
 }
 
-.bulkuploadbutton
-{
-	text-align: center;
-	margin-top: 10px;
+.bulkuploadbutton {
+  text-align: center;
+  margin-top: 10px;
 }
 
-.editing
-{
-	margin-top: 1em;
-	height: 80px;
+.editing {
+  margin-top: 1em;
+  height: 80px;
 }
 
-.editing .icon
-{
-	width: 120px;
-	height: 64px;
-	float: left;
+.editing .icon {
+  width: 120px;
+  height: 64px;
+  float: left;
 }
 
-.editing .fileinfo
-{
-	float: left;
+.editing .fileinfo {
+  float: left;
 }
 
-.editing .fileinfo .filename
-{
-	font-weight: bold;
+.editing .fileinfo .filename {
+  font-weight: bold;
 }
 
-.editing .inplaceAppletDiv
-{
-	float: right;
-	height: 1px;
+.editing .inplaceAppletDiv {
+  float: right;
+  height: 1px;
 }
 
-.editing .clear
-{
-	clear: both;
+.editing .clear {
+  clear: both;
 }
 
-.editLinks
-{
-	display: none;
+.editLinks {
+  display: none;
 }
 
-.editLink
-{
+.editLink {
 }
 
-.editFileWithLink
-{
+.editFileWithLink {
 }
 
-#inplace_applet
-{
-	width: 320px;
-	height: 50px;
+#inplace_applet {
+  width: 320px;
+  height: 50px;
 }
 
-#returntoscrapbookdiv
-{
-	text-align: right;
+#returntoscrapbookdiv {
+  text-align: right;
 }
 
-#returntoscrapbookdiv a.linkasbutton
-{
-	color: #FFFFFF;
-	font-size: 9px;
-	border: medium none;
-	padding: 4px 5px 4px 5px;
-	background: grey;
-	text-transform: uppercase;
+#returntoscrapbookdiv a.linkasbutton {
+  color: #ffffff;
+  font-size: 9px;
+  border: medium none;
+  padding: 4px 5px 4px 5px;
+  background: grey;
+  text-transform: uppercase;
 }
 
 #dndOptionsList ul.dropdown-menu {
-	right: auto;
-	left: 0px;
+  right: auto;
+  left: 0px;
 }
 
-
-.file-upload 
-{
-	margin: 10px 0;
-	clear: both;
+.file-upload {
+  margin: 10px 0;
+  clear: both;
 }
 
-.file-upload .file-name 
-{
-	width: 400px;
-	overflow: hidden;
+.file-upload .file-name {
+  width: 400px;
+  overflow: hidden;
 }
 
-.file-upload-progress 
-{
-	float: right;
-	width: 300px;
+.file-upload-progress {
+  float: right;
+  width: 300px;
 }
 
-.file-upload-problem 
-{
-	background-color: #FF0000;
+.file-upload-problem {
+  background-color: #ff0000;
 }
 
-.progressbar 
-{
-	width: 200px;
-	height: 14px;
-	border: 1px solid #AAA;
-	float: left;
-	margin: 0 10px 0 0;
-	
-	-moz-border-radius: 3px;
-	-o-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+.progressbar {
+  width: 200px;
+  height: 14px;
+  border: 1px solid #aaa;
+  float: left;
+  margin: 0 10px 0 0;
+
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
-.progressbarOuter
-{
-	background-color: #FFFFFF;
+.progressbarOuter {
+  background-color: #ffffff;
 }
 
-.progressbarInner 
-{
-	height: 14px;
-	background: #80D2EE !important;
+.progressbarInner {
+  height: 14px;
+  background: #80d2ee !important;
 }
 
-.progresstextOuter
-{
-	color: #000000;
+.progresstextOuter {
+  color: #000000;
 }
 
-.progresstextInner 
-{
-	color: #FFFFFF;
+.progresstextInner {
+  color: #ffffff;
 }
 
-.complete
-{
-	background: #47E368;
-	width: 100%;
-	height: 14px;
+.complete {
+  background: #47e368;
+  width: 100%;
+  height: 14px;
 }

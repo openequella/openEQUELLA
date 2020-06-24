@@ -19,9 +19,10 @@ The control icons are from a custom font. Each icon corresponds to a character
 (e.g. "\e001"). Font icons allow for easy scaling and coloring of icons.
 */
 @font-face {
-  font-family: 'VideoJS';
-  src: url('font/vjs.eot');
-  src: url('font/vjs.eot?#iefix') format('embedded-opentype'), url('font/vjs.woff') format('woff'), url('font/vjs.ttf') format('truetype');
+  font-family: "VideoJS";
+  src: url("font/vjs.eot");
+  src: url("font/vjs.eot?#iefix") format("embedded-opentype"),
+    url("font/vjs.woff") format("woff"), url("font/vjs.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -84,7 +85,7 @@ The default control bar that is a container for most of the controls.
   left: 0;
   right: 0;
   /* Height includes any margin you want above or below control items */
-  height: 3.0em;
+  height: 3em;
   /* background-color-with-alpha */
   background-color: #07141e;
   background-color: rgba(7, 20, 30, 0.7);
@@ -103,7 +104,8 @@ The default control bar that is a container for most of the controls.
   transition: visibility 0.1s, opacity 0.1s;
 }
 /* Hide the control bar when the video is playing and the user is inactive  */
-.vjs-default-skin.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
+.vjs-default-skin.vjs-has-started.vjs-user-inactive.vjs-playing
+  .vjs-control-bar {
   display: block;
   visibility: hidden;
   opacity: 0;
@@ -141,7 +143,7 @@ fonts to show/hide properly.
   text-align: center;
   margin: 0;
   padding: 0;
-  height: 3.0em;
+  height: 3em;
   width: 4em;
 }
 /* FontAwsome button icons */
@@ -166,7 +168,6 @@ fonts to show/hide properly.
   /*  outline: 0; */
   /* keyboard-only users cannot see the focus on several of the UI elements when
   this is set to 0 */
-
 }
 /* Hide control text visually, but have it available for screenreaders */
 .vjs-default-skin .vjs-control-text {
@@ -207,7 +208,10 @@ fonts to show/hide properly.
   text-align: center;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-.vjs-default-skin .vjs-playback-rate.vjs-menu-button .vjs-menu .vjs-menu-content {
+.vjs-default-skin
+  .vjs-playback-rate.vjs-menu-button
+  .vjs-menu
+  .vjs-menu-content {
   width: 4em;
   left: -2em;
   list-style: none;
@@ -255,7 +259,9 @@ fonts to show/hide properly.
   /* assuming volume starts at 1.0 */
 
   width: 100%;
-  background: #66a8cc url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50% 0 repeat;
+  background: #66a8cc
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50%
+    0 repeat;
 }
 .vjs-default-skin .vjs-volume-bar .vjs-volume-handle {
   width: 0.5em;
@@ -300,7 +306,7 @@ fonts to show/hide properly.
     This simply changes the overall font for the progress bar, and this
     updates both the em-based widths and heights, as wells as the icon font */
 .vjs-default-skin:hover .vjs-progress-control {
-  font-size: .9em;
+  font-size: 0.9em;
   /* Even though we're not changing the top/height, we need to include them in
       the transition so they're handled correctly. */
 
@@ -339,7 +345,9 @@ fonts to show/hide properly.
       The -50% left position makes that happen.
   */
 
-  background: #66a8cc url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50% 0 repeat;
+  background: #66a8cc
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50%
+    0 repeat;
 }
 .vjs-default-skin .vjs-load-progress {
   background: #646464 /* IE8- Fallback */;
@@ -517,7 +525,7 @@ easily in the skin designer. http://designer.videojs.com/
   height: 100%;
 }
 .vjs-error .vjs-error-display:before {
-  content: 'X';
+  content: "X";
   font-family: Arial;
   font-size: 4em;
   color: #666666;
@@ -543,7 +551,7 @@ easily in the skin designer. http://designer.videojs.com/
 }
 .vjs-error-display a,
 .vjs-error-display a:visited {
-  color: #F4A460;
+  color: #f4a460;
 }
 /* Loading Spinner
 --------------------------------------------------------------------------------
@@ -649,7 +657,6 @@ easily in the skin designer. http://designer.videojs.com/
 
   border-top-color: rgba(7, 40, 50, 0.5);
   /* Same as ul background */
-
 }
 /* Button Pop-up Menu */
 .vjs-default-skin .vjs-menu-button .vjs-menu .vjs-menu-content {
@@ -897,7 +904,7 @@ body.vjs-full-window {
 }
 .vjs-no-js a,
 .vjs-no-js a:visited {
-  color: #F4A460;
+  color: #f4a460;
 }
 /* -----------------------------------------------------------------------------
 The original source of this file lives at

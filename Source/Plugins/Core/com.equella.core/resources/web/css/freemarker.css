@@ -1,53 +1,52 @@
 .CodeMirror {
-	height: 300px;
-	line-height: 1.2em;
-	font-size: 13px;
+  height: 300px;
+  line-height: 1.2em;
+  font-size: 13px;
 }
 
 .CodeMirror-gutter {
-	height: 300px;
+  height: 300px;
 }
 
 .settingContainer {
-	width: 667px;
+  width: 667px;
 }
 
 .area .settingContainer h3 {
-	color: #f38c00;
-	font-size: 14px;
-	margin: 20px 0 7px 0;
+  color: #f38c00;
+  font-size: 14px;
+  margin: 20px 0 7px 0;
 }
 
 .area .settingContainer hr {
-	width: 675px;
+  width: 675px;
 }
 
 .area .editor-container {
-	background-color: white;
-	border: solid 1px #AAA;
+  background-color: white;
+  border: solid 1px #aaa;
 }
 
-.area .settingContainer input[type=text].url {
-	width: 400px;
+.area .settingContainer input[type="text"].url {
+  width: 400px;
 }
 
 .area .settingContainer .actions a {
-	color: #0C96C4;
+  color: #0c96c4;
 }
 
 div.load-action {
-	float: right;
-	top: -28px;	
+  float: right;
+  top: -28px;
 }
 
-div.load-action button.dropdown-toggle{
-	position: absolute;
-	right: 0px;
+div.load-action button.dropdown-toggle {
+  position: absolute;
+  right: 0px;
 }
 
-div.load-action ul.dropdown-menu
-{
-	top: 22px;
+div.load-action ul.dropdown-menu {
+  top: 22px;
 }
 
 /* Override some of the Eclipse.css rules */

@@ -1,22 +1,20 @@
 .error {
-	background-color: #FFDDDD;
-	color: red;
-	padding: 0 5px 0 5px;
+  background-color: #ffdddd;
+  color: red;
+  padding: 0 5px 0 5px;
 }
 
 .success {
-	background-color:  #EFFFEE;
-	color: green;
-	padding: 0 5px 0 5px;
+  background-color: #efffee;
+  color: green;
+  padding: 0 5px 0 5px;
 }
 
 #emailstatus {
-	height: 20px;
-	text-align: left !important;
+  height: 20px;
+  text-align: left !important;
 }
 
 #emailstatus img {
-	top: 0 !important;
+  top: 0 !important;
 }
-
-

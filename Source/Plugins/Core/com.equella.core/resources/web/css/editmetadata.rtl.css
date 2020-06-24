@@ -1,13 +1,13 @@
 @import url("editmetadata.css");
 
 #treePanel a.add {
-	margin-left: 0;
-	margin-right: 7px;
+  margin-left: 0;
+  margin-right: 7px;
 }
 
 #treePanel a.unselect {
-	margin-right: 7px;
-	padding-right: 20px;
-	margin-left: 0;
-	padding-left: 0;
+  margin-right: 7px;
+  padding-right: 20px;
+  margin-left: 0;
+  padding-left: 0;
 }
