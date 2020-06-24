@@ -2744,14 +2744,9 @@ Contribution wizard styling
 #wizard-navigation input[type="button"] {
   margin: 0 0 0 3px;
 }
-#wizard-major-actions {
-  display: flex;
-}
 
 #wizard-major-actions .action-button.save {
   background-image: url("../../images/baseline_save_white_18dp.png");
-  text-align: left;
-  padding-left: 42px;
 }
 
 #wizard-major-actions .action-button.edit {
