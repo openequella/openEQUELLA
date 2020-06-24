@@ -22,8 +22,7 @@ import {
   TemplateUpdateProps,
 } from "../../mainui/Template";
 import { routes } from "../../mainui/routes";
-import { Card, Mark, Slider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardContent, Mark, Slider } from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
 import {
   defaultSearchSettings,
@@ -36,23 +35,6 @@ import SettingsListControl from "../../components/SettingsListControl";
 import WebPageIndexSetting from "./components/WebPageIndexSetting";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import { shallowEqual } from "shallow-equal-object";
-
-const useStyles = makeStyles({
-  floatingButton: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    marginTop: "80px",
-    marginRight: "16px",
-    width: "calc(25% - 112px)",
-  },
-  spacedCards: {
-    margin: "16px",
-    width: "75%",
-    padding: "16px",
-    float: "left",
-  },
-});
 
 function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
@@ -68,7 +50,6 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
     languageStrings.settings.searching.contentIndexSettings;
 
   const markStrings = contentIndexSettingsStrings.sliderMarks;
-  const classes = useStyles();
 
   const boostVals: Mark[] = [
     { label: markStrings.off, value: 0 },
@@ -131,82 +112,88 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
       snackBarOnClose={() => setShowSuccess(false)}
       preventNavigation={changesUnsaved}
     >
-      <Card className={classes.spacedCards}>
-        <SettingsList subHeading={contentIndexSettingsStrings.general}>
-          <SettingsListControl
-            primaryText={contentIndexSettingsStrings.name}
-            secondaryText={contentIndexSettingsStrings.description}
-            control={
-              <WebPageIndexSetting
-                disabled={showError}
-                value={searchSettings.urlLevel}
-                setValue={(level) =>
-                  setSearchSettings({
-                    ...searchSettings,
-                    urlLevel: level,
-                  })
-                }
-              />
-            }
-          />
-        </SettingsList>
+      <Card>
+        <CardContent>
+          <SettingsList subHeading={contentIndexSettingsStrings.general}>
+            <SettingsListControl
+              primaryText={contentIndexSettingsStrings.name}
+              secondaryText={contentIndexSettingsStrings.description}
+              control={
+                <WebPageIndexSetting
+                  disabled={showError}
+                  value={searchSettings.urlLevel}
+                  setValue={(level) =>
+                    setSearchSettings({
+                      ...searchSettings,
+                      urlLevel: level,
+                    })
+                  }
+                />
+              }
+            />
+          </SettingsList>
+        </CardContent>
       </Card>
-      <Card className={classes.spacedCards}>
-        <SettingsList subHeading={contentIndexSettingsStrings.boosting}>
-          <SettingsListControl
-            primaryText={contentIndexSettingsStrings.titleBoostingTitle}
-            divider
-            control={
-              <Slider
-                disabled={showError}
-                marks={boostVals}
-                min={0}
-                max={7}
-                getAriaValueText={getAriaLabel}
-                aria-label={contentIndexSettingsStrings.titleBoostingTitle}
-                value={searchSettings.titleBoost}
-                onChange={(event, value) =>
-                  handleSliderChange(value as number, "titleBoost")
-                }
-              />
-            }
-          />
-          <SettingsListControl
-            primaryText={contentIndexSettingsStrings.metaBoostingTitle}
-            divider
-            control={
-              <Slider
-                disabled={showError}
-                marks={boostVals}
-                min={0}
-                max={7}
-                getAriaValueText={getAriaLabel}
-                aria-label={contentIndexSettingsStrings.metaBoostingTitle}
-                value={searchSettings.descriptionBoost}
-                onChange={(event, value) =>
-                  handleSliderChange(value as number, "descriptionBoost")
-                }
-              />
-            }
-          />
-          <SettingsListControl
-            primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
-            control={
-              <Slider
-                disabled={showError}
-                marks={boostVals}
-                min={0}
-                max={7}
-                getAriaValueText={getAriaLabel}
-                aria-label={contentIndexSettingsStrings.attachmentBoostingTitle}
-                value={searchSettings.attachmentBoost}
-                onChange={(event, value) =>
-                  handleSliderChange(value as number, "attachmentBoost")
-                }
-              />
-            }
-          />
-        </SettingsList>
+      <Card>
+        <CardContent>
+          <SettingsList subHeading={contentIndexSettingsStrings.boosting}>
+            <SettingsListControl
+              primaryText={contentIndexSettingsStrings.titleBoostingTitle}
+              divider
+              control={
+                <Slider
+                  disabled={showError}
+                  marks={boostVals}
+                  min={0}
+                  max={7}
+                  getAriaValueText={getAriaLabel}
+                  aria-label={contentIndexSettingsStrings.titleBoostingTitle}
+                  value={searchSettings.titleBoost}
+                  onChange={(event, value) =>
+                    handleSliderChange(value as number, "titleBoost")
+                  }
+                />
+              }
+            />
+            <SettingsListControl
+              primaryText={contentIndexSettingsStrings.metaBoostingTitle}
+              divider
+              control={
+                <Slider
+                  disabled={showError}
+                  marks={boostVals}
+                  min={0}
+                  max={7}
+                  getAriaValueText={getAriaLabel}
+                  aria-label={contentIndexSettingsStrings.metaBoostingTitle}
+                  value={searchSettings.descriptionBoost}
+                  onChange={(event, value) =>
+                    handleSliderChange(value as number, "descriptionBoost")
+                  }
+                />
+              }
+            />
+            <SettingsListControl
+              primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
+              control={
+                <Slider
+                  disabled={showError}
+                  marks={boostVals}
+                  min={0}
+                  max={7}
+                  getAriaValueText={getAriaLabel}
+                  aria-label={
+                    contentIndexSettingsStrings.attachmentBoostingTitle
+                  }
+                  value={searchSettings.attachmentBoost}
+                  onChange={(event, value) =>
+                    handleSliderChange(value as number, "attachmentBoost")
+                  }
+                />
+              }
+            />
+          </SettingsList>
+        </CardContent>
       </Card>
     </SettingPageTemplate>
   );

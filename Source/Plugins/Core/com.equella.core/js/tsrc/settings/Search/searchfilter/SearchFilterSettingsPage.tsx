@@ -32,6 +32,7 @@ import {
   IconButton,
   List,
   makeStyles,
+  CardContent,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -67,12 +68,6 @@ import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import { commonString } from "../../../util/commonstrings";
 
 const useStyles = makeStyles({
-  spacedCards: {
-    margin: "16px",
-    width: "75%",
-    padding: "16px",
-    float: "left",
-  },
   cardAction: {
     display: "flex",
     justifyContent: "flex-end",
@@ -284,77 +279,81 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       snackBarOnClose={() => setShowSnackBar(false)}
       preventNavigation={changesUnsaved}
     >
-      <Card className={classes.spacedCards}>
-        <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
-          <SettingsListControl
-            divider
-            primaryText={searchFilterStrings.disableownerfilter}
-            control={
-              <SettingsToggleSwitch
-                value={searchSettings.searchingDisableOwnerFilter}
-                setValue={(disabled) => {
-                  setSearchSettings({
-                    ...searchSettings,
-                    searchingDisableOwnerFilter: disabled,
-                  });
-                }}
-                id={"disable_owner_filter_toggle"}
-              />
-            }
-          />
-          <SettingsListControl
-            primaryText={searchFilterStrings.disabledatemodifiedfilter}
-            control={
-              <SettingsToggleSwitch
-                value={searchSettings.searchingDisableDateModifiedFilter}
-                setValue={(disabled) => {
-                  setSearchSettings({
-                    ...searchSettings,
-                    searchingDisableDateModifiedFilter: disabled,
-                  });
-                }}
-                id={"disable_date_modified_filter_toggle"}
-              />
-            }
-          />
-        </SettingsList>
+      <Card>
+        <CardContent>
+          <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
+            <SettingsListControl
+              divider
+              primaryText={searchFilterStrings.disableownerfilter}
+              control={
+                <SettingsToggleSwitch
+                  value={searchSettings.searchingDisableOwnerFilter}
+                  setValue={(disabled) => {
+                    setSearchSettings({
+                      ...searchSettings,
+                      searchingDisableOwnerFilter: disabled,
+                    });
+                  }}
+                  id={"disable_owner_filter_toggle"}
+                />
+              }
+            />
+            <SettingsListControl
+              primaryText={searchFilterStrings.disabledatemodifiedfilter}
+              control={
+                <SettingsToggleSwitch
+                  value={searchSettings.searchingDisableDateModifiedFilter}
+                  setValue={(disabled) => {
+                    setSearchSettings({
+                      ...searchSettings,
+                      searchingDisableDateModifiedFilter: disabled,
+                    });
+                  }}
+                  id={"disable_date_modified_filter_toggle"}
+                />
+              }
+            />
+          </SettingsList>
+        </CardContent>
       </Card>
 
-      <Card className={classes.spacedCards}>
-        <List
-          subheader={
-            <ListSubheader disableGutters>
-              {searchFilterStrings.mimetypefiltertitle}
-            </ListSubheader>
-          }
-        >
-          {mimeTypeFilters.map((filter, index) => {
-            return (
-              <ListItem divider={true} key={index}>
-                <ListItemText primary={filter.name} />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => {
-                      openMimeTypeFilterDialog(filter);
-                    }}
-                    aria-label={`${searchFilterStrings.edit} ${filter.name}`}
-                    color={"secondary"}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  |
-                  <IconButton
-                    onClick={() => deleteMimeTypeFilter(filter)}
-                    aria-label={`${searchFilterStrings.delete} ${filter.name}`}
-                    color="secondary"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })}
-        </List>
+      <Card>
+        <CardContent>
+          <List
+            subheader={
+              <ListSubheader disableGutters>
+                {searchFilterStrings.mimetypefiltertitle}
+              </ListSubheader>
+            }
+          >
+            {mimeTypeFilters.map((filter, index) => {
+              return (
+                <ListItem divider={true} key={index}>
+                  <ListItemText primary={filter.name} />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        openMimeTypeFilterDialog(filter);
+                      }}
+                      aria-label={`${searchFilterStrings.edit} ${filter.name}`}
+                      color={"secondary"}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    |
+                    <IconButton
+                      onClick={() => deleteMimeTypeFilter(filter)}
+                      aria-label={`${searchFilterStrings.delete} ${filter.name}`}
+                      color="secondary"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              );
+            })}
+          </List>
+        </CardContent>
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => openMimeTypeFilterDialog()}

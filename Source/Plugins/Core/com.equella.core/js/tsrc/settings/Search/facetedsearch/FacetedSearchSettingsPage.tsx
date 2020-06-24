@@ -26,6 +26,7 @@ import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import {
   Card,
   CardActions,
+  CardContent,
   IconButton,
   List,
   ListItem,
@@ -65,12 +66,6 @@ import {
 } from "react-beautiful-dnd";
 
 const useStyles = makeStyles({
-  spacedCards: {
-    margin: "16px",
-    width: "75%",
-    padding: "16px",
-    float: "left",
-  },
   cardAction: {
     display: "flex",
     justifyContent: "flex-end",
@@ -301,8 +296,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       snackBarOnClose={() => setShowSnackBar(false)}
       preventNavigation={changesUnsaved}
     >
-      <Card className={classes.spacedCards}>
-        {facetList}
+      <Card>
+        <CardContent>{facetList}</CardContent>
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => {
