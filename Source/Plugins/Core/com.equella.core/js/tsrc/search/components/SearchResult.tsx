@@ -224,7 +224,6 @@ export default function SearchResult({
             </Typography>
             <List disablePadding>{customDisplayMetadata}</List>
             {generateAttachmentList()}
-            <Divider />
             {itemMetadata}
           </>
         }

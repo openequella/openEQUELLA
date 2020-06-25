@@ -31,6 +31,7 @@ import {
   TextField,
   Grid,
   Card,
+  CardContent,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { searchItems } from "./SearchModule";
@@ -78,7 +79,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const searchResults = searchResultItems.map(
     (item: OEQ.Search.SearchResultItem) => (
-      <ListItem key={item.uuid}>
+      <ListItem key={item.uuid} divider>
         <SearchResult {...item} />
       </ListItem>
     )
@@ -97,15 +98,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <Grid container direction="column" spacing={2}>
       <Grid item xs={9}>
         <Card>
-          <IconButton>
-            <SearchIcon fontSize="large" />
-          </IconButton>
-          <TextField />
+          <CardContent>
+            <IconButton>
+              <SearchIcon fontSize="large" />
+            </IconButton>
+            <TextField />
+          </CardContent>
         </Card>
       </Grid>
 
       <Grid item xs={9}>
-        <Card>{searchResultList}</Card>
+        <Card>
+          <CardContent>{searchResultList}</CardContent>
+        </Card>
       </Grid>
     </Grid>
   );
