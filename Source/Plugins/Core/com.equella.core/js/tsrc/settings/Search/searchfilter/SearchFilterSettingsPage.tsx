@@ -294,7 +294,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       searchingDisableOwnerFilter: disabled,
                     });
                   }}
-                  id={"disable_owner_filter_toggle"}
+                  id="disable_owner_filter_toggle"
                 />
               }
             />
@@ -309,7 +309,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       searchingDisableDateModifiedFilter: disabled,
                     });
                   }}
-                  id={"disable_date_modified_filter_toggle"}
+                  id="disable_date_modified_filter_toggle"
                 />
               }
             />

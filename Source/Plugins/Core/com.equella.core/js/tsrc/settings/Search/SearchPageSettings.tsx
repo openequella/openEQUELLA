@@ -147,7 +147,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     })
                   }
                   disabled={showError}
-                  id={"_showNonLiveCheckbox"}
+                  id="_showNonLiveCheckbox"
                 />
               }
             />
@@ -166,7 +166,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     })
                   }
                   disabled={showError}
-                  id={"_authenticateByDefault"}
+                  id="_authenticateByDefault"
                 />
               }
             />
@@ -181,7 +181,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     setCloudSettings({ ...cloudSettings, disabled: value })
                   }
                   disabled={showError}
-                  id={"cs_dc"}
+                  id="cs_dc"
                 />
               }
             />
@@ -206,7 +206,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     })
                   }
                   disabled={showError}
-                  id={"_disableGallery"}
+                  id="_disableGallery"
                 />
               }
             />
@@ -224,7 +224,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     })
                   }
                   disabled={showError}
-                  id={"_disableVideos"}
+                  id="_disableVideos"
                 />
               }
             />
@@ -241,7 +241,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                     })
                   }
                   disabled={showError}
-                  id={"_disableFileCount"}
+                  id="_disableFileCount"
                 />
               }
             />

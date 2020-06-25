@@ -80,10 +80,10 @@ const SettingPageTemplate = ({
         <Grid item xs={3}>
           <Button
             fullWidth
-            id={"_saveButton"}
-            color={"primary"}
-            variant={"contained"}
-            size={"large"}
+            id="_saveButton"
+            color="primary"
+            variant="contained"
+            size="large"
             onClick={onSave}
             aria-label={commonString.action.save}
             disabled={saveButtonDisabled}

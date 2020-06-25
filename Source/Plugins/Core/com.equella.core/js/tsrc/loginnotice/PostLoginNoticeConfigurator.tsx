@@ -170,7 +170,7 @@ class PostLoginNoticeConfigurator extends React.Component<
           <CardActions>
             <Button
               id="postClearButton"
-              disabled={dbPostNotice == ""}
+              disabled={dbPostNotice === ""}
               onClick={this.stageClear}
               variant="text"
             >
