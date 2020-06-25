@@ -624,7 +624,7 @@ Contribution wizard inputs
 
 /************************/
 .wizard-controls .indent1 {
-  width: 556px;
+  width: 95%;
 }
 
 .wizard-controls .indent2 {
@@ -846,6 +846,24 @@ a[title="move-down"]:before {
 
 .wizard-layout .indent3 .shufflelist {
   width: 476px;
+}
+
+@media only screen and (max-width: 768px) {
+  .wizard-layout .indent0 .shuffle-box-inner select {
+    width: 30%;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1200px) {
+  .wizard-layout .indent0 .shuffle-box-inner select {
+    width: 38%;
+  }
+}
+
+@media only screen and (min-width: 1201px) {
+  .wizard-layout .indent0 .shuffle-box-inner select {
+    width: 45%;
+  }
 }
 
 .wizard-layout .indent1 .shuffle-box-inner select {
@@ -2652,7 +2670,11 @@ Contribution wizard styling
 .wizard-layout #col2,
 #affix-div {
   width: 221px;
-  top: 55px;
+}
+
+.wizard-layout .rightNav {
+  position: fixed;
+  right: 30px;
 }
 
 .wizard-layout #col2 {
@@ -2721,14 +2743,9 @@ Contribution wizard styling
 #wizard-navigation input[type="button"] {
   margin: 0 0 0 3px;
 }
-#wizard-major-actions {
-  display: flex;
-}
 
 #wizard-major-actions .action-button.save {
   background-image: url("../../images/baseline_save_white_18dp.png");
-  text-align: left;
-  padding-left: 42px;
 }
 
 #wizard-major-actions .action-button.edit {
