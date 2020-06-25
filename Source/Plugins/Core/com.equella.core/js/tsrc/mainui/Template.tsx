@@ -189,6 +189,7 @@ export const useStyles = makeStyles((theme: Theme) => {
       flexGrow: 1,
       flexBasis: 0,
       minHeight: 0,
+      padding: theme.spacing(2),
     },
     toolbar: theme.mixins.toolbar,
     tabs: {

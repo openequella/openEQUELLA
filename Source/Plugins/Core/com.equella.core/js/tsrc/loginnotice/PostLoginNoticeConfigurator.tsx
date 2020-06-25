@@ -18,9 +18,11 @@
 import * as React from "react";
 import {
   Button,
+  Card,
+  CardActions,
+  CardContent,
   DialogContent,
   DialogContentText,
-  Grid,
   TextField,
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
@@ -32,7 +34,6 @@ import {
   strings,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
-import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -149,9 +150,9 @@ class PostLoginNoticeConfigurator extends React.Component<
     const { postNotice, dbPostNotice } = this.state;
     const Dialogs = this.Dialogs;
     return (
-      <SettingsMenuContainer>
-        <Grid id="postLoginConfig" container spacing={8} direction="column">
-          <Grid item>
+      <>
+        <Card>
+          <CardContent>
             <TextField
               id="postNoticeField"
               variant="outlined"
@@ -164,22 +165,21 @@ class PostLoginNoticeConfigurator extends React.Component<
               onChange={(e) => this.handlePostTextFieldChange(e.target)}
               value={postNotice}
             />
-          </Grid>
-          <Grid item container spacing={8} direction="row-reverse">
-            <Grid item>
-              <Button
-                id="postClearButton"
-                disabled={dbPostNotice == ""}
-                onClick={this.stageClear}
-                variant="text"
-              >
-                {commonString.action.clear}
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
+          </CardContent>
+
+          <CardActions>
+            <Button
+              id="postClearButton"
+              disabled={dbPostNotice === ""}
+              onClick={this.stageClear}
+              variant="text"
+            >
+              {commonString.action.clear}
+            </Button>
+          </CardActions>
+        </Card>
         <Dialogs />
-      </SettingsMenuContainer>
+      </>
     );
   }
 }
