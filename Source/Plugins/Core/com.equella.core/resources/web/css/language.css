@@ -1,20 +1,15 @@
-div.langlist
-{
-	height: 202px;
+div.langlist {
+  height: 202px;
 }
 
-div.modal-content div.input
-{
-	margin: 0px;
+div.modal-content div.input {
+  margin: 0px;
 }
 
-
-table.zebra td.exportdelete
-{
-	text-align: right;
+table.zebra td.exportdelete {
+  text-align: right;
 }
 
-#uploadProgress
-{
-	height: 32px;
+#uploadProgress {
+  height: 32px;
 }

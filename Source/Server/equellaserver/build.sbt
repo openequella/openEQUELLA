@@ -15,10 +15,10 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.10.3"
+val jacksonVersion   = "2.11.0"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.56"
-val SwaggerVersion   = "1.5.24"
+val SwaggerVersion   = "1.6.1"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
@@ -42,7 +42,7 @@ libraryDependencies ++= Seq(
   "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
   "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
   "axis"                           % "axis"                           % "1.4",
-  "cglib"                          % "cglib"                          % "2.2.2",
+  "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
   "com.fasterxml.jackson.module"   %% "jackson-module-scala"          % jacksonVersion,
@@ -58,7 +58,6 @@ libraryDependencies ++= Seq(
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200423-1.30.9",
-  "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
   "com.google.guava"             % "guava"                       % "18.0",
@@ -76,7 +75,7 @@ libraryDependencies ++= Seq(
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"                %% "swagger-scala-module" % "1.0.5",
+  "io.swagger"                %% "swagger-scala-module" % "1.0.6",
   "com.zaxxer"                % "HikariCP"              % "2.7.9",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.14",
@@ -188,14 +187,13 @@ libraryDependencies ++= Seq(
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
   "org.freemarker"                       % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"            % "hurl"                           % "1.1",
-  "org.javassist"                        % "javassist"                      % "3.18.2-GA",
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.2_spec" % "1.0.2.Final",
   "org.jboss.logging"                    % "jboss-logging"                  % "3.4.1.Final",
   "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"                    % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.3",
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
+  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.3.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
@@ -210,15 +208,15 @@ libraryDependencies ++= Seq(
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
   "org.slf4j"           % "slf4j-api"              % "1.7.30",
   "org.slf4j"           % "slf4j-log4j12"          % "1.7.30",
-  "org.springframework" % "spring-aop"             % "2.5.5",
-  "org.springframework" % "spring-context"         % "2.5.5",
+  "org.springframework" % "spring-aop"             % "2.5.6",
+  "org.springframework" % "spring-context"         % "2.5.6",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % "2.5.5",
-  "org.springframework" % "spring-tx"   % "2.5.5",
-  "org.springframework" % "spring-web"  % "2.5.5",
+  "org.springframework" % "spring-jdbc" % "2.5.6",
+  "org.springframework" % "spring-tx"   % "2.5.6",
+  "org.springframework" % "spring-web"  % "2.5.6",
 //  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
 //    ExclusionRule(organization = "jasperreports", name = "jasperreports")
 //    ),
@@ -236,7 +234,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.86"
+  "io.github.classgraph"   % "classgraph"                % "4.8.87"
 )
 
 libraryDependencies ++= {

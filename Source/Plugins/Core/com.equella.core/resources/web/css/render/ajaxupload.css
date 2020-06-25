@@ -1,76 +1,62 @@
-.uploadsprogress .progress-bar
-{
-	width: 200px;
-	height: 14px;
-	border: 1px solid #AAA;
-	float: left;
-	margin: 0 10px 0 0;
+.uploadsprogress .progress-bar {
+  width: 200px;
+  height: 14px;
+  border: 1px solid #aaa;
+  float: left;
+  margin: 0 10px 0 0;
 
-	-moz-border-radius: 3px;
-	-o-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
-.uploadsprogress .progressbarOuter
-{
-	background-color: #FFFFFF;
+.uploadsprogress .progressbarOuter {
+  background-color: #ffffff;
 }
 
-.uploadsprogress .progressbarInner
-{
-	height: 14px;
-	background: #80D2EE !important;
+.uploadsprogress .progressbarInner {
+  height: 14px;
+  background: #80d2ee !important;
 }
 
-.uploadsprogress .progresstextOuter
-{
-	color: #000000;
+.uploadsprogress .progresstextOuter {
+  color: #000000;
 }
 
-.uploadsprogress .progresstextInner
-{
-	color: #FFFFFF;
+.uploadsprogress .progresstextInner {
+  color: #ffffff;
 }
 
-.uploadsprogress .file-upload
-{
-	margin: 10px 0;
-	clear: both;
+.uploadsprogress .file-upload {
+  margin: 10px 0;
+  clear: both;
 }
 
-.uploadsprogress .file-upload .file-name
-{
-	width: 400px;
-	overflow: hidden;
+.uploadsprogress .file-upload .file-name {
+  width: 400px;
+  overflow: hidden;
 }
 
-.uploadsprogress .file-upload-progress
-{
-	float: right;
-	width: 300px;
+.uploadsprogress .file-upload-progress {
+  float: right;
+  width: 300px;
 }
 
-.uploadsprogress .file-upload-problem
-{
-	background-color: #FF0000;
+.uploadsprogress .file-upload-problem {
+  background-color: #ff0000;
 }
 
-
-.uploadsprogress .progress-bar-inner
-{
-	height: 14px;
-	background: #80D2EE;
+.uploadsprogress .progress-bar-inner {
+  height: 14px;
+  background: #80d2ee;
 }
 
-.uploadsprogress .progress-bar-inner.complete
-{
-	background: #47E368;
-	width: 100%;
+.uploadsprogress .progress-bar-inner.complete {
+  background: #47e368;
+  width: 100%;
 }
 
-.uploadsprogress .progress-bar + A
-{
-	float: right;
+.uploadsprogress .progress-bar + A {
+  float: right;
 }
-

@@ -1,4 +1,4 @@
-.portlet_myresources_content .box_content_inner, .portlet_myresources_content .box_content 
-{
-	padding: 0;
+.portlet_myresources_content .box_content_inner,
+.portlet_myresources_content .box_content {
+  padding: 0;
 }

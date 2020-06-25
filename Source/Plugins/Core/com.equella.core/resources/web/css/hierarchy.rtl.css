@@ -1,17 +1,17 @@
 @import url("hierarchy.css");
 
 .browse-layout .browse-topics h2.folder {
-	padding: 5px 35px 5px 0;
-	background-position: right 0;
+  padding: 5px 35px 5px 0;
+  background-position: right 0;
 }
 
 .browse-layout .browse-topics ul {
-	margin: 5px -18px 5px 0;
+  margin: 5px -18px 5px 0;
 }
 
 .browse-topics ul li {
-	padding: 0 18px 0 0;
-	background-image: url("../images/list-icon.rtl.png");
-	background-repeat: no-repeat;
-	background-position: right 0;
+  padding: 0 18px 0 0;
+  background-image: url("../images/list-icon.rtl.png");
+  background-repeat: no-repeat;
+  background-position: right 0;
 }

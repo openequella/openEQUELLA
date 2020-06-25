@@ -3,16 +3,13 @@
 .currenttoolbar .toolbarbutton,
 .availabletoolbar .toolbarbutton,
 .currenttoolbar .toolbarbutton *,
-.availabletoolbar .toolbarbutton *
-{
-	float: right;
+.availabletoolbar .toolbarbutton * {
+  float: right;
 }
-.button_placeholder
-{
-	float: right;
+.button_placeholder {
+  float: right;
 }
 
-.toolbaractions .toolbaractionbutton
-{
-	float: left;
+.toolbaractions .toolbaractionbutton {
+  float: left;
 }

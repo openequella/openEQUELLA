@@ -7,20 +7,20 @@
     "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@material-ui/core": "4.10.0",
-    "axios": "0.19.0",
+    "@material-ui/core": "4.10.2",
+    "axios": "0.19.2",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
-    "jss": "10.0.0",
+    "jss": "10.3.0",
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
-    "query-string": "6.4.0",
-    "react": "16.8.4",
-    "react-dom": "16.8.4"
+    "query-string": "6.13.1",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
   "devDependencies": {
-    "@types/react": "16.9.38",
+    "@types/react": "16.9.41",
     "@types/react-dom": "16.9.8",
-    "mkdirp": "0.5.5",
+    "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.4",
     "psc-package": "3.0.1",
     "pulp": "12.4.2",

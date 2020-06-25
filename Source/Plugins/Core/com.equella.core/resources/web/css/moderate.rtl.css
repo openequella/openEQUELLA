@@ -1,24 +1,23 @@
 @import url("moderate.css");
 
 #moderate h3 {
-	padding: 6px 0 6px 0;
-	font-weight: normal;
+  padding: 6px 0 6px 0;
+  font-weight: normal;
 }
 
 #moderate .comments {
-padding: 0 22px 0 0;
-background: url(../images/icons/comment_alt.png) right center no-repeat;
-
+  padding: 0 22px 0 0;
+  background: url(../images/icons/comment_alt.png) right center no-repeat;
 }
 
 #wizard-major-actions .action-button.view {
-	background-image: url("../images/button-rhs-view.rtl.png");
+  background-image: url("../images/button-rhs-view.rtl.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
-	background-image: url("../images/moderate-approve.rtl.png");
+  background-image: url("../images/moderate-approve.rtl.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
-	background-image: url("../images/moderate-reject.rtl.png");
+  background-image: url("../images/moderate-reject.rtl.png");
 }

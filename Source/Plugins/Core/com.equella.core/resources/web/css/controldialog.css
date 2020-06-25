@@ -1,7 +1,9 @@
 .controldialog .modal-content {
-	max-height: 450px;	
+  max-height: 450px;
 }
 
-.controldialog input[type="text"], .controldialog .input.text textarea, .controldialog select.listbox {
-	width: 584px;
-} 
+.controldialog input[type="text"],
+.controldialog .input.text textarea,
+.controldialog select.listbox {
+  width: 584px;
+}

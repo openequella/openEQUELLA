@@ -1,20 +1,19 @@
 @import url("taskstatistics.css");
 
 div.trend {
-	left: 0;
-	right: auto;
+  left: 0;
+  right: auto;
 }
 
 .taskstatsresults th {
-	text-align: right;
+  text-align: right;
 }
 
-.taskstatsresults th, .taskstatsresults td {
-	padding: 9px 32px 9px 10px;
+.taskstatsresults th,
+.taskstatsresults td {
+  padding: 9px 32px 9px 10px;
 }
 
 .taskstatsresults .resourcecount {
-	text-align: right;
+  text-align: right;
 }
-
-

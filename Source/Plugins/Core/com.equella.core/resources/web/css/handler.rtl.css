@@ -1,11 +1,11 @@
 @import url("handler.css");
 
-.mycontent-layout #col1 .control.ctrlinvalid,.mycontent-actions-layout #col1 .control.ctrlinvalid
-	{
-	left: auto;
-	right: -10px;
+.mycontent-layout #col1 .control.ctrlinvalid,
+.mycontent-actions-layout #col1 .control.ctrlinvalid {
+  left: auto;
+  right: -10px;
 }
 
 .mycontent-actions-layout #col2 .minoractions {
-	text-align: left;
+  text-align: left;
 }

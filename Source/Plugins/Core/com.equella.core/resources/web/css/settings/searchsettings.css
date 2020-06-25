@@ -1,68 +1,59 @@
-.selectedItems
-{
-	width: 300px;
+.selectedItems {
+  width: 300px;
 }
 
-input[type="radio"]
-{
-	margin: 4px 7px;
+input[type="radio"] {
+  margin: 4px 7px;
 }
 
-#title-slider label, 
+#title-slider label,
 #description-slider label,
-#attachment-slider label{
-    position: absolute;
-    width: 45px;
-    margin-left: -20px;
-    text-align: center;
-    margin-top: 10px;
-    font-size: 11px;
+#attachment-slider label {
+  position: absolute;
+  width: 45px;
+  margin-left: -20px;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
 }
 
-.ui-widget-content 
-{
-	 color: inherit !important;
+.ui-widget-content {
+  color: inherit !important;
 }
 
-.term-row
-{
-	width: 515px;
-	clear: both;
-	padding-top: 20px;
-	padding-bottom: 20px;
-	height: 25px;
+.term-row {
+  width: 515px;
+  clear: both;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  height: 25px;
 }
 
-.term-row .term-label
-{
-	float: left;
-    line-height: 20px;
-    text-align: right;
-    width: 120px;
+.term-row .term-label {
+  float: left;
+  line-height: 20px;
+  text-align: right;
+  width: 120px;
 }
 
-.term-row .slider
-{
-	float: right;
-    line-height: 20px;
-    padding-top: 5px;
-    width: 370px;
-    padding-right:10px;
+.term-row .slider {
+  float: right;
+  line-height: 20px;
+  padding-top: 5px;
+  width: 370px;
+  padding-right: 10px;
 }
 
-
-.ctrlinvalid 
-{
-    background-color: #FFDDDD;
-    left: -5px;
-    padding: 5px 5px 0;
-    position: relative;
-    top: -5px;
+.ctrlinvalid {
+  background-color: #ffdddd;
+  left: -5px;
+  padding: 5px 5px 0;
+  position: relative;
+  top: -5px;
 }
 
-.error
-{
-	color: red;
-    padding: 3px;
-    text-align: center;
+.error {
+  color: red;
+  padding: 3px;
+  text-align: center;
 }

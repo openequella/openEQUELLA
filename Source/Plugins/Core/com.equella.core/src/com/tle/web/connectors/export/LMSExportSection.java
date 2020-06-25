@@ -41,6 +41,8 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.settings.standard.CourseDefaultsSettings;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
+import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
@@ -195,6 +197,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
   @Inject private PluginTracker<SelectableAttachment> selectableAttachments;
   @Inject private ConnectorService connectorService;
   @Inject private ConnectorRepositoryService repositoryService;
+  @Inject private BlackboardRESTConnectorService blackboardRestConnectorService;
   @Inject private ReceiptService receiptService;
   @Inject private ViewAttachmentWebService viewAttachmentWebService;
   @Inject private ConfigurationService systemConstantsService;
@@ -230,6 +233,10 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
   @Component(name = "sa")
   private Checkbox showArchived;
 
+  @PlugKey("export.button.refreshcache")
+  @Component
+  private Button refreshCourseCacheButton;
+
   @Component(name = "fb", stateful = false, ignoreForContext = BookmarkEvent.CONTEXT_BROWSERURL)
   private TextField filterBox;
 
@@ -257,6 +264,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
     final LMSExporterModel model = getModel(context);
 
     final Connector connector = getConnector(context);
+
     if (connector != null && repositoryService.isRequiresAuthentication(connector)) {
       model.setAuthRequired(true);
 
@@ -266,6 +274,10 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
         checkAttachmentLayout(context);
         model.setConnectorSelected(connectorsList.getSelectedValue(context) != null);
 
+        if (connector != null
+            && connector.getLmsType().equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+          model.setCourseCaching(true);
+        }
         final ViewableItem viewableItem = itemInfo.getViewableItem();
         final List<AttachmentRowDisplay> attachmentRowDisplays =
             viewAttachmentWebService.createViewsForItem(
@@ -454,6 +466,8 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
             .addValidator(locationValidator)
             .addValidator(resourceValidator));
 
+    refreshCourseCacheButton.addClickStatements(events.getNamedHandler("refreshCourseCache"));
+
     folderTree.setModel(new CourseTreeModel());
     folderTree.setLazyLoad(true);
     folderTree.setAllowMultipleOpenBranches(true);
@@ -523,6 +537,19 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
     }
 
     return model.getError() != null;
+  }
+
+  @EventHandlerMethod
+  public void refreshCourseCache(SectionInfo info) {
+    final BaseEntityLabel value = connectorsList.getSelectedValue(info);
+
+    if (value != null) {
+      final Connector connector = connectorService.getByUuid(value.getUuid());
+      if (connector != null
+          && connector.getLmsType().equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+        blackboardRestConnectorService.removeCachedCoursesForConnector(connector);
+      }
+    }
   }
 
   @EventHandlerMethod
@@ -764,6 +791,10 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
     return publishButton;
   }
 
+  public Button getRefreshCourseCacheButton() {
+    return refreshCourseCacheButton;
+  }
+
   public Checkbox getShowArchived() {
     return showArchived;
   }
@@ -786,6 +817,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
     private ConnectorTerminology terms;
     private List<String> filteredCourses;
     private boolean copyrighted;
+    private boolean courseCaching = false;
 
     public Label getSingleConnectorName() {
       return singleConnectorName;
@@ -801,6 +833,14 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
 
     public void setConnectorsCache(List<BaseEntityLabel> connectorsCache) {
       this.connectorsCache = connectorsCache;
+    }
+
+    public boolean isCourseCaching() {
+      return courseCaching;
+    }
+
+    public void setCourseCaching(boolean courseCaching) {
+      this.courseCaching = courseCaching;
     }
 
     public boolean isAuthRequired() {

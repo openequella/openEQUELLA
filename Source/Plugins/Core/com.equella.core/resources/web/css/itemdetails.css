@@ -1,23 +1,21 @@
 .action_list ul {
-	 margin: 10px 0;
-}
-	
-.action_list ul li {
-	line-height: 1.3;
-    margin: 4px 0;
+  margin: 10px 0;
 }
 
+.action_list ul li {
+  line-height: 1.3;
+  margin: 4px 0;
+}
 
 .itemdetails .unlock-group p {
-	padding-top: 10px 0;
-	margin: 0;
-} 
+  padding-top: 10px 0;
+  margin: 0;
+}
 
 .itemdetails .unlock-action-area {
-	text-align: left;
+  text-align: left;
 }
 
 div.action_list {
-    margin-top: 0;
-} 
-
+  margin-top: 0;
+}

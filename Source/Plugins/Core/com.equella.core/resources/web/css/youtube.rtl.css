@@ -1,41 +1,41 @@
 @import url("youtube.css");
 
 .modal-search-result {
-	padding: 10px 40px 10px 10px;
-	float: right;
+  padding: 10px 40px 10px 10px;
+  float: right;
 }
 
 .modal-search-result input {
-	left: auto;
-	right: 8px;
+  left: auto;
+  right: 8px;
 }
 
 .modal-search-result.youtube img {
-	margin: 0 0 10px 20px;
-	float: right;
+  margin: 0 0 10px 20px;
+  float: right;
 }
 
 p.info {
-	padding-left: 0;
-	padding-right: 2px;
+  padding-left: 0;
+  padding-right: 2px;
 }
 
 .rating-bar-likes {
-	float: right;
+  float: right;
 }
 
 .rating-bar-dislikes {
-	float: left;
-	margin-right: 0;
-	margin-left: -1px;
+  float: left;
+  margin-right: 0;
+  margin-left: -1px;
 }
 
 #youtube-query div.input label {
-	left: auto;
-	right: 0;
+  left: auto;
+  right: 0;
 }
 
 #youtube-query div.input {
-	margin: 0 0 5px 3px;
-	padding: 0 50px 0 0;
+  margin: 0 0 5px 3px;
+  padding: 0 50px 0 0;
 }

@@ -1,112 +1,114 @@
 span.chapterNumber {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #copyright-holdinglink {
-	margin-top: 2px;
-	margin-bottom: 0px;
+  margin-top: 2px;
+  margin-bottom: 0px;
 }
 
-table#copyright-table, table#copyright-totals {
-	width: 100%;
+table#copyright-table,
+table#copyright-totals {
+  width: 100%;
 }
 
 table#copyright-table {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 table#copyright-totals .copyright-total {
-	font-weight: bold;
-	text-align: right;
+  font-weight: bold;
+  text-align: right;
 }
 
 table#copyright-totals .copyright-totalvalue {
-	text-align: right;
+  text-align: right;
 }
 
 .sectionCheckbox {
-	margin-top: 6px;
+  margin-top: 6px;
 }
 
 .sectionAttachment {
-	margin-top: 5px;
-	width: 255px;
+  margin-top: 5px;
+  width: 255px;
 }
 
-div.selection #copyright-table .sectionAttachment{
-	width: 175px;
+div.selection #copyright-table .sectionAttachment {
+  width: 175px;
 }
 
-td.sectionAttachment span, td.sectionAttachment a {
-	white-space: pre-wrap;
+td.sectionAttachment span,
+td.sectionAttachment a {
+  white-space: pre-wrap;
 }
 
 .sectionPages {
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	margin-top: 6px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-top: 6px;
 }
 
 .sectionStatus {
-	margin-top: 6px;
+  margin-top: 6px;
 }
 
 td.sectionAction {
-	width: 60px;
+  width: 60px;
 }
 
-div.selection #copyright-table td.sectionAction{
-	max-width: 14px;
-	width: 12px;
+div.selection #copyright-table td.sectionAction {
+  max-width: 14px;
+  width: 12px;
 }
 
 td.sectionAction button.activate-one {
-	float: right;
-	position: relative;
-	height: 26px;
-	z-index: 1000;
-	right: 0px;
+  float: right;
+  position: relative;
+  height: 26px;
+  z-index: 1000;
+  right: 0px;
 }
 
 td.sectionAction button.add {
-	float: right;
-	height: 26px;
-	width: 28px;
+  float: right;
+  height: 26px;
+  width: 28px;
 }
 
 .copyright-portionlink {
-	margin-left: 18px;
+  margin-left: 18px;
 }
 
 img.copyright-sectionlink {
-	height: 16px;
-	width: 16px;
-	margin-right: 5px;
-	vertical-align: middle;
+  height: 16px;
+  width: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
 span.restricted-message {
-	font-style: italic;
-	display: inline-block;
-	margin-left: -18px;
+  font-style: italic;
+  display: inline-block;
+  margin-left: -18px;
 }
 
 table#copyright-table {
-	border: 1px solid #8f8b7f;
-	width: 100%;
-	margin: 10px 0;
+  border: 1px solid #8f8b7f;
+  width: 100%;
+  margin: 10px 0;
 }
 
 table#copyright-table tr.portion-row td {
-	background: #f3f1eb;
+  background: #f3f1eb;
 }
 
 table#copyright-table tr.section-row td {
-	background: #fefefe;
+  background: #fefefe;
 }
 
 table#copyright-table tr td {
-	text-align: left;
-	vertical-align: top;
-	padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 10px;
 }
