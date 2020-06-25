@@ -93,7 +93,12 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
       .finally(() => getSettings());
   }
 
-  const handleSliderChange = (newValue: number, prop: string) => {
+  const handleSliderChange = (newValue: number | number[], prop: string) => {
+    // Because our usage of Sliders do not produce multiple numbers, throw a
+    // TypeError if newValue is not a number.
+    if (typeof newValue !== "number") {
+      throw new TypeError("slider value must be a number");
+    }
     setSearchSettings({
       ...searchSettings,
       [prop]: newValue,
@@ -150,7 +155,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                   aria-label={contentIndexSettingsStrings.titleBoostingTitle}
                   value={searchSettings.titleBoost}
                   onChange={(event, value) =>
-                    handleSliderChange(value as number, "titleBoost")
+                    handleSliderChange(value, "titleBoost")
                   }
                 />
               }
@@ -168,7 +173,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                   aria-label={contentIndexSettingsStrings.metaBoostingTitle}
                   value={searchSettings.descriptionBoost}
                   onChange={(event, value) =>
-                    handleSliderChange(value as number, "descriptionBoost")
+                    handleSliderChange(value, "descriptionBoost")
                   }
                 />
               }
@@ -187,7 +192,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
                   }
                   value={searchSettings.attachmentBoost}
                   onChange={(event, value) =>
-                    handleSliderChange(value as number, "attachmentBoost")
+                    handleSliderChange(value, "attachmentBoost")
                   }
                 />
               }
