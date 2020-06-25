@@ -171,6 +171,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
