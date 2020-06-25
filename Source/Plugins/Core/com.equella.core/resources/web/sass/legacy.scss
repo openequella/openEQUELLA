@@ -2673,9 +2673,15 @@ Contribution wizard styling
   width: 221px;
 }
 
-.wizard-layout .rightNav {
+.wizard-layout .contribution-rightNav {
   position: fixed;
   right: 30px;
+}
+
+.wizard-layout .moderation-rightNav {
+  position: fixed;
+  right: 30px;
+  top: 70px;
 }
 
 .wizard-layout #col2 {
