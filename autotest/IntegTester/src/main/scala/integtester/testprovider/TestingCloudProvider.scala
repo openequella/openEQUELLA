@@ -4,7 +4,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{ContextShift, IO}
+import cats.effect.{Blocker, ContextShift, IO}
 import cats.syntax.semigroupk._
 import io.circe.syntax._
 import org.http4s._
@@ -76,7 +76,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
   )
 
   def headerMap(request: Request[IO]): Map[String, Seq[String]] =
-    request.headers.groupBy(_.name.value).mapValues(_.map(_.value).toSeq)
+    request.headers.toList.groupBy(_.name.value).mapValues(_.map(_.value).toSeq)
 
   val authUser: Kleisli[OptionT[IO, ?], Request[IO], TestUser] =
     Kleisli { request =>
@@ -105,7 +105,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       }
     case request @ GET -> Root / "control.js" =>
       StaticFile
-        .fromResource[IO]("/www/control.js", ExecutionContext.global)
+        .fromResource[IO]("/www/control.js", Blocker.liftExecutionContext(ExecutionContext.global))
         .getOrElse(Response.notFound)
 
   }

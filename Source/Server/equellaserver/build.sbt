@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.11.0"
+val jacksonVersion   = "2.11.1"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.56"
 val SwaggerVersion   = "1.6.1"
@@ -76,7 +76,7 @@ libraryDependencies ++= Seq(
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
   "io.swagger"                %% "swagger-scala-module" % "1.0.6",
-  "com.zaxxer"                % "HikariCP"              % "2.7.9",
+  "com.zaxxer"                % "HikariCP"              % "3.4.5",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.14",
   "commons-collections"       % "commons-collections"   % "3.2.2",

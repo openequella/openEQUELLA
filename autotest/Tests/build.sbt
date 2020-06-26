@@ -6,8 +6,8 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 
 inConfig(Serial)(Defaults.testTasks)
 
-val circeVersion  = "0.9.3"
-val http4sVersion = "0.20.0-M6"
+val circeVersion  = "0.12.1"
+val http4sVersion = "0.21.5"
 val catsVersion   = "1.6.1"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
