@@ -20,7 +20,6 @@ package com.tle.web.controls.youtube;
 
 import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
@@ -288,8 +287,7 @@ public class YoutubeHandler
               YoutubeResultOption result = new YoutubeResultOption(videoId);
               result.setAuthor(new KeyLabel(ADD_AUTHOR_LABEL, vidInfo.getChannelTitle()));
               result.setDate(
-                  dateRendererFactory.createDateRenderer(
-                      new Date(vidInfo.getPublishedAt().getValue())));
+                  dateRendererFactory.createDateRenderer(new Date(vidInfo.getPublishedAt())));
 
               String description = vidInfo.getDescription();
               result.setDescription(
@@ -393,9 +391,9 @@ public class YoutubeHandler
       a.setData(YoutubeUtils.PROPERTY_ID, v.getId());
       a.setData(YoutubeUtils.PROPERTY_DURATION, v.getContentDetails().getDuration());
       a.setData(YoutubeUtils.PROPERTY_AUTHOR, channel.getSnippet().getTitle());
-      DateTime uploaded = v.getSnippet().getPublishedAt();
+      String uploaded = v.getSnippet().getPublishedAt();
       if (uploaded != null) {
-        a.setData(YoutubeUtils.PROPERTY_DATE, uploaded.getValue());
+        a.setData(YoutubeUtils.PROPERTY_DATE, uploaded);
       }
       String title = v.getSnippet().getTitle();
       a.setData(YoutubeUtils.PROPERTY_TITLE, title);
