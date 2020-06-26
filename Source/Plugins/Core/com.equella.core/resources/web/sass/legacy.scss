@@ -1922,13 +1922,23 @@ div.skinnysearch {
   overflow: hidden;
 }
 
-.autocompleteControl .autocomplete-container {
-  float: left;
-  width: 513px;
+@media only screen and (max-width: 1200px) {
+  .autocompleteControl .autocomplete-container {
+    float: left;
+    width: 85%;
+  }
+}
+
+@media only screen and (min-width: 1201px) {
+  .autocompleteControl .autocomplete-container {
+    float: left;
+    width: 96%;
+  }
 }
 
 #wizard-controls .autocompleteControl input[type="text"] {
   height: 34px;
+  width: 98%;
 }
 
 .ac_odd {
@@ -2672,9 +2682,15 @@ Contribution wizard styling
   width: 221px;
 }
 
-.wizard-layout .rightNav {
+.wizard-layout .contribution-rightNav {
   position: fixed;
   right: 30px;
+}
+
+.wizard-layout .moderation-rightNav {
+  position: fixed;
+  right: 30px;
+  top: 70px;
 }
 
 .wizard-layout #col2 {
