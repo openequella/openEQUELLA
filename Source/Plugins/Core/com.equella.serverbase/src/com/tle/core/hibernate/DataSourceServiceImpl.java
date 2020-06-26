@@ -123,7 +123,7 @@ public class DataSourceServiceImpl implements DataSourceService {
       // Fixed properties: (i.e. do not allow override in hikari.properties)
       newConfig.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
       newConfig.setAutoCommit(false);
-      newConfig.setInitializationFailFast(false);
+      newConfig.setInitializationFailTimeout(-1);
       newConfig.setThreadFactory(
           new ThreadFactory() {
             @Override
