@@ -35,25 +35,16 @@ var WizardCtrl = {
     ad.attr("data-offset-top", offset);
   },
   affixDivNewUI: function () {
-    var moderate = $("#moderate");
-    var affixDiv = $("#affix-div");
-    if (moderate.length > 0) {
+    const moderationPanel = $("#moderate");
+    const affixDiv = $("#affix-div");
+    if (moderationPanel.length > 0) {
       $(window).on("scroll", function () {
         // Use outerHeight to include margin.
-        var moderateTop = moderate.outerHeight(true);
-        var scrollTop = $(window).scrollTop();
-        if (
-          scrollTop >= moderateTop &&
-          !affixDiv.hasClass("moderation-rightNav")
-        ) {
-          affixDiv.addClass("moderation-rightNav");
-        }
-        if (
-          scrollTop < moderateTop &&
-          affixDiv.hasClass("moderation-rightNav")
-        ) {
-          affixDiv.removeClass("moderation-rightNav");
-        }
+        const moderationPanelHeight = moderationPanel.outerHeight(true);
+        const currentWindowYPos = $(window).scrollTop();
+        currentWindowYPos >= moderationPanelHeight
+          ? affixDiv.addClass("moderation-rightNav")
+          : affixDiv.removeClass("moderation-rightNav");
       });
     } else {
       affixDiv.addClass("contribution-rightNav");
