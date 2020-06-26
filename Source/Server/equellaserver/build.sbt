@@ -179,7 +179,6 @@ libraryDependencies ++= Seq(
                   name = "slf4j-log4j12")
   ),
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
-  "org.codehaus.woodstox"  % "stax2-api"         % "3.1.4",
   "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.4.1",
   "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.6",
   "org.dspace"             % "cql-java"          % "1.0",
