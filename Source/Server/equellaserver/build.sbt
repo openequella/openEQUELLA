@@ -64,7 +64,7 @@ libraryDependencies ++= Seq(
   "com.google.inject"            % "guice"                       % "3.0",
   "com.google.inject.extensions" % "guice-assistedinject"        % "3.0",
   "com.google.inject.extensions" % "guice-spring"                % "3.0",
-  "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
+  "com.ibm.icu"                  % "icu4j"                       % "67.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind")
