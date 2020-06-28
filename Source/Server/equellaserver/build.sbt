@@ -139,7 +139,7 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
-  "org.apache.poi"            % "poi-ooxml"        % "3.9",
+  "org.apache.poi"            % "poi-ooxml"        % "3.17",
   "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
