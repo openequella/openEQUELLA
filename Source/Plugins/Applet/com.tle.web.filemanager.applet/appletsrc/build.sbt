@@ -1,5 +1,5 @@
 libraryDependencies ++= Seq(
-  "com.google.guava"         % "guava"           % "18.0",
+  "com.google.guava"         % "guava"           % "29.0-jre",
   "com.github.insubstantial" % "flamingo"        % "7.3",
   "com.miglayout"            % "miglayout-swing" % "4.2",
   "org.springframework"      % "spring-web"      % "2.5.6",

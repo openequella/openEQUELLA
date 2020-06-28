@@ -60,7 +60,7 @@ libraryDependencies ++= Seq(
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200423-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
-  "com.google.guava"             % "guava"                       % "18.0",
+  "com.google.guava"             % "guava"                       % "29.0-jre",
   "com.google.inject"            % "guice"                       % "3.0",
   "com.google.inject.extensions" % "guice-assistedinject"        % "3.0",
   "com.google.inject.extensions" % "guice-spring"                % "3.0",

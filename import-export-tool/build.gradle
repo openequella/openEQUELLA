@@ -30,7 +30,7 @@ allprojects {
   }
   
   dependencies {
-    implementation group: 'com.google.guava', name: 'guava', version: '16.0.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
     implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'

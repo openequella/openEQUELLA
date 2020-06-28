@@ -1,6 +1,6 @@
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
-  "com.google.guava"       % "guava"           % "18.0",
+  "com.google.guava"       % "guava"           % "29.0-jre",
   "org.slf4j"              % "jcl-over-slf4j"  % "1.7.30",
   "org.slf4j"              % "slf4j-simple"    % "1.7.30",
   "org.springframework"    % "spring-web"      % "2.5.6",
