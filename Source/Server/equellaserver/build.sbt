@@ -24,7 +24,7 @@ val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
-val fs2Version       = "1.0.5"
+val fs2Version       = "2.4.2"
 val jsassVersion     = "5.10.3"
 
 libraryDependencies ++= Seq(
