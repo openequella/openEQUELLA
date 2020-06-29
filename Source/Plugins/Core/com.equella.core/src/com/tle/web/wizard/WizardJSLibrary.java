@@ -37,6 +37,8 @@ public final class WizardJSLibrary {
       new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
   public static final JSCallable AffixDiv =
       new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
+  public static final JSCallable AffixDivNewUI =
+      new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDivNewUI", 0);
 
   private WizardJSLibrary() {
     throw new Error();

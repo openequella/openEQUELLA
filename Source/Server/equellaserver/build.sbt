@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.1"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.56"
+val TomcatVersion    = "9.0.36"
 val SwaggerVersion   = "1.6.1"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -171,6 +171,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
@@ -179,7 +180,6 @@ libraryDependencies ++= Seq(
                   name = "slf4j-log4j12")
   ),
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
-  "org.codehaus.woodstox"  % "stax2-api"         % "3.1.4",
   "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.4.1",
   "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.6",
   "org.dspace"             % "cql-java"          % "1.0",
