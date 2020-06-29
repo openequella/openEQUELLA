@@ -179,6 +179,7 @@ object SearchHelper {
     val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
     SearchResultItem(
       uuid = key.getUuid,
+      version = key.getVersion,
       name = Option(bean.getName),
       description = Option(bean.getDescription),
       status = bean.getStatus,

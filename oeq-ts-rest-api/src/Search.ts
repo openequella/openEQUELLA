@@ -145,6 +145,10 @@ export interface SearchResultItem {
    */
   uuid: string;
   /**
+   * Item's version.
+   */
+  version: number;
+  /**
    * Item's name.
    */
   name?: Common.i18nString;
