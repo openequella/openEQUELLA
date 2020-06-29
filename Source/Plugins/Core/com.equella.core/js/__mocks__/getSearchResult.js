@@ -22,6 +22,7 @@ exports.getSearchResult = {
   results: [
     {
       uuid: "9b9bf5a9-c5af-490b-88fe-7e330679fad2",
+      version: 1,
       name: "new title",
       status: "personal",
       createdDate: new Date("2014-06-11T10:28:58.190+10:00"),
@@ -53,6 +54,7 @@ exports.getSearchResult = {
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc227c",
+      version: 1,
       status: "live",
       createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
       modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
@@ -70,6 +72,7 @@ exports.getSearchResult = {
     },
     {
       uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
+      version: 1,
       status: "live",
       createdDate: new Date("2014-06-11T09:27:14.800+10:00"),
       modifiedDate: new Date("2014-06-11T09:27:14.803+10:00"),
@@ -87,6 +90,7 @@ exports.getSearchResult = {
     },
     {
       uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
+      version: 1,
       name: "new title",
       status: "personal",
       createdDate: new Date("2014-06-10T16:01:25.817+10:00"),
