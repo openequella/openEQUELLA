@@ -4,5 +4,24 @@
 <@css "auth.css" />
 
 <div id="auth_container">
-	<iframe frameBorder="0" src="${m.authUrl?html}"></iframe>
+  <#if m.showReceipt >
+    <p>${b.key('export.authorization.newtab.receipt')}</p>
+  <#else>
+    <#if m.showNewTabLauncher >
+      <p>${b.key('export.authorization.newtab.description')}</p>
+
+      <button onclick="newTabAuth()" class="btn btn-equella">
+          ${b.key('export.authorization.newtab.launch')}
+      </button>
+
+        <script>
+            function newTabAuth() {
+                window.open(
+                  "${m.authUrl}", "_blank", "noopener,noreferrer");
+            }
+        </script>
+    <#else>
+      <iframe frameBorder="0" src="${m.authUrl?html}"></iframe>
+    </#if>
+	</#if>
 </div>

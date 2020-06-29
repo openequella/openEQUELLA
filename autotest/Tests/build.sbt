@@ -6,8 +6,8 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 
 inConfig(Serial)(Defaults.testTasks)
 
-val circeVersion  = "0.9.3"
-val http4sVersion = "0.20.0-M6"
+val circeVersion  = "0.12.1"
+val http4sVersion = "0.21.5"
 val catsVersion   = "1.6.1"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
@@ -28,9 +28,9 @@ libraryDependencies ++= Seq(
   "org.codehaus.jackson"      % "jackson-mapper-asl"       % "1.9.13",
   "xalan"                     % "xalan"                    % "2.7.2",
   "org.dspace.oclc"           % "oclc-srw"                 % "1.0.20080328",
-  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.3.6",
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.3.6",
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.3.6",
+  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.3.7",
+  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.3.7",
+  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.3.7",
   "org.apache.httpcomponents" % "httpclient"               % "4.5.12",
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis"       % "axis" % "1.4",
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,
   "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "4.0.14"
+  "com.unboundid"    % "unboundid-ldapsdk"         % "5.1.0"
 )
 
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"

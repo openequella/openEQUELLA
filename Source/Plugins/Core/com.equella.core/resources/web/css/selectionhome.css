@@ -1,80 +1,82 @@
 .selectiondashboard #col1 {
-	width: 368px;
+  width: 368px;
 }
 
 .selectiondashboard #col2 {
-	width: 368px;
+  width: 368px;
 }
 
-.recent-portal .box_content_inner,.recent-portal .box_content {
-	padding: 0px;
+.recent-portal .box_content_inner,
+.recent-portal .box_content {
+  padding: 0px;
 }
 
 /************************\
 | DEPRECATED STUFF BELOW |
 \************************/
-.selectionHome { /*height: 100%;*/
-	margin-left: 0px;
-	margin-right: 0px;
-	padding-left: 10px;
-	padding-right: 10px;
-	/*background-color: #FFFFAA;*/
+.selectionHome {
+  /*height: 100%;*/
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  /*background-color: #FFFFAA;*/
 }
 
 .colwidth2 {
-	width: 40%; /*Note: not 50 - not greater than 40 because of padding */
+  width: 40%; /*Note: not 50 - not greater than 40 because of padding */
 }
 
 .colwidth3 {
-	width: 30%; /*Note: not 33*/
+  width: 30%; /*Note: not 33*/
 }
 
 .colwidth4 {
-	width: 23%;
+  width: 23%;
 }
 
 .colwidth5 {
-	width: 19%;
+  width: 19%;
 }
 
 .columns {
-	padding-top: 2px;
-	width: 100%;
+  padding-top: 2px;
+  width: 100%;
 }
 
 .column {
-	margin-left: 0px;
-	margin-right: 0px;
-	padding-left: 10px;
-	padding-right: 10px;
-	float: left;
-	height: 100%;
-	/*background-color: #AAAAFF;*/
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  float: left;
+  height: 100%;
+  /*background-color: #AAAAFF;*/
 }
 
 .quickSearchField {
-	width: 300px;
+  width: 300px;
 }
 
 .pageSection {
-	width: 100%;
-	padding-top: 0.5em;
-	/*background-color: #FFAAAA;*/
+  width: 100%;
+  padding-top: 0.5em;
+  /*background-color: #FFAAAA;*/
 }
 
 .columnclear {
-	clear: both;
-	height: 1px;
-	overflow: hidden;
+  clear: both;
+  height: 1px;
+  overflow: hidden;
 }
 
 .optionrow {
-	margin-top: 5px;
-	padding-left: 4px;
+  margin-top: 5px;
+  padding-left: 4px;
 }
 
 .noresults {
-	display: block;
-	padding: 10px;
-	text-align: center;
+  display: block;
+  padding: 10px;
+  text-align: center;
 }

@@ -1,33 +1,28 @@
-.file-list
-{
-	margin: 2px;
+.file-list {
+  margin: 2px;
 }
 
-.file-list div
-{
-	background-position: 26px 5px;
-	background-repeat: no-repeat;
-	position: relative;
-	padding: 8px 10px 8px 50px;
-	margin: 0 0 1px 0;
+.file-list div {
+  background-position: 26px 5px;
+  background-repeat: no-repeat;
+  position: relative;
+  padding: 8px 10px 8px 50px;
+  margin: 0 0 1px 0;
 }
 
-.file-list input
-{
-	position: absolute;
-	top: 6px;
-	left: 5px;
+.file-list input {
+  position: absolute;
+  top: 6px;
+  left: 5px;
 }
 
-.file-scroller
-{
-	background-color: white;
-	height: 150px;
-	overflow: auto;
-	margin-bottom: 10px;
+.file-scroller {
+  background-color: white;
+  height: 150px;
+  overflow: auto;
+  margin-bottom: 10px;
 }
 
-.file-list .odd
-{
-	background-color: white;
+.file-list .odd {
+  background-color: white;
 }

@@ -1,110 +1,95 @@
-
-.console 
-{
-	position: absolute !important;
-	border-width: 1px;
-	border-style: solid;
-	width: 700px;
-	/*height: 200px;*/
-	-moz-opacity: .80;
-	filter: alpha(opacity = 80);
-	opacity: .80;
-	z-index: 999999 !important;	
+.console {
+  position: absolute !important;
+  border-width: 1px;
+  border-style: solid;
+  width: 700px;
+  /*height: 200px;*/
+  -moz-opacity: 0.8;
+  filter: alpha(opacity = 80);
+  opacity: 0.8;
+  z-index: 999999 !important;
 }
 
-.consoleShow
-{
-	position: absolute !important;
-	left: 0px;
-	top: 0px;
-	width: 80px;
-	height: 20px;
-	z-index: 999999 !important;
+.consoleShow {
+  position: absolute !important;
+  left: 0px;
+  top: 0px;
+  width: 80px;
+  height: 20px;
+  z-index: 999999 !important;
 }
 
-.stackShow
-{
-	position: absolute !important;
-	left: 140px;
-	top: 0px;
-	width: 80px;
-	height: 20px;
-	z-index: 999999 !important;
+.stackShow {
+  position: absolute !important;
+  left: 140px;
+  top: 0px;
+  width: 80px;
+  height: 20px;
+  z-index: 999999 !important;
 }
 
-.console .inner 
-{
-	border-width: 5px;
-	border-style: solid;
-	border-color: #FFFFFF;
-	font-size: 16px;
-	overflow: hidden;
+.console .inner {
+  border-width: 5px;
+  border-style: solid;
+  border-color: #ffffff;
+  font-size: 16px;
+  overflow: hidden;
 }
 
-.console .inner .titlebar
-{
-	height: 20px;
-	padding: 2px;
-	background-color: #999999;
-	color: #000000;
-	cursor: move;
+.console .inner .titlebar {
+  height: 20px;
+  padding: 2px;
+  background-color: #999999;
+  color: #000000;
+  cursor: move;
 }
 
-.console .ev 
-{
-	width: 80%;
-	height: 3em;
+.console .ev {
+  width: 80%;
+  height: 3em;
 }
 
-.console .terminal 
-{
-	overflow: auto;
+.console .terminal {
+  overflow: auto;
 }
 
-.console BUTTON 
-{	
+.console BUTTON {
 }
 
 #stack {
-	left: 0px;
-	height: 500px;
-	color: #00FF00;
+  left: 0px;
+  height: 500px;
+  color: #00ff00;
 }
 
 #stack .inner {
-	background-color: #005000;
-	color: #00FF00;
+  background-color: #005000;
+  color: #00ff00;
 }
 
-#stack .inner .head
-{
-	height: 40px;
+#stack .inner .head {
+  height: 40px;
 }
 
-#stack .inner .terminal
-{
-	height: 448px;
+#stack .inner .terminal {
+  height: 448px;
 }
 
-#console 
-{
-	right: 0px;
-	height: 500px;
-	border-color: #0000FF;
+#console {
+  right: 0px;
+  height: 500px;
+  border-color: #0000ff;
 }
 
-#console .inner 
-{
-	background-color: #0000FF;
-	color: #FFFFFF;
+#console .inner {
+  background-color: #0000ff;
+  color: #ffffff;
 }
 
-#console .inner .head
-{
-	height: 40px;
+#console .inner .head {
+  height: 40px;
 }
 
-#console .inner .terminal
-{
-	height: 450px;
+#console .inner .terminal {
+  height: 450px;
 }

@@ -3,7 +3,7 @@
   */
 package integtester
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import integtester.testprovider.TestingCloudProvider
 import io.circe.syntax._
 import org.http4s._
@@ -97,8 +97,10 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
   def stream(args: List[String]) =
     BlazeBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
-      .mountService(resourceService[IO](ResourceService.Config("/www", ExecutionContext.global)),
-                    "/")
+      .mountService(
+        resourceService[IO](
+          ResourceService.Config("/www", Blocker.liftExecutionContext(ExecutionContext.global))),
+        "/")
       .mountService(appService, "/")
       .mountService(new TestingCloudProvider().oauthService, "/provider/")
       .serve

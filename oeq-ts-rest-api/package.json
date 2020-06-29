@@ -34,18 +34,18 @@
     "typescript-is": "^0.16.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.0",
+    "@types/jest": "26.0.3",
     "@types/tough-cookie": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "2.33.0",
-    "@typescript-eslint/parser": "2.33.0",
-    "eslint": "7.3.0",
-    "eslint-plugin-jest": "23.16.0",
-    "jest": "26.0.1",
-    "rollup": "2.17.1",
+    "@typescript-eslint/eslint-plugin": "3.4.0",
+    "@typescript-eslint/parser": "3.4.0",
+    "eslint": "7.3.1",
+    "eslint-plugin-jest": "23.17.1",
+    "jest": "26.1.0",
+    "rollup": "2.18.1",
     "rollup-plugin-typescript2": "0.27.1",
-    "ts-jest": "26.1.0",
+    "ts-jest": "26.1.1",
     "ts-node": "8.10.2",
-    "tslib": "1.13.0",
+    "tslib": "2.0.0",
     "ttypescript": "1.5.10",
     "typescript": "3.9.5"
   }

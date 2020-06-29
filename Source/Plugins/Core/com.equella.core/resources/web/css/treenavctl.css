@@ -1,207 +1,211 @@
 .overallPanel {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .titlePanel {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .leftPanel {
-	float: left;
-	width: 33%;
+  float: left;
+  width: 33%;
 }
 
 .upDownContainerPanel {
-	height: 50px;
-	width: 35px;
-	float: left;
+  height: 50px;
+  width: 35px;
+  float: left;
 }
 
 .treePanel {
-	height: 98%;
-	border: 1px solid black;
-	overflow-y: auto;
-	background-color: #FFFFFF;
+  height: 98%;
+  border: 1px solid black;
+  overflow-y: auto;
+  background-color: #ffffff;
 }
 
 .upDownButtonPanel {
-	position: relative;
+  position: relative;
 }
 
 .upDownButtonPanel button {
-	margin-bottom: 2px;
+  margin-bottom: 2px;
 }
 
 .addRemovePanel {
-	position: relative;
-	width: 80%;
-	height: 40px;
-	left: 33px;
-	float: left;
+  position: relative;
+  width: 80%;
+  height: 40px;
+  left: 33px;
+  float: left;
 }
 
 .addRemovePanel button {
-	width: 80px;
-	margin-bottom: 5px;
-	margin-right: 5px;
+  width: 80px;
+  margin-bottom: 5px;
+  margin-right: 5px;
 }
 
 .rightPanel {
-	float: right;
-	width: 60%;
-	margin-right: 20px;
+  float: right;
+  width: 60%;
+  margin-right: 20px;
 }
 
 div.toppadded {
-	clear: both;
-	padding-top: 5px;
+  clear: both;
+  padding-top: 5px;
 }
 
 div.formrow {
-	clear: both;
-	overflow: auto;
-	padding-top: 5px;
+  clear: both;
+  overflow: auto;
+  padding-top: 5px;
 }
 
 div.formrow .buttons {
-	margin-left: 35%;
-	text-align: center;
+  margin-left: 35%;
+  text-align: center;
 }
 
-div.formrow label,div.formrow span.name {
-	text-align: right;
-	width: 20%;
-	float: left;
-	padding-right: 15px;
+div.formrow label,
+div.formrow span.name {
+  text-align: right;
+  width: 20%;
+  float: left;
+  padding-right: 15px;
 }
 
 div.formrow span.value {
-	float: left;
+  float: left;
 }
 
 div.formrow .formcontrol {
-	float: left;
-	width: 200px;
+  float: left;
+  width: 200px;
 }
 
 div.formrow span {
-	float: left;
-	line-height: 22px;
-	min-width: 60px;
+  float: left;
+  line-height: 22px;
+  min-width: 60px;
 }
 
 .heading {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .rightPanel .heading {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 div.checkrow {
-	margin-top: 7px;
-	padding-left: 40px;
+  margin-top: 7px;
+  padding-left: 40px;
 }
 
 div.checkrow label {
-	width: 70%;
+  width: 70%;
 }
 
-div.input.checkbox input , div.input.radio input {
-	float: none;
+div.input.checkbox input,
+div.input.radio input {
+  float: none;
 }
 
-div.input.checkbox label , div.input.radio label {
-	display: inline;
-	margin: 0 20px 0 6px;
+div.input.checkbox label,
+div.input.radio label {
+  display: inline;
+  margin: 0 20px 0 6px;
 }
 
 div.tabsettings {
-	margin-left: 20px;
-	padding-left: 20px;
+  margin-left: 20px;
+  padding-left: 20px;
 }
 
 .tabsettingsHeading {
-	margin-top: 30px;
+  margin-top: 30px;
 }
 
 div.itemsettings {
-	margin-top: 30px;
+  margin-top: 30px;
 }
 
 .rightHeading {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .navChildren {
-	margin-left: 15px;
+  margin-left: 15px;
 }
 
 .formrow .newListSelected {
-	margin-left: 60px;
+  margin-left: 60px;
 }
 
 .tabdialog .modal-content {
-	overflow: visible; 
+  overflow: visible;
 }
 
 .tabdialog .controlcontainer {
-	min-height: 150px;
+  min-height: 150px;
 }
 
 .tabdialog .settingRow .settingLabel {
-	width: 80px;
+  width: 80px;
 }
 
-#singlesettings .formrow,#TB_ajaxContent .formrow {
-	overflow: visible;
+#singlesettings .formrow,
+#TB_ajaxContent .formrow {
+  overflow: visible;
 }
 
 .form-label {
-	margin-left: 40px;
+  margin-left: 40px;
 }
 
 a.label {
-	text-decoration: none !important;
-	color: #4b4842 !important;
+  text-decoration: none !important;
+  color: #4b4842 !important;
 }
 
 .container:hover {
-	background-color: #E4E4E4 !important;
+  background-color: #e4e4e4 !important;
 }
 
-.textBox,.iconBox {
-	vertical-align: middle;
+.textBox,
+.iconBox {
+  vertical-align: middle;
 }
 
-ul.tablist  {
-	list-style: none outside none;
-	border: 1px solid #8f8b7e;
-	margin: 0 0 10px 0;
-	width: 270px;
+ul.tablist {
+  list-style: none outside none;
+  border: 1px solid #8f8b7e;
+  margin: 0 0 10px 0;
+  width: 270px;
 }
 
-ul.tablist  li {
-	position: relative;
-	padding: 6px 50px 6px 10px !important;
-	margin: 0 !important;
-	line-height:1.2;
+ul.tablist li {
+  position: relative;
+  padding: 6px 50px 6px 10px !important;
+  margin: 0 !important;
+  line-height: 1.2;
 }
 
-
-ul.tablist  li.odd {
-	background: #f3f1eb !important;
+ul.tablist li.odd {
+  background: #f3f1eb !important;
 }
-ul.tablist  li.even {
-	background: #fefefe !important;
+ul.tablist li.even {
+  background: #fefefe !important;
 }
 
 ul.tablist .unselect {
-	width: 17px;
-	height: 17px;
-	cursor: pointer;
-	position: absolute;
-	right: 10px;
-	top: 5px;
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 5px;
 }

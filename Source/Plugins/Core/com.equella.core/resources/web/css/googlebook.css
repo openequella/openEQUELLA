@@ -1,91 +1,91 @@
 #googlebook-results {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .bookquery {
-	width: 200px;
+  width: 200px;
 }
 
 .googlebook-result {
-	position: relative;
-	margin: 0 0 10px 0;
-	padding: 10px 10px 10px 40px;
-	background: #f0f0f0;
-	width: 681px;
-	float: left;
+  position: relative;
+  margin: 0 0 10px 0;
+  padding: 10px 10px 10px 40px;
+  background: #f0f0f0;
+  width: 681px;
+  float: left;
 }
 
 .googlebook-result input {
-	position: absolute;
-	left: 8px;
-	top: 8px;
+  position: absolute;
+  left: 8px;
+  top: 8px;
 }
 
 .googlebook-result h4 {
-	font-size: 13px;
-	margin: 0 0 4px 0;
+  font-size: 13px;
+  margin: 0 0 4px 0;
 }
 
 .googlebook-result img {
-	margin: 0 20px 10px 0;
-	padding: 4px;
-	background: #fff;
-	border: 1px solid #ddd;
-	float: left;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-o-border-radius: 3px;
-	border-radius: 3px;
+  margin: 0 20px 10px 0;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid #ddd;
+  float: left;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
 }
 
 .googlebook-result input {
-	top: 12px;
+  top: 12px;
 }
 
 .googlebook-result h4 {
-	margin-top: 4px;
-	font-weight: normal;
-	line-height: 1.3;
+  margin-top: 4px;
+  font-weight: normal;
+  line-height: 1.3;
 }
 
 #googlebook-query label {
-	display: block;
-	font-size: 12px;
-	font-weight: bold;
-	margin-top: 6px;
-	width: 55px;
-	float: left;
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 6px;
+  width: 55px;
+  float: left;
 }
 
 .rating-stars {
-	width: 52px;
-	height: 10px;
-	background-image: url(../images/stars-small.png);
-	background-repeat: no-repeat;
-	float: left;
-	margin: 0 5px 0 0;
+  width: 52px;
+  height: 10px;
+  background-image: url(../images/stars-small.png);
+  background-repeat: no-repeat;
+  float: left;
+  margin: 0 5px 0 0;
 }
 
 .rating-stars.zero {
-	background-position: 0 0;
+  background-position: 0 0;
 }
 
 .rating-starss.one {
-	background-position: 0 -10px;
+  background-position: 0 -10px;
 }
 
 .rating-stars.two {
-	background-position: 0 -20px;
+  background-position: 0 -20px;
 }
 
 .rating-stars.three {
-	background-position: 0 -30px;
+  background-position: 0 -30px;
 }
 
 .rating-stars.four {
-	background-position: 0 -40px;
+  background-position: 0 -40px;
 }
 
 .rating-stars.five {
-	background-position: 0 -50px;
+  background-position: 0 -50px;
 }

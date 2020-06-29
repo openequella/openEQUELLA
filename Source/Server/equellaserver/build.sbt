@@ -15,9 +15,9 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.11.0"
+val jacksonVersion   = "2.11.1"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "8.5.56"
+val TomcatVersion    = "9.0.36"
 val SwaggerVersion   = "1.6.1"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -58,7 +58,6 @@ libraryDependencies ++= Seq(
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200423-1.30.9",
-  "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
   "com.google.guava"             % "guava"                       % "18.0",
@@ -72,12 +71,12 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.13.1",
+  "com.rometools"             % "rome"                  % "1.14.1",
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
   "io.swagger"                %% "swagger-scala-module" % "1.0.6",
-  "com.zaxxer"                % "HikariCP"              % "2.7.9",
+  "com.zaxxer"                % "HikariCP"              % "3.4.5",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.14",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -172,6 +171,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
@@ -180,7 +180,6 @@ libraryDependencies ++= Seq(
                   name = "slf4j-log4j12")
   ),
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
-  "org.codehaus.woodstox"  % "stax2-api"         % "3.1.4",
   "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.4.1",
   "org.codehaus.xfire"     % "xfire-aegis"       % "1.2.6",
   "org.dspace"             % "cql-java"          % "1.0",
@@ -188,14 +187,13 @@ libraryDependencies ++= Seq(
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
   "org.freemarker"                       % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"            % "hurl"                           % "1.1",
-  "org.javassist"                        % "javassist"                      % "3.18.2-GA",
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.2_spec" % "1.0.2.Final",
   "org.jboss.logging"                    % "jboss-logging"                  % "3.4.1.Final",
   "org.jboss.logging"                    % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"                    % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.3",
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.0.Final",
+  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "1.0.3.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
@@ -236,7 +234,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.86"
+  "io.github.classgraph"   % "classgraph"                % "4.8.87"
 )
 
 libraryDependencies ++= {

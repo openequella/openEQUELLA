@@ -1,33 +1,32 @@
 DIV.formrow {
-	clear: both;
-	padding-top: 10px;
+  clear: both;
+  padding-top: 10px;
 }
 
 DIV.formrow .buttons {
-	margin-left: 35%;
-	text-align: center;
+  margin-left: 35%;
+  text-align: center;
 }
 
-DIV.formrow label, DIV.formrow SPAN.name 
-{
-	text-align: right;
-	width: 15%;
-	float: left;
-	padding-right: 15px;
+DIV.formrow label,
+DIV.formrow SPAN.name {
+  text-align: right;
+  width: 15%;
+  float: left;
+  padding-right: 15px;
 }
 
 DIV.formrow SPAN.value {
-	float: left;
+  float: left;
 }
 
 DIV.formrow .formcontrol {
-	width: 68%;
-	float: left;
+  width: 68%;
+  float: left;
 }
 
-DIV.formrow SPAN.help
-{
-	margin-left: 15%;
-	padding-left: 15px;
-	font-size: 85%;
+DIV.formrow SPAN.help {
+  margin-left: 15%;
+  padding-left: 15px;
+  font-size: 85%;
 }

@@ -1,14 +1,14 @@
-INPUT[type='checkbox']+LABEL {
-	margin-left: 1em;
+INPUT[type="checkbox"] + LABEL {
+  margin-left: 1em;
 }
 
 /**Created this rule so there wasn't a separate stylesheet with one rule */
-html[dir='rtl'] INPUT[type='checkbox']+LABEL {
-	margin-right: 1em;
-	margin-left: 0;
+html[dir="rtl"] INPUT[type="checkbox"] + LABEL {
+  margin-right: 1em;
+  margin-left: 0;
 }
 
 input[readonly="readonly"] {
-	color: grey; 
-	background-color: #F0F0F0;
+  color: grey;
+  background-color: #f0f0f0;
 }

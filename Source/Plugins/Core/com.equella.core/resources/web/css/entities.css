@@ -1,30 +1,26 @@
 /* doesn't really belong here */
-TR.disabled TD:FIRST-CHILD
-{
-	color: #AAAAAA;
-	font-style: italic;
+TR.disabled TD:first-child {
+  color: #aaaaaa;
+  font-style: italic;
 }
 
-DIV.entitylist TABLE TR.enabled TD:FIRST-CHILD
-{
-	background-image: url(../images/enabled.png);
-	background-repeat: no-repeat;
-	background-position: 10px;
-	padding-left: 40px;
+DIV.entitylist TABLE TR.enabled TD:first-child {
+  background-image: url(../images/enabled.png);
+  background-repeat: no-repeat;
+  background-position: 10px;
+  padding-left: 40px;
 }
 
-DIV.entitylist TABLE TR.disabled TD:FIRST-CHILD 
-{
-	background-image: url(../images/disabled.png);
-	background-repeat: no-repeat;
-	background-position: 10px;
-	padding-left: 40px;
+DIV.entitylist TABLE TR.disabled TD:first-child {
+  background-image: url(../images/disabled.png);
+  background-repeat: no-repeat;
+  background-position: 10px;
+  padding-left: 40px;
 }
 
-DIV.entitylist TABLE TR.pending TD:FIRST-CHILD 
-{
-	background-image: url(../images/pending.png);
-	background-repeat: no-repeat;
-	background-position: 10px;
-	padding-left: 40px;
+DIV.entitylist TABLE TR.pending TD:first-child {
+  background-image: url(../images/pending.png);
+  background-repeat: no-repeat;
+  background-position: 10px;
+  padding-left: 40px;
 }

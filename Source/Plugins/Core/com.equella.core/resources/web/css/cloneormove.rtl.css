@@ -1,10 +1,11 @@
 @import url("cloneormove.css");
 
 .infobox {
-	padding-left: 0;
-	padding-right: 2px;
+  padding-left: 0;
+  padding-right: 2px;
 }
 
-div.cloneopts.input.checkbox label , div.input.radio label {
-	margin: 0 6px 0 20px;
+div.cloneopts.input.checkbox label,
+div.input.radio label {
+  margin: 0 6px 0 20px;
 }

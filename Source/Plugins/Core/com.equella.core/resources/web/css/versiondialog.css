@@ -1,25 +1,21 @@
-div.modal-content-inner
-{
-	height: 308px;
+div.modal-content-inner {
+  height: 308px;
 }
 
 /* Um, will bugger up the parent page?... */
-html
-{
-	overflow-y: hidden;
+html {
+  overflow-y: hidden;
 }
 
-td.title-cell
-{
-	width: 430px;
+td.title-cell {
+  width: 430px;
 }
 
-span.no-selections
-{
-	font-size: 13px;
-	padding-left: 15px;
-	padding-top:10px;
-	position: absolute;
+span.no-selections {
+  font-size: 13px;
+  padding-left: 15px;
+  padding-top: 10px;
+  position: absolute;
 }
 /*
 #table-div div.newListSelected
