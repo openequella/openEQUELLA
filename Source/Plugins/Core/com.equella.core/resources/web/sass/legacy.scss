@@ -1922,23 +1922,34 @@ div.skinnysearch {
   overflow: hidden;
 }
 
-@media only screen and (max-width: 1200px) {
+.autocompleteControl .autocomplete-container {
+  float: left;
+}
+
+@media only screen and (max-width: 1500px) {
   .autocompleteControl .autocomplete-container {
-    float: left;
     width: 85%;
   }
 }
 
-@media only screen and (min-width: 1201px) {
+@media only screen and (min-width: 1501px) and (max-width: 1800px) {
   .autocompleteControl .autocomplete-container {
-    float: left;
-    width: 96%;
+    width: 89%;
   }
 }
 
+@media only screen and (min-width: 1801px){
+  .autocompleteControl .autocomplete-container {
+    width: 92%;
+  }
+}
+.autocompleteControl .btn {
+  float: right;
+}
 #wizard-controls .autocompleteControl input[type="text"] {
   height: 34px;
-  width: 98%;
+  width: 100%;
+  padding-right: 10px;
 }
 
 .ac_odd {
