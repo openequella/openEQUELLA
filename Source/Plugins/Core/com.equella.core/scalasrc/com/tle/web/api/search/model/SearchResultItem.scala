@@ -41,6 +41,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   */
 case class SearchResultItem(
     uuid: String,
+    version: Int,
     name: Option[I18NString],
     description: Option[I18NString],
     status: String,

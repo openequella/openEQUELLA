@@ -28,6 +28,7 @@ export default {
 export const BasicSearchResultComponent = () => (
   <SearchResult
     name={text("name", mockData.basicSearchObj.name!)}
+    version={number("version", mockData.basicSearchObj.version)}
     uuid={text("uuid", mockData.basicSearchObj.uuid)}
     description={text("description", mockData.basicSearchObj.description!)}
     displayFields={object("display fields", [
@@ -53,6 +54,7 @@ export const BasicSearchResultComponent = () => (
 export const AttachmentSearchResultComponent = () => (
   <SearchResult
     name={text("name", mockData.attachSearchObj.name!)}
+    version={number("version", mockData.attachSearchObj.version)}
     uuid={text("uuid", mockData.attachSearchObj.uuid)}
     description={text("description", mockData.attachSearchObj.description!)}
     displayFields={object("display fields", [
@@ -84,6 +86,7 @@ export const AttachmentSearchResultComponent = () => (
 export const CustomMetadataSearchResultComponent = () => (
   <SearchResult
     name={text("name", mockData.customMetaSearchObj.name!)}
+    version={number("version", mockData.customMetaSearchObj.version)}
     uuid={text("uuid", mockData.customMetaSearchObj.uuid)}
     description={text("description", mockData.customMetaSearchObj.description!)}
     displayFields={object("display fields", [
