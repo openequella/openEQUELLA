@@ -313,6 +313,7 @@ export const languageStrings = {
     title: "Search",
     subtitle: "Search results",
     resultsAvailable: "results available",
+    noResultsFound: "No results found.",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
     searchresult: {
