@@ -24,18 +24,18 @@ import {
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
 import {
-  IconButton,
+  Card,
+  CardContent,
+  Grid,
   List,
   ListItem,
   ListSubheader,
-  TextField,
-  Grid,
-  Card,
-  CardContent,
+  Typography,
 } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
+import SearchBar from "../search/components/SearchBar";
 import { searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
+import { ItemStatus } from "@openequella/rest-api-client/src/Common";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
 
@@ -54,9 +54,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
 
     search({
-      status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+      status: [ItemStatus.LIVE, ItemStatus.REVIEW],
     });
   }, []);
+
+  const handleSearch = (query: string) => {
+    search({ query, status: [ItemStatus.LIVE, ItemStatus.REVIEW] });
+  };
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -90,7 +94,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const searchResultList = (
     <List subheader={<ListSubheader>{searchStrings.subtitle}</ListSubheader>}>
-      {searchResults}
+      {searchResults.length > 0 ? (
+        searchResults
+      ) : (
+        <ListItem key={searchStrings.noResultsFound} divider>
+          <Typography>{searchStrings.noResultsFound}</Typography>
+        </ListItem>
+      )}
     </List>
   );
 
@@ -99,14 +109,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>
-            <IconButton>
-              <SearchIcon fontSize="large" />
-            </IconButton>
-            <TextField />
+            <SearchBar onChange={handleSearch} />
           </CardContent>
         </Card>
       </Grid>
-
       <Grid item xs={9}>
         <Card>
           <CardContent>{searchResultList}</CardContent>
