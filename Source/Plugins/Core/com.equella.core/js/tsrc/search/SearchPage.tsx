@@ -38,6 +38,10 @@ import { searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
+import {
+  getSearchSettingsFromServer,
+  SearchSettings,
+} from "../settings/Search/SearchSettingsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -53,9 +57,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    search({
-      status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-    });
+    getSearchSettingsFromServer().then((settings: SearchSettings) =>
+      search({
+        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+        order: settings.defaultSearchSort,
+      })
+    );
   }, []);
 
   const handleError = (error: Error) => {

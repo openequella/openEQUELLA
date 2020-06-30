@@ -59,7 +59,7 @@ object SearchHelper {
     search.setQuery(params.query)
     search.setOwner(params.owner)
 
-    val orderType = DefaultSearch.getOrderType(params.order, params.query)
+    val orderType = DefaultSearch.getOrderType(params.order.toLowerCase, params.query)
     search.setSortFields(orderType.getSortField(params.reverseOrder))
 
     val collectionUuids = handleCollections(params.advancedSearch, params.collections)
