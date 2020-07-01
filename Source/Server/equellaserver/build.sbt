@@ -202,7 +202,7 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
   ),
-  "org.ow2.asm" % "asm" % "5.2",
+  "org.ow2.asm" % "asm" % "8.0.1",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
