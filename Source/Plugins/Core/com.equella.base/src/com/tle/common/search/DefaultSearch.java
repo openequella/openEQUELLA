@@ -550,19 +550,21 @@ public class DefaultSearch extends VeryBasicSearch {
 
   public static SortType getOrderType(String order, String q) {
     if (order != null) {
-      // allowed values are relevance, modified, name, rating
-      if (order.equals("relevance")) {
+      // Allowed values are relevance, modified, name, rating and created.
+      // However due to the inconsistent order values, rank, datemodified and datecreated are also
+      // accepted.
+      if (order.equals("relevance") || order.equals("rank")) {
         if (Check.isEmpty(q)) {
           return SortType.DATEMODIFIED;
         }
         return SortType.RANK;
-      } else if (order.equals("modified")) {
+      } else if (order.equals("modified") || order.equals("datemodified")) {
         return SortType.DATEMODIFIED;
       } else if (order.equals("name")) {
         return SortType.NAME;
       } else if (order.equals("rating")) {
         return SortType.RATING;
-      } else if (order.equals("created")) {
+      } else if (order.equals("created") || order.equals("datecreated")) {
         return SortType.DATECREATED;
       }
     }

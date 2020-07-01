@@ -40,6 +40,8 @@ import {
   Subject,
 } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
+import { Link } from "react-router-dom";
+import { routes } from "../../mainui/routes";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -85,6 +87,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export default function SearchResult({
   name,
+  version,
   uuid,
   description,
   displayFields,
@@ -212,11 +215,15 @@ export default function SearchResult({
     return null;
   };
 
+  const itemLink = (
+    <Link to={routes.ViewItem.to(uuid, version)}>{name ?? uuid}</Link>
+  );
+
   return (
     <ListItem alignItems="flex-start" key={uuid}>
       {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
-        primary={<a href={links.view}> {name ?? uuid} </a>}
+        primary={itemLink}
         secondary={
           <>
             <Typography className={classes.itemDescription}>

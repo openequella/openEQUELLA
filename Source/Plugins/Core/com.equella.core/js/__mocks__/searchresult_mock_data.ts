@@ -20,6 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 
 const basicSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
+  version: 1,
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",
@@ -46,6 +47,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
 
 const attachSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
+  version: 1,
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",
@@ -84,6 +86,7 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
 
 const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
+  version: 1,
   name: "Little Larry",
   description: "A description of a bird",
   status: "live",

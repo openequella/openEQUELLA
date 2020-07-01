@@ -35,9 +35,12 @@ import {
 import SearchBar from "../search/components/SearchBar";
 import { searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
-import { ItemStatus } from "@openequella/rest-api-client/src/Common";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
+import {
+  getSearchSettingsFromServer,
+  SearchSettings,
+} from "../settings/Search/SearchSettingsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -53,9 +56,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    search({
-      status: [ItemStatus.LIVE, ItemStatus.REVIEW],
-    });
+    getSearchSettingsFromServer().then((settings: SearchSettings) =>
+      search({
+        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+        order: settings.defaultSearchSort,
+      })
+    );
   }, []);
 
   const handleSearch = (query: string) => {
@@ -113,6 +119,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </CardContent>
         </Card>
       </Grid>
+
       <Grid item xs={9}>
         <Card>
           <CardContent>{searchResultList}</CardContent>

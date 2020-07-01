@@ -59,7 +59,8 @@ object SearchHelper {
     search.setQuery(params.query)
     search.setOwner(params.owner)
 
-    val orderType = DefaultSearch.getOrderType(params.order, params.query)
+    val orderType =
+      DefaultSearch.getOrderType(Option(params.order).map(_.toLowerCase).orNull, params.query)
     search.setSortFields(orderType.getSortField(params.reverseOrder))
 
     val collectionUuids = handleCollections(params.advancedSearch, params.collections)
@@ -179,6 +180,7 @@ object SearchHelper {
     val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
     SearchResultItem(
       uuid = key.getUuid,
+      version = key.getVersion,
       name = Option(bean.getName),
       description = Option(bean.getDescription),
       status = bean.getStatus,
