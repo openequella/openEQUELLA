@@ -37,6 +37,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.generic.CachedData.CacheFiller;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.statement.ReturnStatement;
 import com.tle.web.sections.js.validators.Confirm;
@@ -278,9 +279,16 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
       Decorations decorations = Decorations.getDecorations(context);
       decorations.addContentBodyClasses(cssClass);
     }
+
+    // To make the Navigation bar stick to top of the page, Old UI uses Bootstrap affix
+    // whereas New UI dynamically adds a CSS style by JS.
+    JSCallable affixScript = null;
     if (!RenderNewTemplate.isNewLayout(context)) {
-      model.getFixedDiv().getTagState().addReadyStatements(WizardJSLibrary.AffixDiv);
+      affixScript = WizardJSLibrary.AffixDiv;
+    } else {
+      affixScript = WizardJSLibrary.AffixDivNewUI;
     }
+    model.getFixedDiv().getTagState().addReadyStatements(affixScript);
     return viewFactory.createTemplateResult("wizard/body.ftl", context);
   }
 
