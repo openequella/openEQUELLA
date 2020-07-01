@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { SketchPicker, ColorResult } from "react-color";
-import createStyles from "@material-ui/core/styles/createStyles";
-import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
+import { useState } from "react";
+import { ColorResult, SketchPicker } from "react-color";
+import { makeStyles } from "@material-ui/core/styles";
 
-const styles = createStyles({
+const useStyles = makeStyles({
   color: {
     width: "36px",
     height: "14px",
@@ -48,72 +48,40 @@ const styles = createStyles({
 });
 
 interface ColorProps {
-  color?: string;
-  changeColor(color: string): void;
+  currentColor?: string;
+  onColorChange(color: string): void;
 }
 
-class ColorPickerComponent extends React.Component<
-  ColorProps & WithStyles<typeof styles>
-> {
-  constructor(
-    props: ColorProps & WithStyles<"color" | "swatch" | "popover" | "cover">
-  ) {
-    super(props);
-  }
+const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
+  const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+  const classes = useStyles();
 
-  state = {
-    displayColorPicker: false,
-    colorState: this.props.color,
-  };
+  const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
-  componentWillReceiveProps = (
-    nextProps: ColorProps & WithStyles<typeof styles>
-  ) => {
-    if (nextProps.color !== this.props.color) {
-      this.setState({ colorState: nextProps.color });
-    }
-  };
-
-  handleClick = () => {
-    this.setState({ displayColorPicker: true });
-  };
-
-  handleClose = () => {
-    this.setState({ displayColorPicker: false });
-  };
-
-  handleChange = (color: ColorResult) => {
-    this.setState({ colorState: color.hex });
-  };
-
-  handleComplete = (color: ColorResult) => {
-    this.props.changeColor(color.hex);
-  };
-
-  render() {
-    const { classes } = this.props;
-    return (
-      <div>
-        <div className={classes.swatch} onClick={this.handleClick}>
+  return (
+    <>
+      <div
+        className={classes.swatch}
+        onClick={() => setDisplayColorPicker(true)}
+      >
+        <div style={{ background: currentColor }} className={classes.color} />
+      </div>
+      {displayColorPicker && (
+        <div className={classes.popover}>
           <div
-            style={{ background: this.state.colorState }}
-            className={classes.color}
+            className={classes.cover}
+            onClick={() => setDisplayColorPicker(false)}
+          />
+          <SketchPicker
+            disableAlpha={true}
+            color={currentColor}
+            onChange={changeHandler}
+            onChangeComplete={changeHandler}
           />
         </div>
-        {this.state.displayColorPicker ? (
-          <div className={classes.popover}>
-            <div className={classes.cover} onClick={this.handleClose} />
-            <SketchPicker
-              disableAlpha={true}
-              color={this.state.colorState}
-              onChange={this.handleChange}
-              onChangeComplete={this.handleComplete}
-            />
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-}
+      )}
+    </>
+  );
+};
 
-export default withStyles(styles)(ColorPickerComponent);
+export default ColorPickerComponent;
