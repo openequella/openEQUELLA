@@ -4271,6 +4271,10 @@
     <parameter id="type" value="blackboardrest" />
     <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="blackboardRestOAuthServlet">
+    <parameter id="bean" value="bean:com.tle.web.connectors.blackboard.servlet.BlackboardRestOauthSignonServlet" />
+    <parameter id="url-pattern" value="/blackboardrestauth" />
+  </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
     <parameter id="id" value="blackboard" />
     <parameter id="nameKey" value="com.equella.core.connector.name" />
@@ -5143,6 +5147,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20192.AddLastOwnerMigration" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.AddLastOwnerMigration" />
     <parameter id="date" value="2019-09-17" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveLastKnownUserConstraint">
+    <parameter id="id" value="com.tle.core.institution.migration.v20201.RemoveLastKnownUserConstraint" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20201.RemoveLastKnownUserConstraint" />
+    <parameter id="date" value="2020-06-15" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="increaseThumbnailColumnMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v64.IncreaseThumbnailLength" />

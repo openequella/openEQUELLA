@@ -18,6 +18,44 @@
 
 package com.tle.core.connectors.blackboard.service;
 
+import com.tle.annotation.Nullable;
+import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 
-public interface BlackboardRESTConnectorService extends ConnectorRepositoryImplementation {}
+public interface BlackboardRESTConnectorService extends ConnectorRepositoryImplementation {
+  // TODO may need more method sigs
+
+  /**
+   * Admin setup function
+   *
+   * @param appId
+   * @param appKey
+   * @param brightspaceServerUrl
+   * @param forwardUrl
+   * @param postfixKey
+   * @return
+   */
+  String getAuthorisationUrl(
+      String appId,
+      String appKey,
+      String brightspaceServerUrl,
+      String forwardUrl,
+      @Nullable String postfixKey);
+
+  /**
+   * The connector object will need to store an encrypted admin token in the DB. Use this method to
+   * encrypt the one returned from Blackboard.
+   *
+   * @param token
+   * @return
+   */
+  String encrypt(String data);
+
+  String decrypt(String encryptedData);
+
+  void setToken(Connector connector, String value);
+
+  void setUserId(Connector connector, String value);
+
+  void removeCachedCoursesForConnector(Connector connector);
+}
