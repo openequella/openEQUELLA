@@ -277,6 +277,9 @@ export const languageStrings = {
       permissiontitle: "Permission Error",
       permissiondescription: "You do not have permission to edit the settings.",
     },
+    colorPicker: {
+      dialogTitle: "Select a Color",
+    },
   },
   common: {
     action: {
@@ -299,6 +302,7 @@ export const languageStrings = {
       revertchanges: "Revert Changes",
       register: "Register",
       refresh: "Refresh",
+      done: "Done",
     },
     result: {
       success: "Saved successfully.",

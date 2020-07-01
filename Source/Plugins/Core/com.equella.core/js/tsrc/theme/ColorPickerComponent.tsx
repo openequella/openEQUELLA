@@ -19,6 +19,14 @@ import * as React from "react";
 import { useState } from "react";
 import { ColorResult, SketchPicker } from "react-color";
 import { makeStyles } from "@material-ui/core/styles";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@material-ui/core";
+import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles({
   color: {
@@ -34,17 +42,6 @@ const useStyles = makeStyles({
     display: "inline-block",
     cursor: "pointer",
   },
-  popover: {
-    position: "absolute",
-    zIndex: 2,
-  },
-  cover: {
-    position: "fixed",
-    top: "0px",
-    right: "0px",
-    bottom: "0px",
-    left: "0px",
-  },
 });
 
 interface ColorProps {
@@ -55,6 +52,7 @@ interface ColorProps {
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
   const classes = useStyles();
+  const strings = languageStrings.newuisettings.colorPicker;
 
   const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
@@ -67,18 +65,30 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
         <div style={{ background: currentColor }} className={classes.color} />
       </div>
       {displayColorPicker && (
-        <div className={classes.popover}>
-          <div
-            className={classes.cover}
-            onClick={() => setDisplayColorPicker(false)}
-          />
-          <SketchPicker
-            disableAlpha={true}
-            color={currentColor}
-            onChange={changeHandler}
-            onChangeComplete={changeHandler}
-          />
-        </div>
+        <Dialog
+          open={displayColorPicker}
+          aria-labelledby="select-color-dialog-title"
+        >
+          <DialogTitle id="select-color-dialog-title">
+            {strings.dialogTitle}
+          </DialogTitle>
+          <DialogContent>
+            <SketchPicker
+              disableAlpha
+              color={currentColor}
+              onChange={changeHandler}
+              onChangeComplete={changeHandler}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color="primary"
+              onClick={() => setDisplayColorPicker(false)}
+            >
+              {languageStrings.common.action.done}
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </>
   );
