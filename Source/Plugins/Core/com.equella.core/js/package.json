@@ -37,7 +37,7 @@
     "@tinymce/tinymce-react": "3.6.0",
     "axios": "0.19.2",
     "create-react-class": "15.6.3",
-    "downshift": "2.2.3",
+    "downshift": "5.4.5",
     "es6-object-assign": "1.1.0",
     "history": "4.10.1",
     "jspolyfill-array.prototype.find": "0.1.3",
