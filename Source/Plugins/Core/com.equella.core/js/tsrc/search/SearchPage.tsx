@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -24,46 +24,79 @@ import {
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
 import {
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
   IconButton,
   List,
-  ListItem,
   ListSubheader,
+  TablePagination,
   TextField,
-  Grid,
-  Card,
-  CardContent,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import { searchItems } from "./SearchModule";
+import { defaultPagedSearchResult, searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
+  SortOrder,
 } from "../settings/Search/SearchSettingsModule";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  cardAction: {
+    display: "flex",
+    justifyContent: "center",
+  },
+});
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
+  const classes = useStyles();
   const searchStrings = languageStrings.searchpage;
-  const [searchResultItems, setSearchResultItems] = useState<
-    OEQ.Search.SearchResultItem[]
-  >([]);
+
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.RANK);
+  const [pagedSearchResult, setPagedSearchResult] = useState<
+    OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+  >(defaultPagedSearchResult);
 
   /**
-   * Update the page title and do a default search.
+   * Construct a standard search criteria.
+   */
+  const standardParams: OEQ.Search.SearchParams = {
+    start: currentPage * rowsPerPage,
+    length: rowsPerPage,
+    status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+    order: sortOrder,
+  };
+  /**
+   * Update the page title and retrieve Search settings.
    */
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    getSearchSettingsFromServer().then((settings: SearchSettings) =>
-      search({
-        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-        order: settings.defaultSearchSort,
-      })
-    );
+    getSearchSettingsFromServer().then((settings: SearchSettings) => {
+      setSortOrder(settings.defaultSearchSort);
+    });
   }, []);
+
+  /**
+   * Trigger a search when state values change, but skip the initial values.
+   */
+  const isInitialSearch = useRef(true);
+  useEffect(() => {
+    if (isInitialSearch.current) {
+      isInitialSearch.current = false;
+    } else {
+      search(standardParams);
+    }
+  }, [rowsPerPage, currentPage, sortOrder]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -76,7 +109,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const search = (params?: OEQ.Search.SearchParams): void => {
     searchItems(params)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
-        setSearchResultItems(items.results)
+        setPagedSearchResult(items)
       )
       .catch((error: Error) => handleError(error));
   };
@@ -84,11 +117,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * A SearchResult that represents one of the search result items.
    */
-  const searchResults = searchResultItems.map(
+  const searchResults = pagedSearchResult.results.map(
     (item: OEQ.Search.SearchResultItem) => (
-      <ListItem key={item.uuid} divider>
-        <SearchResult {...item} />
-      </ListItem>
+      <SearchResult {...item} key={item.uuid} />
     )
   );
 
@@ -117,6 +148,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>{searchResultList}</CardContent>
+
+          <CardActions className={classes.cardAction}>
+            <TablePagination
+              component="div"
+              count={pagedSearchResult.available}
+              page={currentPage}
+              onChangePage={(_, page: number) => setCurrentPage(page)}
+              rowsPerPageOptions={[10, 25, 50]}
+              labelRowsPerPage={searchStrings.pagination.itemsPerPage}
+              rowsPerPage={rowsPerPage}
+              onChangeRowsPerPage={(event) => {
+                setRowsPerPage(parseInt(event.target.value));
+                setCurrentPage(0);
+              }}
+            />
+          </CardActions>
         </Card>
       </Grid>
     </Grid>

@@ -26,3 +26,10 @@ export const searchItems = (
   params?: OEQ.Search.SearchParams
 ): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> =>
   OEQ.Search.search(API_BASE_URL, params);
+
+export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
+  start: 0,
+  length: 10,
+  available: 10,
+  results: [],
+};

@@ -342,6 +342,9 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
+    pagination: {
+      itemsPerPage: "items per page",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",
