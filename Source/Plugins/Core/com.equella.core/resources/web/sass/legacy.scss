@@ -1069,7 +1069,7 @@ Generic layout
   flex-grow: 1;
   justify-content: space-between;
   #col2 {
-    min-width: 240px;
+    min-width: 0px;
   }
 }
 
@@ -4500,16 +4500,24 @@ div#sssh_finishedButton {
 }
 
 .selection-courses-inner .folder.rootfolder {
-  @include typography-subtitle-1;
+  @include typography-subtitle-2;
+  padding-top: 4px;
 }
 
 .folders {
-  padding-top: 16px;
+  padding-top: 4px;
 }
 
 .folderlist {
   display: flex;
   flex-direction: column;
+  @include typography-subtitle-2;
+  float: left;
+  width: 100%;
+}
+
+.foldertree {
+  height: 100% !important;
 }
 
 .selection-courses-inner .folder.targetfolder.selected {
@@ -4559,7 +4567,7 @@ div#sssh_finishedButton {
 
 #selection-content-inner.wizard-layout #col2,
 #selection-content-inner.wizard-layout #affix-div {
-  width: 146px;
+  right: unset;
 }
 
 #selection-content-inner.wizard-layout .indent1 {
