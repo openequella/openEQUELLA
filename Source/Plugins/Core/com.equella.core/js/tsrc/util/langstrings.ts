@@ -262,12 +262,12 @@ export const languageStrings = {
       secondarytextcolour: "Secondary Text Colour",
       sidebariconcolour: "Icon Colour",
     },
-    logosettings: {
+    logoSettings: {
       alt: "Logo",
       title: "Logo Settings",
-      imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
-      current: "Current Logo: ",
-      nofileselected: "No file selected.",
+      siteLogo: "Site Logo",
+      siteLogoDescription:
+        "The main logo for the site, primarily displayed in the top left of pages. (Use a PNG file of 230x36 pixels for best results.)",
     },
     errors: {
       invalidimagetitle: "Image Processing Error",
@@ -276,6 +276,9 @@ export const languageStrings = {
       nofiledescription: "Please select an image file to upload.",
       permissiontitle: "Permission Error",
       permissiondescription: "You do not have permission to edit the settings.",
+    },
+    colorPicker: {
+      dialogTitle: "Select a Color",
     },
   },
   common: {
@@ -299,6 +302,7 @@ export const languageStrings = {
       revertchanges: "Revert Changes",
       register: "Register",
       refresh: "Refresh",
+      done: "Done",
     },
     result: {
       success: "Saved successfully.",
