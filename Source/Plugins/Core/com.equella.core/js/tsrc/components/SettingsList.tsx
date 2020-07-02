@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { List, ListSubheader } from "@material-ui/core";
+import { List, Typography } from "@material-ui/core";
 import * as React from "react";
 import { ReactNode } from "react";
 
@@ -38,10 +38,13 @@ export default function SettingsList({
   children,
 }: SettingsListProps) {
   return (
-    <List
-      subheader={<ListSubheader disableGutters>{subHeading}</ListSubheader>}
-    >
-      {children}
-    </List>
+    <>
+      {subHeading && (
+        <Typography gutterBottom variant="h5" component="h2">
+          {subHeading}
+        </Typography>
+      )}
+      <List>{children}</List>
+    </>
   );
 }
