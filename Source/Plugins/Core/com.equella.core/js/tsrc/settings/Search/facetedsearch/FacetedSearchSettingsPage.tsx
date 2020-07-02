@@ -32,7 +32,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
   makeStyles,
   Typography,
 } from "@material-ui/core";
@@ -64,6 +63,7 @@ import {
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
+import SettingsListHeading from "../../../components/SettingsListHeading";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -266,20 +266,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppableFacetList">
         {(droppable: DroppableProvided) => (
-          <List
-            ref={droppable.innerRef}
-            subheader={
-              <>
-                <ListSubheader disableGutters>
-                  {facetedsearchsettingStrings.subHeading}
-                </ListSubheader>
-                <Typography variant={"caption"}>
-                  {facetedsearchsettingStrings.explanationText}
-                </Typography>
-              </>
-            }
-            {...droppable.droppableProps}
-          >
+          <List ref={droppable.innerRef} {...droppable.droppableProps}>
             {facetListItems}
             {droppable.placeholder}
           </List>
@@ -297,7 +284,15 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       preventNavigation={changesUnsaved}
     >
       <Card>
-        <CardContent>{facetList}</CardContent>
+        <CardContent>
+          <SettingsListHeading
+            heading={facetedsearchsettingStrings.subHeading}
+          />
+          <Typography variant={"caption"}>
+            {facetedsearchsettingStrings.explanationText}
+          </Typography>
+          {facetList}
+        </CardContent>
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => {
