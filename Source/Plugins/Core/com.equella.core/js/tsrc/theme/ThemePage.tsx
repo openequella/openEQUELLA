@@ -46,6 +46,7 @@ import { IThemeSettings } from ".";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsListControl from "../components/SettingsListControl";
 import SettingsList from "../components/SettingsList";
+import { routes } from "../mainui/routes";
 
 declare const themeSettings: IThemeSettings;
 declare const logoURL: string;
@@ -112,7 +113,10 @@ class ThemePage extends React.Component<
   };
 
   componentDidMount = () => {
-    this.props.updateTemplate(templateDefaults(strings.title));
+    this.props.updateTemplate((tp) => ({
+      ...templateDefaults(strings.title)(tp),
+      backRoute: routes.Settings.to,
+    }));
   };
 
   handleDefaultButton = () => {
