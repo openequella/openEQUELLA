@@ -1922,23 +1922,19 @@ div.skinnysearch {
   overflow: hidden;
 }
 
-@media only screen and (max-width: 1200px) {
-  .autocompleteControl .autocomplete-container {
-    float: left;
-    width: 85%;
-  }
+.autocompleteControl .autocomplete-container {
+  float: left;
+  // 120px for width of the select button and padding with default text 'select'.
+  width: calc(100% - 120px);
 }
 
-@media only screen and (min-width: 1201px) {
-  .autocompleteControl .autocomplete-container {
-    float: left;
-    width: 96%;
-  }
+.autocompleteControl .btn {
+  float: right;
 }
 
 #wizard-controls .autocompleteControl input[type="text"] {
   height: 34px;
-  width: 98%;
+  width: 100%;
 }
 
 .ac_odd {
