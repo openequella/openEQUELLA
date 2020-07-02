@@ -201,18 +201,13 @@ export const languageStrings = {
       title: "Warning",
       confirm: "Are you sure you want to clear this login notice?",
     },
-    prelogin: {
-      label: "Before login notice",
+    preLogin: {
+      title: "Before login notice",
     },
-    postlogin: {
-      label: "After login notice",
+    postLogin: {
+      title: "After login notice",
       description:
         "Write a plaintext message to be displayed after login as an alert...",
-    },
-    notifications: {
-      saved: "Login notice saved successfully.",
-      cleared: "Login notice cleared successfully.",
-      cancelled: "Cancelled changes to login notice.",
     },
     errors: {
       permissions: "You do not have permission to edit these settings.",

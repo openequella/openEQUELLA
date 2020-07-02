@@ -23,11 +23,6 @@ import { BlobInfo } from "../components/RichTextEditor";
 export const PRE_LOGIN_NOTICE_API_URL = `${API_BASE_URL}/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${API_BASE_URL}/postloginnotice`;
 export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image/`;
-export enum NotificationType {
-  Save,
-  Clear,
-  Revert,
-}
 
 export enum ScheduleTypeSelection {
   OFF = "OFF",
