@@ -54,6 +54,8 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     thumbnail: {
       paddingRight: theme.spacing(2),
+      width: "88px",
+      height: "auto",
     },
     placeholderThumbnail: {
       paddingRight: theme.spacing(2),
