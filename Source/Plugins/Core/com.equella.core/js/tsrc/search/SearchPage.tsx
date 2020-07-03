@@ -35,35 +35,30 @@ import {
   TextField,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import { defaultPagedSearchResult, searchItems } from "./SearchModule";
+import {
+  defaultPagedSearchResult,
+  defaultSearchOptions,
+  searchItems,
+  SearchOptions,
+} from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
-  SortOrder,
 } from "../settings/Search/SearchSettingsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
 
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.RANK);
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>(
+    defaultSearchOptions
+  );
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
 
-  /**
-   * Construct a standard search criteria.
-   */
-  const standardParams: OEQ.Search.SearchParams = {
-    start: currentPage * rowsPerPage,
-    length: rowsPerPage,
-    status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-    order: sortOrder,
-  };
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -73,7 +68,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
 
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSortOrder(settings.defaultSearchSort);
+      setSearchOptions({
+        ...searchOptions,
+        sortOrder: settings.defaultSearchSort,
+      });
     });
   }, []);
 
@@ -85,9 +83,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     if (isInitialSearch.current) {
       isInitialSearch.current = false;
     } else {
-      search(standardParams);
+      search();
     }
-  }, [rowsPerPage, currentPage, sortOrder]);
+  }, [searchOptions]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -95,10 +93,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Search items with specified search criteria.
-   * @param params Search criteria
    */
-  const search = (params?: OEQ.Search.SearchParams): void => {
-    searchItems(params)
+  const search = (): void => {
+    searchItems(searchOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
         setPagedSearchResult(items)
       )
