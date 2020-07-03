@@ -31,7 +31,10 @@ export const searchItems = (
   const searchParams: OEQ.Search.SearchParams = {
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+    status: [
+      "LIVE" as OEQ.Common.ItemStatus,
+      "REVIEW" as OEQ.Common.ItemStatus,
+    ],
     order: sortOrder,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);

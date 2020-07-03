@@ -26,7 +26,9 @@ jest.mock("@openequella/rest-api-client");
 
 describe("SearchModule", () => {
   it("should provide an list of items", async () => {
-    const searchResult = await SearchModule.searchItems();
+    const searchResult = await SearchModule.searchItems(
+      SearchModule.defaultSearchOptions
+    );
     expect(searchResult.available).toBe(4);
     expect(searchResult.results).toHaveLength(4);
   });
