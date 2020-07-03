@@ -44,17 +44,8 @@ import {
   SearchSettings,
   SortOrder,
 } from "../settings/Search/SearchSettingsModule";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles({
-  cardAction: {
-    display: "flex",
-    justifyContent: "center",
-  },
-});
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const classes = useStyles();
   const searchStrings = languageStrings.searchpage;
 
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
@@ -149,20 +140,29 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         <Card>
           <CardContent>{searchResultList}</CardContent>
 
-          <CardActions className={classes.cardAction}>
-            <TablePagination
-              component="div"
-              count={pagedSearchResult.available}
-              page={currentPage}
-              onChangePage={(_, page: number) => setCurrentPage(page)}
-              rowsPerPageOptions={[10, 25, 50]}
-              labelRowsPerPage={searchStrings.pagination.itemsPerPage}
-              rowsPerPage={rowsPerPage}
-              onChangeRowsPerPage={(event) => {
-                setRowsPerPage(parseInt(event.target.value));
-                setCurrentPage(0);
-              }}
-            />
+          <CardActions>
+            <Grid container justify="center">
+              <Grid item>
+                <TablePagination
+                  component="div"
+                  count={pagedSearchResult.available}
+                  page={searchOptions.currentPage}
+                  onChangePage={(_, page: number) =>
+                    setSearchOptions({ ...searchOptions, currentPage: page })
+                  }
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage={searchStrings.pagination.itemsPerPage}
+                  rowsPerPage={searchOptions.rowsPerPage}
+                  onChangeRowsPerPage={(event) =>
+                    setSearchOptions({
+                      ...searchOptions,
+                      currentPage: 0,
+                      rowsPerPage: parseInt(event.target.value),
+                    })
+                  }
+                />
+              </Grid>
+            </Grid>
           </CardActions>
         </Card>
       </Grid>
