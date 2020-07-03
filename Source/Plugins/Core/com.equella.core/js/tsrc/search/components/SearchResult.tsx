@@ -220,7 +220,7 @@ export default function SearchResult({
   );
 
   return (
-    <ListItem alignItems="flex-start" key={uuid}>
+    <ListItem alignItems="flex-start" divider>
       {thumbnail(displayOptions?.disableThumbnail ?? false)}
       <ListItemText
         primary={itemLink}
