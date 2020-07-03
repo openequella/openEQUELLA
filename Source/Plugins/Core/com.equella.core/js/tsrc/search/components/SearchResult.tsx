@@ -54,11 +54,10 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     thumbnail: {
       paddingRight: theme.spacing(2),
-    },
-    placeholderThumbnail: {
-      paddingRight: theme.spacing(2),
       width: "88px",
       height: "auto",
+    },
+    placeholderThumbnail: {
       color: theme.palette.text.secondary,
     },
     itemDescription: {
@@ -127,7 +126,10 @@ export default function SearchResult({
       );
     } else {
       result = (
-        <Subject className={classes.placeholderThumbnail} fontSize="large" />
+        <Subject
+          className={`${classes.placeholderThumbnail} ${classes.thumbnail}`}
+          fontSize="large"
+        />
       );
     }
     return result;
