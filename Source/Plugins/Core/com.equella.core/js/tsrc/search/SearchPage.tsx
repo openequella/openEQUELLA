@@ -27,17 +27,20 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   Grid,
   IconButton,
   List,
-  ListSubheader,
   TablePagination,
   TextField,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
+  getSortingOptions,
   searchItems,
   SearchOptions,
 } from "./SearchModule";
@@ -47,6 +50,7 @@ import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
+  SortOrder,
 } from "../settings/Search/SearchSettingsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
@@ -114,11 +118,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * A list that consists of search result items.
    */
-  const searchResultList = (
-    <List subheader={<ListSubheader>{searchStrings.subtitle}</ListSubheader>}>
-      {searchResults}
-    </List>
-  );
+  const searchResultList = <List>{searchResults}</List>;
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -135,6 +135,26 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Grid item xs={9}>
         <Card>
+          <CardHeader
+            title={searchStrings.subtitle}
+            action={
+              <Select
+                variant="outlined"
+                // If sortOrder is undefined, pass an empty string to select nothing.
+                value={searchOptions.sortOrder ?? ""}
+                onChange={(event) =>
+                  setSearchOptions({
+                    ...searchOptions,
+                    sortOrder: event.target.value as SortOrder,
+                  })
+                }
+              >
+                {Object.entries(getSortingOptions()).map(([text, value]) => (
+                  <MenuItem value={value}>{text}</MenuItem>
+                ))}
+              </Select>
+            }
+          />
           <CardContent>{searchResultList}</CardContent>
 
           <CardActions>

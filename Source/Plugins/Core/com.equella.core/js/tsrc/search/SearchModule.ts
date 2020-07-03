@@ -18,34 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
-
-/**
- * A function that takes search options and converts search options to search params,
- * and then does a search and returns a list of Items.
- * @param searchOptions  Search options selected on Search page.
- */
-export const searchItems = (
-  searchOptions: SearchOptions
-): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> => {
-  const { rowsPerPage, currentPage, sortOrder } = searchOptions;
-  const searchParams: OEQ.Search.SearchParams = {
-    start: currentPage * rowsPerPage,
-    length: rowsPerPage,
-    status: [
-      "LIVE" as OEQ.Common.ItemStatus,
-      "REVIEW" as OEQ.Common.ItemStatus,
-    ],
-    order: sortOrder,
-  };
-  return OEQ.Search.search(API_BASE_URL, searchParams);
-};
-
-export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 10,
-  results: [],
-};
+import { languageStrings } from "../util/langstrings";
 
 /**
  * Type of all search options on Search page
@@ -69,4 +42,52 @@ export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: undefined,
+};
+
+export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
+  start: 0,
+  length: 10,
+  available: 10,
+  results: [],
+};
+
+/**
+ * A function that takes search options and converts search options to search params,
+ * and then does a search and returns a list of Items.
+ * @param searchOptions  Search options selected on Search page.
+ */
+export const searchItems = (
+  searchOptions: SearchOptions
+): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> => {
+  const { rowsPerPage, currentPage, sortOrder } = searchOptions;
+  const searchParams: OEQ.Search.SearchParams = {
+    start: currentPage * rowsPerPage,
+    length: rowsPerPage,
+    status: [
+      "LIVE" as OEQ.Common.ItemStatus,
+      "REVIEW" as OEQ.Common.ItemStatus,
+    ],
+    order: sortOrder,
+  };
+  return OEQ.Search.search(API_BASE_URL, searchParams);
+};
+
+/**
+ * Provide the search sorting control's data source.
+ */
+export const getSortingOptions = (): Record<string, SortOrder> => {
+  const {
+    relevance,
+    lastModified,
+    dateCreated,
+    title,
+    userRating,
+  } = languageStrings.settings.searching.searchPageSettings;
+  return {
+    [relevance]: SortOrder.RANK,
+    [lastModified]: SortOrder.DATEMODIFIED,
+    [dateCreated]: SortOrder.DATECREATED,
+    [title]: SortOrder.NAME,
+    [userRating]: SortOrder.RATING,
+  };
 };
