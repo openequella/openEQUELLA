@@ -65,7 +65,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   const handleSearch = (query: string) => {
-    search({ query, status: [ItemStatus.LIVE, ItemStatus.REVIEW] });
+    search({
+      query,
+      status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
+    });
   };
 
   const handleError = (error: Error) => {
