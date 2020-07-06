@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -25,15 +25,22 @@ import {
 import { languageStrings } from "../util/langstrings";
 import {
   Card,
+  CardActions,
   CardContent,
   Grid,
   List,
   ListItem,
   ListSubheader,
+  TablePagination,
   Typography,
 } from "@material-ui/core";
+import {
+  defaultPagedSearchResult,
+  defaultSearchOptions,
+  searchItems,
+  SearchOptions,
+} from "./SearchModule";
 import SearchBar from "../search/components/SearchBar";
-import { searchItems } from "./SearchModule";
 import * as OEQ from "@openequella/rest-api-client";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
@@ -44,32 +51,41 @@ import {
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
-  const [searchResultItems, setSearchResultItems] = useState<
-    OEQ.Search.SearchResultItem[]
-  >([]);
+
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>(
+    defaultSearchOptions
+  );
+  const [pagedSearchResult, setPagedSearchResult] = useState<
+    OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+  >(defaultPagedSearchResult);
 
   /**
-   * Update the page title and do a default search.
+   * Update the page title and retrieve Search settings.
    */
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
-    getSearchSettingsFromServer().then((settings: SearchSettings) =>
-      search({
-        status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-        order: settings.defaultSearchSort,
-      })
-    );
+    getSearchSettingsFromServer().then((settings: SearchSettings) => {
+      setSearchOptions({
+        ...searchOptions,
+        sortOrder: settings.defaultSearchSort,
+      });
+    });
   }, []);
 
-  const handleSearch = (query: string) => {
-    search({
-      query,
-      status: [OEQ.Common.ItemStatus.LIVE, OEQ.Common.ItemStatus.REVIEW],
-    });
-  };
+  /**
+   * Trigger a search when state values change, but skip the initial values.
+   */
+  const isInitialSearch = useRef(true);
+  useEffect(() => {
+    if (isInitialSearch.current) {
+      isInitialSearch.current = false;
+    } else {
+      search();
+    }
+  }, [searchOptions]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -77,12 +93,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Search items with specified search criteria.
-   * @param params Search criteria
    */
-  const search = (params?: OEQ.Search.SearchParams): void => {
-    searchItems(params)
+  const search = (): void => {
+    searchItems(searchOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
-        setSearchResultItems(items.results)
+        setPagedSearchResult(items)
       )
       .catch((error: Error) => handleError(error));
   };
@@ -90,11 +105,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * A SearchResult that represents one of the search result items.
    */
-  const searchResults = searchResultItems.map(
+  const searchResults = pagedSearchResult.results.map(
     (item: OEQ.Search.SearchResultItem) => (
-      <ListItem key={item.uuid} divider>
-        <SearchResult {...item} />
-      </ListItem>
+      <SearchResult {...item} key={item.uuid} />
     )
   );
 
@@ -118,7 +131,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>
-            <SearchBar onChange={handleSearch} />
+            <SearchBar
+              onChange={(query) =>
+                setSearchOptions({ ...searchOptions, query: query })
+              }
+            />
           </CardContent>
         </Card>
       </Grid>
@@ -126,6 +143,31 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>{searchResultList}</CardContent>
+
+          <CardActions>
+            <Grid container justify="center">
+              <Grid item>
+                <TablePagination
+                  component="div"
+                  count={pagedSearchResult.available}
+                  page={searchOptions.currentPage}
+                  onChangePage={(_, page: number) =>
+                    setSearchOptions({ ...searchOptions, currentPage: page })
+                  }
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage={searchStrings.pagination.itemsPerPage}
+                  rowsPerPage={searchOptions.rowsPerPage}
+                  onChangeRowsPerPage={(event) =>
+                    setSearchOptions({
+                      ...searchOptions,
+                      currentPage: 0,
+                      rowsPerPage: parseInt(event.target.value),
+                    })
+                  }
+                />
+              </Grid>
+            </Grid>
+          </CardActions>
         </Card>
       </Grid>
     </Grid>

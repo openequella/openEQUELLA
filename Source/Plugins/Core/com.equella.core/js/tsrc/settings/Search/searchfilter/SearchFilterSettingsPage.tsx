@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -25,14 +26,13 @@ import { routes } from "../../../mainui/routes";
 import {
   Card,
   CardActions,
+  CardContent,
+  IconButton,
+  List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  ListSubheader,
-  IconButton,
-  List,
   makeStyles,
-  CardContent,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -41,7 +41,6 @@ import { languageStrings } from "../../../util/langstrings";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
-import { useEffect, useState } from "react";
 import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
@@ -66,6 +65,7 @@ import {
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import { commonString } from "../../../util/commonstrings";
+import SettingsListHeading from "../../../components/SettingsListHeading";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -319,13 +319,10 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Card>
         <CardContent>
-          <List
-            subheader={
-              <ListSubheader disableGutters>
-                {searchFilterStrings.mimetypefiltertitle}
-              </ListSubheader>
-            }
-          >
+          <SettingsListHeading
+            heading={searchFilterStrings.mimetypefiltertitle}
+          />
+          <List>
             {mimeTypeFilters.map((filter, index) => {
               return (
                 <ListItem divider={true} key={index}>
