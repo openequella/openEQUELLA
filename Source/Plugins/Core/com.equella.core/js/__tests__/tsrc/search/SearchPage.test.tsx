@@ -49,7 +49,7 @@ describe("<SearchPage/>", () => {
 
   it("should contain the test data after a search bar text change and render", async () => {
     component = mount(<SearchPage updateTemplate={jest.fn()} />);
-    const input = component.find("inputinput.MuiInputBase-input");
+    const input = component.find("input.MuiInputBase-input");
     await input.simulate("change", { target: { value: "new title" } });
     await component.render();
     expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
