@@ -21,7 +21,6 @@ import { useCallback } from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import { Close } from "@material-ui/icons";
 import { debounce } from "lodash";
-import { languageStrings } from "../../util/langstrings";
 
 interface SearchBarProps {
   /**
@@ -39,7 +38,6 @@ interface SearchBarProps {
  */
 export default function SearchBar({ onChange }: SearchBarProps) {
   const [query, setQuery] = React.useState<string>("");
-  const searchStrings = languageStrings.searchpage;
   /**
    * uses lodash to debounce the search query by half a second
    */
@@ -54,6 +52,13 @@ export default function SearchBar({ onChange }: SearchBarProps) {
 
   return (
     <TextField
+      onKeyDown={(event) => {
+        //27 is the escape key
+        if (event.keyCode == 27) {
+          event.preventDefault();
+          setQuery("");
+        }
+      }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -68,9 +73,8 @@ export default function SearchBar({ onChange }: SearchBarProps) {
       }}
       fullWidth
       onChange={(event) => setQuery(event.target.value)}
-      variant={"outlined"}
+      variant={"standard"}
       value={query}
-      label={searchStrings.title}
     />
   );
 }
