@@ -74,6 +74,7 @@
       "jquery": true
     },
     "rules": {
+      "react/jsx-curly-brace-presence": "error",
       "jest/require-top-level-describe": "error",
       "jest/consistent-test-it": "error",
       "jest/no-mocks-import": "warn",
