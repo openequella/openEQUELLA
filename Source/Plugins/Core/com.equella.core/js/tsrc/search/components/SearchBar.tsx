@@ -22,6 +22,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import { Close } from "@material-ui/icons";
 import { debounce } from "lodash";
 
+const ESCAPE_KEY_CODE = 27;
 interface SearchBarProps {
   /**
    * Callback fired when the user stops typing (debounced for 500 milliseconds).
@@ -53,8 +54,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
   return (
     <TextField
       onKeyDown={(event) => {
-        //27 is the escape key
-        if (event.keyCode == 27) {
+        if (event.keyCode == ESCAPE_KEY_CODE) {
           event.preventDefault();
           setQuery("");
         }
