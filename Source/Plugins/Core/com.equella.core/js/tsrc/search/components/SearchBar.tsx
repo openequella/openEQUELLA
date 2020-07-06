@@ -62,18 +62,18 @@ export default function SearchBar({ onChange }: SearchBarProps) {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon fontSize={"small"} />
+            <SearchIcon fontSize="small" />
           </InputAdornment>
         ),
         endAdornment: query.length > 0 && (
-          <IconButton onClick={() => setQuery("")} size={"small"}>
+          <IconButton onClick={() => setQuery("")} size="small">
             <Close />
           </IconButton>
         ),
       }}
       fullWidth
       onChange={(event) => setQuery(event.target.value)}
-      variant={"standard"}
+      variant="standard"
       value={query}
     />
   );
