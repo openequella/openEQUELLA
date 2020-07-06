@@ -144,9 +144,7 @@ class RichTextEditor extends React.Component<
             skin_url: skinUrl,
             media_dimensions: false,
           }}
-          toolbar={
-            "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
-          }
+          toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
           plugins={
             "anchor autolink autoresize advlist charmap code codesample  " +
             "directionality fullscreen help hr image imagetools " +

@@ -28,7 +28,7 @@ export default {
 export const ToggleSwitchControl = () => (
   <SettingsToggleSwitch
     disabled={boolean("Disabled", false)}
-    id={"toggle"}
+    id="toggle"
     setValue={action("Value of checkbox changed")}
     value={boolean("Toggle state", false)}
   />

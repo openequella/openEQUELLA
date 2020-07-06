@@ -67,7 +67,7 @@ export default function SettingsListControl({
 }: SettingsListControlProps) {
   const classes = useStyles();
   return (
-    <ListItem alignItems={"flex-start"} divider={divider}>
+    <ListItem alignItems="flex-start" divider={divider}>
       <ListItemText
         className={classes.listItemText}
         primary={primaryText}

@@ -278,7 +278,7 @@ class ThemePage extends React.Component<
     const { classes } = this.props;
     return (
       <div>
-        <Typography className={classes.labels} color={"textSecondary"}>
+        <Typography className={classes.labels} color="textSecondary">
           {label}
         </Typography>
         <ColorPickerComponent changeColor={changeColor} color={color} />
@@ -292,7 +292,7 @@ class ThemePage extends React.Component<
       <div>
         <CardContent className={classes.cardContent}>
           <FormControl>
-            <Typography variant={"h4"}>
+            <Typography variant="h4">
               {strings.colourschemesettings.title}
             </Typography>
             <Grid container spacing={2}>
@@ -358,7 +358,7 @@ class ThemePage extends React.Component<
           <Button
             className={classes.button}
             variant="contained"
-            type={"submit"}
+            type="submit"
             onClick={this.submitTheme}
           >
             {commonString.action.apply}
@@ -373,8 +373,8 @@ class ThemePage extends React.Component<
     return (
       <div>
         <CardContent className={classes.cardContent}>
-          <Typography variant={"h4"}>{strings.logosettings.title}</Typography>
-          <Typography className={classes.labels} color={"textSecondary"}>
+          <Typography variant="h4">{strings.logosettings.title}</Typography>
+          <Typography className={classes.labels} color="textSecondary">
             {strings.logosettings.imagespeclabel}
           </Typography>
 
@@ -382,13 +382,13 @@ class ThemePage extends React.Component<
             <input
               accept="image/*"
               className={classes.input}
-              color={"textSecondary"}
+              color="textSecondary"
               id="contained-button-file"
               onChange={(e) => this.handleImageChange(e.target)}
               type="file"
             />
             <label htmlFor="contained-button-file">
-              <Grid container spacing={8} direction={"row"}>
+              <Grid container spacing={8} direction="row">
                 <Grid item>
                   <Button
                     className={classes.button}
@@ -401,7 +401,7 @@ class ThemePage extends React.Component<
                 <Grid item>
                   <Typography
                     className={classes.fileName}
-                    color={"textSecondary"}
+                    color="textSecondary"
                   >
                     {this.state.fileName
                       ? this.state.fileName
@@ -412,9 +412,9 @@ class ThemePage extends React.Component<
             </label>
           </label>
 
-          <Grid container spacing={8} direction={"row"}>
+          <Grid container spacing={8} direction="row">
             <Grid item>
-              <Typography className={classes.button} color={"textSecondary"}>
+              <Typography className={classes.button} color="textSecondary">
                 {strings.logosettings.current}
               </Typography>
             </Grid>
@@ -431,7 +431,7 @@ class ThemePage extends React.Component<
           <Button
             className={classes.button}
             variant="contained"
-            type={"submit"}
+            type="submit"
             onClick={this.submitLogo}
           >
             {commonString.action.apply}

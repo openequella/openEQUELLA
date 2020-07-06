@@ -241,7 +241,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
               <ListItemText primary={facet.name} />
               <ListItemIcon>
                 <IconButton
-                  color={"secondary"}
+                  color="secondary"
                   onClick={() => {
                     setShowEditingDialog(true);
                     setCurrentFacet(facet);
@@ -278,7 +278,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 <ListSubheader disableGutters>
                   {facetedsearchsettingStrings.subHeading}
                 </ListSubheader>
-                <Typography variant={"caption"}>
+                <Typography variant="caption">
                   {facetedsearchsettingStrings.explanationText}
                 </Typography>
               </>
@@ -310,9 +310,9 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
               setShowEditingDialog(true);
             }}
             aria-label={facetedsearchsettingStrings.add}
-            color={"primary"}
+            color="primary"
           >
-            <AddCircleIcon fontSize={"large"} />
+            <AddCircleIcon fontSize="large" />
           </IconButton>
         </CardActions>
       </Card>

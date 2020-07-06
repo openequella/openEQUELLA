@@ -197,7 +197,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             id="startDatePicker"
             okLabel={<span id="ok">OK</span>}
             onChange={this.handleStartDateChange}
-            format={"d MMM yyyy - h:mm a"}
+            format="d MMM yyyy - h:mm a"
             value={this.state.current.startDate}
           />
 
@@ -208,7 +208,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           <DateTimePicker
             id="endDatePicker"
             onChange={this.handleEndDateChange}
-            format={"d MMM yyyy - h:mm a"}
+            format="d MMM yyyy - h:mm a"
             value={this.state.current.endDate}
           />
         </div>

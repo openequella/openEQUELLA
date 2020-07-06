@@ -28,7 +28,7 @@ describe("SearchSettingFormControl.tsx", () => {
       shallow(
         <SearchSettingFormControl
           control={
-            <TextField id="testTextField" value={"test"} onChange={onChange} />
+            <TextField id="testTextField" value="test" onChange={onChange} />
           }
           onChange={onChange}
         />
