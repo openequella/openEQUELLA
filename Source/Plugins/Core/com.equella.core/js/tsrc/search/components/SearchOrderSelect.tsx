@@ -48,7 +48,7 @@ export const SearchOrderSelect = ({
   } = languageStrings.settings.searching.searchPageSettings;
 
   /**
-   * Provide a memorised data source for search sorting control.
+   * Provide a data source for search sorting control.
    */
   const sortingOptionStrings = new Map<SortOrder, string>([
     [SortOrder.RANK, relevance],
