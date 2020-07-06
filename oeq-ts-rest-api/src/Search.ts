@@ -1,6 +1,6 @@
 import * as Common from './Common';
-import { is } from 'typescript-is';
-import { GET } from './AxiosInstance';
+import {is} from 'typescript-is';
+import {GET} from './AxiosInstance';
 import * as Utils from './Utils';
 
 /**

@@ -19,6 +19,19 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
 
+export const defaultSearchOptions: SearchOptions = {
+  rowsPerPage: 10,
+  currentPage: 0,
+  sortOrder: undefined,
+};
+
+export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
+  start: 0,
+  length: 10,
+  available: 10,
+  results: [],
+};
+
 /**
  * A function that takes search options and converts search options to search params,
  * and then does a search and returns a list of Items.
@@ -39,13 +52,6 @@ export const searchItems = (
     order: sortOrder,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
-};
-
-export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 10,
-  results: [],
 };
 
 /**
@@ -69,9 +75,3 @@ export interface SearchOptions {
    */
   sortOrder: SortOrder | undefined;
 }
-
-export const defaultSearchOptions: SearchOptions = {
-  rowsPerPage: 10,
-  currentPage: 0,
-  sortOrder: undefined,
-};

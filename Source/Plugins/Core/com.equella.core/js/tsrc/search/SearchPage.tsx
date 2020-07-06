@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -27,6 +27,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   Grid,
   List,
   ListItem,
@@ -47,7 +48,9 @@ import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
+  SortOrder,
 } from "../settings/Search/SearchSettingsModule";
+import SearchOrderSelect from "./components/SearchOrderSelect";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -68,10 +71,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
 
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSearchOptions({
-        ...searchOptions,
-        sortOrder: settings.defaultSearchSort,
-      });
+      handleSortOrderChanged(settings.defaultSearchSort);
     });
   }, []);
 
@@ -112,6 +112,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   /**
+   * Provide a memorized callback for updating sort order in order to avoid re-rendering
+   * component SearchOrderSelect when other search control values are changed.
+   */
+  const handleSortOrderChanged = useCallback(
+    (order: SortOrder) =>
+      setSearchOptions({ ...searchOptions, sortOrder: order }),
+    []
+  );
+  /**
    * A list that consists of search result items.
    */
   const searchResultList = (
@@ -142,6 +151,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Grid item xs={9}>
         <Card>
+          <CardHeader
+            title={searchStrings.subtitle}
+            action={
+              <SearchOrderSelect
+                value={searchOptions.sortOrder}
+                onChange={handleSortOrderChanged}
+              />
+            }
+          />
           <CardContent>{searchResultList}</CardContent>
 
           <CardActions>
