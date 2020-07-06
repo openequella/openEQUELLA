@@ -21,7 +21,9 @@ import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
 import * as OEQ from "@openequella/rest-api-client";
 import { ReactWrapper } from "enzyme";
+import { act } from "react-dom/test-utils";
 
+jest.useFakeTimers();
 jest.mock("@openequella/rest-api-client");
 (OEQ.Search.search as jest.Mock<
   Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>>
@@ -33,6 +35,7 @@ describe("<SearchPage/>", () => {
 
   beforeEach(() => {
     mount = createMount();
+    component = mount(<SearchPage updateTemplate={jest.fn()} />);
   });
 
   afterEach(() => {
@@ -40,19 +43,23 @@ describe("<SearchPage/>", () => {
   });
 
   it("should display 'No results found.' when there are no search results", () => {
-    component = mount(<SearchPage updateTemplate={jest.fn()} />);
     expect(component.html()).not.toContain(
       "266bb0ff-a730-4658-aec0-c68bbefc227c"
     );
     expect(component.html()).toContain("No results found.");
   });
 
-  it("should contain the test data after a search bar text change and render", async () => {
-    component = mount(<SearchPage updateTemplate={jest.fn()} />);
-    const input = component.find("input.MuiInputBase-input");
-    await input.simulate("change", { target: { value: "new title" } });
-    await component.render();
-    expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
-    expect(component.html()).not.toContain("No results found.");
+  it("should contain the test data after a search bar text change and render", () => {
+    act(() => {
+      const input = component.find("input.MuiInputBase-input");
+      input.simulate("change", { target: { value: "new title" } });
+    });
+    //use a timed callback to wait for the debounce before asserting results have populated the page
+    setTimeout(() => {
+      expect(component.html()).not.toContain("No results found.");
+      expect(component.html()).toContain(
+        "266bb0ff-a730-4658-aec0-c68bbefc227c"
+      );
+    }, 1000);
   });
 });
