@@ -1,6 +1,6 @@
 import * as Common from './Common';
-import { is } from 'typescript-is';
-import { GET } from './AxiosInstance';
+import {is} from 'typescript-is';
+import {GET} from './AxiosInstance';
 import * as Utils from './Utils';
 
 /**
@@ -86,7 +86,7 @@ export interface DisplayOptions {
   /**
    * The display mode for attachments when viewed from search result page.
    */
-  attachmentType: string;
+  attachmentType?: string;
   /**
    * True if thumbnail is prevented from displaying.
    */
