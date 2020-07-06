@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -33,14 +33,11 @@ import {
   List,
   TablePagination,
   TextField,
-  MenuItem,
-  Select,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
-  getSortingOptions,
   searchItems,
   SearchOptions,
 } from "./SearchModule";
@@ -52,6 +49,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../settings/Search/SearchSettingsModule";
+import SearchOrderSelect from "./components/SearchOrderSelect";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -72,10 +70,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
 
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSearchOptions({
-        ...searchOptions,
-        sortOrder: settings.defaultSearchSort,
-      });
+      handleSortOrderChanged(settings.defaultSearchSort);
     });
   }, []);
 
@@ -120,6 +115,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const searchResultList = <List>{searchResults}</List>;
 
+  /**
+   * Provide a memorized callback for updating sort order in order to avoid re-rendering
+   * component SearchOrderSelect when other search control values are changed.
+   */
+  const handleSortOrderChanged = useCallback(
+    (order: SortOrder) =>
+      setSearchOptions({ ...searchOptions, sortOrder: order }),
+    []
+  );
+
   return (
     <Grid container direction="column" spacing={2}>
       <Grid item xs={9}>
@@ -138,21 +143,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <CardHeader
             title={searchStrings.subtitle}
             action={
-              <Select
-                variant="outlined"
-                // If sortOrder is undefined, pass an empty string to select nothing.
-                value={searchOptions.sortOrder ?? ""}
-                onChange={(event) =>
-                  setSearchOptions({
-                    ...searchOptions,
-                    sortOrder: event.target.value as SortOrder,
-                  })
-                }
-              >
-                {Object.entries(getSortingOptions()).map(([text, value]) => (
-                  <MenuItem value={value}>{text}</MenuItem>
-                ))}
-              </Select>
+              <SearchOrderSelect
+                value={searchOptions.sortOrder}
+                onChange={handleSortOrderChanged}
+              />
             }
           />
           <CardContent>{searchResultList}</CardContent>

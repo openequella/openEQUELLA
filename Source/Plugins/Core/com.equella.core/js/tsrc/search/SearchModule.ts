@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
-import { languageStrings } from "../util/langstrings";
 
 /**
  * Type of all search options on Search page
@@ -70,24 +69,4 @@ export const searchItems = (
     order: sortOrder,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
-};
-
-/**
- * Provide the search sorting control's data source.
- */
-export const getSortingOptions = (): Record<string, SortOrder> => {
-  const {
-    relevance,
-    lastModified,
-    dateCreated,
-    title,
-    userRating,
-  } = languageStrings.settings.searching.searchPageSettings;
-  return {
-    [relevance]: SortOrder.RANK,
-    [lastModified]: SortOrder.DATEMODIFIED,
-    [dateCreated]: SortOrder.DATECREATED,
-    [title]: SortOrder.NAME,
-    [userRating]: SortOrder.RATING,
-  };
 };
