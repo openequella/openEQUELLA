@@ -38,7 +38,7 @@ export default React.memo(function ScreenOptions({
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
   const classes = useStyles();
   return (
-    <React.Fragment>
+    <>
       <IconButton
         id="screenOptionsOpen"
         onClick={(e) => setOptionsAnchor(e.currentTarget)}
@@ -61,6 +61,6 @@ export default React.memo(function ScreenOptions({
           html={optionsHtml}
         />
       </Popover>
-    </React.Fragment>
+    </>
   );
 });

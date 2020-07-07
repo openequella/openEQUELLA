@@ -469,14 +469,14 @@ class ThemePage extends React.Component<
   render() {
     const { classes } = this.props;
     return (
-      <React.Fragment>
+      <>
         <Card raised className={classes.card}>
           <this.ColorSchemeSettings />
-          <Divider light={true} />
+          <Divider light />
           <this.LogoSettings />
         </Card>
         <this.Notifications />
-      </React.Fragment>
+      </>
     );
   }
 }

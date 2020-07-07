@@ -416,7 +416,7 @@ export const Template = React.memo(function Template({
           );
         }}
         key={ind}
-        button={true}
+        button
       >
         <ListItemIcon>
           {item.iconUrl ? (
@@ -497,7 +497,7 @@ export const Template = React.memo(function Template({
       <div className={classes.userMenu}>
         {menuExtra}
         {!disableNotifications && !currentUser.guest && (
-          <React.Fragment>
+          <>
             <Hidden smDown>
               {badgedLink(
                 <AssignmentIcon />,
@@ -531,7 +531,7 @@ export const Template = React.memo(function Template({
               {currentUser.prefsEditable &&
                 linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
             </Menu>
-          </React.Fragment>
+          </>
         )}
       </div>
     );

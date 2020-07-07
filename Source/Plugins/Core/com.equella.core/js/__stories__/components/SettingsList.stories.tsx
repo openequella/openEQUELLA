@@ -50,7 +50,7 @@ export const ListWithTwoItems = () => (
           id="toggle"
         />
       }
-      divider={true}
+      divider
       primaryText="Checkbox"
     />
     <SettingsListControl

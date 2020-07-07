@@ -330,7 +330,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         >
           {mimeTypeFilters.map((filter, index) => {
             return (
-              <ListItem divider={true} key={index}>
+              <ListItem divider key={index}>
                 <ListItemText primary={filter.name} />
                 <ListItemSecondaryAction>
                   <IconButton

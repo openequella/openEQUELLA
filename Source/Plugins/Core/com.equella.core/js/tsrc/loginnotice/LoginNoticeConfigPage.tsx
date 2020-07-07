@@ -235,10 +235,10 @@ class LoginNoticeConfigPage extends React.Component<
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
-      <React.Fragment>
+      <>
         <Configurators />
         <Notifications />
-      </React.Fragment>
+      </>
     );
   }
 }
