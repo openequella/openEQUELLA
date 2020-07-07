@@ -80,11 +80,11 @@ const SettingPageTemplate = ({
       {children}
 
       <Button
-        id={"_saveButton"}
-        color={"primary"}
+        id="_saveButton"
+        color="primary"
         className={classes.floatingButton}
-        variant={"contained"}
-        size={"large"}
+        variant="contained"
+        size="large"
         onClick={onSave}
         aria-label={commonString.action.save}
         disabled={saveButtonDisabled}
@@ -97,7 +97,7 @@ const SettingPageTemplate = ({
         title={commonString.result.success}
         open={snackbarOpen}
         onClose={snackBarOnClose}
-        variant={"success"}
+        variant="success"
       />
 
       <NavigationGuard when={preventNavigation} />

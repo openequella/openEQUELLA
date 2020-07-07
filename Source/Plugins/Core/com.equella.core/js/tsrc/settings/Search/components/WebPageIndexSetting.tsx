@@ -39,15 +39,15 @@ export default function WebPageIndexSetting({
     languageStrings.settings.searching.contentIndexSettings;
   return (
     <>
-      <FormControl variant={"outlined"}>
+      <FormControl variant="outlined">
         <Select
           SelectDisplayProps={{ id: "_contentIndex" }}
           disabled={disabled}
           onChange={(event) => setValue(event.target.value as ContentIndex)}
-          variant={"outlined"}
+          variant="outlined"
           value={value}
           autoWidth={true}
-          input={<OutlinedInput labelWidth={0} id={"_contentIndex"} />}
+          input={<OutlinedInput labelWidth={0} id="_contentIndex" />}
         >
           <MenuItem value={ContentIndex.OPTION_NONE}>
             {contentIndexSettingsStrings.option.none}

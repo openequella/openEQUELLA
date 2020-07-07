@@ -42,22 +42,22 @@ const marks: Mark[] = [
 export const ListWithTwoItems = () => (
   <SettingsList subHeading={text("Sub Heading", "Sub Heading")}>
     <SettingsListControl
-      secondaryText={"Box for checking"}
+      secondaryText="Box for checking"
       control={
         <SettingsToggleSwitch
           setValue={action("Checkbox")}
           disabled={false}
-          id={"toggle"}
+          id="toggle"
         />
       }
       divider={true}
-      primaryText={"Checkbox"}
+      primaryText="Checkbox"
     />
     <SettingsListControl
-      secondaryText={"Slide for sliding"}
+      secondaryText="Slide for sliding"
       control={<Slider marks={marks} min={0} max={7} step={null} />}
       divider={false}
-      primaryText={"SliderControl"}
+      primaryText="SliderControl"
     />
   </SettingsList>
 );

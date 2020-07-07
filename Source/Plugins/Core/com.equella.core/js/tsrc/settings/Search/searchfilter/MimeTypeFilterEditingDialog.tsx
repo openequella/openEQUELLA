@@ -156,14 +156,14 @@ const MimeTypeFilterEditingDialog = ({
       </DialogContent>
       <DialogActions>
         <Button
-          id={"MimeTypeFilterEditingDialog_cancel"}
+          id="MimeTypeFilterEditingDialog_cancel"
           onClick={onClose}
           color="primary"
         >
           {commonString.action.cancel}
         </Button>
         <Button
-          id={"MimeTypeFilterEditingDialog_save"}
+          id="MimeTypeFilterEditingDialog_save"
           onClick={onAddOrUpdate}
           color="primary"
           disabled={

@@ -448,7 +448,7 @@ export const Template = React.memo(function Template({
   const menuContent = React.useMemo(
     () => (
       <div className={classes.logo}>
-        <img role="presentation" src={logoURL} alt={"Logo"} />
+        <img role="presentation" src={logoURL} alt="Logo" />
         {hasMenu && (
           <div id="menulinks">
             {currentUser.menuGroups.map((group, ind) => (

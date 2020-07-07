@@ -46,15 +46,15 @@ export default function DefaultSortOrderSetting({
   const classes = useStyles();
   return (
     <>
-      <FormControl variant={"outlined"}>
+      <FormControl variant="outlined">
         <Select
           SelectDisplayProps={{ id: "_sortOrder" }}
           disabled={disabled}
           onChange={(event) => setValue(event.target.value as SortOrder)}
-          variant={"outlined"}
+          variant="outlined"
           value={value}
           className={classes.select}
-          input={<OutlinedInput labelWidth={0} id={"_sortOrder"} />}
+          input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
         >
           <MenuItem value={SortOrder.RANK}>
             {searchPageSettingsStrings.relevance}
