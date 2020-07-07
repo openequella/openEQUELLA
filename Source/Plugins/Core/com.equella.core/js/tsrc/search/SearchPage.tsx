@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -29,18 +29,19 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  IconButton,
   List,
+  ListItem,
+  ListSubheader,
   TablePagination,
-  TextField,
+  Typography,
 } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
   searchItems,
   SearchOptions,
 } from "./SearchModule";
+import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
 import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
@@ -111,18 +112,28 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   /**
-   * A list that consists of search result items.
-   */
-  const searchResultList = <List>{searchResults}</List>;
-
-  /**
    * Provide a memorized callback for updating sort order in order to avoid re-rendering
    * component SearchOrderSelect when other search control values are changed.
    */
-  const handleSortOrderChanged = useCallback(
-    (order: SortOrder) =>
-      setSearchOptions({ ...searchOptions, sortOrder: order }),
-    []
+  const handleSortOrderChanged = (order: SortOrder) =>
+    setSearchOptions({ ...searchOptions, sortOrder: order });
+
+  const handleQueryChanged = (query: string) =>
+    setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
+
+  /**
+   * A list that consists of search result items.
+   */
+  const searchResultList = (
+    <List subheader={<ListSubheader>{searchStrings.subtitle}</ListSubheader>}>
+      {searchResults.length > 0 ? (
+        searchResults
+      ) : (
+        <ListItem key={searchStrings.noResultsFound} divider>
+          <Typography>{searchStrings.noResultsFound}</Typography>
+        </ListItem>
+      )}
+    </List>
   );
 
   return (
@@ -130,14 +141,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>
-            <IconButton>
-              <SearchIcon fontSize="large" />
-            </IconButton>
-            <TextField />
+            <SearchBar onChange={handleQueryChanged} />
           </CardContent>
         </Card>
       </Grid>
-
       <Grid item xs={9}>
         <Card>
           <CardHeader
@@ -150,7 +157,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }
           />
           <CardContent>{searchResultList}</CardContent>
-
           <CardActions>
             <Grid container justify="center">
               <Grid item>

@@ -19,24 +19,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
 
-/**
- * Type of all search options on Search page
- */
-export interface SearchOptions {
-  /**
-   * The number of items displayed in one page.
-   */
-  rowsPerPage: number;
-  /**
-   * Selected page.
-   */
-  currentPage: number;
-  /**
-   * Selected search result sorting order.
-   */
-  sortOrder: SortOrder | undefined;
-}
-
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
@@ -58,8 +40,9 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
 export const searchItems = (
   searchOptions: SearchOptions
 ): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> => {
-  const { rowsPerPage, currentPage, sortOrder } = searchOptions;
+  const { query, rowsPerPage, currentPage, sortOrder } = searchOptions;
   const searchParams: OEQ.Search.SearchParams = {
+    query: query,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
     status: [
@@ -70,3 +53,25 @@ export const searchItems = (
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
+
+/**
+ * Type of all search options on Search page
+ */
+export interface SearchOptions {
+  /**
+   * The query string of the current search. Can be left blank for a default search.
+   */
+  query?: string;
+  /**
+   * The number of items displayed in one page.
+   */
+  rowsPerPage: number;
+  /**
+   * Selected page.
+   */
+  currentPage: number;
+  /**
+   * Selected search result sorting order.
+   */
+  sortOrder: SortOrder | undefined;
+}
