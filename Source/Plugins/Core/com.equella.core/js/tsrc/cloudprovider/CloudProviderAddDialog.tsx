@@ -104,8 +104,8 @@ class CloudProviderAddDialog extends React.Component<
           open={open}
           onClose={onCancel}
           aria-labelledby="form-dialog-title"
-          disableBackdropClick={true}
-          disableEscapeKeyDown={true}
+          disableBackdropClick
+          disableEscapeKeyDown
           fullWidth
         >
           <DialogTitle>

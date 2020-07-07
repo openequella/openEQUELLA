@@ -45,34 +45,32 @@ export default function DefaultSortOrderSetting({
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
   return (
-    <>
-      <FormControl variant="outlined">
-        <Select
-          SelectDisplayProps={{ id: "_sortOrder" }}
-          disabled={disabled}
-          onChange={(event) => setValue(event.target.value as SortOrder)}
-          variant="outlined"
-          value={value}
-          className={classes.select}
-          input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
-        >
-          <MenuItem value={SortOrder.RANK}>
-            {searchPageSettingsStrings.relevance}
-          </MenuItem>
-          <MenuItem value={SortOrder.DATEMODIFIED}>
-            {searchPageSettingsStrings.lastModified}
-          </MenuItem>
-          <MenuItem value={SortOrder.DATECREATED}>
-            {searchPageSettingsStrings.dateCreated}
-          </MenuItem>
-          <MenuItem value={SortOrder.NAME}>
-            {searchPageSettingsStrings.title}
-          </MenuItem>
-          <MenuItem value={SortOrder.RATING}>
-            {searchPageSettingsStrings.userRating}
-          </MenuItem>
-        </Select>
-      </FormControl>
-    </>
+    <FormControl variant="outlined">
+      <Select
+        SelectDisplayProps={{ id: "_sortOrder" }}
+        disabled={disabled}
+        onChange={(event) => setValue(event.target.value as SortOrder)}
+        variant="outlined"
+        value={value}
+        className={classes.select}
+        input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
+      >
+        <MenuItem value={SortOrder.RANK}>
+          {searchPageSettingsStrings.relevance}
+        </MenuItem>
+        <MenuItem value={SortOrder.DATEMODIFIED}>
+          {searchPageSettingsStrings.lastModified}
+        </MenuItem>
+        <MenuItem value={SortOrder.DATECREATED}>
+          {searchPageSettingsStrings.dateCreated}
+        </MenuItem>
+        <MenuItem value={SortOrder.NAME}>
+          {searchPageSettingsStrings.title}
+        </MenuItem>
+        <MenuItem value={SortOrder.RATING}>
+          {searchPageSettingsStrings.userRating}
+        </MenuItem>
+      </Select>
+    </FormControl>
   );
 }
