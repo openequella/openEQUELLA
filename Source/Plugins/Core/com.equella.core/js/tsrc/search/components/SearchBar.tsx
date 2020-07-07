@@ -30,6 +30,7 @@ interface SearchBarProps {
    */
   onChange: (query: string) => void;
 }
+
 /**
  * Debounced searchbar component to be used in the Search Page.
  * It also includes an adornment which allows clearing the search field in a single click.
@@ -38,6 +39,7 @@ interface SearchBarProps {
  */
 export default function SearchBar({ onChange }: SearchBarProps) {
   const [query, setQuery] = React.useState<string>("");
+
   /**
    * uses lodash to debounce the search query by half a second
    */
@@ -45,10 +47,12 @@ export default function SearchBar({ onChange }: SearchBarProps) {
     debounce((query: string) => onChange(query), 500),
     [onChange]
   );
+
   const handleQueryChange = (query: string) => {
     setQuery(query);
     delayedQuery(query);
   };
+
   return (
     <TextField
       onKeyDown={(event) => {

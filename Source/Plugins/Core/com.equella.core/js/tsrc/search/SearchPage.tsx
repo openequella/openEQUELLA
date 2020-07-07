@@ -54,12 +54,14 @@ import SearchOrderSelect from "./components/SearchOrderSelect";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
+
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
     defaultSearchOptions
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -67,10 +69,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
+
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
       handleSortOrderChanged(settings.defaultSearchSort);
     });
   }, []);
+
   /**
    * Trigger a search when state values change, but skip the initial values.
    */
@@ -82,9 +86,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       search();
     }
   }, [searchOptions]);
+
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
   };
+
   /**
    * Search items with specified search criteria.
    */
@@ -95,6 +101,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )
       .catch((error: Error) => handleError(error));
   };
+
   /**
    * A SearchResult that represents one of the search result items.
    */
@@ -103,6 +110,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <SearchResult {...item} key={item.uuid} />
     )
   );
+
   /**
    * Provide a memorized callback for updating sort order in order to avoid re-rendering
    * component SearchOrderSelect when other search control values are changed.
@@ -117,6 +125,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       setSearchOptions({ ...searchOptions, query: query, currentPage: 0 }),
     [searchOptions]
   );
+
   /**
    * A list that consists of search result items.
    */
@@ -131,6 +140,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )}
     </List>
   );
+
   return (
     <Grid container direction="column" spacing={2}>
       <Grid item xs={9}>
@@ -181,4 +191,5 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     </Grid>
   );
 };
+
 export default SearchPage;
