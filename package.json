@@ -74,16 +74,19 @@
       "jquery": true
     },
     "rules": {
-      "react/jsx-curly-brace-presence": "error",
-      "jest/require-top-level-describe": "error",
       "jest/consistent-test-it": "error",
       "jest/no-mocks-import": "warn",
+      "jest/require-top-level-describe": "error",
       "notice/notice": [
         "error",
         {
           "templateFile": "licenseHeader.js"
         }
-      ]
+      ],
+      "react/jsx-boolean-value": "error",
+      "react/jsx-curly-brace-presence": "error",
+      "react/jsx-fragments": "error",
+      "react/jsx-no-useless-fragment": "error"
     },
     "overrides": [
       {
