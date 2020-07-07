@@ -31,29 +31,23 @@ interface EquellaListItemProps {
   icon?: ReactNode;
 }
 
-class EquellaListItem extends React.Component<EquellaListItemProps> {
-  render() {
-    const {
-      listItemAttributes,
-      listItemPrimaryText,
-      icon,
-      listItemSecondText,
-      secondaryAction,
-    } = this.props;
-
-    return (
-      <ListItem {...listItemAttributes}>
-        {icon}
-        <ListItemText
-          primary={listItemPrimaryText}
-          secondary={listItemSecondText}
-        />
-        {secondaryAction && (
-          <ListItemSecondaryAction>{secondaryAction}</ListItemSecondaryAction>
-        )}
-      </ListItem>
-    );
-  }
-}
+const EquellaListItem = ({
+  listItemAttributes,
+  listItemPrimaryText,
+  icon,
+  listItemSecondText,
+  secondaryAction,
+}: EquellaListItemProps) => (
+  <ListItem {...listItemAttributes}>
+    {icon}
+    <ListItemText
+      primary={listItemPrimaryText}
+      secondary={listItemSecondText}
+    />
+    {secondaryAction && (
+      <ListItemSecondaryAction>{secondaryAction}</ListItemSecondaryAction>
+    )}
+  </ListItem>
+);
 
 export default EquellaListItem;
