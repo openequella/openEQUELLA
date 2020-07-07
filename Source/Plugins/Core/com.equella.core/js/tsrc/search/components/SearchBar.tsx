@@ -30,7 +30,6 @@ interface SearchBarProps {
    */
   onChange: (query: string) => void;
 }
-
 /**
  * Debounced searchbar component to be used in the Search Page.
  * It also includes an adornment which allows clearing the search field in a single click.
@@ -44,19 +43,18 @@ export default function SearchBar({ onChange }: SearchBarProps) {
    */
   const delayedQuery = useCallback(
     debounce((query: string) => onChange(query), 500),
-    []
+    [onChange]
   );
-
-  React.useEffect(() => {
+  const handleQueryChange = (query: string) => {
+    setQuery(query);
     delayedQuery(query);
-  }, [query]);
-
+  };
   return (
     <TextField
       onKeyDown={(event) => {
         if (event.keyCode == ESCAPE_KEY_CODE) {
           event.preventDefault();
-          setQuery("");
+          handleQueryChange("");
         }
       }}
       InputProps={{
@@ -66,13 +64,15 @@ export default function SearchBar({ onChange }: SearchBarProps) {
           </InputAdornment>
         ),
         endAdornment: query.length > 0 && (
-          <IconButton onClick={() => setQuery("")} size="small">
+          <IconButton onClick={() => handleQueryChange("")} size="small">
             <Close />
           </IconButton>
         ),
       }}
       fullWidth
-      onChange={(event) => setQuery(event.target.value)}
+      onChange={(event) => {
+        handleQueryChange(event.target.value);
+      }}
       variant="standard"
       value={query}
     />
