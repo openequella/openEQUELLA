@@ -31,7 +31,6 @@ import {
   Grid,
   List,
   ListItem,
-  ListSubheader,
   TablePagination,
   Typography,
 } from "@material-ui/core";
@@ -125,7 +124,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * A list that consists of search result items.
    */
   const searchResultList = (
-    <List subheader={<ListSubheader>{searchStrings.subtitle}</ListSubheader>}>
+    <List>
       {searchResults.length > 0 ? (
         searchResults
       ) : (
