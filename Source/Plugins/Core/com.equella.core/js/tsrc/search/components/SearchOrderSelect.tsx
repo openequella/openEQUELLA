@@ -74,4 +74,4 @@ export const SearchOrderSelect = ({
   );
 };
 
-export default React.memo(SearchOrderSelect);
+export default SearchOrderSelect;
