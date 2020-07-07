@@ -278,9 +278,9 @@ function updateStylesheets(
     ? _sheets.map(resolveUrl)
     : [resolveUrl(`${Config.baseUrl}api/theme/legacy.css`)];
   const doc = window.document;
-  const insertPoint = doc.getElementById("_dynamicInsert")!;
+  const insertPoint = doc.getElementById("_dynamicInsert");
   const head = doc.getElementsByTagName("head")[0];
-  let current = insertPoint.previousElementSibling;
+  let current = insertPoint?.previousElementSibling ?? null;
   const existingSheets: { [index: string]: HTMLLinkElement } = {};
 
   while (
@@ -321,7 +321,7 @@ function updateStylesheets(
 function deleteElements(elements: { [url: string]: HTMLElement }) {
   for (const key in elements) {
     const e = elements[key];
-    e.parentElement!.removeChild(e);
+    e.parentElement?.removeChild(e);
   }
 }
 

@@ -250,7 +250,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         (): Promise<any> =>
           // Filters stored in 'deletedMimeTypeFilters' always have an ID.
           deletedMimeTypeFilters.length
-            ? batchDelete(deletedMimeTypeFilters.map((filter) => filter.id!))
+            ? batchDelete(
+                deletedMimeTypeFilters.map(({ id }) => {
+                  if (!id) throw TypeError("id is undefined");
+                  return id;
+                })
+              )
                 .then((messages) => errorMessages.push(...messages))
                 .catch((error) => handleError(error))
             : Promise.resolve()

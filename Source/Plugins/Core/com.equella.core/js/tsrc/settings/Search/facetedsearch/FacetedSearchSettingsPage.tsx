@@ -138,7 +138,12 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       : Promise.resolve([]);
 
     const deletePromise: Promise<string[]> = listOfDeleted.length
-      ? batchDelete(listOfDeleted.map((facet) => facet.id!.toString()))
+      ? batchDelete(
+          listOfDeleted.map(({ id }) => {
+            if (!id) throw new TypeError("id is undefined");
+            return id.toString();
+          })
+        )
       : Promise.resolve([]);
 
     Promise.all([updatePromise, deletePromise])
