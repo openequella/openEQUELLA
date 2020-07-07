@@ -17,7 +17,13 @@
  */
 import * as React from "react";
 import { ReactElement } from "react";
-import { Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
+import {
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import {
   schemaListSummary,
   SchemaNode,
@@ -81,21 +87,24 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       <>
         <Grid item>
           {schemaList && (
-            <Select
-              fullWidth
-              label={
-                <InputLabel shrink id="select-label">
-                  {strings.schema}
-                </InputLabel>
-              }
-              value={selectedSchema}
-              displayEmpty
-              onChange={(event) => {
-                setSelectedSchema(event.target.value as string | undefined);
-              }}
-            >
-              {schemaList}
-            </Select>
+            <>
+              <Select
+                fullWidth
+                label={
+                  <InputLabel shrink id="select-label">
+                    {strings.schema}
+                  </InputLabel>
+                }
+                value={selectedSchema}
+                displayEmpty
+                onChange={(event) => {
+                  setSelectedSchema(event.target.value as string | undefined);
+                }}
+              >
+                {schemaList}
+              </Select>
+              <FormHelperText>{strings.permissionsHelperText}</FormHelperText>
+            </>
           )}
         </Grid>
         <Grid item>

@@ -467,6 +467,8 @@ export const languageStrings = {
         schemaSelector: {
           schema: "Schema",
           selectASchema: "Select a schema...",
+          permissionsHelperText:
+            "The LIST_SCHEMA permission is required to select a schema",
           nodeSelector: {
             expandAll: "Expand All",
             collapseAll: "Collapse All",
