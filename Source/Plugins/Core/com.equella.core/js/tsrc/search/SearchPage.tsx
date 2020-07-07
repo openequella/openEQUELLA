@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   templateDefaults,
   templateError,
@@ -115,16 +115,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Provide a memorized callback for updating sort order in order to avoid re-rendering
    * component SearchOrderSelect when other search control values are changed.
    */
-  const handleSortOrderChanged = useCallback(
-    (order: SortOrder) =>
-      setSearchOptions({ ...searchOptions, sortOrder: order }),
-    [searchOptions]
-  );
-  const handleQueryChanged = useCallback(
-    (query) =>
-      setSearchOptions({ ...searchOptions, query: query, currentPage: 0 }),
-    [searchOptions]
-  );
+  const handleSortOrderChanged = (order: SortOrder) =>
+    setSearchOptions({ ...searchOptions, sortOrder: order });
+
+  const handleQueryChanged = (query: string) =>
+    setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
 
   /**
    * A list that consists of search result items.
