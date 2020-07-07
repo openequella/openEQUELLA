@@ -16,24 +16,22 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { createStyles, Paper, withStyles, WithStyles } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 
-const styles = createStyles({
+const useStyles = makeStyles({
   container: {
     margin: "8px",
     padding: "8px",
   },
 });
 
-class SettingsMenuContainer extends React.Component<WithStyles<typeof styles>> {
-  constructor(props: WithStyles<typeof styles>) {
-    super(props);
-  }
-
-  render() {
-    const styles = this.props.classes;
-    return <Paper className={styles.container}>{this.props.children}</Paper>;
-  }
+interface SettingsMenuContainerProps {
+  children: React.ReactNode;
 }
 
-export default withStyles(styles)(SettingsMenuContainer);
+const SettingsMenuContainer = ({ children }: SettingsMenuContainerProps) => {
+  const styles = useStyles();
+  return <Paper className={styles.container}>{children}</Paper>;
+};
+
+export default SettingsMenuContainer;

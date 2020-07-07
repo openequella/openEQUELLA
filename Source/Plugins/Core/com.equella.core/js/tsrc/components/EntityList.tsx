@@ -23,41 +23,39 @@ import {
   Paper,
   Theme,
   Typography,
-  WithStyles,
+  makeStyles,
 } from "@material-ui/core";
-import { StyleRules, withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 
-const styles = (theme: Theme) =>
-  ({
-    overall: {
-      padding: theme.spacing(2),
-      height: "100%",
-    },
-    results: {
-      padding: theme.spacing(2),
-      position: "relative",
-    },
-    resultHeader: {
-      display: "flex",
-      justifyContent: "flex-end",
-    },
-    resultText: {
-      flexGrow: 1,
-    },
-    progress: {
-      display: "flex",
-      justifyContent: "center",
-    },
-    fab: {
-      zIndex: 1000,
-      position: "fixed",
-      bottom: theme.spacing(2),
-      right: theme.spacing(5),
-    },
-  } as StyleRules);
+const useStyles = makeStyles((theme: Theme) => ({
+  overall: {
+    padding: theme.spacing(2),
+    height: "100%",
+  },
+  results: {
+    padding: theme.spacing(2),
+    position: "relative",
+  },
+  resultHeader: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  resultText: {
+    flexGrow: 1,
+  },
+  progress: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  fab: {
+    zIndex: 1000,
+    position: "fixed",
+    bottom: theme.spacing(2),
+    right: theme.spacing(5),
+  },
+}));
 
-interface EntityListProps extends WithStyles<typeof styles> {
+interface EntityListProps {
   resultsText: React.ReactNode;
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
@@ -66,47 +64,44 @@ interface EntityListProps extends WithStyles<typeof styles> {
   id?: string;
 }
 
-class EntityList extends React.Component<EntityListProps, {}> {
-  render() {
-    const {
-      id,
-      classes,
-      progress,
-      resultsText,
-      resultsRight,
-      children,
-      createOnClick,
-    } = this.props;
-    return (
-      <div id={id} className={classes.overall}>
-        {createOnClick && (
-          <Fab
-            id="add-entity"
-            className={classes.fab}
-            component="button"
-            color="secondary"
-            onClick={createOnClick}
-          >
-            <AddIcon />
-          </Fab>
-        )}
-        <Paper className={classes.results}>
-          <div className={classes.resultHeader}>
-            <Typography className={classes.resultText} variant="subtitle1">
-              {resultsText}
-            </Typography>
-            {resultsRight}
+const EntityList = ({
+  id,
+  progress,
+  resultsText,
+  resultsRight,
+  children,
+  createOnClick,
+}: EntityListProps) => {
+  const styles = useStyles();
+  return (
+    <div id={id} className={styles.overall}>
+      {createOnClick && (
+        <Fab
+          id="add-entity"
+          className={styles.fab}
+          component="button"
+          color="secondary"
+          onClick={createOnClick}
+        >
+          <AddIcon />
+        </Fab>
+      )}
+      <Paper className={styles.results}>
+        <div className={styles.resultHeader}>
+          <Typography className={styles.resultText} variant="subtitle1">
+            {resultsText}
+          </Typography>
+          {resultsRight}
+        </div>
+        <List>{children}</List>
+        {progress && (
+          <div className={styles.progress}>
+            <CircularProgress />
           </div>
-          <List>{children}</List>
-          {progress && (
-            <div className={classes.progress}>
-              <CircularProgress />
-            </div>
-          )}
-        </Paper>
-      </div>
-    );
-  }
-}
+        )}
+      </Paper>
+    </div>
+  );
+};
 
-export default withStyles(styles)(EntityList);
+export default EntityList;
