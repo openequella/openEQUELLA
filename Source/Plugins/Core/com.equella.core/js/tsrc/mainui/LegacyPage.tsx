@@ -31,6 +31,7 @@ import {
   LegacyContentProps,
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -45,6 +46,13 @@ interface LegacyPageProps extends TemplateUpdateProps {
     ) => void;
   };
 }
+const useStyles = makeStyles({
+  centralSpinner: {
+    top: "50%",
+    left: "50%",
+    position: "fixed",
+  },
+});
 
 export function templatePropsForLegacy({
   title,
@@ -81,6 +89,7 @@ export const LegacyPage = React.memo(
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
+    const classes = useStyles();
 
     React.useEffect(() => {
       if (content) {
@@ -143,6 +152,10 @@ export const LegacyPage = React.memo(
       []
     );
 
-    return content ? <LegacyContentRenderer {...content} /> : <div />;
+    return content ? (
+      <LegacyContentRenderer {...content} />
+    ) : (
+      <CircularProgress className={classes.centralSpinner} />
+    );
   }
 );
