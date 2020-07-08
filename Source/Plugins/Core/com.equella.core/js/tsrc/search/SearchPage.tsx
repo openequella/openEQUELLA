@@ -115,7 +115,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
         setPagedSearchResult(items)
       )
-      .catch((error: Error) => handleError(error))
+      .catch(handleError)
       .finally(() => setShowSpinner(false));
   };
 
@@ -139,13 +139,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const searchResultList = (
     <List className={showSpinner ? classes.transparentList : ""}>
-      {searchResults.length > 0
-        ? searchResults
-        : !showSpinner && (
-            <ListItem key={searchStrings.noResultsFound} divider>
-              <Typography>{searchStrings.noResultsFound}</Typography>
-            </ListItem>
-          )}
+      {searchResults.length === 0 && !showSpinner ? (
+        <ListItem key={searchStrings.noResultsFound} divider>
+          <Typography>{searchStrings.noResultsFound}</Typography>
+        </ListItem>
+      ) : (
+        searchResults
+      )}
     </List>
   );
 
@@ -169,7 +169,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               />
             }
           />
-          {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
+          {/*Add an inline style to make the spinner displays at the Card's horizontal center.*/}
           <CardContent style={{ textAlign: "center" }}>
             {showSpinner && (
               <CircularProgress
