@@ -32,27 +32,7 @@ import {
   validateFacetFields,
 } from "./FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
-import { makeStyles, Theme } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    dialogPaper: {
-      width: "45%",
-      height: "90%",
-      maxHeight: "none",
-      maxWidth: "none",
-      margin: theme.spacing(2),
-      padding: theme.spacing(1),
-      overflowY: "hidden",
-    },
-    dialog: {
-      overflowY: "hidden",
-    },
-    root: {
-      flexGrow: 1,
-    },
-  };
-});
 interface FacetDialogProps {
   /**
    * If true, the dialog will be shown.
@@ -102,7 +82,6 @@ const FacetDialog = ({
   const isNameInvalid = validateFacetFields(name);
   const isSchemaNodeInvalid = validateFacetFields(schemaNode);
 
-  const classes = useStyles();
   /**
    * Initialise textfields' values, depending on 'onClose'.
    */
@@ -123,8 +102,6 @@ const FacetDialog = ({
       onClose={onClose}
       disableBackdropClick
       disableEscapeKeyDown
-      className={classes.dialog}
-      classes={{ paper: classes.dialogPaper }}
     >
       <DialogTitle>
         {facet
@@ -165,6 +142,7 @@ const FacetDialog = ({
           }}
           required
           fullWidth
+          disabled
           error={!!schemaNode && validateFacetFields(schemaNode)}
         />
         <SchemaSelector
