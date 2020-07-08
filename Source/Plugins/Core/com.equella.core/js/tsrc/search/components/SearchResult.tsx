@@ -21,22 +21,22 @@ import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import ReactHtmlParser from "react-html-parser";
 import {
-  ListItem,
-  Theme,
-  Typography,
-  ListItemText,
   Divider,
-  List,
-  ListItemIcon,
-  ExpansionPanelSummary,
   ExpansionPanel,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Theme,
+  Typography,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
 import {
-  InsertDriveFile,
-  ExpandMore,
   AttachFile,
+  ExpandMore,
+  InsertDriveFile,
   Subject,
 } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
@@ -53,9 +53,11 @@ const useStyles = makeStyles((theme: Theme) => {
       paddingRight: theme.spacing(1),
     },
     thumbnail: {
-      paddingRight: theme.spacing(2),
+      marginRight: theme.spacing(2),
       width: "88px",
       height: "auto",
+      borderRadius: "4px",
+      boxShadow: "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)",
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
