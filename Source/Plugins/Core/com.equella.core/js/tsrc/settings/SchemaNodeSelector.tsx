@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => {
   return {
     treeView: {
       flexGrow: 1,
-      maxHeight: "30vh",
+      height: "30vh",
       overflowY: "auto",
       width: "100%",
     },
