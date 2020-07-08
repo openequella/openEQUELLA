@@ -27,7 +27,6 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
       val notice = s"${w1.word}"
       page.setPostLoginNotice(notice)
       page.load()
-      page.gotoPostNoticeTab()
       Prop(page.getPostNoticeFieldContents == notice)
         .label("Notice: " + notice + ", NoticeField: " + page.getPostNoticeFieldContents)
     }
@@ -52,7 +51,6 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
       page.load()
       page.clearPostLoginNotice()
       page.load()
-      page.gotoPostNoticeTab()
       Prop(page.getPostNoticeFieldContents == "")
     }
   }

@@ -30,7 +30,6 @@ import {
 import {
   clearPreLoginNotice,
   getPreLoginNotice,
-  NotificationType,
   PreLoginNotice,
   ScheduleTypeSelection,
   strings,
@@ -40,12 +39,12 @@ import {
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import { DateTimePicker } from "material-ui-pickers";
+import SettingsListHeading from "../components/SettingsListHeading";
 
 const RichTextEditor = React.lazy(() => import("../components/RichTextEditor"));
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
-  notify: (notificationType: NotificationType) => void;
   preventNav: (prevNav: boolean) => void;
 }
 
@@ -76,41 +75,11 @@ class PreLoginNoticeConfigurator extends React.Component<
     };
   }
 
-  handleSubmitPreNotice = () => {
-    if (this.state.current.notice == "") {
-      clearPreLoginNotice()
-        .then(() => {
-          this.props.notify(NotificationType.Clear);
-          this.setState(
-            {
-              db: this.state.current,
-            },
-            () => this.setPreventNav()
-          );
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
-    } else {
-      submitPreLoginNotice(this.state.current)
-        .then(() => {
-          this.props.notify(NotificationType.Save);
-          this.setDBToValues();
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
-    }
-  };
-
-  setDBToValues = () => {
-    this.setState(
-      {
-        db: this.state.current,
-      },
-      () => this.setPreventNav()
-    );
-  };
+  save = async () =>
+    (this.state.current.notice
+      ? submitPreLoginNotice(this.state.current)
+      : clearPreLoginNotice()
+    ).then(() => this.setState({ db: this.state.current }));
 
   componentDidMount = () => {
     getPreLoginNotice()
@@ -252,7 +221,8 @@ class PreLoginNoticeConfigurator extends React.Component<
     return (
       <Card>
         <CardContent>
-          <Grid id="preLoginConfig" container spacing={8} direction="column">
+          <SettingsListHeading heading={strings.preLogin.title} />
+          <Grid id="preLoginConfig" container spacing={2} direction="column">
             <Grid item>
               <React.Suspense fallback={<div>Loading editor...</div>}>
                 <RichTextEditor

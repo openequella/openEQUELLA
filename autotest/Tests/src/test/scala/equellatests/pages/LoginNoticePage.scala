@@ -3,13 +3,15 @@ package equellatests.pages
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.ExpectedConditions2
 import equellatests.browserpage.NewTitledPage
+import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, Keys, WebElement}
 
 case class LoginNoticePage(ctx: PageContext)
     extends NewTitledPage("Login notice editor", "page/loginconfiguration") {
+  private val SUCCESS_MSG = "Saved successfully."
 
-  private def saveButton: WebElement = findElementById("SaveButton")
+  private def saveButton: WebElement = findElementById("_saveButton")
 
   private def preNoticeField: WebElement = findElementById("tinymce")
 
@@ -32,8 +34,6 @@ case class LoginNoticePage(ctx: PageContext)
   private def postNoticeClearButton: WebElement = findElementById("postClearButton")
 
   private def postNoticeField: WebElement = findElementById("postNoticeField")
-
-  private def postTab: WebElement = findElementById("postTab")
 
   private def clearOkButton: WebElement = findElementById("okToClear")
 
@@ -60,15 +60,10 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementLocated(By.id("client-snackbar"), content))
   }
 
-  private def waitForPostTab(): Unit = {
-    waitFor(ExpectedConditions2.presenceOfElement(postNoticeField))
-  }
-
   def setPreLoginNotice(notice: String): Unit = {
     clearAndPopulatePreNoticeField(notice)
     switchFromTinyMCEIFrame()
-    saveButton.click()
-    waitForSnackBar("Login notice saved successfully.")
+    save()
   }
 
   def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
@@ -82,15 +77,13 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    saveButton.click()
-    waitForSnackBar("Login notice saved successfully.")
+    save()
   }
 
   def clearPreLoginNotice(): Unit = {
     clearAndPopulatePreNoticeField("")
     switchFromTinyMCEIFrame()
-    saveButton.click()
-    waitForSnackBar("Login notice cleared successfully.")
+    save()
   }
 
   def getPreNoticeFieldContents: String = {
@@ -101,34 +94,43 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def setPostLoginNotice(notice: String): Unit = {
-    gotoPostNoticeTab()
     populatePostNoticeField(notice)
-    saveButton.click()
-    waitForSnackBar("Login notice saved successfully.")
+    save()
   }
 
   def clearPostLoginNotice(): Unit = {
-    gotoPostNoticeTab()
     postNoticeClearButton.click()
     waitFor(ExpectedConditions2.presenceOfElement(clearOkButton))
     clearOkButton.click()
-    waitForSnackBar("Login notice cleared successfully.")
+    save()
   }
 
   def getPostNoticeFieldContents: String = {
-    gotoPostNoticeTab()
     postNoticeField.getText
   }
 
-  def gotoPostNoticeTab(): Unit = {
-    this.postTab.click()
-    waitForPostTab()
-  }
-
   def populatePostNoticeField(notice: String): Unit = {
-    gotoPostNoticeTab()
     postNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.BACK_SPACE))
     postNoticeField.sendKeys(notice)
   }
 
+  def save(): Unit = {
+    def saveButtonActive: Boolean = saveButton.getAttribute("disabled") == null
+    def clickSaveButton(): Unit =
+      new Actions(driver)
+        .moveToElement(saveButton)
+        .click()
+        .perform()
+
+    // A retry for clicking the save button, as sometimes delays due to showing and then
+    // hiding a dialog can trip things up
+    waiter.until(_ => {
+      if (saveButtonActive) clickSaveButton()
+
+      // Once the click has been genuinely received, then the button will no longer be active
+      // and we can move on to checking for the expectant snackbar.
+      !saveButtonActive
+    })
+    waitForSnackBar(SUCCESS_MSG)
+  }
 }

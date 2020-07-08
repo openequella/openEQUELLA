@@ -29,24 +29,28 @@ import { commonString } from "../util/commonstrings";
 import {
   clearPostLoginNotice,
   getPostLoginNotice,
-  NotificationType,
-  submitPostLoginNotice,
   strings,
+  submitPostLoginNotice,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
+import SettingsListHeading from "../components/SettingsListHeading";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
-  notify: (notificationType: NotificationType) => void;
   preventNav: (prevNav: boolean) => void;
 }
 
 interface PostLoginNoticeConfiguratorState {
-  postNotice?: string; //what is currently in the textfield
-  dbPostNotice?: string; //what is currently in the database
+  /** What is currently in the textfield. */
+  postNotice?: string;
+
+  /** What is currently in the database. */
+  dbPostNotice?: string;
+
+  /** Whether to display the dialog to confirm clearing. */
   clearStaged: boolean;
 }
 
@@ -63,36 +67,15 @@ class PostLoginNoticeConfigurator extends React.Component<
     };
   }
 
-  handleSubmitPostNotice = () => {
-    if (this.state.postNotice != undefined) {
-      submitPostLoginNotice(this.state.postNotice)
-        .then(() => {
-          this.props.notify(NotificationType.Save);
-          this.setState({ dbPostNotice: this.state.postNotice });
-          this.props.preventNav(false);
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
-    }
-  };
+  save = async () =>
+    (this.state.postNotice
+      ? submitPostLoginNotice(this.state.postNotice)
+      : clearPostLoginNotice()
+    ).then(() => this.setState({ dbPostNotice: this.state.postNotice }));
 
   handleClearPostNotice = () => {
-    this.setState({ postNotice: "" });
-    clearPostLoginNotice()
-      .then(() => {
-        this.setState({ dbPostNotice: "", clearStaged: false });
-        this.props.preventNav(false);
-        this.props.notify(NotificationType.Clear);
-      })
-      .catch((error: AxiosError) => {
-        this.props.handleError(error);
-      });
-  };
-
-  handleUndoPostNotice = () => {
-    this.setState({ postNotice: this.state.dbPostNotice });
-    this.props.notify(NotificationType.Revert);
+    this.setState({ postNotice: "", clearStaged: false });
+    this.props.preventNav(true);
   };
 
   handlePostTextFieldChange = (
@@ -119,9 +102,39 @@ class PostLoginNoticeConfigurator extends React.Component<
     this.setState({ clearStaged: true });
   };
 
-  Dialogs = () => {
+  render() {
+    const { postNotice, dbPostNotice } = this.state;
     return (
-      <div>
+      <>
+        <Card>
+          <CardContent>
+            <SettingsListHeading heading={strings.postLogin.title} />
+            <TextField
+              id="postNoticeField"
+              variant="outlined"
+              rows="12"
+              rowsMax="35"
+              multiline
+              fullWidth
+              inputProps={{ length: 12 }}
+              placeholder={strings.postLogin.description}
+              onChange={(e) => this.handlePostTextFieldChange(e.target)}
+              value={postNotice}
+            />
+          </CardContent>
+
+          <CardActions>
+            <Button
+              id="postClearButton"
+              disabled={dbPostNotice === ""}
+              onClick={this.stageClear}
+              variant="text"
+            >
+              {commonString.action.clear}
+            </Button>
+          </CardActions>
+        </Card>
+
         <Dialog
           open={this.state.clearStaged}
           onClose={() => this.setState({ clearStaged: false })}
@@ -142,43 +155,6 @@ class PostLoginNoticeConfigurator extends React.Component<
             </Button>
           </DialogActions>
         </Dialog>
-      </div>
-    );
-  };
-
-  render() {
-    const { postNotice, dbPostNotice } = this.state;
-    const Dialogs = this.Dialogs;
-    return (
-      <>
-        <Card>
-          <CardContent>
-            <TextField
-              id="postNoticeField"
-              variant="outlined"
-              rows="12"
-              rowsMax="35"
-              multiline
-              fullWidth
-              inputProps={{ length: 12 }}
-              placeholder={strings.postlogin.description}
-              onChange={(e) => this.handlePostTextFieldChange(e.target)}
-              value={postNotice}
-            />
-          </CardContent>
-
-          <CardActions>
-            <Button
-              id="postClearButton"
-              disabled={dbPostNotice === ""}
-              onClick={this.stageClear}
-              variant="text"
-            >
-              {commonString.action.clear}
-            </Button>
-          </CardActions>
-        </Card>
-        <Dialogs />
       </>
     );
   }
