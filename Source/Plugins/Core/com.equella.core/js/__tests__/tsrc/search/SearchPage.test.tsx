@@ -19,47 +19,93 @@ import { getSearchResult } from "../../../__mocks__/getSearchResult";
 import { createMount } from "@material-ui/core/test-utils";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
-import * as OEQ from "@openequella/rest-api-client";
 import { ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
+import * as SearchModule from "../../../tsrc/search/SearchModule";
+import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule";
+import { defaultSearchSettings } from "../../../tsrc/settings/Search/SearchSettingsModule";
+import { BrowserRouter } from "react-router-dom";
+import { CircularProgress } from "@material-ui/core";
 
 jest.useFakeTimers();
-jest.mock("@openequella/rest-api-client");
-(OEQ.Search.search as jest.Mock<
-  Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>>
->).mockResolvedValue(getSearchResult);
+const mockSearch = jest.spyOn(SearchModule, "searchItems");
+const mockSearchSettings = jest.spyOn(
+  SearchSettingsModule,
+  "getSearchSettingsFromServer"
+);
+const searchSettingPromise = mockSearchSettings.mockImplementation(() =>
+  Promise.resolve(defaultSearchSettings)
+);
+const searchPromise = mockSearch.mockImplementation(() =>
+  Promise.resolve(getSearchResult)
+);
 
 describe("<SearchPage/>", () => {
   let mount: ReturnType<typeof createMount>;
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mount = createMount();
-    component = mount(<SearchPage updateTemplate={jest.fn()} />);
+    component = mount(
+      <BrowserRouter>
+        <SearchPage updateTemplate={jest.fn()} />{" "}
+      </BrowserRouter>
+    );
+    // Wait until Search settings are returned.
+    await act(async () => {
+      await searchSettingPromise;
+    });
+    // Wait until the first search is completed.
+    await act(async () => {
+      await searchPromise;
+    });
   });
 
   afterEach(() => {
     mount.cleanUp();
   });
 
+  const changeQuery = (query: string) => {
+    act(() => {
+      const input = component.find("input.MuiInputBase-input");
+      input.simulate("change", { target: { value: query } });
+    });
+  };
+
+  it("should retrieve search settings and do a search when the page is opened", async () => {
+    expect(
+      SearchSettingsModule.getSearchSettingsFromServer
+    ).toHaveBeenCalledTimes(1);
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(1);
+  });
+
   it("should display 'No results found.' when there are no search results", () => {
-    expect(component.html()).not.toContain(
-      "266bb0ff-a730-4658-aec0-c68bbefc227c"
-    );
-    expect(component.html()).toContain("No results found.");
+    changeQuery("old title");
+    //use a timed callback to wait for the debounce before asserting results have populated the page
+    setTimeout(() => {
+      expect(component.html()).toContain("No results found.");
+    }, 1000);
   });
 
   it("should contain the test data after a search bar text change and render", () => {
-    act(() => {
-      const input = component.find("input.MuiInputBase-input");
-      input.simulate("change", { target: { value: "new title" } });
-    });
-    //use a timed callback to wait for the debounce before asserting results have populated the page
+    changeQuery("new title");
     setTimeout(() => {
       expect(component.html()).not.toContain("No results found.");
       expect(component.html()).toContain(
         "266bb0ff-a730-4658-aec0-c68bbefc227c"
       );
     }, 1000);
+  });
+
+  it("should display a spinner when search is in progress", async () => {
+    // Trigger a search by changing search query.
+    changeQuery("new query");
+    setTimeout(async () => {
+      expect(component.find(CircularProgress)).toHaveLength(1);
+    }, 1000);
+    await act(async () => {
+      await searchPromise;
+    });
+    expect(component.find(CircularProgress)).toHaveLength(0);
   });
 });

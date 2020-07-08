@@ -33,6 +33,8 @@ import {
   ListItem,
   TablePagination,
   Typography,
+  CircularProgress,
+  makeStyles,
 } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
@@ -51,8 +53,19 @@ import {
 } from "../settings/Search/SearchSettingsModule";
 import SearchOrderSelect from "./components/SearchOrderSelect";
 
+const useStyles = makeStyles({
+  transparentList: {
+    opacity: 0.2,
+  },
+  centralSpinner: {
+    top: "50%",
+    position: "fixed",
+  },
+});
+
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
+  const classes = useStyles();
 
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
     defaultSearchOptions
@@ -60,6 +73,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   /**
    * Update the page title and retrieve Search settings.
@@ -69,6 +83,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(searchStrings.title)(tp),
     }));
 
+    // Show spinner before calling API to retrieve Search settings.
+    setShowSpinner(true);
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
       handleSortOrderChanged(settings.defaultSearchSort);
     });
@@ -91,14 +107,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   /**
-   * Search items with specified search criteria.
+   * Search items with specified search criteria and show a spinner when the search is in progress.
    */
   const search = (): void => {
+    setShowSpinner(true);
     searchItems(searchOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
         setPagedSearchResult(items)
       )
-      .catch((error: Error) => handleError(error));
+      .catch(handleError)
+      .finally(() => setShowSpinner(false));
   };
 
   /**
@@ -110,10 +128,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     )
   );
 
-  /**
-   * Provide a memorized callback for updating sort order in order to avoid re-rendering
-   * component SearchOrderSelect when other search control values are changed.
-   */
   const handleSortOrderChanged = (order: SortOrder) =>
     setSearchOptions({ ...searchOptions, sortOrder: order });
 
@@ -121,16 +135,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
 
   /**
-   * A list that consists of search result items.
+   * A list that consists of search result items. Lower the list's opacity when spinner displays.
    */
   const searchResultList = (
-    <List>
-      {searchResults.length > 0 ? (
-        searchResults
-      ) : (
+    <List className={showSpinner ? classes.transparentList : ""}>
+      {searchResults.length === 0 && !showSpinner ? (
         <ListItem key={searchStrings.noResultsFound} divider>
           <Typography>{searchStrings.noResultsFound}</Typography>
         </ListItem>
+      ) : (
+        searchResults
       )}
     </List>
   );
@@ -155,7 +169,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               />
             }
           />
-          <CardContent>{searchResultList}</CardContent>
+          {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
+          <CardContent style={{ textAlign: "center" }}>
+            {showSpinner && (
+              <CircularProgress
+                variant="indeterminate"
+                className={
+                  pagedSearchResult.results.length > 0
+                    ? classes.centralSpinner
+                    : ""
+                }
+              />
+            )}
+            {searchResultList}
+          </CardContent>
+
           <CardActions>
             <Grid container justify="center">
               <Grid item>
