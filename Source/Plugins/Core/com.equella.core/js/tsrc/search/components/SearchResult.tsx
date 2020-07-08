@@ -53,11 +53,10 @@ const useStyles = makeStyles((theme: Theme) => {
       paddingRight: theme.spacing(1),
     },
     thumbnail: {
+      //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
       marginRight: theme.spacing(2),
       width: "88px",
       height: "auto",
-      borderRadius: "4px",
-      boxShadow: "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)",
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
@@ -121,7 +120,7 @@ export default function SearchResult({
     if (attachments.length > 0 && !disableThumb) {
       result = (
         <img
-          className={classes.thumbnail}
+          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
           src={attachments[0].links.thumbnail}
           alt={attachments[0].description}
         />
