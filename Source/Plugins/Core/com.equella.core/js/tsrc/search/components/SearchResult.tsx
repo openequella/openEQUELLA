@@ -21,22 +21,22 @@ import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import ReactHtmlParser from "react-html-parser";
 import {
-  ListItem,
-  Theme,
-  Typography,
-  ListItemText,
   Divider,
-  List,
-  ListItemIcon,
-  ExpansionPanelSummary,
   ExpansionPanel,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Theme,
+  Typography,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
 import {
-  InsertDriveFile,
-  ExpandMore,
   AttachFile,
+  ExpandMore,
+  InsertDriveFile,
   Subject,
 } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
@@ -53,7 +53,8 @@ const useStyles = makeStyles((theme: Theme) => {
       paddingRight: theme.spacing(1),
     },
     thumbnail: {
-      paddingRight: theme.spacing(2),
+      //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
+      marginRight: theme.spacing(2),
       width: "88px",
       height: "auto",
     },
@@ -119,7 +120,7 @@ export default function SearchResult({
     if (attachments.length > 0 && !disableThumb) {
       result = (
         <img
-          className={classes.thumbnail}
+          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
           src={attachments[0].links.thumbnail}
           alt={attachments[0].description}
         />
