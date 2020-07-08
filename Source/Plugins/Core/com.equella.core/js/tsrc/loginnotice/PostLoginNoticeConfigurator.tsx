@@ -44,13 +44,13 @@ interface PostLoginNoticeConfiguratorProps {
 }
 
 interface PostLoginNoticeConfiguratorState {
-  /** what is currently in the textfield */
+  /** What is currently in the textfield. */
   postNotice?: string;
 
-  /** what is currently in the database */
+  /** What is currently in the database. */
   dbPostNotice?: string;
 
-  /** Whether to display the dialog to confirm clearing */
+  /** Whether to display the dialog to confirm clearing. */
   clearStaged: boolean;
 }
 
