@@ -73,11 +73,8 @@ describe("<SearchPage/>", () => {
    * Update search options in order to trigger a search.
    * @param update A function that simulates UI behaviours such as selecting a different value from a dropdown.
    */
-  const updateSearchOptions = async (update: () => void) => {
-    await act(async () => {
-      await update();
-    });
-  };
+  const updateSearchOptions = async (update: () => void) =>
+    await act(async () => await update());
 
   it("should retrieve search settings and do a search when the page is opened", () => {
     expect(
@@ -90,10 +87,10 @@ describe("<SearchPage/>", () => {
   it("should support debounce query search", async () => {
     jest.useFakeTimers("modern");
     const input = component.find("input.MuiInputBase-input");
-    await updateSearchOptions(() =>
-      input.simulate("change", { target: { value: "new query" } })
-    );
-    jest.advanceTimersByTime(1000);
+    await updateSearchOptions(() => {
+      input.simulate("change", { target: { value: "new query" } });
+      jest.advanceTimersByTime(1000);
+    });
     // After 1s the second search should be triggered.
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
