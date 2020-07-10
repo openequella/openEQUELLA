@@ -91,7 +91,7 @@ describe("<SearchPage/>", () => {
       input.simulate("change", { target: { value: "new query" } });
       jest.advanceTimersByTime(1000);
     });
-    // After 1s the second search should be triggered.
+    // After 1s the second search should be triggered
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
@@ -100,7 +100,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support changing the number of items displayed per page", async () => {
-    // Initial items per page is 10.
+    // Initial items per page is 10
     expect(component.html()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
@@ -135,8 +135,8 @@ describe("<SearchPage/>", () => {
         target: { value: SortOrder.DATEMODIFIED },
       })
     );
-    // Because sorting is done on Server and we are using mock data, we can only check if the selected
-    // sort order is included in the search params.
+    // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
+    // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
       sortOrder: SortOrder.DATEMODIFIED,
@@ -144,7 +144,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should display a spinner when search is in progress", async () => {
-    // Trigger a search by changing sorting order.
+    // Trigger a search by changing sorting order
     const sortingControl = component.find(".MuiCardHeader-action input");
     sortingControl.simulate("change", {
       target: { value: SortOrder.DATEMODIFIED },
