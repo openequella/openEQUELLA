@@ -18,7 +18,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 val jacksonVersion   = "2.11.1"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "9.0.37"
-val SwaggerVersion   = "1.6.1"
+val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.7",
   "commons-lang"              % "commons-lang"          % "2.6",
-  "dom4j"                     % "dom4j"                 % "1.6.1",
+  "dom4j"                     % "dom4j"                 % "1.6.2",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
@@ -174,7 +174,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
+  "org.apache.ws.security"      % "wss4j"                  % "1.6.29",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
