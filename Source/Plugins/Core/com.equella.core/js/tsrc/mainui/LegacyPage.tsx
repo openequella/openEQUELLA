@@ -147,13 +147,7 @@ export const LegacyPage = React.memo(
     return content ? (
       <LegacyContentRenderer {...content} />
     ) : (
-      <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-        style={{ minHeight: "calc(100vh - 96px)" }}
-      >
+      <Grid container direction="column" alignItems="center">
         <Grid item>
           <CircularProgress />
         </Grid>
