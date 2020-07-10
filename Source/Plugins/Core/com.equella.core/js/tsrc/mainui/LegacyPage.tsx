@@ -31,6 +31,7 @@ import {
   LegacyContentProps,
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
+import { CircularProgress, Grid } from "@material-ui/core";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -143,6 +144,14 @@ export const LegacyPage = React.memo(
       []
     );
 
-    return content ? <LegacyContentRenderer {...content} /> : <div />;
+    return content ? (
+      <LegacyContentRenderer {...content} />
+    ) : (
+      <Grid container direction="column" alignItems="center">
+        <Grid item>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    );
   }
 );
