@@ -273,7 +273,8 @@ excludeDependencies ++= Seq(
   "org.bouncycastle"             % "bcprov-jdk15",
   "org.apache.geronimo.specs"    % "geronimo-javamail_1.4_spec",
   "org.apache.geronimo.specs"    % "geronimo-stax-api_1.0_spec",
-  "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec"
+  "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec",
+  "taglibs"                      % "standard"
 )
 
 run := {
