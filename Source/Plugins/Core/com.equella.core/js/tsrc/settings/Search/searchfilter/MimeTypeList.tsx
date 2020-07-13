@@ -69,8 +69,8 @@ const MimeTypeList = ({
       className={classes.list}
       subheader={
         <Typography
-          variant={"subtitle2"}
-          color={"textSecondary"}
+          variant="subtitle2"
+          color="textSecondary"
           className={classes.listTitle}
         >
           {searchFilterStrings.mimetypelistlabel}

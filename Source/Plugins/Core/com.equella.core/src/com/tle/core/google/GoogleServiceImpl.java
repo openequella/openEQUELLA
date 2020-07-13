@@ -23,7 +23,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -43,6 +42,7 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.google.api.GoogleApiUtils;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -82,10 +82,10 @@ public class GoogleServiceImpl implements GoogleService {
       String query, String orderBy, String channelId, long limit, String data)
       throws GoogleJsonResponseException {
     try {
-      YouTube.Search.List search = getTubeService().search().list(data);
+      YouTube.Search.List search = getTubeService().search().list(Arrays.asList(data.split(",")));
       search.setKey(getApiKey());
       search.setQ(query);
-      search.setType("video");
+      search.setType(Arrays.asList("video"));
       search.setMaxResults(limit);
       search.setVideoEmbeddable("true");
       search.setOrder(orderBy);
@@ -129,7 +129,7 @@ public class GoogleServiceImpl implements GoogleService {
   @Override
   public Channel getChannelForUser(String userId) {
     try {
-      YouTube.Channels.List channels = getTubeService().channels().list("snippet");
+      YouTube.Channels.List channels = getTubeService().channels().list(Arrays.asList("snippet"));
       channels.setKey(getApiKey());
       channels.setForUsername(userId);
       ChannelListResponse channelListResponse = channels.execute();
@@ -145,9 +145,9 @@ public class GoogleServiceImpl implements GoogleService {
   @Override
   public List<Channel> getChannels(List<String> channelIds) {
     try {
-      YouTube.Channels.List channels = getTubeService().channels().list("snippet");
+      YouTube.Channels.List channels = getTubeService().channels().list(Arrays.asList("snippet"));
       channels.setKey(getApiKey());
-      channels.setId(Joiner.on(',').join(channelIds));
+      channels.setId(channelIds);
       ChannelListResponse channelListResponse = channels.execute();
 
       return channelListResponse.getItems();
@@ -166,9 +166,11 @@ public class GoogleServiceImpl implements GoogleService {
   public List<Video> getVideos(List<String> videoIds) {
     try {
       YouTube.Videos.List videos =
-          getTubeService().videos().list("id,snippet,player,contentDetails,statistics");
+          getTubeService()
+              .videos()
+              .list(Arrays.asList("id", "snippet", "player", "contentDetails", "statistics"));
       videos.setKey(getApiKey());
-      videos.setId(Joiner.on(',').join(videoIds));
+      videos.setId(videoIds);
       VideoListResponse vlr = videos.execute();
 
       return vlr.getItems();

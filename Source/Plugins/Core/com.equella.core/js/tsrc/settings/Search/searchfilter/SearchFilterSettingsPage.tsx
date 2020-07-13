@@ -325,7 +325,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <List>
             {mimeTypeFilters.map((filter, index) => {
               return (
-                <ListItem divider={true} key={index}>
+                <ListItem divider key={index}>
                   <ListItemText primary={filter.name} />
                   <ListItemSecondaryAction>
                     <IconButton
@@ -333,7 +333,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                         openMimeTypeFilterDialog(filter);
                       }}
                       aria-label={`${searchFilterStrings.edit} ${filter.name}`}
-                      color={"secondary"}
+                      color="secondary"
                     >
                       <EditIcon />
                     </IconButton>
@@ -351,13 +351,14 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
             })}
           </List>
         </CardContent>
+
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => openMimeTypeFilterDialog()}
             aria-label={searchFilterStrings.add}
-            color={"primary"}
+            color="primary"
           >
-            <AddCircleIcon fontSize={"large"} />
+            <AddCircleIcon fontSize="large" />
           </IconButton>
         </CardActions>
       </Card>

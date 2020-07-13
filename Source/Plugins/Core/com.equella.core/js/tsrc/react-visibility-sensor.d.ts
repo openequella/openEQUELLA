@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-declare module "react-visibility-sensor" {
-  import * as React from "react";
 
+import { FunctionComponent } from "react";
+
+declare module "react-visibility-sensor" {
   interface VisibilitySensorProps {
     onChange: (visible: boolean) => void;
   }
-  class VisibilitySensor extends React.Component<VisibilitySensorProps> {}
+  const VisibilitySensor: FunctionComponent<VisibilitySensorProps>;
 
   export = VisibilitySensor;
 }

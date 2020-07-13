@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => {
   return {
     treeView: {
       flexGrow: 1,
-      maxHeight: "30vh",
+      height: "30vh",
       overflowY: "auto",
       width: "100%",
     },
@@ -99,11 +99,11 @@ export default function SchemaNodeSelector({
   return (
     <>
       {expandControls && (
-        <Grid container direction={"row"} wrap={"nowrap"} justify={"flex-end"}>
+        <Grid container direction="row" wrap="nowrap" justify="flex-end">
           <Grid item>
             <Button
               className={classes.button}
-              size={"small"}
+              size="small"
               onClick={() => setExpanded(getAllPaths(tree!, false))}
             >
               {strings.expandAll}
@@ -112,7 +112,7 @@ export default function SchemaNodeSelector({
           <Grid item>
             <Button
               className={classes.button}
-              size={"small"}
+              size="small"
               onClick={() => setExpanded([])}
             >
               {strings.collapseAll}

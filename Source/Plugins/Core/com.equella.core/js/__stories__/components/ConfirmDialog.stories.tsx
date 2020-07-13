@@ -34,6 +34,6 @@ export const ShowDialog = () => (
     )}
     onCancel={action("cancel")}
     onConfirm={action("confirm")}
-    confirmButtonText={"ok"}
+    confirmButtonText="ok"
   />
 );

@@ -83,7 +83,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   }, [schemaNodePath]);
 
   return (
-    <Grid container direction={"column"} spacing={0}>
+    <Grid container direction="column" spacing={0}>
       <>
         <Grid item>
           {schemaList && (

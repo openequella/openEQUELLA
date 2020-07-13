@@ -101,7 +101,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
 
   return (
     <ExpansionPanelDetails>
-      <Grid container direction={"column"}>
+      <Grid container direction="column">
         <Grid item>
           <div className={classes.enableNewUIColumn}>
             <FormControl>

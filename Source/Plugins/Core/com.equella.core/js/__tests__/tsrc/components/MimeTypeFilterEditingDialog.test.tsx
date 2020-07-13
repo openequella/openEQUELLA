@@ -28,7 +28,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   const renderDialog = (filter: MimeTypeFilter | undefined = undefined) =>
     shallow(
       <MimeTypeFilterEditingDialog
-        open={true}
+        open
         onClose={onClose}
         addOrUpdate={addOrUpdate}
         mimeTypeFilter={filter}

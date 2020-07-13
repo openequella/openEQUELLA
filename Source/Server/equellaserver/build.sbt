@@ -17,14 +17,14 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.1"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.36"
-val SwaggerVersion   = "1.6.1"
+val TomcatVersion    = "9.0.37"
+val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
-val fs2Version       = "1.0.5"
+val fs2Version       = "2.4.2"
 val jsassVersion     = "5.10.3"
 
 libraryDependencies ++= Seq(
@@ -56,8 +56,8 @@ libraryDependencies ++= Seq(
                   name = "axis")
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.9",
-  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200204-1.30.9",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200423-1.30.9",
+  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200617-1.30.9",
+  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
   "com.google.guava"             % "guava"                       % "18.0",

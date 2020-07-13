@@ -98,7 +98,7 @@ const SettingPageTemplate = ({
         title={commonString.result.success}
         open={snackbarOpen}
         onClose={snackBarOnClose}
-        variant={"success"}
+        variant="success"
       />
 
       <NavigationGuard when={preventNavigation} />
