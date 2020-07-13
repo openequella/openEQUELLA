@@ -28,13 +28,16 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  CircularProgress,
+  FormControlLabel,
   Grid,
   List,
   ListItem,
-  TablePagination,
-  Typography,
-  CircularProgress,
   makeStyles,
+  Switch,
+  TablePagination,
+  Tooltip,
+  Typography,
 } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
@@ -66,7 +69,7 @@ const useStyles = makeStyles({
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
   const classes = useStyles();
-
+  const [useRawSearch, setUseRawSearch] = useState<boolean>(false);
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
     defaultSearchOptions
   );
@@ -154,7 +157,28 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Card>
           <CardContent>
-            <SearchBar onChange={handleQueryChanged} />
+            <SearchBar
+              rawSearchMode={useRawSearch}
+              onChange={handleQueryChanged}
+            />
+            <Grid container justify={"flex-end"}>
+              <Grid item>
+                <Tooltip title={searchStrings.rawSearchTooltip}>
+                  <FormControlLabel
+                    labelPlacement={"start"}
+                    label={searchStrings.rawSearch}
+                    control={
+                      <Switch
+                        size={"small"}
+                        onChange={(_, checked) => setUseRawSearch(checked)}
+                        value={useRawSearch}
+                        name={searchStrings.rawSearch}
+                      />
+                    }
+                  />
+                </Tooltip>
+              </Grid>
+            </Grid>
           </CardContent>
         </Card>
       </Grid>
