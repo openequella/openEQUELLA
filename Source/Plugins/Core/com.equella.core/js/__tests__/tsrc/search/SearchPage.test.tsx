@@ -15,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getSearchResult } from "../../../__mocks__/getSearchResult";
-import { createMount } from "@material-ui/core/test-utils";
+import {
+  getSearchResult,
+  getEmptySearchResult,
+} from "../../../__mocks__/getSearchResult";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
-import { ReactWrapper } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
 import * as SearchModule from "../../../tsrc/search/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule";
-import { defaultSearchSettings } from "../../../tsrc/settings/Search/SearchSettingsModule";
+import {
+  defaultSearchSettings,
+  SortOrder,
+} from "../../../tsrc/settings/Search/SearchSettingsModule";
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
-jest.useFakeTimers("modern");
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -39,13 +43,16 @@ const searchSettingPromise = mockSearchSettings.mockImplementation(() =>
 const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
 );
+const defaultSearchOptions = {
+  rowsPerPage: 10,
+  currentPage: 0,
+  sortOrder: SortOrder.RANK,
+};
 
 describe("<SearchPage/>", () => {
-  let mount: ReturnType<typeof createMount>;
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
   beforeEach(async () => {
-    mount = createMount();
     component = mount(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />{" "}
@@ -62,50 +69,112 @@ describe("<SearchPage/>", () => {
   });
 
   afterEach(() => {
-    mount.cleanUp();
+    jest.clearAllMocks();
   });
 
-  const changeQuery = (query: string) => {
-    act(() => {
-      const input = component.find("input.MuiInputBase-input");
-      input.simulate("change", { target: { value: query } });
+  /**
+   * Wait for the completion of an asynchronous act.
+   * @param update A function that simulates UI behaviours such as selecting a different value from a dropdown.
+   */
+  const awaitAct = async (update: () => void) =>
+    await act(async () => await update());
+
+  /**
+   * Do a query search with fake timer.
+   * @param searchTerm The specified search term.
+   */
+  const querySearch = async (searchTerm: string) => {
+    jest.useFakeTimers("modern");
+    const input = component.find("input.MuiInputBase-input");
+    await awaitAct(() => {
+      input.simulate("change", { target: { value: searchTerm } });
+      jest.advanceTimersByTime(1000);
     });
   };
 
-  it("should retrieve search settings and do a search when the page is opened", async () => {
+  it("should retrieve search settings and do a search when the page is opened", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(1);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith(defaultSearchOptions);
   });
 
-  it("should display 'No results found.' when there are no search results", () => {
-    changeQuery("old title");
-    //use a timed callback to wait for the debounce before asserting results have populated the page
-    setTimeout(() => {
-      expect(component.html()).toContain("No results found.");
-    }, 1000);
+  it("should support debounce query search and display search results", async () => {
+    await querySearch("new query");
+    // After 1s the second search should be triggered
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      query: "new query*",
+    });
+    expect(component.html()).not.toContain("No results found.");
+    expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
   });
 
-  it("should contain the test data after a search bar text change and render", () => {
-    changeQuery("new title");
-    setTimeout(() => {
-      expect(component.html()).not.toContain("No results found.");
-      expect(component.html()).toContain(
-        "266bb0ff-a730-4658-aec0-c68bbefc227c"
-      );
-    }, 1000);
+  it("should display 'No results found.' when there are no search results", async () => {
+    mockSearch.mockImplementationOnce(() =>
+      Promise.resolve(getEmptySearchResult)
+    );
+    await querySearch("no items");
+    expect(component.html()).toContain("No results found.");
+  });
+
+  it("should support changing the number of items displayed per page", async () => {
+    // Initial items per page is 10
+    expect(component.html()).toContain("1-10 of 12");
+    const itemsPerPageSelect = component.find(
+      ".MuiTablePagination-input input"
+    );
+    await awaitAct(() =>
+      itemsPerPageSelect.simulate("change", { target: { value: 25 } })
+    );
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      rowsPerPage: 25,
+    });
+    expect(component.html()).toContain("1-12 of 12");
+  });
+
+  it("should support navigating to previous/next page", async () => {
+    const prevPageButton = component
+      .find(".MuiTablePagination-actions button")
+      .at(0);
+    const nextPageButton = component
+      .find(".MuiTablePagination-actions button")
+      .at(1);
+    await awaitAct(() => nextPageButton.simulate("click"));
+    expect(component.html()).toContain("11-12 of 12");
+    await awaitAct(() => prevPageButton.simulate("click"));
+    expect(component.html()).toContain("1-10 of 12");
+  });
+
+  it("should support sorting search results", async () => {
+    const sortingControl = component.find(".MuiCardHeader-action input");
+    await awaitAct(() =>
+      sortingControl.simulate("change", {
+        target: { value: SortOrder.DATEMODIFIED },
+      })
+    );
+    // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
+    // sort order is included in the search params
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      sortOrder: SortOrder.DATEMODIFIED,
+    });
   });
 
   it("should display a spinner when search is in progress", async () => {
-    // Trigger a search by changing search query.
-    changeQuery("new query");
-    setTimeout(async () => {
-      expect(component.find(CircularProgress)).toHaveLength(1);
-    }, 1000);
+    // Trigger a search by changing sorting order
+    const sortingControl = component.find(".MuiCardHeader-action input");
+    sortingControl.simulate("change", {
+      target: { value: SortOrder.DATEMODIFIED },
+    });
+    expect(component.find(CircularProgress)).toHaveLength(1);
     await act(async () => {
       await searchPromise;
     });
+    component.update();
     expect(component.find(CircularProgress)).toHaveLength(0);
   });
   it("should debounce append an * when not in raw search mode", async () => {
