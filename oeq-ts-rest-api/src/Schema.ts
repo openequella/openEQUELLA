@@ -1,6 +1,6 @@
 import * as Common from './Common';
-import { GET } from './AxiosInstance';
-import { is } from 'typescript-is';
+import {GET} from './AxiosInstance';
+import {is} from 'typescript-is';
 
 export interface Citation {
   name: string;
@@ -22,32 +22,6 @@ export interface EquellaSchema extends Schema {
   importTransformsMap: Record<string, string>;
   ownerUuid: string;
   serializedDefinition: string;
-}
-
-/**
- * Query params for listing of schemas. All are optional!
- */
-export interface ListSchemaParams {
-  /**
-   * Search name and description
-   */
-  q?: string;
-  /**
-   * Privilege(s) to filter by
-   */
-  privilege?: string[];
-  /**
-   * Resumption token for paging
-   */
-  resumptionToken?: string;
-  /**
-   * Number of results
-   */
-  length?: number;
-  /**
-   * Return full entity (needs VIEW or EDIT privilege)
-   */
-  full?: boolean;
 }
 
 /**
@@ -81,7 +55,7 @@ const SCHEMA_ROOT_PATH = '/schema';
  */
 export const listSchemas = (
   apiBasePath: string,
-  params?: ListSchemaParams
+  params?: Common.ListCommonParams
 ): Promise<Common.PagedResult<Common.BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Schema definition, otherwise
   // it's the bare minimum of BaseEntity.
