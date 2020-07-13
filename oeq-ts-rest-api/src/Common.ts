@@ -1,5 +1,5 @@
 import * as Security from './Security';
-import {is} from 'typescript-is';
+import { is } from 'typescript-is';
 
 export type i18nString = string;
 
@@ -87,24 +87,24 @@ export const isPagedBaseEntity = (
  * Query params for common to listing endpoints. All are optional!
  */
 export interface ListCommonParams {
-    /**
-     * Search name and description
-     */
-    q?: string;
-    /**
-     * Privilege(s) to filter by
-     */
-    privilege?: string[];
-    /**
-     * Resumption token for paging
-     */
-    resumptionToken?: string;
-    /**
-     * Number of results
-     */
-    length?: number;
-    /**
-     * Return full entity (needs VIEW or EDIT privilege)
-     */
-    full?: boolean;
+  /**
+   * Search name and description
+   */
+  q?: string;
+  /**
+   * Privilege(s) to filter by
+   */
+  privilege?: string[];
+  /**
+   * Resumption token for paging
+   */
+  resumptionToken?: string;
+  /**
+   * Number of results
+   */
+  length?: number;
+  /**
+   * Return full entity (needs VIEW or EDIT privilege)
+   */
+  full?: boolean;
 }

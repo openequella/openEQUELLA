@@ -1,6 +1,6 @@
 import * as Common from './Common';
-import {GET} from './AxiosInstance';
-import {is} from 'typescript-is';
+import { GET } from './AxiosInstance';
+import { is } from 'typescript-is';
 
 export interface Citation {
   name: string;

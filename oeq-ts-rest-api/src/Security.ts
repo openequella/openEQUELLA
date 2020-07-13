@@ -11,7 +11,7 @@ export interface BaseEntitySecurity {
 
 export interface ItemMetadataSecurity {
   name: string;
-  script: string
+  script: string;
   entries: TargetListEntry[];
 }
 
@@ -19,5 +19,5 @@ export interface DynamicRule {
   name: string;
   path: string;
   type: string;
-  targetList:  TargetListEntry[];
+  targetList: TargetListEntry[];
 }
