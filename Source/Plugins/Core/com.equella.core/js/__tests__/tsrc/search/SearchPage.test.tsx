@@ -15,7 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getSearchResult } from "../../../__mocks__/getSearchResult";
+import {
+  getSearchResult,
+  getEmptySearchResult,
+} from "../../../__mocks__/getSearchResult";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
 import { mount, ReactWrapper } from "enzyme";
@@ -70,10 +73,10 @@ describe("<SearchPage/>", () => {
   });
 
   /**
-   * Update search options in order to trigger a search.
+   * Wait for the completion of an asynchronous act.
    * @param update A function that simulates UI behaviours such as selecting a different value from a dropdown.
    */
-  const updateSearchOptions = async (update: () => void) =>
+  const awaitAct = async (update: () => void) =>
     await act(async () => await update());
 
   it("should retrieve search settings and do a search when the page is opened", () => {
@@ -84,10 +87,10 @@ describe("<SearchPage/>", () => {
     expect(SearchModule.searchItems).toHaveBeenCalledWith(defaultSearchOptions);
   });
 
-  it("should support debounce query search", async () => {
+  it("should support debounce query search and display search results", async () => {
     jest.useFakeTimers("modern");
     const input = component.find("input.MuiInputBase-input");
-    await updateSearchOptions(() => {
+    await awaitAct(() => {
       input.simulate("change", { target: { value: "new query" } });
       jest.advanceTimersByTime(1000);
     });
@@ -97,6 +100,21 @@ describe("<SearchPage/>", () => {
       ...defaultSearchOptions,
       query: "new query",
     });
+    expect(component.html()).not.toContain("No results found.");
+    expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
+  });
+
+  it("should display 'No results found.' when there are no search results", async () => {
+    mockSearch.mockImplementationOnce(() =>
+      Promise.resolve(getEmptySearchResult)
+    );
+    jest.useFakeTimers("modern");
+    const input = component.find("input.MuiInputBase-input");
+    await awaitAct(() => {
+      input.simulate("change", { target: { value: "no items" } });
+      jest.advanceTimersByTime(1000);
+    });
+    expect(component.html()).toContain("No results found.");
   });
 
   it("should support changing the number of items displayed per page", async () => {
@@ -105,7 +123,7 @@ describe("<SearchPage/>", () => {
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
     );
-    await updateSearchOptions(() =>
+    await awaitAct(() =>
       itemsPerPageSelect.simulate("change", { target: { value: 25 } })
     );
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
@@ -122,15 +140,15 @@ describe("<SearchPage/>", () => {
     const nextPageButton = component
       .find(".MuiTablePagination-actions button")
       .at(1);
-    await updateSearchOptions(() => nextPageButton.simulate("click"));
+    await awaitAct(() => nextPageButton.simulate("click"));
     expect(component.html()).toContain("11-12 of 12");
-    await updateSearchOptions(() => prevPageButton.simulate("click"));
+    await awaitAct(() => prevPageButton.simulate("click"));
     expect(component.html()).toContain("1-10 of 12");
   });
 
   it("should support sorting search results", async () => {
     const sortingControl = component.find(".MuiCardHeader-action input");
-    await updateSearchOptions(() =>
+    await awaitAct(() =>
       sortingControl.simulate("change", {
         target: { value: SortOrder.DATEMODIFIED },
       })

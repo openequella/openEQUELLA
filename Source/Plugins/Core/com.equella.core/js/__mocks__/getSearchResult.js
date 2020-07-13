@@ -15,6 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+exports.getEmptySearchResult = {
+  start: 0,
+  length: 0,
+  available: 0,
+  results: [],
+};
+
 exports.getSearchResult = {
   start: 0,
   length: 10,
