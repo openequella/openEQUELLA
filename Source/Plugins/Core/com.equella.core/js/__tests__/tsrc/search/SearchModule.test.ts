@@ -29,7 +29,7 @@ describe("SearchModule", () => {
     const searchResult = await SearchModule.searchItems(
       SearchModule.defaultSearchOptions
     );
-    expect(searchResult.available).toBe(4);
-    expect(searchResult.results).toHaveLength(4);
+    expect(searchResult.available).toBe(12);
+    expect(searchResult.results).toHaveLength(12);
   });
 });

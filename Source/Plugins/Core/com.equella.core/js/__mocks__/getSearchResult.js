@@ -15,10 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+exports.getEmptySearchResult = {
+  start: 0,
+  length: 0,
+  available: 0,
+  results: [],
+};
+
 exports.getSearchResult = {
   start: 0,
   length: 10,
-  available: 4,
+  available: 12,
   results: [
     {
       uuid: "9b9bf5a9-c5af-490b-88fe-7e330679fad2",
@@ -118,6 +125,158 @@ exports.getSearchResult = {
           "http://localhost:8080/rest/items/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
         self:
           "http://localhost:8080/rest/api/item/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2271",
+      name: "a",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2272",
+      name: "b",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2273",
+      name: "c",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2274",
+      name: "d",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2275",
+      name: "e",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2276",
+      name: "f",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2277",
+      name: "g",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    },
+    {
+      uuid: "266bb0ff-a730-4658-aec0-c68bbefc2278",
+      name: "last modified item",
+      version: 1,
+      status: "live",
+      createdDate: new Date("2020-07-10T09:31:08.557+10:00"),
+      modifiedDate: new Date("2020-07-10T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
     },
   ],
