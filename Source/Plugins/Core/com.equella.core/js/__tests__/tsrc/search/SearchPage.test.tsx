@@ -79,6 +79,19 @@ describe("<SearchPage/>", () => {
   const awaitAct = async (update: () => void) =>
     await act(async () => await update());
 
+  /**
+   * Do a query search with fake timer.
+   * @param searchTerm The specified search term.
+   */
+  const querySearch = async (searchTerm: string) => {
+    jest.useFakeTimers("modern");
+    const input = component.find("input.MuiInputBase-input");
+    await awaitAct(() => {
+      input.simulate("change", { target: { value: searchTerm } });
+      jest.advanceTimersByTime(1000);
+    });
+  };
+
   it("should retrieve search settings and do a search when the page is opened", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
@@ -88,12 +101,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support debounce query search and display search results", async () => {
-    jest.useFakeTimers("modern");
-    const input = component.find("input.MuiInputBase-input");
-    await awaitAct(() => {
-      input.simulate("change", { target: { value: "new query" } });
-      jest.advanceTimersByTime(1000);
-    });
+    await querySearch("new query");
     // After 1s the second search should be triggered
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
@@ -108,12 +116,7 @@ describe("<SearchPage/>", () => {
     mockSearch.mockImplementationOnce(() =>
       Promise.resolve(getEmptySearchResult)
     );
-    jest.useFakeTimers("modern");
-    const input = component.find("input.MuiInputBase-input");
-    await awaitAct(() => {
-      input.simulate("change", { target: { value: "no items" } });
-      jest.advanceTimersByTime(1000);
-    });
+    await querySearch("no items");
     expect(component.html()).toContain("No results found.");
   });
 
