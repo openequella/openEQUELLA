@@ -161,15 +161,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               rawSearchMode={useRawSearch}
               onChange={handleQueryChanged}
             />
-            <Grid container justify={"flex-end"}>
+            <Grid container justify="flex-end">
               <Grid item>
                 <Tooltip title={searchStrings.rawSearchTooltip}>
                   <FormControlLabel
-                    labelPlacement={"start"}
+                    labelPlacement="start"
                     label={searchStrings.rawSearch}
                     control={
                       <Switch
-                        size={"small"}
+                        size="small"
                         onChange={(_, checked) => setUseRawSearch(checked)}
                         value={useRawSearch}
                         name={searchStrings.rawSearch}
