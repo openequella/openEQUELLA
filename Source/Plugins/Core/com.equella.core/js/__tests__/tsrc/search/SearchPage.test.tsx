@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import {
-  getSearchResult,
   getEmptySearchResult,
+  getSearchResult,
 } from "../../../__mocks__/getSearchResult";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
@@ -177,51 +177,43 @@ describe("<SearchPage/>", () => {
     component.update();
     expect(component.find(CircularProgress)).toHaveLength(0);
   });
-  it("should debounce append an * when not in raw search mode", async () => {
-    await act(async () => {
-      const input = component.find("input.MuiInputBase-input");
-      await input.simulate("change", { target: { value: "new query" } });
-      await jest.advanceTimersByTime(1000);
-      expect(searchPromise).toHaveBeenLastCalledWith({
-        currentPage: 0,
-        rowsPerPage: 10,
-        sortOrder: "RANK",
-        query: "new query*",
-      });
+
+  it("should debounce and append an * when not in raw search mode", async () => {
+    await querySearch("new query");
+    expect(searchPromise).toHaveBeenLastCalledWith({
+      ...defaultSearchOptions,
+      query: "new query*",
     });
   });
-  it("should not debounce when in raw search mode", async () => {
-    await act(async () => {
-      const input = component.find("input.MuiInputBase-input");
-      const rawModeSwitch = component.find("input[type='checkbox']");
 
+  it("should not debounce and send query as-is when in raw search mode", async () => {
+    const input = component.find("input.MuiInputBase-input");
+    const rawModeSwitch = component.find("input[type='checkbox']");
+    await awaitAct(() => {
       //turn raw search mode on, add a search query and hit enter
-      await rawModeSwitch.simulate("change", { target: { checked: true } });
-      await input.simulate("change", { target: { value: "raw search test" } });
-      await input.simulate("keyDown", {
+      rawModeSwitch.simulate("change", { target: { checked: true } });
+      jest.advanceTimersByTime(1000);
+      querySearch("raw search test");
+      input.simulate("keyDown", {
         keyCode: 13,
       });
-      await jest.advanceTimersByTime(1000);
-
-      //assert that the simple search wildcard was not appended
-      expect(searchPromise).not.toHaveBeenCalledWith({
-        currentPage: 0,
-        rowsPerPage: 10,
-        sortOrder: "RANK",
-        query: "raw search test*",
-      });
-      //assert that the query was passed in as-is
-      expect(searchPromise).toHaveBeenLastCalledWith({
-        currentPage: 0,
-        rowsPerPage: 10,
-        sortOrder: "RANK",
-        query: "raw search test",
-      });
-      /*assert that there were only two calls - initial search and Enter key triggered.
-      if the debounce was still on, this would be three calls -
-      the initial search, the search triggered by the debounce,
-      and the search triggered by the Enter key.*/
-      expect(searchPromise).toHaveBeenCalledTimes(2);
+      jest.advanceTimersByTime(1000);
     });
+
+    //assert that the simple search wildcard was not appended
+    expect(searchPromise).not.toHaveBeenLastCalledWith({
+      ...defaultSearchOptions,
+      query: "raw search test*",
+    });
+    //assert that the query was passed in as-is
+    expect(searchPromise).toHaveBeenLastCalledWith({
+      ...defaultSearchOptions,
+      query: "raw search test",
+    });
+    /*assert that there were only two calls - initial search and Enter key triggered.
+    if the debounce was still on, this would be three calls -
+    the initial search, the search triggered by the debounce,
+    and the search triggered by the Enter key.*/
+    expect(searchPromise).toHaveBeenCalledTimes(2);
   });
 });
