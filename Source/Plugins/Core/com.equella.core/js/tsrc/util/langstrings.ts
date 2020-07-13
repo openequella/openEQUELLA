@@ -345,6 +345,9 @@ export const languageStrings = {
     pagination: {
       itemsPerPage: "items per page",
     },
+    refineSearchPanel: {
+      title: "Refine search",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",

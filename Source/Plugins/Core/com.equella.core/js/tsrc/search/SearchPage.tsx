@@ -52,6 +52,7 @@ import {
   SortOrder,
 } from "../settings/Search/SearchSettingsModule";
 import SearchOrderSelect from "./components/SearchOrderSelect";
+import { RefineSearchPanel } from "./components/RefineSearchPanel";
 
 const useStyles = makeStyles({
   transparentList: {
@@ -150,65 +151,82 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   return (
-    <Grid container direction="column" spacing={2}>
+    <Grid container spacing={2}>
       <Grid item xs={9}>
-        <Card>
-          <CardContent>
-            <SearchBar onChange={handleQueryChanged} />
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={9}>
-        <Card>
-          <CardHeader
-            title={searchStrings.subtitle}
-            action={
-              <SearchOrderSelect
-                value={searchOptions.sortOrder}
-                onChange={handleSortOrderChanged}
-              />
-            }
-          />
-          {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
-          <CardContent style={{ textAlign: "center" }}>
-            {showSpinner && (
-              <CircularProgress
-                variant="indeterminate"
-                className={
-                  pagedSearchResult.results.length > 0
-                    ? classes.centralSpinner
-                    : ""
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <SearchBar onChange={handleQueryChanged} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader
+                title={searchStrings.subtitle}
+                action={
+                  <SearchOrderSelect
+                    value={searchOptions.sortOrder}
+                    onChange={handleSortOrderChanged}
+                  />
                 }
               />
-            )}
-            {searchResultList}
-          </CardContent>
+              {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
+              <CardContent style={{ textAlign: "center" }}>
+                {showSpinner && (
+                  <CircularProgress
+                    variant="indeterminate"
+                    className={
+                      pagedSearchResult.results.length > 0
+                        ? classes.centralSpinner
+                        : ""
+                    }
+                  />
+                )}
+                {searchResultList}
+              </CardContent>
 
-          <CardActions>
-            <Grid container justify="center">
-              <Grid item>
-                <TablePagination
-                  component="div"
-                  count={pagedSearchResult.available}
-                  page={searchOptions.currentPage}
-                  onChangePage={(_, page: number) =>
-                    setSearchOptions({ ...searchOptions, currentPage: page })
-                  }
-                  rowsPerPageOptions={[10, 25, 50]}
-                  labelRowsPerPage={searchStrings.pagination.itemsPerPage}
-                  rowsPerPage={searchOptions.rowsPerPage}
-                  onChangeRowsPerPage={(event) =>
-                    setSearchOptions({
-                      ...searchOptions,
-                      currentPage: 0,
-                      rowsPerPage: parseInt(event.target.value),
-                    })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </CardActions>
-        </Card>
+              <CardActions>
+                <Grid container justify="center">
+                  <Grid item>
+                    <TablePagination
+                      component="div"
+                      count={pagedSearchResult.available}
+                      page={searchOptions.currentPage}
+                      onChangePage={(_, page: number) =>
+                        setSearchOptions({
+                          ...searchOptions,
+                          currentPage: page,
+                        })
+                      }
+                      rowsPerPageOptions={[10, 25, 50]}
+                      labelRowsPerPage={searchStrings.pagination.itemsPerPage}
+                      rowsPerPage={searchOptions.rowsPerPage}
+                      onChangeRowsPerPage={(event) =>
+                        setSearchOptions({
+                          ...searchOptions,
+                          currentPage: 0,
+                          rowsPerPage: parseInt(event.target.value),
+                        })
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </CardActions>
+            </Card>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={3}>
+        <RefineSearchPanel>
+          <Typography>place holder 1</Typography>
+          <Typography>place holder 2</Typography>
+          <Typography>place holder 3</Typography>
+          <Typography>place holder 4</Typography>
+          <Typography>place holder 5</Typography>
+        </RefineSearchPanel>
       </Grid>
     </Grid>
   );
