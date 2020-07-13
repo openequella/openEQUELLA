@@ -62,7 +62,7 @@
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
     "timeago-react": "2.0.1",
-    "tinymce": "5.4.0",
+    "tinymce": "5.4.1",
     "typescript-fsa": "2.5.0",
     "typescript-fsa-reducers": "0.4.5",
     "uuid": "8.2.0",
