@@ -262,7 +262,7 @@ class ThemePage extends React.Component<
         <Grid item>
           <input
             accept="image/*"
-            color={"textSecondary"}
+            color="textSecondary"
             id="contained-button-file"
             onChange={(e) => this.handleImageChange(e.target)}
             type="file"
