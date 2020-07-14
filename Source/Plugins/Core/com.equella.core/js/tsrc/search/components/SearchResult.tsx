@@ -128,7 +128,7 @@ export default function SearchResult({
     } else {
       result = (
         <Subject
-          className={`${classes.placeholderThumbnail} ${classes.thumbnail}`}
+          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.placeholderThumbnail} ${classes.thumbnail}`}
           fontSize="large"
         />
       );
