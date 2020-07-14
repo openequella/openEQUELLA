@@ -211,7 +211,7 @@ object SearchHelper {
             att.getUuid,
             Option(att.getDescription),
             att.isPreview,
-            getFilenameFromBean(att),
+            getMimetypeForAttachment(att),
             !thumbExists(itemKey, att.getUuid),
             getLinksFromBean(att)
         ))
@@ -228,9 +228,9 @@ object SearchHelper {
   }
 
   /**
-    * Extract the filename for AbstractExtendableBean.
+    * Extract the mimetype for AbstractExtendableBean.
     */
-  def getFilenameFromBean[T <: AbstractExtendableBean](bean: T): Option[String] = {
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] = {
     bean match {
       case file: AbstractFileAttachmentBean =>
         Option(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
