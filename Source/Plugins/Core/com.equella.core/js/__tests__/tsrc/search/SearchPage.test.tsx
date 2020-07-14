@@ -95,6 +95,32 @@ describe("<SearchPage/>", () => {
     });
   };
 
+  /**
+   * Do a raw query search with fake timer. Turns on raw search mode, enters a search and hits enter.
+   * Waits for the debounce after the enter key.
+   * @param searchTerm The specified search term.
+   */
+  const rawQuerySearch = async (searchTerm: string) => {
+    jest.useFakeTimers("modern");
+    const input = component.find(SEARCHBAR_ID);
+    const rawModeSwitch = component.find(RAW_SEARCH_TOGGLE_ID);
+    //turn raw search mode on
+    await awaitAct(() =>
+      rawModeSwitch.simulate("change", { target: { checked: true } })
+    );
+    //add the searchTerm
+    await awaitAct(() => {
+      input.simulate("change", { target: { value: searchTerm } });
+    });
+    //Hit Enter and wait for debounce
+    await awaitAct(() => {
+      input.simulate("keyDown", {
+        keyCode: ENTER_KEYCODE,
+      });
+      jest.advanceTimersByTime(1000);
+    });
+  };
+
   it("should retrieve search settings and do a search when the page is opened", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
@@ -182,22 +208,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should not debounce and send query as-is when in raw search mode", async () => {
-    const input = component.find(SEARCHBAR_ID);
-    const rawModeSwitch = component.find(RAW_SEARCH_TOGGLE_ID);
-
-    //turn raw search mode on, add a search query and hit enter
-    await awaitAct(() =>
-      rawModeSwitch.simulate("change", { target: { checked: true } })
-    );
-    await awaitAct(() =>
-      input.simulate("change", { target: { value: "raw search test" } })
-    );
-    await awaitAct(() =>
-      input.simulate("keyDown", {
-        keyCode: ENTER_KEYCODE,
-      })
-    );
-
+    await rawQuerySearch("raw search test");
     //assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchOptions,
