@@ -56,6 +56,7 @@ describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
   beforeEach(async () => {
+    jest.useFakeTimers("modern");
     component = mount(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />{" "}
@@ -87,7 +88,6 @@ describe("<SearchPage/>", () => {
    * @param searchTerm The specified search term.
    */
   const querySearch = async (searchTerm: string) => {
-    jest.useFakeTimers("modern");
     const input = component.find(SEARCHBAR_ID);
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
@@ -196,7 +196,7 @@ describe("<SearchPage/>", () => {
     });
 
     //assert that the query was passed in as-is
-    expect(searchPromise).toHaveBeenLastCalledWith({
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchOptions,
       query: "raw search test",
     });
@@ -204,6 +204,6 @@ describe("<SearchPage/>", () => {
     if the debounce was still on, this would be three calls -
     the initial search, the search triggered by the debounce,
     and the search triggered by the Enter key.*/
-    expect(searchPromise).toHaveBeenCalledTimes(2);
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
   });
 });
