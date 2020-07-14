@@ -66,7 +66,7 @@ export const listSchemas = (
   return GET<Common.PagedResult<Common.BaseEntity>>(
     apiBasePath + SCHEMA_ROOT_PATH,
     validator,
-    params ?? undefined
+    params
   );
 };
 

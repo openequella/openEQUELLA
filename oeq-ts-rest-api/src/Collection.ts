@@ -43,6 +43,6 @@ export const listCollections = (
   return GET<Common.PagedResult<Common.BaseEntity>>(
     apiBasePath + COLLECTION_ROOT_PATH,
     validator,
-    params ?? undefined
+    params
   );
 };
