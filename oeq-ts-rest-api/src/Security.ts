@@ -8,3 +8,16 @@ export interface TargetListEntry {
 export interface BaseEntitySecurity {
   rules: TargetListEntry[];
 }
+
+export interface ItemMetadataSecurity {
+  name: string;
+  script: string;
+  entries: TargetListEntry[];
+}
+
+export interface DynamicRule {
+  name: string;
+  path: string;
+  type: string;
+  targetList: TargetListEntry[];
+}
