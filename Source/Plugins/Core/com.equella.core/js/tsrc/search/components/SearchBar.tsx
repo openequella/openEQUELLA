@@ -54,7 +54,7 @@ export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
   /**
    * uses lodash to debounce the search query by half a second
    */
-  const delayedQuery = useCallback(debounce(callOnChange, 500), [onChange]);
+  const debouncedQuery = useCallback(debounce(callOnChange, 500), [onChange]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.keyCode) {
@@ -64,14 +64,14 @@ export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
         break;
       case ENTER_KEY_CODE:
         event.preventDefault();
-        callOnChange(query);
+        debouncedQuery(query);
         break;
     }
   };
   const handleQueryChange = (query: string) => {
     setQuery(query);
     if (!rawSearchMode) {
-      delayedQuery(query);
+      debouncedQuery(query);
     }
   };
 
