@@ -56,7 +56,6 @@ describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
   beforeEach(async () => {
-    jest.useFakeTimers("modern");
     component = mount(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />{" "}
@@ -88,6 +87,7 @@ describe("<SearchPage/>", () => {
    * @param searchTerm The specified search term.
    */
   const querySearch = async (searchTerm: string) => {
+    jest.useFakeTimers("modern");
     const input = component.find(SEARCHBAR_ID);
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
