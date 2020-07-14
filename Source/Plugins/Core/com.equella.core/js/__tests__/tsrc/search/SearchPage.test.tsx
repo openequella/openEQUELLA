@@ -32,6 +32,9 @@ import {
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
+const ENTER_KEYCODE = 13;
+const SEARCHBAR_ID = "input[id='searchBar']";
+const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -85,7 +88,7 @@ describe("<SearchPage/>", () => {
    */
   const querySearch = async (searchTerm: string) => {
     jest.useFakeTimers("modern");
-    const input = component.find("input.MuiInputBase-input");
+    const input = component.find(SEARCHBAR_ID);
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
       jest.advanceTimersByTime(1000);
@@ -178,33 +181,20 @@ describe("<SearchPage/>", () => {
     expect(component.find(CircularProgress)).toHaveLength(0);
   });
 
-  it("should debounce and append an * when not in raw search mode", async () => {
-    await querySearch("new query");
-    expect(searchPromise).toHaveBeenLastCalledWith({
-      ...defaultSearchOptions,
-      query: "new query*",
-    });
-  });
-
   it("should not debounce and send query as-is when in raw search mode", async () => {
-    const input = component.find("input.MuiInputBase-input");
-    const rawModeSwitch = component.find("input[type='checkbox']");
+    const input = component.find(SEARCHBAR_ID);
+    const rawModeSwitch = component.find(RAW_SEARCH_TOGGLE_ID);
     await awaitAct(() => {
       //turn raw search mode on, add a search query and hit enter
       rawModeSwitch.simulate("change", { target: { checked: true } });
       jest.advanceTimersByTime(1000);
       querySearch("raw search test");
       input.simulate("keyDown", {
-        keyCode: 13,
+        keyCode: ENTER_KEYCODE,
       });
       jest.advanceTimersByTime(1000);
     });
 
-    //assert that the simple search wildcard was not appended
-    expect(searchPromise).not.toHaveBeenLastCalledWith({
-      ...defaultSearchOptions,
-      query: "raw search test*",
-    });
     //assert that the query was passed in as-is
     expect(searchPromise).toHaveBeenLastCalledWith({
       ...defaultSearchOptions,
