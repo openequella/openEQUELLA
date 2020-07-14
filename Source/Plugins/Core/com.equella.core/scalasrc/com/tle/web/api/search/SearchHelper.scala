@@ -20,6 +20,7 @@ package com.tle.web.api.search
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
+
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.{ItemIdKey, ItemStatus}
@@ -32,9 +33,10 @@ import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
-import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
+import com.tle.web.api.item.equella.interfaces.beans.{AbstractFileAttachmentBean, EquellaItemBean}
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchResultAttachment, SearchParam, SearchResultItem}
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -188,7 +190,7 @@ object SearchHelper {
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
       commentCount,
-      attachments = convertToAttachment(bean.getAttachments),
+      attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
@@ -199,17 +201,41 @@ object SearchHelper {
   /**
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
-  def convertToAttachment(
-      attachmentBeans: java.util.List[AttachmentBean]): List[SearchResultAttachment] = {
+  def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
+                          itemKey: ItemIdKey): List[SearchResultAttachment] = {
     attachmentBeans.asScala
       .map(
         att =>
-          SearchResultAttachment(att.getRawAttachmentType,
-                                 att.getUuid,
-                                 Option(att.getDescription),
-                                 att.isPreview,
-                                 getLinksFromBean(att)))
+          SearchResultAttachment(
+            att.getRawAttachmentType,
+            att.getUuid,
+            Option(att.getDescription),
+            att.isPreview,
+            getFilenameFromBean(att),
+            !thumbExists(itemKey, att.getUuid),
+            getLinksFromBean(att)
+        ))
       .toList
+  }
+
+  /**
+    * Determines if attachment contains a generated thumbnail in filestore
+    */
+  def thumbExists(itemKey: ItemIdKey, attachUuid: String): Boolean = {
+    val item   = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
+    val attach = item.getAttachmentByUuid(attachUuid)
+    LegacyGuice.fileSystemService.fileExists(item.getFileHandle, attach.getThumbnail)
+  }
+
+  /**
+    * Extract the filename for AbstractExtendableBean.
+    */
+  def getFilenameFromBean[T <: AbstractExtendableBean](bean: T): Option[String] = {
+    bean match {
+      case file: AbstractFileAttachmentBean =>
+        Option(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
+      case _ => None
+    }
   }
 
   /**
