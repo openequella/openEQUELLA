@@ -18,6 +18,7 @@
 import * as React from "react";
 import SearchBar from "../../tsrc/search/components/SearchBar";
 import { action } from "@storybook/addon-actions";
+import { boolean } from "@storybook/addon-knobs";
 
 export default {
   title: "SearchBar",
@@ -25,5 +26,8 @@ export default {
 };
 
 export const BasicSearchPage = () => (
-  <SearchBar onChange={action("OnChange called")} />
+  <SearchBar
+    onChange={action("OnChange called")}
+    rawSearchMode={boolean("raw search mode", false)}
+  />
 );

@@ -27,14 +27,23 @@ import { useCallback } from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import { Close } from "@material-ui/icons";
 import { debounce } from "lodash";
+import { languageStrings } from "../../util/langstrings";
 
+const ENTER_KEY_CODE = 13;
 const ESCAPE_KEY_CODE = 27;
+
 interface SearchBarProps {
   /**
    * Callback fired when the user stops typing (debounced for 500 milliseconds).
    * @param query The string to search.
    */
   onChange: (query: string) => void;
+  /**
+   * Flag for raw search mode.
+   * If false, search is a debounced type-ahead style simple search with a * wildcard added automatically.
+   * If true, search occurs only on Enter press and is an explicit search which supports Lucene syntax.
+   */
+  rawSearchMode: boolean;
 }
 
 /**
@@ -43,32 +52,42 @@ interface SearchBarProps {
  * This component does not handle the API query itself,
  * that should be done in the parent component with the onChange callback.
  */
-export default function SearchBar({ onChange }: SearchBarProps) {
+export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
   const [query, setQuery] = React.useState<string>("");
-
+  const strings = languageStrings.searchpage;
+  const callOnChange = (query: string) =>
+    onChange(query + (rawSearchMode ? "" : "*"));
   /**
    * uses lodash to debounce the search query by half a second
    */
-  const delayedQuery = useCallback(
-    debounce((query: string) => onChange(query), 500),
-    [onChange]
-  );
+  const debouncedQuery = useCallback(debounce(callOnChange, 500), [onChange]);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    switch (event.keyCode) {
+      case ESCAPE_KEY_CODE:
+        event.preventDefault();
+        handleQueryChange("");
+        break;
+      case ENTER_KEY_CODE:
+        event.preventDefault();
+        debouncedQuery(query);
+        break;
+    }
+  };
   const handleQueryChange = (query: string) => {
     setQuery(query);
-    delayedQuery(query);
+    if (!rawSearchMode) {
+      debouncedQuery(query);
+    }
   };
 
   return (
     <Card>
       <CardContent>
         <TextField
-          onKeyDown={(event) => {
-            if (event.keyCode == ESCAPE_KEY_CODE) {
-              event.preventDefault();
-              handleQueryChange("");
-            }
-          }}
+          id="searchBar"
+          helperText={rawSearchMode ? strings.pressEnterToSearch : " "}
+          onKeyDown={handleKeyDown}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
