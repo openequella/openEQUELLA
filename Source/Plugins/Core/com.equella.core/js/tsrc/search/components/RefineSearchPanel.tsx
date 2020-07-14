@@ -28,12 +28,15 @@ import {
 import { languageStrings } from "../../util/langstrings";
 
 interface RefinePanelProps {
+  /**
+   * Child components rendered inside this panel.
+   */
   children: ReactNode;
 }
 
 const useStyles = makeStyles({
   refineSearchPanel: {
-    height: "100%",
+    height: "100%", // Ensure Card always takes the item grid's full height.
   },
 });
 
