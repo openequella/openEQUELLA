@@ -48,8 +48,10 @@ export const RefineSearchPanel = ({ children }: RefinePanelProps) => {
       <CardHeader title={title} />
       <CardContent>
         <List>
-          {React.Children.map(children, (child) => (
-            <ListItem divider>{child}</ListItem>
+          {React.Children.map(children, (child, index) => (
+            <ListItem divider={index != React.Children.count(children) - 1}>
+              {child}
+            </ListItem>
           ))}
         </List>
       </CardContent>
