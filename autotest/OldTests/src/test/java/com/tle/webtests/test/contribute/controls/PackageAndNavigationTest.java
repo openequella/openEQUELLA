@@ -267,6 +267,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     assertTrue(attachments.attachmentExists("2 single ' quotes'"));
   }
 
+  @RetryTest
   @Test
   public void navigation() {
     String itemName = context.getFullName("navigation");
