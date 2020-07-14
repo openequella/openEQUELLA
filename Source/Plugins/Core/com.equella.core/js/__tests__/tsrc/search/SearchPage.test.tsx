@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import {
-  getSearchResult,
   getEmptySearchResult,
+  getSearchResult,
 } from "../../../__mocks__/getSearchResult";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
@@ -32,6 +32,9 @@ import {
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
+const ENTER_KEYCODE = 13;
+const SEARCHBAR_ID = "input[id='searchBar']";
+const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -85,9 +88,35 @@ describe("<SearchPage/>", () => {
    */
   const querySearch = async (searchTerm: string) => {
     jest.useFakeTimers("modern");
-    const input = component.find("input.MuiInputBase-input");
+    const input = component.find(SEARCHBAR_ID);
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
+      jest.advanceTimersByTime(1000);
+    });
+  };
+
+  /**
+   * Do a raw query search with fake timer. Turns on raw search mode, enters a search and hits enter.
+   * Waits for the debounce after the enter key.
+   * @param searchTerm The specified search term.
+   */
+  const rawQuerySearch = async (searchTerm: string) => {
+    jest.useFakeTimers("modern");
+    const input = component.find(SEARCHBAR_ID);
+    const rawModeSwitch = component.find(RAW_SEARCH_TOGGLE_ID);
+    //turn raw search mode on
+    await awaitAct(() =>
+      rawModeSwitch.simulate("change", { target: { checked: true } })
+    );
+    //add the searchTerm
+    await awaitAct(() => {
+      input.simulate("change", { target: { value: searchTerm } });
+    });
+    //Hit Enter and wait for debounce
+    await awaitAct(() => {
+      input.simulate("keyDown", {
+        keyCode: ENTER_KEYCODE,
+      });
       jest.advanceTimersByTime(1000);
     });
   };
@@ -106,7 +135,7 @@ describe("<SearchPage/>", () => {
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
-      query: "new query",
+      query: "new query*",
     });
     expect(component.html()).not.toContain("No results found.");
     expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
@@ -176,5 +205,19 @@ describe("<SearchPage/>", () => {
     });
     component.update();
     expect(component.find(CircularProgress)).toHaveLength(0);
+  });
+
+  it("should not debounce and send query as-is when in raw search mode", async () => {
+    await rawQuerySearch("raw search test");
+    //assert that the query was passed in as-is
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
+      ...defaultSearchOptions,
+      query: "raw search test",
+    });
+    /*assert that there were only two calls - initial search and Enter key triggered.
+    if the debounce was still on, this would be three calls -
+    the initial search, the search triggered by the debounce,
+    and the search triggered by the Enter key.*/
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
   });
 });
