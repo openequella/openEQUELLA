@@ -15,7 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconButton, InputAdornment, TextField } from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  IconButton,
+  InputAdornment,
+  TextField,
+} from "@material-ui/core";
 import * as React from "react";
 import { useCallback } from "react";
 import SearchIcon from "@material-ui/icons/Search";
@@ -54,31 +60,35 @@ export default function SearchBar({ onChange }: SearchBarProps) {
   };
 
   return (
-    <TextField
-      onKeyDown={(event) => {
-        if (event.keyCode == ESCAPE_KEY_CODE) {
-          event.preventDefault();
-          handleQueryChange("");
-        }
-      }}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon fontSize="small" />
-          </InputAdornment>
-        ),
-        endAdornment: query.length > 0 && (
-          <IconButton onClick={() => handleQueryChange("")} size="small">
-            <Close />
-          </IconButton>
-        ),
-      }}
-      fullWidth
-      onChange={(event) => {
-        handleQueryChange(event.target.value);
-      }}
-      variant="standard"
-      value={query}
-    />
+    <Card>
+      <CardContent>
+        <TextField
+          onKeyDown={(event) => {
+            if (event.keyCode == ESCAPE_KEY_CODE) {
+              event.preventDefault();
+              handleQueryChange("");
+            }
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+            endAdornment: query.length > 0 && (
+              <IconButton onClick={() => handleQueryChange("")} size="small">
+                <Close />
+              </IconButton>
+            ),
+          }}
+          fullWidth
+          onChange={(event) => {
+            handleQueryChange(event.target.value);
+          }}
+          variant="standard"
+          value={query}
+        />
+      </CardContent>
+    </Card>
   );
 }

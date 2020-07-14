@@ -23,19 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Grid,
-  List,
-  ListItem,
-  TablePagination,
-  Typography,
-  CircularProgress,
-  makeStyles,
-} from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -44,29 +32,17 @@ import {
 } from "./SearchModule";
 import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
-import SearchResult from "./components/SearchResult";
 import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
 } from "../settings/Search/SearchSettingsModule";
-import SearchOrderSelect from "./components/SearchOrderSelect";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
-
-const useStyles = makeStyles({
-  transparentList: {
-    opacity: 0.2,
-  },
-  centralSpinner: {
-    top: "50%",
-    position: "fixed",
-  },
-});
+import { SearchResultList } from "./components/SearchResultList";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
-  const classes = useStyles();
 
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
     defaultSearchOptions
@@ -120,101 +96,41 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .finally(() => setShowSpinner(false));
   };
 
-  /**
-   * A SearchResult that represents one of the search result items.
-   */
-  const searchResults = pagedSearchResult.results.map(
-    (item: OEQ.Search.SearchResultItem) => (
-      <SearchResult {...item} key={item.uuid} />
-    )
-  );
-
   const handleSortOrderChanged = (order: SortOrder) =>
     setSearchOptions({ ...searchOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
     setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
 
-  /**
-   * A list that consists of search result items. Lower the list's opacity when spinner displays.
-   */
-  const searchResultList = (
-    <List className={showSpinner ? classes.transparentList : ""}>
-      {searchResults.length === 0 && !showSpinner ? (
-        <ListItem key={searchStrings.noResultsFound} divider>
-          <Typography>{searchStrings.noResultsFound}</Typography>
-        </ListItem>
-      ) : (
-        searchResults
-      )}
-    </List>
-  );
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <SearchBar onChange={handleQueryChanged} />
-              </CardContent>
-            </Card>
+            <SearchBar onChange={handleQueryChanged} />
           </Grid>
           <Grid item xs={12}>
-            <Card>
-              <CardHeader
-                title={searchStrings.subtitle}
-                action={
-                  <SearchOrderSelect
-                    value={searchOptions.sortOrder}
-                    onChange={handleSortOrderChanged}
-                  />
-                }
-              />
-              {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
-              <CardContent style={{ textAlign: "center" }}>
-                {showSpinner && (
-                  <CircularProgress
-                    variant="indeterminate"
-                    className={
-                      pagedSearchResult.results.length > 0
-                        ? classes.centralSpinner
-                        : ""
-                    }
-                  />
-                )}
-                {searchResultList}
-              </CardContent>
-
-              <CardActions>
-                <Grid container justify="center">
-                  <Grid item>
-                    <TablePagination
-                      component="div"
-                      count={pagedSearchResult.available}
-                      page={searchOptions.currentPage}
-                      onChangePage={(_, page: number) =>
-                        setSearchOptions({
-                          ...searchOptions,
-                          currentPage: page,
-                        })
-                      }
-                      rowsPerPageOptions={[10, 25, 50]}
-                      labelRowsPerPage={searchStrings.pagination.itemsPerPage}
-                      rowsPerPage={searchOptions.rowsPerPage}
-                      onChangeRowsPerPage={(event) =>
-                        setSearchOptions({
-                          ...searchOptions,
-                          currentPage: 0,
-                          rowsPerPage: parseInt(event.target.value),
-                        })
-                      }
-                    />
-                  </Grid>
-                </Grid>
-              </CardActions>
-            </Card>
+            <SearchResultList
+              searchResultItems={pagedSearchResult.results}
+              showSpinner={showSpinner}
+              paginationProps={{
+                count: pagedSearchResult.available,
+                currentPage: searchOptions.currentPage,
+                rowsPerPage: searchOptions.rowsPerPage,
+                onPageChange: (page: number) =>
+                  setSearchOptions({ ...searchOptions, currentPage: page }),
+                onRowsPerPageChange: (rowsPerPage: number) =>
+                  setSearchOptions({
+                    ...searchOptions,
+                    currentPage: 0,
+                    rowsPerPage: rowsPerPage,
+                  }),
+              }}
+              orderSelectProps={{
+                value: searchOptions.sortOrder,
+                onChange: handleSortOrderChanged,
+              }}
+            />
           </Grid>
         </Grid>
       </Grid>

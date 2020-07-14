@@ -23,7 +23,7 @@ import { languageStrings } from "../../util/langstrings";
 /**
  * Type of props passed to SearchOrderSelect.
  */
-interface SearchOrderSelectProps {
+export interface SearchOrderSelectProps {
   /**
    * The selected order. Being undefined means no option is selected.
    */
