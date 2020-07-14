@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
+      marginRight: theme.spacing(2),
+      width: "88px",
+      height: "auto",
     },
     itemDescription: {
       paddingBottom: theme.spacing(1),
@@ -128,7 +131,7 @@ export default function SearchResult({
     } else {
       result = (
         <Subject
-          className={`${classes.placeholderThumbnail} ${classes.thumbnail}`}
+          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.placeholderThumbnail}`}
           fontSize="large"
         />
       );
