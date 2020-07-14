@@ -169,6 +169,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                     label={searchStrings.rawSearch}
                     control={
                       <Switch
+                        id="rawSearch"
                         size="small"
                         onChange={(_, checked) => setUseRawSearch(checked)}
                         value={useRawSearch}

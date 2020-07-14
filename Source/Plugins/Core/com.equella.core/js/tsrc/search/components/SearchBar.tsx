@@ -49,13 +49,12 @@ interface SearchBarProps {
 export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
   const [query, setQuery] = React.useState<string>("");
   const strings = languageStrings.searchpage;
+  const callOnChange = (query: string) =>
+    onChange(query + (rawSearchMode ? "" : "*"));
   /**
    * uses lodash to debounce the search query by half a second
    */
-  const delayedQuery = useCallback(
-    debounce((query: string) => onChange(query + "*"), 500),
-    [onChange]
-  );
+  const delayedQuery = useCallback(debounce(callOnChange, 500), [onChange]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.keyCode) {
@@ -65,11 +64,7 @@ export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
         break;
       case ENTER_KEY_CODE:
         event.preventDefault();
-        if (rawSearchMode) {
-          onChange(query);
-        } else {
-          onChange(query + "*");
-        }
+        callOnChange(query);
         break;
     }
   };
@@ -82,6 +77,7 @@ export default function SearchBar({ onChange, rawSearchMode }: SearchBarProps) {
 
   return (
     <TextField
+      id="searchBar"
       helperText={rawSearchMode ? strings.pressEnterToSearch : " "}
       onKeyDown={handleKeyDown}
       InputProps={{
