@@ -23,7 +23,6 @@ import {
   CardHeader,
   List,
   ListItem,
-  makeStyles,
 } from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
 
@@ -34,17 +33,10 @@ interface RefinePanelProps {
   children: ReactNode;
 }
 
-const useStyles = makeStyles({
-  refineSearchPanel: {
-    height: "100%", // Ensure Card always takes the item grid's full height.
-  },
-});
-
 export const RefineSearchPanel = ({ children }: RefinePanelProps) => {
-  const classes = useStyles();
   const { title } = languageStrings.searchpage.refineSearchPanel;
   return (
-    <Card className={classes.refineSearchPanel}>
+    <Card>
       <CardHeader title={title} />
       <CardContent>
         <List>
