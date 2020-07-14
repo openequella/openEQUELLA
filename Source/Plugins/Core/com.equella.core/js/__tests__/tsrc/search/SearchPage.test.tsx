@@ -184,16 +184,19 @@ describe("<SearchPage/>", () => {
   it("should not debounce and send query as-is when in raw search mode", async () => {
     const input = component.find(SEARCHBAR_ID);
     const rawModeSwitch = component.find(RAW_SEARCH_TOGGLE_ID);
-    await awaitAct(() => {
-      //turn raw search mode on, add a search query and hit enter
-      rawModeSwitch.simulate("change", { target: { checked: true } });
-      jest.advanceTimersByTime(1000);
-      querySearch("raw search test");
+
+    //turn raw search mode on, add a search query and hit enter
+    await awaitAct(() =>
+      rawModeSwitch.simulate("change", { target: { checked: true } })
+    );
+    await awaitAct(() =>
+      input.simulate("change", { target: { value: "raw search test" } })
+    );
+    await awaitAct(() =>
       input.simulate("keyDown", {
         keyCode: ENTER_KEYCODE,
-      });
-      jest.advanceTimersByTime(1000);
-    });
+      })
+    );
 
     //assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
