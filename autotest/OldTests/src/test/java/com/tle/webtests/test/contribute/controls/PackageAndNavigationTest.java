@@ -24,6 +24,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import retry.RetryTest;
 
 @TestInstitution("fiveo")
 public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
@@ -158,6 +159,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
     wizard.save().publish();
   }
 
+  @RetryTest
   @Test
   public void zipOnly() {
     String itemName = context.getFullName("zip");
@@ -220,6 +222,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest {
    * DTEC-14847 - Ensure that if a new node is created, "Multiple resources" checked but no
    * resources selected for the tabs, then everything still keeps going without error.
    */
+  @RetryTest
   @Test
   public void checkNoErrorForEmptyTabs() {
     String itemName = context.getFullName("check no error for empty tabs");
