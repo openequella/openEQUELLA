@@ -15,15 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import SearchBar from "../../tsrc/search/components/SearchBar";
-import { action } from "@storybook/addon-actions";
+import * as OEQ from "@openequella/rest-api-client";
 
-export default {
-  title: "SearchBar",
-  component: SearchBar,
-};
-
-export const BasicSearchPage = () => (
-  <SearchBar onChange={action("OnChange called")} />
-);
+/**
+ * Provides a simple summary of a list of BaseEntities, where K will be the UUID and V will
+ * be the name. This kind of summary is useful for displaying in UI controls where a user
+ * may need to select one.
+ *
+ * @param list A list most likely retrieved via a REST call in the REST Client library
+ */
+export const summarisePagedBaseEntities = (
+  list: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>
+) =>
+  list.results.reduce(
+    (prev: Map<string, string>, curr: OEQ.Common.BaseEntity) =>
+      prev.set(curr.uuid, curr.name),
+    new Map<string, string>()
+  );

@@ -15,15 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import SearchBar from "../../tsrc/search/components/SearchBar";
-import { action } from "@storybook/addon-actions";
+import { getCollectionsResp } from "../../../__mocks__/getCollectionsResp";
+import * as OEQ from "@openequella/rest-api-client";
+import * as CollectionModule from "../../../tsrc/modules/CollectionsModule";
 
-export default {
-  title: "SearchBar",
-  component: SearchBar,
-};
+jest.mock("@openequella/rest-api-client");
+(OEQ.Collection.listCollections as jest.Mock<
+  Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
+>).mockResolvedValue(getCollectionsResp);
 
-export const BasicSearchPage = () => (
-  <SearchBar onChange={action("OnChange called")} />
-);
+describe("CollectionModule", () => {
+  it("should be able to get a list of collections", async () => {
+    const result = await CollectionModule.collectionListSummary();
+    expect(result.size).toEqual(10);
+  });
+});

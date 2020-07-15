@@ -23,13 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import {
-  FormControlLabel,
-  Grid,
-  Switch,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -50,7 +44,6 @@ import { SearchResultList } from "./components/SearchResultList";
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
 
-  const [useRawSearch, setUseRawSearch] = useState<boolean>(false);
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
     defaultSearchOptions
   );
@@ -114,29 +107,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={9}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <SearchBar
-              rawSearchMode={useRawSearch}
-              onChange={handleQueryChanged}
-            />
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Tooltip title={searchStrings.rawSearchTooltip}>
-                  <FormControlLabel
-                    labelPlacement="start"
-                    label={searchStrings.rawSearch}
-                    control={
-                      <Switch
-                        id="rawSearch"
-                        size="small"
-                        onChange={(_, checked) => setUseRawSearch(checked)}
-                        value={useRawSearch}
-                        name={searchStrings.rawSearch}
-                      />
-                    }
-                  />
-                </Tooltip>
-              </Grid>
-            </Grid>
+            <SearchBar onChange={handleQueryChanged} />
           </Grid>
           <Grid item xs={12}>
             <SearchResultList
