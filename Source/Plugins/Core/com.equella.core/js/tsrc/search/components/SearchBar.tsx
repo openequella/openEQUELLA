@@ -51,14 +51,17 @@ interface SearchBarProps {
 export default function SearchBar({ onChange }: SearchBarProps) {
   const searchStrings = languageStrings.searchpage;
   const [rawSearchMode, setRawSearchMode] = useState<boolean>(false);
-  const [query, setQuery] = React.useState<string>("");
+  const [queryString, setQuery] = React.useState<string>("");
   const strings = languageStrings.searchpage;
   const callOnChange = (query: string) =>
     onChange(query + (rawSearchMode ? "" : "*"));
   /**
    * uses lodash to debounce the search query by half a second
    */
-  const debouncedQuery = useCallback(debounce(callOnChange, 500), [onChange]);
+  const debouncedQuery = useCallback(debounce(callOnChange, 500), [
+    onChange,
+    rawSearchMode,
+  ]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.keyCode) {
@@ -68,7 +71,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
         break;
       case ENTER_KEY_CODE:
         event.preventDefault();
-        debouncedQuery(query);
+        debouncedQuery(queryString);
         break;
     }
   };
@@ -92,7 +95,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
                 <SearchIcon fontSize="small" />
               </InputAdornment>
             ),
-            endAdornment: query.length > 0 && (
+            endAdornment: queryString.length > 0 && (
               <IconButton onClick={() => handleQueryChange("")} size="small">
                 <Close />
               </IconButton>
@@ -103,7 +106,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
             handleQueryChange(event.target.value);
           }}
           variant="standard"
-          value={query}
+          value={queryString}
         />
       </Grid>
       {/* inline style ensures the raw search controls align vertically to the searchbar*/}
