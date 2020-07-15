@@ -22,9 +22,9 @@ import { languageStrings } from "../../util/langstrings";
 import ReactHtmlParser from "react-html-parser";
 import {
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   List,
   ListItem,
   ListItemIcon,
@@ -199,21 +199,21 @@ export default function SearchResult({
 
     if (attachmentsList.length > 0)
       return (
-        <ExpansionPanel
+        <Accordion
           className={classes.attachmentExpander}
           expanded={attachExapanded}
           onClick={(event) => handleAttachmentPanelClick(event)}
         >
-          <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
             <AttachFile className={classes.attachmentIcon} />
             <Typography>{searchResultStrings.attachments}</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          </AccordionSummary>
+          <AccordionDetails>
             <List component="div" disablePadding>
               {attachmentsList}
             </List>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          </AccordionDetails>
+        </Accordion>
       );
     return null;
   };
