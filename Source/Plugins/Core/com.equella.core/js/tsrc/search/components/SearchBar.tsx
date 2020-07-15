@@ -44,7 +44,7 @@ const useStyles = makeStyles({
   },
   divider: {
     height: 28,
-    margin: "4px 12px 4px",
+    margin: "4px 12px",
   },
 });
 
