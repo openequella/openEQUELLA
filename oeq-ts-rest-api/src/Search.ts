@@ -122,6 +122,14 @@ export interface Attachment {
    */
   preview: boolean;
   /**
+   * MimeType of file based attachment
+   */
+  mimeType?: string;
+  /**
+   * True if an attachment does not have a generated thumbnail
+   */
+  isPlaceholderThumb: boolean;
+  /**
    * Links to the attachment.
    */
   links: {
