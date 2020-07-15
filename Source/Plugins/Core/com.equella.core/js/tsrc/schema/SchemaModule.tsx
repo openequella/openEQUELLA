@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
+import { summarisePagedBaseEntities } from "../modules/OEQHelpers";
 
 /**
  * A minimal representation of a node within an oEQ schema.
@@ -43,16 +44,10 @@ export interface SchemaNode {
 export const schemaListSummary = (): Promise<Map<string, string>> =>
   OEQ.Schema.listSchemas(API_BASE_URL, {
     // We believe very few people have more than 5 schemas, so this will do for now.
-    // Plus there are some oddities currently in the oEQ paging as seen in
+    // As there are some oddities currently in the oEQ paging as seen in
     // https://github.com/openequella/openEQUELLA/issues/1735
     length: 100,
-  }).then((schemas: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>) =>
-    schemas.results.reduce(
-      (prev: Map<string, string>, curr: OEQ.Common.BaseEntity) =>
-        prev.set(curr.uuid, curr.name),
-      new Map<string, string>()
-    )
-  );
+  }).then(summarisePagedBaseEntities);
 
 /**
  * Recursive helper function to build a simple outline of the structure of an oEQ schema.
