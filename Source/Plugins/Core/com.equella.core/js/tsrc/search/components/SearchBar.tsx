@@ -53,8 +53,10 @@ export default function SearchBar({ onChange }: SearchBarProps) {
   const [rawSearchMode, setRawSearchMode] = useState<boolean>(false);
   const [queryString, setQuery] = React.useState<string>("");
   const strings = languageStrings.searchpage;
-  const callOnChange = (query: string) =>
-    onChange(query + (rawSearchMode ? "" : "*"));
+  const callOnChange = (query: string) => {
+    const trimmedQuery = query.trim();
+    onChange(trimmedQuery + (rawSearchMode || !trimmedQuery ? "" : "*"));
+  };
   /**
    * uses lodash to debounce the search query by half a second
    */
