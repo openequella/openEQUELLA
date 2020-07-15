@@ -207,13 +207,13 @@ object SearchHelper {
       .map(
         att =>
           SearchResultAttachment(
-            att.getRawAttachmentType,
-            att.getUuid,
-            Option(att.getDescription),
-            att.isPreview,
-            getMimetypeForAttachment(att),
-            !thumbExists(itemKey, att.getUuid),
-            getLinksFromBean(att)
+            attachmentType = att.getRawAttachmentType,
+            id = att.getUuid,
+            description = Option(att.getDescription),
+            preview = att.isPreview,
+            mimeType = getMimetypeForAttachment(att),
+            isPlaceholderThumb = !thumbExists(itemKey, att.getUuid),
+            links = getLinksFromBean(att)
         ))
       .toList
   }
