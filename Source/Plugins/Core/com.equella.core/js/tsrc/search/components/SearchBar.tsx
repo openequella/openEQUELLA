@@ -55,8 +55,15 @@ export default function SearchBar({ onChange }: SearchBarProps) {
   const [rawSearchMode, setRawSearchMode] = useState<boolean>(false);
   const [queryString, setQuery] = React.useState<string>("");
   const strings = languageStrings.searchpage;
-  const callOnChange = (query: string) =>
-    onChange(query + (rawSearchMode ? "" : "*"));
+
+  const callOnChange = (query: string) => {
+    //only append the wildcard if raw search is off, and the query isn't blank
+    const trimmedQuery = query.trim();
+    const appendWildcard = !rawSearchMode && trimmedQuery.length > 0;
+    const formattedQuery = trimmedQuery + (appendWildcard ? "*" : "");
+    onChange(formattedQuery);
+  };
+
   /**
    * uses lodash to debounce the search query by half a second
    */

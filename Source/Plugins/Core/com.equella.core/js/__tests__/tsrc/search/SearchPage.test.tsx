@@ -141,6 +141,14 @@ describe("<SearchPage/>", () => {
     expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
   });
 
+  it("should not append a wildcard for a search which is empty when trimmed", async () => {
+    await querySearch("      ");
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      query: "",
+    });
+  });
+
   it("should display 'No results found.' when there are no search results", async () => {
     mockSearch.mockImplementationOnce(() =>
       Promise.resolve(getEmptySearchResult)
