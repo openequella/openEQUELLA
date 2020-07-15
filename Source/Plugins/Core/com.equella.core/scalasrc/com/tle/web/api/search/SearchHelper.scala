@@ -32,9 +32,13 @@ import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
-import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
+import com.tle.web.api.item.equella.interfaces.beans.{
+  AbstractFileAttachmentBean,
+  EquellaItemBean,
+  FileAttachmentBean
+}
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.{SearchResultAttachment, SearchParam, SearchResultItem}
+import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -188,7 +192,7 @@ object SearchHelper {
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
       commentCount,
-      attachments = convertToAttachment(bean.getAttachments),
+      attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
@@ -199,17 +203,44 @@ object SearchHelper {
   /**
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
-  def convertToAttachment(
-      attachmentBeans: java.util.List[AttachmentBean]): List[SearchResultAttachment] = {
+  def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
+                          itemKey: ItemIdKey): List[SearchResultAttachment] = {
     attachmentBeans.asScala
       .map(
         att =>
-          SearchResultAttachment(att.getRawAttachmentType,
-                                 att.getUuid,
-                                 Option(att.getDescription),
-                                 att.isPreview,
-                                 getLinksFromBean(att)))
+          SearchResultAttachment(
+            attachmentType = att.getRawAttachmentType,
+            id = att.getUuid,
+            description = Option(att.getDescription),
+            preview = att.isPreview,
+            mimeType = getMimetypeForAttachment(att),
+            isPlaceholderThumb = !thumbExists(itemKey, att),
+            links = getLinksFromBean(att)
+        ))
       .toList
+  }
+
+  /**
+    * Determines if attachment contains a generated thumbnail in filestore
+    */
+  def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Boolean = {
+    attachBean match {
+      case fileBean: FileAttachmentBean =>
+        val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
+        LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileBean.getThumbnail)
+      case _ => false
+    }
+  }
+
+  /**
+    * Extract the mimetype for AbstractExtendableBean.
+    */
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] = {
+    bean match {
+      case file: AbstractFileAttachmentBean =>
+        Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
+      case _ => None
+    }
   }
 
   /**
