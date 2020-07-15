@@ -20,7 +20,6 @@ package com.tle.web.api.search
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
-
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.{ItemIdKey, ItemStatus}
@@ -33,10 +32,13 @@ import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
-import com.tle.web.api.item.equella.interfaces.beans.{AbstractFileAttachmentBean, EquellaItemBean}
+import com.tle.web.api.item.equella.interfaces.beans.{
+  AbstractFileAttachmentBean,
+  EquellaItemBean,
+  FileAttachmentBean
+}
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.{SearchResultAttachment, SearchParam, SearchResultItem}
-
+import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -212,7 +214,7 @@ object SearchHelper {
             description = Option(att.getDescription),
             preview = att.isPreview,
             mimeType = getMimetypeForAttachment(att),
-            isPlaceholderThumb = !thumbExists(itemKey, att.getUuid),
+            isPlaceholderThumb = !thumbExists(itemKey, att),
             links = getLinksFromBean(att)
         ))
       .toList
@@ -221,10 +223,13 @@ object SearchHelper {
   /**
     * Determines if attachment contains a generated thumbnail in filestore
     */
-  def thumbExists(itemKey: ItemIdKey, attachUuid: String): Boolean = {
-    val item   = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
-    val attach = item.getAttachmentByUuid(attachUuid)
-    LegacyGuice.fileSystemService.fileExists(item.getFileHandle, attach.getThumbnail)
+  def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Boolean = {
+    attachBean match {
+      case fileBean: FileAttachmentBean =>
+        val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
+        LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileBean.getThumbnail)
+      case _ => false
+    }
   }
 
   /**
@@ -233,7 +238,7 @@ object SearchHelper {
   def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] = {
     bean match {
       case file: AbstractFileAttachmentBean =>
-        Option(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
+        Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
       case _ => None
     }
   }
