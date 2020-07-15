@@ -124,7 +124,7 @@
     "rewire": "5.0.0",
     "storybook-react-router": "1.0.8",
     "ts-jest": "26.1.2",
-    "ts-loader": "8.0.0",
+    "ts-loader": "8.0.1",
     "typescript": "3.9.6"
   }
 }
