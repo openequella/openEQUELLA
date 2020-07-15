@@ -16,25 +16,37 @@
  * limitations under the License.
  */
 import {
-  Card,
-  CardContent,
+  Divider,
   FormControlLabel,
-  Grid,
   IconButton,
-  InputAdornment,
+  InputBase,
+  Paper,
   Switch,
-  TextField,
   Tooltip,
 } from "@material-ui/core";
 import * as React from "react";
 import { useCallback, useState } from "react";
 import SearchIcon from "@material-ui/icons/Search";
-import { Close } from "@material-ui/icons";
 import { debounce } from "lodash";
 import { languageStrings } from "../../util/langstrings";
+import { makeStyles } from "@material-ui/core/styles";
 
 const ENTER_KEY_CODE = 13;
 const ESCAPE_KEY_CODE = 27;
+
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    alignItems: "center",
+  },
+  input: {
+    flex: "auto",
+  },
+  divider: {
+    height: 28,
+    margin: "4px 12px 4px",
+  },
+});
 
 interface SearchBarProps {
   /**
@@ -51,6 +63,8 @@ interface SearchBarProps {
  * that should be done in the parent component with the onChange callback.
  */
 export default function SearchBar({ onChange }: SearchBarProps) {
+  const classes = useStyles();
+
   const searchStrings = languageStrings.searchpage;
   const [rawSearchMode, setRawSearchMode] = useState<boolean>(false);
   const [queryString, setQuery] = React.useState<string>("");
@@ -72,7 +86,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
     rawSearchMode,
   ]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.keyCode) {
       case ESCAPE_KEY_CODE:
         event.preventDefault();
@@ -84,6 +98,7 @@ export default function SearchBar({ onChange }: SearchBarProps) {
         break;
     }
   };
+
   const handleQueryChange = (query: string) => {
     setQuery(query);
     if (!rawSearchMode) {
@@ -92,61 +107,37 @@ export default function SearchBar({ onChange }: SearchBarProps) {
   };
 
   return (
-    <Card>
-      <CardContent>
-        <Grid container direction="row">
-          <Grid item xs={10}>
-            <TextField
-              id="searchBar"
-              helperText={rawSearchMode ? strings.pressEnterToSearch : " "}
-              onKeyDown={handleKeyDown}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: queryString.length > 0 && (
-                  <IconButton
-                    onClick={() => handleQueryChange("")}
-                    size="small"
-                  >
-                    <Close />
-                  </IconButton>
-                ),
-              }}
-              fullWidth
-              onChange={(event) => {
-                handleQueryChange(event.target.value);
-              }}
-              variant="standard"
-              value={queryString}
+    <Paper className={classes.root}>
+      <IconButton
+        onClick={() => debouncedQuery(queryString)}
+        aria-label={strings.title}
+      >
+        <SearchIcon />
+      </IconButton>
+      <InputBase
+        id="searchBar"
+        className={classes.input}
+        onKeyDown={handleKeyDown}
+        onChange={(event) => {
+          handleQueryChange(event.target.value);
+        }}
+        value={queryString}
+        placeholder={rawSearchMode ? strings.pressEnterToSearch : strings.title}
+      />
+      <Divider className={classes.divider} orientation="vertical" />
+      <Tooltip title={searchStrings.rawSearchTooltip}>
+        <FormControlLabel
+          label={searchStrings.rawSearch}
+          control={
+            <Switch
+              id="rawSearch"
+              onChange={(_, checked) => setRawSearchMode(checked)}
+              value={rawSearchMode}
+              name={searchStrings.rawSearch}
             />
-          </Grid>
-          {/* inline style ensures the raw search controls align vertically to the searchbar*/}
-          <Grid xs={2} item style={{ alignSelf: "center" }}>
-            {/* inline style ensures that the raw search control justifies to the right of it's grid item*/}
-            <Tooltip
-              title={searchStrings.rawSearchTooltip}
-              style={{ float: "right" }}
-            >
-              <FormControlLabel
-                labelPlacement="start"
-                label={searchStrings.rawSearch}
-                control={
-                  <Switch
-                    id="rawSearch"
-                    size="small"
-                    onChange={(_, checked) => setRawSearchMode(checked)}
-                    value={rawSearchMode}
-                    name={searchStrings.rawSearch}
-                  />
-                }
-              />
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+          }
+        />
+      </Tooltip>
+    </Paper>
   );
 }
