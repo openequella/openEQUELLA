@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base", ":masterIssue"],
+  "extends": ["config:base", ":masterIssue", ":maintainLockFilesMonthly"],
   "prConcurrentLimit": 20,
   "prHourlyLimit": 2,
   "packageRules": [
