@@ -245,11 +245,16 @@ describe("<SearchPage/>", () => {
       "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
       "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe",
     ];
+    component.update();
     const collectionSelector = component.find(CollectionSelector);
     const handleCollectionChange: (
       collections: string[]
     ) => void = collectionSelector.prop("onSelectionChange");
     await awaitAct(() => handleCollectionChange(selectedCollections));
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      collections: selectedCollections,
+    });
   });
 });
