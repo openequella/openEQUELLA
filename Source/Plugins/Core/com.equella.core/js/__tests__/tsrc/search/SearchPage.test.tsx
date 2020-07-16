@@ -19,11 +19,13 @@ import {
   getEmptySearchResult,
   getSearchResult,
 } from "../../../__mocks__/getSearchResult";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
 import { mount, ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
 import * as SearchModule from "../../../tsrc/search/SearchModule";
+import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule";
 import {
   defaultSearchSettings,
@@ -31,6 +33,8 @@ import {
 } from "../../../tsrc/settings/Search/SearchSettingsModule";
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
+import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import { SearchOptions } from "../../../tsrc/search/SearchModule";
 
 const ENTER_KEYCODE = 13;
 const SEARCHBAR_ID = "input[id='searchBar']";
@@ -40,17 +44,20 @@ const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
+const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const searchSettingPromise = mockSearchSettings.mockImplementation(() =>
   Promise.resolve(defaultSearchSettings)
 );
 const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
 );
-const defaultSearchOptions = {
+mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
+const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: SortOrder.RANK,
 };
+const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
 describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
@@ -121,12 +128,16 @@ describe("<SearchPage/>", () => {
     });
   };
 
-  it("should retrieve search settings and do a search when the page is opened", () => {
+  it("should retrieve search settings and collections, and do a search when the page is opened", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(1);
     expect(SearchModule.searchItems).toHaveBeenCalledWith(defaultSearchOptions);
+    expect(CollectionsModule.collectionListSummary).toHaveBeenCalledTimes(1);
+    expect(CollectionsModule.collectionListSummary).toHaveBeenCalledWith(
+      defaultCollectionPrivileges
+    );
   });
 
   it("should support debounce query search and display search results", async () => {
@@ -226,6 +237,19 @@ describe("<SearchPage/>", () => {
     if the debounce was still on, this would be three calls -
     the initial search, the search triggered by the debounce,
     and the search triggered by the Enter key.*/
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
+  });
+
+  it("should filter search results by collections", async () => {
+    const selectedCollections = [
+      "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
+      "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe",
+    ];
+    const collectionSelector = component.find(CollectionSelector);
+    const handleCollectionChange: (
+      collections: string[]
+    ) => void = collectionSelector.prop("onSelectionChange");
+    await awaitAct(() => handleCollectionChange(selectedCollections));
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
   });
 });

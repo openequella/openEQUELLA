@@ -163,3 +163,11 @@ exports.getCollectionsResp = {
   ],
   resumptionToken: "17:10",
 };
+
+exports.getCollectionMap = new Map([
+  ["8e3caf16-f3cb-b3dd-d403-e5eb8d545fff", "DRM Test Collection"],
+  ["8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe", "Generic Testing Collection"],
+  ["8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg", "Basic Items"],
+  ["8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa", "Books"],
+  ["8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb", "Videos"],
+]);
