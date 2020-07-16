@@ -46,7 +46,7 @@
     "remark-cli": "8.0.0",
     "remark-lint-no-dead-urls": "1.0.2",
     "remark-validate-links": "10.0.2",
-    "typescript": "3.9.6"
+    "typescript": "3.9.7"
   },
   "husky": {
     "hooks": {
