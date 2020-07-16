@@ -22,10 +22,11 @@ import { collectionListSummary } from "../../modules/CollectionsModule";
 import { Autocomplete } from "@material-ui/lab";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import { languageStrings } from "../../util/langstrings";
 
 interface CollectionSelectorProps {
   /**
-   * Fire when collection selections are changed.
+   * Fires when collection selections are changed.
    * @param collections Selected collections.
    */
   onSelectionChange: (collections: string[]) => void;
@@ -37,6 +38,8 @@ interface CollectionSelectorProps {
 export const CollectionSelector = ({
   onSelectionChange,
 }: CollectionSelectorProps) => {
+  const collectionSelectorStrings =
+    languageStrings.searchpage.collectionSelector;
   const [collections, setCollections] = useState<[string, string][]>([]);
   useEffect(() => {
     collectionListSummary([
@@ -51,7 +54,7 @@ export const CollectionSelector = ({
       multiple
       fullWidth
       limitTags={2}
-      onChange={(event: React.ChangeEvent<{}>, value: [string, string][]) => {
+      onChange={(_, value: [string, string][]) => {
         onSelectionChange(value.map((collection) => collection[0]));
       }}
       options={collections}
@@ -71,8 +74,8 @@ export const CollectionSelector = ({
         <TextField
           {...params}
           variant="outlined"
-          label="Collections"
-          placeholder="Collections"
+          label={collectionSelectorStrings.label}
+          placeholder={collectionSelectorStrings.label}
         />
       )}
     />
