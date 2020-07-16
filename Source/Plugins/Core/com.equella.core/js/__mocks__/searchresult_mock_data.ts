@@ -61,6 +61,8 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
       id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
       description: "config.json",
       preview: false,
+      mimeType: "image/png",
+      hasGeneratedThumb: true,
       links: {
         view:
           "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
@@ -100,6 +102,8 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
       id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
       description: "config.json",
       preview: false,
+      mimeType: "image/png",
+      hasGeneratedThumb: true,
       links: {
         view:
           "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",

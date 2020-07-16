@@ -1,6 +1,6 @@
 import * as Common from './Common';
-import {is} from 'typescript-is';
-import {GET} from './AxiosInstance';
+import { is } from 'typescript-is';
+import { GET } from './AxiosInstance';
 import * as Utils from './Utils';
 
 /**
@@ -121,6 +121,14 @@ export interface Attachment {
    * True if an attachment can be previewed.
    */
   preview: boolean;
+  /**
+   * MimeType of file based attachment
+   */
+  mimeType?: string;
+  /**
+   * True if a file attachment has a generated thumbnail in filestore
+   */
+  hasGeneratedThumb?: boolean;
   /**
    * Links to the attachment.
    */
