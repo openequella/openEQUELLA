@@ -43,7 +43,7 @@ exports.getSearchResult = {
           description: "B.txt",
           preview: false,
           mimeType: "text/plain",
-          isPlaceholderThumb: false,
+          hasGeneratedThumb: true,
           links: {
             view:
               "http://localhost:8080/rest/items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?attachment.uuid=29e0fe1b-dbd6-4c98-9e7a-d957d9c731f5",
@@ -113,7 +113,7 @@ exports.getSearchResult = {
           description: "B.txt",
           preview: false,
           mimeType: "text/plain",
-          isPlaceholderThumb: false,
+          hasGeneratedThumb: true,
           links: {
             view:
               "http://localhost:8080/rest/items/925f5dd2-66eb-4b68-85be-93837af785d0/1/?attachment.uuid=0a89415c-73b6-4e9b-8372-197b6ba4946c",

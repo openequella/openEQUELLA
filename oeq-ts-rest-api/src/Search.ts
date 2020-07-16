@@ -126,9 +126,9 @@ export interface Attachment {
    */
   mimeType?: string;
   /**
-   * True if an attachment does not have a generated thumbnail
+   * True if an file attachment has a generated thumbnail in filestore
    */
-  isPlaceholderThumb: boolean;
+  hasGeneratedThumb?: boolean;
   /**
    * Links to the attachment.
    */

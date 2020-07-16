@@ -63,7 +63,7 @@ case class SearchResultItem(
   * @param description The description of an attachment.
   * @param preview If an attachment can be previewed or not.
   * @param mimeType Mime Type of file based attachments
-  * @param isPlaceholderThumb Indicates if an attachment does not yet have a generated thumbnail
+  * @param hasGeneratedThumb Indicates if file based attachments have a generated thumbnail store in filestore
   * @param links Attachment's links.
   */
 case class SearchResultAttachment(
@@ -72,6 +72,6 @@ case class SearchResultAttachment(
     description: Option[String],
     preview: Boolean,
     mimeType: Option[String],
-    isPlaceholderThumb: Boolean,
+    hasGeneratedThumb: Option[Boolean],
     links: java.util.Map[String, String]
 )
