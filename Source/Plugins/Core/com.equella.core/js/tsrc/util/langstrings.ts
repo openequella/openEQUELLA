@@ -315,8 +315,8 @@ export const languageStrings = {
     noResultsFound: "No results found.",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
-    rawSearch: "Raw Search",
-    pressEnterToSearch: "Press enter to search",
+    rawSearch: "Raw search",
+    pressEnterToSearch: "Raw search enabled, press enter to search",
     rawSearchTooltip: "Supports use of Apache Lucene search syntax",
     searchresult: {
       attachments: "Attachments",
