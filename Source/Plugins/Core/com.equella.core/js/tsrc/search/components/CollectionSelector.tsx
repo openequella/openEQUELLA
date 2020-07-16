@@ -49,7 +49,6 @@ export const CollectionSelector = ({
   return (
     <Autocomplete
       multiple
-      disablePortal
       fullWidth
       limitTags={2}
       onChange={(event: React.ChangeEvent<{}>, value: [string, string][]) => {
