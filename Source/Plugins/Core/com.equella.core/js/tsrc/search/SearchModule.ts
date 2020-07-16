@@ -40,7 +40,13 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
 export const searchItems = (
   searchOptions: SearchOptions
 ): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> => {
-  const { query, rowsPerPage, currentPage, sortOrder } = searchOptions;
+  const {
+    query,
+    rowsPerPage,
+    currentPage,
+    sortOrder,
+    collections,
+  } = searchOptions;
   const searchParams: OEQ.Search.SearchParams = {
     query: query,
     start: currentPage * rowsPerPage,
@@ -50,6 +56,7 @@ export const searchItems = (
       "REVIEW" as OEQ.Common.ItemStatus,
     ],
     order: sortOrder,
+    collections: collections,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -74,4 +81,8 @@ export interface SearchOptions {
    * Selected search result sorting order.
    */
   sortOrder: SortOrder | undefined;
+  /**
+   * A list of collection UUIDs.
+   */
+  collections?: string[];
 }

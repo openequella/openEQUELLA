@@ -23,7 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -40,6 +40,7 @@ import {
 } from "../settings/Search/SearchSettingsModule";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
+import { CollectionSelector } from "./components/CollectionSelector";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -137,11 +138,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Grid item xs={3}>
         <RefineSearchPanel>
-          <Typography>place holder 1</Typography>
-          <Typography>place holder 2</Typography>
-          <Typography>place holder 3</Typography>
-          <Typography>place holder 4</Typography>
-          <Typography>place holder 5</Typography>
+          <CollectionSelector
+            onSelectionChange={(collections: string[]) =>
+              setSearchOptions({ ...searchOptions, collections: collections })
+            }
+          />
         </RefineSearchPanel>
       </Grid>
     </Grid>
