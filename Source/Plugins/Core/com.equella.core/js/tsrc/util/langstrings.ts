@@ -351,6 +351,9 @@ export const languageStrings = {
     refineSearchPanel: {
       title: "Refine search",
     },
+    collectionSelector: {
+      label: "Collections",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",

@@ -23,7 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -40,6 +40,8 @@ import {
 } from "../settings/Search/SearchSettingsModule";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
+import { CollectionSelector } from "./components/CollectionSelector";
+import { Collection } from "../modules/CollectionsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -102,6 +104,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleQueryChanged = (query: string) =>
     setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
 
+  const handleCollectionSelectionChanged = (collections: Collection[]) => {
+    setSearchOptions({
+      ...searchOptions,
+      collections: collections,
+      currentPage: 0,
+    });
+  };
+
+  const handlePageChanged = (page: number) =>
+    setSearchOptions({ ...searchOptions, currentPage: page });
+
+  const handleRowsPerPageChanged = (rowsPerPage: number) =>
+    setSearchOptions({
+      ...searchOptions,
+      currentPage: 0,
+      rowsPerPage: rowsPerPage,
+    });
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
@@ -117,14 +137,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 count: pagedSearchResult.available,
                 currentPage: searchOptions.currentPage,
                 rowsPerPage: searchOptions.rowsPerPage,
-                onPageChange: (page: number) =>
-                  setSearchOptions({ ...searchOptions, currentPage: page }),
-                onRowsPerPageChange: (rowsPerPage: number) =>
-                  setSearchOptions({
-                    ...searchOptions,
-                    currentPage: 0,
-                    rowsPerPage: rowsPerPage,
-                  }),
+                onPageChange: handlePageChanged,
+                onRowsPerPageChange: handleRowsPerPageChanged,
               }}
               orderSelectProps={{
                 value: searchOptions.sortOrder,
@@ -137,11 +151,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Grid item xs={3}>
         <RefineSearchPanel>
-          <Typography>place holder 1</Typography>
-          <Typography>place holder 2</Typography>
-          <Typography>place holder 3</Typography>
-          <Typography>place holder 4</Typography>
-          <Typography>place holder 5</Typography>
+          <CollectionSelector
+            onSelectionChange={handleCollectionSelectionChanged}
+            value={searchOptions.collections}
+          />
         </RefineSearchPanel>
       </Grid>
     </Grid>

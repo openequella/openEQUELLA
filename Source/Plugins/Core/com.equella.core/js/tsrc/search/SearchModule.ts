@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
+import { Collection } from "../modules/CollectionsModule";
 
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
@@ -37,10 +38,15 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
  * and then does a search and returns a list of Items.
  * @param searchOptions  Search options selected on Search page.
  */
-export const searchItems = (
-  searchOptions: SearchOptions
-): Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>> => {
-  const { query, rowsPerPage, currentPage, sortOrder } = searchOptions;
+export const searchItems = ({
+  query,
+  rowsPerPage,
+  currentPage,
+  sortOrder,
+  collections,
+}: SearchOptions): Promise<
+  OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+> => {
   const searchParams: OEQ.Search.SearchParams = {
     query: query,
     start: currentPage * rowsPerPage,
@@ -50,6 +56,7 @@ export const searchItems = (
       "REVIEW" as OEQ.Common.ItemStatus,
     ],
     order: sortOrder,
+    collections: collections?.map((collection) => collection.uuid),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -74,4 +81,8 @@ export interface SearchOptions {
    * Selected search result sorting order.
    */
   sortOrder: SortOrder | undefined;
+  /**
+   * A list of collections.
+   */
+  collections?: Collection[];
 }
