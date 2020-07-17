@@ -35,3 +35,17 @@ export const collectionListSummary = (
     length: 100,
     privilege: requiredPrivileges,
   }).then(summarisePagedBaseEntities);
+
+/**
+ * A simplified type of Collection used when only collection'uuid and name are required.
+ */
+export interface Collection {
+  /**
+   * Collection's uuid.
+   */
+  uuid: string;
+  /**
+   * Collection's name.
+   */
+  name: string;
+}

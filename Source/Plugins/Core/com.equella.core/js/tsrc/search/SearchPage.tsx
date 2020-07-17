@@ -41,6 +41,7 @@ import {
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
+import { Collection } from "../modules/CollectionsModule";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
@@ -103,6 +104,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleQueryChanged = (query: string) =>
     setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
 
+  const handleCollectionSelectionChanged = (collections: Collection[]) => {
+    setSearchOptions({
+      ...searchOptions,
+      collections: collections,
+      currentPage: 0,
+    });
+  };
+
+  const handlePageChanged = (page: number) =>
+    setSearchOptions({ ...searchOptions, currentPage: page });
+
+  const handleRowsPerPageChanged = (rowsPerPage: number) =>
+    setSearchOptions({
+      ...searchOptions,
+      currentPage: 0,
+      rowsPerPage: rowsPerPage,
+    });
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
@@ -118,14 +137,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 count: pagedSearchResult.available,
                 currentPage: searchOptions.currentPage,
                 rowsPerPage: searchOptions.rowsPerPage,
-                onPageChange: (page: number) =>
-                  setSearchOptions({ ...searchOptions, currentPage: page }),
-                onRowsPerPageChange: (rowsPerPage: number) =>
-                  setSearchOptions({
-                    ...searchOptions,
-                    currentPage: 0,
-                    rowsPerPage: rowsPerPage,
-                  }),
+                onPageChange: handlePageChanged,
+                onRowsPerPageChange: handleRowsPerPageChanged,
               }}
               orderSelectProps={{
                 value: searchOptions.sortOrder,
@@ -139,9 +152,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={3}>
         <RefineSearchPanel>
           <CollectionSelector
-            onSelectionChange={(collections: string[]) =>
-              setSearchOptions({ ...searchOptions, collections: collections })
-            }
+            onSelectionChange={handleCollectionSelectionChanged}
+            value={searchOptions.collections}
           />
         </RefineSearchPanel>
       </Grid>

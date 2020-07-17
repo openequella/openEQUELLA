@@ -18,7 +18,10 @@
 import * as React from "react";
 import { Checkbox, TextField } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import { collectionListSummary } from "../../modules/CollectionsModule";
+import {
+  Collection,
+  collectionListSummary,
+} from "../../modules/CollectionsModule";
 import { Autocomplete } from "@material-ui/lab";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
@@ -29,23 +32,35 @@ interface CollectionSelectorProps {
    * Fires when collection selections are changed.
    * @param collections Selected collections.
    */
-  onSelectionChange: (collections: string[]) => void;
+  onSelectionChange: (collections: Collection[]) => void;
+  /**
+   * Initially selected collections.
+   */
+  value?: Collection[];
 }
 
 /**
  * As a refine search control, this component is used to filter search results by collections.
+ * The initially selected collections are either provided through props or an empty array.
  */
 export const CollectionSelector = ({
   onSelectionChange,
+  value,
 }: CollectionSelectorProps) => {
   const collectionSelectorStrings =
     languageStrings.searchpage.collectionSelector;
-  const [collections, setCollections] = useState<[string, string][]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [selectedCollections, setSelectedCollections] = useState<Collection[]>(
+    value ?? []
+  );
+
   useEffect(() => {
     collectionListSummary([
       "SEARCH_COLLECTION",
     ]).then((collections: Map<string, string>) =>
-      setCollections(Array.from(collections))
+      setCollections(
+        Array.from(collections, ([uuid, name]) => ({ uuid, name }))
+      )
     );
   }, []);
 
@@ -54,12 +69,19 @@ export const CollectionSelector = ({
       multiple
       fullWidth
       limitTags={2}
-      onChange={(_, value: [string, string][]) => {
-        onSelectionChange(value.map((collection) => collection[0]));
+      onChange={(_, value: Collection[]) => {
+        setSelectedCollections(value);
+        onSelectionChange(value);
       }}
+      value={selectedCollections}
       options={collections}
       disableCloseOnSelect
-      getOptionLabel={(collection) => collection[1]}
+      getOptionLabel={(collection) => collection.name}
+      getOptionSelected={(collection) =>
+        selectedCollections.some(
+          (selected) => selected.uuid === collection.uuid
+        )
+      }
       renderOption={(collection, { selected }) => (
         <>
           <Checkbox
@@ -67,7 +89,7 @@ export const CollectionSelector = ({
             checkedIcon={<CheckBoxIcon fontSize="small" />}
             checked={selected}
           />
-          {collection[1]}
+          {collection.name}
         </>
       )}
       renderInput={(params) => (

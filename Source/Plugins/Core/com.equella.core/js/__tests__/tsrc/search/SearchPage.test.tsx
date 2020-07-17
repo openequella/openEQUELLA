@@ -242,13 +242,19 @@ describe("<SearchPage/>", () => {
 
   it("should filter search results by collections", async () => {
     const selectedCollections = [
-      "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
-      "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe",
+      {
+        uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
+        name: "DRM Test Collection",
+      },
+      {
+        uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe",
+        name: "Generic Testing Collection",
+      },
     ];
     component.update();
     const collectionSelector = component.find(CollectionSelector);
     const handleCollectionChange: (
-      collections: string[]
+      collections: CollectionsModule.Collection[]
     ) => void = collectionSelector.prop("onSelectionChange");
     await awaitAct(() => handleCollectionChange(selectedCollections));
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
