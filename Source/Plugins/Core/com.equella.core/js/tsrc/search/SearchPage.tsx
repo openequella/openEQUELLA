@@ -128,12 +128,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       rowsPerPage: rowsPerPage,
     });
 
+  const handleRawModeChanged = (rawMode: boolean) =>
+    setSearchOptions({ ...searchOptions, rawMode: rawMode });
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <SearchBar onChange={handleQueryChanged} />
+            <SearchBar
+              query={searchOptions.query ?? ""}
+              rawMode={searchOptions.rawMode}
+              onQueryChange={handleQueryChanged}
+              onRawModeChange={handleRawModeChanged}
+              doSearch={search}
+            />
           </Grid>
           <Grid item xs={12}>
             <SearchResultList

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+  debounce,
   Divider,
   FormControlLabel,
   IconButton,
@@ -27,7 +28,6 @@ import {
 import * as React from "react";
 import { useCallback, useState } from "react";
 import SearchIcon from "@material-ui/icons/Search";
-import { debounce } from "lodash";
 import { languageStrings } from "../../util/langstrings";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -49,80 +49,85 @@ const useStyles = makeStyles({
 });
 
 interface SearchBarProps {
+  /** Current value for the search field. */
+  query: string;
+
+  /** Current value for the rawMode toggle. */
+  rawMode: boolean;
+
   /**
    * Callback fired when the user stops typing (debounced for 500 milliseconds).
    * @param query The string to search.
    */
-  onChange: (query: string) => void;
+  onQueryChange: (query: string) => void;
+
+  /**
+   * Callback fired when the user changes the rawMode.
+   * @param rawMode the new value for Raw Mode
+   */
+  onRawModeChange: (rawMode: boolean) => void;
+
+  /** Called when search button clicked. */
+  doSearch: () => void;
 }
 
 /**
  * Debounced searchbar component to be used in the Search Page.
- * It also includes an adornment which allows clearing the search field in a single click.
  * This component does not handle the API query itself,
- * that should be done in the parent component with the onChange callback.
+ * that should be done in the parent component in response to the
+ * onXyzChange callbacks and the doSearch.
  */
-export default function SearchBar({ onChange }: SearchBarProps) {
+export default function SearchBar({
+  query,
+  rawMode,
+  onQueryChange,
+  onRawModeChange,
+  doSearch,
+}: SearchBarProps) {
   const classes = useStyles();
-
   const searchStrings = languageStrings.searchpage;
-  const [rawSearchMode, setRawSearchMode] = useState<boolean>(false);
-  const [queryString, setQuery] = React.useState<string>("");
-  const strings = languageStrings.searchpage;
 
-  const callOnChange = (query: string) => {
-    //only append the wildcard if raw search is off, and the query isn't blank
-    const trimmedQuery = query.trim();
-    const appendWildcard = !rawSearchMode && trimmedQuery.length > 0;
-    const formattedQuery = trimmedQuery + (appendWildcard ? "*" : "");
-    onChange(formattedQuery);
-  };
+  const [currentQuery, setCurrentQuery] = useState<string>(query);
 
-  /**
-   * uses lodash to debounce the search query by half a second
-   */
-  const debouncedQuery = useCallback(debounce(callOnChange, 500), [
-    onChange,
-    rawSearchMode,
-  ]);
+  const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.keyCode) {
       case ESCAPE_KEY_CODE:
-        event.preventDefault();
-        handleQueryChange("");
+        if (currentQuery) {
+          // iff there is a current query, clear it out and trigger a search
+          setCurrentQuery("");
+          onQueryChange("");
+        }
         break;
       case ENTER_KEY_CODE:
-        event.preventDefault();
-        debouncedQuery(queryString);
+        debouncedOnQueryChange(currentQuery);
         break;
     }
   };
 
-  const handleQueryChange = (query: string) => {
-    setQuery(query);
-    if (!rawSearchMode) {
-      debouncedQuery(query);
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedQuery = event.target.value;
+    setCurrentQuery(updatedQuery);
+    if (!rawMode) {
+      debouncedOnQueryChange(updatedQuery);
     }
   };
 
   return (
     <Paper className={classes.root}>
-      <IconButton
-        onClick={() => debouncedQuery(queryString)}
-        aria-label={strings.title}
-      >
+      <IconButton onClick={doSearch} aria-label={searchStrings.title}>
         <SearchIcon />
       </IconButton>
       <InputBase
         id="searchBar"
         className={classes.input}
         onKeyDown={handleKeyDown}
-        onChange={(event) => {
-          handleQueryChange(event.target.value);
-        }}
-        value={queryString}
-        placeholder={rawSearchMode ? strings.pressEnterToSearch : strings.title}
+        onChange={handleOnChange}
+        value={currentQuery}
+        placeholder={
+          rawMode ? searchStrings.pressEnterToSearch : searchStrings.title
+        }
       />
       <Divider className={classes.divider} orientation="vertical" />
       <Tooltip title={searchStrings.rawSearchTooltip}>
@@ -131,8 +136,9 @@ export default function SearchBar({ onChange }: SearchBarProps) {
           control={
             <Switch
               id="rawSearch"
-              onChange={(_, checked) => setRawSearchMode(checked)}
-              value={rawSearchMode}
+              onChange={(_, checked) => onRawModeChange(checked)}
+              value={rawMode}
+              checked={rawMode}
               name={searchStrings.rawSearch}
             />
           }
