@@ -134,6 +134,7 @@ export default function SearchBar({
       <Divider className={classes.divider} orientation="vertical" />
       <Tooltip title={searchStrings.rawSearchTooltip}>
         <FormControlLabel
+          style={{ opacity: 0.6 }}
           label={searchStrings.rawSearch}
           control={
             <Switch
@@ -142,6 +143,7 @@ export default function SearchBar({
               value={rawMode}
               checked={rawMode}
               name={searchStrings.rawSearch}
+              size="small"
             />
           }
         />
