@@ -70,7 +70,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      handleSortOrderChanged(settings.defaultSearchSort);
+      handleSortOrderChanged(
+        searchOptions.sortOrder ?? settings.defaultSearchSort
+      );
     });
   }, []);
 
