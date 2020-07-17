@@ -77,10 +77,8 @@ export const CollectionSelector = ({
       options={collections}
       disableCloseOnSelect
       getOptionLabel={(collection) => collection.name}
-      getOptionSelected={(collection) =>
-        selectedCollections.some(
-          (selected) => selected.uuid === collection.uuid
-        )
+      getOptionSelected={(collection, selected) =>
+        selected.uuid === collection.uuid
       }
       renderOption={(collection, { selected }) => (
         <>
