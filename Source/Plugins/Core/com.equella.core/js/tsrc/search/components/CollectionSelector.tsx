@@ -50,9 +50,6 @@ export const CollectionSelector = ({
   const collectionSelectorStrings =
     languageStrings.searchpage.collectionSelector;
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [selectedCollections, setSelectedCollections] = useState<Collection[]>(
-    value ?? []
-  );
 
   useEffect(() => {
     collectionListSummary([
@@ -66,10 +63,9 @@ export const CollectionSelector = ({
       fullWidth
       limitTags={2}
       onChange={(_, value: Collection[]) => {
-        setSelectedCollections(value);
         onSelectionChange(value);
       }}
-      value={selectedCollections}
+      value={value ?? []}
       options={collections}
       disableCloseOnSelect
       getOptionLabel={(collection) => collection.name}
