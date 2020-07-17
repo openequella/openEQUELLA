@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
-import { summarisePagedBaseEntities } from "./OEQHelpers";
 
 /**
  * Provides a simple Map<string,string> summary of available collections, where K is the UUID
@@ -27,14 +26,14 @@ import { summarisePagedBaseEntities } from "./OEQHelpers";
  */
 export const collectionListSummary = (
   requiredPrivileges?: string[]
-): Promise<Map<string, string>> =>
+): Promise<Collection[]> =>
   OEQ.Collection.listCollections(API_BASE_URL, {
     // We believe very few people have more than 20 collections, so this will do for now.
     // As there are some oddities currently in the oEQ paging as seen in
     // https://github.com/openequella/openEQUELLA/issues/1735
     length: 100,
     privilege: requiredPrivileges,
-  }).then(summarisePagedBaseEntities);
+  }).then((pagedResult) => pagedResult.results);
 
 /**
  * A simplified type of Collection used when only collection uuid and name are required.

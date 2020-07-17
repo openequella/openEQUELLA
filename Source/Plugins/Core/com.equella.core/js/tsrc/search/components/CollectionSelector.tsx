@@ -57,11 +57,7 @@ export const CollectionSelector = ({
   useEffect(() => {
     collectionListSummary([
       "SEARCH_COLLECTION",
-    ]).then((collections: Map<string, string>) =>
-      setCollections(
-        Array.from(collections, ([uuid, name]) => ({ uuid, name }))
-      )
-    );
+    ]).then((collections: Collection[]) => setCollections(collections));
   }, []);
 
   return (

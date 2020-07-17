@@ -27,6 +27,6 @@ jest.mock("@openequella/rest-api-client");
 describe("CollectionModule", () => {
   it("should be able to get a list of collections", async () => {
     const result = await CollectionModule.collectionListSummary();
-    expect(result.size).toEqual(10);
+    expect(result).toHaveLength(10);
   });
 });
