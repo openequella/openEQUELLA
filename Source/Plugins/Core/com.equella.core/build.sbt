@@ -133,7 +133,13 @@ buildJS := {
     .toSeq
 }
 
+buildCheck := {
+  println("Starting npm run check")
+  val rootDirectory = (baseDirectory in LocalProject("equella")).value
+  Common.nodeScript("check", rootDirectory)
+}
 resourceGenerators in Compile += buildJS.taskValue
+resourceGenerators in Compile += buildCheck.taskValue
 
 clean := {
   clean.value
