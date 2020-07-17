@@ -31,7 +31,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import { languageStrings } from "../../util/langstrings";
 import { makeStyles } from "@material-ui/core/styles";
 
-const ENTER_KEY_CODE = 13;
 const ESCAPE_KEY_CODE = 27;
 
 const useStyles = makeStyles({
@@ -94,26 +93,17 @@ export default function SearchBar({
   ]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    switch (event.keyCode) {
-      case ESCAPE_KEY_CODE:
-        if (currentQuery) {
-          // iff there is a current query, clear it out and trigger a search
-          setCurrentQuery("");
-          onQueryChange("");
-        }
-        break;
-      case ENTER_KEY_CODE:
-        debouncedOnQueryChange(currentQuery);
-        break;
+    if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
+      // iff there is a current query, clear it out and trigger a search
+      setCurrentQuery("");
+      onQueryChange("");
     }
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedQuery = event.target.value;
     setCurrentQuery(updatedQuery);
-    if (!rawMode) {
-      debouncedOnQueryChange(updatedQuery);
-    }
+    debouncedOnQueryChange(updatedQuery);
   };
 
   return (
@@ -128,7 +118,9 @@ export default function SearchBar({
         onChange={handleOnChange}
         value={currentQuery}
         placeholder={
-          rawMode ? searchStrings.pressEnterToSearch : searchStrings.title
+          rawMode
+            ? searchStrings.rawSearchEnabledPlaceholder
+            : searchStrings.rawSearchDisabledPlaceholder
         }
       />
       <Divider className={classes.divider} orientation="vertical" />

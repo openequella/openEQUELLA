@@ -36,7 +36,6 @@ import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
 import { SearchOptions } from "../../../tsrc/search/SearchModule";
 
-const ENTER_KEYCODE = 13;
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
@@ -118,12 +117,6 @@ describe("<SearchPage/>", () => {
     //add the searchTerm
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
-    });
-    //Hit Enter and wait for debounce
-    await awaitAct(() => {
-      input.simulate("keyDown", {
-        keyCode: ENTER_KEYCODE,
-      });
       jest.advanceTimersByTime(1000);
     });
   };
