@@ -37,7 +37,7 @@ export const collectionListSummary = (
   }).then(summarisePagedBaseEntities);
 
 /**
- * A simplified type of Collection used when only collection'uuid and name are required.
+ * A simplified type of Collection used when only collection uuid and name are required.
  */
 export interface Collection {
   /**
