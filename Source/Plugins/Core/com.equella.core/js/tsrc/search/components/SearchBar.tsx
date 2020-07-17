@@ -89,7 +89,9 @@ export default function SearchBar({
 
   const [currentQuery, setCurrentQuery] = useState<string>(query);
 
-  const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), []);
+  const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), [
+    doSearch,
+  ]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.keyCode) {
