@@ -42,6 +42,7 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import { Link } from "react-router-dom";
 import { routes } from "../../mainui/routes";
+import OEQThumb from "./OEQThumb";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -60,6 +61,8 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
+      opacity: 0.4,
+      height: "66px",
     },
     itemDescription: {
       paddingBottom: theme.spacing(1),
@@ -116,24 +119,16 @@ export default function SearchResult({
    * Otherwise, return a placeholder icon, to ensure a consistent layout
    */
   const thumbnail = (disableThumb: boolean): React.ReactElement => {
-    let result: any;
+    let thumb: any = (
+      <Subject
+        className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.placeholderThumbnail} ${classes.thumbnail}`}
+        fontSize="large"
+      />
+    );
     if (attachments.length > 0 && !disableThumb) {
-      result = (
-        <img
-          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
-          src={attachments[0].links.thumbnail}
-          alt={attachments[0].description}
-        />
-      );
-    } else {
-      result = (
-        <Subject
-          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.placeholderThumbnail} ${classes.thumbnail}`}
-          fontSize="large"
-        />
-      );
+      thumb = <OEQThumb {...attachments[0]} />;
     }
-    return result;
+    return thumb;
   };
 
   const itemMetadata = (
