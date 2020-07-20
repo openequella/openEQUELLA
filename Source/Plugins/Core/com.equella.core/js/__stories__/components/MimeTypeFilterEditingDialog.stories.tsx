@@ -25,7 +25,8 @@ export default {
   title: "MimeTypeFilterDialog",
   component: MimeTypeFilterEditingDialog,
 };
-export const mimeTypeFilter: MimeTypeFilter = {
+
+const mimeTypeFilter: MimeTypeFilter = {
   id: "f8eab6cf-98bc-4c5f-a9a2-8ecdd07533d0",
   name: "Image filter",
   mimeTypes: ["image/png", "image/jpeg"],
