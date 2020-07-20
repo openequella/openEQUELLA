@@ -18,7 +18,7 @@ phases:
   build:
     commands:
       - (npm ci && cd Source/Plugins/Core/com.equella.core/js && npm ci)
-      - (npm run check:ts && npm run check:ts-types-source && check:license)
+      - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
       - (cd Source/Plugins/Core/com.equella.core/js && npm test)
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
       - sbt -mem 2048 -no-colors "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
