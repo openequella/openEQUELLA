@@ -227,10 +227,10 @@ object SearchHelper {
 
     attachBean match {
       case fileBean: FileAttachmentBean =>
-        val item  = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
-        val thumb = fileBean.getThumbnail
-        if (thumb == null) Some(false)
-        else Some(LegacyGuice.fileSystemService.fileExists(item.getFileHandle, thumb))
+        val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
+        Option(fileBean.getThumbnail).map {
+          LegacyGuice.fileSystemService.fileExists(item.getFileHandle, _)
+        }
       case _ => None
     }
   }
