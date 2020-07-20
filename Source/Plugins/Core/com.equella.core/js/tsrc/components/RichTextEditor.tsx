@@ -81,6 +81,10 @@ export interface BlobInfo {
 
 interface RichTextEditorProps {
   htmlInput?: string;
+  /** Optionally provide the name of the skin to use. */
+  skinName?: string;
+  /** Optionally provide the URL for the location of the skin. */
+  skinUrl?: string;
   onStateChange(html: string): void;
   imageUploadCallBack?(file: BlobInfo): AxiosPromise<ImageReturnType>;
 }
@@ -143,8 +147,8 @@ class RichTextEditor extends React.Component<
             images_upload_handler: this.uploadImages,
             paste_data_images: true,
             relative_urls: false,
-            skin: "oxide",
-            skin_url: skinUrl,
+            skin: this.props.skinName ?? "oxide",
+            skin_url: this.props.skinUrl ?? skinUrl,
             media_dimensions: false,
           }}
           toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
