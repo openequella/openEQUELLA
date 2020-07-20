@@ -24,6 +24,17 @@ export default {
   component: SearchBar,
 };
 
-export const BasicSearchPage = () => (
-  <SearchBar onChange={action("OnChange called")} />
-);
+const actions = {
+  onQueryChange: action("onQueryChange called"),
+  onRawModeChange: action("onRawModeChange called"),
+  doSearch: action("doSearch called"),
+};
+
+const values = {
+  query: "",
+  rawMode: false,
+};
+
+export const NonRawMode = () => <SearchBar {...actions} {...values} />;
+
+export const RawMode = () => <SearchBar {...actions} {...values} rawMode />;

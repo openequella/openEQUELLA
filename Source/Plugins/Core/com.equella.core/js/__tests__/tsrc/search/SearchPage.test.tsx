@@ -36,7 +36,6 @@ import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
 import { SearchOptions } from "../../../tsrc/search/SearchModule";
 
-const ENTER_KEYCODE = 13;
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
@@ -53,8 +52,7 @@ const searchPromise = mockSearch.mockImplementation(() =>
 );
 mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
 const defaultSearchOptions: SearchOptions = {
-  rowsPerPage: 10,
-  currentPage: 0,
+  ...SearchModule.defaultSearchOptions,
   sortOrder: SortOrder.RANK,
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
@@ -63,6 +61,7 @@ describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
   beforeEach(async () => {
+    window.history.replaceState({}, "Clean history state");
     component = mount(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />{" "}
@@ -118,12 +117,6 @@ describe("<SearchPage/>", () => {
     //add the searchTerm
     await awaitAct(() => {
       input.simulate("change", { target: { value: searchTerm } });
-    });
-    //Hit Enter and wait for debounce
-    await awaitAct(() => {
-      input.simulate("keyDown", {
-        keyCode: ENTER_KEYCODE,
-      });
       jest.advanceTimersByTime(1000);
     });
   };
@@ -142,22 +135,14 @@ describe("<SearchPage/>", () => {
 
   it("should support debounce query search and display search results", async () => {
     await querySearch("new query");
-    // After 1s the second search should be triggered
+    // After 1s the second search should be triggered. (The first being the initial component mount.)
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
-      query: "new query*",
+      query: "new query",
     });
     expect(component.html()).not.toContain("No results found.");
     expect(component.html()).toContain("266bb0ff-a730-4658-aec0-c68bbefc227c");
-  });
-
-  it("should not append a wildcard for a search which is empty when trimmed", async () => {
-    await querySearch("      ");
-    expect(SearchModule.searchItems).toHaveBeenCalledWith({
-      ...defaultSearchOptions,
-      query: "",
-    });
   });
 
   it("should display 'No results found.' when there are no search results", async () => {
@@ -228,16 +213,17 @@ describe("<SearchPage/>", () => {
 
   it("should not debounce and send query as-is when in raw search mode", async () => {
     await rawQuerySearch("raw search test");
-    //assert that the query was passed in as-is
+    // assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchOptions,
+      rawMode: true,
       query: "raw search test",
     });
-    /*assert that there were only two calls - initial search and Enter key triggered.
-    if the debounce was still on, this would be three calls -
-    the initial search, the search triggered by the debounce,
-    and the search triggered by the Enter key.*/
-    expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
+    // There should be three calls:
+    // 1. The initial call on component mount
+    // 2. Switching to raw mode
+    // 3. Typing a query, and hitting enter
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(3);
   });
 
   it("should filter search results by collections", async () => {

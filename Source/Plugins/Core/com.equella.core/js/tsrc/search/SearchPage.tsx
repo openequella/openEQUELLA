@@ -42,12 +42,17 @@ import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
+import { useHistory } from "react-router";
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
 
+  const history = useHistory();
+
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(
-    defaultSearchOptions
+    // If the user has gone 'back' to this page, then use their previous options. Otherwise
+    // we start fresh - i.e. if a new navigation to Search Page.
+    (history.location.state as SearchOptions) ?? defaultSearchOptions
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
@@ -65,7 +70,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      handleSortOrderChanged(settings.defaultSearchSort);
+      handleSortOrderChanged(
+        searchOptions.sortOrder ?? settings.defaultSearchSort
+      );
     });
   }, []);
 
@@ -91,9 +98,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const search = (): void => {
     setShowSpinner(true);
     searchItems(searchOptions)
-      .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) =>
-        setPagedSearchResult(items)
-      )
+      .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
+        setPagedSearchResult(items);
+        history.replace({ ...history.location, state: searchOptions });
+      })
       .catch(handleError)
       .finally(() => setShowSpinner(false));
   };
@@ -122,12 +130,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       rowsPerPage: rowsPerPage,
     });
 
+  const handleRawModeChanged = (rawMode: boolean) =>
+    setSearchOptions({ ...searchOptions, rawMode: rawMode });
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <SearchBar onChange={handleQueryChanged} />
+            <SearchBar
+              query={searchOptions.query ?? ""}
+              rawMode={searchOptions.rawMode}
+              onQueryChange={handleQueryChanged}
+              onRawModeChange={handleRawModeChanged}
+              doSearch={search}
+            />
           </Grid>
           <Grid item xs={12}>
             <SearchResultList

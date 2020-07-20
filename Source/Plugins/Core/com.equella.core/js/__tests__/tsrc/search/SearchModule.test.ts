@@ -20,7 +20,7 @@ import * as SearchModule from "../../../tsrc/search/SearchModule";
 import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
 jest.mock("@openequella/rest-api-client");
-(OEQ.Search.search as jest.Mock<
+const mockedSearch = (OEQ.Search.search as jest.Mock<
   Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>>
 >).mockResolvedValue(getSearchResult);
 
@@ -31,5 +31,41 @@ describe("SearchModule", () => {
     );
     expect(searchResult.available).toBe(12);
     expect(searchResult.results).toHaveLength(12);
+  });
+
+  const validateSearchQuery = (expectedQuery: string) => {
+    const calls = mockedSearch.mock.calls;
+    const params = calls[0][1]; // Second parameter of the call is the 'params'
+    expect(params.query).toEqual(expectedQuery);
+  };
+
+  it("should not append a wildcard for a search which is empty when trimmed", async () => {
+    mockedSearch.mockReset();
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: "   ",
+    });
+    validateSearchQuery("");
+  });
+
+  it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
+    mockedSearch.mockReset();
+    const queryTerm = "non RAW";
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: queryTerm,
+    });
+    validateSearchQuery(`${queryTerm}*`);
+  });
+
+  it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
+    mockedSearch.mockReset();
+    const queryTerm = "RAW mode!";
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: queryTerm,
+      rawMode: true,
+    });
+    validateSearchQuery(`${queryTerm}`);
   });
 });

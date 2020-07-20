@@ -316,7 +316,8 @@ export const languageStrings = {
     refineTitle: "Refine search",
     modifiedDate: "Modified",
     rawSearch: "Raw search",
-    pressEnterToSearch: "Raw search enabled, press enter to search",
+    rawSearchEnabledPlaceholder: "Search (raw mode)",
+    rawSearchDisabledPlaceholder: "Search",
     rawSearchTooltip: "Supports use of Apache Lucene search syntax",
     searchresult: {
       attachments: "Attachments",

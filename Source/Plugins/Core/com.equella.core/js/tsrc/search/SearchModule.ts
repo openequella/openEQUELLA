@@ -24,6 +24,7 @@ export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: undefined,
+  rawMode: false,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -31,6 +32,19 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
   length: 10,
   available: 10,
   results: [],
+};
+
+/**
+ * Helper function, to support formatting of query in raw mode. When _not_ raw mode
+ * we append a wildcard to support the idea of a simple (typeahead) search.
+ *
+ * @param query the intended search query to be sent to the API
+ * @param addWildcard whether a wildcard should be appended
+ */
+const formatQuery = (query: string, addWildcard: boolean): string => {
+  const trimmedQuery = query ? query.trim() : "";
+  const appendWildcard = addWildcard && trimmedQuery.length > 0;
+  return trimmedQuery + (appendWildcard ? "*" : "");
 };
 
 /**
@@ -44,11 +58,14 @@ export const searchItems = ({
   currentPage,
   sortOrder,
   collections,
+  rawMode,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
+  // If query is undefined, then we want to keep 'undefined'; but otherwise let's pre-process it.
+  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   const searchParams: OEQ.Search.SearchParams = {
-    query: query,
+    query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
     status: [
@@ -85,4 +102,9 @@ export interface SearchOptions {
    * A list of collections.
    */
   collections?: Collection[];
+  /**
+   * Whether to send the `query` as is (true) or to apply some processing (such as appending
+   * a wildcard operator).
+   */
+  rawMode: boolean;
 }
