@@ -75,7 +75,7 @@ object Common {
       case x if x contains "windows" => Seq("cmd", "/C")
       case _                         => Seq.empty
     }
-    if (Process(precmd ++ Seq("npm", "install"), dir).! > 0)
-      sys.error(s"Running node install in dir ${dir.absolutePath} failed")
+    if (Process(precmd ++ Seq("npm", "ci"), dir).! > 0)
+      sys.error(s"Running node ci in dir ${dir.absolutePath} failed")
   }
 }
