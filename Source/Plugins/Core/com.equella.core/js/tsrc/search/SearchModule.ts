@@ -35,8 +35,8 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
 };
 
 /**
- * Helper function, to support raw mode where. When _not_ raw mode we append a wildcard
- * to support the idea of a simple (typeahead) search.
+ * Helper function, to support formatting of query in raw mode. When _not_ raw mode
+ * we append a wildcard to support the idea of a simple (typeahead) search.
  *
  * @param query the intended search query to be sent to the API
  * @param addWildcard whether a wildcard should be appended
@@ -103,7 +103,8 @@ export interface SearchOptions {
    */
   collections?: Collection[];
   /**
-   * Whether the search page is currently accepting 'raw' searches.
+   * Whether to send the `query` as is (true) or to apply some processing (such as appending
+   * a wildcard operator).
    */
   rawMode: boolean;
 }
