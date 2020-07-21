@@ -33,12 +33,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
-import {
-  AttachFile,
-  ExpandMore,
-  InsertDriveFile,
-  Subject,
-} from "@material-ui/icons";
+import { AttachFile, ExpandMore, InsertDriveFile } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { Link } from "react-router-dom";
 import { routes } from "../../mainui/routes";
@@ -52,17 +47,6 @@ const useStyles = makeStyles((theme: Theme) => {
     heading: {
       fontWeight: "bold",
       paddingRight: theme.spacing(1),
-    },
-    thumbnail: {
-      //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
-      marginRight: theme.spacing(2),
-      width: "88px",
-      height: "auto",
-    },
-    placeholderThumbnail: {
-      color: theme.palette.text.secondary,
-      opacity: 0.4,
-      height: "66px",
     },
     itemDescription: {
       paddingBottom: theme.spacing(1),
@@ -112,23 +96,6 @@ export default function SearchResult({
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
     setAttachExpanded(!attachExapanded);
-  };
-  /**
-   * @param {boolean} disableThumb - controls if item thumbnail is displayed
-   * @return {ReactElement} image JSX element is returned if item contains attachments, and thumbnail is not disabled.
-   * Otherwise, return a placeholder icon, to ensure a consistent layout
-   */
-  const thumbnail = (disableThumb: boolean): React.ReactElement => {
-    let thumb: any = (
-      <Subject
-        className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.placeholderThumbnail} ${classes.thumbnail}`}
-        fontSize="large"
-      />
-    );
-    if (attachments.length > 0 && !disableThumb) {
-      thumb = <OEQThumb {...attachments[0]} />;
-    }
-    return thumb;
   };
 
   const itemMetadata = (
@@ -219,7 +186,10 @@ export default function SearchResult({
 
   return (
     <ListItem alignItems="flex-start" divider>
-      {thumbnail(displayOptions?.disableThumbnail ?? false)}
+      <OEQThumb
+        attachment={attachments[0]}
+        showPlaceholder={displayOptions?.disableThumbnail ?? false}
+      />
       <ListItemText
         primary={itemLink}
         secondary={

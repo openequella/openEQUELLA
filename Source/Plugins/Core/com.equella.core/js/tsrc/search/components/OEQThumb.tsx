@@ -25,6 +25,7 @@ import {
   Panorama as ImageIcon,
   InsertDriveFile as DefaultFileIcon,
   Language as WebIcon,
+  Subject as PlaceholderIcon,
 } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -47,27 +48,36 @@ interface ThumbProps {
   className: string;
   fontSize: "inherit" | "default" | "small" | "large";
 }
+interface OEQThumbProps {
+  attachment?: OEQ.Search.Attachment;
+  showPlaceholder: boolean;
+}
 /**
  * OEQThumb component
  * Takes an OEQ.Search.Attachment object as a parameter.
- * The thumbnail will be served up from oEQ if the attachment has had a thumbnail generated (Image, video, pdf based files, Youtube, Flickr, Goodle books)
+ * The thumbnail will be served up from oEQ if the attachment has had a thumbnail generated (Image, video, pdf based files, Youtube, Flickr, Google books)
  * Otherwise, an appropriate Icon is returned
  */
 export default function OEQThumb({
-  mimeType,
-  attachmentType,
-  hasGeneratedThumb,
-  description,
-  links,
-}: OEQ.Search.Attachment) {
+  attachment,
+  showPlaceholder,
+}: OEQThumbProps) {
   const classes = useStyles();
   const generalThumbStyles: ThumbProps = {
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
     fontSize: "large",
   };
-  let oeqThumb: React.ReactElement = (
-    <DefaultFileIcon {...generalThumbStyles} />
-  );
+  if (!attachment) {
+    return <PlaceholderIcon {...generalThumbStyles} />;
+  }
+
+  const {
+    description,
+    mimeType,
+    attachmentType,
+    hasGeneratedThumb,
+    links,
+  } = attachment;
 
   const oeqProvidedThumb: React.ReactElement = (
     <img
@@ -76,56 +86,52 @@ export default function OEQThumb({
       alt={description}
     />
   );
+
   /**
+   * We need to check if a thumbnail has been generated, and return a generic icon if not
    * @param {string} mimeType - Attachment's Mimetype. eg. image/png application/pdf
    * @return {ReactElement} Image, video and pdf based mimetypes are thumbnailed by oEQ.
-   * We need to check if a thumbnail has been generated, and return a generic icon if not
    */
   const handleMimeType = (mimeType?: string): React.ReactElement => {
+    if (hasGeneratedThumb) {
+      return oeqProvidedThumb;
+    }
     let result = <DefaultFileIcon {...generalThumbStyles} />;
-    if (
-      mimeType?.startsWith("image") ||
-      mimeType?.startsWith("video") ||
-      mimeType?.endsWith("/pdf")
-    ) {
-      if (hasGeneratedThumb) {
-        result = oeqProvidedThumb;
-      } else {
-        if (mimeType?.startsWith("image")) {
-          result = <ImageIcon {...generalThumbStyles} />;
-        } else if (mimeType?.startsWith("video")) {
-          result = <VideoIcon {...generalThumbStyles} />;
-        }
-      }
+    if (mimeType?.startsWith("image")) {
+      result = <ImageIcon {...generalThumbStyles} />;
+    } else if (mimeType?.startsWith("video")) {
+      result = <VideoIcon {...generalThumbStyles} />;
     }
     return result;
   };
 
+  let oeqThumb: React.ReactElement = showPlaceholder ? (
+    <PlaceholderIcon {...generalThumbStyles} />
+  ) : (
+    <DefaultFileIcon {...generalThumbStyles} />
+  );
+
   switch (attachmentType) {
-    case "file": {
+    case "file":
       oeqThumb = handleMimeType(mimeType);
       break;
-    }
-    case "link": {
+    case "link":
       oeqThumb = <LinkIcon {...generalThumbStyles} />;
       break;
-    }
-    case "custom/flickr": {
-      oeqThumb = oeqProvidedThumb;
-      break;
-    }
-    case "custom/youtube": {
-      oeqThumb = oeqProvidedThumb;
-      break;
-    }
-    case "custom/googlebook": {
-      oeqThumb = oeqProvidedThumb;
-      break;
-    }
-    case "html": {
+    case "html":
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
-    }
+    case "custom/flickr":
+    case "custom/youtube":
+    case "custom/googlebook":
+      oeqThumb = (
+        <img
+          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
+          src={links.thumbnail}
+          alt={description}
+        />
+      );
+      break;
   }
   return oeqThumb;
 }
