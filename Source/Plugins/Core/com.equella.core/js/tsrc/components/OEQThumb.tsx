@@ -107,7 +107,7 @@ export default function OEQThumb({
     if (hasGeneratedThumb) {
       return oeqProvidedThumb;
     }
-    let result = <DefaultFileIcon {...generalThumbStyles} />;
+    let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
       result = <ImageIcon {...generalThumbStyles} />;
     } else if (mimeType?.startsWith("video")) {
