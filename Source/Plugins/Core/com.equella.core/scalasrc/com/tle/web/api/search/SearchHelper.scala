@@ -224,10 +224,13 @@ object SearchHelper {
     * Determines if attachment contains a generated thumbnail in filestore
     */
   def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Option[Boolean] = {
+
     attachBean match {
       case fileBean: FileAttachmentBean =>
         val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
-        Some(LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileBean.getThumbnail))
+        Option(fileBean.getThumbnail).map {
+          LegacyGuice.fileSystemService.fileExists(item.getFileHandle, _)
+        }
       case _ => None
     }
   }
