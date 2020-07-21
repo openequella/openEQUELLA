@@ -33,13 +33,13 @@ const useStyles = makeStyles((theme: Theme) => {
     thumbnail: {
       //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
       marginRight: theme.spacing(2),
-      width: "88",
+      width: 88,
       height: "auto",
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
       opacity: 0.4,
-      height: "66",
+      height: 66,
     },
   };
 });
