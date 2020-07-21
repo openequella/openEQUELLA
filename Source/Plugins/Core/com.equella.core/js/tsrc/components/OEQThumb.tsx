@@ -33,13 +33,13 @@ const useStyles = makeStyles((theme: Theme) => {
     thumbnail: {
       //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
       marginRight: theme.spacing(2),
-      width: "88px",
+      width: "88",
       height: "auto",
     },
     placeholderThumbnail: {
       color: theme.palette.text.secondary,
       opacity: 0.4,
-      height: "66px",
+      height: "66",
     },
   };
 });
@@ -49,7 +49,13 @@ interface ThumbProps {
   fontSize: "inherit" | "default" | "small" | "large";
 }
 interface OEQThumbProps {
+  /**
+   * On object representing an oEQ attachment. If undefined, a placeholder icon is returned
+   */
   attachment?: OEQ.Search.Attachment;
+  /**
+   * True indicates that a placeholder icon should be used instead of the 'real' thumbnail
+   */
   showPlaceholder: boolean;
 }
 /**
@@ -67,6 +73,7 @@ export default function OEQThumb({
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
     fontSize: "large",
   };
+
   if (!attachment) {
     return <PlaceholderIcon {...generalThumbStyles} />;
   }
