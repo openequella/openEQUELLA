@@ -37,7 +37,7 @@ import { AttachFile, ExpandMore, InsertDriveFile } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { Link } from "react-router-dom";
 import { routes } from "../../mainui/routes";
-import OEQThumb from "./OEQThumb";
+import OEQThumb from "../../components/OEQThumb";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
