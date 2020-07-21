@@ -48,6 +48,7 @@ interface ThumbProps {
   className: string;
   fontSize: "inherit" | "default" | "small" | "large";
 }
+
 interface OEQThumbProps {
   /**
    * On object representing an oEQ attachment. If undefined, a placeholder icon is returned
@@ -58,6 +59,7 @@ interface OEQThumbProps {
    */
   showPlaceholder: boolean;
 }
+
 /**
  * OEQThumb component
  * Takes an OEQ.Search.Attachment object as a parameter.
@@ -74,7 +76,7 @@ export default function OEQThumb({
     fontSize: "large",
   };
 
-  if (!attachment) {
+  if (!attachment || showPlaceholder) {
     return <PlaceholderIcon {...generalThumbStyles} />;
   }
 
@@ -94,6 +96,8 @@ export default function OEQThumb({
     />
   );
 
+  const defaultThumb = <DefaultFileIcon {...generalThumbStyles} />;
+
   /**
    * We need to check if a thumbnail has been generated, and return a generic icon if not
    * @param {string} mimeType - Attachment's Mimetype. eg. image/png application/pdf
@@ -112,11 +116,7 @@ export default function OEQThumb({
     return result;
   };
 
-  let oeqThumb: React.ReactElement = showPlaceholder ? (
-    <PlaceholderIcon {...generalThumbStyles} />
-  ) : (
-    <DefaultFileIcon {...generalThumbStyles} />
-  );
+  let oeqThumb = defaultThumb;
 
   switch (attachmentType) {
     case "file":
