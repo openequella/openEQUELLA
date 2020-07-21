@@ -51,7 +51,7 @@ services:
       - oeq-cluster
 
   traefik:
-    image: traefik:1.7.24
+    image: traefik:1.7.25
     restart: always
     command: --api --docker
     ports:
