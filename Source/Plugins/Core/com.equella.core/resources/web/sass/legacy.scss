@@ -43,6 +43,10 @@
 @import "myresourcecontribute.css";
 @import "htmleditorwebcontrol.css";
 
+$small-breakpoint-max: "768px";
+$medium-breakpoint-max: "1200px";
+$large-breakpoint-max: "1500px";
+$extra-large-breakpoint-max: "1800px";
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -848,19 +852,19 @@ a[title="move-down"]:before {
   width: 476px;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: $small-breakpoint-max) {
   .wizard-layout .indent0 .shuffle-box-inner select {
     width: 30%;
   }
 }
 
-@media only screen and (min-width: 769px) and (max-width: 1200px) {
+@media only screen and (min-width: $small-breakpoint-max +1) and (max-width: $medium-breakpoint-max) {
   .wizard-layout .indent0 .shuffle-box-inner select {
     width: 38%;
   }
 }
 
-@media only screen and (min-width: 1201px) {
+@media only screen and (min-width: $medium-breakpoint-max +1) {
   .wizard-layout .indent0 .shuffle-box-inner select {
     width: 45%;
   }
