@@ -131,13 +131,7 @@ export default function OEQThumb({
     case "custom/flickr":
     case "custom/youtube":
     case "custom/googlebook":
-      oeqThumb = (
-        <img
-          className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
-          src={links.thumbnail}
-          alt={description}
-        />
-      );
+      oeqThumb = oeqProvidedThumb;
       break;
   }
   return oeqThumb;
