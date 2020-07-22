@@ -19,7 +19,7 @@ import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { array, object } from "@storybook/addon-knobs";
 import MimeTypeList from "../../tsrc/settings/Search/searchfilter/MimeTypeList";
-import { MimeTypeEntry } from "../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import { MimeTypeEntry } from "../../tsrc/modules/SearchFilterSettingsModule";
 
 export default {
   title: "MimeTypeList",

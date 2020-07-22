@@ -32,7 +32,7 @@ import {
   saveCloudSettingsToServer,
   saveSearchSettingsToServer,
   SearchSettings,
-} from "./SearchSettingsModule";
+} from "../../modules/SearchSettingsModule";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
 import SettingsList from "../../components/SettingsList";

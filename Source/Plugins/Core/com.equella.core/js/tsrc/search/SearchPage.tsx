@@ -29,7 +29,7 @@ import {
   defaultSearchOptions,
   searchItems,
   SearchOptions,
-} from "./SearchModule";
+} from "../modules/SearchModule";
 import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
 import { generateFromError } from "../api/errors";
@@ -37,7 +37,7 @@ import {
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
-} from "../settings/Search/SearchSettingsModule";
+} from "../modules/SearchSettingsModule";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";

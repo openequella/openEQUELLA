@@ -32,7 +32,7 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
-import { fetchSettings } from "./SettingsPageModule";
+import { fetchSettings } from "../modules/GeneralSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import MUILink from "@material-ui/core/Link";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";

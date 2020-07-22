@@ -29,7 +29,7 @@ import {
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
   SearchSettings,
-} from "./SearchSettingsModule";
+} from "../../modules/SearchSettingsModule";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
 import WebPageIndexSetting from "./components/WebPageIndexSetting";

@@ -23,7 +23,10 @@ import {
   Checkbox,
   Typography,
 } from "@material-ui/core";
-import { getMimeTypeDetail, MimeTypeEntry } from "./SearchFilterSettingsModule";
+import {
+  getMimeTypeDetail,
+  MimeTypeEntry,
+} from "../../../modules/SearchFilterSettingsModule";
 import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../../util/langstrings";
 

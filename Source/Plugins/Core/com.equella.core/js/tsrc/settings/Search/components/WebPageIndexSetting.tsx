@@ -21,7 +21,7 @@ import {
   OutlinedInput,
   Select,
 } from "@material-ui/core";
-import { ContentIndex } from "../SearchSettingsModule";
+import { ContentIndex } from "../../../modules/SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 

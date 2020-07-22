@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as SearchModule from "../../../tsrc/search/SearchModule";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
 jest.mock("@openequella/rest-api-client");

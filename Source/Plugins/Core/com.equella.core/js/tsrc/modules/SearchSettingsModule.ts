@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import { fromAxiosError } from "../../api/errors";
-import { templateError, TemplateUpdate } from "../../mainui/Template";
+import { fromAxiosError } from "../api/errors";
+import { templateError, TemplateUpdate } from "../mainui/Template";
 
 export interface SearchSettings {
   searchingShowNonLiveCheckbox: boolean;

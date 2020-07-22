@@ -20,7 +20,7 @@ import { AxiosError } from "axios";
 import { generateFromError, generateNewErrorID } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { strings } from "./LoginNoticeModule";
+import { strings } from "../modules/LoginNoticeModule";
 import {
   templateDefaults,
   templateError,

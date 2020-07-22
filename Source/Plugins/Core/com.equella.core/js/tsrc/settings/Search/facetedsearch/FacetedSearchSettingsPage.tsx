@@ -45,7 +45,7 @@ import {
   getHighestOrderIndex,
   removeFacetFromList,
   reorder,
-} from "./FacetedSearchSettingsModule";
+} from "../../../modules/FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";

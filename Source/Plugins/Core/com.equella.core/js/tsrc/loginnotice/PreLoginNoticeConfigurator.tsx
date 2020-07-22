@@ -36,7 +36,7 @@ import {
   submitPreLoginNotice,
   unMarshallPreLoginNotice,
   uploadPreLoginNoticeImage,
-} from "./LoginNoticeModule";
+} from "../modules/LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import { DateTimePicker } from "material-ui-pickers";
 import SettingsListHeading from "../components/SettingsListHeading";
