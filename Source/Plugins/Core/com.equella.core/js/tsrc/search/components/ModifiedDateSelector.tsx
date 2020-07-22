@@ -23,7 +23,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { DatePicker } from "@material-ui/pickers";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   dateOptionToDateRangeConverter,
   dateRangeToDateOptionConverter,
@@ -34,6 +34,7 @@ import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
 import { ReactNode } from "react";
 import { languageStrings } from "../../util/langstrings";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
+import LuxonUtils from "@date-io/luxon";
 
 export interface ModifiedDateSelectorProps {
   /**
@@ -102,36 +103,42 @@ export const ModifiedDateSelector = ({
   );
 
   const customDateRange: ReactNode = (
-    <Grid container spacing={2}>
-      <Grid item>
-        <DatePicker
-          disableFuture
-          variant="inline"
-          label={modifiedDateSelectorStrings.modifiedAfter}
-          value={dateRange?.modifiedAfter}
-          onChange={(newDate: MaterialUiPickersDate) =>
-            onDateRangeChange({
-              ...dateRange,
-              modifiedAfter: newDate?.toISODate(),
-            })
-          }
-        />
+    <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <Grid container spacing={2}>
+        <Grid item>
+          <DatePicker
+            disableFuture
+            variant="inline"
+            inputVariant="outlined"
+            autoOk
+            label={modifiedDateSelectorStrings.modifiedAfter}
+            value={dateRange?.modifiedAfter}
+            onChange={(newDate: MaterialUiPickersDate) =>
+              onDateRangeChange({
+                ...dateRange,
+                modifiedAfter: newDate?.toISODate(),
+              })
+            }
+          />
+        </Grid>
+        <Grid item>
+          <DatePicker
+            disableFuture
+            variant="inline"
+            inputVariant="outlined"
+            autoOk
+            label={modifiedDateSelectorStrings.modifiedBefore}
+            value={dateRange?.modifiedBefore}
+            onChange={(newDate: MaterialUiPickersDate) =>
+              onDateRangeChange({
+                ...dateRange,
+                modifiedBefore: newDate?.toISODate(),
+              })
+            }
+          />
+        </Grid>
       </Grid>
-      <Grid item>
-        <DatePicker
-          disableFuture
-          variant="inline"
-          label={modifiedDateSelectorStrings.modifiedBefore}
-          value={dateRange?.modifiedBefore}
-          onChange={(newDate: MaterialUiPickersDate) =>
-            onDateRangeChange({
-              ...dateRange,
-              modifiedBefore: newDate?.toISODate(),
-            })
-          }
-        />
-      </Grid>
-    </Grid>
+    </MuiPickersUtilsProvider>
   );
 
   return (
