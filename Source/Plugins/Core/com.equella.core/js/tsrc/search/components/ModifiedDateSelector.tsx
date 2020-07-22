@@ -103,8 +103,8 @@ export const ModifiedDateSelector = ({
   );
 
   const customDateRange: ReactNode = (
-    <Grid container>
-      <Grid item xs={6}>
+    <Grid container spacing={2}>
+      <Grid item>
         <InlineDatePicker
           disableFuture
           variant="outlined"
@@ -119,7 +119,7 @@ export const ModifiedDateSelector = ({
           }
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item>
         <InlineDatePicker
           disableFuture
           variant="outlined"
