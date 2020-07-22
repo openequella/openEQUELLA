@@ -16,7 +16,7 @@
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ .cache/ .psc-package/ .pulp-cache/",
     "dev": "pulp build && cross-env-shell parcel watch --no-autoinstall --public-url=. --out-dir=${npm_package_config_devjs} entrydev/*.html entrydev/scripts/*.js",
-    "dev:build": "run-s bundleps && cross-env-shell parcel build --public-url=. --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/scripts/*.js",
+    "dev:build": "tsc --noEmit && run-s bundleps && cross-env-shell parcel build --public-url=. --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/scripts/*.js",
     "build": "npm-run-all build:*",
     "build:bundles": "run-s bundleps && cross-env-shell parcel build --public-url=. --out-dir=${npm_package_config_dist} entrybuild/*.html entrybuild/scripts/*.js",
     "build:langbundle": "cross-env-shell parcel build target/genlang.js --no-minify --no-source-maps --target node --out-dir=target/tools && cross-env-shell \"node target/tools/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
