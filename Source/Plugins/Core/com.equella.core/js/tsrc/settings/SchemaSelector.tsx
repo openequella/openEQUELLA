@@ -28,7 +28,7 @@ import {
   schemaListSummary,
   SchemaNode,
   schemaTree,
-} from "../schema/SchemaModule";
+} from "../modules/SchemaModule";
 import SchemaNodeSelector from "../settings/SchemaNodeSelector";
 import { languageStrings } from "../util/langstrings";
 
