@@ -355,6 +355,12 @@ export const languageStrings = {
     collectionSelector: {
       label: "Collections",
     },
+    modifiedDateSelector: {
+      modifiedBefore: "Modified before",
+      modifiedAfter: "Modified after",
+      quickOptionLabel: "Last modified date",
+      quickOptionSwitchLabel: "Enble quick options",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",

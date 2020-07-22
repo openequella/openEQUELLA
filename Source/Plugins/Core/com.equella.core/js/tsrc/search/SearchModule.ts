@@ -19,6 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
 import { Collection } from "../modules/CollectionsModule";
+import { DateTime } from "luxon";
 
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
@@ -108,3 +109,89 @@ export interface SearchOptions {
    */
   rawMode: boolean;
 }
+
+/**
+ * Type of Last modified date range.
+ */
+export interface LastModifiedDateRange {
+  /**
+   * The date before which items are modified.
+   */
+  modifiedBefore?: string;
+  /**
+   * The date after which items are modified.
+   */
+  modifiedAfter?: string;
+}
+
+/**
+ * An enum providing five values as the Quick date options.
+ */
+export enum LastModifiedDateOption {
+  ALL = "All",
+  TODAY = "Today",
+  LAST_SEVEN_DAYS = "Last seven days",
+  LAST_MONTH = "Last month",
+  THIS_YEAR = "This year",
+}
+
+/**
+ * Return a map whose key is a value of enum LastModifiedDateOptions and value is a date string.
+ */
+export const getLastModifiedDateOptions = (): Map<
+  LastModifiedDateOption,
+  string
+> => {
+  const today = DateTime.local();
+  return new Map([
+    [LastModifiedDateOption.TODAY, today.toISODate()],
+    [
+      LastModifiedDateOption.LAST_SEVEN_DAYS,
+      today.minus({ days: 7 }).toISODate(),
+    ],
+    [LastModifiedDateOption.LAST_MONTH, today.minus({ month: 1 }).toISODate()],
+    [LastModifiedDateOption.THIS_YEAR, DateTime.local(today.year).toISODate()],
+    [LastModifiedDateOption.ALL, ""],
+  ]);
+};
+
+/**
+ * Convert a quick date option to a date range.
+ * The value of field 'modifiedAfter' depends on what quick date option is selected.
+ * The value of field 'modifiedBefore' is always undefined.
+ *
+ * @param option  An option selected from the Quick date options.
+ */
+export const dateOptionToDateRangeConverter = (
+  option: LastModifiedDateOption
+): LastModifiedDateRange => {
+  const modifiedAfter = getLastModifiedDateOptions().get(option);
+  return { modifiedAfter: modifiedAfter, modifiedBefore: undefined };
+};
+
+/**
+ * Convert a date range to a quick date option.
+ *
+ * If the provided date range is undefined, or defined but the value of field modifiedAfter is undefined,
+ * then return LastModifiedDateOptions.ALL. Otherwise, return the Quick date option whose value is equal
+ * to the value of modifiedAfter.
+ *
+ * @param dateRange A date range to be converted to a quick date range
+ */
+export const dateRangeToDateOptionConverter = (
+  dateRange?: LastModifiedDateRange
+): LastModifiedDateOption => {
+  let option = LastModifiedDateOption.ALL;
+  if (!dateRange || !dateRange.modifiedAfter) {
+    return option;
+  }
+  getLastModifiedDateOptions().forEach(
+    (value: string, key: LastModifiedDateOption) => {
+      if (value === dateRange.modifiedAfter) {
+        option = key;
+      }
+    }
+  );
+
+  return option;
+};
