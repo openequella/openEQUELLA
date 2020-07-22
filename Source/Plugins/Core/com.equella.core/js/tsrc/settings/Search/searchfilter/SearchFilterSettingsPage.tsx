@@ -53,7 +53,7 @@ import {
   filterComparator,
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
-} from "./SearchFilterSettingsModule";
+} from "../../../modules/SearchFilterSettingsModule";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import { generateFromError } from "../../../api/errors";
 import { AxiosError } from "axios";

@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import { encodeQuery } from "../../../util/encodequery";
+import { encodeQuery } from "../util/encodequery";
 import {
   BatchOperationResponse,
   groupErrorMessages,
-} from "../../../api/BatchOperationResponse";
+} from "../api/BatchOperationResponse";
 
 export interface MimeTypeFilter {
   /**

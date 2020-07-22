@@ -29,7 +29,7 @@ import {
   MimeTypeFilter,
   MimeTypeEntry,
   vaidateMimeTypeName,
-} from "./SearchFilterSettingsModule";
+} from "../../../modules/SearchFilterSettingsModule";
 import { useEffect, useState } from "react";
 import { commonString } from "../../../util/commonstrings";
 import MimeTypeList from "./MimeTypeList";
