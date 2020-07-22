@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { fetchUISetting, saveUISetting } from "./SettingsPageModule";
+import {
+  fetchUISetting,
+  saveUISetting,
+} from "../modules/GeneralSettingsModule";
 import {
   ExpansionPanelDetails,
   Button,
