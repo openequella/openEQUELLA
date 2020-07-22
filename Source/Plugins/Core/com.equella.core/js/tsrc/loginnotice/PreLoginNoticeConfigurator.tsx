@@ -38,8 +38,10 @@ import {
   uploadPreLoginNoticeImage,
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
-import { DateTimePicker } from "material-ui-pickers";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import SettingsListHeading from "../components/SettingsListHeading";
+import LuxonUtils from "@date-io/luxon";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
 const RichTextEditor = React.lazy(() => import("../components/RichTextEditor"));
 
@@ -163,41 +165,52 @@ class PreLoginNoticeConfigurator extends React.Component<
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
-          <DateTimePicker
-            id="startDatePicker"
-            okLabel={<span id="ok">OK</span>}
-            onChange={this.handleStartDateChange}
-            format="d MMM yyyy - h:mm a"
-            value={this.state.current.startDate}
-          />
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <DateTimePicker
+              id="startDatePicker"
+              okLabel={<span id="ok">OK</span>}
+              onChange={this.handleStartDateChange}
+              format="d MMM yyyy - h:mm a"
+              value={this.state.current.startDate}
+            />
 
-          <Typography color="textSecondary" variant="subtitle1">
-            {strings.scheduling.end}
-          </Typography>
+            <Typography color="textSecondary" variant="subtitle1">
+              {strings.scheduling.end}
+            </Typography>
 
-          <DateTimePicker
-            id="endDatePicker"
-            onChange={this.handleEndDateChange}
-            format="d MMM yyyy - h:mm a"
-            value={this.state.current.endDate}
-          />
+            <DateTimePicker
+              id="endDatePicker"
+              onChange={this.handleEndDateChange}
+              format="d MMM yyyy - h:mm a"
+              value={this.state.current.endDate}
+            />
+          </MuiPickersUtilsProvider>
         </div>
       </FormControl>
     );
   };
 
-  handleStartDateChange = (startDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, startDate: new Date(startDate) } },
-      () => this.setPreventNav()
-    );
+  handleStartDateChange = (startDate: MaterialUiPickersDate) => {
+    if (startDate) {
+      this.setState(
+        { current: { ...this.state.current, startDate: startDate.toJSDate() } },
+        () => this.setPreventNav()
+      );
+    }
   };
 
-  handleEndDateChange = (endDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, endDate: new Date(endDate) } },
-      () => this.setPreventNav()
-    );
+  handleEndDateChange = (endDate: MaterialUiPickersDate) => {
+    if (endDate) {
+      this.setState(
+        {
+          current: {
+            ...this.state.current,
+            endDate: new Date(endDate.toJSDate()),
+          },
+        },
+        () => this.setPreventNav()
+      );
+    }
   };
 
   handleScheduleTypeSelectionChange = (

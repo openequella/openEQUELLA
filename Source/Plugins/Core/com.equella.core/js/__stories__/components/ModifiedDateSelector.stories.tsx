@@ -22,7 +22,7 @@ import {
 } from "../../tsrc/search/components/ModifiedDateSelector";
 import { action } from "@storybook/addon-actions";
 import { boolean, object } from "@storybook/addon-knobs";
-import { MuiPickersUtilsProvider } from "material-ui-pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import LuxonUtils from "@date-io/luxon";
 
 export default {

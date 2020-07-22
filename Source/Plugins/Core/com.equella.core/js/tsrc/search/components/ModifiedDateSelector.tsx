@@ -23,9 +23,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { InlineDatePicker } from "material-ui-pickers";
-
-import { DateTime } from "luxon";
+import { DatePicker } from "@material-ui/pickers";
 import {
   dateOptionToDateRangeConverter,
   dateRangeToDateOptionConverter,
@@ -35,6 +33,7 @@ import {
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
 import { ReactNode } from "react";
 import { languageStrings } from "../../util/langstrings";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
 export interface ModifiedDateSelectorProps {
   /**
@@ -105,31 +104,29 @@ export const ModifiedDateSelector = ({
   const customDateRange: ReactNode = (
     <Grid container spacing={2}>
       <Grid item>
-        <InlineDatePicker
+        <DatePicker
           disableFuture
-          variant="outlined"
-          format="dd/MM/yyyy"
+          variant="inline"
           label={modifiedDateSelectorStrings.modifiedAfter}
           value={dateRange?.modifiedAfter}
-          onChange={(newDate: DateTime) =>
+          onChange={(newDate: MaterialUiPickersDate) =>
             onDateRangeChange({
               ...dateRange,
-              modifiedAfter: newDate.toISODate(),
+              modifiedAfter: newDate?.toISODate(),
             })
           }
         />
       </Grid>
       <Grid item>
-        <InlineDatePicker
+        <DatePicker
           disableFuture
-          variant="outlined"
-          format="dd/MM/yyyy"
+          variant="inline"
           label={modifiedDateSelectorStrings.modifiedBefore}
           value={dateRange?.modifiedBefore}
-          onChange={(newDate: DateTime) =>
+          onChange={(newDate: MaterialUiPickersDate) =>
             onDateRangeChange({
               ...dateRange,
-              modifiedBefore: newDate.toISODate(),
+              modifiedBefore: newDate?.toISODate(),
             })
           }
         />
