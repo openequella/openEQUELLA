@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "../settings/Search/SearchSettingsModule";
-import { Collection } from "../modules/CollectionsModule";
+import { Collection } from "./CollectionsModule";
 
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,

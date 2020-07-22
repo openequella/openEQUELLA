@@ -24,7 +24,7 @@ import * as React from "react";
 import SearchPage from "../../../tsrc/search/SearchPage";
 import { mount, ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
-import * as SearchModule from "../../../tsrc/search/SearchModule";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule";
 import {
@@ -34,7 +34,6 @@ import {
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
-import { SearchOptions } from "../../../tsrc/search/SearchModule";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -51,7 +50,7 @@ const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
 );
 mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
-const defaultSearchOptions: SearchOptions = {
+const defaultSearchOptions: SearchModule.SearchOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: SortOrder.RANK,
 };
