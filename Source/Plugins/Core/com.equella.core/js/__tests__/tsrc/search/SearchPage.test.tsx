@@ -26,11 +26,7 @@ import { mount, ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule";
-import {
-  defaultSearchSettings,
-  SortOrder,
-} from "../../../tsrc/settings/Search/SearchSettingsModule";
+import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
@@ -44,7 +40,7 @@ const mockSearchSettings = jest.spyOn(
 );
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const searchSettingPromise = mockSearchSettings.mockImplementation(() =>
-  Promise.resolve(defaultSearchSettings)
+  Promise.resolve(SearchSettingsModule.defaultSearchSettings)
 );
 const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
@@ -52,7 +48,7 @@ const searchPromise = mockSearch.mockImplementation(() =>
 mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
 const defaultSearchOptions: SearchModule.SearchOptions = {
   ...SearchModule.defaultSearchOptions,
-  sortOrder: SortOrder.RANK,
+  sortOrder: SearchSettingsModule.SortOrder.RANK,
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
@@ -185,14 +181,14 @@ describe("<SearchPage/>", () => {
     const sortingControl = component.find(".MuiCardHeader-action input");
     await awaitAct(() =>
       sortingControl.simulate("change", {
-        target: { value: SortOrder.DATEMODIFIED },
+        target: { value: SearchSettingsModule.SortOrder.DATEMODIFIED },
       })
     );
     // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
     // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
-      sortOrder: SortOrder.DATEMODIFIED,
+      sortOrder: SearchSettingsModule.SortOrder.DATEMODIFIED,
     });
   });
 
@@ -200,7 +196,7 @@ describe("<SearchPage/>", () => {
     // Trigger a search by changing sorting order
     const sortingControl = component.find(".MuiCardHeader-action input");
     sortingControl.simulate("change", {
-      target: { value: SortOrder.DATEMODIFIED },
+      target: { value: SearchSettingsModule.SortOrder.DATEMODIFIED },
     });
     expect(component.find(CircularProgress)).toHaveLength(1);
     await act(async () => {

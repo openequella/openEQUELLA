@@ -37,7 +37,7 @@ import {
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
-} from "../settings/Search/SearchSettingsModule";
+} from "../modules/SearchSettingsModule";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";

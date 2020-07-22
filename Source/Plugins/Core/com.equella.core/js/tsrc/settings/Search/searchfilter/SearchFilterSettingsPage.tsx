@@ -46,7 +46,7 @@ import {
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
   SearchSettings,
-} from "../SearchSettingsModule";
+} from "../../../modules/SearchSettingsModule";
 import {
   batchDelete,
   batchUpdateOrAdd,

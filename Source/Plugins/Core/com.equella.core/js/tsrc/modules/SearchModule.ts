@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
-import { SortOrder } from "../settings/Search/SearchSettingsModule";
+import { SortOrder } from "./SearchSettingsModule";
 import { Collection } from "./CollectionsModule";
 
 export const defaultSearchOptions: SearchOptions = {
