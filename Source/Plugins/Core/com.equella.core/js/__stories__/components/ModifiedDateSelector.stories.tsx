@@ -40,7 +40,7 @@ export const QuickOptionMode = () => (
     <ModifiedDateSelector
       quickModeEnabled={boolean("Enable Quick mode", true)}
       dateRange={object("Date range", {
-        modifiedAfter: "2020-07-01",
+        modifiedAfter: new Date(),
         modifiedBefore: undefined,
       })}
       {...actions}
@@ -53,8 +53,8 @@ export const CustomDateMode = () => (
     <ModifiedDateSelector
       quickModeEnabled={boolean("Enable Quick mode", false)}
       dateRange={object("Date range", {
-        modifiedAfter: "2020-07-01",
-        modifiedBefore: "2020-07-21",
+        modifiedAfter: new Date(),
+        modifiedBefore: undefined,
       })}
       {...actions}
     />

@@ -356,10 +356,17 @@ export const languageStrings = {
       label: "Collections",
     },
     modifiedDateSelector: {
-      modifiedBefore: "Modified before",
-      modifiedAfter: "Modified after",
+      modifiedBeforeLabel: "Modified before",
+      modifiedAfterLabel: "Modified after",
       quickOptionLabel: "Last modified date",
       quickOptionSwitchLabel: "Enble quick options",
+      optionsLabel: {
+        all: "All",
+        today: "Today",
+        lastSevenDays: "Last seven days",
+        lastMonth: "Last month",
+        thisYear: "This year",
+      },
     },
   },
   "com.equella.core.searching.search": {

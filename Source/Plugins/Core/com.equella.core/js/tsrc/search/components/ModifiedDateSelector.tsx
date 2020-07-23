@@ -24,17 +24,26 @@ import {
   Select,
 } from "@material-ui/core";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import {
-  dateOptionToDateRangeConverter,
-  dateRangeToDateOptionConverter,
-  LastModifiedDateOption,
-  LastModifiedDateRange,
-} from "../SearchModule";
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
 import { ReactNode } from "react";
 import { languageStrings } from "../../util/langstrings";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import LuxonUtils from "@date-io/luxon";
+import { DateTime } from "luxon";
+
+/**
+ * Type of Last modified date range.
+ */
+export interface LastModifiedDateRange {
+  /**
+   * The date before which items are modified.
+   */
+  modifiedBefore?: Date;
+  /**
+   * The date after which items are modified.
+   */
+  modifiedAfter?: Date;
+}
 
 export interface ModifiedDateSelectorProps {
   /**
@@ -67,42 +76,106 @@ export const ModifiedDateSelector = ({
   dateRange,
   quickModeEnabled,
 }: ModifiedDateSelectorProps) => {
-  const modifiedDateSelectorStrings =
-    languageStrings.searchpage.modifiedDateSelector;
+  const {
+    quickOptionLabel,
+    quickOptionSwitchLabel,
+    modifiedBeforeLabel,
+    modifiedAfterLabel,
+    optionsLabel,
+  } = languageStrings.searchpage.modifiedDateSelector;
 
-  const handleQuickDateOptionChange = (
-    option: LastModifiedDateOption
-  ): void => {
+  /**
+   * Return a map in which keys are language strings and values are instances of DateTime or undefined.
+   */
+  const getLastModifiedDateOptions = (): Map<string, DateTime | undefined> => {
+    const { today, lastSevenDays, lastMonth, thisYear, all } = optionsLabel;
+    const now = DateTime.local();
+    return new Map([
+      [today, now],
+      [lastSevenDays, now.minus({ days: 7 })],
+      [lastMonth, now.minus({ month: 1 })],
+      [thisYear, DateTime.local(now.year)],
+      [all, undefined],
+    ]);
+  };
+
+  /**
+   * Convert a quick date option to a date range.
+   * The value of field 'modifiedAfter' depends on what Quick date option is selected.
+   * The value of field 'modifiedBefore' is always undefined.
+   *
+   * @param option  An option selected from the Quick date options.
+   */
+  const dateOptionToDateRangeConverter = (
+    option: string
+  ): LastModifiedDateRange => {
+    const modifiedAfter = getLastModifiedDateOptions().get(option);
+    return {
+      modifiedAfter: modifiedAfter?.toJSDate(),
+      modifiedBefore: undefined,
+    };
+  };
+
+  /**
+   * Convert a date range to a Quick date option.
+   * If the provided date range is undefined, or defined but the value of field modifiedAfter is undefined,
+   * then return the Quick option "All".
+   * Otherwise, returns the Quick option whose value is equal to modifiedAfter in ISO Date format.
+   *
+   * @param dateRange A date range to be converted to a Quick date range
+   */
+  const dateRangeToDateOptionConverter = (
+    dateRange?: LastModifiedDateRange
+  ): string => {
+    let option = optionsLabel.all;
+    if (!dateRange || !dateRange.modifiedAfter) {
+      return option;
+    }
+    const modifiedAfter = DateTime.fromJSDate(dateRange.modifiedAfter);
+    getLastModifiedDateOptions().forEach(
+      (value: DateTime | undefined, key: string) => {
+        if (value && value.toISODate() === modifiedAfter.toISODate()) {
+          option = key;
+        }
+      }
+    );
+
+    return option;
+  };
+
+  /**
+   * Fired when a different Quick option is selected.
+   * @param option A Quick option.
+   */
+  const handleQuickDateOptionChange = (option: string): void => {
     const dateRange = dateOptionToDateRangeConverter(option);
     onDateRangeChange(dateRange);
   };
 
-  const quickOptions: ReactNode = (
+  const quickOptionSelector: ReactNode = (
     <FormControl variant="outlined" fullWidth>
       <InputLabel id="modified_date_range_selector_label">
-        {modifiedDateSelectorStrings.quickOptionLabel}
+        {quickOptionLabel}
       </InputLabel>
       <Select
         value={dateRangeToDateOptionConverter(dateRange)}
         id="modified_date_range_selector"
         labelId="modified_date_range_selector_label"
         onChange={(event) =>
-          handleQuickDateOptionChange(
-            event.target.value as LastModifiedDateOption
-          )
+          handleQuickDateOptionChange(event.target.value as string)
         }
-        label={modifiedDateSelectorStrings.quickOptionLabel}
+        label={quickOptionLabel}
       >
-        {Object.values(LastModifiedDateOption).map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
+        {Array.from(getLastModifiedDateOptions()).map(([option, _]) => (
+          <MenuItem key={option} value={option}>
+            {option}
           </MenuItem>
         ))}
       </Select>
     </FormControl>
   );
 
-  const customDateRange: ReactNode = (
+  const customDatePicker: ReactNode = (
     <MuiPickersUtilsProvider utils={LuxonUtils}>
       <Grid container spacing={2}>
         <Grid item>
@@ -111,12 +184,12 @@ export const ModifiedDateSelector = ({
             variant="inline"
             inputVariant="outlined"
             autoOk
-            label={modifiedDateSelectorStrings.modifiedAfter}
+            label={modifiedAfterLabel}
             value={dateRange?.modifiedAfter}
             onChange={(newDate: MaterialUiPickersDate) =>
               onDateRangeChange({
                 ...dateRange,
-                modifiedAfter: newDate?.toISODate(),
+                modifiedAfter: newDate?.toJSDate(),
               })
             }
           />
@@ -127,12 +200,12 @@ export const ModifiedDateSelector = ({
             variant="inline"
             inputVariant="outlined"
             autoOk
-            label={modifiedDateSelectorStrings.modifiedBefore}
+            label={modifiedBeforeLabel}
             value={dateRange?.modifiedBefore}
             onChange={(newDate: MaterialUiPickersDate) =>
               onDateRangeChange({
                 ...dateRange,
-                modifiedBefore: newDate?.toISODate(),
+                modifiedBefore: newDate?.toJSDate(),
               })
             }
           />
@@ -144,12 +217,12 @@ export const ModifiedDateSelector = ({
   return (
     <Grid container>
       <Grid item xs={12}>
-        {quickModeEnabled ? quickOptions : customDateRange}
+        {quickModeEnabled ? quickOptionSelector : customDatePicker}
       </Grid>
       <Grid item>
         <SettingsToggleSwitch
           id="modified_date_selector_mode_switch"
-          label={modifiedDateSelectorStrings.quickOptionSwitchLabel}
+          label={quickOptionSwitchLabel}
           value={quickModeEnabled}
           setValue={(value) => onQuickModeChange(value)}
         />
