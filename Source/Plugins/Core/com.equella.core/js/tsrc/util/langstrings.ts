@@ -347,7 +347,7 @@ export const languageStrings = {
       day: "Day",
     },
     pagination: {
-      itemsPerPage: "items per page",
+      itemsPerPage: "Items per page",
     },
     refineSearchPanel: {
       title: "Refine search",
