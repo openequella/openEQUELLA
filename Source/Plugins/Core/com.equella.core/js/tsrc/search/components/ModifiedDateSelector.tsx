@@ -66,6 +66,23 @@ export interface ModifiedDateSelectorProps {
   quickModeEnabled?: boolean;
 }
 
+type DatePickerInputVariant = "standard" | "outlined" | "filled";
+type DatePickerWrapperVariant = "dialog" | "inline" | "static";
+
+/**
+ * General props for Material ui Date Picker.
+ *
+ * @see BaseDatePickerProps
+ * @see BasePickerProps
+ */
+export interface GeneralDatePickerProps {
+  disableFuture: boolean;
+  variant: DatePickerWrapperVariant;
+  inputVariant: DatePickerInputVariant;
+  autoOk: boolean;
+  labelFunc: (value: MaterialUiPickersDate, invalidLabel: string) => string;
+}
+
 /**
  * As a refine control, this component is used to filter search results by last modified dates.
  * Depending on what mode is selected, a Quick option Dropdown or two custom date pickers are displayed.
@@ -83,6 +100,14 @@ export const ModifiedDateSelector = ({
     modifiedAfterLabel,
     optionsLabel,
   } = languageStrings.searchpage.modifiedDateSelector;
+
+  const datePickerProps: GeneralDatePickerProps = {
+    disableFuture: true,
+    variant: "inline",
+    inputVariant: "outlined",
+    autoOk: true,
+    labelFunc: (value, invalidLabel) => value?.toLocaleString() ?? invalidLabel,
+  };
 
   /**
    * Return a map in which keys are language strings and values are instances of DateTime or undefined.
@@ -180,10 +205,7 @@ export const ModifiedDateSelector = ({
       <Grid container spacing={2}>
         <Grid item>
           <DatePicker
-            disableFuture
-            variant="inline"
-            inputVariant="outlined"
-            autoOk
+            {...datePickerProps}
             label={modifiedAfterLabel}
             value={dateRange?.modifiedAfter}
             onChange={(newDate: MaterialUiPickersDate) =>
@@ -196,10 +218,7 @@ export const ModifiedDateSelector = ({
         </Grid>
         <Grid item>
           <DatePicker
-            disableFuture
-            variant="inline"
-            inputVariant="outlined"
-            autoOk
+            {...datePickerProps}
             label={modifiedBeforeLabel}
             value={dateRange?.modifiedBefore}
             onChange={(newDate: MaterialUiPickersDate) =>
