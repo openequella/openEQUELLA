@@ -17,23 +17,21 @@
  */
 import "../util/polyfill";
 import {
-  Switch,
-  Route,
   Prompt,
-  RouteComponentProps,
   Redirect,
+  Route,
+  RouteComponentProps,
+  Switch,
 } from "react-router";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 import { ThemeProvider } from "@material-ui/core";
-import { Provider } from "react-redux";
-import store from "../store";
-import { routes, OEQRoute, OEQRouteComponentProps } from "./routes";
+import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
 import { shallowEqual } from "shallow-equal-object";
 import { startHeartbeat } from "../util/heartbeat";
-import { NavAwayDialog, defaultNavMessage } from "./PreventNavigation";
+import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { initStrings } from "../util/langstrings";
 import { oeqTheme } from "../theme";
@@ -257,11 +255,9 @@ export default function () {
   if (typeof renderData !== "undefined") {
     startHeartbeat();
     ReactDOM.render(
-      <Provider store={store}>
-        <ThemeProvider theme={oeqTheme}>
-          <IndexPage />
-        </ThemeProvider>
-      </Provider>,
+      <ThemeProvider theme={oeqTheme}>
+        <IndexPage />
+      </ThemeProvider>,
       document.getElementById("mainDiv")
     );
   } else {

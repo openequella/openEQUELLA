@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PagingResults } from "../api";
+import * as OEQ from "@openequella/rest-api-client";
 import Axios, { AxiosPromise } from "axios";
 import { API_BASE_URL } from "../config";
 import { CloudProviderEntity } from "./CloudProviderEntity";
@@ -32,9 +32,9 @@ interface CloudProviderInitResponse {
 }
 
 export function getCloudProviders(): Promise<
-  PagingResults<CloudProviderEntity>
+  OEQ.Common.PagedResult<CloudProviderEntity>
 > {
-  return Axios.get<PagingResults<CloudProviderEntity>>(
+  return Axios.get<OEQ.Common.PagedResult<CloudProviderEntity>>(
     GET_CLOUD_PROVIDER_LIST_URL
   ).then((res) => res.data);
 }
