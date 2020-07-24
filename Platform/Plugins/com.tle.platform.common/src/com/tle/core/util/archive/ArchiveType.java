@@ -19,40 +19,38 @@
 package com.tle.core.util.archive;
 
 import com.tle.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.zip.*;
+
 public enum ArchiveType {
   ZIP(".zip", ".jar", ".war") // $NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
   {
-    @Override
-    public ArchiveExtractor createExtractor(InputStream in) {
-      final ZipInputStream zin = new ZipInputStream(in);
-      return new ArchiveExtractor() {
-        @Override
-        public ArchiveEntry getNextEntry() throws IOException {
-          final ZipEntry entry = zin.getNextEntry();
-          if (entry == null) {
-            return null;
-          }
-          // Some poorly created ZIP files incorrectly use
-          // backslashes as a
-          // directory separator instead of forward slash. This
+	  @Override
+	  public ArchiveExtractor createExtractor(InputStream in, String charset) {
+		  final ZipInputStream zin = new ZipInputStream(in, Charset.forName(charset));
+		  return new ArchiveExtractor() {
+			  @Override
+			  public ArchiveEntry getNextEntry() throws IOException {
+				  final ZipEntry entry = zin.getNextEntry();
+				  if (entry == null) {
+					  return null;
+				  }
+				  // Some poorly created ZIP files incorrectly use
+				  // backslashes as a
+				  // directory separator instead of forward slash. This
           // causes us to
           // write out filenames containing backslashes rather
           // than creating
@@ -98,10 +96,11 @@ public enum ArchiveType {
   @Deprecated
   TAR_BZ2(".tar.bz2") // $NON-NLS-1$
   {
-    @Override
-    public ArchiveExtractor createExtractor(InputStream in) throws IOException {
-      return createTarXZipExtractor(new BZip2CompressorInputStream(in));
-    }
+	  @Override
+	  public ArchiveExtractor createExtractor(InputStream in, String charset) throws IOException {
+		  //Ignore charset - for ZIP only.
+		  return createTarXZipExtractor(new BZip2CompressorInputStream(in));
+	  }
 
     @Override
     public ArchiveCreator createArchiver(OutputStream archive) throws IOException {
@@ -111,10 +110,11 @@ public enum ArchiveType {
 
   TAR_GZ(".tar.gz", ".tgz") // $NON-NLS-1$ //$NON-NLS-2$
   {
-    @Override
-    public ArchiveExtractor createExtractor(InputStream in) throws IOException {
-      return createTarXZipExtractor(new GZIPInputStream(in));
-    }
+	  @Override
+	  public ArchiveExtractor createExtractor(InputStream in, String charset) throws IOException {
+		  //Ignore charset - for ZIP only.
+		  return createTarXZipExtractor(new GZIPInputStream(in));
+	  }
 
     @Override
     public ArchiveCreator createArchiver(OutputStream archive) throws IOException {
@@ -124,12 +124,12 @@ public enum ArchiveType {
 
   private final String[] fileExtensions;
 
-  private ArchiveType(String... fileExtensions) {
-    assert fileExtensions != null;
-    this.fileExtensions = fileExtensions;
-  }
+	ArchiveType(String... fileExtensions) {
+		assert fileExtensions != null;
+		this.fileExtensions = fileExtensions;
+	}
 
-  public abstract ArchiveExtractor createExtractor(InputStream archive) throws IOException;
+	public abstract ArchiveExtractor createExtractor(InputStream archive, String charset) throws IOException;
 
   public abstract ArchiveCreator createArchiver(OutputStream archive) throws IOException;
 

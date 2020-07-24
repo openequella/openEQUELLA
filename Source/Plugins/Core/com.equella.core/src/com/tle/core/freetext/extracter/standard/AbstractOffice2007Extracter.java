@@ -22,13 +22,15 @@ import com.google.common.base.Throwables;
 import com.tle.core.util.archive.ArchiveEntry;
 import com.tle.core.util.archive.ArchiveExtractor;
 import com.tle.core.util.archive.ArchiveType;
+import org.xmlpull.mxp1.MXParser;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import org.xmlpull.mxp1.MXParser;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import java.nio.charset.StandardCharsets;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -45,7 +47,7 @@ public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterE
       throws IOException {
     // Ignore parseDuration for now.
     try {
-      ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input);
+		ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input, StandardCharsets.UTF_8.name());
 
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
