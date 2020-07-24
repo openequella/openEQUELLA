@@ -33,13 +33,15 @@ export default {
   component: RichTextEditor,
 };
 
+const defaultProps = {
+  skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
+  onStateChange: action("stateChange"),
+};
 export const WithHTMLInput = () => (
   <RichTextEditor
+    {...defaultProps}
     htmlInput={text("htmlInput", "<p>example</p>")}
-    onStateChange={action("stateChange")}
   />
 );
 
-export const WithoutHTMLInput = () => (
-  <RichTextEditor onStateChange={action("stateChange")} />
-);
+export const WithoutHTMLInput = () => <RichTextEditor {...defaultProps} />;

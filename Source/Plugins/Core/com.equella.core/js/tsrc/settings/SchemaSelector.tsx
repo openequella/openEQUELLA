@@ -53,8 +53,8 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       const defaultListItem = [[undefined, strings.selectASchema]];
       const schemaArray = defaultListItem.concat(Array.from(schemas));
       setSchemaList(
-        schemaArray.map(([uuid, name]) => (
-          <MenuItem id={uuid} value={uuid}>
+        schemaArray.map(([uuid, name], index) => (
+          <MenuItem id={uuid} value={uuid} key={uuid ?? index}>
             {name}
           </MenuItem>
         ))
@@ -88,7 +88,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
                   {strings.schema}
                 </InputLabel>
               }
-              value={selectedSchema}
+              value={selectedSchema ?? ""}
               displayEmpty
               onChange={(event) => {
                 setSelectedSchema(event.target.value as string | undefined);
