@@ -83,31 +83,27 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   private static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(FileSystemServiceImpl.class) + ".";
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private EventService eventService;
-	@Inject
-	private ZookeeperService zkService;
-	@Inject
-	private Map<String, Filestore> filestores;
+  @Inject private ConfigurationService configService;
+  @Inject private EventService eventService;
+  @Inject private ZookeeperService zkService;
+  @Inject private Map<String, Filestore> filestores;
 
-	@com.google.inject.Inject(optional = true)
-	@Named("filestore.advanced")
-	private boolean advancedFilestore;
+  @com.google.inject.Inject(optional = true)
+  @Named("filestore.advanced")
+  private boolean advancedFilestore;
 
-	@com.google.inject.Inject(optional = true)
-	@Named("filestore.zipExtractCharset")
-	private String charset;
+  @com.google.inject.Inject(optional = true)
+  @Named("filestore.zipExtractCharset")
+  private String charset;
 
-	@Inject
-	@Named("filestore.root")
-	private File rootDir;
+  @Inject
+  @Named("filestore.root")
+  private File rootDir;
 
-	@PostConstruct
-	private void init() {
-		LOGGER.info("Filestore: " + this.rootDir.getAbsolutePath());
-		LOGGER.info("Filestore advanced: " + advancedFilestore);
+  @PostConstruct
+  private void init() {
+    LOGGER.info("Filestore: " + this.rootDir.getAbsolutePath());
+    LOGGER.info("Filestore advanced: " + advancedFilestore);
 
     if (advancedFilestore && filestores.size() > 0) {
       LOGGER.info("Additional filestores: ");
@@ -307,8 +303,8 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   public static long copyStream(InputStream source, OutputStream destination, MessageDigest md5)
       throws IOException {
     final int bufferSize = 4096;
-	  long copiedBytes = 0;
-	  byte[] buffer = new byte[bufferSize];
+    long copiedBytes = 0;
+    byte[] buffer = new byte[bufferSize];
     for (int bytes = source.read(buffer, 0, buffer.length);
         bytes != -1;
         bytes = source.read(buffer, 0, buffer.length)) {
@@ -346,9 +342,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     long byteCount = 0;
-	  try (Writer out = new OutputStreamWriter(getOutputStream(file, append), StandardCharsets.UTF_8)) {
-		  byteCount = CharStreams.copy(content, out);
-	  }
+    try (Writer out =
+        new OutputStreamWriter(getOutputStream(file, append), StandardCharsets.UTF_8)) {
+      byteCount = CharStreams.copy(content, out);
+    }
 
     return new FileInfo(byteCount, filename);
   }
@@ -901,7 +898,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     try (InputStream in2 = in) {
-		extract(method.createExtractor(in2, charset), outdir, progress);
+      extract(method.createExtractor(in2, charset), outdir, progress);
       return outdir.getName();
     }
   }
@@ -954,9 +951,9 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   public ArchiveEntry findZipEntry(
       FileHandle handle, String filename, String entryToFind, boolean matchCase) {
     try (InputStream in = read(handle, filename)) {
-		final ArchiveType method = ArchiveType.getForFilename(filename);
-		final ArchiveExtractor extractor = method.createExtractor(in, charset);
-		final String lookFor = (matchCase ? entryToFind : entryToFind.toLowerCase());
+      final ArchiveType method = ArchiveType.getForFilename(filename);
+      final ArchiveExtractor extractor = method.createExtractor(in, charset);
+      final String lookFor = (matchCase ? entryToFind : entryToFind.toLowerCase());
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
         String entryName = (matchCase ? entry.getName() : entry.getName().toLowerCase());
@@ -975,9 +972,9 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   public void extractNamedZipEntryAsStream(
       FileHandle handle, String packageZipName, String entryToFind, OutputStream out) {
     try (InputStream in = read(handle, packageZipName)) {
-		final ArchiveType method = ArchiveType.getForFilename(packageZipName);
-		final ArchiveExtractor extractor = method.createExtractor(in, charset);
-		ArchiveEntry matchedEntry = extractor.getNextEntry();
+      final ArchiveType method = ArchiveType.getForFilename(packageZipName);
+      final ArchiveExtractor extractor = method.createExtractor(in, charset);
+      ArchiveEntry matchedEntry = extractor.getNextEntry();
       while (matchedEntry != null) {
         String entryName = matchedEntry.getName();
         if (entryName.equals(entryToFind)) {
