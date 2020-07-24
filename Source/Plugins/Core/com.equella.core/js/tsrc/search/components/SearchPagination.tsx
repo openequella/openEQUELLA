@@ -55,7 +55,6 @@ export const SearchPagination = ({
       onChangePage={(_, page: number) => onPageChange(page)}
       rowsPerPageOptions={[10, 25, 50]}
       labelRowsPerPage={paginationStrings.itemsPerPage}
-      backIconButtonProps={{}}
       rowsPerPage={rowsPerPage}
       onChangeRowsPerPage={(event) =>
         onRowsPerPageChange(parseInt(event.target.value))
