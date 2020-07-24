@@ -23,7 +23,6 @@ import com.google.inject.TypeLiteral;
 import com.tle.common.filesystem.Filestore;
 import com.tle.core.config.guice.MandatoryConfigModule;
 import com.tle.core.config.guice.OptionalConfigModule;
-
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;

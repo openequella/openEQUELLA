@@ -53,13 +53,6 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.util.archive.*;
 import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.web.stream.FileContentStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -72,6 +65,12 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** @author Nicholas Read */
 @Bind(FileSystemService.class)
