@@ -38,8 +38,8 @@ public enum ArchiveType {
   ZIP(".zip", ".jar", ".war") // $NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in, String charset) {
-      final ZipInputStream zin = new ZipInputStream(in, Charset.forName(charset));
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) {
+      final ZipInputStream zin = new ZipInputStream(in, charset);
       return new ArchiveExtractor() {
         @Override
         public ArchiveEntry getNextEntry() throws IOException {
@@ -96,7 +96,7 @@ public enum ArchiveType {
   TAR_BZ2(".tar.bz2") // $NON-NLS-1$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in, String charset) throws IOException {
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) throws IOException {
       // Ignore charset - for ZIP only.
       return createTarXZipExtractor(new BZip2CompressorInputStream(in));
     }
@@ -110,7 +110,7 @@ public enum ArchiveType {
   TAR_GZ(".tar.gz", ".tgz") // $NON-NLS-1$ //$NON-NLS-2$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in, String charset) throws IOException {
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) throws IOException {
       // Ignore charset - for ZIP only.
       return createTarXZipExtractor(new GZIPInputStream(in));
     }
@@ -128,7 +128,7 @@ public enum ArchiveType {
     this.fileExtensions = fileExtensions;
   }
 
-  public abstract ArchiveExtractor createExtractor(InputStream archive, String charset)
+  public abstract ArchiveExtractor createExtractor(InputStream archive, Charset charset)
       throws IOException;
 
   public abstract ArchiveCreator createArchiver(OutputStream archive) throws IOException;

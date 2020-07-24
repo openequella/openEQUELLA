@@ -54,6 +54,7 @@ import com.tle.core.util.archive.*;
 import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.web.stream.FileContentStream;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
@@ -897,7 +898,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     try (InputStream in2 = in) {
-      extract(method.createExtractor(in2, charset), outdir, progress);
+      extract(method.createExtractor(in2, Charset.forName(charset)), outdir, progress);
       return outdir.getName();
     }
   }
@@ -951,7 +952,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       FileHandle handle, String filename, String entryToFind, boolean matchCase) {
     try (InputStream in = read(handle, filename)) {
       final ArchiveType method = ArchiveType.getForFilename(filename);
-      final ArchiveExtractor extractor = method.createExtractor(in, charset);
+      final ArchiveExtractor extractor = method.createExtractor(in, Charset.forName(charset));
       final String lookFor = (matchCase ? entryToFind : entryToFind.toLowerCase());
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
@@ -972,7 +973,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       FileHandle handle, String packageZipName, String entryToFind, OutputStream out) {
     try (InputStream in = read(handle, packageZipName)) {
       final ArchiveType method = ArchiveType.getForFilename(packageZipName);
-      final ArchiveExtractor extractor = method.createExtractor(in, charset);
+      final ArchiveExtractor extractor = method.createExtractor(in, Charset.forName(charset));
       ArchiveEntry matchedEntry = extractor.getNextEntry();
       while (matchedEntry != null) {
         String entryName = matchedEntry.getName();
