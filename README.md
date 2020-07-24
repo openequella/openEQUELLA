@@ -47,7 +47,7 @@ This guide assumes you have SSH capabilities. Be sure to add your public SSH key
 
 **Download and install SBT**
 
-<http://www.scala-sbt.org/>
+<https://www.scala-sbt.org/>
 
 In ubuntu:
 
@@ -81,7 +81,7 @@ In ubuntu:
 
 **Download and install Image Magick binaries**
 
-<http://www.imagemagick.org/script/binary-releases.php>
+<https://www.imagemagick.org/script/binary-releases.php>
 
 _Note: For ubuntu follow the install from Unix Source instructions:_
 <https://www.imagemagick.org/script/install-source.php>
