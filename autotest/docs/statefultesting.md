@@ -6,8 +6,8 @@ generating test data and verifying that the properties of the system hold.
 I won't go into why this style of testing is better than your traditional unit 
 testing as there are plenty of other people who have discussed that:
 
-* See the presentations on the [Scalacheck documentation](http://scalacheck.org/documentation.html)
-* [PropEr Testing](http://propertesting.com/) - a book about property based testing in Erlang. The concepts still apply here.
+* See the presentations on the [Scalacheck documentation](https://scalacheck.org/documentation.html)
+* [PropEr Testing](https://propertesting.com/) - a book about property based testing in Erlang. The concepts still apply here.
 
 ## Stateful tests
 
@@ -21,7 +21,7 @@ to just drop the number of test cases to a lower number, say 5 or 10, that won't
 still give you confidence that the tested properties hold.
 
 There is a particular technique of stateful testing that is really suited to browser UI testing 
-which is described in [PropEr](http://propertesting.com/book_stateful_properties.html).
+which is described in [PropEr](https://propertesting.com/book_stateful_properties.html).
 
 To quote `PropEr`:
 

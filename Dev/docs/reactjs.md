@@ -8,7 +8,7 @@ To catch as many problems as early as possible, two typed languages are used to
 compile to JavaScript, rather than raw dynamically typed JavaScript.
 
 - [Typescript](https://www.typescriptlang.org/)
-- [Purescript](http://www.purescript.org/) (using Purescript is deprecated in favour of Typescript)
+- [Purescript](https://www.purescript.org/) (using Purescript is deprecated in favour of Typescript)
 
 To achieve a modern look and feel based on Google's [Material Design](https://material.io/), a
 React component library called [Material UI](https://material-ui.com/) is used.

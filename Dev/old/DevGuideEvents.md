@@ -52,7 +52,7 @@ One of the major difference between 3.2 and 4.0 Sections is the whole "event" ba
 1. Event processing. The initial event is a request parameters event.
 2. Rendering. If you get to this phase, you know you are actually rendering to the browser, you never respond to, for example, a user clicking a delete button at this point.
 
-Because of the [PRG](http://en.wikipedia.org/wiki/Post/Redirect/Get) design pattern, usually the rendering phase will only ever happen on the GET request, and you will only ever respond to user interface events during the POST request. There are special cases where this won't be strictly
+Because of the [PRG](https://en.wikipedia.org/wiki/Post/Redirect/Get) design pattern, usually the rendering phase will only ever happen on the GET request, and you will only ever respond to user interface events during the POST request. There are special cases where this won't be strictly
 true, but for the most part, POST is for event handling, GET is for rendering.
 
 ## Javascript event generation
