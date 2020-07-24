@@ -23,6 +23,7 @@ import com.google.inject.TypeLiteral;
 import com.tle.common.filesystem.Filestore;
 import com.tle.core.config.guice.MandatoryConfigModule;
 import com.tle.core.config.guice.OptionalConfigModule;
+
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,18 +33,19 @@ public class FilesystemModule extends OptionalConfigModule {
 
   @Override
   protected void configure() {
-    bindBoolean("files.useXSendfile");
-    bindBoolean("filestore.advanced");
+	  bindBoolean("files.useXSendfile");
+	  bindBoolean("filestore.advanced");
+	  bindProp("filestore.zipExtractCharset", "UTF-8");
 
-    final Map<String, Filestore> filestores = new HashMap<>();
-    final String filestoresProp = getProperty("filestore.additional.ids");
-    if (!Strings.isNullOrEmpty(filestoresProp)) {
-      final String[] filestoreIds = filestoresProp.split(",");
-      for (String filestoreId : filestoreIds) {
-        String id = filestoreId.trim();
-        if (!id.isEmpty()) {
-          final String nameProp = "filestore.additional." + id + ".name";
-          final String name = getProperty(nameProp);
+	  final Map<String, Filestore> filestores = new HashMap<>();
+	  final String filestoresProp = getProperty("filestore.additional.ids");
+	  if (!Strings.isNullOrEmpty(filestoresProp)) {
+		  final String[] filestoreIds = filestoresProp.split(",");
+		  for (String filestoreId : filestoreIds) {
+			  String id = filestoreId.trim();
+			  if (!id.isEmpty()) {
+				  final String nameProp = "filestore.additional." + id + ".name";
+				  final String name = getProperty(nameProp);
           if (name == null) {
             throw new Error("No property " + nameProp + " for filestore ID = " + id);
           }
