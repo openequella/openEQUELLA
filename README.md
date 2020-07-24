@@ -67,7 +67,7 @@ The recommended version of Node is noted in [_.nvmrc_](./.nvmrc), this version c
 
 **Download and install Java 8 JDK**
 
-<http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
+<https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html>
 
 Oracle is the recommended and historically the supported vendor of Java to run openEquella with.
 
