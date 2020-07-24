@@ -17,32 +17,36 @@
  */
 import * as React from "react";
 import {
-  ModifiedDateSelector,
-  ModifiedDateSelectorProps,
-} from "../../tsrc/search/components/ModifiedDateSelector";
+  DateRangeSelector,
+  DateRangeSelectorProps,
+} from "../../tsrc/components/DateRangeSelector";
 import { action } from "@storybook/addon-actions";
-import { boolean, object } from "@storybook/addon-knobs";
+import { object, text } from "@storybook/addon-knobs";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import LuxonUtils from "@date-io/luxon";
 
 export default {
   title: "ModifiedDateSelector",
-  component: ModifiedDateSelector,
+  component: DateRangeSelector,
 };
 
-const actions: ModifiedDateSelectorProps = {
+const actions: DateRangeSelectorProps = {
   onDateRangeChange: action("onDateRangeChange called"),
   onQuickModeChange: action("onQuickModeChange called"),
 };
 
 export const QuickOptionMode = () => (
   <MuiPickersUtilsProvider utils={LuxonUtils}>
-    <ModifiedDateSelector
-      quickModeEnabled={boolean("Enable Quick mode", true)}
+    <DateRangeSelector
+      quickModeEnabled
       dateRange={object("Date range", {
-        modifiedAfter: new Date(),
-        modifiedBefore: undefined,
+        start: new Date(),
+        end: undefined,
       })}
+      quickOptionDropdownLabel={text(
+        "Quick option Dropdown label",
+        "Quick date range options"
+      )}
       {...actions}
     />
   </MuiPickersUtilsProvider>
@@ -50,12 +54,14 @@ export const QuickOptionMode = () => (
 
 export const CustomDateMode = () => (
   <MuiPickersUtilsProvider utils={LuxonUtils}>
-    <ModifiedDateSelector
-      quickModeEnabled={boolean("Enable Quick mode", false)}
+    <DateRangeSelector
+      quickModeEnabled={false}
       dateRange={object("Date range", {
-        modifiedAfter: new Date(),
-        modifiedBefore: undefined,
+        start: new Date(),
+        end: new Date(),
       })}
+      startDatePickerLabel={text("Start date", "Start date")}
+      endDatePickerLabel={text("End date", "End date")}
       {...actions}
     />
   </MuiPickersUtilsProvider>

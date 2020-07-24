@@ -355,19 +355,6 @@ export const languageStrings = {
     collectionSelector: {
       label: "Collections",
     },
-    modifiedDateSelector: {
-      modifiedBeforeLabel: "Modified before",
-      modifiedAfterLabel: "Modified after",
-      quickOptionLabel: "Last modified date",
-      quickOptionSwitchLabel: "Enble quick options",
-      optionsLabel: {
-        all: "All",
-        today: "Today",
-        lastSevenDays: "Last seven days",
-        lastMonth: "Last month",
-        thisYear: "This year",
-      },
-    },
   },
   "com.equella.core.searching.search": {
     title: "Search",
@@ -554,5 +541,18 @@ export const languageStrings = {
     title: "Close without saving?",
     message:
       "You have unsaved changes. Are you sure you want to leave this page without saving?",
+  },
+  dateRangeSelector: {
+    defaultStartDatePickerLabel: "Start",
+    defaultEndDatePickerLabel: "End",
+    defaultDropdownLabel: "Quick date ranges",
+    quickOptionSwitchLabel: "Enable quick options",
+    quickOptionLabels: {
+      all: "All",
+      today: "Today",
+      lastSevenDays: "Last seven days",
+      lastMonth: "Last month",
+      thisYear: "This year",
+    },
   },
 };
