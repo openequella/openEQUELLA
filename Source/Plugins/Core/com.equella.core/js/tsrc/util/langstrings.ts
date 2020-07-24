@@ -347,7 +347,7 @@ export const languageStrings = {
       day: "Day",
     },
     pagination: {
-      itemsPerPage: "items per page",
+      itemsPerPage: "Items per page",
     },
     refineSearchPanel: {
       title: "Refine search",
@@ -541,5 +541,18 @@ export const languageStrings = {
     title: "Close without saving?",
     message:
       "You have unsaved changes. Are you sure you want to leave this page without saving?",
+  },
+  dateRangeSelector: {
+    defaultStartDatePickerLabel: "Start",
+    defaultEndDatePickerLabel: "End",
+    defaultDropdownLabel: "Quick date ranges",
+    quickOptionSwitchLabel: "Enable quick options",
+    quickOptionLabels: {
+      all: "All",
+      today: "Today",
+      lastSevenDays: "Last seven days",
+      lastMonth: "Last month",
+      thisYear: "This year",
+    },
   },
 };
