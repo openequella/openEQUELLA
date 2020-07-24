@@ -26,7 +26,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import LuxonUtils from "@date-io/luxon";
 
 export default {
-  title: "ModifiedDateSelector",
+  title: "DateRangeSelector",
   component: DateRangeSelector,
 };
 
