@@ -48,7 +48,7 @@ import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
-interface SearchPageOptions extends SearchOptions {
+export interface SearchPageOptions extends SearchOptions {
   /**
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
