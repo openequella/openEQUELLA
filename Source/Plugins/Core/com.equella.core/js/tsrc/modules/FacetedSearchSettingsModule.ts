@@ -20,8 +20,8 @@ import Axios from "axios";
 import {
   BatchOperationResponse,
   groupErrorMessages,
-} from "../../../api/BatchOperationResponse";
-import { encodeQuery } from "../../../util/encodequery";
+} from "../api/BatchOperationResponse";
+import { encodeQuery } from "../util/encodequery";
 
 export interface Facet {
   /**

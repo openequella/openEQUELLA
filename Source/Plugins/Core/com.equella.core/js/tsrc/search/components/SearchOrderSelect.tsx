@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import { MenuItem, Select } from "@material-ui/core";
-import { SortOrder } from "../../settings/Search/SearchSettingsModule";
+import { SortOrder } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
 /**

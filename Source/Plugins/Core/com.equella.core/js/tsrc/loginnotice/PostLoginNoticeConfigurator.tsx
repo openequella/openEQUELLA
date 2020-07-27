@@ -31,7 +31,7 @@ import {
   getPostLoginNotice,
   strings,
   submitPostLoginNotice,
-} from "./LoginNoticeModule";
+} from "../modules/LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";

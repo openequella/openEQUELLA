@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as SchemaModule from "../../../tsrc/schema/SchemaModule";
+import * as SchemaModule from "../../../tsrc/modules/SchemaModule";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
 import * as OEQ from "@openequella/rest-api-client";

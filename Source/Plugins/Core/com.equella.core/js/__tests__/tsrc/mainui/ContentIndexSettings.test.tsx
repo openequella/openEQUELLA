@@ -18,7 +18,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
-import * as SearchSettingsModule from "../../../tsrc/settings/Search/SearchSettingsModule"; // eslint-disable-line
+import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule"; // eslint-disable-line
 import SettingsList from "../../../tsrc/components/SettingsList";
 import WebPageIndexSetting from "../../../tsrc/settings/Search/components/WebPageIndexSetting";
 import { Slider } from "@material-ui/core";

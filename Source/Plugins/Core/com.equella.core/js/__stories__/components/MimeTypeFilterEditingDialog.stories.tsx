@@ -19,7 +19,7 @@ import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { boolean, object } from "@storybook/addon-knobs";
 import MimeTypeFilterEditingDialog from "../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import { MimeTypeFilter } from "../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import { MimeTypeFilter } from "../../tsrc/modules/SearchFilterSettingsModule";
 
 export default {
   title: "MimeTypeFilterDialog",

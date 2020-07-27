@@ -29,7 +29,7 @@ import {
   defaultSearchOptions,
   searchItems,
   SearchOptions,
-} from "./SearchModule";
+} from "../modules/SearchModule";
 import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
 import { generateFromError } from "../api/errors";
@@ -37,7 +37,7 @@ import {
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
-} from "../settings/Search/SearchSettingsModule";
+} from "../modules/SearchSettingsModule";
 import { RefineSearchPanel } from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -101,6 +101,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
         history.replace({ ...history.location, state: searchOptions });
+        // scroll back up to the top of the page
+        window.scrollTo(0, 0);
       })
       .catch(handleError)
       .finally(() => setShowSpinner(false));
