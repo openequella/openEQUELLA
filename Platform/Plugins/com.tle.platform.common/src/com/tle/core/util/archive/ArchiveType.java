@@ -22,15 +22,12 @@ import com.tle.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -41,8 +38,8 @@ public enum ArchiveType {
   ZIP(".zip", ".jar", ".war") // $NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in) {
-      final ZipInputStream zin = new ZipInputStream(in);
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) {
+      final ZipInputStream zin = new ZipInputStream(in, charset);
       return new ArchiveExtractor() {
         @Override
         public ArchiveEntry getNextEntry() throws IOException {
@@ -99,7 +96,8 @@ public enum ArchiveType {
   TAR_BZ2(".tar.bz2") // $NON-NLS-1$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in) throws IOException {
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) throws IOException {
+      // Ignore charset - for ZIP only.
       return createTarXZipExtractor(new BZip2CompressorInputStream(in));
     }
 
@@ -112,7 +110,8 @@ public enum ArchiveType {
   TAR_GZ(".tar.gz", ".tgz") // $NON-NLS-1$ //$NON-NLS-2$
   {
     @Override
-    public ArchiveExtractor createExtractor(InputStream in) throws IOException {
+    public ArchiveExtractor createExtractor(InputStream in, Charset charset) throws IOException {
+      // Ignore charset - for ZIP only.
       return createTarXZipExtractor(new GZIPInputStream(in));
     }
 
@@ -124,12 +123,13 @@ public enum ArchiveType {
 
   private final String[] fileExtensions;
 
-  private ArchiveType(String... fileExtensions) {
+  ArchiveType(String... fileExtensions) {
     assert fileExtensions != null;
     this.fileExtensions = fileExtensions;
   }
 
-  public abstract ArchiveExtractor createExtractor(InputStream archive) throws IOException;
+  public abstract ArchiveExtractor createExtractor(InputStream archive, Charset charset)
+      throws IOException;
 
   public abstract ArchiveCreator createArchiver(OutputStream archive) throws IOException;
 

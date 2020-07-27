@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -45,7 +46,7 @@ public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterE
       throws IOException {
     // Ignore parseDuration for now.
     try {
-      ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input);
+      ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input, StandardCharsets.UTF_8);
 
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
