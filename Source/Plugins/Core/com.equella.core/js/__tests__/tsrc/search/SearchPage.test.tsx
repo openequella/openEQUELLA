@@ -21,7 +21,7 @@ import {
 } from "../../../__mocks__/getSearchResult";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import * as React from "react";
-import SearchPage from "../../../tsrc/search/SearchPage";
+import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { mount, ReactWrapper } from "enzyme";
 import { act } from "react-dom/test-utils";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -30,6 +30,7 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -46,9 +47,10 @@ const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
 );
 mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
-const defaultSearchOptions: SearchModule.SearchOptions = {
+const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: SearchSettingsModule.SortOrder.RANK,
+  dateRangeQuickModeEnabled: true,
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
@@ -121,7 +123,9 @@ describe("<SearchPage/>", () => {
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(1);
-    expect(SearchModule.searchItems).toHaveBeenCalledWith(defaultSearchOptions);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith(
+      defaultSearchPageOptions
+    );
     expect(CollectionsModule.collectionListSummary).toHaveBeenCalledTimes(1);
     expect(CollectionsModule.collectionListSummary).toHaveBeenCalledWith(
       defaultCollectionPrivileges
@@ -133,7 +137,7 @@ describe("<SearchPage/>", () => {
     // After 1s the second search should be triggered. (The first being the initial component mount.)
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
-      ...defaultSearchOptions,
+      ...defaultSearchPageOptions,
       query: "new query",
     });
     expect(component.html()).not.toContain("No results found.");
@@ -158,7 +162,7 @@ describe("<SearchPage/>", () => {
       itemsPerPageSelect.simulate("change", { target: { value: 25 } })
     );
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
-      ...defaultSearchOptions,
+      ...defaultSearchPageOptions,
       rowsPerPage: 25,
     });
     expect(component.html()).toContain("1-12 of 12");
@@ -187,7 +191,7 @@ describe("<SearchPage/>", () => {
     // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
     // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
-      ...defaultSearchOptions,
+      ...defaultSearchPageOptions,
       sortOrder: SearchSettingsModule.SortOrder.DATEMODIFIED,
     });
   });
@@ -210,7 +214,7 @@ describe("<SearchPage/>", () => {
     await rawQuerySearch("raw search test");
     // assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
-      ...defaultSearchOptions,
+      ...defaultSearchPageOptions,
       rawMode: true,
       query: "raw search test",
     });
@@ -240,8 +244,24 @@ describe("<SearchPage/>", () => {
     await awaitAct(() => handleCollectionChange(selectedCollections));
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
-      ...defaultSearchOptions,
+      ...defaultSearchPageOptions,
       collections: selectedCollections,
+    });
+  });
+
+  it("should support selecting a date range through Quick options", async () => {
+    const quickOptions = component.find("#date_range_selector input");
+    await awaitAct(() =>
+      quickOptions.simulate("change", { target: { value: "Today" } })
+    );
+    component.update();
+    const dateRangeSelector = component.find(DateRangeSelector);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchPageOptions,
+      lastModifiedDateRange: {
+        start: dateRangeSelector.prop("dateRange")!.start,
+        end: undefined,
+      },
     });
   });
 });

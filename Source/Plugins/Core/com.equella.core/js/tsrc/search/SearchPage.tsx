@@ -23,7 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -43,16 +43,38 @@ import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
 import { useHistory } from "react-router";
+import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
+
+/**
+ * Type of search options that are specific to Search page presentation layer.
+ */
+export interface SearchPageOptions extends SearchOptions {
+  /**
+   * Whether to enable Quick mode (true) or to use custom date pickers (false).
+   */
+  dateRangeQuickModeEnabled: boolean;
+}
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
+  const {
+    title: dateModifiedSelectorTitle,
+    startDatePicker,
+    endDatePicker,
+    quickOptionDropdown,
+  } = searchStrings.lastModifiedDateSelector;
+  const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 
   const history = useHistory();
 
-  const [searchOptions, setSearchOptions] = useState<SearchOptions>(
+  const defaultSearchPageOptions: SearchPageOptions = {
+    ...defaultSearchOptions,
+    dateRangeQuickModeEnabled: true,
+  };
+  const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    (history.location.state as SearchOptions) ?? defaultSearchOptions
+    (history.location.state as SearchPageOptions) ?? defaultSearchPageOptions
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
@@ -71,7 +93,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setShowSpinner(true);
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
       handleSortOrderChanged(
-        searchOptions.sortOrder ?? settings.defaultSearchSort
+        searchPageOptions.sortOrder ?? settings.defaultSearchSort
       );
     });
   }, []);
@@ -86,7 +108,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     } else {
       search();
     }
-  }, [searchOptions]);
+  }, [searchPageOptions]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -97,10 +119,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const search = (): void => {
     setShowSpinner(true);
-    searchItems(searchOptions)
+    searchItems(searchPageOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
-        history.replace({ ...history.location, state: searchOptions });
+        history.replace({ ...history.location, state: searchPageOptions });
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
       })
@@ -109,31 +131,53 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const handleSortOrderChanged = (order: SortOrder) =>
-    setSearchOptions({ ...searchOptions, sortOrder: order });
+    setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
-    setSearchOptions({ ...searchOptions, query: query, currentPage: 0 });
+    setSearchPageOptions({
+      ...searchPageOptions,
+      query: query,
+      currentPage: 0,
+    });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
-    setSearchOptions({
-      ...searchOptions,
+    setSearchPageOptions({
+      ...searchPageOptions,
       collections: collections,
       currentPage: 0,
     });
   };
 
   const handlePageChanged = (page: number) =>
-    setSearchOptions({ ...searchOptions, currentPage: page });
+    setSearchPageOptions({ ...searchPageOptions, currentPage: page });
 
   const handleRowsPerPageChanged = (rowsPerPage: number) =>
-    setSearchOptions({
-      ...searchOptions,
+    setSearchPageOptions({
+      ...searchPageOptions,
       currentPage: 0,
       rowsPerPage: rowsPerPage,
     });
 
   const handleRawModeChanged = (rawMode: boolean) =>
-    setSearchOptions({ ...searchOptions, rawMode: rawMode });
+    setSearchPageOptions({ ...searchPageOptions, rawMode: rawMode });
+
+  const handleQuickDateRangeModeChange = (
+    quickDateRangeMode: boolean,
+    dateRange?: DateRange
+  ) =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      dateRangeQuickModeEnabled: quickDateRangeMode,
+      // When the mode is changed, the date range may also need to be updated.
+      // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
+      lastModifiedDateRange: dateRange,
+    });
+
+  const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      lastModifiedDateRange: dateRange,
+    });
 
   return (
     <Grid container spacing={2}>
@@ -141,8 +185,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SearchBar
-              query={searchOptions.query ?? ""}
-              rawMode={searchOptions.rawMode}
+              query={searchPageOptions.query ?? ""}
+              rawMode={searchPageOptions.rawMode}
               onQueryChange={handleQueryChanged}
               onRawModeChange={handleRawModeChanged}
               doSearch={search}
@@ -154,13 +198,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               showSpinner={showSpinner}
               paginationProps={{
                 count: pagedSearchResult.available,
-                currentPage: searchOptions.currentPage,
-                rowsPerPage: searchOptions.rowsPerPage,
+                currentPage: searchPageOptions.currentPage,
+                rowsPerPage: searchPageOptions.rowsPerPage,
                 onPageChange: handlePageChanged,
                 onRowsPerPageChange: handleRowsPerPageChanged,
               }}
               orderSelectProps={{
-                value: searchOptions.sortOrder,
+                value: searchPageOptions.sortOrder,
                 onChange: handleSortOrderChanged,
               }}
             />
@@ -170,9 +214,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       <Grid item xs={3}>
         <RefineSearchPanel>
+          <Typography variant="h6">{collectionSelectorTitle}</Typography>
           <CollectionSelector
             onSelectionChange={handleCollectionSelectionChanged}
-            value={searchOptions.collections}
+            value={searchPageOptions.collections}
+          />
+
+          <Typography variant="h6">{dateModifiedSelectorTitle}</Typography>
+          <DateRangeSelector
+            onDateRangeChange={handleLastModifiedDateRangeChange}
+            onQuickModeChange={handleQuickDateRangeModeChange}
+            startDatePickerLabel={startDatePicker}
+            endDatePickerLabel={endDatePicker}
+            quickOptionDropdownLabel={quickOptionDropdown}
+            dateRange={searchPageOptions.lastModifiedDateRange}
+            quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
           />
         </RefineSearchPanel>
       </Grid>

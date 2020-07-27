@@ -45,6 +45,21 @@ export interface DateRange {
   end?: Date;
 }
 
+interface DatePickerProps {
+  /**
+   * The field which a date picker controls.
+   */
+  field: "start" | "end";
+  /**
+   * The label of a date picker.
+   */
+  label: string;
+  /**
+   * The value of a date picker.
+   */
+  value?: Date;
+}
+
 export interface DateRangeSelectorProps {
   /**
    * Fired when date range is changed.
@@ -54,8 +69,9 @@ export interface DateRangeSelectorProps {
   /**
    * Fired when the status of Quick mode is changed.
    * @param enabled The new status of Quick mode
+   * @param dateRange Date range updated due to the mode change.
    */
-  onQuickModeChange: (enabled: boolean) => void;
+  onQuickModeChange: (enabled: boolean, dateRange?: DateRange) => void;
   /**
    * Initially selected date range.
    */
@@ -142,15 +158,22 @@ export const DateRangeSelector = ({
    * Return label of a Quick date option based on date range.
    * If the provided date range is undefined, or defined but start is undefined, or no matched Quick option is found,
    * then return the Quick option label "All".
+   * If end is defined but it is not equal to today, then return "All", too.
    * Otherwise, returns the Quick option label whose value is equal to start in ISO Date format.
    *
    * @param dateRange A date range to be converted to a Quick date option label.
    */
   const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
-    if (!dateRange || !dateRange.start) {
+    if (
+      !dateRange ||
+      !dateRange.start ||
+      (dateRange.end &&
+        dateRange.end.toDateString() !== new Date().toDateString())
+    ) {
       return option;
     }
+
     const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
@@ -193,33 +216,50 @@ export const DateRangeSelector = ({
     </FormControl>
   );
 
+  /**
+   * Generate two date pickers and wrap them with Grid items.
+   */
+  const getDatePickers = (): ReactNode => {
+    const dateRangePickers: DatePickerProps[] = [
+      {
+        field: "start",
+        label: startLabel,
+        value: dateRange?.start,
+      },
+      {
+        field: "end",
+        label: endLabel,
+        value: dateRange?.end,
+      },
+    ];
+
+    return dateRangePickers.map(({ field, label, value }) => (
+      <Grid item key={field}>
+        <DatePicker
+          disableFuture
+          variant="inline"
+          inputVariant="outlined"
+          autoOk
+          labelFunc={(value, invalidLabel) =>
+            value?.toLocaleString() ?? invalidLabel
+          }
+          label={!value ? label : ""}
+          value={value ?? null}
+          onChange={(newDate: MaterialUiPickersDate) =>
+            onDateRangeChange({
+              ...dateRange,
+              [field]: newDate?.toJSDate(),
+            })
+          }
+        />
+      </Grid>
+    ));
+  };
+
   const customDatePicker: ReactNode = (
     <MuiPickersUtilsProvider utils={LuxonUtils}>
       <Grid container spacing={2}>
-        {[
-          [startLabel, dateRange?.start],
-          [endLabel, dateRange?.end],
-        ].map(([label, value]) => (
-          <Grid item>
-            <DatePicker
-              disableFuture
-              variant="inline"
-              inputVariant="outlined"
-              autoOk
-              labelFunc={(value, invalidLabel) =>
-                value?.toLocaleString() ?? invalidLabel
-              }
-              label={label}
-              value={value}
-              onChange={(newDate: MaterialUiPickersDate) =>
-                onDateRangeChange({
-                  ...dateRange,
-                  end: newDate?.toJSDate(),
-                })
-              }
-            />
-          </Grid>
-        ))}
+        {getDatePickers()}
       </Grid>
     </MuiPickersUtilsProvider>
   );
@@ -234,7 +274,16 @@ export const DateRangeSelector = ({
           id="modified_date_selector_mode_switch"
           label={quickOptionSwitchLabel}
           value={quickModeEnabled}
-          setValue={(value) => onQuickModeChange(value)}
+          setValue={(value) => {
+            // If selected custom date range matches the option `All` then clear both start and end.
+            const isAllSelected =
+              dateRangeToDateOptionConverter(dateRange) ===
+              quickOptionLabels.all;
+            const updatedRange = isAllSelected
+              ? undefined
+              : { ...dateRange, end: undefined };
+            onQuickModeChange(value, updatedRange);
+          }}
         />
       </Grid>
     </Grid>

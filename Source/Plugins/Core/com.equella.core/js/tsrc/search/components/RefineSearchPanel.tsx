@@ -20,9 +20,9 @@ import { ReactNode } from "react";
 import {
   Card,
   CardContent,
-  CardHeader,
   List,
   ListItem,
+  Typography,
 } from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
 
@@ -37,13 +37,11 @@ export const RefineSearchPanel = ({ children }: RefinePanelProps) => {
   const { title } = languageStrings.searchpage.refineSearchPanel;
   return (
     <Card>
-      <CardHeader title={title} />
       <CardContent>
+        <Typography variant="h5">{title}</Typography>
         <List>
           {React.Children.map(children, (child, index) => (
-            <ListItem divider={index != React.Children.count(children) - 1}>
-              {child}
-            </ListItem>
+            <ListItem>{child}</ListItem>
           ))}
         </List>
       </CardContent>
