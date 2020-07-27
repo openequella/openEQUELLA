@@ -161,10 +161,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleRawModeChanged = (rawMode: boolean) =>
     setSearchPageOptions({ ...searchPageOptions, rawMode: rawMode });
 
-  const handleQuickDateRangeModeChange = (quickDateRangeMode: boolean) =>
+  const handleQuickDateRangeModeChange = (
+    quickDateRangeMode: boolean,
+    dateRange?: DateRange
+  ) =>
     setSearchPageOptions({
       ...searchPageOptions,
       dateRangeQuickModeEnabled: quickDateRangeMode,
+      // When the mode is changed, the date range may also need to be updated.
+      // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
+      lastModifiedDateRange: dateRange,
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>

@@ -70,7 +70,7 @@ export interface DateRangeSelectorProps {
    * Fired when the status of Quick mode is changed.
    * @param enabled The new status of Quick mode
    */
-  onQuickModeChange: (enabled: boolean) => void;
+  onQuickModeChange: (enabled: boolean, dateRange?: DateRange) => void;
   /**
    * Initially selected date range.
    */
@@ -157,15 +157,22 @@ export const DateRangeSelector = ({
    * Return label of a Quick date option based on date range.
    * If the provided date range is undefined, or defined but start is undefined, or no matched Quick option is found,
    * then return the Quick option label "All".
+   * If end is defined but it is not equal to today, then return "All", too.
    * Otherwise, returns the Quick option label whose value is equal to start in ISO Date format.
    *
    * @param dateRange A date range to be converted to a Quick date option label.
    */
   const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
-    if (!dateRange || !dateRange.start) {
+    if (
+      !dateRange ||
+      !dateRange.start ||
+      (dateRange.end &&
+        dateRange.end.toDateString() !== new Date().toDateString())
+    ) {
       return option;
     }
+
     const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
@@ -235,8 +242,8 @@ export const DateRangeSelector = ({
           labelFunc={(value, invalidLabel) =>
             value?.toLocaleString() ?? invalidLabel
           }
-          label={label}
-          value={value}
+          label={!value ? label : ""}
+          value={value ?? null}
           onChange={(newDate: MaterialUiPickersDate) =>
             onDateRangeChange({
               ...dateRange,
@@ -266,7 +273,16 @@ export const DateRangeSelector = ({
           id="modified_date_selector_mode_switch"
           label={quickOptionSwitchLabel}
           value={quickModeEnabled}
-          setValue={(value) => onQuickModeChange(value)}
+          setValue={(value) => {
+            // If selected custom date range matches the option `All` then clear both start and end.
+            const isAllSelected =
+              dateRangeToDateOptionConverter(dateRange) ===
+              quickOptionLabels.all;
+            const updatedRange = isAllSelected
+              ? undefined
+              : { ...dateRange, end: undefined };
+            onQuickModeChange(value, updatedRange);
+          }}
         />
       </Grid>
     </Grid>
