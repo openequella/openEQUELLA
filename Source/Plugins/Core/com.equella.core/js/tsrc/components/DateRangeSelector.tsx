@@ -69,6 +69,7 @@ export interface DateRangeSelectorProps {
   /**
    * Fired when the status of Quick mode is changed.
    * @param enabled The new status of Quick mode
+   * @param dateRange Date range updated due to the mode change.
    */
   onQuickModeChange: (enabled: boolean, dateRange?: DateRange) => void;
   /**
