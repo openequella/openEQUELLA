@@ -255,6 +255,7 @@ describe("<SearchPage/>", () => {
     const dateRangeSelector = component.find(DateRangeSelector);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
+      dateRangeQuickModeEnabled: true,
       lastModifiedDateRange: {
         start: dateRangeSelector.prop("dateRange")!.start,
         end: undefined,
