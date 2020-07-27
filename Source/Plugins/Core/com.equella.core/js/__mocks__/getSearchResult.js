@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * Licensed to The Apereo Foundation under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional
@@ -284,4 +285,33 @@ exports.getSearchResult = {
       },
     },
   ],
+};
+
+exports.getSearchResultsCustom = (numberOfResults) => {
+  const { v4: uuidv4 } = require("uuid");
+  let results = [];
+
+  for (let i = 0; i < numberOfResults; i++) {
+    let currentResult = {
+      uuid: uuidv4(),
+      name: `item ${i}`,
+      version: 1,
+      status: "live",
+      createdDate: new Date("2020-07-10T09:31:08.557+10:00"),
+      modifiedDate: new Date("2020-07-10T09:31:08.557+10:00"),
+      collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+      commentCount: 0,
+      attachments: [],
+      thumbnail: "initial",
+      displayFields: [],
+      links: {
+        view:
+          "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+        self:
+          "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+      },
+    };
+    results.push(currentResult);
+  }
+  return { start: 0, length: 10, available: 30, results };
 };

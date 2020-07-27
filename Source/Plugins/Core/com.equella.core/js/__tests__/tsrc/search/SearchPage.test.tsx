@@ -18,6 +18,7 @@
 import {
   getEmptySearchResult,
   getSearchResult,
+  getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import * as React from "react";
@@ -155,7 +156,11 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    expect(component.html()).toContain("1-10 of 12");
+    const pageCount = component
+      .find(".MuiTablePagination-toolbar")
+      .find("p")
+      .at(1);
+    expect(pageCount.text()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
     );
@@ -166,20 +171,52 @@ describe("<SearchPage/>", () => {
       ...defaultSearchOptions,
       rowsPerPage: 25,
     });
-    expect(component.html()).toContain("1-12 of 12");
+    expect(pageCount.text()).toContain("1-12 of 12");
   });
 
   it("should support navigating to previous/next page", async () => {
+    await querySearch("");
+    component.update();
     const prevPageButton = component
       .find(".MuiTablePagination-actions button")
-      .at(0);
+      .at(1);
     const nextPageButton = component
       .find(".MuiTablePagination-actions button")
+      .at(2);
+    const pageCount = component
+      .find(".MuiTablePagination-toolbar")
+      .find("p")
       .at(1);
     await awaitAct(() => nextPageButton.simulate("click"));
-    expect(component.html()).toContain("11-12 of 12");
+    expect(pageCount.text()).toContain("11-12 of 12");
+    await querySearch("");
+    component.update();
     await awaitAct(() => prevPageButton.simulate("click"));
-    expect(component.html()).toContain("1-10 of 12");
+    expect(pageCount.text()).toContain("1-10 of 12");
+  });
+
+  it("should support navigating to first/last page of results", async () => {
+    mockSearch.mockImplementation(() =>
+      Promise.resolve(getSearchResultsCustom(30))
+    );
+    await querySearch("");
+    component.update();
+    const firstPageButton = component
+      .find(".MuiTablePagination-actions button")
+      .at(0);
+    const lastPageButton = component
+      .find(".MuiTablePagination-actions button")
+      .at(3);
+    const pageCount = component
+      .find(".MuiTablePagination-toolbar")
+      .find("p")
+      .at(1);
+    await awaitAct(() => lastPageButton.simulate("click"));
+    expect(pageCount.text()).toContain("21-30 of 30");
+    await querySearch("");
+    component.update();
+    await awaitAct(() => firstPageButton.simulate("click"));
+    expect(component.html()).toContain("1-10 of 30");
   });
 
   it("should support sorting search results", async () => {
