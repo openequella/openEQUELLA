@@ -26,7 +26,6 @@ export const defaultSearchOptions: SearchOptions = {
   currentPage: 0,
   sortOrder: undefined,
   rawMode: false,
-  dateRangeQuickModeEnabled: true,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -113,11 +112,7 @@ export interface SearchOptions {
    */
   rawMode: boolean;
   /**
-   * A date range for Items' last modified dates.
+   * A date range for searching items by last modified date.
    */
   lastModifiedDateRange?: DateRange;
-  /**
-   * Whether to enable Quick mode (true) or to use custom date pickers (false)
-   */
-  dateRangeQuickModeEnabled: boolean;
 }

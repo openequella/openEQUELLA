@@ -45,9 +45,6 @@ export interface DateRange {
   end?: Date;
 }
 
-/**
- * Props of date pickers.
- */
 interface DatePickerProps {
   /**
    * The field which a date picker controls.
@@ -212,7 +209,7 @@ export const DateRangeSelector = ({
   );
 
   /**
-   * Generate two Date pickers and each of them is wrapped inside a Grid item.
+   * Generate two date pickers and wrap them with Grid items.
    */
   const getDatePickers = (): ReactNode => {
     const dateRangePickers: DatePickerProps[] = [

@@ -353,9 +353,10 @@ export const languageStrings = {
       title: "Refine search",
     },
     collectionSelector: {
-      label: "Collections",
+      title: "Collections",
     },
     lastModifiedDateSelector: {
+      title: "Date modified",
       startDatePicker: "Modified after",
       endDatePicker: "Modified before",
       quickOptionDropdown: "Last modified date",
