@@ -45,6 +45,24 @@ export interface DateRange {
   end?: Date;
 }
 
+/**
+ * Props of date pickers.
+ */
+interface DatePickerProps {
+  /**
+   * The field which a date picker controls.
+   */
+  field: "start" | "end";
+  /**
+   * The label of a date picker.
+   */
+  label: string;
+  /**
+   * The value of a date picker.
+   */
+  value?: Date;
+}
+
 export interface DateRangeSelectorProps {
   /**
    * Fired when date range is changed.
@@ -193,33 +211,50 @@ export const DateRangeSelector = ({
     </FormControl>
   );
 
+  /**
+   * Generate two Date pickers and each of them is wrapped inside a Grid item.
+   */
+  const getDatePickers = (): ReactNode => {
+    const dateRangePickers: DatePickerProps[] = [
+      {
+        field: "start",
+        label: startLabel,
+        value: dateRange?.start,
+      },
+      {
+        field: "end",
+        label: endLabel,
+        value: dateRange?.end,
+      },
+    ];
+
+    return dateRangePickers.map(({ field, label, value }) => (
+      <Grid item key={field}>
+        <DatePicker
+          disableFuture
+          variant="inline"
+          inputVariant="outlined"
+          autoOk
+          labelFunc={(value, invalidLabel) =>
+            value?.toLocaleString() ?? invalidLabel
+          }
+          label={label}
+          value={value}
+          onChange={(newDate: MaterialUiPickersDate) =>
+            onDateRangeChange({
+              ...dateRange,
+              [field]: newDate?.toJSDate(),
+            })
+          }
+        />
+      </Grid>
+    ));
+  };
+
   const customDatePicker: ReactNode = (
     <MuiPickersUtilsProvider utils={LuxonUtils}>
       <Grid container spacing={2}>
-        {[
-          [startLabel, dateRange?.start],
-          [endLabel, dateRange?.end],
-        ].map(([label, value]) => (
-          <Grid item>
-            <DatePicker
-              disableFuture
-              variant="inline"
-              inputVariant="outlined"
-              autoOk
-              labelFunc={(value, invalidLabel) =>
-                value?.toLocaleString() ?? invalidLabel
-              }
-              label={label}
-              value={value}
-              onChange={(newDate: MaterialUiPickersDate) =>
-                onDateRangeChange({
-                  ...dateRange,
-                  end: newDate?.toJSDate(),
-                })
-              }
-            />
-          </Grid>
-        ))}
+        {getDatePickers()}
       </Grid>
     </MuiPickersUtilsProvider>
   );

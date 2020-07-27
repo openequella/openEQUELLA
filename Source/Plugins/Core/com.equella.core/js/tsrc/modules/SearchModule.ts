@@ -19,12 +19,14 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 import { SortOrder } from "./SearchSettingsModule";
 import { Collection } from "./CollectionsModule";
+import { DateRange } from "../components/DateRangeSelector";
 
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: undefined,
   rawMode: false,
+  dateRangeQuickModeEnabled: true,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -59,6 +61,7 @@ export const searchItems = ({
   sortOrder,
   collections,
   rawMode,
+  lastModifiedDateRange,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -74,6 +77,8 @@ export const searchItems = ({
     ],
     order: sortOrder,
     collections: collections?.map((collection) => collection.uuid),
+    modifiedAfter: lastModifiedDateRange?.start?.toISOString(),
+    modifiedBefore: lastModifiedDateRange?.end?.toISOString(),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -107,4 +112,12 @@ export interface SearchOptions {
    * a wildcard operator).
    */
   rawMode: boolean;
+  /**
+   * A date range for Items' last modified dates.
+   */
+  lastModifiedDateRange?: DateRange;
+  /**
+   * Whether to enable Quick mode (true) or to use custom date pickers (false)
+   */
+  dateRangeQuickModeEnabled: boolean;
 }
