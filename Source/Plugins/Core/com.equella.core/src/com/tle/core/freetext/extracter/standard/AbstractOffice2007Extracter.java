@@ -46,8 +46,7 @@ public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterE
       throws IOException {
     // Ignore parseDuration for now.
     try {
-      ArchiveExtractor extractor =
-          ArchiveType.ZIP.createExtractor(input, StandardCharsets.UTF_8.name());
+      ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input, StandardCharsets.UTF_8);
 
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
