@@ -71,7 +71,6 @@ export const SearchPagination = ({
     const theme = createMuiTheme();
 
     const numberOfPages = () => {
-      console.log(Math.ceil(count / rowsPerPage));
       return Math.ceil(count / rowsPerPage);
     };
     const isFirstPage = currentPage == 0;
