@@ -30,6 +30,7 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -242,6 +243,22 @@ describe("<SearchPage/>", () => {
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchOptions,
       collections: selectedCollections,
+    });
+  });
+
+  it("should support selecting a date range through Quick options", async () => {
+    const quickOptions = component.find("#date_range_selector input");
+    await awaitAct(() =>
+      quickOptions.simulate("change", { target: { value: "Today" } })
+    );
+    component.update();
+    const dateRangeSelector = component.find(DateRangeSelector);
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchOptions,
+      lastModifiedDateRange: {
+        start: dateRangeSelector.prop("dateRange")!.start,
+        end: undefined,
+      },
     });
   });
 });
