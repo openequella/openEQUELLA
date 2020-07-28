@@ -1,6 +1,6 @@
 import { GET } from './AxiosInstance';
 import { is } from 'typescript-is';
-import {UuidString} from "./Common";
+import { UuidString } from './Common';
 
 export interface UserDetails {
   id: UuidString;
@@ -59,4 +59,8 @@ export const search = (
   apiBasePath: string,
   params: SearchParams
 ): Promise<SearchResult> =>
-  GET<SearchResult>( apiBasePath + USERQUERY_ROOT_PATH + '/search', isSearchResult, params);
+  GET<SearchResult>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/search',
+    isSearchResult,
+    params
+  );
