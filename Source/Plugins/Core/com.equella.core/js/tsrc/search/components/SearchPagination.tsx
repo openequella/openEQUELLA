@@ -89,6 +89,7 @@ export const SearchPagination = ({
             onClick={() => onPageChange(0)}
             disabled={isFirstPage}
             aria-label={paginationStrings.firstPageButton}
+            id="firstPageButton"
           >
             <FirstPage />
           </IconButton>
@@ -98,6 +99,7 @@ export const SearchPagination = ({
             onClick={() => onPageChange(currentPage - 1)}
             aria-label={paginationStrings.previousPageButton}
             disabled={isFirstPage}
+            id="previousPageButton"
           >
             <KeyboardArrowLeft />
           </IconButton>
@@ -107,6 +109,7 @@ export const SearchPagination = ({
             onClick={() => onPageChange(currentPage + 1)}
             aria-label={paginationStrings.nextPageButton}
             disabled={isLastPage}
+            id="nextPageButton"
           >
             <KeyboardArrowRight />
           </IconButton>
@@ -116,6 +119,7 @@ export const SearchPagination = ({
             onClick={() => onPageChange(Math.max(0, numberOfPages() - 1))}
             aria-label={paginationStrings.lastPageButton}
             disabled={isLastPage}
+            id="lastPageButton"
           >
             <LastPage />
           </IconButton>
