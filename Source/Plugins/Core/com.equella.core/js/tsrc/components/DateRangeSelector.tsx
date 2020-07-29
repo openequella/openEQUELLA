@@ -131,8 +131,20 @@ export const DateRangeSelector = ({
   useEffect(() => {
     const start = stateDateRange?.start;
     const end = stateDateRange?.end;
-    // Call onDateRangeChange when the range is open-ended or when start <= end
-    if (!start || !end || start <= end) {
+    const isStartValid = start && DateTime.fromJSDate(start).isValid;
+    const isEndValid = end && DateTime.fromJSDate(end).isValid;
+
+    // start is undefined and end is a valid date
+    const openStart = !start && isEndValid;
+    // End is undefined and start is a valid date
+    const openEnd = !end && isStartValid;
+    // Both are undefined
+    const openRange = !start && !end;
+    // Both are valid dates and start is equal or less than end
+    const closedRange = isStartValid && isEndValid && start! <= end!;
+
+    // Call onDateRangeChange for above four cases
+    if (openStart || openEnd || openRange || closedRange) {
       onDateRangeChange(stateDateRange);
     }
   }, [stateDateRange]);
