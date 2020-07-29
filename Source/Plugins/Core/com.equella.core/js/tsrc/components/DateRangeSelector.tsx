@@ -197,18 +197,18 @@ export const DateRangeSelector = ({
    *
    * @param dateRange A date range to be converted to a Quick date option label.
    */
-  const dateRangeToDateOptionConverter = (): string => {
+  const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
     if (
-      !stateDateRange ||
-      !stateDateRange.start ||
-      (stateDateRange.end &&
-        stateDateRange.end.toDateString() !== new Date().toDateString())
+      !dateRange ||
+      !dateRange.start ||
+      (dateRange.end &&
+        dateRange.end.toDateString() !== new Date().toDateString())
     ) {
       return option;
     }
 
-    const start = DateTime.fromJSDate(stateDateRange.start);
+    const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
         if (dateTime && dateTime.toISODate() === start.toISODate()) {
@@ -233,7 +233,7 @@ export const DateRangeSelector = ({
     <FormControl variant="outlined" fullWidth>
       <InputLabel id="date_range_selector_label">{quickOptionLabel}</InputLabel>
       <Select
-        value={dateRangeToDateOptionConverter()}
+        value={dateRangeToDateOptionConverter(stateDateRange)}
         id="date_range_selector"
         labelId="date_range_selector_label"
         onChange={(event) =>
@@ -277,12 +277,12 @@ export const DateRangeSelector = ({
             clearable
             inputVariant="outlined"
             autoOk
-            // Show date in locale string, or nothing if date is null.
+            // Show date in ISO format string, or nothing if date is null.
             labelFunc={(date, _) => {
-              return date?.toLocaleString() ?? "";
+              return date?.toISODate() ?? "";
             }}
             // TextField inputs are parsed to this format.
-            format="dd/MM/yyyy"
+            format="yyyy-MM-dd"
             // The maximum start date is the range's end whereas minimum end date is the range's start.
             minDate={!isStart ? stateDateRange?.start : undefined}
             maxDate={isStart ? stateDateRange?.end : undefined}
@@ -302,7 +302,10 @@ export const DateRangeSelector = ({
   };
 
   const customDatePicker: ReactNode = (
-    <MuiPickersUtilsProvider utils={LuxonUtils}>
+    <MuiPickersUtilsProvider
+      utils={LuxonUtils}
+      locale={DateTime.local().locale}
+    >
       <Grid container spacing={2}>
         {getDatePickers()}
       </Grid>
@@ -322,7 +325,8 @@ export const DateRangeSelector = ({
           setValue={(value) => {
             // If selected custom date range matches the option `All` then clear both start and end.
             const isAllSelected =
-              dateRangeToDateOptionConverter() === quickOptionLabels.all;
+              dateRangeToDateOptionConverter(stateDateRange) ===
+              quickOptionLabels.all;
             const updatedRange = isAllSelected
               ? undefined
               : { ...dateRange, end: undefined };
