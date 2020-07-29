@@ -28,7 +28,7 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { languageStrings } from "../util/langstrings";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
@@ -128,7 +128,12 @@ export const DateRangeSelector = ({
     dateRange
   );
 
+  const isInitialRender = useRef(true);
   useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
     const start = stateDateRange?.start;
     const end = stateDateRange?.end;
     const isStartValid = start && DateTime.fromJSDate(start).isValid;
@@ -142,7 +147,6 @@ export const DateRangeSelector = ({
     const openRange = !start && !end;
     // Both are valid dates and start is equal or less than end
     const closedRange = isStartValid && isEndValid && start! <= end!;
-
     // Call onDateRangeChange for above four cases
     if (openStart || openEnd || openRange || closedRange) {
       onDateRangeChange(stateDateRange);
