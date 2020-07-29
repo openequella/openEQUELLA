@@ -5,6 +5,8 @@ export type i18nString = string;
 
 export type I18nStrings = Record<string, string>;
 
+export type UuidString = string;
+
 export interface User {
   id: string;
   username?: string;
