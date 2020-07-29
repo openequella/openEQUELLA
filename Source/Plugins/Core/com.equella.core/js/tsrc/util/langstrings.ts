@@ -549,8 +549,8 @@ export const languageStrings = {
       "You have unsaved changes. Are you sure you want to leave this page without saving?",
   },
   dateRangeSelector: {
-    defaultStartDatePickerLabel: "Start",
-    defaultEndDatePickerLabel: "End",
+    defaultStartDatePickerLabel: "From",
+    defaultEndDatePickerLabel: "To",
     defaultDropdownLabel: "Quick date ranges",
     quickOptionSwitchLabel: "Enable quick options",
     quickOptionLabels: {

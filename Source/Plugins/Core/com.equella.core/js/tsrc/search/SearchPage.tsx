@@ -59,8 +59,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
   const {
     title: dateModifiedSelectorTitle,
-    startDatePicker,
-    endDatePicker,
     quickOptionDropdown,
   } = searchStrings.lastModifiedDateSelector;
   const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
@@ -224,8 +222,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <DateRangeSelector
             onDateRangeChange={handleLastModifiedDateRangeChange}
             onQuickModeChange={handleQuickDateRangeModeChange}
-            startDatePickerLabel={startDatePicker}
-            endDatePickerLabel={endDatePicker}
             quickOptionDropdownLabel={quickOptionDropdown}
             dateRange={searchPageOptions.lastModifiedDateRange}
             quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
