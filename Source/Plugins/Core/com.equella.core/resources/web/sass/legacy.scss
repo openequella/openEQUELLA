@@ -1061,6 +1061,12 @@ Generic layout
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
   }
+  &:hover {
+    background-color: transparentize(#000, 0.9);
+  }
+  &:active {
+    background-color: transparentize(#000, 0.7);
+  }
 }
 
 #mainDiv #content-body {
@@ -2762,22 +2768,47 @@ Contribution wizard styling
 }
 
 #wizard-major-actions .action-button.save {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   background-image: url("../../images/baseline_save_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.edit {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   background-image: url("../../images/baseline_edit_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.view {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   background-image: url("../../images/baseline_list_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   background-image: url("../../images/baseline_check_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   background-image: url("../../images/baseline_close_white_18dp.png");
 }
 
@@ -2952,6 +2983,21 @@ button + .repeater-groups {
   padding: 8px 0px;
 }
 
+#r_resume {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+  margin-bottom: 4px;
+}
+#d_discard {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+}
 .settingRow .settingField {
   width: auto;
   padding-left: 26px;
@@ -2966,6 +3012,13 @@ button + .repeater-groups {
   .editLinks {
     padding-top: 8px;
   }
+}
+#searchform-editquery{
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 .spacer {
@@ -3295,6 +3348,12 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+      &:hover {
+        background-color: transparentize(#000, 0.9);
+      }
+      &:active {
+        background-color: transparentize(#000, 0.7);
+      }
     }
   }
 }
@@ -3316,22 +3375,48 @@ Item summary styling
 
 .shareButton {
   background-image: url(../../images/baseline_share_white_18dp.png);
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 .addToFavourites {
   background-image: url(../../images/baseline_star_white_18dp.png);
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+
 }
 
 .removeFromFavourites {
   background-image: url(../../images/baseline_remove_white_18dp.png);
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 .wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 .add-mime {
   background-image: url(../../images/baseline_code_white_18dp.png);
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 .itemsummary-layout hr {
@@ -3642,6 +3727,12 @@ table.versions td {
 }
 
 .comment-form button {
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+  margin-top: 4px;
   float: right;
 }
 
@@ -4072,6 +4163,11 @@ img.warningimg {
   text-align: center;
   background-size: 26px 26px;
   background-position: left 3px top 4px;
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
@@ -4924,6 +5020,10 @@ $loginTextBoxWidth: 200;
   margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
   margin-top: 16px;
   width: $loginTextBoxWidth + unquote("px");
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
+
 }
 #username {
   width: $loginTextBoxWidth + unquote("px");
