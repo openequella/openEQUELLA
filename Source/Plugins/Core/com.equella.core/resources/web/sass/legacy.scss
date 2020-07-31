@@ -49,6 +49,8 @@ $large-breakpoint-max: "1500px";
 $extra-large-breakpoint-max: "1800px";
 $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
   0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+$hoverBackgroundColor: transparentize(#000, 0.9);
+$activeBackgroundColor: transparentize(#000, 0.7);
 
 @font-face {
   font-family: "Material Icons";
@@ -1064,10 +1066,10 @@ Generic layout
     color: set-text-color($primaryColor);
   }
   &:hover {
-    background-color: transparentize(#000, 0.9);
+    background-color: $hoverBackgroundColor;
   }
   &:active {
-    background-color: transparentize(#000, 0.7);
+    background-color: $activeBackgroundColor;
   }
 }
 
@@ -3351,10 +3353,10 @@ Item summary styling
         vertical-align: middle;
       }
       &:hover {
-        background-color: transparentize(#000, 0.9);
+        background-color: $hoverBackgroundColor;
       }
       &:active {
-        background-color: transparentize(#000, 0.7);
+        background-color: $activeBackgroundColor;
       }
     }
   }
