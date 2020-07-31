@@ -47,6 +47,7 @@ $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
 $large-breakpoint-max: "1500px";
 $extra-large-breakpoint-max: "1800px";
+$boxShadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
 
 @font-face {
   font-family: "Material Icons";
@@ -1770,9 +1771,9 @@ div.skinnysearch {
   background: white;
   border: 1px solid #8f8b7e;
   padding: 5px 17px;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .skinnysearch .sortandfilter div.input {
@@ -2770,45 +2771,45 @@ Contribution wizard styling
 #wizard-major-actions .action-button.save {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   background-image: url("../../images/baseline_save_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.edit {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   background-image: url("../../images/baseline_edit_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.view {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   background-image: url("../../images/baseline_list_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   background-image: url("../../images/baseline_check_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   background-image: url("../../images/baseline_close_white_18dp.png");
 }
 
@@ -2986,17 +2987,17 @@ button + .repeater-groups {
 #r_resume {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   margin-bottom: 4px;
 }
 #d_discard {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 .settingRow .settingField {
   width: auto;
@@ -3016,9 +3017,9 @@ button + .repeater-groups {
 #searchform-editquery{
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .spacer {
@@ -3377,18 +3378,18 @@ Item summary styling
   background-image: url(../../images/baseline_share_white_18dp.png);
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .addToFavourites {
   background-image: url(../../images/baseline_star_white_18dp.png);
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 
 }
 
@@ -3396,27 +3397,27 @@ Item summary styling
   background-image: url(../../images/baseline_remove_white_18dp.png);
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .add-mime {
   background-image: url(../../images/baseline_code_white_18dp.png);
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .itemsummary-layout hr {
@@ -3729,9 +3730,9 @@ table.versions td {
 .comment-form button {
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   margin-top: 4px;
   float: right;
 }
@@ -4165,9 +4166,9 @@ img.warningimg {
   background-position: left 3px top 4px;
   border-radius: 4px;
   border: none;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
@@ -5020,9 +5021,9 @@ $loginTextBoxWidth: 200;
   margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
   margin-top: 16px;
   width: $loginTextBoxWidth + unquote("px");
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 
 }
 #username {
