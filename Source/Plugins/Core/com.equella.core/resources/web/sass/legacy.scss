@@ -47,7 +47,8 @@ $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
 $large-breakpoint-max: "1500px";
 $extra-large-breakpoint-max: "1800px";
-$boxShadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
+$boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+  0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 
 @font-face {
   font-family: "Material Icons";
@@ -3014,7 +3015,7 @@ button + .repeater-groups {
     padding-top: 8px;
   }
 }
-#searchform-editquery{
+#searchform-editquery {
   border-radius: 4px;
   border: none;
   box-shadow: $boxShadow;
@@ -3390,7 +3391,6 @@ Item summary styling
   box-shadow: $boxShadow;
   -moz-box-shadow: $boxShadow;
   -webkit-box-shadow: $boxShadow;
-
 }
 
 .removeFromFavourites {
@@ -5024,7 +5024,6 @@ $loginTextBoxWidth: 200;
   box-shadow: $boxShadow;
   -moz-box-shadow: $boxShadow;
   -webkit-box-shadow: $boxShadow;
-
 }
 #username {
   width: $loginTextBoxWidth + unquote("px");
