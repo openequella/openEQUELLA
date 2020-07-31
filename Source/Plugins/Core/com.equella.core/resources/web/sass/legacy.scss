@@ -1043,7 +1043,11 @@ Generic layout
 }
 
 #fancybox-inner {
-  min-width: 320px;
+  border-radius: 4px;
+  border: none;
+  box-shadow: 3px 3px 5px #888;
+  -moz-box-shadow: 3px 3px 5px #888;
+  -webkit-box-shadow: 3px 3px 5px #888;
 }
 
 #fancybox-wrap {
