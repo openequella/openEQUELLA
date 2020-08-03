@@ -1058,7 +1058,7 @@ Generic layout
 }
 
 #fancybox-inner {
-  min-width: 320px;
+  @include buttonShadowBorder;
 }
 
 #fancybox-wrap {
