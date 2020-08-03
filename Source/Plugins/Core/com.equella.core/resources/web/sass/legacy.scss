@@ -62,7 +62,14 @@ $activeBackgroundColor: transparentize(#000, 0.7);
   border-radius: 4px;
   border: none;
 }
-
+@mixin hoverHighlight {
+  &:hover {
+    background-color: $hoverBackgroundColor;
+  }
+  &:active {
+    background-color: $activeBackgroundColor;
+  }
+}
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -1076,12 +1083,7 @@ Generic layout
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
   }
-  &:hover {
-    background-color: $hoverBackgroundColor;
-  }
-  &:active {
-    background-color: $activeBackgroundColor;
-  }
+  @include hoverHighlight;
 }
 
 #mainDiv #content-body {
@@ -3329,12 +3331,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
-      &:hover {
-        background-color: $hoverBackgroundColor;
-      }
-      &:active {
-        background-color: $activeBackgroundColor;
-      }
+      @include hoverHighlight;
     }
   }
 }
