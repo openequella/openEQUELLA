@@ -20,28 +20,48 @@ import { ReactNode } from "react";
 import {
   Card,
   CardContent,
+  Grid,
   List,
   ListItem,
   Typography,
 } from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
+import { RefinePanelControlHeading } from "./RefinePanelControlHeading";
+
+export interface RefinePanelControl {
+  /**
+   * Title of a Refine control.
+   */
+  title: string;
+  /**
+   * Refine control.
+   */
+  component: ReactNode;
+}
 
 interface RefinePanelProps {
   /**
    * Child components rendered inside this panel.
    */
-  children: ReactNode;
+  controls: RefinePanelControl[];
 }
 
-export const RefineSearchPanel = ({ children }: RefinePanelProps) => {
+export const RefineSearchPanel = ({ controls }: RefinePanelProps) => {
   const { title } = languageStrings.searchpage.refineSearchPanel;
   return (
     <Card>
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <List>
-          {React.Children.map(children, (child, index) => (
-            <ListItem>{child}</ListItem>
+          {controls.map((control) => (
+            <ListItem>
+              <Grid container direction="column">
+                <Grid item>
+                  <RefinePanelControlHeading title={control.title} />
+                </Grid>
+                <Grid item>{control.component}</Grid>
+              </Grid>
+            </ListItem>
           ))}
         </List>
       </CardContent>

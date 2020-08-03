@@ -15,17 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime } from "luxon";
+import * as React from "react";
+import { Typography } from "@material-ui/core";
 
-/**
- * Convert a date to string in ISO format but keep time unchanged.
- * One should call 'toISOString()' to get the UTC date in ISO format.
- * @param date The date to be converted to a string in ISO format.
- */
-export const getISODateString = (date?: Date) => {
-  if (date) {
-    // If the result of toISODate is null then return undefined.
-    return DateTime.fromJSDate(date).toISODate() ?? undefined;
-  }
-  return undefined;
-};
+interface RefinePanelControlHeadingProps {
+  /**
+   * Title of a Refine control.
+   */
+  title: string;
+}
+export const RefinePanelControlHeading = ({
+  title,
+}: RefinePanelControlHeadingProps) => (
+  <Typography variant="h6" gutterBottom>
+    {title}
+  </Typography>
+);
