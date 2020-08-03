@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
+import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 import UserSearch from "../../tsrc/components/UserSearch";
 import { action } from "@storybook/addon-actions";
 import * as React from "react";
@@ -26,58 +26,10 @@ export default {
   component: UserSearch,
 };
 
-/**
- * A list of users to test with, deliberately out of order. Names are randomly generated.
- */
-const users: OEQ.UserQuery.UserDetails[] = [
-  {
-    id: "680f5eb7-22e2-4ab6-bcea-25205165e36e",
-    username: "user200",
-    firstName: "Fabienne",
-    lastName: "Hobson",
-  },
-  {
-    id: "cda09b86-3662-46bd-b60e-4bce89efba7a",
-    username: "user100",
-    firstName: "Racheal",
-    lastName: "Carlyle",
-  },
-  {
-    id: "97254515-6e32-48e9-ba65-5b5c6aa182a6",
-    username: "user400",
-    firstName: "Ronny",
-    lastName: "Southgate",
-  },
-  {
-    id: "8db50158-757d-44f3-8ccf-7b2e0a3a6405",
-    username: "user300",
-    firstName: "Yasmin",
-    lastName: "Day",
-  },
-  {
-    id: "3f25f543-7231-46f4-8f3b-aaccc8fcf52a",
-    username: "admin999",
-    firstName: "Wat",
-    lastName: "Swindlehurst",
-  },
-];
-
-/**
- * Helper function to inject into component for user retrieval.
- *
- * @param query A simple string to filter by (no wildcard support)
- */
-const userDetailsProvider = (
-  query?: string
-): Promise<OEQ.UserQuery.UserDetails[]> =>
-  new Promise((resolve) =>
-    resolve(query ? users.filter((u) => u.username.search(query) === 0) : users)
-  );
-
 export const DefaultState = () => (
   <UserSearch
     listHeight={number("List Height", 150)}
     onSelect={action("onSelect")}
-    userListProvider={userDetailsProvider}
+    userListProvider={UserSearchMock.userDetailsProvider}
   />
 );
