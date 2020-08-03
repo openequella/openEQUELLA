@@ -55,7 +55,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.9",
+  "com.google.api-client"        % "google-api-client"           % "1.30.10",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200617-1.30.9",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
@@ -71,7 +71,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.14.1",
+  "com.rometools"             % "rome"                  % "1.15.0",
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
