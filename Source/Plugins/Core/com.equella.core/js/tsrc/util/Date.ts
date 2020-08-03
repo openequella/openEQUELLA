@@ -22,5 +22,10 @@ import { DateTime } from "luxon";
  * One should call 'toISOString()' to get the UTC date in ISO format.
  * @param date The date to be converted to a string in ISO format.
  */
-export const getISODateString = (date?: Date) =>
-  date ? DateTime.fromJSDate(date).toISODate() : undefined;
+export const getISODateString = (date?: Date) => {
+  if (date) {
+    // If the result of toISODate is null then return undefined.
+    return DateTime.fromJSDate(date).toISODate() ?? undefined;
+  }
+  return undefined;
+};
