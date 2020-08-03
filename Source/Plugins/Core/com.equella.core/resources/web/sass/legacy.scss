@@ -52,6 +52,14 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
 
+@mixin buttonShadowBorder {
+  border-radius: 4px;
+  border: none;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
+}
+
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -2772,47 +2780,27 @@ Contribution wizard styling
 }
 
 #wizard-major-actions .action-button.save {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_save_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.edit {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_edit_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.view {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_list_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_check_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_close_white_18dp.png");
 }
 
@@ -2988,19 +2976,11 @@ button + .repeater-groups {
 }
 
 #r_resume {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   margin-bottom: 4px;
 }
 #d_discard {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 .settingRow .settingField {
   width: auto;
@@ -3018,11 +2998,7 @@ button + .repeater-groups {
   }
 }
 #searchform-editquery {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .spacer {
@@ -3379,47 +3355,27 @@ Item summary styling
 
 .shareButton {
   background-image: url(../../images/baseline_share_white_18dp.png);
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .addToFavourites {
   background-image: url(../../images/baseline_star_white_18dp.png);
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .removeFromFavourites {
   background-image: url(../../images/baseline_remove_white_18dp.png);
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .add-mime {
   background-image: url(../../images/baseline_code_white_18dp.png);
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
 }
 
 .itemsummary-layout hr {
@@ -3730,11 +3686,7 @@ table.versions td {
 }
 
 .comment-form button {
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   margin-top: 4px;
   float: right;
 }
@@ -4166,11 +4118,7 @@ img.warningimg {
   text-align: center;
   background-size: 26px 26px;
   background-position: left 3px top 4px;
-  border-radius: 4px;
-  border: none;
-  box-shadow: $boxShadow;
-  -moz-box-shadow: $boxShadow;
-  -webkit-box-shadow: $boxShadow;
+  @include buttonShadowBorder;
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
