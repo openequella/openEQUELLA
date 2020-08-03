@@ -1042,8 +1042,14 @@ Generic layout
   box-sizing: content-box;
 }
 
+$boxShadow: 3px 3px 5px #888;
+
 #fancybox-inner {
-  min-width: 320px;
+  border-radius: 4px;
+  border: none;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 #fancybox-wrap {
@@ -1764,9 +1770,9 @@ div.skinnysearch {
   background: white;
   border: 1px solid #8f8b7e;
   padding: 5px 17px;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
 }
 
 .skinnysearch .sortandfilter div.input {
