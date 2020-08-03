@@ -23,7 +23,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -38,7 +38,10 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { RefineSearchPanel } from "./components/RefineSearchPanel";
+import {
+  RefinePanelControl,
+  RefineSearchPanel,
+} from "./components/RefineSearchPanel";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
@@ -177,6 +180,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       lastModifiedDateRange: dateRange,
     });
 
+  const refinePanelControls: RefinePanelControl[] = [
+    {
+      title: collectionSelectorTitle,
+      component: (
+        <CollectionSelector
+          onSelectionChange={handleCollectionSelectionChanged}
+          value={searchPageOptions.collections}
+        />
+      ),
+    },
+    {
+      title: dateModifiedSelectorTitle,
+      component: (
+        <DateRangeSelector
+          onDateRangeChange={handleLastModifiedDateRangeChange}
+          onQuickModeChange={handleQuickDateRangeModeChange}
+          quickOptionDropdownLabel={quickOptionDropdown}
+          dateRange={searchPageOptions.lastModifiedDateRange}
+          quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
+        />
+      ),
+    },
+  ];
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
@@ -211,22 +238,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Grid>
 
       <Grid item xs={3}>
-        <RefineSearchPanel>
-          <Typography variant="h6">{collectionSelectorTitle}</Typography>
-          <CollectionSelector
-            onSelectionChange={handleCollectionSelectionChanged}
-            value={searchPageOptions.collections}
-          />
-
-          <Typography variant="h6">{dateModifiedSelectorTitle}</Typography>
-          <DateRangeSelector
-            onDateRangeChange={handleLastModifiedDateRangeChange}
-            onQuickModeChange={handleQuickDateRangeModeChange}
-            quickOptionDropdownLabel={quickOptionDropdown}
-            dateRange={searchPageOptions.lastModifiedDateRange}
-            quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
-          />
-        </RefineSearchPanel>
+        <RefineSearchPanel controls={refinePanelControls} />
       </Grid>
     </Grid>
   );
