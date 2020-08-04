@@ -29,13 +29,13 @@ import scala.collection.JavaConverters._
 
 object PagedResults {
 
-  def decodeOffsetStart(resumption: String): (Int, Int) = {
+  def decodeOffsetStart(resumption: String): (Int, Option[Int]) = {
     Option(resumption)
       .map(_.split(":").map(_.toInt))
       .collect {
-        case Array(o, s) => (o, s)
+        case Array(o, s) => (o, Some(s))
       }
-      .getOrElse((0, 0))
+      .getOrElse((0, None))
   }
 
   val MaxEntities = 200
@@ -49,8 +49,9 @@ object PagedResults {
       full: Boolean,
       system: Boolean,
       includeDisabled: Boolean): PagingBean[BEB] = {
-    val (firstOffset, start) = decodeOffsetStart(resumption)
-
+    val (firstOffset, lengthFromToken) = decodeOffsetStart(resumption)
+    // If resumption token provides a length then use it, or otherwise use the one from params.
+    val _length = if (lengthFromToken.isDefined) lengthFromToken.get else length
     val privilege =
       if (_privilege.isEmpty) Set("LIST_" + res.getPrivilegeType) else _privilege.asScala.toSet
     val forFull = Set("VIEW_" + res.getPrivilegeType, "EDIT_" + res.getPrivilegeType)
@@ -99,16 +100,18 @@ object PagedResults {
       b
     }
 
-    val (nextOffset, results) = collectMore(length, firstOffset, 0, Vector.empty)
-    val pb                    = new PagingBean[BEB]
-    val actualLen             = results.length
-    pb.setStart(start)
+    val (_, results) = collectMore(_length, firstOffset, 0, Vector.empty)
+    val pb           = new PagingBean[BEB]
+    val actualLen    = results.length
+    val available = res.getEntityService
+      .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
+      .toInt
+    pb.setStart(firstOffset)
     pb.setLength(actualLen)
-    pb.setAvailable(
-      res.getEntityService
-        .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
-        .toInt)
-    if (actualLen == length) pb.setResumptionToken(s"$nextOffset:${start + actualLen}")
+    pb.setAvailable(available)
+    // Include resumption token if there are items which can be retrieved in next request.
+    if (actualLen + firstOffset < available)
+      pb.setResumptionToken(s"${firstOffset + actualLen}:${_length}")
     pb.setResults(results.map {
       case (be, canFull, privs) => addPrivs(privs, res.serialize(be, null, canFull))
     }.asJava)
