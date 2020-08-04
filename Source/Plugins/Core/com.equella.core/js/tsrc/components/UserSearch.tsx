@@ -163,14 +163,7 @@ const UserSearch = ({
   };
 
   return (
-    <Grid
-      id={genId()}
-      container
-      direction="column"
-      justify="flex-start"
-      alignItems="stretch"
-      spacing={1}
-    >
+    <Grid id={genId()} container direction="column" spacing={1}>
       <Grid item xs={12}>
         {queryBar}
       </Grid>
