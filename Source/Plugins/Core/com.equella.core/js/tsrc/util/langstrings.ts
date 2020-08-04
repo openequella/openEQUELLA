@@ -561,4 +561,8 @@ export const languageStrings = {
       thisYear: "This year",
     },
   },
+  userSearchComponent: {
+    failedToFindUsersMessage: "Unable to find any users matching '%s'",
+    queryFieldLabel: "Username, first or last name",
+  },
 };
