@@ -46,7 +46,6 @@ export const listEntities = <T extends OEQ.Common.BaseEntity>(
 ): Promise<T[]> => {
   const entities: T[] = [];
   return getData(DEFAULT_RESUMPTION_TOKEN).then(async (pagedResult) => {
-    console.log(pagedResult);
     entities.push(...pagedResult.results);
     // If a resumption token is returned, recursively call listEntities to retrieve more entities.
     if (pagedResult.resumptionToken) {
