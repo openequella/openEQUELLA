@@ -102,7 +102,7 @@ const UserSearch = ({
           <SearchIcon />
         </IconButton>
       </Grid>
-      <Grid item>
+      <Grid item style={{ flexGrow: 1 }}>
         <TextField
           label={queryFieldLabel}
           value={query}
@@ -111,6 +111,7 @@ const UserSearch = ({
             setQuery(event.target.value);
           }}
           onKeyDown={handleQueryFieldKeypress}
+          fullWidth
         />
       </Grid>
     </Grid>
