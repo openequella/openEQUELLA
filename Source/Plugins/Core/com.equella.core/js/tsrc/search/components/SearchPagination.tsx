@@ -69,12 +69,11 @@ export const SearchPagination = ({
    */
   function PaginationActions() {
     const theme = createMuiTheme();
+    const numberOfPages = Math.ceil(count / rowsPerPage);
+    const lastPage = Math.max(0, numberOfPages - 1);
 
-    const numberOfPages = () => {
-      return Math.ceil(count / rowsPerPage);
-    };
-    const isFirstPage = currentPage == 0;
-    const isLastPage = currentPage >= numberOfPages() - 1;
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage >= numberOfPages - 1;
 
     return (
       <Grid
@@ -116,7 +115,7 @@ export const SearchPagination = ({
         </Grid>
         <Grid item>
           <IconButton
-            onClick={() => onPageChange(Math.max(0, numberOfPages() - 1))}
+            onClick={() => onPageChange(lastPage)}
             aria-label={paginationStrings.lastPageButton}
             disabled={isLastPage}
             id="lastPageButton"
