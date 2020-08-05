@@ -20,7 +20,7 @@ import {
   deleteElement,
   replaceElement,
 } from "../../../tsrc/util/ImmutableArrayUtil";
-import { MimeTypeFilter } from "../../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
 
 describe("ImmutableArrayUtil", () => {
   describe("create new arrays of primitives", () => {

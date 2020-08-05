@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
-import { summarisePagedBaseEntities } from "../modules/OEQHelpers";
+import { summarisePagedBaseEntities } from "./OEQHelpers";
 
 /**
  * A minimal representation of a node within an oEQ schema.

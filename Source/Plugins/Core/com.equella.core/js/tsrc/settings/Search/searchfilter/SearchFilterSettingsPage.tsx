@@ -46,14 +46,14 @@ import {
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
   SearchSettings,
-} from "../SearchSettingsModule";
+} from "../../../modules/SearchSettingsModule";
 import {
   batchDelete,
   batchUpdateOrAdd,
   filterComparator,
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
-} from "./SearchFilterSettingsModule";
+} from "../../../modules/SearchFilterSettingsModule";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import { generateFromError } from "../../../api/errors";
 import { AxiosError } from "axios";

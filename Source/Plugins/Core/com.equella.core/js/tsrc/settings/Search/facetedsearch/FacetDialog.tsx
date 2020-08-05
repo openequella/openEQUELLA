@@ -30,7 +30,7 @@ import { languageStrings } from "../../../util/langstrings";
 import {
   FacetWithFlags,
   validateFacetFields,
-} from "./FacetedSearchSettingsModule";
+} from "../../../modules/FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
 
 interface FacetDialogProps {

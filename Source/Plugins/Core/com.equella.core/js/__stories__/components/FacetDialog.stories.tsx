@@ -19,7 +19,7 @@ import * as React from "react";
 import { action } from "@storybook/addon-actions";
 import { boolean, object } from "@storybook/addon-knobs";
 import FacetDialog from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
-import { FacetWithFlags } from "../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import { FacetWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
 
 export default {
   title: "FacetDialog",
