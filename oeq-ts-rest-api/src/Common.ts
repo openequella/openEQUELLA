@@ -100,7 +100,7 @@ export interface ListCommonParams {
   /**
    * Resumption token for paging
    */
-  resumptionToken?: string;
+  resumption?: string;
   /**
    * Number of results
    */

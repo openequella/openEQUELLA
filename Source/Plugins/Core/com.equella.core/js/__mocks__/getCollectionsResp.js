@@ -161,7 +161,6 @@ exports.getCollectionsResp = {
       },
     },
   ],
-  resumptionToken: "17:10",
 };
 
 exports.getCollectionMap = [

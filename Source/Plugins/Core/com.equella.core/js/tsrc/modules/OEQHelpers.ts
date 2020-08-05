@@ -24,11 +24,38 @@ import * as OEQ from "@openequella/rest-api-client";
  *
  * @param list A list most likely retrieved via a REST call in the REST Client library
  */
-export const summarisePagedBaseEntities = (
-  list: OEQ.Common.PagedResult<OEQ.Common.BaseEntity>
-) =>
-  list.results.reduce(
+export const summarisePagedBaseEntities = (list: OEQ.Common.BaseEntity[]) =>
+  list.reduce(
     (prev: Map<string, string>, curr: OEQ.Common.BaseEntity) =>
       prev.set(curr.uuid, curr.name),
     new Map<string, string>()
   );
+
+const DEFAULT_RESUMPTION_TOKEN = "0:10";
+
+/**
+ * Retrieve BaseEntities by resumption tokens.
+ * If a resumption token is included in response, then send another request to retrieve
+ * more entities, until no resumption token is returned.
+ *
+ * @param getData A function which takes a resumption token to retrieve specific entities
+ *        such as schemas and collections.
+ */
+export const listEntities = <T extends OEQ.Common.BaseEntity>(
+  getData: (resumptionToken: string) => Promise<OEQ.Common.PagedResult<T>>
+): Promise<T[]> => {
+  const entities: T[] = [];
+  return getData(DEFAULT_RESUMPTION_TOKEN).then(async (pagedResult) => {
+    console.log(pagedResult);
+    entities.push(...pagedResult.results);
+    // If a resumption token is returned, recursively call listEntities to retrieve more entities.
+    if (pagedResult.resumptionToken) {
+      const nextResumptionToken = pagedResult.resumptionToken;
+      const moreEntities = await listEntities(() =>
+        getData(nextResumptionToken)
+      );
+      entities.push(...moreEntities);
+    }
+    return entities;
+  });
+};
