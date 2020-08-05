@@ -177,12 +177,8 @@ describe("<SearchPage/>", () => {
   it("should support navigating to previous/next page", async () => {
     await querySearch("");
     component.update();
-    const prevPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(1);
-    const nextPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(2);
+    const prevPageButton = component.find("#previousPageButton button");
+    const nextPageButton = component.find("#nextPageButton button");
     const pageCount = component
       .find(".MuiTablePagination-toolbar")
       .find("p")
@@ -199,14 +195,11 @@ describe("<SearchPage/>", () => {
     mockSearch.mockImplementation(() =>
       Promise.resolve(getSearchResultsCustom(30))
     );
+
     await querySearch("");
     component.update();
-    const firstPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(0);
-    const lastPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(3);
+    const firstPageButton = component.find("#firstPageButton button");
+    const lastPageButton = component.find("#lastPageButton button");
     const pageCount = component
       .find(".MuiTablePagination-toolbar")
       .find("p")
