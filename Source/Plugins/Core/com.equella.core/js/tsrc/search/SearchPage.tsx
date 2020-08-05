@@ -47,6 +47,7 @@ import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
 import { useHistory } from "react-router";
 import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
+import OwnerSelector from "./components/OwnerSelector";
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -180,6 +181,18 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       lastModifiedDateRange: dateRange,
     });
 
+  const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      owner: { ...owner },
+    });
+
+  const handleOwnerClear = () =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      owner: undefined,
+    });
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       title: collectionSelectorTitle,
@@ -199,6 +212,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           quickOptionDropdownLabel={quickOptionDropdown}
           dateRange={searchPageOptions.lastModifiedDateRange}
           quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
+        />
+      ),
+    },
+    {
+      title: searchStrings.filterOwner.title,
+      component: (
+        <OwnerSelector
+          onClearSelect={handleOwnerClear}
+          onSelect={handleOwnerChange}
+          value={searchPageOptions.owner}
         />
       ),
     },
