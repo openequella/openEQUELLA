@@ -47,7 +47,29 @@ $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
 $large-breakpoint-max: "1500px";
 $extra-large-breakpoint-max: "1800px";
+$boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+  0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+$hoverBackgroundColor: transparentize(#000, 0.9);
+$activeBackgroundColor: transparentize(#000, 0.7);
 
+@mixin boxShadow {
+  box-shadow: $boxShadow;
+  -moz-box-shadow: $boxShadow;
+  -webkit-box-shadow: $boxShadow;
+}
+@mixin buttonShadowBorder {
+  @include boxShadow;
+  border-radius: 4px;
+  border: none;
+}
+@mixin hoverHighlight {
+  &:hover {
+    background-color: $hoverBackgroundColor;
+  }
+  &:active {
+    background-color: $activeBackgroundColor;
+  }
+}
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -1043,7 +1065,7 @@ Generic layout
 }
 
 #fancybox-inner {
-  min-width: 320px;
+  @include buttonShadowBorder;
 }
 
 #fancybox-wrap {
@@ -1061,6 +1083,7 @@ Generic layout
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
   }
+  @include hoverHighlight;
 }
 
 #mainDiv #content-body {
@@ -1764,9 +1787,7 @@ div.skinnysearch {
   background: white;
   border: 1px solid #8f8b7e;
   padding: 5px 17px;
-  box-shadow: 3px 3px 5px #888;
-  -moz-box-shadow: 3px 3px 5px #888;
-  -webkit-box-shadow: 3px 3px 5px #888;
+  @include boxShadow;
 }
 
 .skinnysearch .sortandfilter div.input {
@@ -2761,22 +2782,27 @@ Contribution wizard styling
 }
 
 #wizard-major-actions .action-button.save {
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_save_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.edit {
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_edit_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.view {
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_list_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-approve {
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_check_white_18dp.png");
 }
 
 #wizard-major-actions .action-button.moderate-reject {
+  @include buttonShadowBorder;
   background-image: url("../../images/baseline_close_white_18dp.png");
 }
 
@@ -2951,6 +2977,13 @@ button + .repeater-groups {
   padding: 8px 0px;
 }
 
+#r_resume {
+  @include buttonShadowBorder;
+  margin-bottom: 4px;
+}
+#d_discard {
+  @include buttonShadowBorder;
+}
 .settingRow .settingField {
   width: auto;
   padding-left: 26px;
@@ -2965,6 +2998,9 @@ button + .repeater-groups {
   .editLinks {
     padding-top: 8px;
   }
+}
+#searchform-editquery {
+  @include buttonShadowBorder;
 }
 
 .spacer {
@@ -3294,6 +3330,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+      @include hoverHighlight;
     }
   }
 }
@@ -3315,22 +3352,27 @@ Item summary styling
 
 .shareButton {
   background-image: url(../../images/baseline_share_white_18dp.png);
+  @include buttonShadowBorder;
 }
 
 .addToFavourites {
   background-image: url(../../images/baseline_star_white_18dp.png);
+  @include buttonShadowBorder;
 }
 
 .removeFromFavourites {
   background-image: url(../../images/baseline_remove_white_18dp.png);
+  @include buttonShadowBorder;
 }
 
 .wizard-major-actions.save {
   background-image: url(../../images/baseline_save_white_18dp.png);
+  @include buttonShadowBorder;
 }
 
 .add-mime {
   background-image: url(../../images/baseline_code_white_18dp.png);
+  @include buttonShadowBorder;
 }
 
 .itemsummary-layout hr {
@@ -3641,6 +3683,8 @@ table.versions td {
 }
 
 .comment-form button {
+  @include buttonShadowBorder;
+  margin-top: 4px;
   float: right;
 }
 
@@ -4071,6 +4115,7 @@ img.warningimg {
   text-align: center;
   background-size: 26px 26px;
   background-position: left 3px top 4px;
+  @include buttonShadowBorder;
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
@@ -4923,6 +4968,7 @@ $loginTextBoxWidth: 200;
   margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
   margin-top: 16px;
   width: $loginTextBoxWidth + unquote("px");
+  @include boxShadow;
 }
 #username {
   width: $loginTextBoxWidth + unquote("px");
