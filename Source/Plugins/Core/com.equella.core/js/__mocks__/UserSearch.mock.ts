@@ -58,9 +58,12 @@ export const users: OEQ.UserQuery.UserDetails[] = [
  *
  * @param query A simple string to filter by (no wildcard support)
  */
-export const userDetailsProvider = (
+export const userDetailsProvider = async (
   query?: string
-): Promise<OEQ.UserQuery.UserDetails[]> =>
-  new Promise((resolve) =>
+): Promise<OEQ.UserQuery.UserDetails[]> => {
+  // A sleep to emulate latency
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return new Promise((resolve) =>
     resolve(query ? users.filter((u) => u.username.search(query) === 0) : users)
   );
+};
