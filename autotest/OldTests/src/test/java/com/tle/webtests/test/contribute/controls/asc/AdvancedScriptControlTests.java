@@ -1066,14 +1066,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @return
    */
   private WebElement getAscMessage() {
-    By ascMessageXpath = By.xpath("//div[@id='ascMessage']/pre");
+    By ascMessageXpath = By.xpath("//div[@id='ascMessage']/span");
     WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
     wait.until(ExpectedConditions.visibilityOfElementLocated(ascMessageXpath));
     return context.getDriver().findElement(ascMessageXpath);
   }
 
   private WebElement getAscMessage1() {
-    return context.getDriver().findElement(By.xpath("//div[@id='ascMessage1']/pre"));
+    return context.getDriver().findElement(By.xpath("//div[@id='ascMessage1']/span"));
   }
 
   /**

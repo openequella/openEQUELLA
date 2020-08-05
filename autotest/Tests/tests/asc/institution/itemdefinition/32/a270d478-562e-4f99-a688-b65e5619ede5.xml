@@ -221,7 +221,7 @@ if(request.get(&apos;doit&apos;) == &apos;Set owner&apos;)
 &lt;br/&gt;
 Contents:
 &lt;div id=&quot;ascMessage&quot;&gt;
-	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+	&lt;span&gt;${attributes.get(&apos;content&apos;)}&lt;/span&gt;
 &lt;/div&gt;</string>
                 </entry>
                 <entry>
