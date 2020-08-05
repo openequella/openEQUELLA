@@ -102,16 +102,15 @@ object PagedResults {
 
     val (_, results) = collectMore(_length, firstOffset, 0, Vector.empty)
     val pb           = new PagingBean[BEB]
-    val actualLen    = results.length
     val available = res.getEntityService
       .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
       .toInt
     pb.setStart(firstOffset)
-    pb.setLength(actualLen)
+    pb.setLength(results.length)
     pb.setAvailable(available)
     // Include resumption token if there are items which can be retrieved in next request.
-    if (actualLen + firstOffset < available)
-      pb.setResumptionToken(s"${firstOffset + actualLen}:${_length}")
+    if (results.length + firstOffset < available)
+      pb.setResumptionToken(s"${firstOffset + results.length}:${_length}")
     pb.setResults(results.map {
       case (be, canFull, privs) => addPrivs(privs, res.serialize(be, null, canFull))
     }.asJava)
