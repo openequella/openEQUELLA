@@ -23,13 +23,9 @@ import UserSearch from "../../../tsrc/components/UserSearch";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { sprintf } from "sprintf-js";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import { doSearch, getUserList } from "./UserSearchTestHelpers";
 
 describe("<UserSearch/>", () => {
-  const {
-    failedToFindUsersMessage,
-    queryFieldLabel,
-  } = languageStrings.userSearchComponent;
-
   // Helper to render and wait for component under test
   const renderUserSearch = async (
     onSelect: (username: OEQ.UserQuery.UserDetails) => void = jest.fn()
@@ -42,29 +38,18 @@ describe("<UserSearch/>", () => {
     );
 
     // Wait for it to be rendered
-    await waitFor(() => screen.getByText(queryFieldLabel));
+    await waitFor(() =>
+      screen.getByText(languageStrings.userSearchComponent.queryFieldLabel)
+    );
 
     return container;
-  };
-
-  // Helper function to execute a search (assuming rendered component)
-  const doSearch = (queryValue: string) => {
-    const queryField = screen
-      .getByText(queryFieldLabel)
-      .parentElement?.querySelector("input");
-    if (!queryField) {
-      throw new Error("Unable to find query field!");
-    }
-
-    fireEvent.change(queryField, { target: { value: queryValue } });
-    fireEvent.keyDown(queryField, { key: "Enter", code: "Enter" });
   };
 
   it("displays the search bar and no users on initial render", async () => {
     const container = await renderUserSearch();
 
     // Ensure the user list section is not present
-    expect(container.querySelector("#UserSearch-UserList")).toBeFalsy();
+    expect(getUserList(container)).toBeFalsy();
   });
 
   it("displays an error when it can't find requested user", async () => {
@@ -76,7 +61,12 @@ describe("<UserSearch/>", () => {
 
     // Ensure an error was displayed
     await waitFor(() =>
-      screen.getByText(sprintf(failedToFindUsersMessage, noSuchUser))
+      screen.getByText(
+        sprintf(
+          languageStrings.userSearchComponent.failedToFindUsersMessage,
+          noSuchUser
+        )
+      )
     );
   });
 
