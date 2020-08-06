@@ -609,7 +609,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     assertEquals(getAscMessage().getText(), expectedString);
 
     // delete all attachments
-    expectedString = "all  attachments deleted";
+    expectedString = "all attachments deleted";
     clickAscButtonAndWait("Delete all attachments", wizard, expectedString, ASC_MESSAGE_DIV_ID);
     assertEquals(getAscMessage().getText(), expectedString);
     item = wizard.saveNoConfirm();
