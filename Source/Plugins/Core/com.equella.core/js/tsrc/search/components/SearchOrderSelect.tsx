@@ -60,7 +60,6 @@ export const SearchOrderSelect = ({
 
   return (
     <Select
-      variant="outlined"
       // If sortOrder is undefined, pass an empty string to select nothing.
       value={value ?? ""}
       onChange={(event) => onChange(event.target.value as SortOrder)}
