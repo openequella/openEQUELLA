@@ -41,20 +41,16 @@ const DEFAULT_RESUMPTION_TOKEN = "0:10";
  * @param getData A function which takes a resumption token to retrieve specific entities
  *        such as schemas and collections.
  */
-export const listEntities = <T extends OEQ.Common.BaseEntity>(
+export const listEntities = async <T extends OEQ.Common.BaseEntity>(
   getData: (resumptionToken: string) => Promise<OEQ.Common.PagedResult<T>>
 ): Promise<T[]> => {
   const entities: T[] = [];
-  return getData(DEFAULT_RESUMPTION_TOKEN).then(async (pagedResult) => {
-    entities.push(...pagedResult.results);
-    // If a resumption token is returned, recursively call listEntities to retrieve more entities.
-    if (pagedResult.resumptionToken) {
-      const nextResumptionToken = pagedResult.resumptionToken;
-      const moreEntities = await listEntities(() =>
-        getData(nextResumptionToken)
-      );
-      entities.push(...moreEntities);
-    }
-    return entities;
-  });
+  let token: string = DEFAULT_RESUMPTION_TOKEN;
+  while (token) {
+    await getData(token).then((pagedResult) => {
+      entities.push(...pagedResult.results);
+      token = pagedResult.resumptionToken ?? "";
+    });
+  }
+  return entities;
 };
