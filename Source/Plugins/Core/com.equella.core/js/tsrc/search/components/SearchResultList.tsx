@@ -44,12 +44,6 @@ const useStyles = makeStyles({
     top: "50%",
     position: "fixed",
   },
-  newSearchButton: {
-    height: "100%", // Ensure the button's as high as the sorting control.
-    // The texts don't need to be bold and capitalised.
-    textTransform: "none",
-    fontWeight: "normal",
-  },
 });
 
 /**
@@ -131,11 +125,7 @@ export const SearchResultList = ({
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
-                <Button
-                  variant="outlined"
-                  className={classes.newSearchButton}
-                  onClick={onClearSearchOptions}
-                >
+                <Button variant="outlined" onClick={onClearSearchOptions}>
                   {searchPageStrings.newSearch}
                 </Button>
               </Tooltip>

@@ -134,9 +134,7 @@ export const DateRangeSelector = ({
       isInitialRender.current = false;
       return;
     }
-    // When stateDateRange is set to undefined by props, do not proceed to avoid
-    // duplicated search. And the only one case that stateDateRange can be set to
-    // undefined is when New search button is clicked.
+    // When state is cleared, do not proceed to avoid duplicated search.
     if (!stateDateRange) {
       return;
     }
@@ -159,11 +157,11 @@ export const DateRangeSelector = ({
     }
   }, [stateDateRange]);
 
-  // This is added mainly for clearing search options. Because this
-  // component uses its own state to control date range values, update
-  // state when prop dateRange is changed.
+  // Only when prop dateRange is cleared, clear stateDateRange as well.
   useEffect(() => {
-    setStateDateRange(dateRange);
+    if (!dateRange) {
+      setStateDateRange(dateRange);
+    }
   }, [dateRange]);
 
   /**
