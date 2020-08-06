@@ -26,7 +26,7 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import * as React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import { languageStrings } from "../../util/langstrings";
 import { makeStyles } from "@material-ui/core/styles";
@@ -91,6 +91,14 @@ export default function SearchBar({
   const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), [
     doSearch,
   ]);
+
+  /**
+   * Same as the Date range selector, add this effect to update state
+   * when search options are cleared..
+   */
+  useEffect(() => {
+    setCurrentQuery(query);
+  }, [query]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
