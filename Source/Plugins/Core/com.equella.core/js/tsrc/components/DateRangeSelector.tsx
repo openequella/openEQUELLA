@@ -134,24 +134,38 @@ export const DateRangeSelector = ({
       isInitialRender.current = false;
       return;
     }
+    // When stateDateRange is set to undefined by props, do not proceed to avoid
+    // duplicated search. And the only one case that stateDateRange can be set to
+    // undefined is when New search button is clicked.
+    if (!stateDateRange) {
+      return;
+    }
     const start = stateDateRange?.start;
     const end = stateDateRange?.end;
     const isStartValid = start && DateTime.fromJSDate(start).isValid;
     const isEndValid = end && DateTime.fromJSDate(end).isValid;
 
-    // start is undefined and end is a valid date
+    // start is undefined and end is a valid date.
     const openStart = !start && isEndValid;
-    // End is undefined and start is a valid date
+    // End is undefined and start is a valid date.
     const openEnd = !end && isStartValid;
-    // Both are undefined
+    // Both are undefined.
     const openRange = !start && !end;
-    // Both are valid dates and start is equal or less than end
+    // Both are valid dates and start is equal or less than end.
     const closedRange = isStartValid && isEndValid && start! <= end!;
-    // Call onDateRangeChange for above four cases
+    // Call onDateRangeChange for above four cases.
     if (openStart || openEnd || openRange || closedRange) {
       onDateRangeChange(stateDateRange);
     }
   }, [stateDateRange]);
+
+  // This is added mainly for clearing search options. Because this
+  // component uses its own state to control date range values, update
+  // state when prop dateRange is changed.
+  useEffect(() => {
+    setStateDateRange(dateRange);
+  }, [dateRange]);
+
   /**
    * Provide labels and values for options of pre-defined date ranges.
    */
