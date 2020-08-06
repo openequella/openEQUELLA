@@ -96,7 +96,7 @@ const OwnerSelector = ({
               variant="outlined"
               onClick={() => setShowFindUserDialog(true)}
             >
-              Find User
+              {languageStrings.common.action.select}
             </Button>
           </Grid>
         )}
