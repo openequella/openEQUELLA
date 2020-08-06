@@ -45,12 +45,11 @@ export const listEntities = async <T extends OEQ.Common.BaseEntity>(
   getData: (resumptionToken: string) => Promise<OEQ.Common.PagedResult<T>>
 ): Promise<T[]> => {
   const entities: T[] = [];
-  let token: string = DEFAULT_RESUMPTION_TOKEN;
+  let token: string | undefined = DEFAULT_RESUMPTION_TOKEN;
   while (token) {
-    await getData(token).then((pagedResult) => {
-      entities.push(...pagedResult.results);
-      token = pagedResult.resumptionToken ?? "";
-    });
+    const pagedResult: OEQ.Common.PagedResult<T> = await getData(token);
+    entities.push(...pagedResult.results);
+    token = pagedResult.resumptionToken;
   }
   return entities;
 };
