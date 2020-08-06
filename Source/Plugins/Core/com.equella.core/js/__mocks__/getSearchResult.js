@@ -293,7 +293,7 @@ const _ = require("lodash");
 exports.getSearchResultsCustom = (numberOfResults) => ({
   start: 0,
   length: 10,
-  available: 30,
+  available: numberOfResults,
   results: _.range(numberOfResults).map((i) => ({
     uuid: uuidv4(),
     name: `item ${i}`,
