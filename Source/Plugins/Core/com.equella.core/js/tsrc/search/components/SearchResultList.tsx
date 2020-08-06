@@ -18,6 +18,7 @@
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -26,6 +27,7 @@ import {
   Grid,
   List,
   ListItem,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
@@ -41,6 +43,12 @@ const useStyles = makeStyles({
   centralSpinner: {
     top: "50%",
     position: "fixed",
+  },
+  newSearchButton: {
+    height: "100%", // Ensure the button's as high as the sorting control.
+    // The texts don't need to be bold and capitalised.
+    textTransform: "none",
+    fontWeight: "normal",
   },
 });
 
@@ -64,6 +72,10 @@ interface SearchResultListProps {
    * Props required by component SearchPagination.
    */
   paginationProps: SearchPaginationProps;
+  /**
+   * Fired when the New search button is clicked.
+   */
+  onClearSearchOptions: () => void;
 }
 
 /**
@@ -77,6 +89,7 @@ export const SearchResultList = ({
   showSpinner,
   orderSelectProps,
   paginationProps,
+  onClearSearchOptions,
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
@@ -109,10 +122,25 @@ export const SearchResultList = ({
       <CardHeader
         title={searchPageStrings.subtitle}
         action={
-          <SearchOrderSelect
-            value={orderSelectProps.value}
-            onChange={orderSelectProps.onChange}
-          />
+          <Grid container spacing={1}>
+            <Grid item>
+              <SearchOrderSelect
+                value={orderSelectProps.value}
+                onChange={orderSelectProps.onChange}
+              />
+            </Grid>
+            <Grid item>
+              <Tooltip title={searchPageStrings.newSearchHelperText}>
+                <Button
+                  variant="outlined"
+                  className={classes.newSearchButton}
+                  onClick={onClearSearchOptions}
+                >
+                  {searchPageStrings.newSearch}
+                </Button>
+              </Tooltip>
+            </Grid>
+          </Grid>
         }
       />
       {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
