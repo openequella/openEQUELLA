@@ -31,6 +31,7 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import { paginatorControls } from "../components/SearchPaginationTestHelper";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -151,10 +152,7 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    const pageCount = component
-      .find(".MuiTablePagination-toolbar")
-      .find("p")
-      .at(1);
+    const [, , , , pageCount] = paginatorControls(component);
     expect(pageCount.text()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
@@ -170,14 +168,11 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support navigating to previous/next page", async () => {
+    const [, prevPageButton, nextPageButton, , pageCount] = paginatorControls(
+      component
+    );
     await querySearch("");
     component.update();
-    const prevPageButton = component.find("#previousPageButton button");
-    const nextPageButton = component.find("#nextPageButton button");
-    const pageCount = component
-      .find(".MuiTablePagination-toolbar")
-      .find("p")
-      .at(1);
     await awaitAct(() => nextPageButton.simulate("click"));
     expect(pageCount.text()).toContain("11-12 of 12");
     await querySearch("");
@@ -187,18 +182,14 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support navigating to first/last page of results", async () => {
+    const [firstPageButton, , , lastPageButton, pageCount] = paginatorControls(
+      component
+    );
     mockSearch.mockImplementation(() =>
       Promise.resolve(getSearchResultsCustom(30))
     );
-
     await querySearch("");
     component.update();
-    const firstPageButton = component.find("#firstPageButton button");
-    const lastPageButton = component.find("#lastPageButton button");
-    const pageCount = component
-      .find(".MuiTablePagination-toolbar")
-      .find("p")
-      .at(1);
     await awaitAct(() => lastPageButton.simulate("click"));
     expect(pageCount.text()).toContain("21-30 of 30");
     await querySearch("");
