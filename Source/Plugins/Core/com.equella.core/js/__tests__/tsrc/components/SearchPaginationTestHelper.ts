@@ -38,6 +38,6 @@ export const paginatorControls = (
     previousPageButton: component.find("#previousPageButton button"),
     nextPageButton: component.find("#nextPageButton button"),
     lastPageButton: component.find("#lastPageButton button"),
-    pageCount: component.find(".MuiTablePagination-toolbar > p"),
+    pageCount: component.find(".MuiTablePagination-toolbar").find("p").at(1),
   };
 };

@@ -168,11 +168,11 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support navigating to previous/next page", async () => {
+    await querySearch("");
+    component.update();
     const { nextPageButton, pageCount, previousPageButton } = paginatorControls(
       component
     );
-    await querySearch("");
-    component.update();
     await awaitAct(() => nextPageButton.simulate("click"));
     expect(pageCount.text()).toContain("11-12 of 12");
     await querySearch("");
@@ -182,15 +182,18 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support navigating to first/last page of results", async () => {
-    const { firstPageButton, lastPageButton, pageCount } = paginatorControls(
-      component
-    );
     mockSearch.mockImplementation(() =>
       Promise.resolve(getSearchResultsCustom(30))
     );
     await querySearch("");
     component.update();
+    const { firstPageButton, lastPageButton, pageCount } = paginatorControls(
+      component
+    );
+    expect(pageCount.text()).toContain("1-10 of 30");
+
     await awaitAct(() => lastPageButton.simulate("click"));
+    component.update();
     expect(pageCount.text()).toContain("21-30 of 30");
     await querySearch("");
     component.update();
