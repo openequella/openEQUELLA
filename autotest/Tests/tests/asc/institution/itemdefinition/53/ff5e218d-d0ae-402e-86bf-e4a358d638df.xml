@@ -220,7 +220,7 @@ if(request.get(&apos;doit&apos;) == &apos;Get all for type&apos;)
 	var mtdt = metadata.getMetadata(attachments.list().get(0));
 	var all = mtdt.getAllForType(request.get(&apos;alltype&apos;));
 
-	// Awkward loop to cover code 
+	// Awkward loop to cover code
 	if(!all.isEmpty())
 	{
 		var kl = all.listKeys();
@@ -283,7 +283,7 @@ if(request.get(&quot;doit&quot;) == &apos;Get specific key&apos;)
 &lt;br/&gt;
 Contents:
 &lt;div id=&quot;ascMessage&quot;&gt;
-	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+	&lt;span&gt;${attributes.get(&apos;content&apos;)}&lt;/span&gt;
 &lt;/div&gt;
 &lt;br/&gt;
 &lt;div id=&quot;attachmentList&quot;&gt;
