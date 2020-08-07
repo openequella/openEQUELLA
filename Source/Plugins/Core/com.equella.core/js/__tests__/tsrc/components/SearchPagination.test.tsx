@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { mount, ReactWrapper } from "enzyme";
+import { mount } from "enzyme";
 import { SearchPagination } from "../../../tsrc/search/components/SearchPagination";
 import { paginatorControls } from "./SearchPaginationTestHelper";
 
