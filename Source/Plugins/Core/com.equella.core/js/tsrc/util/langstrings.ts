@@ -357,7 +357,13 @@ export const languageStrings = {
       title: "Refine search",
     },
     collectionSelector: {
-      label: "Collections",
+      title: "Collections",
+    },
+    lastModifiedDateSelector: {
+      title: "Date modified",
+      startDatePicker: "Modified after",
+      endDatePicker: "Modified before",
+      quickOptionDropdown: "Last modified date",
     },
   },
   "com.equella.core.searching.search": {
@@ -547,8 +553,8 @@ export const languageStrings = {
       "You have unsaved changes. Are you sure you want to leave this page without saving?",
   },
   dateRangeSelector: {
-    defaultStartDatePickerLabel: "Start",
-    defaultEndDatePickerLabel: "End",
+    defaultStartDatePickerLabel: "From",
+    defaultEndDatePickerLabel: "To",
     defaultDropdownLabel: "Quick date ranges",
     quickOptionSwitchLabel: "Enable quick options",
     quickOptionLabels: {
@@ -558,5 +564,9 @@ export const languageStrings = {
       lastMonth: "Last month",
       thisYear: "This year",
     },
+  },
+  userSearchComponent: {
+    failedToFindUsersMessage: "Unable to find any users matching '%s'",
+    queryFieldLabel: "Username, first or last name",
   },
 };

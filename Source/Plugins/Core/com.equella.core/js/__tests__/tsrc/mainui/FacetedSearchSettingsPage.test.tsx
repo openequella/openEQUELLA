@@ -83,23 +83,33 @@ const mockBatchUpdateOrAdd = jest.spyOn(
   "batchUpdateOrAdd"
 );
 
+const getFacetsPromise = mockGetFacetsFromServer.mockImplementation(() =>
+  Promise.resolve(mockFacets)
+);
+
 describe("<FacetedSearchSettingsPage />", () => {
   enum Actions {
     Edit,
     Add,
   }
   let component: ReactWrapper;
+  let root: HTMLDivElement;
   beforeEach(async () => {
-    const getFacetsPromise = mockGetFacetsFromServer.mockImplementation(() =>
-      Promise.resolve(mockFacets)
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    component = mount(
+      <FacetedSearchSettingsPage updateTemplate={jest.fn()} />,
+      { attachTo: root }
     );
-    component = mount(<FacetedSearchSettingsPage updateTemplate={jest.fn()} />);
     await act(async () => {
       await getFacetsPromise;
     });
     component.update();
   });
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => {
+    jest.clearAllMocks();
+    document.body.removeChild(root);
+  });
 
   const getListItems = () => component.find(Draggable);
   const getSaveButton = () => component.find("#_saveButton").hostNodes();
@@ -123,14 +133,17 @@ describe("<FacetedSearchSettingsPage />", () => {
     button.simulate("click");
   };
 
-  const openDialog = (action: Actions) => {
+  const openDialog = async (action: Actions) => {
     let button: ReactWrapper;
     if (action === Actions.Add) {
       button = component.find(".MuiCardActions-root button");
     } else {
       button = getListItems().at(0).find("button").at(0);
     }
-    button.simulate("click");
+    await act(async () => {
+      await button.simulate("click");
+    });
+    component.update();
   };
 
   it("should fetch facets", () => {
@@ -144,12 +157,12 @@ describe("<FacetedSearchSettingsPage />", () => {
   });
 
   it("should show a dialog when an Edit button is clicked", async () => {
-    openDialog(Actions.Edit);
+    await openDialog(Actions.Edit);
     expect(component.find(FacetDialog).props().open).toBeTruthy();
   });
 
   it("should show a dialog when the Add button is clicked", async () => {
-    openDialog(Actions.Add);
+    await openDialog(Actions.Add);
     expect(component.find(FacetDialog).props().open).toBeTruthy();
   });
 
@@ -160,8 +173,8 @@ describe("<FacetedSearchSettingsPage />", () => {
     expect(getSaveButton().props().disabled).toBeFalsy();
   });
 
-  it("should show the updated facet and enable the Save button when a facet is edited through the dialog", () => {
-    openDialog(Actions.Edit);
+  it("should show the updated facet and enable the Save button when a facet is edited through the dialog", async () => {
+    await openDialog(Actions.Edit);
     updateFacet(Actions.Edit);
     const items = getListItems();
     expect(items).toHaveLength(3);
@@ -169,8 +182,8 @@ describe("<FacetedSearchSettingsPage />", () => {
     expect(getSaveButton().props().disabled).toBeFalsy();
   });
 
-  it("should add a facet to the list and enable the Save button when a new facet is added through the dialog", () => {
-    openDialog(Actions.Add);
+  it("should add a facet to the list and enable the Save button when a new facet is added through the dialog", async () => {
+    await openDialog(Actions.Add);
     updateFacet(Actions.Add);
     const items = getListItems();
     expect(items).toHaveLength(4);
@@ -179,9 +192,9 @@ describe("<FacetedSearchSettingsPage />", () => {
   });
 
   describe("when the Save button is enabled and clicked", () => {
-    const makeChanges = () => {
+    const makeChanges = async () => {
       deleteFacet();
-      openDialog(Actions.Edit);
+      await openDialog(Actions.Edit);
       updateFacet(Actions.Edit);
     };
     const save = async (errorsReturned: boolean) => {
@@ -191,7 +204,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       const updatePromise = mockBatchUpdateOrAdd.mockResolvedValueOnce(
         errorsReturned ? ["Failed to update"] : []
       );
-      makeChanges();
+      await makeChanges();
       getSaveButton().simulate("click");
       await act(async () => {
         await updatePromise;

@@ -39,14 +39,14 @@ export default function Date({ displayRelative, date }: DateProps) {
   const classes = useStyles();
   const luxDate = DateTime.fromJSDate(date);
   let primaryDate = luxDate.toLocaleString(DateTime.DATETIME_MED);
-  let hoverDate = luxDate.toRelative() || "undefined";
+  let hoverDate = luxDate.toRelative();
   if (displayRelative) {
     //swap 'em around
     [primaryDate, hoverDate] = [hoverDate, primaryDate];
   }
 
   return (
-    <Tooltip title={hoverDate}>
+    <Tooltip title={hoverDate ?? "undefined"}>
       <Typography className={classes.dateModified} component="span">
         {primaryDate}
       </Typography>

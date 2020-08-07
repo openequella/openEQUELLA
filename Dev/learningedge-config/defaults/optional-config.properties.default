@@ -61,5 +61,8 @@ conversionService.disableConversion = true
 # ExifTool path
 #exiftool.path = /path/to/exiftool
 
-# Libav path. For example C:/Libav/usr/bin  
-#libav.path = 
+# Libav path. For example C:/Libav/usr/bin
+#libav.path =
+
+# Zip extraction charset. If omitted, defaults to UTF-8.
+#filestore.zipExtractCharset = ISO_8859_1

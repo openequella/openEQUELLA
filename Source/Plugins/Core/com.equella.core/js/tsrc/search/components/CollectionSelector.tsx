@@ -86,8 +86,8 @@ export const CollectionSelector = ({
         <TextField
           {...params}
           variant="outlined"
-          label={collectionSelectorStrings.label}
-          placeholder={collectionSelectorStrings.label}
+          label={collectionSelectorStrings.title}
+          placeholder={collectionSelectorStrings.title}
         />
       )}
     />
