@@ -152,7 +152,7 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    const [, , , , pageCount] = paginatorControls(component);
+    const { pageCount } = paginatorControls(component);
     expect(pageCount.text()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
@@ -168,7 +168,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support navigating to previous/next page", async () => {
-    const [, prevPageButton, nextPageButton, , pageCount] = paginatorControls(
+    const { nextPageButton, pageCount, previousPageButton } = paginatorControls(
       component
     );
     await querySearch("");
@@ -177,12 +177,12 @@ describe("<SearchPage/>", () => {
     expect(pageCount.text()).toContain("11-12 of 12");
     await querySearch("");
     component.update();
-    await awaitAct(() => prevPageButton.simulate("click"));
+    await awaitAct(() => previousPageButton.simulate("click"));
     expect(pageCount.text()).toContain("1-10 of 12");
   });
 
   it("should support navigating to first/last page of results", async () => {
-    const [firstPageButton, , , lastPageButton, pageCount] = paginatorControls(
+    const { firstPageButton, lastPageButton, pageCount } = paginatorControls(
       component
     );
     mockSearch.mockImplementation(() =>

@@ -41,7 +41,7 @@ describe("<SearchPagination/>", () => {
   it("Goes back to the first page of results when First Page Button is clicked", () => {
     //currently on page 3 of 3
     const lastPage = searchPagination(30, 1, 10);
-    const [firstPageButton] = paginatorControls(lastPage);
+    const { firstPageButton } = paginatorControls(lastPage);
 
     firstPageButton.simulate("click");
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
@@ -50,7 +50,7 @@ describe("<SearchPagination/>", () => {
   it("Goes back to the previous page of results when Previous Page Button is clicked", () => {
     //currently on page 2 of 2
     const lastPage = searchPagination(20, 1, 10);
-    const [, previousPageButton] = paginatorControls(lastPage);
+    const { previousPageButton } = paginatorControls(lastPage);
 
     previousPageButton.simulate("click");
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
@@ -59,7 +59,7 @@ describe("<SearchPagination/>", () => {
   it("Goes to the next page of results when Next Page Button is clicked", () => {
     //currently on page 1 of 2
     const firstPage = searchPagination(20, 0, 10);
-    const [, , nextPageButton] = paginatorControls(firstPage);
+    const { nextPageButton } = paginatorControls(firstPage);
 
     nextPageButton.simulate("click");
     expect(mockOnPageChange).toHaveBeenCalledWith(1);
@@ -68,7 +68,7 @@ describe("<SearchPagination/>", () => {
   it("Goes to the last page of results when Last Page Button is clicked", () => {
     //currently on page 1 of 3
     const firstPage = searchPagination(30, 0, 10);
-    const [, , , lastPageButton] = paginatorControls(firstPage);
+    const { lastPageButton } = paginatorControls(firstPage);
 
     lastPageButton.simulate("click");
     //should now be on last page
@@ -77,12 +77,12 @@ describe("<SearchPagination/>", () => {
 
   it("Disables all buttons when there are no results", () => {
     const noResults = searchPagination(0, 0, 10);
-    const [
+    const {
       firstPageButton,
       previousPageButton,
       nextPageButton,
       lastPageButton,
-    ] = paginatorControls(noResults);
+    } = paginatorControls(noResults);
 
     expect(firstPageButton.prop("disabled")).toBeTruthy();
     expect(previousPageButton.prop("disabled")).toBeTruthy();
@@ -93,12 +93,12 @@ describe("<SearchPagination/>", () => {
 
   it("Disables FirstPage and PreviousPage buttons on first page of results", () => {
     const firstPage = searchPagination(20, 0, 10);
-    const [
+    const {
       firstPageButton,
       previousPageButton,
       nextPageButton,
       lastPageButton,
-    ] = paginatorControls(firstPage);
+    } = paginatorControls(firstPage);
 
     expect(firstPageButton.prop("disabled")).toBeTruthy();
     expect(previousPageButton.prop("disabled")).toBeTruthy();
@@ -109,12 +109,12 @@ describe("<SearchPagination/>", () => {
 
   it("Disables LastPage and NextPage buttons on last page of results", () => {
     const lastPage = searchPagination(20, 1, 10);
-    const [
+    const {
       firstPageButton,
       previousPageButton,
       nextPageButton,
       lastPageButton,
-    ] = paginatorControls(lastPage);
+    } = paginatorControls(lastPage);
 
     expect(firstPageButton.prop("disabled")).toBeFalsy();
     expect(previousPageButton.prop("disabled")).toBeFalsy();
