@@ -1,7 +1,7 @@
 import * as OEQ from '../src';
-import {is} from "typescript-is";
+import { is } from 'typescript-is';
 
-describe("Convert date fields", () => {
+describe('Convert date fields', () => {
   interface StringDate {
     dates: {
       yesterday: string;
@@ -21,26 +21,32 @@ describe("Convert date fields", () => {
     };
   }
 
-  it("should convert valid date strings to objects of Date", () => {
+  it('should convert valid date strings to objects of Date', () => {
     const validDates: StringDate = {
       dates: {
-        yesterday: "2020-06-11T11:45:24.296+10:00",
-        today: "2020-06-12T11:45:24.296+10:00",
-      }
+        yesterday: '2020-06-11T11:45:24.296+10:00',
+        today: '2020-06-12T11:45:24.296+10:00',
+      },
     };
 
-    const dates = OEQ.Utils.convertDateFields<StandardDate>(validDates, ["yesterday", "today"] );
+    const dates = OEQ.Utils.convertDateFields<StandardDate>(validDates, [
+      'yesterday',
+      'today',
+    ]);
     expect(is<StandardDate>(dates)).toBe(true);
   });
 
-  it("should return undefined for fields that have invalid date strings", () => {
+  it('should return undefined for fields that have invalid date strings', () => {
     const invalidDates: StringDate = {
       dates: {
-        yesterday: "hello",
-        today: "world",
-      }
+        yesterday: 'hello',
+        today: 'world',
+      },
     };
-    const dates = OEQ.Utils.convertDateFields<StandardDate>(invalidDates, ["yesterday", "today"] );
+    const dates = OEQ.Utils.convertDateFields<StandardDate>(invalidDates, [
+      'yesterday',
+      'today',
+    ]);
     expect(is<InvalidDate>(dates)).toBe(true);
-  })
+  });
 });

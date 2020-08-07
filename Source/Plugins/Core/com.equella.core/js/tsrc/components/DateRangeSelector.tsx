@@ -23,11 +23,13 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { languageStrings } from "../util/langstrings";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
 
@@ -45,6 +47,21 @@ export interface DateRange {
   end?: Date;
 }
 
+interface DatePickerProps {
+  /**
+   * The field which a date picker controls.
+   */
+  field: "start" | "end";
+  /**
+   * The label of a date picker.
+   */
+  label: string;
+  /**
+   * The value of a date picker.
+   */
+  value?: Date;
+}
+
 export interface DateRangeSelectorProps {
   /**
    * Fired when date range is changed.
@@ -54,8 +71,9 @@ export interface DateRangeSelectorProps {
   /**
    * Fired when the status of Quick mode is changed.
    * @param enabled The new status of Quick mode
+   * @param dateRange Date range updated due to the mode change.
    */
-  onQuickModeChange: (enabled: boolean) => void;
+  onQuickModeChange: (enabled: boolean, dateRange?: DateRange) => void;
   /**
    * Initially selected date range.
    */
@@ -103,6 +121,38 @@ export const DateRangeSelector = ({
   const endLabel = endDatePickerLabel ?? defaultEndDatePickerLabel;
 
   /**
+   * MUI KeyboardDatePicker requires its value to be controlled by state,
+   * in order to properly parse and validate TextField inputs.
+   */
+  const [stateDateRange, setStateDateRange] = useState<DateRange | undefined>(
+    dateRange
+  );
+
+  const isInitialRender = useRef(true);
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    const start = stateDateRange?.start;
+    const end = stateDateRange?.end;
+    const isStartValid = start && DateTime.fromJSDate(start).isValid;
+    const isEndValid = end && DateTime.fromJSDate(end).isValid;
+
+    // start is undefined and end is a valid date
+    const openStart = !start && isEndValid;
+    // End is undefined and start is a valid date
+    const openEnd = !end && isStartValid;
+    // Both are undefined
+    const openRange = !start && !end;
+    // Both are valid dates and start is equal or less than end
+    const closedRange = isStartValid && isEndValid && start! <= end!;
+    // Call onDateRangeChange for above four cases
+    if (openStart || openEnd || openRange || closedRange) {
+      onDateRangeChange(stateDateRange);
+    }
+  }, [stateDateRange]);
+  /**
    * Provide labels and values for options of pre-defined date ranges.
    */
   const getDateRangeOptions = (): Map<string, DateTime | undefined> => {
@@ -142,15 +192,22 @@ export const DateRangeSelector = ({
    * Return label of a Quick date option based on date range.
    * If the provided date range is undefined, or defined but start is undefined, or no matched Quick option is found,
    * then return the Quick option label "All".
+   * If end is defined but it is not equal to today, then return "All", too.
    * Otherwise, returns the Quick option label whose value is equal to start in ISO Date format.
    *
    * @param dateRange A date range to be converted to a Quick date option label.
    */
   const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
-    if (!dateRange || !dateRange.start) {
+    if (
+      !dateRange ||
+      !dateRange.start ||
+      (dateRange.end &&
+        dateRange.end.toDateString() !== new Date().toDateString())
+    ) {
       return option;
     }
+
     const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
@@ -169,14 +226,14 @@ export const DateRangeSelector = ({
    */
   const handleQuickDateOptionChange = (option: string): void => {
     const dateRange = dateOptionToDateRangeConverter(option);
-    onDateRangeChange(dateRange);
+    setStateDateRange(dateRange);
   };
 
   const quickOptionSelector: ReactNode = (
     <FormControl variant="outlined" fullWidth>
       <InputLabel id="date_range_selector_label">{quickOptionLabel}</InputLabel>
       <Select
-        value={dateRangeToDateOptionConverter(dateRange)}
+        value={dateRangeToDateOptionConverter(stateDateRange)}
         id="date_range_selector"
         labelId="date_range_selector_label"
         onChange={(event) =>
@@ -193,33 +250,64 @@ export const DateRangeSelector = ({
     </FormControl>
   );
 
+  /**
+   * Generate two date pickers and wrap them with Grid items.
+   */
+  const getDatePickers = (): ReactNode => {
+    const dateRangePickers: DatePickerProps[] = [
+      {
+        field: "start",
+        label: startLabel,
+        value: stateDateRange?.start,
+      },
+      {
+        field: "end",
+        label: endLabel,
+        value: stateDateRange?.end,
+      },
+    ];
+
+    return dateRangePickers.map(({ field, label, value }) => {
+      const isStart = field === "start";
+      return (
+        <Grid item key={field} xs={12} md={6}>
+          <KeyboardDatePicker
+            disableFuture
+            variant="dialog"
+            clearable
+            inputVariant="outlined"
+            autoOk
+            // Show date in ISO format string, or nothing if date is null.
+            labelFunc={(date, _) => {
+              return date?.toISODate() ?? "";
+            }}
+            // TextField inputs are parsed to this format.
+            format="yyyy-MM-dd"
+            // The maximum start date is the range's end whereas minimum end date is the range's start.
+            minDate={!isStart ? stateDateRange?.start : undefined}
+            maxDate={isStart ? stateDateRange?.end : undefined}
+            label={label}
+            // When value is undefined use null instead so nothing is displayed in the TextField.
+            value={value ?? null}
+            onChange={(newDate, _) =>
+              setStateDateRange({
+                ...stateDateRange,
+                [field]: newDate?.toJSDate(),
+              })
+            }
+          />
+        </Grid>
+      );
+    });
+  };
+
   const customDatePicker: ReactNode = (
-    <MuiPickersUtilsProvider utils={LuxonUtils}>
+    <MuiPickersUtilsProvider
+      utils={LuxonUtils}
+      locale={DateTime.local().locale}
+    >
       <Grid container spacing={2}>
-        {[
-          [startLabel, dateRange?.start],
-          [endLabel, dateRange?.end],
-        ].map(([label, value]) => (
-          <Grid item>
-            <DatePicker
-              disableFuture
-              variant="inline"
-              inputVariant="outlined"
-              autoOk
-              labelFunc={(value, invalidLabel) =>
-                value?.toLocaleString() ?? invalidLabel
-              }
-              label={label}
-              value={value}
-              onChange={(newDate: MaterialUiPickersDate) =>
-                onDateRangeChange({
-                  ...dateRange,
-                  end: newDate?.toJSDate(),
-                })
-              }
-            />
-          </Grid>
-        ))}
+        {getDatePickers()}
       </Grid>
     </MuiPickersUtilsProvider>
   );
@@ -234,7 +322,16 @@ export const DateRangeSelector = ({
           id="modified_date_selector_mode_switch"
           label={quickOptionSwitchLabel}
           value={quickModeEnabled}
-          setValue={(value) => onQuickModeChange(value)}
+          setValue={(value) => {
+            // If selected custom date range matches the option `All` then clear both start and end.
+            const isAllSelected =
+              dateRangeToDateOptionConverter(stateDateRange) ===
+              quickOptionLabels.all;
+            const updatedRange = isAllSelected
+              ? undefined
+              : { ...dateRange, end: undefined };
+            onQuickModeChange(value, updatedRange);
+          }}
         />
       </Grid>
     </Grid>

@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash';
 /**
  * Performs inplace conversion of specified fields with supplied converter.
  *
@@ -7,19 +7,25 @@ import { cloneDeep } from 'lodash'
  * @param recursive True if processing nested objects is required.
  * @param converter A function converting fields' type.
  */
-const convertFields = <T, R>(input: unknown, targetFields: string[], recursive: boolean, converter: (value: T) => R): void => {
+const convertFields = <T, R>(
+  input: unknown,
+  targetFields: string[],
+  recursive: boolean,
+  converter: (value: T) => R
+): void => {
   const entries: [string, any][] = Object.entries(input as any);
 
   entries.forEach(([field, value]) => {
-    if(typeof value === "object" && recursive) {
+    if (typeof value === 'object' && recursive) {
       convertFields(value, targetFields, recursive, converter);
-    }
-    else {
+    } else {
       targetFields
-        .filter(targetField => targetField === field)
-        .forEach(targetField => (input as any)[targetField] = converter(value))
+        .filter((targetField) => targetField === field)
+        .forEach(
+          (targetField) => ((input as any)[targetField] = converter(value))
+        );
     }
-  })
+  });
 };
 
 /**
@@ -31,9 +37,8 @@ const convertFields = <T, R>(input: unknown, targetFields: string[], recursive: 
  */
 export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
   const inputClone: any = cloneDeep(input);
-  convertFields(inputClone,
-    fields,
-    true,
-    (value: string) => isNaN(Date.parse(value))? undefined: new Date( value));
+  convertFields(inputClone, fields, true, (value: string) =>
+    isNaN(Date.parse(value)) ? undefined : new Date(value)
+  );
   return inputClone;
 };

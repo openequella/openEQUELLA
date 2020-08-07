@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   env: {
+    node: true,
     browser: true,
     es6: true,
   },
@@ -10,6 +11,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:jest/recommended',
     'plugin:jest/style',
+    'plugin:prettier/recommended',
   ],
   globals: {
     Atomics: 'readonly',
