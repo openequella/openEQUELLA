@@ -109,7 +109,7 @@
     "css-vars-ponyfill": "2.3.2",
     "envify": "4.1.0",
     "enzyme": "3.11.0",
-    "enzyme-adapter-react-16": "1.15.2",
+    "enzyme-adapter-react-16": "1.15.3",
     "enzyme-to-json": "3.5.0",
     "fork-ts-checker-webpack-plugin": "5.0.14",
     "jest": "26.2.2",
