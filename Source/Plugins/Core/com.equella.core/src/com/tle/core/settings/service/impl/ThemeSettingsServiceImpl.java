@@ -41,6 +41,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.net.URLConnection;
 import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -99,7 +100,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   }
 
   @Override
-  public void setTheme(NewUITheme theme) throws JsonProcessingException, IOException {
+  public void setTheme(NewUITheme theme) throws IOException {
     checkPermissions();
     String themeString = themeToJSONString(theme);
     configurationService.setProperty(THEME_KEY, themeString);
@@ -164,20 +165,27 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
     return themeToString;
   }
 
-  public InputStream getLegacyCss() throws IOException {
-    File baseLegacySass =
-        new File(getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).getFile());
-    CustomisationFile customisationFile = new CustomisationFile();
-    boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
-    boolean baseSassUpdated =
-        baseLegacySass.lastModified()
-            > fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
+	public InputStream getLegacyCss() throws IOException {
+		CustomisationFile customisationFile = new CustomisationFile();
 
-    if (!legacyCssExists || baseSassUpdated) {
-      compileSass();
-    }
-    return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
-  }
+		//get last modified date of the scss file
+		URLConnection conn =
+			getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
+		long lastMod = conn.getLastModified();
+		conn.getInputStream().close();
+
+		//compare against the modified date of the css file if it exists
+		boolean legacyCssExists = fileSystemService
+			.fileExists(customisationFile, LEGACY_CSS_FILENAME);
+		if(legacyCssExists){
+			long cssLastMod = fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
+			boolean baseSassUpdated = lastMod > cssLastMod;
+			if (baseSassUpdated) {
+				compileSass();
+			}
+		}
+		return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
+	}
 
   private InputStream compileSass() throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
