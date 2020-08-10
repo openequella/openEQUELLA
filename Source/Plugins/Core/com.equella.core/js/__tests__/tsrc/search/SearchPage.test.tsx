@@ -35,6 +35,7 @@ import { paginatorControls } from "../components/SearchPaginationTestHelper";
 import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -92,7 +93,9 @@ describe("<SearchPage/> with react-testing-library", () => {
     const sortingDropdown = screen.getByDisplayValue(
       SearchSettingsModule.SortOrder.RANK
     );
-    const newSearchButton = screen.getByText("New search");
+    const newSearchButton = screen.getByText(
+      languageStrings.searchpage.newSearch
+    );
 
     // We will change the debounced query so use fake timer here.
     jest.useFakeTimers("modern");
@@ -104,9 +107,6 @@ describe("<SearchPage/> with react-testing-library", () => {
     });
     fireEvent.change(sortingDropdown, {
       target: { value: SearchSettingsModule.SortOrder.NAME },
-    });
-    await waitFor(() => {
-      expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.NAME);
     });
 
     // Perform a new search and check.

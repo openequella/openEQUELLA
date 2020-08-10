@@ -92,9 +92,7 @@ export default function SearchBar({
     doSearch,
   ]);
 
-  /**
-   * Update state when search query is cleared.
-   */
+  //Update state when search query is cleared.
   useEffect(() => {
     if (!query) {
       setCurrentQuery(query);
@@ -103,7 +101,7 @@ export default function SearchBar({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
-      // if there is a current query, clear it out and trigger a search
+      // iff there is a current query, clear it out and trigger a search
       setCurrentQuery("");
       onQueryChange("");
     }
