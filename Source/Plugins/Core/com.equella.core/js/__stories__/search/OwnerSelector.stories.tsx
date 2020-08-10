@@ -34,10 +34,5 @@ const commonParams = {
 export const NoSelectedUser = () => <OwnerSelector {...commonParams} />;
 
 export const SelectedUser = () => (
-  <OwnerSelector
-    onClearSelect={action("onClearSelect")}
-    onSelect={action("onSelect")}
-    userListProvider={UserSearchMock.userDetailsProvider}
-    value={UserSearchMock.users[0]}
-  />
+  <OwnerSelector {...commonParams} value={UserSearchMock.users[0]} />
 );
