@@ -167,22 +167,30 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 
   public InputStream getLegacyCss() throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
-
-    // get last modified date of the scss file
-    URLConnection conn =
-        getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
-    long lastMod = conn.getLastModified();
-    conn.getInputStream().close();
+    boolean needsUpdate = false;
 
     // compare against the modified date of the css file if it exists
     boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
     if (legacyCssExists) {
+      // get last modified date of the scss file
+      URLConnection conn =
+          getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
+      long lastMod = conn.getLastModified();
+      conn.getInputStream().close();
+
+      // get last modified of the compiled css file
       long cssLastMod = fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
-      boolean baseSassUpdated = lastMod > cssLastMod;
-      if (baseSassUpdated) {
-        compileSass();
+      if (lastMod > cssLastMod) {
+        needsUpdate = true;
       }
+    } else {
+      needsUpdate = true;
     }
+
+    if (needsUpdate) {
+      compileSass();
+    }
+
     return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
   }
 
