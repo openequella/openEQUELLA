@@ -92,7 +92,7 @@ export default function SearchBar({
     doSearch,
   ]);
 
-  //Update state when search query is cleared.
+  // Update state when search query is cleared.
   useEffect(() => {
     if (!query) {
       setCurrentQuery(query);
