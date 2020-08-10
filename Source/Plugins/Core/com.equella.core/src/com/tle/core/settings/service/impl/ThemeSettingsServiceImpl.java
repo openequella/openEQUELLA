@@ -165,27 +165,26 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
     return themeToString;
   }
 
-	public InputStream getLegacyCss() throws IOException {
-		CustomisationFile customisationFile = new CustomisationFile();
+  public InputStream getLegacyCss() throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
 
-		//get last modified date of the scss file
-		URLConnection conn =
-			getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
-		long lastMod = conn.getLastModified();
-		conn.getInputStream().close();
+    // get last modified date of the scss file
+    URLConnection conn =
+        getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
+    long lastMod = conn.getLastModified();
+    conn.getInputStream().close();
 
-		//compare against the modified date of the css file if it exists
-		boolean legacyCssExists = fileSystemService
-			.fileExists(customisationFile, LEGACY_CSS_FILENAME);
-		if(legacyCssExists){
-			long cssLastMod = fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
-			boolean baseSassUpdated = lastMod > cssLastMod;
-			if (baseSassUpdated) {
-				compileSass();
-			}
-		}
-		return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
-	}
+    // compare against the modified date of the css file if it exists
+    boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
+    if (legacyCssExists) {
+      long cssLastMod = fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
+      boolean baseSassUpdated = lastMod > cssLastMod;
+      if (baseSassUpdated) {
+        compileSass();
+      }
+    }
+    return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
+  }
 
   private InputStream compileSass() throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
