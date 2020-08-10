@@ -349,6 +349,10 @@ export const languageStrings = {
       day: "Day",
     },
     pagination: {
+      firstPageButton: "First page",
+      previousPageButton: "Previous page",
+      nextPageButton: "Next page",
+      lastPageButton: "Last page",
       itemsPerPage: "Items per page",
     },
     refineSearchPanel: {

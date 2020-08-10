@@ -18,6 +18,7 @@
 import {
   getEmptySearchResult,
   getSearchResult,
+  getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import * as React from "react";
@@ -30,6 +31,7 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import { paginatorControls } from "../components/SearchPaginationTestHelper";
 import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
@@ -222,7 +224,9 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    expect(component.html()).toContain(FIRST_PAGE_PAGINATION);
+
+    const { pageCount } = paginatorControls(component);
+    expect(pageCount.text()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
     );
@@ -233,20 +237,42 @@ describe("<SearchPage/>", () => {
       ...defaultSearchPageOptions,
       rowsPerPage: 25,
     });
-    expect(component.html()).toContain("1-12 of 12");
+    expect(pageCount.text()).toContain("1-12 of 12");
   });
 
   it("should support navigating to previous/next page", async () => {
-    const prevPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(0);
-    const nextPageButton = component
-      .find(".MuiTablePagination-actions button")
-      .at(1);
+    await querySearch("");
+    component.update();
+    const { nextPageButton, pageCount, previousPageButton } = paginatorControls(
+      component
+    );
     await awaitAct(() => nextPageButton.simulate("click"));
-    expect(component.html()).toContain(SECOND_PAGE_PAGINATION);
-    await awaitAct(() => prevPageButton.simulate("click"));
-    expect(component.html()).toContain(FIRST_PAGE_PAGINATION);
+
+    expect(pageCount.text()).toContain("11-12 of 12");
+    await querySearch("");
+    component.update();
+    await awaitAct(() => previousPageButton.simulate("click"));
+    expect(pageCount.text()).toContain("1-10 of 12");
+  });
+
+  it("should support navigating to first/last page of results", async () => {
+    mockSearch.mockImplementation(() =>
+      Promise.resolve(getSearchResultsCustom(30))
+    );
+    await querySearch("");
+    component.update();
+    const { firstPageButton, lastPageButton, pageCount } = paginatorControls(
+      component
+    );
+    expect(pageCount.text()).toContain("1-10 of 30");
+
+    await awaitAct(() => lastPageButton.simulate("click"));
+    component.update();
+    expect(pageCount.text()).toContain("21-30 of 30");
+    await querySearch("");
+    component.update();
+    await awaitAct(() => firstPageButton.simulate("click"));
+    expect(component.html()).toContain("1-10 of 30");
   });
 
   it("should support sorting search results", async () => {

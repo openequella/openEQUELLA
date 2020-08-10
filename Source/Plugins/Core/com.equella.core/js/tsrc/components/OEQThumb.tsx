@@ -25,7 +25,7 @@ import {
   Panorama as ImageIcon,
   InsertDriveFile as DefaultFileIcon,
   Language as WebIcon,
-  Subject as PlaceholderIcon,
+  TextFields as PlaceholderIcon,
 } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) => {

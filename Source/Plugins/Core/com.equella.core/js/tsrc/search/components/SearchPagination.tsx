@@ -16,8 +16,19 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { TablePagination } from "@material-ui/core";
+import {
+  TablePagination,
+  IconButton,
+  Grid,
+  createMuiTheme,
+} from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
+import {
+  FirstPage,
+  LastPage,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+} from "@material-ui/icons";
 
 export interface SearchPaginationProps {
   count: number;
@@ -26,6 +37,7 @@ export interface SearchPaginationProps {
   onPageChange: (currentPage: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
 }
+
 export const SearchPagination = ({
   count,
   currentPage,
@@ -34,6 +46,7 @@ export const SearchPagination = ({
   onRowsPerPageChange,
 }: SearchPaginationProps) => {
   const paginationStrings = languageStrings.searchpage.pagination;
+
   return (
     <TablePagination
       component="div"
@@ -46,6 +59,71 @@ export const SearchPagination = ({
       onChangeRowsPerPage={(event) =>
         onRowsPerPageChange(parseInt(event.target.value))
       }
+      ActionsComponent={PaginationActions}
     />
   );
+
+  /**
+   * Provides pagination navigation controls.
+   * @return {ReactElement} IconButtons for navigating to First, Previous, Next, and Last Page of results
+   */
+  function PaginationActions() {
+    const theme = createMuiTheme();
+    const numberOfPages = Math.ceil(count / rowsPerPage);
+    const lastPage = Math.max(0, numberOfPages - 1);
+
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage >= numberOfPages - 1;
+
+    return (
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        wrap="nowrap"
+        style={{ marginLeft: theme.spacing(2) }}
+      >
+        <Grid item>
+          <IconButton
+            onClick={() => onPageChange(0)}
+            disabled={isFirstPage}
+            aria-label={paginationStrings.firstPageButton}
+            id="firstPageButton"
+          >
+            <FirstPage />
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <IconButton
+            onClick={() => onPageChange(currentPage - 1)}
+            aria-label={paginationStrings.previousPageButton}
+            disabled={isFirstPage}
+            id="previousPageButton"
+          >
+            <KeyboardArrowLeft />
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <IconButton
+            onClick={() => onPageChange(currentPage + 1)}
+            aria-label={paginationStrings.nextPageButton}
+            disabled={isLastPage}
+            id="nextPageButton"
+          >
+            <KeyboardArrowRight />
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <IconButton
+            onClick={() => onPageChange(lastPage)}
+            aria-label={paginationStrings.lastPageButton}
+            disabled={isLastPage}
+            id="lastPageButton"
+          >
+            <LastPage />
+          </IconButton>
+        </Grid>
+      </Grid>
+    );
+  }
 };
