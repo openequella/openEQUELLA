@@ -16,41 +16,22 @@
  * limitations under the License.
  */
 import * as React from "react";
-import {
-  fireEvent,
-  queryByText,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
 import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
-import { doSearch } from "../../components/UserSearchTestHelpers";
 
 import "@testing-library/jest-dom/extend-expect";
-
-const queryMuiButtonByText = (container: HTMLElement, text: string) =>
-  queryByText(
-    container,
-    (content: string, element: HTMLElement) =>
-      content === text && (element.parentElement?.matches("button") as boolean)
-  );
+import { queryMuiButtonByText } from "../../MuiQueries";
+import {
+  clearSelection,
+  clickSelect,
+  getSelectButton,
+  selectUser,
+} from "./OwnerSelectTestHelpers";
 
 describe("<OwnerSelector/>", () => {
   const testUser = UserSearchMock.users[0];
-  const getSelectButton = (container: HTMLElement) =>
-    queryMuiButtonByText(container, languageStrings.common.action.select);
-
-  // Helper user action abstraction function
-  const clickSelect = (container: HTMLElement) => {
-    const selectButton = getSelectButton(container);
-    if (!selectButton) {
-      throw new Error(
-        "Was expecting the 'select' button to be available, but no. :/"
-      );
-    }
-    fireEvent.click(selectButton);
-  };
 
   it("should show the select button when no user selected", () => {
     const { container } = render(
@@ -73,7 +54,7 @@ describe("<OwnerSelector/>", () => {
 
   it("should trigger the clear callback when the clear user button is clicked", () => {
     const clearCallback = jest.fn();
-    const { getByLabelText } = render(
+    render(
       <OwnerSelector
         onClearSelect={clearCallback}
         onSelect={jest.fn()}
@@ -81,9 +62,7 @@ describe("<OwnerSelector/>", () => {
       />
     );
 
-    fireEvent.click(
-      getByLabelText(languageStrings.searchpage.filterOwner.clear)
-    );
+    clearSelection();
 
     expect(clearCallback).toHaveBeenCalled();
   });
@@ -102,7 +81,7 @@ describe("<OwnerSelector/>", () => {
 
   it("should trigger the callback with the correct details of the selected user", async () => {
     const onSelectCallback = jest.fn();
-    const { container, getByText, getByRole } = render(
+    const { container } = render(
       <OwnerSelector
         onClearSelect={jest.fn()}
         onSelect={onSelectCallback}
@@ -110,21 +89,7 @@ describe("<OwnerSelector/>", () => {
       />
     );
 
-    clickSelect(container);
-    doSearch(testUser.username);
-    // Wait for mock latency
-    const findUsername = () => getByText(testUser.username);
-    await waitFor(findUsername);
-    // Click on a user
-    fireEvent.click(findUsername());
-    // And click select
-    const dialogSelectButton = getSelectButton(getByRole("dialog"));
-    if (!dialogSelectButton) {
-      throw new Error(
-        "Unable to find the 'select' button in the user select dialog."
-      );
-    }
-    fireEvent.click(dialogSelectButton);
+    await selectUser(container, testUser.username);
 
     // Finally, was the callback called with the correct user details
     expect(onSelectCallback).toHaveBeenCalledWith(testUser);
