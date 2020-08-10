@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Helper function to execute a search (assuming rendered component)
 import { fireEvent, screen } from "@testing-library/react";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 

@@ -38,7 +38,7 @@ import UserSearch from "../../components/UserSearch";
 import { languageStrings } from "../../util/langstrings";
 
 interface OwnerSelectorProps {
-  /** The currently selected user or. */
+  /** The currently selected user or undefined if none. */
   value?: OEQ.UserQuery.UserDetails;
   /** Handler for when current selection is cleared. */
   onClearSelect: () => void;
