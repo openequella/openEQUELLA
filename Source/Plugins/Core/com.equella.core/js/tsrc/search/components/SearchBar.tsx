@@ -93,16 +93,17 @@ export default function SearchBar({
   ]);
 
   /**
-   * Same as the Date range selector, add this effect to update state
-   * when search options are cleared..
+   * Update state when search query is cleared.
    */
   useEffect(() => {
-    setCurrentQuery(query);
+    if (!query) {
+      setCurrentQuery(query);
+    }
   }, [query]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
-      // iff there is a current query, clear it out and trigger a search
+      // if there is a current query, clear it out and trigger a search
       setCurrentQuery("");
       onQueryChange("");
     }

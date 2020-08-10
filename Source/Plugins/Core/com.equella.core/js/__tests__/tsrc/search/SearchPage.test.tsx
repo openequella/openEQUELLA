@@ -31,9 +31,13 @@ import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
 import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
+import { render, waitFor, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
+const FIRST_PAGE_PAGINATION = "1-10 of 12";
+const SECOND_PAGE_PAGINATION = "11-12 of 12";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -53,6 +57,70 @@ const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
+
+describe("<SearchPage/> with react-testing-library", () => {
+  let container: HTMLElement = document.createElement("div");
+  const renderSearchPage = async () => {
+    const { container } = render(
+      <BrowserRouter>
+        <SearchPage updateTemplate={jest.fn} />
+      </BrowserRouter>
+    );
+    // When Pagination shows the correct data, the render is completed.
+    await waitFor(() =>
+      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
+    );
+    return container;
+  };
+
+  beforeEach(async () => {
+    container = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should clear search options and perform a new search", async () => {
+    const query = "clear query";
+    const queryBar = container.querySelector("#searchBar");
+    if (!queryBar) {
+      throw new Error("Failed to locate the search bar, unable to continue.");
+    }
+    const sortingDropdown = screen.getByDisplayValue(
+      SearchSettingsModule.SortOrder.RANK
+    );
+    const newSearchButton = screen.getByText("New search");
+
+    // We will change the debounced query so use fake timer here.
+    jest.useFakeTimers("modern");
+    // Change search options now.
+    fireEvent.change(queryBar, { target: { value: query } });
+    await waitFor(() => {
+      expect(queryBar).toHaveDisplayValue(query);
+      jest.advanceTimersByTime(1000);
+    });
+    fireEvent.change(sortingDropdown, {
+      target: { value: SearchSettingsModule.SortOrder.NAME },
+    });
+    await waitFor(() => {
+      expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.NAME);
+    });
+
+    // Perform a new search and check.
+    fireEvent.click(newSearchButton);
+    await waitFor(() => {
+      expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.RANK);
+      expect(queryBar).toHaveValue("");
+    });
+    // Four searches have been performed: initial search, one for query change and
+    // one for sorting change, and one for clearing.
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(4);
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith(
+      defaultSearchPageOptions
+    );
+  });
+});
 
 describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
@@ -154,7 +222,7 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    expect(component.html()).toContain("1-10 of 12");
+    expect(component.html()).toContain(FIRST_PAGE_PAGINATION);
     const itemsPerPageSelect = component.find(
       ".MuiTablePagination-input input"
     );
@@ -176,9 +244,9 @@ describe("<SearchPage/>", () => {
       .find(".MuiTablePagination-actions button")
       .at(1);
     await awaitAct(() => nextPageButton.simulate("click"));
-    expect(component.html()).toContain("11-12 of 12");
+    expect(component.html()).toContain(SECOND_PAGE_PAGINATION);
     await awaitAct(() => prevPageButton.simulate("click"));
-    expect(component.html()).toContain("1-10 of 12");
+    expect(component.html()).toContain(FIRST_PAGE_PAGINATION);
   });
 
   it("should support sorting search results", async () => {
