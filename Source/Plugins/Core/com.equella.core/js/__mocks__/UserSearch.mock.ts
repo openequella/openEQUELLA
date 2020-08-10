@@ -63,7 +63,7 @@ export const userDetailsProvider = async (
 ): Promise<OEQ.UserQuery.UserDetails[]> => {
   // A sleep to emulate latency
   await new Promise((resolve) => setTimeout(resolve, 500));
-  return new Promise((resolve) =>
-    resolve(query ? users.filter((u) => u.username.search(query) === 0) : users)
+  return Promise.resolve(
+    query ? users.filter((u) => u.username.search(query) === 0) : users
   );
 };
