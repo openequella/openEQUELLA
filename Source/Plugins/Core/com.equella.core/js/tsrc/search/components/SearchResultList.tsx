@@ -107,7 +107,7 @@ export const SearchResultList = ({
   return (
     <Card>
       <CardHeader
-        title={searchPageStrings.subtitle}
+        title={searchPageStrings.subtitle + ` (${paginationProps.count})`}
         action={
           <SearchOrderSelect
             value={orderSelectProps.value}
