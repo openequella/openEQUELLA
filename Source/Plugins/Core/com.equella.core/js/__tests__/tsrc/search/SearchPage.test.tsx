@@ -39,7 +39,6 @@ import "@testing-library/jest-dom/extend-expect";
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const FIRST_PAGE_PAGINATION = "1-10 of 12";
-const SECOND_PAGE_PAGINATION = "11-12 of 12";
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -53,6 +52,7 @@ const searchPromise = mockSearch.mockImplementation(() =>
   Promise.resolve(getSearchResult)
 );
 mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
+window.scrollTo = jest.fn();
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: SearchSettingsModule.SortOrder.RANK,
@@ -65,7 +65,7 @@ describe("<SearchPage/> with react-testing-library", () => {
   const renderSearchPage = async () => {
     const { container } = render(
       <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn} />
+        <SearchPage updateTemplate={jest.fn()} />
       </BrowserRouter>
     );
     // When Pagination shows the correct data, the render is completed.
@@ -131,7 +131,7 @@ describe("<SearchPage/>", () => {
     window.history.replaceState({}, "Clean history state");
     component = mount(
       <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />{" "}
+        <SearchPage updateTemplate={jest.fn()} />
       </BrowserRouter>
     );
     // Wait until Search settings are returned.
@@ -224,7 +224,6 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-
     const { pageCount } = paginatorControls(component);
     expect(pageCount.text()).toContain("1-10 of 12");
     const itemsPerPageSelect = component.find(
@@ -247,7 +246,6 @@ describe("<SearchPage/>", () => {
       component
     );
     await awaitAct(() => nextPageButton.simulate("click"));
-
     expect(pageCount.text()).toContain("11-12 of 12");
     await querySearch("");
     component.update();
