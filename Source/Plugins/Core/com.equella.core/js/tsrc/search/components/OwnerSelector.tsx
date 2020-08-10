@@ -56,9 +56,7 @@ const OwnerSelector = ({
 }: OwnerSelectorProps) => {
   const [showFindUserDialog, setShowFindUserDialog] = useState<boolean>(false);
 
-  const handleCloseFindUserDialog = (
-    selection: OEQ.UserQuery.UserDetails | undefined
-  ) => {
+  const handleCloseFindUserDialog = (selection?: OEQ.UserQuery.UserDetails) => {
     setShowFindUserDialog(false);
     if (selection) {
       onSelect(selection);
