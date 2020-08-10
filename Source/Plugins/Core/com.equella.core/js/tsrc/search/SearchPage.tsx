@@ -195,6 +195,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const refinePanelControls: RefinePanelControl[] = [
     {
+      idSuffix: "CollectionSelector",
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
@@ -204,6 +205,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     },
     {
+      idSuffix: "DateRangeSelector",
       title: dateModifiedSelectorTitle,
       component: (
         <DateRangeSelector
@@ -216,6 +218,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     },
     {
+      idSuffix: "OwnerSelector",
       title: searchStrings.filterOwner.title,
       component: (
         <OwnerSelector

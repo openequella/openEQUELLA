@@ -30,6 +30,10 @@ import { RefinePanelControlHeading } from "./RefinePanelControlHeading";
 
 export interface RefinePanelControl {
   /**
+   * A suffix to use in the DOM id of this control which will be prefixed with `RefineSearchPanel-`.
+   */
+  idSuffix: string;
+  /**
    * Title of a Refine control.
    */
   title: string;
@@ -55,7 +59,11 @@ export const RefineSearchPanel = ({ controls }: RefinePanelProps) => {
         <List>
           {controls.map((control) => (
             <ListItem>
-              <Grid container direction="column">
+              <Grid
+                id={`RefineSearchPanel-${control.idSuffix}`}
+                container
+                direction="column"
+              >
                 <Grid item>
                   <RefinePanelControlHeading title={control.title} />
                 </Grid>
