@@ -27,5 +27,5 @@ export const queryMuiButtonByText = (container: HTMLElement, text: string) =>
   queryByText(
     container,
     (content: string, element: HTMLElement) =>
-      content === text && (element.parentElement?.matches("button") as boolean)
+      content === text && (element.parentElement?.matches("button") ?? false)
   );
