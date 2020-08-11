@@ -21,7 +21,6 @@ import { TemplateUpdateProps, templateError } from "../mainui/Template";
 
 export { default as Error } from "./Error";
 export { default as AppBarQuery } from "./AppBarQuery";
-export { default as SearchResult } from "./SearchResult";
 
 export function handleUnexpectedApiError<P extends TemplateUpdateProps>({
   props: { updateTemplate },
