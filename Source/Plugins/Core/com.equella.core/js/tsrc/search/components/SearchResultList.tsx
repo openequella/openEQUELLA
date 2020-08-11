@@ -18,6 +18,7 @@
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -26,6 +27,7 @@ import {
   Grid,
   List,
   ListItem,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
@@ -64,6 +66,10 @@ interface SearchResultListProps {
    * Props required by component SearchPagination.
    */
   paginationProps: SearchPaginationProps;
+  /**
+   * Fired when the New search button is clicked.
+   */
+  onClearSearchOptions: () => void;
 }
 
 /**
@@ -77,6 +83,7 @@ export const SearchResultList = ({
   showSpinner,
   orderSelectProps,
   paginationProps,
+  onClearSearchOptions,
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
@@ -109,10 +116,21 @@ export const SearchResultList = ({
       <CardHeader
         title={searchPageStrings.subtitle + ` (${paginationProps.count})`}
         action={
-          <SearchOrderSelect
-            value={orderSelectProps.value}
-            onChange={orderSelectProps.onChange}
-          />
+          <Grid container spacing={1}>
+            <Grid item>
+              <SearchOrderSelect
+                value={orderSelectProps.value}
+                onChange={orderSelectProps.onChange}
+              />
+            </Grid>
+            <Grid item>
+              <Tooltip title={searchPageStrings.newSearchHelperText}>
+                <Button variant="outlined" onClick={onClearSearchOptions}>
+                  {searchPageStrings.newSearch}
+                </Button>
+              </Tooltip>
+            </Grid>
+          </Grid>
         }
       />
       {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}

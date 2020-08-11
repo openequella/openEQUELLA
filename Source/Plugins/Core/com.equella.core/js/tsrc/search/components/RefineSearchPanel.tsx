@@ -58,7 +58,7 @@ export const RefineSearchPanel = ({ controls }: RefinePanelProps) => {
         <Typography variant="h5">{title}</Typography>
         <List>
           {controls.map((control) => (
-            <ListItem>
+            <ListItem key={control.title}>
               <Grid
                 id={`RefineSearchPanel-${control.idSuffix}`}
                 container

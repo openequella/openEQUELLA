@@ -35,14 +35,23 @@ import { CollectionSelector } from "../../../tsrc/search/components/CollectionSe
 import { paginatorControls } from "../components/SearchPaginationTestHelper";
 import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import { render, RenderResult, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
 import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
+const FIRST_PAGE_PAGINATION = "1-10 of 12";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -51,12 +60,11 @@ const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
-
+window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
 );
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
-
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
 
@@ -140,6 +148,69 @@ describe("Refine search by Owner", () => {
   });
 });
 
+describe("<SearchPage/> with react-testing-library", () => {
+  let container: HTMLElement = document.createElement("div");
+  const renderSearchPage = async () => {
+    const { container } = render(
+      <BrowserRouter>
+        <SearchPage updateTemplate={jest.fn()} />
+      </BrowserRouter>
+    );
+    // When Pagination shows the correct data, the render is completed.
+    await waitFor(() =>
+      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
+    );
+    return container;
+  };
+
+  beforeEach(async () => {
+    container = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should clear search options and perform a new search", async () => {
+    const query = "clear query";
+    const queryBar = container.querySelector("#searchBar");
+    if (!queryBar) {
+      throw new Error("Failed to locate the search bar, unable to continue.");
+    }
+    const sortingDropdown = screen.getByDisplayValue(
+      SearchSettingsModule.SortOrder.RANK
+    );
+    const newSearchButton = screen.getByText(
+      languageStrings.searchpage.newSearch
+    );
+
+    // We will change the debounced query so use fake timer here.
+    jest.useFakeTimers("modern");
+    // Change search options now.
+    fireEvent.change(queryBar, { target: { value: query } });
+    await waitFor(() => {
+      expect(queryBar).toHaveDisplayValue(query);
+      jest.advanceTimersByTime(1000);
+    });
+    fireEvent.change(sortingDropdown, {
+      target: { value: SearchSettingsModule.SortOrder.NAME },
+    });
+
+    // Perform a new search and check.
+    fireEvent.click(newSearchButton);
+    await waitFor(() => {
+      expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.RANK);
+      expect(queryBar).toHaveValue("");
+    });
+    // Four searches have been performed: initial search, one for query change and
+    // one for sorting change, and one for clearing.
+    expect(SearchModule.searchItems).toHaveBeenCalledTimes(4);
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith(
+      defaultSearchPageOptions
+    );
+  });
+});
+
 describe("<SearchPage/>", () => {
   let component: ReactWrapper<any, Readonly<{}>, React.Component<{}, {}, any>>;
 
@@ -147,7 +218,7 @@ describe("<SearchPage/>", () => {
     window.history.replaceState({}, "Clean history state");
     component = mount(
       <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />{" "}
+        <SearchPage updateTemplate={jest.fn()} />
       </BrowserRouter>
     );
     // Wait until Search settings are returned.

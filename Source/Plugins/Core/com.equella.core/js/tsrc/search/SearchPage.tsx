@@ -82,7 +82,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-
+  const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -94,6 +94,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
     getSearchSettingsFromServer().then((settings: SearchSettings) => {
+      setSearchSettings(settings);
       handleSortOrderChanged(
         searchPageOptions.sortOrder ?? settings.defaultSearchSort
       );
@@ -181,6 +182,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       lastModifiedDateRange: dateRange,
     });
 
+  const handleClearSearchOptions = () =>
+    setSearchPageOptions({
+      ...defaultSearchPageOptions,
+      sortOrder: searchSettings?.defaultSearchSort,
+    });
+
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
     setSearchPageOptions({
       ...searchPageOptions,
@@ -258,6 +265,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 value: searchPageOptions.sortOrder,
                 onChange: handleSortOrderChanged,
               }}
+              onClearSearchOptions={handleClearSearchOptions}
             />
           </Grid>
         </Grid>
