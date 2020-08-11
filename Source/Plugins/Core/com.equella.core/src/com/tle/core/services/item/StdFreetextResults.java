@@ -50,6 +50,10 @@ public class StdFreetextResults<T extends FreetextResult> implements FreetextSea
     return items;
   }
 
+  public SearchResults<T> getSearchResult() {
+    return results;
+  }
+
   public static <T extends FreetextResult> List<ItemIdKey> convertToKeys(List<T> results) {
     List<ItemIdKey> keys = new ArrayList<ItemIdKey>();
     for (T result : results) {
@@ -61,6 +65,11 @@ public class StdFreetextResults<T extends FreetextResult> implements FreetextSea
   @Override
   public ItemKey getItemKey(int index) {
     return results.getResults().get(index).getItemKey();
+  }
+
+  @Override
+  public List<T> getSearchResults() {
+    return results.getResults();
   }
 
   @Override

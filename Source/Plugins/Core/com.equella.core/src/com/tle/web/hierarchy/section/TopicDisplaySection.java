@@ -641,6 +641,11 @@ public class TopicDisplaySection
     }
 
     @Override
+    public List<T> getSearchResults() {
+      return null;
+    }
+
+    @Override
     public int getAvailable() {
       return wrapped.getAvailable() + keyResources.size();
     }

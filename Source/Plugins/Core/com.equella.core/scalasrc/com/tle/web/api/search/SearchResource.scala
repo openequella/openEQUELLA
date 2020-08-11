@@ -18,8 +18,9 @@
 
 package com.tle.web.api.search
 
-import com.tle.beans.item.ItemIdKey
-import com.tle.common.searching.SearchResults
+import com.tle.beans.item.{Item, ItemIdKey}
+import com.tle.common.searching.{SearchResults, SimpleSearchResults}
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults, StdFreetextResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
@@ -44,23 +45,28 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
-    val searchResults: SearchResults[ItemIdKey] =
-      LegacyGuice.freeTextService.searchIds(createSearch(params), params.start, params.length)
-    val itemIds: List[ItemIdKey] = searchResults.getResults.asScala.toList
-    val serializer               = createSerializer(itemIds)
-    val items: List[(ItemIdKey, EquellaItemBean)] = for { itemId <- itemIds } yield {
+    val searchResults: FreetextSearchResults[FreetextResult] =
+      LegacyGuice.freeTextService.search(createSearch(params), params.start, params.length)
+    val itemIds = for { item <- searchResults.getSearchResults.asScala } yield {
+      item.getItemIdKey
+    }
+    val serializer = createSerializer(itemIds.toList)
+    val items = for { resultData <- searchResults.getSearchResults.asScala } yield {
+      val keyFound = resultData.isKeywordFoundInAttachment
+      val itemId   = resultData.getItemIdKey
       val itemBean = new EquellaItemBean
+      itemBean.setKeyWordFoundInAttachment(keyFound)
       itemBean.setUuid(itemId.getUuid)
       itemBean.setVersion(itemId.getVersion)
       serializer.writeItemBeanResult(itemBean, itemId.getKey)
       LegacyGuice.itemLinkService.addLinks(itemBean)
       itemId -> itemBean
     }
+
     val result = SearchResult(searchResults.getOffset,
                               searchResults.getCount,
                               searchResults.getAvailable,
-                              items.map(convertToItem))
-
+                              items.toList.map(convertToItem))
     Response.ok.entity(result).build()
   }
 }

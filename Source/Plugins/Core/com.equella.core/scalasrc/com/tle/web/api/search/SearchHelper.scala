@@ -20,6 +20,7 @@ package com.tle.web.api.search
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
+
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.{ItemIdKey, ItemStatus}
@@ -39,6 +40,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -78,7 +80,6 @@ object SearchHelper {
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
-
     val dynaCollectionQuery = handleDynaCollection(params.dynaCollection)
     val whereQuery = Option(params.whereClause) match {
       case Some(where) => WhereParser.parse(where)
@@ -196,6 +197,7 @@ object SearchHelper {
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
+      keywordFoundInAttachment = Option(bean.isKeyWordFoundInAttachment),
       links = getLinksFromBean(bean)
     )
   }

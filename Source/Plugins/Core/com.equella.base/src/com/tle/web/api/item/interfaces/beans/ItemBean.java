@@ -47,6 +47,7 @@ public class ItemBean extends AbstractExtendableBean {
   private List<AttachmentBean> attachments;
   private NavigationTreeBean navigation;
   private DrmBean drm;
+  private boolean isKeyWordFoundInAttachment;
 
   @JsonProperty(value = "_export")
   private ItemExportBean exportDetails;
@@ -193,5 +194,13 @@ public class ItemBean extends AbstractExtendableBean {
 
   public void setExportDetails(ItemExportBean exportDetails) {
     this.exportDetails = exportDetails;
+  }
+
+  public boolean isKeyWordFoundInAttachment() {
+    return isKeyWordFoundInAttachment;
+  }
+
+  public void setKeyWordFoundInAttachment(boolean keyWordFoundInAttachment) {
+    isKeyWordFoundInAttachment = keyWordFoundInAttachment;
   }
 }

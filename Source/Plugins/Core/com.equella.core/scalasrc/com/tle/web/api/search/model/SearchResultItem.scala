@@ -53,6 +53,7 @@ case class SearchResultItem(
     thumbnail: String,
     displayFields: List[DisplayField],
     displayOptions: Option[DisplayOptions],
+    keywordFoundInAttachment: Option[Boolean],
     links: java.util.Map[String, String]
 )
 

@@ -21,6 +21,7 @@ package com.tle.core.services.item;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.searching.SearchResults;
+import java.util.List;
 
 public interface FreetextSearchResults<T extends FreetextResult> extends SearchResults<Item> {
   T getResultData(int index);
@@ -28,4 +29,6 @@ public interface FreetextSearchResults<T extends FreetextResult> extends SearchR
   Item getItem(int index);
 
   ItemKey getItemKey(int index);
+
+  List<T> getSearchResults();
 }
