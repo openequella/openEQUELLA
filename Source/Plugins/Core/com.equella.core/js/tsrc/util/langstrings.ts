@@ -368,6 +368,11 @@ export const languageStrings = {
       attachments: "Attachments",
       dateModified: "Modified",
     },
+    statusSelector: {
+      all: "All",
+      live: "Live",
+      title: "Status",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",

@@ -63,6 +63,7 @@ export const searchItems = ({
   rawMode,
   lastModifiedDateRange,
   owner,
+  status = liveStatuses,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -72,10 +73,7 @@ export const searchItems = ({
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: [
-      "LIVE" as OEQ.Common.ItemStatus,
-      "REVIEW" as OEQ.Common.ItemStatus,
-    ],
+    status: status,
     order: sortOrder,
     collections: collections?.map((collection) => collection.uuid),
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
@@ -84,6 +82,30 @@ export const searchItems = ({
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
+
+/**
+ * List of status which are considered 'live'.
+ */
+export const liveStatuses: OEQ.Common.ItemStatus[] = [
+  OEQ.Common.ItemStatus.LIVE,
+  OEQ.Common.ItemStatus.REVIEW,
+];
+
+/**
+ * Predicate for checking if a provided status is not one of `liveStatuses`.
+ * @param status a status to check for liveliness
+ */
+export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
+  !liveStatuses.find((liveStatus) => status === liveStatus);
+
+/**
+ * List of statuses which are considered non-live.
+ */
+export const nonLiveStatuses: OEQ.Common.ItemStatus[] = Object.keys(
+  OEQ.Common.ItemStatus
+)
+  .map((status) => status as OEQ.Common.ItemStatus)
+  .filter(nonLiveStatus);
 
 /**
  * Type of all search options on Search page
@@ -122,4 +144,8 @@ export interface SearchOptions {
    * A user for which to filter the search by based on ownership of items.
    */
   owner?: OEQ.UserQuery.UserDetails;
+  /**
+   * Filter search results to only include items with the specified statuses.
+   */
+  status?: OEQ.Common.ItemStatus[];
 }
