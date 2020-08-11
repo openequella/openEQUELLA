@@ -321,22 +321,8 @@ export const languageStrings = {
     rawSearchTooltip: "Supports use of Apache Lucene search syntax",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
-    searchresult: {
-      attachments: "Attachments",
-      dateModified: "Modified",
-    },
-    order: {
-      relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
-    },
-    filterOwner: {
-      title: "Owner",
-      chip: "Owner: ",
-      clear: "Clear owner selector",
-      selectTitle: "Select user to filter by",
+    collectionSelector: {
+      title: "Collections",
     },
     filterLast: {
       label: "Modified within last",
@@ -349,6 +335,25 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
+    filterOwner: {
+      title: "Owner",
+      chip: "Owner: ",
+      clear: "Clear owner selector",
+      selectTitle: "Select user to filter by",
+    },
+    lastModifiedDateSelector: {
+      title: "Date modified",
+      startDatePicker: "Modified after",
+      endDatePicker: "Modified before",
+      quickOptionDropdown: "Last modified date",
+    },
+    order: {
+      relevance: "Relevance",
+      name: "Name",
+      datemodified: "Date modifed",
+      datecreated: "Date created",
+      rating: "Rating",
+    },
     pagination: {
       firstPageButton: "First page",
       previousPageButton: "Previous page",
@@ -359,14 +364,9 @@ export const languageStrings = {
     refineSearchPanel: {
       title: "Refine search",
     },
-    collectionSelector: {
-      title: "Collections",
-    },
-    lastModifiedDateSelector: {
-      title: "Date modified",
-      startDatePicker: "Modified after",
-      endDatePicker: "Modified before",
-      quickOptionDropdown: "Last modified date",
+    searchresult: {
+      attachments: "Attachments",
+      dateModified: "Modified",
     },
   },
   "com.equella.core.searching.search": {
