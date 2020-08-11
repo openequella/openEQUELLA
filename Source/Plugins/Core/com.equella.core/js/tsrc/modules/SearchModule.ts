@@ -62,6 +62,7 @@ export const searchItems = ({
   collections,
   rawMode,
   lastModifiedDateRange,
+  owner,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -79,6 +80,7 @@ export const searchItems = ({
     collections: collections?.map((collection) => collection.uuid),
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
+    owner: owner?.id,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -116,4 +118,8 @@ export interface SearchOptions {
    * A date range for searching items by last modified date.
    */
   lastModifiedDateRange?: DateRange;
+  /**
+   * A user for which to filter the search by based on ownership of items.
+   */
+  owner?: OEQ.UserQuery.UserDetails;
 }
