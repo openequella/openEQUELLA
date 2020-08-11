@@ -86,4 +86,6 @@ public interface Search {
   String getPrivilegeToCollect();
 
   Collection<DateFilter> getDateFilters();
+
+  boolean isFromSearch2API();
 }

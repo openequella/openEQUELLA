@@ -18,7 +18,8 @@
 
 package com.tle.web.api.search
 
-import java.text.{ParseException, SimpleDateFormat}
+import java.time.format.DateTimeParseException
+import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
@@ -60,6 +61,7 @@ object SearchHelper {
     */
   def createSearch(params: SearchParam): DefaultSearch = {
     val search = new DefaultSearch
+    search.setFromSearch2API(true)
     search.setQuery(params.query)
     search.setOwner(params.owner)
 
@@ -74,7 +76,7 @@ object SearchHelper {
     search.setItemStatuses(itemStatus.orNull)
 
     val modifiedBefore = handleModifiedDate(params.modifiedBefore)
-    val modifiedAfter  = handleModifiedDate(params.modifiedAfter)
+    val modifiedAfter  = handleModifiedDate(params.modifiedAfter, isStart = true)
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
@@ -118,17 +120,22 @@ object SearchHelper {
 
   /**
     * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
-    * @param date The string to parse.
-    * @return An option which wraps an instace of Date.
+    * @param dateString The string to parse.
+    * @param isStart True if the date is the start of a date range.
+    * @return An option which wraps an instance of Date.
     */
-  def handleModifiedDate(date: String): Option[Date] = {
-    if (Check.isEmpty(date)) {
+  def handleModifiedDate(dateString: String, isStart: Boolean = false): Option[Date] = {
+    if (Check.isEmpty(dateString)) {
       return None
     }
     try {
-      Some(parseDate(date, new SimpleDateFormat("yyyy-MM-dd")))
+      // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
+      val time     = if (isStart) LocalTime.MIN else LocalTime.MAX
+      val dateTime = LocalDateTime.of(LocalDate.parse(dateString), time)
+      //Need to convert back to util.date to work compatibly with old methods.
+      Some(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant))
     } catch {
-      case _: ParseException => throw new BadRequestException(s"Invalid date: $date")
+      case _: DateTimeParseException => throw new BadRequestException(s"Invalid date: $dateString")
     }
   }
 

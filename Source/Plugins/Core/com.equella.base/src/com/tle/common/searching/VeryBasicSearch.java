@@ -36,6 +36,7 @@ public class VeryBasicSearch implements Search, Serializable {
   protected String query;
   protected Collection<String> queryTokens;
   protected FreeTextQuery freeTextQuery;
+  private boolean fromSearch2API;
 
   public VeryBasicSearch() {}
 
@@ -135,6 +136,15 @@ public class VeryBasicSearch implements Search, Serializable {
   @Override
   public Collection<DateFilter> getDateFilters() {
     return null;
+  }
+
+  @Override
+  public boolean isFromSearch2API() {
+    return fromSearch2API;
+  }
+
+  public void setFromSearch2API(boolean fromSearch2API) {
+    this.fromSearch2API = fromSearch2API;
   }
 
   @Override
