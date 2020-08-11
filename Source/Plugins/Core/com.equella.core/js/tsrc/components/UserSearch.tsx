@@ -19,6 +19,7 @@ import * as React from "react";
 import { KeyboardEvent, useState } from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  CircularProgress,
   Grid,
   IconButton,
   List,
@@ -66,20 +67,25 @@ const UserSearch = ({
     OEQ.Common.UuidString | undefined
   >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   // Simple helper function to assist with providing useful id's for testing and theming.
   const genId = (suffix?: string) =>
     (id ? `${id}-` : "") + "UserSearch" + (suffix ? `-${suffix}` : "");
 
-  const handleOnSearch = () =>
-    userListProvider(query).then((userDetails: OEQ.UserQuery.UserDetails[]) => {
-      setHasSearched(true);
-      setUsers(
-        userDetails.sort((a, b) =>
-          a.username.toLowerCase().localeCompare(b.username.toLowerCase())
-        )
-      );
-    });
+  const handleOnSearch = () => {
+    setShowSpinner(true);
+    userListProvider(query)
+      .then((userDetails: OEQ.UserQuery.UserDetails[]) => {
+        setHasSearched(true);
+        setUsers(
+          userDetails.sort((a, b) =>
+            a.username.toLowerCase().localeCompare(b.username.toLowerCase())
+          )
+        );
+      })
+      .finally(() => setShowSpinner(false));
+  };
 
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
@@ -88,6 +94,7 @@ const UserSearch = ({
         setUsers([]);
         setSelectedUser(undefined);
         setHasSearched(false);
+        event.stopPropagation();
         break;
       case "Enter":
         handleOnSearch();
@@ -102,7 +109,7 @@ const UserSearch = ({
           <SearchIcon />
         </IconButton>
       </Grid>
-      <Grid item>
+      <Grid item style={{ flexGrow: 1 }}>
         <TextField
           label={queryFieldLabel}
           value={query}
@@ -111,6 +118,7 @@ const UserSearch = ({
             setQuery(event.target.value);
           }}
           onKeyDown={handleQueryFieldKeypress}
+          fullWidth
         />
       </Grid>
     </Grid>
@@ -162,13 +170,21 @@ const UserSearch = ({
     );
   };
 
+  const spinner = (
+    <Grid container justify="center">
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>
+  );
+
   return (
     <Grid id={genId()} container direction="column" spacing={1}>
       <Grid item xs={12}>
         {queryBar}
       </Grid>
       <Grid item xs={12}>
-        {userList()}
+        {showSpinner ? spinner : userList()}
       </Grid>
     </Grid>
   );

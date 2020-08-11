@@ -28,38 +28,125 @@ import { act } from "react-dom/test-utils";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
+import * as UserModule from "../../../tsrc/modules/UserModule";
 import { BrowserRouter } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
 import { paginatorControls } from "../components/SearchPaginationTestHelper";
 import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
-import { render, waitFor, screen, fireEvent } from "@testing-library/react";
+import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import {
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
+import {
+  clearSelection,
+  selectUser,
+} from "./components/OwnerSelectTestHelpers";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
 const FIRST_PAGE_PAGINATION = "1-10 of 12";
+
+const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
+const mockListUsers = jest.spyOn(UserModule, "listUsers");
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
-const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
-const searchSettingPromise = mockSearchSettings.mockImplementation(() =>
-  Promise.resolve(SearchSettingsModule.defaultSearchSettings)
-);
-const searchPromise = mockSearch.mockImplementation(() =>
-  Promise.resolve(getSearchResult)
-);
-mockCollections.mockImplementation(() => Promise.resolve(getCollectionMap));
 window.scrollTo = jest.fn();
+const searchSettingPromise = mockSearchSettings.mockResolvedValue(
+  SearchSettingsModule.defaultSearchSettings
+);
+const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
+mockCollections.mockResolvedValue(getCollectionMap);
+mockListUsers.mockResolvedValue(UserSearchMock.users);
+
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: SearchSettingsModule.SortOrder.RANK,
   dateRangeQuickModeEnabled: true,
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
+
+describe("Refine search by Owner", () => {
+  const testUser = UserSearchMock.users[0];
+  let page: RenderResult;
+
+  beforeEach(async () => {
+    window.history.replaceState({}, "Clean history state");
+    page = render(
+      <BrowserRouter>
+        <SearchPage updateTemplate={jest.fn()} />{" "}
+      </BrowserRouter>
+    );
+    // Wait for the first completion of initial search
+    await act(async () => {
+      await searchPromise;
+    });
+  });
+
+  afterEach(() => {
+    // Needed to keep Enzyme tests below happy
+    jest.clearAllMocks();
+  });
+
+  const getOwnerFilter = (container: Element): HTMLElement => {
+    const e = container.querySelector("#RefineSearchPanel-OwnerSelector");
+    if (!e) {
+      throw new Error("Failed to find OwnerSelector");
+    }
+
+    return e as HTMLElement;
+  };
+
+  const confirmSelectedUser = (username: string) => screen.getByText(username);
+
+  const confirmSelectedUserCleared = (username: string) => {
+    let stillPresent = true;
+    try {
+      confirmSelectedUser(username);
+    } catch {
+      stillPresent = false;
+    }
+    if (stillPresent) {
+      throw new Error("Can still see the username: " + username);
+    }
+  };
+
+  const _selectUser = async (container: HTMLElement, username: string) => {
+    await selectUser(getOwnerFilter(container), username);
+    // The selected user will now be displayed
+    await waitFor(() => confirmSelectedUser(username));
+  };
+
+  it("should be possible to set the owner", async () => {
+    await _selectUser(page.container, testUser.username);
+
+    expect(SearchModule.searchItems).toHaveBeenCalledWith({
+      ...defaultSearchPageOptions,
+      owner: testUser,
+    });
+  });
+
+  it("should be possible to clear the owner filter", async () => {
+    await _selectUser(page.container, testUser.username);
+
+    // Now clear the selection
+    clearSelection();
+    await waitFor(() => confirmSelectedUserCleared(testUser.username));
+
+    expect(SearchModule.searchItems).toHaveBeenCalledWith(
+      defaultSearchPageOptions
+    );
+  });
+});
 
 describe("<SearchPage/> with react-testing-library", () => {
   let container: HTMLElement = document.createElement("div");

@@ -51,7 +51,7 @@ object PagedResults {
       includeDisabled: Boolean): PagingBean[BEB] = {
     val (firstOffset, lengthFromToken) = decodeOffsetStart(resumption)
     // If resumption token provides a length then use it, or otherwise use the one from params.
-    val _length = if (lengthFromToken.isDefined) lengthFromToken.get else length
+    val _length = lengthFromToken.getOrElse(length)
     val privilege =
       if (_privilege.isEmpty) Set("LIST_" + res.getPrivilegeType) else _privilege.asScala.toSet
     val forFull = Set("VIEW_" + res.getPrivilegeType, "EDIT_" + res.getPrivilegeType)

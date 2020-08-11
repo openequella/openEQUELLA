@@ -335,6 +335,7 @@ export const languageStrings = {
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
+      clear: "Clear owner selector",
       selectTitle: "Select user to filter by",
     },
     filterLast: {
