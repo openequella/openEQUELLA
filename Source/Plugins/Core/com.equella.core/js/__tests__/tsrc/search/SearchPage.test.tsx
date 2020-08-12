@@ -41,6 +41,7 @@ import {
   screen,
   waitFor,
   fireEvent,
+  cleanup,
 } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -51,7 +52,6 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
-const FIRST_PAGE_PAGINATION = "1-10 of 12";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -149,31 +149,58 @@ describe("Refine search by Owner", () => {
 });
 
 describe("<SearchPage/> with react-testing-library", () => {
-  let container: HTMLElement = document.createElement("div");
+  let page: RenderResult;
   const renderSearchPage = async () => {
-    const { container } = render(
+    page = render(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />
       </BrowserRouter>
     );
-    // When Pagination shows the correct data, the render is completed.
-    await waitFor(() =>
-      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
-    );
-    return container;
-  };
 
+    await act(async () => {
+      await searchPromise;
+    });
+  };
   beforeEach(async () => {
-    container = await renderSearchPage();
+    await renderSearchPage();
   });
 
   afterEach(() => {
+    cleanup();
     jest.clearAllMocks();
+  });
+
+  it("should not show Owner filter if it is disabled", async () => {
+    const ownerSelector = screen.queryByText("Owner", { selector: "h6" });
+    expect(ownerSelector).toBeInTheDocument();
+    // Change the setting to disable Owner filter and then re-render.
+    mockSearchSettings.mockResolvedValueOnce({
+      ...SearchSettingsModule.defaultSearchSettings,
+      searchingDisableOwnerFilter: true,
+    });
+    page.unmount();
+    await renderSearchPage();
+    expect(ownerSelector).not.toBeInTheDocument();
+  });
+
+  it("should not show Date modified filter if it is disabled", async () => {
+    const dateModifiedSelector = screen.queryByText("Date modified", {
+      selector: "h6",
+    });
+    expect(dateModifiedSelector).toBeInTheDocument();
+    // Change the setting to disable Owner filter and then re-render.
+    mockSearchSettings.mockResolvedValueOnce({
+      ...SearchSettingsModule.defaultSearchSettings,
+      searchingDisableDateModifiedFilter: true,
+    });
+    page.unmount();
+    await renderSearchPage();
+    expect(dateModifiedSelector).not.toBeInTheDocument();
   });
 
   it("should clear search options and perform a new search", async () => {
     const query = "clear query";
-    const queryBar = container.querySelector("#searchBar");
+    const queryBar = page.container.querySelector("#searchBar");
     if (!queryBar) {
       throw new Error("Failed to locate the search bar, unable to continue.");
     }
@@ -188,10 +215,14 @@ describe("<SearchPage/> with react-testing-library", () => {
     jest.useFakeTimers("modern");
     // Change search options now.
     fireEvent.change(queryBar, { target: { value: query } });
+    await act(async () => {
+      await jest.advanceTimersByTime(1000);
+    });
+
     await waitFor(() => {
       expect(queryBar).toHaveDisplayValue(query);
-      jest.advanceTimersByTime(1000);
     });
+
     fireEvent.change(sortingDropdown, {
       target: { value: SearchSettingsModule.SortOrder.NAME },
     });
