@@ -64,7 +64,7 @@ const StatusSelector = ({
       </Button>
       <Button
         variant={variant(() => !isLive(value))}
-        onClick={() => onChange(nonLiveStatuses.concat(liveStatuses))}
+        onClick={() => onChange(liveStatuses.concat(nonLiveStatuses))}
       >
         {languageStrings.searchpage.statusSelector.all}
       </Button>

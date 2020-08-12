@@ -15,39 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CircularProgress } from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
+import "@testing-library/jest-dom/extend-expect";
+import {
+  fireEvent,
+  getByText,
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { mount, ReactWrapper } from "enzyme";
+import * as React from "react";
+import { act } from "react-dom/test-utils";
+import { BrowserRouter } from "react-router-dom";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
   getEmptySearchResult,
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
-import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import * as React from "react";
-import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
-import { mount, ReactWrapper } from "enzyme";
-import { act } from "react-dom/test-utils";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
+import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import {
+  liveStatuses,
+  nonLiveStatuses,
+} from "../../../tsrc/modules/SearchModule";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import { BrowserRouter } from "react-router-dom";
-import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import { paginatorControls } from "../components/SearchPaginationTestHelper";
-import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
-import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import {
-  render,
-  RenderResult,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
 import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
-import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -75,21 +81,86 @@ const defaultSearchPageOptions: SearchPageOptions = {
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
+const waitForSearch = async () =>
+  await act(async () => {
+    await searchPromise;
+  });
+
+const renderSearchPage = async (): Promise<RenderResult> => {
+  window.history.replaceState({}, "Clean history state");
+  const page = render(
+    <BrowserRouter>
+      <SearchPage updateTemplate={jest.fn()} />{" "}
+    </BrowserRouter>
+  );
+  // Wait for the first completion of initial search
+  await waitForSearch();
+
+  return page;
+};
+
+const getRefineSearchComponent = (
+  container: Element,
+  componentSuffix: string
+) => {
+  const id = `#RefineSearchPanel-${componentSuffix}`;
+  const e = container.querySelector(id);
+  if (!e) {
+    throw new Error(`Failed to find ${id}`);
+  }
+
+  return e as HTMLElement;
+};
+
+describe("Refine search to include all statuses", () => {
+  const {
+    live: liveButtonLabel,
+    all: allButtonLabel,
+  } = languageStrings.searchpage.statusSelector;
+
+  const expectSearchItemsCalledWithStatus = (status: OEQ.Common.ItemStatus[]) =>
+    expect(mockSearch).toHaveBeenCalledWith({
+      ...defaultSearchPageOptions,
+      status: status,
+    });
+
+  const getStatusSelector = (container: Element): HTMLElement =>
+    getRefineSearchComponent(container, "StatusSelector");
+
+  const selectStatus = (container: Element, status: string) =>
+    fireEvent.click(getByText(getStatusSelector(container), status));
+
+  afterEach(() => {
+    // Needed to keep Enzyme tests below happy
+    jest.clearAllMocks();
+  });
+
+  it("Should default to LIVE statuses", async () => {
+    await renderSearchPage();
+    expectSearchItemsCalledWithStatus(liveStatuses);
+  });
+
+  it("Should search for items of all statuses if ALL is clicked", async () => {
+    const page = await renderSearchPage();
+    selectStatus(page.container, allButtonLabel);
+    await waitForSearch();
+    expectSearchItemsCalledWithStatus(liveStatuses.concat(nonLiveStatuses));
+  });
+
+  it("Should search for items of 'live' statuses if LIVE is clicked", async () => {
+    const page = await renderSearchPage();
+    selectStatus(page.container, liveButtonLabel);
+    await waitForSearch();
+    expectSearchItemsCalledWithStatus(liveStatuses);
+  });
+});
+
 describe("Refine search by Owner", () => {
   const testUser = UserSearchMock.users[0];
   let page: RenderResult;
 
   beforeEach(async () => {
-    window.history.replaceState({}, "Clean history state");
-    page = render(
-      <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />{" "}
-      </BrowserRouter>
-    );
-    // Wait for the first completion of initial search
-    await act(async () => {
-      await searchPromise;
-    });
+    page = await renderSearchPage();
   });
 
   afterEach(() => {
@@ -97,14 +168,8 @@ describe("Refine search by Owner", () => {
     jest.clearAllMocks();
   });
 
-  const getOwnerFilter = (container: Element): HTMLElement => {
-    const e = container.querySelector("#RefineSearchPanel-OwnerSelector");
-    if (!e) {
-      throw new Error("Failed to find OwnerSelector");
-    }
-
-    return e as HTMLElement;
-  };
+  const getOwnerSelector = (container: Element): HTMLElement =>
+    getRefineSearchComponent(container, "OwnerSelector");
 
   const confirmSelectedUser = (username: string) => screen.getByText(username);
 
@@ -121,7 +186,7 @@ describe("Refine search by Owner", () => {
   };
 
   const _selectUser = async (container: HTMLElement, username: string) => {
-    await selectUser(getOwnerFilter(container), username);
+    await selectUser(getOwnerSelector(container), username);
     // The selected user will now be displayed
     await waitFor(() => confirmSelectedUser(username));
   };
