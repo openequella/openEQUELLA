@@ -123,7 +123,7 @@ object SearchHelper {
     * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
     * @param dateString The string to parse.
     * @param time The time added to a date.
-    * @return An option which wraps an instance of Date.
+    * @return An Option which wraps an instance of Date, combining the successfully parsed dateString and provided time (based on the system's default timezone).
     */
   def handleModifiedDate(dateString: String, time: LocalTime): Option[Date] = {
     if (Check.isEmpty(dateString)) {

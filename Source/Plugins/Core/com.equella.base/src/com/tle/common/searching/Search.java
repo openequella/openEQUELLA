@@ -88,7 +88,7 @@ public interface Search {
   Collection<DateFilter> getDateFilters();
 
   /**
-   * Indicate if the server time zone is needed in searches.
+   * Indicates if the server time zone should be included in searches.
    *
    * @return True if server time zone is used or otherwise false.
    */
