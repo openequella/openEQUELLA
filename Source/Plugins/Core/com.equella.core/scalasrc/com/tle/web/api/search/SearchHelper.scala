@@ -18,7 +18,8 @@
 
 package com.tle.web.api.search
 
-import java.text.{ParseException, SimpleDateFormat}
+import java.time.format.DateTimeParseException
+import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
@@ -60,6 +61,7 @@ object SearchHelper {
     */
   def createSearch(params: SearchParam): DefaultSearch = {
     val search = new DefaultSearch
+    search.setUseServerTimeZone(true)
     search.setQuery(params.query)
     search.setOwner(params.owner)
 
@@ -73,8 +75,9 @@ object SearchHelper {
     val itemStatus = if (params.status.isEmpty) None else Some(params.status.toList.asJava)
     search.setItemStatuses(itemStatus.orNull)
 
-    val modifiedBefore = handleModifiedDate(params.modifiedBefore)
-    val modifiedAfter  = handleModifiedDate(params.modifiedAfter)
+    // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
+    val modifiedAfter  = handleModifiedDate(params.modifiedAfter, LocalTime.MIN)
+    val modifiedBefore = handleModifiedDate(params.modifiedBefore, LocalTime.MAX)
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
@@ -118,17 +121,20 @@ object SearchHelper {
 
   /**
     * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
-    * @param date The string to parse.
-    * @return An option which wraps an instace of Date.
+    * @param dateString The string to parse.
+    * @param time The time added to a date.
+    * @return An Option which wraps an instance of Date, combining the successfully parsed dateString and provided time (based on the system's default timezone).
     */
-  def handleModifiedDate(date: String): Option[Date] = {
-    if (Check.isEmpty(date)) {
+  def handleModifiedDate(dateString: String, time: LocalTime): Option[Date] = {
+    if (Check.isEmpty(dateString)) {
       return None
     }
     try {
-      Some(parseDate(date, new SimpleDateFormat("yyyy-MM-dd")))
+      val dateTime = LocalDateTime.of(LocalDate.parse(dateString), time)
+      //Need to convert back to util.date to work compatibly with old methods.
+      Some(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant))
     } catch {
-      case _: ParseException => throw new BadRequestException(s"Invalid date: $date")
+      case _: DateTimeParseException => throw new BadRequestException(s"Invalid date: $dateString")
     }
   }
 

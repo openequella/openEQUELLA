@@ -985,7 +985,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
     Date[] dateRange = request.getDateRange();
     if (dateRange != null) {
-      filters.add(createDateFilter(FreeTextQuery.FIELD_REALLASTMODIFIED, dateRange, Dates.ISO));
+      filters.add(
+          createDateFilter(
+              FreeTextQuery.FIELD_REALLASTMODIFIED,
+              dateRange,
+              Dates.ISO,
+              request.useServerTimeZone()));
     }
 
     Collection<com.tle.common.searching.DateFilter> dateFilters = request.getDateFilters();
@@ -994,7 +999,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         Date[] range = dateFilter.getRange();
         String indexFieldName = dateFilter.getIndexFieldName();
         if (dateFilter.getFormat() == Format.ISO) {
-          filters.add(createDateFilter(indexFieldName, range, Dates.ISO));
+          filters.add(
+              createDateFilter(indexFieldName, range, Dates.ISO, request.useServerTimeZone()));
         } else {
           Long start = range[0] != null ? range[0].getTime() : null;
           Long end = range[1] != null ? range[1].getTime() : null;
@@ -1031,11 +1037,17 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return filters;
   }
 
-  protected DateFilter createDateFilter(String fieldName, Date[] range, Dates indexDateFormat) {
+  protected DateFilter createDateFilter(
+      String fieldName, Date[] range, Dates indexDateFormat, boolean useServerTimeZone) {
     if (range.length != 2 || (range[0] != null && range[1] != null && range[0].after(range[1]))) {
       throw new InvalidDateRangeException();
     }
-    return new DateFilter(fieldName, range[0], range[1], indexDateFormat, null);
+    return new DateFilter(
+        fieldName,
+        range[0],
+        range[1],
+        indexDateFormat,
+        useServerTimeZone ? TimeZone.getDefault() : null);
   }
 
   /**
