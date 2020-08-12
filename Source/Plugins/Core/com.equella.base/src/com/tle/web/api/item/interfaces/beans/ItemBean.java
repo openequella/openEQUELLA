@@ -195,12 +195,4 @@ public class ItemBean extends AbstractExtendableBean {
   public void setExportDetails(ItemExportBean exportDetails) {
     this.exportDetails = exportDetails;
   }
-
-  public boolean isKeyWordFoundInAttachment() {
-    return isKeyWordFoundInAttachment;
-  }
-
-  public void setKeyWordFoundInAttachment(boolean keyWordFoundInAttachment) {
-    isKeyWordFoundInAttachment = keyWordFoundInAttachment;
-  }
 }

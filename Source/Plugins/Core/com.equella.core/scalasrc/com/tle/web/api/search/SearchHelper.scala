@@ -35,12 +35,10 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{
   AbstractFileAttachmentBean,
-  EquellaItemBean,
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -175,13 +173,14 @@ object SearchHelper {
   }
 
   /**
-    * Convert a tuple of ItemIdKey and EquellaItemBean to an instance of SearchResultItem.
-    * @param itemKeyAndBean An EquellaItemBean and its ItemIdKey.
+    * Convert a SearchItem to an instance of SearchResultItem.
+    * @param item Represents a SearchItem, containing an ItemIdKey, EquellaItemBean, and
+    * Boolean indicating if a search term has been found inside attachment content
     * @return An instance of SearchResultItem.
     */
-  def convertToItem(itemKeyAndBean: (ItemIdKey, EquellaItemBean)): SearchResultItem = {
-    val key          = itemKeyAndBean._1
-    val bean         = itemKeyAndBean._2
+  def convertToItem(item: SearchItem): SearchResultItem = {
+    val key          = item.idKey
+    val bean         = item.bean
     val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
     SearchResultItem(
       uuid = key.getUuid,
@@ -197,7 +196,7 @@ object SearchHelper {
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
-      keywordFoundInAttachment = Option(bean.isKeyWordFoundInAttachment),
+      keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean)
     )
   }

@@ -18,9 +18,8 @@
 
 package com.tle.web.api.search
 
-import com.tle.beans.item.{Item, ItemIdKey}
-import com.tle.common.searching.{SearchResults, SimpleSearchResults}
-import com.tle.core.services.item.{FreetextResult, FreetextSearchResults, StdFreetextResults}
+import com.tle.beans.item.{ItemIdKey}
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
@@ -51,22 +50,32 @@ class SearchResource {
       item.getItemIdKey
     }
     val serializer = createSerializer(itemIds.toList)
-    val items = for { resultData <- searchResults.getSearchResults.asScala } yield {
-      val keyFound = resultData.isKeywordFoundInAttachment
-      val itemId   = resultData.getItemIdKey
-      val itemBean = new EquellaItemBean
-      itemBean.setKeyWordFoundInAttachment(keyFound)
-      itemBean.setUuid(itemId.getUuid)
-      itemBean.setVersion(itemId.getVersion)
-      serializer.writeItemBeanResult(itemBean, itemId.getKey)
-      LegacyGuice.itemLinkService.addLinks(itemBean)
-      itemId -> itemBean
+    val items: List[SearchItem] = {
+      val items = for { resultData <- searchResults.getSearchResults.asScala } yield {
+        val keywordFoundInAttachment = resultData.isKeywordFoundInAttachment
+        val itemId                   = resultData.getItemIdKey
+        val itemBean                 = new EquellaItemBean
+        itemBean.setUuid(itemId.getUuid)
+        itemBean.setVersion(itemId.getVersion)
+        serializer.writeItemBeanResult(itemBean, itemId.getKey)
+        LegacyGuice.itemLinkService.addLinks(itemBean)
+        itemId -> itemBean
+        SearchItem(itemId, itemBean, keywordFoundInAttachment)
+      }
+      items.toList
     }
-
     val result = SearchResult(searchResults.getOffset,
                               searchResults.getCount,
                               searchResults.getAvailable,
-                              items.toList.map(convertToItem))
+                              items.map(convertToItem))
     Response.ok.entity(result).build()
   }
 }
+
+/**
+  * This class provides general information of an Item to be used inside a SearchResult.
+  * @param idKey
+  * @param bean An EquellaItemBean
+  * @param keywordFound Indicates if a search term has been found inside attachment content
+  */
+case class SearchItem(idKey: ItemIdKey, bean: EquellaItemBean, keywordFound: Boolean)
