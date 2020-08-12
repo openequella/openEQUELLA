@@ -75,8 +75,9 @@ object SearchHelper {
     val itemStatus = if (params.status.isEmpty) None else Some(params.status.toList.asJava)
     search.setItemStatuses(itemStatus.orNull)
 
-    val modifiedBefore = handleModifiedDate(params.modifiedBefore)
-    val modifiedAfter  = handleModifiedDate(params.modifiedAfter, isStart = true)
+    // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
+    val modifiedAfter  = handleModifiedDate(params.modifiedAfter, LocalTime.MIN)
+    val modifiedBefore = handleModifiedDate(params.modifiedBefore, LocalTime.MAX)
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
@@ -121,16 +122,14 @@ object SearchHelper {
   /**
     * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
     * @param dateString The string to parse.
-    * @param isStart True if the date is the start of a date range.
+    * @param time The time added to a date.
     * @return An option which wraps an instance of Date.
     */
-  def handleModifiedDate(dateString: String, isStart: Boolean = false): Option[Date] = {
+  def handleModifiedDate(dateString: String, time: LocalTime): Option[Date] = {
     if (Check.isEmpty(dateString)) {
       return None
     }
     try {
-      // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
-      val time     = if (isStart) LocalTime.MIN else LocalTime.MAX
       val dateTime = LocalDateTime.of(LocalDate.parse(dateString), time)
       //Need to convert back to util.date to work compatibly with old methods.
       Some(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant))
