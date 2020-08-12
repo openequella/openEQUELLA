@@ -186,7 +186,7 @@
 
 	// move a file into here
 	staging.move(&apos;A.txt&apos;, &apos;test2/sub1/subsub1a/A.txt&apos;);
-	
+
 	staging.createFolder(&apos;test2/sub1/subsub1a&apos;);
 
 	// make sure the file was un-harmed
@@ -212,7 +212,7 @@
 
 Contents:
 &lt;div id=&quot;ascMessage&quot;&gt;
-	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+	&lt;span&gt;${attributes.get(&apos;content&apos;)}&lt;/span&gt;
 &lt;/div&gt;</string>
                 </entry>
                 <entry>

@@ -146,9 +146,9 @@
                   <string>MarkUp</string>
                   <string>The XML:
 &lt;div id=&quot;ascMessage&quot;&gt;
-	&lt;pre&gt;
+	&lt;span&gt;
 		${xml.asString()?html}
-	&lt;/pre&gt;
+	&lt;/span&gt;
 &lt;/div&gt;</string>
                 </entry>
                 <entry>

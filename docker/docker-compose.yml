@@ -49,6 +49,8 @@ services:
     restart: always
     networks:
       - oeq-cluster
+    environment:
+      - POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
 
   traefik:
     image: traefik:1.7.26
