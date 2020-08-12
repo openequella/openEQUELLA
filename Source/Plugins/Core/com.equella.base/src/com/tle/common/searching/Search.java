@@ -87,5 +87,10 @@ public interface Search {
 
   Collection<DateFilter> getDateFilters();
 
-  boolean isFromSearch2API();
+  /**
+   * Indicate if the server time zone is needed in searches.
+   *
+   * @return True if server time zone is used or otherwise false.
+   */
+  boolean useServerTimeZone();
 }

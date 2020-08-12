@@ -61,7 +61,7 @@ object SearchHelper {
     */
   def createSearch(params: SearchParam): DefaultSearch = {
     val search = new DefaultSearch
-    search.setFromSearch2API(true)
+    search.setUseServerTimeZone(true)
     search.setQuery(params.query)
     search.setOwner(params.owner)
 

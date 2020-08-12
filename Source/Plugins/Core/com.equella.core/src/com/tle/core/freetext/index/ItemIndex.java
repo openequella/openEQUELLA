@@ -990,7 +990,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               FreeTextQuery.FIELD_REALLASTMODIFIED,
               dateRange,
               Dates.ISO,
-              request.isFromSearch2API()));
+              request.useServerTimeZone()));
     }
 
     Collection<com.tle.common.searching.DateFilter> dateFilters = request.getDateFilters();
@@ -1000,7 +1000,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         String indexFieldName = dateFilter.getIndexFieldName();
         if (dateFilter.getFormat() == Format.ISO) {
           filters.add(
-              createDateFilter(indexFieldName, range, Dates.ISO, request.isFromSearch2API()));
+              createDateFilter(indexFieldName, range, Dates.ISO, request.useServerTimeZone()));
         } else {
           Long start = range[0] != null ? range[0].getTime() : null;
           Long end = range[1] != null ? range[1].getTime() : null;
@@ -1038,7 +1038,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   protected DateFilter createDateFilter(
-      String fieldName, Date[] range, Dates indexDateFormat, boolean isFromSearch2API) {
+      String fieldName, Date[] range, Dates indexDateFormat, boolean useServerTimeZone) {
     if (range.length != 2 || (range[0] != null && range[1] != null && range[0].after(range[1]))) {
       throw new InvalidDateRangeException();
     }
@@ -1047,7 +1047,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         range[0],
         range[1],
         indexDateFormat,
-        isFromSearch2API ? TimeZone.getDefault() : null);
+        useServerTimeZone ? TimeZone.getDefault() : null);
   }
 
   /**

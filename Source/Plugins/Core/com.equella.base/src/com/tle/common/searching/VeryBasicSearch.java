@@ -36,7 +36,7 @@ public class VeryBasicSearch implements Search, Serializable {
   protected String query;
   protected Collection<String> queryTokens;
   protected FreeTextQuery freeTextQuery;
-  private boolean fromSearch2API;
+  private boolean useServerTimeZone;
 
   public VeryBasicSearch() {}
 
@@ -139,12 +139,12 @@ public class VeryBasicSearch implements Search, Serializable {
   }
 
   @Override
-  public boolean isFromSearch2API() {
-    return fromSearch2API;
+  public boolean useServerTimeZone() {
+    return useServerTimeZone;
   }
 
-  public void setFromSearch2API(boolean fromSearch2API) {
-    this.fromSearch2API = fromSearch2API;
+  public void setUseServerTimeZone(boolean useServerTimeZone) {
+    this.useServerTimeZone = useServerTimeZone;
   }
 
   @Override
