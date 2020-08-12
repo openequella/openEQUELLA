@@ -136,7 +136,7 @@ describe("Refine search by status", () => {
   } = languageStrings.searchpage.statusSelector;
 
   const expectSearchItemsCalledWithStatus = (status: OEQ.Common.ItemStatus[]) =>
-    expect(mockSearch).toHaveBeenCalledWith({
+    expect(mockSearch).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       status: status,
     });
