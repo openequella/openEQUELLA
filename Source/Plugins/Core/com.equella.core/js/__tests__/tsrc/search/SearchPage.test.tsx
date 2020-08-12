@@ -81,11 +81,22 @@ const defaultSearchPageOptions: SearchPageOptions = {
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
+/**
+ * Simple helper to wrap the process of waiting for the execution of a search based on checking the
+ * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
+ * something other than the `searchPromise`.
+ */
 const waitForSearch = async () =>
   await act(async () => {
     await searchPromise;
   });
 
+/**
+ * Helper function for the initial render of the `<SearchPage>` for tests below. Also includes
+ * the wait for the initial search call.
+ *
+ * @returns The RenderResult from the `render` of the `<SearchPage>`
+ */
 const renderSearchPage = async (): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
   const page = render(
@@ -99,6 +110,12 @@ const renderSearchPage = async (): Promise<RenderResult> => {
   return page;
 };
 
+/**
+ * Helper function to find individual Refine Search components based on the their `idSuffix`.
+ *
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ */
 const getRefineSearchComponent = (
   container: Element,
   componentSuffix: string
@@ -112,7 +129,7 @@ const getRefineSearchComponent = (
   return e as HTMLElement;
 };
 
-describe("Refine search to include all statuses", () => {
+describe("Refine search by status", () => {
   const {
     live: liveButtonLabel,
     all: allButtonLabel,
