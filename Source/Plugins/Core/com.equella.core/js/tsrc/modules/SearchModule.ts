@@ -86,10 +86,7 @@ export const searchItems = ({
 /**
  * List of status which are considered 'live'.
  */
-export const liveStatuses: OEQ.Common.ItemStatus[] = [
-  OEQ.Common.ItemStatus.LIVE,
-  OEQ.Common.ItemStatus.REVIEW,
-];
+export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
 
 /**
  * Predicate for checking if a provided status is not one of `liveStatuses`.
@@ -101,10 +98,8 @@ export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
 /**
  * List of statuses which are considered non-live.
  */
-export const nonLiveStatuses: OEQ.Common.ItemStatus[] = Object.keys(
-  OEQ.Common.ItemStatus
-)
-  .map((status) => status as OEQ.Common.ItemStatus)
+export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
+  .map((status) => status.value)
   .filter(nonLiveStatus);
 
 /**

@@ -30,10 +30,11 @@
   "dependencies": {
     "axios": "^0.19.2",
     "axios-cookiejar-support": "^1.0.0",
+    "lodash": "^4.17.15",
     "query-string": "^6.12.1",
+    "runtypes": "^5.0.1",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.16.0",
-    "lodash": "^4.17.15"
+    "typescript-is": "^0.16.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
