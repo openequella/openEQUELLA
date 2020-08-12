@@ -41,6 +41,10 @@ export interface RefinePanelControl {
    * Refine control.
    */
   component: ReactNode;
+  /**
+   * True if the control is configured not to be showed.
+   */
+  disabled: boolean;
 }
 
 interface RefinePanelProps {
@@ -57,20 +61,22 @@ export const RefineSearchPanel = ({ controls }: RefinePanelProps) => {
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <List>
-          {controls.map((control) => (
-            <ListItem key={control.title}>
-              <Grid
-                id={`RefineSearchPanel-${control.idSuffix}`}
-                container
-                direction="column"
-              >
-                <Grid item>
-                  <RefinePanelControlHeading title={control.title} />
+          {controls
+            .filter((control) => !control.disabled)
+            .map((control) => (
+              <ListItem key={control.title}>
+                <Grid
+                  id={`RefineSearchPanel-${control.idSuffix}`}
+                  container
+                  direction="column"
+                >
+                  <Grid item>
+                    <RefinePanelControlHeading title={control.title} />
+                  </Grid>
+                  <Grid item>{control.component}</Grid>
                 </Grid>
-                <Grid item>{control.component}</Grid>
-              </Grid>
-            </ListItem>
-          ))}
+              </ListItem>
+            ))}
         </List>
       </CardContent>
     </Card>
