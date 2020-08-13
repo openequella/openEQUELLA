@@ -15,15 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import * as React from "react";
-import { generateFromError } from "../api/errors";
-import { TemplateUpdateProps, templateError } from "../mainui/Template";
+import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
+import StatusSelector from "../../tsrc/search/components/StatusSelector";
 
-export { default as Error } from "./Error";
-export { default as AppBarQuery } from "./AppBarQuery";
+export default {
+  title: "Search/StatusSelector",
+  component: StatusSelector,
+};
 
-export function handleUnexpectedApiError<P extends TemplateUpdateProps>({
-  props: { updateTemplate },
-}: React.Component<P>) {
-  return (err: Error) => updateTemplate(templateError(generateFromError(err)));
-}
+const commonParams = {
+  onChange: action("onChange"),
+};
+
+export const DefaultSelection = () => <StatusSelector {...commonParams} />;
+
+export const LiveSelection = () => (
+  <StatusSelector {...commonParams} value={liveStatuses} />
+);
+
+export const AllSelection = () => (
+  <StatusSelector
+    {...commonParams}
+    value={liveStatuses.concat(nonLiveStatuses)}
+  />
+);

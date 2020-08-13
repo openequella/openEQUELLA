@@ -22,11 +22,31 @@ import { Collection } from "./CollectionsModule";
 import { DateRange } from "../components/DateRangeSelector";
 import { getISODateString } from "../util/Date";
 
+/**
+ * List of status which are considered 'live'.
+ */
+export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
+
+/**
+ * Predicate for checking if a provided status is not one of `liveStatuses`.
+ * @param status a status to check for liveliness
+ */
+export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
+  !liveStatuses.find((liveStatus) => status === liveStatus);
+
+/**
+ * List of statuses which are considered non-live.
+ */
+export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
+  .map((status) => status.value)
+  .filter(nonLiveStatus);
+
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: undefined,
   rawMode: false,
+  status: liveStatuses,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -63,6 +83,7 @@ export const searchItems = ({
   rawMode,
   lastModifiedDateRange,
   owner,
+  status = liveStatuses,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -72,10 +93,7 @@ export const searchItems = ({
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: [
-      "LIVE" as OEQ.Common.ItemStatus,
-      "REVIEW" as OEQ.Common.ItemStatus,
-    ],
+    status: status,
     order: sortOrder,
     collections: collections?.map((collection) => collection.uuid),
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
@@ -122,4 +140,8 @@ export interface SearchOptions {
    * A user for which to filter the search by based on ownership of items.
    */
   owner?: OEQ.UserQuery.UserDetails;
+  /**
+   * Filter search results to only include items with the specified statuses.
+   */
+  status?: OEQ.Common.ItemStatus[];
 }

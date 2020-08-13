@@ -147,10 +147,10 @@
 	findUserDetails += &quot;Username: &quot; + userBean.get(0).getUsername() + &quot;\n&quot;;
 	findUserDetails += &quot;First Name: &quot; + userBean.get(0).getFirstName() + &quot;\n&quot;;
 	findUserDetails += &quot;Last Name: &quot; + userBean.get(0).getLastName() + &quot;\n&quot;;
-	findUserDetails += &quot;Email: &quot; + userBean.get(0).getEmailAddress() + &quot;\n&quot;;	
+	findUserDetails += &quot;Email: &quot; + userBean.get(0).getEmailAddress() + &quot;\n&quot;;
 	attributes.set(&apos;content&apos;,userDetails);
 	attributes.set(&apos;content1&apos;,findUserDetails);
-	
+
 }
 if (request.get(&apos;doit&apos;) == &apos;in group&apos;)
 {
@@ -206,10 +206,10 @@ user.getInformationForGroups(groups);
 &lt;button name=&quot;${prefix}doit&quot; value=&apos;Get Info&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get Info&lt;/button&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;div id=&quot;ascMessage&quot;&gt;
-&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+&lt;span&gt;${attributes.get(&apos;content&apos;)}&lt;/span&gt;
 &lt;/div&gt;
 &lt;div id=&quot;ascMessage1&quot;&gt;
-&lt;pre&gt;${attributes.get(&apos;content1&apos;)}&lt;/pre&gt;
+&lt;span&gt;${attributes.get(&apos;content1&apos;)}&lt;/span&gt;
 &lt;/div&gt;</string>
                 </entry>
                 <entry>

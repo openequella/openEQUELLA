@@ -86,4 +86,11 @@ public interface Search {
   String getPrivilegeToCollect();
 
   Collection<DateFilter> getDateFilters();
+
+  /**
+   * Indicates if the server time zone should be included in searches.
+   *
+   * @return True if server time zone is used or otherwise false.
+   */
+  boolean useServerTimeZone();
 }

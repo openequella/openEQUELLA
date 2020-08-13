@@ -36,6 +36,7 @@ public class VeryBasicSearch implements Search, Serializable {
   protected String query;
   protected Collection<String> queryTokens;
   protected FreeTextQuery freeTextQuery;
+  private boolean useServerTimeZone;
 
   public VeryBasicSearch() {}
 
@@ -135,6 +136,15 @@ public class VeryBasicSearch implements Search, Serializable {
   @Override
   public Collection<DateFilter> getDateFilters() {
     return null;
+  }
+
+  @Override
+  public boolean useServerTimeZone() {
+    return useServerTimeZone;
+  }
+
+  public void setUseServerTimeZone(boolean useServerTimeZone) {
+    this.useServerTimeZone = useServerTimeZone;
   }
 
   @Override

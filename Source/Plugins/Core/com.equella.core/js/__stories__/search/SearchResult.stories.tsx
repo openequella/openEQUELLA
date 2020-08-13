@@ -21,7 +21,7 @@ import SearchResult from "../../tsrc/search/components/SearchResult";
 import { number, object, text } from "@storybook/addon-knobs";
 
 export default {
-  title: "SerachResult",
+  title: "Search/SearchResult",
   component: SearchResult,
 };
 

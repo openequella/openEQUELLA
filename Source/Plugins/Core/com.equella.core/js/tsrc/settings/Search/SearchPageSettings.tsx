@@ -135,8 +135,8 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
             {/*Non-Live Results*/}
             <SettingsListControl
               divider
-              primaryText={searchPageSettingsStrings.allowNonLive}
-              secondaryText={searchPageSettingsStrings.allowNonLiveLabel}
+              primaryText={searchPageSettingsStrings.allowStatusControl}
+              secondaryText={searchPageSettingsStrings.allowStatusControlLabel}
               control={
                 <SettingsToggleSwitch
                   value={searchSettings.searchingShowNonLiveCheckbox}

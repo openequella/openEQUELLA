@@ -18,7 +18,7 @@ describe('Search for items', () => {
     const collection = 'a77112e6-3370-fd02-6ac6-6bc5aec22001';
     const searchParams: OEQ.Search.SearchParams = {
       query: 'API',
-      status: [OEQ.Common.ItemStatus.LIVE],
+      status: ['LIVE'],
       collections: [collection],
     };
     const searchResult = await OEQ.Search.search(TC.API_PATH, searchParams);
@@ -27,7 +27,7 @@ describe('Search for items', () => {
     expect(searchResult).toHaveLength(searchResult.results.length);
     expect(uuid).toBeTruthy();
     // Status returned is in lowercase so have to convert to uppercase.
-    expect(status.toUpperCase()).toBe(OEQ.Common.ItemStatus.LIVE);
+    expect(status.toUpperCase()).toBe<OEQ.Common.ItemStatus>('LIVE');
     expect(collectionId).toBe(collection);
   });
 

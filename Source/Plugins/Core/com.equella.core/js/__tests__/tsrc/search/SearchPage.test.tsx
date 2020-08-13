@@ -15,43 +15,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CircularProgress } from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
+import "@testing-library/jest-dom/extend-expect";
+import {
+  fireEvent,
+  getByText,
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { mount, ReactWrapper } from "enzyme";
+import * as React from "react";
+import { act } from "react-dom/test-utils";
+import { BrowserRouter } from "react-router-dom";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
   getEmptySearchResult,
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
-import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import * as React from "react";
-import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
-import { mount, ReactWrapper } from "enzyme";
-import { act } from "react-dom/test-utils";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
+import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import {
+  liveStatuses,
+  nonLiveStatuses,
+} from "../../../tsrc/modules/SearchModule";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import { BrowserRouter } from "react-router-dom";
-import { CircularProgress } from "@material-ui/core";
 import { CollectionSelector } from "../../../tsrc/search/components/CollectionSelector";
+import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import { paginatorControls } from "../components/SearchPaginationTestHelper";
-import { DateRangeSelector } from "../../../tsrc/components/DateRangeSelector";
-import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import {
-  render,
-  RenderResult,
-  screen,
-  waitFor,
-  fireEvent,
-  cleanup,
-} from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
 import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
-import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
+const FIRST_PAGE_PAGINATION = "1-10 of 12";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -75,21 +81,103 @@ const defaultSearchPageOptions: SearchPageOptions = {
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
+/**
+ * Simple helper to wrap the process of waiting for the execution of a search based on checking the
+ * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
+ * something other than the `searchPromise`.
+ */
+const waitForSearch = async () =>
+  await act(async () => {
+    await searchPromise;
+  });
+
+/**
+ * Helper function for the initial render of the `<SearchPage>` for tests below. Also includes
+ * the wait for the initial search call.
+ *
+ * @returns The RenderResult from the `render` of the `<SearchPage>`
+ */
+const renderSearchPage = async (): Promise<RenderResult> => {
+  window.history.replaceState({}, "Clean history state");
+  const page = render(
+    <BrowserRouter>
+      <SearchPage updateTemplate={jest.fn()} />{" "}
+    </BrowserRouter>
+  );
+  // Wait for the first completion of initial search
+  await waitForSearch();
+
+  return page;
+};
+
+/**
+ * Helper function to find individual Refine Search components based on the their `idSuffix`.
+ *
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ */
+const getRefineSearchComponent = (
+  container: Element,
+  componentSuffix: string
+) => {
+  const id = `#RefineSearchPanel-${componentSuffix}`;
+  const e = container.querySelector(id);
+  if (!e) {
+    throw new Error(`Failed to find ${id}`);
+  }
+
+  return e as HTMLElement;
+};
+
+describe("Refine search by status", () => {
+  const {
+    live: liveButtonLabel,
+    all: allButtonLabel,
+  } = languageStrings.searchpage.statusSelector;
+
+  const expectSearchItemsCalledWithStatus = (status: OEQ.Common.ItemStatus[]) =>
+    expect(mockSearch).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      status: status,
+    });
+
+  const getStatusSelector = (container: Element): HTMLElement =>
+    getRefineSearchComponent(container, "StatusSelector");
+
+  const selectStatus = (container: Element, status: string) =>
+    fireEvent.click(getByText(getStatusSelector(container), status));
+
+  afterEach(() => {
+    // Needed to keep Enzyme tests below happy
+    jest.clearAllMocks();
+  });
+
+  it("Should default to LIVE statuses", async () => {
+    await renderSearchPage();
+    expectSearchItemsCalledWithStatus(liveStatuses);
+  });
+
+  it("Should search for items of all statuses if ALL is clicked", async () => {
+    const page = await renderSearchPage();
+    selectStatus(page.container, allButtonLabel);
+    await waitForSearch();
+    expectSearchItemsCalledWithStatus(liveStatuses.concat(nonLiveStatuses));
+  });
+
+  it("Should search for items of 'live' statuses if LIVE is clicked", async () => {
+    const page = await renderSearchPage();
+    selectStatus(page.container, liveButtonLabel);
+    await waitForSearch();
+    expectSearchItemsCalledWithStatus(liveStatuses);
+  });
+});
+
 describe("Refine search by Owner", () => {
   const testUser = UserSearchMock.users[0];
   let page: RenderResult;
 
   beforeEach(async () => {
-    window.history.replaceState({}, "Clean history state");
-    page = render(
-      <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />{" "}
-      </BrowserRouter>
-    );
-    // Wait for the first completion of initial search
-    await act(async () => {
-      await searchPromise;
-    });
+    page = await renderSearchPage();
   });
 
   afterEach(() => {
@@ -97,14 +185,8 @@ describe("Refine search by Owner", () => {
     jest.clearAllMocks();
   });
 
-  const getOwnerFilter = (container: Element): HTMLElement => {
-    const e = container.querySelector("#RefineSearchPanel-OwnerSelector");
-    if (!e) {
-      throw new Error("Failed to find OwnerSelector");
-    }
-
-    return e as HTMLElement;
-  };
+  const getOwnerSelector = (container: Element): HTMLElement =>
+    getRefineSearchComponent(container, "OwnerSelector");
 
   const confirmSelectedUser = (username: string) => screen.getByText(username);
 
@@ -121,7 +203,7 @@ describe("Refine search by Owner", () => {
   };
 
   const _selectUser = async (container: HTMLElement, username: string) => {
-    await selectUser(getOwnerFilter(container), username);
+    await selectUser(getOwnerSelector(container), username);
     // The selected user will now be displayed
     await waitFor(() => confirmSelectedUser(username));
   };
@@ -149,58 +231,31 @@ describe("Refine search by Owner", () => {
 });
 
 describe("<SearchPage/> with react-testing-library", () => {
-  let page: RenderResult;
+  let container: HTMLElement = document.createElement("div");
   const renderSearchPage = async () => {
-    page = render(
+    const { container } = render(
       <BrowserRouter>
         <SearchPage updateTemplate={jest.fn()} />
       </BrowserRouter>
     );
-
-    await act(async () => {
-      await searchPromise;
-    });
+    // When Pagination shows the correct data, the render is completed.
+    await waitFor(() =>
+      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
+    );
+    return container;
   };
+
   beforeEach(async () => {
-    await renderSearchPage();
+    container = await renderSearchPage();
   });
 
   afterEach(() => {
-    cleanup();
     jest.clearAllMocks();
-  });
-
-  it("should not show Owner filter if it is disabled", async () => {
-    const ownerSelector = screen.queryByText("Owner", { selector: "h6" });
-    expect(ownerSelector).toBeInTheDocument();
-    // Change the setting to disable Owner filter and then re-render.
-    mockSearchSettings.mockResolvedValueOnce({
-      ...SearchSettingsModule.defaultSearchSettings,
-      searchingDisableOwnerFilter: true,
-    });
-    page.unmount();
-    await renderSearchPage();
-    expect(ownerSelector).not.toBeInTheDocument();
-  });
-
-  it("should not show Date modified filter if it is disabled", async () => {
-    const dateModifiedSelector = screen.queryByText("Date modified", {
-      selector: "h6",
-    });
-    expect(dateModifiedSelector).toBeInTheDocument();
-    // Change the setting to disable Owner filter and then re-render.
-    mockSearchSettings.mockResolvedValueOnce({
-      ...SearchSettingsModule.defaultSearchSettings,
-      searchingDisableDateModifiedFilter: true,
-    });
-    page.unmount();
-    await renderSearchPage();
-    expect(dateModifiedSelector).not.toBeInTheDocument();
   });
 
   it("should clear search options and perform a new search", async () => {
     const query = "clear query";
-    const queryBar = page.container.querySelector("#searchBar");
+    const queryBar = container.querySelector("#searchBar");
     if (!queryBar) {
       throw new Error("Failed to locate the search bar, unable to continue.");
     }
@@ -215,14 +270,10 @@ describe("<SearchPage/> with react-testing-library", () => {
     jest.useFakeTimers("modern");
     // Change search options now.
     fireEvent.change(queryBar, { target: { value: query } });
-    await act(async () => {
-      await jest.advanceTimersByTime(1000);
-    });
-
     await waitFor(() => {
       expect(queryBar).toHaveDisplayValue(query);
+      jest.advanceTimersByTime(1000);
     });
-
     fireEvent.change(sortingDropdown, {
       target: { value: SearchSettingsModule.SortOrder.NAME },
     });
