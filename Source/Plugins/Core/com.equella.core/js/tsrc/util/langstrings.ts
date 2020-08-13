@@ -251,6 +251,7 @@ export const languageStrings = {
       primarycolour: "Primary Colour",
       menubackgroundcolour: "Menu Background Colour",
       backgroundcolour: "Background Colour",
+      paperColor: "Paper Colour",
       secondarycolour: "Secondary Colour",
       sidebartextcolour: "Sidebar Text Colour",
       primarytextcolour: "Primary Text Colour",

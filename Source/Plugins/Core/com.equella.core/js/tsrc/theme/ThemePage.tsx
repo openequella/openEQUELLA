@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
   Button,
   Card,
@@ -27,26 +26,27 @@ import {
   WithStyles,
   withStyles,
 } from "@material-ui/core";
-import ColorPickerComponent from "./ColorPickerComponent";
 import axios, { AxiosError } from "axios";
-import { API_BASE_URL } from "../config";
-import { languageStrings } from "../util/langstrings";
-import { commonString } from "../util/commonstrings";
+import * as React from "react";
+import { IThemeSettings } from ".";
 import {
   ErrorResponse,
   generateFromError,
   generateNewErrorID,
 } from "../api/errors";
+import SettingPageTemplate from "../components/SettingPageTemplate";
+import SettingsList from "../components/SettingsList";
+import SettingsListControl from "../components/SettingsListControl";
+import { API_BASE_URL } from "../config";
+import { routes } from "../mainui/routes";
 import {
   templateDefaults,
   templateError,
   TemplateUpdate,
 } from "../mainui/Template";
-import { IThemeSettings } from ".";
-import SettingPageTemplate from "../components/SettingPageTemplate";
-import SettingsListControl from "../components/SettingsListControl";
-import SettingsList from "../components/SettingsList";
-import { routes } from "../mainui/routes";
+import { commonString } from "../util/commonstrings";
+import { languageStrings } from "../util/langstrings";
+import ColorPickerComponent from "./ColorPickerComponent";
 
 declare const themeSettings: IThemeSettings;
 declare const logoURL: string;
@@ -73,6 +73,7 @@ interface ThemeColors {
   primary: string;
   secondary: string;
   background: string;
+  paper: string;
   menu: string;
   menuText: string;
   menuIcon: string;
@@ -100,6 +101,7 @@ class ThemePage extends React.Component<
     primary: themeSettings.primaryColor,
     secondary: themeSettings.secondaryColor,
     background: themeSettings.backgroundColor,
+    paper: themeSettings.paperColor,
     menu: themeSettings.menuItemColor,
     menuText: themeSettings.menuItemTextColor,
     menuIcon: themeSettings.menuItemIconColor,
@@ -125,6 +127,7 @@ class ThemePage extends React.Component<
         primary: "#186caf",
         secondary: "#ff9800",
         background: "#fafafa",
+        paper: "#ffffff",
         menuText: "#000000",
         menu: "#ffffff",
         menuIcon: "#000000",
@@ -141,6 +144,7 @@ class ThemePage extends React.Component<
       primary: themeSettings.primaryColor,
       secondary: themeSettings.secondaryColor,
       background: themeSettings.backgroundColor,
+      paper: themeSettings.paperColor,
       menu: themeSettings.menuItemColor,
       menuText: themeSettings.menuItemTextColor,
       menuIcon: themeSettings.menuItemIconColor,
@@ -175,10 +179,11 @@ class ThemePage extends React.Component<
   };
 
   submitTheme = () =>
-    axios.put(`${API_BASE_URL}/theme/settings/`, {
+    axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, {
       primaryColor: this.state.primary,
       secondaryColor: this.state.secondary,
       backgroundColor: this.state.background,
+      paperColor: this.state.paper,
       menuItemColor: this.state.menu,
       menuItemIconColor: this.state.menuIcon,
       menuItemTextColor: this.state.menuText,
@@ -316,6 +321,11 @@ class ThemePage extends React.Component<
             <SettingsListControl
               primaryText={strings.colourschemesettings.backgroundcolour}
               control={this.colorPicker("background")}
+              divider
+            />
+            <SettingsListControl
+              primaryText={strings.colourschemesettings.paperColor}
+              control={this.colorPicker("paper")}
               divider
             />
             <SettingsListControl
