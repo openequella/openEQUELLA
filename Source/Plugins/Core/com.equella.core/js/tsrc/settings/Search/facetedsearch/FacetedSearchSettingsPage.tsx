@@ -63,6 +63,7 @@ import {
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
+import { idExtractor } from "../../../util/idExtractor";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -138,7 +139,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       : Promise.resolve([]);
 
     const deletePromise: Promise<string[]> = listOfDeleted.length
-      ? batchDelete(listOfDeleted.map((facet) => facet.id!.toString()))
+      ? batchDelete(listOfDeleted.map(idExtractor))
       : Promise.resolve([]);
 
     Promise.all([updatePromise, deletePromise])

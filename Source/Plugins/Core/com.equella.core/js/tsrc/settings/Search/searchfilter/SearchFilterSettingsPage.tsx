@@ -65,6 +65,7 @@ import {
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import { commonString } from "../../../util/commonstrings";
+import { idExtractor } from "../../../util/idExtractor";
 
 const useStyles = makeStyles({
   spacedCards: {
@@ -250,7 +251,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         (): Promise<any> =>
           // Filters stored in 'deletedMimeTypeFilters' always have an ID.
           deletedMimeTypeFilters.length
-            ? batchDelete(deletedMimeTypeFilters.map((filter) => filter.id!))
+            ? batchDelete(deletedMimeTypeFilters.map(idExtractor))
                 .then((messages) => errorMessages.push(...messages))
                 .catch((error) => handleError(error))
             : Promise.resolve()
