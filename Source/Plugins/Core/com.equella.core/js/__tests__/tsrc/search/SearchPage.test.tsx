@@ -25,7 +25,6 @@ import {
   RenderResult,
   screen,
   waitFor,
-  queryHelpers,
 } from "@testing-library/react";
 import { mount, ReactWrapper } from "enzyme";
 import * as React from "react";
@@ -55,7 +54,6 @@ import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
-import { SearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -112,8 +110,33 @@ const renderSearchPage = async (): Promise<RenderResult> => {
 };
 
 /**
- * Helper function to find individual Refine Search components based on the their `idSuffix`.
+ * Helper function to unmount current Search page and re-render Search page.
+ * @param page Current Search page.
+ */
+const reRenderSearchPage = async (page: RenderResult) => {
+  page.unmount();
+  return await renderSearchPage();
+};
+
+/**
+ * Helper function to find individual Refine Search components based on the their `idSuffix`,
+ * or return null if the component is not found.
  *
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ */
+const queryRefineSearchComponent = (
+  container: Element,
+  componentSuffix: string
+): HTMLElement | null => {
+  const id = `#RefineSearchPanel-${componentSuffix}`;
+  return container.querySelector(id);
+};
+
+/**
+ * Similar to queryRefineSearchComponent but throws an error if the component is not found.
+ *
+ * @see queryRefineSearchComponent
  * @param container The root container to start the search from
  * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
  */
@@ -121,30 +144,12 @@ const getRefineSearchComponent = (
   container: Element,
   componentSuffix: string
 ) => {
-  const id = `#RefineSearchPanel-${componentSuffix}`;
-  const e = container.querySelector(id);
+  const e = queryRefineSearchComponent(container, componentSuffix);
   if (!e) {
-    throw new Error(`Failed to find ${id}`);
+    throw new Error(`Failed to find ${componentSuffix}`);
   }
 
   return e as HTMLElement;
-};
-
-/**
- * Helper function similar to 'getRefineSearchComponent' but returns null instead of
- * throwing errors if expected Refine Search component is not found.
- *
- * @param container The root container to start the search from
- * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
- * @param attribute The custom attribute used to search elements. Default to 'id'.
- */
-const queryRefineSearchComponent = (
-  container: HTMLElement,
-  componentSuffix: string,
-  attribute: string = "id"
-): HTMLElement | null => {
-  const id = `RefineSearchPanel-${componentSuffix}`;
-  return queryHelpers.queryByAttribute(attribute, container, id);
 };
 
 describe("Refine search by status", () => {
@@ -164,6 +169,14 @@ describe("Refine search by status", () => {
 
   const selectStatus = (container: Element, status: string) =>
     fireEvent.click(getByText(getStatusSelector(container), status));
+
+  beforeEach(() => {
+    // Status selector is disabled by default so enable it before test.
+    searchSettingPromise.mockResolvedValueOnce({
+      ...SearchSettingsModule.defaultSearchSettings,
+      searchingShowNonLiveCheckbox: true,
+    });
+  });
 
   afterEach(() => {
     // Needed to keep Enzyme tests below happy
@@ -262,6 +275,9 @@ describe("Hide Refine Search controls", () => {
     queryRefineSearchComponent(page.container, "OwnerSelector");
   const getDateSelector = () =>
     queryRefineSearchComponent(page.container, "DateRangeSelector");
+  const getStatusSelector = () =>
+    queryRefineSearchComponent(page.container, "StatusSelector");
+
   const disableDateSelector = {
     ...SearchSettingsModule.defaultSearchSettings,
     searchingDisableDateModifiedFilter: true,
@@ -270,22 +286,45 @@ describe("Hide Refine Search controls", () => {
     ...SearchSettingsModule.defaultSearchSettings,
     searchingDisableOwnerFilter: true,
   };
+  const enableStatusSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingShowNonLiveCheckbox: true,
+  };
   it.each([
-    ["Owner Selector", getOwnerSelector, disableOwnerSelector],
-    ["Date Selector", getDateSelector, disableDateSelector],
+    // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
+    [
+      "Owner Selector",
+      getOwnerSelector,
+      disableOwnerSelector,
+      SearchSettingsModule.defaultSearchSettings,
+    ],
+    [
+      "Date Selector",
+      getDateSelector,
+      disableDateSelector,
+      SearchSettingsModule.defaultSearchSettings,
+    ],
+    [
+      "Status Selector",
+      getStatusSelector,
+      SearchSettingsModule.defaultSearchSettings,
+      enableStatusSelector,
+    ],
   ])(
     "should be possible to disable %s",
     async (
       testName: string,
       getSelector: () => HTMLElement | null,
-      disableSelector: SearchSettings
+      disableSelector: SearchSettingsModule.SearchSettings,
+      enableSelector: SearchSettingsModule.SearchSettings
     ) => {
-      // The default Search settings do not disable these selectors.
+      // Explicitly enable selectors.
+      searchSettingPromise.mockResolvedValueOnce(enableSelector);
+      page = await reRenderSearchPage(page);
       expect(getSelector()).toBeInTheDocument();
       // Now disable them and re-render the page.
       searchSettingPromise.mockResolvedValueOnce(disableSelector);
-      page.unmount();
-      page = await renderSearchPage();
+      page = await reRenderSearchPage(page);
       // They should disappear.
       expect(getSelector()).toBeNull();
     }
