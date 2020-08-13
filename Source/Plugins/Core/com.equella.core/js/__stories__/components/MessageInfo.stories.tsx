@@ -16,75 +16,58 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import { boolean, select, text } from "@storybook/addon-knobs";
-import MessageInfo from "../../tsrc/components/MessageInfo";
+import type { Meta, Story } from "@storybook/react";
+import MessageInfo, {
+  MessageInfoProps,
+} from "../../tsrc/components/MessageInfo";
 
 export default {
   title: "MessageInfo",
   component: MessageInfo,
+  argTypes: { onClose: { action: "onClose" } },
+} as Meta<MessageInfoProps>;
+
+export const DynamicVariant: Story<MessageInfoProps> = (args) => (
+  <MessageInfo {...args} />
+);
+DynamicVariant.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  variant: "success",
 };
 
-export const DynamicVariant = () => (
-  <MessageInfo
-    open={boolean("open", true)}
-    onClose={action("close")}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    variant={select(
-      "variant",
-      { success: "success", error: "error", info: "info", warning: "warning" },
-      "success"
-    )}
-  />
+export const VariantSuccess: Story<MessageInfoProps> = (args) => (
+  <MessageInfo {...args} />
 );
+VariantSuccess.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  variant: "success",
+};
 
-export const VariantSuccess = () => (
-  <MessageInfo
-    open={boolean("open", true)}
-    onClose={action("close")}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    variant="success"
-  />
+export const VariantError: Story<MessageInfoProps> = (args) => (
+  <MessageInfo {...args} />
 );
+VariantError.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  variant: "error",
+};
 
-export const VariantError = () => (
-  <MessageInfo
-    open={boolean("open", true)}
-    onClose={action("close")}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    variant="error"
-  />
+export const VariantInfo: Story<MessageInfoProps> = (args) => (
+  <MessageInfo {...args} />
 );
+VariantInfo.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  variant: "info",
+};
 
-export const VariantInfo = () => (
-  <MessageInfo
-    open={boolean("open", true)}
-    onClose={action("close")}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    variant="info"
-  />
+export const VariantWarning: Story<MessageInfoProps> = (args) => (
+  <MessageInfo {...args} />
 );
-
-export const VariantWarning = () => (
-  <MessageInfo
-    open={boolean("open", true)}
-    onClose={action("close")}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    variant="warning"
-  />
-);
+VariantWarning.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  variant: "warning",
+};

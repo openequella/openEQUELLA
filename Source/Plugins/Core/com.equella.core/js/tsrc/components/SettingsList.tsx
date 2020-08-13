@@ -19,7 +19,7 @@ import { List, ListSubheader } from "@material-ui/core";
 import * as React from "react";
 import { ReactNode } from "react";
 
-interface SettingsListProps {
+export interface SettingsListProps {
   /**
    * Optional subheading. Appears above the list at the top left.
    */

@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import { text } from "@storybook/addon-knobs";
-import RichTextEditor from "../../tsrc/components/RichTextEditor";
+import type { Meta, Story } from "@storybook/react";
+import RichTextEditor, {
+  RichTextEditorProps,
+} from "../../tsrc/components/RichTextEditor";
 
 /**
  * FIXME: to get the tinyMCE skin styles with the current setup
@@ -31,17 +32,23 @@ import RichTextEditor from "../../tsrc/components/RichTextEditor";
 export default {
   title: "RichTextEditor",
   component: RichTextEditor,
-};
+  argTypes: {
+    onStateChange: { action: "onStateChange" },
+    imageUploadCallBack: { action: "imageUploadCallBack" },
+  },
+} as Meta<RichTextEditorProps>;
 
-const defaultProps = {
-  skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
-  onStateChange: action("stateChange"),
-};
-export const WithHTMLInput = () => (
-  <RichTextEditor
-    {...defaultProps}
-    htmlInput={text("htmlInput", "<p>example</p>")}
-  />
+export const WithHTMLInput: Story<RichTextEditorProps> = (args) => (
+  <RichTextEditor {...args} />
 );
+WithHTMLInput.args = {
+  skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
+  htmlInput: "<p>example</p>",
+};
 
-export const WithoutHTMLInput = () => <RichTextEditor {...defaultProps} />;
+export const WithoutHTMLInput: Story<RichTextEditorProps> = (args) => (
+  <RichTextEditor {...args} />
+);
+WithoutHTMLInput.args = {
+  skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
+};

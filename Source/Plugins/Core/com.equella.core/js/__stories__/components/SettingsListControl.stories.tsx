@@ -16,16 +16,19 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { boolean, number, text } from "@storybook/addon-knobs";
-import SettingsListControl from "../../tsrc/components/SettingsListControl";
-import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
-import { Mark, Slider } from "@material-ui/core";
-import { action } from "@storybook/addon-actions";
+import type { Meta, Story } from "@storybook/react";
+import SettingsListControl, {
+  SettingsListControlProps,
+} from "../../tsrc/components/SettingsListControl";
+import SettingsToggleSwitch, {
+  SettingsToggleSwitchProps,
+} from "../../tsrc/components/SettingsToggleSwitch";
+import { Mark, Slider, SliderProps } from "@material-ui/core";
 
 export default {
   title: "SettingsListControl",
   component: SettingsListControl,
-};
+} as Meta<SettingsListControlProps>;
 
 const marks: Mark[] = [
   { label: "Off", value: 0 },
@@ -38,34 +41,59 @@ const marks: Mark[] = [
   { label: "x8", value: 7 },
 ];
 
-export const ToggleSwitchControl = () => (
+type ToggleSwitchControlProps = Pick<
+  SettingsListControlProps,
+  "primaryText" | "secondaryText" | "divider"
+> &
+  Pick<SettingsToggleSwitchProps, "disabled" | "setValue" | "value">;
+export const ToggleSwitchControl: Story<ToggleSwitchControlProps> = (args) => (
   <SettingsListControl
-    secondaryText={text("Secondary Text", "Box for checking")}
+    primaryText={args.primaryText}
+    secondaryText={args.secondaryText}
+    divider={args.divider}
     control={
       <SettingsToggleSwitch
-        disabled={boolean("Disabled", false)}
+        disabled={args.disabled}
         id="toggle"
-        setValue={action("Value of checkbox changed")}
-        value={boolean("Toggle state", false)}
+        setValue={args.setValue}
+        value={args.value}
       />
     }
-    divider={boolean("divider", false)}
-    primaryText={text("primaryText", "Checkbox")}
   />
 );
-export const SliderControl = () => (
+ToggleSwitchControl.args = {
+  primaryText: "Checkbox",
+  secondaryText: "Box for checking",
+  divider: false,
+  disabled: false,
+  value: false,
+};
+
+type SliderControlProps = Pick<
+  SettingsListControlProps,
+  "primaryText" | "secondaryText" | "divider"
+> &
+  Pick<SliderProps, "min" | "max" | "onChangeCommitted">;
+export const SliderControl: Story<SliderControlProps> = (args) => (
   <SettingsListControl
-    secondaryText={text("Secondary Text", "Slide for sliding")}
+    primaryText={args.primaryText}
+    secondaryText={args.secondaryText}
+    divider={args.divider}
     control={
       <Slider
         marks={marks}
-        onChangeCommitted={action("Value of slider changed")}
-        min={number("min", 0)}
-        max={number("max", 7)}
+        onChangeCommitted={args.onChangeCommitted}
+        min={args.min}
+        max={args.max}
         step={null}
       />
     }
-    divider={boolean("divider", false)}
-    primaryText={text("primaryText", "SliderControl")}
   />
 );
+SliderControl.args = {
+  primaryText: "SliderControl",
+  secondaryText: "Slides for sliding",
+  divider: false,
+  min: 0,
+  max: 7,
+};

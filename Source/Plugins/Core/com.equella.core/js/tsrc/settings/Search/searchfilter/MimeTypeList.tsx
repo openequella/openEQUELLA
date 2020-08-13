@@ -40,7 +40,7 @@ const useStyles = makeStyles({
   },
 });
 
-interface MimeTypeFilterListProps {
+export interface MimeTypeFilterListProps {
   /**
    * A list of MIME types to be displayed.
    */

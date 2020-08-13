@@ -16,20 +16,22 @@
  * limitations under the License.
  */
 import * as React from "react";
-import SchemaNodeSelector from "../../tsrc/settings/SchemaNodeSelector";
-import { action } from "@storybook/addon-actions";
-import { boolean } from "@storybook/addon-knobs";
+import type { Meta, Story } from "@storybook/react";
+import SchemaNodeSelector, {
+  SchemaNodeSelectorProps,
+} from "../../tsrc/settings/SchemaNodeSelector";
 import { testSchema } from "../../__mocks__/schemaSelectorDataMock";
 
 export default {
   title: "SchemaNodeSelector",
   component: SchemaNodeSelector,
-};
+  argTypes: { setSelectedNode: { action: "setSelectedNode" } },
+} as Meta<SchemaNodeSelectorProps>;
 
-export const SchemaNodeSelectorComponent = () => (
-  <SchemaNodeSelector
-    setSelectedNode={action("Node Selected")}
-    tree={testSchema}
-    expandControls={boolean("Show expand controls?", false)}
-  />
-);
+export const SchemaNodeSelectorComponent: Story<SchemaNodeSelectorProps> = (
+  args
+) => <SchemaNodeSelector {...args} />;
+SchemaNodeSelectorComponent.args = {
+  tree: testSchema,
+  expandControls: false,
+};
