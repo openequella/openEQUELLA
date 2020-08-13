@@ -25,6 +25,7 @@ import {
   RenderResult,
   screen,
   waitFor,
+  queryHelpers,
 } from "@testing-library/react";
 import { mount, ReactWrapper } from "enzyme";
 import * as React from "react";
@@ -54,10 +55,10 @@ import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
+import { SearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
-const FIRST_PAGE_PAGINATION = "1-10 of 12";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -127,6 +128,23 @@ const getRefineSearchComponent = (
   }
 
   return e as HTMLElement;
+};
+
+/**
+ * Helper function similar to 'getRefineSearchComponent' but returns null instead of
+ * throwing errors if expected Refine Search component is not found.
+ *
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ * @param attribute The custom attribute used to search elements. Default to 'id'.
+ */
+const queryRefineSearchComponent = (
+  container: HTMLElement,
+  componentSuffix: string,
+  attribute: string = "id"
+): HTMLElement | null => {
+  const id = `RefineSearchPanel-${componentSuffix}`;
+  return queryHelpers.queryByAttribute(attribute, container, id);
 };
 
 describe("Refine search by status", () => {
@@ -230,23 +248,54 @@ describe("Refine search by Owner", () => {
   });
 });
 
-describe("<SearchPage/> with react-testing-library", () => {
-  let container: HTMLElement = document.createElement("div");
-  const renderSearchPage = async () => {
-    const { container } = render(
-      <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />
-      </BrowserRouter>
-    );
-    // When Pagination shows the correct data, the render is completed.
-    await waitFor(() =>
-      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
-    );
-    return container;
-  };
-
+describe("Hide Refine Search controls", () => {
+  let page: RenderResult;
   beforeEach(async () => {
-    container = await renderSearchPage();
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const getOwnerSelector = () =>
+    queryRefineSearchComponent(page.container, "OwnerSelector");
+  const getDateSelector = () =>
+    queryRefineSearchComponent(page.container, "DateRangeSelector");
+  const disableDateSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingDisableDateModifiedFilter: true,
+  };
+  const disableOwnerSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingDisableOwnerFilter: true,
+  };
+  it.each([
+    ["Owner Selector", getOwnerSelector, disableOwnerSelector],
+    ["Date Selector", getDateSelector, disableDateSelector],
+  ])(
+    "should be possible to disable %s",
+    async (
+      testName: string,
+      getSelector: () => HTMLElement | null,
+      disableSelector: SearchSettings
+    ) => {
+      // The default Search settings do not disable these selectors.
+      expect(getSelector()).toBeInTheDocument();
+      // Now disable them and re-render the page.
+      searchSettingPromise.mockResolvedValueOnce(disableSelector);
+      page.unmount();
+      page = await renderSearchPage();
+      // They should disappear.
+      expect(getSelector()).toBeNull();
+    }
+  );
+});
+
+describe("<SearchPage/> with react-testing-library", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
   });
 
   afterEach(() => {
@@ -255,7 +304,7 @@ describe("<SearchPage/> with react-testing-library", () => {
 
   it("should clear search options and perform a new search", async () => {
     const query = "clear query";
-    const queryBar = container.querySelector("#searchBar");
+    const queryBar = page.container.querySelector("#searchBar");
     if (!queryBar) {
       throw new Error("Failed to locate the search bar, unable to continue.");
     }
@@ -511,6 +560,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support selecting a date range through Quick options", async () => {
+    component.update();
     const quickOptions = component.find("#date_range_selector input");
     await awaitAct(() =>
       quickOptions.simulate("change", { target: { value: "Today" } })
