@@ -57,7 +57,6 @@ import {
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
-const FIRST_PAGE_PAGINATION = "1-10 of 12";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -111,8 +110,33 @@ const renderSearchPage = async (): Promise<RenderResult> => {
 };
 
 /**
- * Helper function to find individual Refine Search components based on the their `idSuffix`.
+ * Helper function to unmount current Search page and re-render Search page.
+ * @param page Current Search page.
+ */
+const reRenderSearchPage = async (page: RenderResult) => {
+  page.unmount();
+  return await renderSearchPage();
+};
+
+/**
+ * Helper function to find individual Refine Search components based on the their `idSuffix`,
+ * or return null if the component is not found.
  *
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ */
+const queryRefineSearchComponent = (
+  container: Element,
+  componentSuffix: string
+): HTMLElement | null => {
+  const id = `#RefineSearchPanel-${componentSuffix}`;
+  return container.querySelector(id);
+};
+
+/**
+ * Similar to queryRefineSearchComponent but throws an error if the component is not found.
+ *
+ * @see queryRefineSearchComponent
  * @param container The root container to start the search from
  * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
  */
@@ -120,10 +144,9 @@ const getRefineSearchComponent = (
   container: Element,
   componentSuffix: string
 ) => {
-  const id = `#RefineSearchPanel-${componentSuffix}`;
-  const e = container.querySelector(id);
+  const e = queryRefineSearchComponent(container, componentSuffix);
   if (!e) {
-    throw new Error(`Failed to find ${id}`);
+    throw new Error(`Failed to find ${componentSuffix}`);
   }
 
   return e as HTMLElement;
@@ -146,6 +169,14 @@ describe("Refine search by status", () => {
 
   const selectStatus = (container: Element, status: string) =>
     fireEvent.click(getByText(getStatusSelector(container), status));
+
+  beforeEach(() => {
+    // Status selector is disabled by default so enable it before test.
+    searchSettingPromise.mockResolvedValueOnce({
+      ...SearchSettingsModule.defaultSearchSettings,
+      searchingShowNonLiveCheckbox: true,
+    });
+  });
 
   afterEach(() => {
     // Needed to keep Enzyme tests below happy
@@ -230,23 +261,80 @@ describe("Refine search by Owner", () => {
   });
 });
 
-describe("<SearchPage/> with react-testing-library", () => {
-  let container: HTMLElement = document.createElement("div");
-  const renderSearchPage = async () => {
-    const { container } = render(
-      <BrowserRouter>
-        <SearchPage updateTemplate={jest.fn()} />
-      </BrowserRouter>
-    );
-    // When Pagination shows the correct data, the render is completed.
-    await waitFor(() =>
-      screen.getByText(FIRST_PAGE_PAGINATION, { selector: "p" })
-    );
-    return container;
-  };
-
+describe("Hide Refine Search controls", () => {
+  let page: RenderResult;
   beforeEach(async () => {
-    container = await renderSearchPage();
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const getOwnerSelector = () =>
+    queryRefineSearchComponent(page.container, "OwnerSelector");
+  const getDateSelector = () =>
+    queryRefineSearchComponent(page.container, "DateRangeSelector");
+  const getStatusSelector = () =>
+    queryRefineSearchComponent(page.container, "StatusSelector");
+
+  const disableDateSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingDisableDateModifiedFilter: true,
+  };
+  const disableOwnerSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingDisableOwnerFilter: true,
+  };
+  const enableStatusSelector = {
+    ...SearchSettingsModule.defaultSearchSettings,
+    searchingShowNonLiveCheckbox: true,
+  };
+  it.each([
+    // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
+    [
+      "Owner Selector",
+      getOwnerSelector,
+      disableOwnerSelector,
+      SearchSettingsModule.defaultSearchSettings,
+    ],
+    [
+      "Date Selector",
+      getDateSelector,
+      disableDateSelector,
+      SearchSettingsModule.defaultSearchSettings,
+    ],
+    [
+      "Status Selector",
+      getStatusSelector,
+      SearchSettingsModule.defaultSearchSettings,
+      enableStatusSelector,
+    ],
+  ])(
+    "should be possible to disable %s",
+    async (
+      testName: string,
+      getSelector: () => HTMLElement | null,
+      disableSelector: SearchSettingsModule.SearchSettings,
+      enableSelector: SearchSettingsModule.SearchSettings
+    ) => {
+      // Explicitly enable selectors.
+      searchSettingPromise.mockResolvedValueOnce(enableSelector);
+      page = await reRenderSearchPage(page);
+      expect(getSelector()).toBeInTheDocument();
+      // Now disable them and re-render the page.
+      searchSettingPromise.mockResolvedValueOnce(disableSelector);
+      page = await reRenderSearchPage(page);
+      // They should disappear.
+      expect(getSelector()).toBeNull();
+    }
+  );
+});
+
+describe("<SearchPage/> with react-testing-library", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
   });
 
   afterEach(() => {
@@ -255,7 +343,7 @@ describe("<SearchPage/> with react-testing-library", () => {
 
   it("should clear search options and perform a new search", async () => {
     const query = "clear query";
-    const queryBar = container.querySelector("#searchBar");
+    const queryBar = page.container.querySelector("#searchBar");
     if (!queryBar) {
       throw new Error("Failed to locate the search bar, unable to continue.");
     }
@@ -511,6 +599,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("should support selecting a date range through Quick options", async () => {
+    component.update();
     const quickOptions = component.find("#date_range_selector input");
     await awaitAct(() =>
       quickOptions.simulate("change", { target: { value: "Today" } })

@@ -217,6 +217,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.collections}
         />
       ),
+      disabled: false,
     },
     {
       idSuffix: "DateRangeSelector",
@@ -230,6 +231,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
         />
       ),
+      // Before Search settings are retrieved, do not show.
+      disabled: searchSettings?.searchingDisableDateModifiedFilter ?? true,
     },
     {
       idSuffix: "OwnerSelector",
@@ -241,6 +244,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.owner}
         />
       ),
+      disabled: searchSettings?.searchingDisableOwnerFilter ?? true,
     },
     {
       idSuffix: "StatusSelector",
@@ -251,6 +255,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.status}
         />
       ),
+      disabled: !searchSettings?.searchingShowNonLiveCheckbox ?? true,
     },
   ];
 
