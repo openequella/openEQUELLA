@@ -34,7 +34,6 @@ import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
 import { generateFromError } from "../api/errors";
 import {
-  defaultSearchSettings,
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
@@ -83,9 +82,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>(
-    defaultSearchSettings
-  );
+  const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -227,7 +224,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
         />
       ),
-      disabled: searchSettings.searchingDisableDateModifiedFilter,
+      // Before Search settings are retrieved, do not show.
+      disabled: searchSettings?.searchingDisableDateModifiedFilter ?? true,
     },
     {
       idSuffix: "OwnerSelector",
@@ -239,7 +237,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.owner}
         />
       ),
-      disabled: searchSettings.searchingDisableOwnerFilter,
+      disabled: searchSettings?.searchingDisableOwnerFilter ?? true,
     },
   ];
 
