@@ -255,6 +255,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.status}
         />
       ),
+      disabled: !searchSettings?.searchingShowNonLiveCheckbox ?? true,
     },
   ];
 
