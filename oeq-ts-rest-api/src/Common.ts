@@ -1,5 +1,6 @@
-import * as Security from './Security';
+import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
+import * as Security from './Security';
 
 export type i18nString = string;
 
@@ -55,17 +56,19 @@ export interface BaseEntityReference {
   // which means there's potential for additional fields added dynamically at runtime.
 }
 
-export enum ItemStatus {
-  DRAFT = 'DRAFT',
-  LIVE = 'LIVE',
-  REJECTED = 'REJECTED',
-  MODERATING = 'MODERATING',
-  ARCHIVED = 'ARCHIVED',
-  SUSPENDED = 'SUSPENDED',
-  DELETED = 'DELETED',
-  REVIEW = 'REVIEW',
-  PERSONAL = 'PERSONAL',
-}
+export const ItemStatuses = Union(
+  Literal('ARCHIVED'),
+  Literal('DELETED'),
+  Literal('DRAFT'),
+  Literal('LIVE'),
+  Literal('MODERATING'),
+  Literal('PERSONAL'),
+  Literal('REJECTED'),
+  Literal('REVIEW'),
+  Literal('SUSPENDED')
+);
+
+export type ItemStatus = Static<typeof ItemStatuses>;
 
 export interface PagedResult<T> {
   start: number;

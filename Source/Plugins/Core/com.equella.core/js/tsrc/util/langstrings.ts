@@ -321,22 +321,8 @@ export const languageStrings = {
     rawSearchTooltip: "Supports use of Apache Lucene search syntax",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
-    searchresult: {
-      attachments: "Attachments",
-      dateModified: "Modified",
-    },
-    order: {
-      relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
-    },
-    filterOwner: {
-      title: "Owner",
-      chip: "Owner: ",
-      clear: "Clear owner selector",
-      selectTitle: "Select user to filter by",
+    collectionSelector: {
+      title: "Collections",
     },
     filterLast: {
       label: "Modified within last",
@@ -349,6 +335,25 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
+    filterOwner: {
+      title: "Owner",
+      chip: "Owner: ",
+      clear: "Clear owner selector",
+      selectTitle: "Select user to filter by",
+    },
+    lastModifiedDateSelector: {
+      title: "Date modified",
+      startDatePicker: "Modified after",
+      endDatePicker: "Modified before",
+      quickOptionDropdown: "Last modified date",
+    },
+    order: {
+      relevance: "Relevance",
+      name: "Name",
+      datemodified: "Date modifed",
+      datecreated: "Date created",
+      rating: "Rating",
+    },
     pagination: {
       firstPageButton: "First page",
       previousPageButton: "Previous page",
@@ -359,14 +364,14 @@ export const languageStrings = {
     refineSearchPanel: {
       title: "Refine search",
     },
-    collectionSelector: {
-      title: "Collections",
+    searchresult: {
+      attachments: "Attachments",
+      dateModified: "Modified",
     },
-    lastModifiedDateSelector: {
-      title: "Date modified",
-      startDatePicker: "Modified after",
-      endDatePicker: "Modified before",
-      quickOptionDropdown: "Last modified date",
+    statusSelector: {
+      all: "All",
+      live: "Live",
+      title: "Status",
     },
   },
   "com.equella.core.searching.search": {
@@ -408,9 +413,9 @@ export const languageStrings = {
         dateCreated: "Date created",
         title: "Title",
         userRating: "User rating",
-        allowNonLive: "Non-live results",
-        allowNonLiveLabel:
-          "Show the 'Include results that are not live' checkbox",
+        allowStatusControl: "Enable status selector",
+        allowStatusControlLabel:
+          "Allow users to toggle between live and all statuses via the status selector",
         authFeed: "Authenticated feeds",
         authFeedLabel: "Generate authenticated RSS and Atom feed links ",
         gallery: "Gallery",

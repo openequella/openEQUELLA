@@ -48,6 +48,7 @@ import { Collection } from "../modules/CollectionsModule";
 import { useHistory } from "react-router";
 import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
 import OwnerSelector from "./components/OwnerSelector";
+import StatusSelector from "./components/StatusSelector";
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -200,6 +201,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       owner: undefined,
     });
 
+  const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      status: [...status],
+    });
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -232,6 +239,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onClearSelect={handleOwnerClear}
           onSelect={handleOwnerChange}
           value={searchPageOptions.owner}
+        />
+      ),
+    },
+    {
+      idSuffix: "StatusSelector",
+      title: searchStrings.statusSelector.title,
+      component: (
+        <StatusSelector
+          onChange={handleStatusChange}
+          value={searchPageOptions.status}
         />
       ),
     },
