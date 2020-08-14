@@ -37,6 +37,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   * @param thumbnail Item's thumbnail.
   * @param displayFields A list of Item's displayFields.
   * @param displayOptions Item's displayOptions which can be null.
+  * @param keywordFoundInAttachment Indicates if a search term has been found inside attachment content
   * @param links Item's links.
   */
 case class SearchResultItem(
@@ -53,6 +54,7 @@ case class SearchResultItem(
     thumbnail: String,
     displayFields: List[DisplayField],
     displayOptions: Option[DisplayOptions],
+    keywordFoundInAttachment: Boolean,
     links: java.util.Map[String, String]
 )
 

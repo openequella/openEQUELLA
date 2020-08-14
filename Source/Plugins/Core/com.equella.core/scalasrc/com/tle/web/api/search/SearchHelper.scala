@@ -21,6 +21,7 @@ package com.tle.web.api.search
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
+
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.{ItemIdKey, ItemStatus}
@@ -35,7 +36,6 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{
   AbstractFileAttachmentBean,
-  EquellaItemBean,
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
@@ -81,7 +81,6 @@ object SearchHelper {
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
-
     val dynaCollectionQuery = handleDynaCollection(params.dynaCollection)
     val whereQuery = Option(params.whereClause) match {
       case Some(where) => WhereParser.parse(where)
@@ -180,13 +179,14 @@ object SearchHelper {
   }
 
   /**
-    * Convert a tuple of ItemIdKey and EquellaItemBean to an instance of SearchResultItem.
-    * @param itemKeyAndBean An EquellaItemBean and its ItemIdKey.
+    * Convert a SearchItem to an instance of SearchResultItem.
+    * @param item Represents a SearchItem, containing an ItemIdKey, EquellaItemBean, and
+    * Boolean indicating if a search term has been found inside attachment content
     * @return An instance of SearchResultItem.
     */
-  def convertToItem(itemKeyAndBean: (ItemIdKey, EquellaItemBean)): SearchResultItem = {
-    val key          = itemKeyAndBean._1
-    val bean         = itemKeyAndBean._2
+  def convertToItem(item: SearchItem): SearchResultItem = {
+    val key          = item.idKey
+    val bean         = item.bean
     val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
     SearchResultItem(
       uuid = key.getUuid,
@@ -202,6 +202,7 @@ object SearchHelper {
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
+      keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean)
     )
   }

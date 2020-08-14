@@ -19,7 +19,8 @@
 package com.tle.web.api.search
 
 import com.tle.beans.item.ItemIdKey
-import com.tle.common.searching.SearchResults
+import com.tle.core.item.serializer.ItemSerializerItemBean
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
@@ -44,23 +45,37 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
-    val searchResults: SearchResults[ItemIdKey] =
-      LegacyGuice.freeTextService.searchIds(createSearch(params), params.start, params.length)
-    val itemIds: List[ItemIdKey] = searchResults.getResults.asScala.toList
-    val serializer               = createSerializer(itemIds)
-    val items: List[(ItemIdKey, EquellaItemBean)] = for { itemId <- itemIds } yield {
-      val itemBean = new EquellaItemBean
-      itemBean.setUuid(itemId.getUuid)
-      itemBean.setVersion(itemId.getVersion)
-      serializer.writeItemBeanResult(itemBean, itemId.getKey)
-      LegacyGuice.itemLinkService.addLinks(itemBean)
-      itemId -> itemBean
-    }
+    val searchResults: FreetextSearchResults[FreetextResult] =
+      LegacyGuice.freeTextService.search(createSearch(params), params.start, params.length)
+    val freetextResults         = searchResults.getSearchResults.asScala.toList
+    val itemIds                 = freetextResults.map(_.getItemIdKey)
+    val serializer              = createSerializer(itemIds)
+    val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
     val result = SearchResult(searchResults.getOffset,
                               searchResults.getCount,
                               searchResults.getAvailable,
                               items.map(convertToItem))
-
     Response.ok.entity(result).build()
+  }
+}
+
+/**
+  * This class provides general information of an Item to be used inside a SearchResult.
+  * @param idKey An ItemIdKey
+  * @param bean An EquellaItemBean
+  * @param keywordFound Indicates if a search term has been found inside attachment content
+  */
+case class SearchItem(idKey: ItemIdKey, bean: EquellaItemBean, keywordFound: Boolean)
+object SearchItem {
+  def apply(item: FreetextResult, serializer: ItemSerializerItemBean): SearchItem = {
+    val keywordFoundInAttachment = item.isKeywordFoundInAttachment
+    val itemId                   = item.getItemIdKey
+    val itemBean                 = new EquellaItemBean
+    itemBean.setUuid(itemId.getUuid)
+    itemBean.setVersion(itemId.getVersion)
+    serializer.writeItemBeanResult(itemBean, itemId.getKey)
+    LegacyGuice.itemLinkService.addLinks(itemBean)
+    itemId -> itemBean
+    SearchItem(itemId, itemBean, keywordFoundInAttachment)
   }
 }
