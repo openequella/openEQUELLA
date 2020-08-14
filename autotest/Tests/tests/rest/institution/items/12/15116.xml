@@ -71,9 +71,10 @@
         <string>en_GB</string>
         <com.tle.beans.entity.LanguageString>
           <id>15121</id>
+          <id>15121</id>
           <locale>en_GB</locale>
           <priority>2</priority>
-          <text>Keyword found in attachment</text>
+          <text>Keyword found in attachment test item</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>

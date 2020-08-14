@@ -81,6 +81,15 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(itemResult.get("keywordFoundInAttachment").asBoolean(), true);
   }
 
+  @Test(description = "Search for a term that is not found inside an attachment")
+  public void noTermFoundInAttachmentTest() throws IOException {
+    JsonNode itemResult =
+        doSearch(200, new NameValuePair("query", "Keyword found in attachment test item"))
+            .get("results")
+            .get(0);
+    assertEquals(itemResult.get("keywordFoundInAttachment").asBoolean(), false);
+  }
+
   @Test(description = "Search by a specific where clause")
   public void whereClauseTest() throws IOException {
     JsonNode result =
