@@ -99,7 +99,7 @@
     "@types/sprintf-js": "1.1.2",
     "@types/tinymce": "4.5.24",
     "@types/uuid": "8.3.0",
-    "argparse": "1.0.10",
+    "argparse": "2.0.0",
     "babel-jest": "26.3.0",
     "babel-loader": "8.1.0",
     "combined-stream2": "1.1.2",
