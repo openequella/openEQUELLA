@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { AclEditorProps } from "./acleditor";
-import { TemplateProps } from "tsrc/mainui/Template";
+import type { ComponentType } from "react";
+import type { AclEditorProps } from "./acleditor";
+import type { TemplateProps } from "tsrc/mainui/Template";
 
-interface GenericPageProps {
+export interface GenericPageProps {
   updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
 }
 
@@ -28,7 +28,7 @@ interface SettingsPageProps extends GenericPageProps {
 }
 
 export interface Bridge {
-  AclEditor: React.ComponentType<AclEditorProps>;
-  SettingsPage: React.ComponentType<SettingsPageProps>;
-  SearchPage: React.ComponentType<GenericPageProps>;
+  AclEditor: ComponentType<AclEditorProps>;
+  SettingsPage: ComponentType<SettingsPageProps>;
+  SearchPage: ComponentType<GenericPageProps>;
 }

@@ -30,7 +30,7 @@ import { Template, TemplateProps, TemplateUpdate } from "./Template";
 import { ThemeProvider } from "@material-ui/core";
 import { Provider } from "react-redux";
 import store from "../store";
-import { routes, OEQRoute, OEQRouteComponentProps } from "./routes";
+import { routes, Routes, OEQRouteComponentProps } from "./routes";
 import { shallowEqual } from "shallow-equal-object";
 import { startHeartbeat } from "../util/heartbeat";
 import { NavAwayDialog, defaultNavMessage } from "./PreventNavigation";
@@ -122,9 +122,11 @@ function IndexPage() {
       return shallowEqual(edited, tp) ? tp : edited;
     });
   }, []);
-  const oeqRoutes: { [key: string]: OEQRoute } = routes;
+  const oeqRoutes: Routes = routes;
 
-  function mkRouteProps(p: RouteComponentProps<any>): OEQRouteComponentProps {
+  function mkRouteProps<T>(
+    p: RouteComponentProps<T>
+  ): OEQRouteComponentProps<T> {
     return {
       ...p,
       updateTemplate,
