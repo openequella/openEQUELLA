@@ -46,7 +46,10 @@ class SearchResource {
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
     val searchResults: FreetextSearchResults[FreetextResult] =
-      LegacyGuice.freeTextService.search(createSearch(params), params.start, params.length)
+      LegacyGuice.freeTextService.search(createSearch(params),
+                                         params.start,
+                                         params.length,
+                                         params.searchAttachments)
     val freetextResults         = searchResults.getSearchResults.asScala.toList
     val itemIds                 = freetextResults.map(_.getItemIdKey)
     val serializer              = createSerializer(itemIds)

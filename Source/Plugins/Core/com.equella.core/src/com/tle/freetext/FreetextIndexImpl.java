@@ -153,15 +153,19 @@ public class FreetextIndexImpl
     return userPrefs.isSearchAttachment();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T extends FreetextResult> SearchResults<T> search(
       Search searchReq, int start, int count) {
+    return search(searchReq, start, count, isSearchAttachment());
+  }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends FreetextResult> SearchResults<T> search(
+      Search searchReq, int start, int count, boolean searchAttachments) {
     try {
       return (SearchResults<T>)
-          getIndexer(searchReq.getSearchType())
-              .search(searchReq, start, count, isSearchAttachment());
+          getIndexer(searchReq.getSearchType()).search(searchReq, start, count, searchAttachments);
     } catch (SearchingException ex) {
       if (!ex.isLogged()) {
         LOGGER.error(ex);

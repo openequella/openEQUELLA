@@ -264,6 +264,13 @@ public class FreeTextServiceImpl
   }
 
   @Override
+  public <T extends FreetextResult> FreetextSearchResults<T> search(
+      Search searchReq, int start, int count, boolean searchAttachments) {
+    SearchResults<T> fTextResults = indexer.search(searchReq, start, count, searchAttachments);
+    return new StdFreetextResults<T>(itemService, fTextResults, searchReq);
+  }
+
+  @Override
   public SearchResults<ItemIdKey> searchIds(Search searchreq, int nStart, int nCount) {
     SearchResults<FreetextResult> results = indexer.search(searchreq, nStart, nCount);
     return new ItemIdKeySearchResults(
