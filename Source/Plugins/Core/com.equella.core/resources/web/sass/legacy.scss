@@ -1007,11 +1007,12 @@ div.error-receipt ul li {
 Generic layout
 *****************************************************************************/
 
-.area {
-  background: white;
+div.area {
+  @include boxShadow;
+  background: $paperColor;
   padding: 25px 33px 33px;
+  border-radius: 4px;
   border: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .area .indent {
@@ -1113,7 +1114,7 @@ Generic layout
 
 .area h3 {
   @include typography-headline-6;
-  color: #444444;
+  color: $primaryTextColor;
   word-wrap: break-word;
   padding-top: 8px;
 }
@@ -1127,7 +1128,7 @@ Generic layout
 
 .area h2 {
   @include typography-headline-4;
-  color: #444444;
+  color: $primaryTextColor;
 }
 
 .button-strip {

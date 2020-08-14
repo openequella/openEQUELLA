@@ -22,6 +22,7 @@ export interface IThemeSettings {
   primaryColor: string;
   secondaryColor: string;
   backgroundColor: string;
+  paperColor: string;
   menuItemColor: string;
   menuItemTextColor: string;
   menuItemIconColor: string;
@@ -48,6 +49,7 @@ const standardThemeSettings: ThemeOptions = {
     },
     background: {
       default: themeSettings.backgroundColor,
+      paper: themeSettings.paperColor,
     },
     text: {
       primary: themeSettings.primaryTextColor,
