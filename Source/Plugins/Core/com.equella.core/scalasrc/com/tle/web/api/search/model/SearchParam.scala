@@ -52,6 +52,11 @@ class SearchParam {
   @QueryParam("reverseOrder")
   var reverseOrder: Boolean = _
 
+  @ApiParam("Whether to search attachments or not")
+  @DefaultValue("true")
+  @QueryParam("searchAttachments")
+  var searchAttachments: Boolean = _
+
   @ApiParam(
     "An advanced search UUID. If a value is supplied, the collections in the advanced search will be used and the collections parameter will be ignored.")
   @QueryParam("advancedSearch")

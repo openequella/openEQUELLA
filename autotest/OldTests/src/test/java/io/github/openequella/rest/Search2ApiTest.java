@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.codehaus.jackson.JsonNode;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class Search2ApiTest extends AbstractRestApiTest {
@@ -116,6 +117,27 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search by a invalid date format")
   public void invalidDateSearch() throws IOException {
     doSearch(400, new NameValuePair("modifiedAfter", "2020/05/05"));
+  }
+
+  @DataProvider(name = "searchAttachmentsData")
+  public static Object[][] searchAttachmentsData() {
+    return new Object[][] {
+      // Four item should be returned if searching attachments is enabled or otherwise return 3
+      // items.
+      {true, 4}, {false, 3}
+    };
+  }
+
+  @Test(
+      description = "Include or exclude attachments in a search",
+      dataProvider = "searchAttachmentsData")
+  public void notSearchAttachments(boolean searchAttachment, int expectNumber) throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            new NameValuePair("query", "size"),
+            new NameValuePair("searchAttachments", Boolean.toString(searchAttachment)));
+    assertEquals(result.get("available").asInt(), expectNumber);
   }
 
   private JsonNode doSearch(int expectedCode, NameValuePair... queryVals) throws IOException {
