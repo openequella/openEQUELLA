@@ -80,7 +80,7 @@
     "@storybook/react": "6.0.7",
     "@types/enzyme": "3.10.5",
     "@types/enzyme-adapter-react-16": "1.0.6",
-    "@types/jest": "26.0.9",
+    "@types/jest": "26.0.10",
     "@types/lodash": "4.14.159",
     "@types/luxon": "1.24.3",
     "@types/node": "12.12.47",
