@@ -53,6 +53,7 @@ class SearchParam {
   var reverseOrder: Boolean = _
 
   @ApiParam("Whether to search attachments or not")
+  @DefaultValue("true")
   @QueryParam("searchAttachments")
   var searchAttachments: Boolean = _
 
