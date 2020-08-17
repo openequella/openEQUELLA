@@ -201,6 +201,10 @@ export interface SearchResultItem {
    */
   displayOptions?: DisplayOptions;
   /**
+   * Indicates if a search term was found inside attachment content
+   */
+  keywordFoundInAttachment: boolean;
+  /**
    * Links to an item.
    */
   links: {
