@@ -365,6 +365,11 @@ export const languageStrings = {
     refineSearchPanel: {
       title: "Refine search",
     },
+    searchAttachmentsSelector: {
+      title: "Search attachments",
+      yes: "Yes",
+      no: "No",
+    },
     searchresult: {
       attachments: "Attachments",
       dateModified: "Modified",

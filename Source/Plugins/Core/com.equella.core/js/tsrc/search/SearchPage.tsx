@@ -42,6 +42,7 @@ import {
   RefinePanelControl,
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
+import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
@@ -207,6 +208,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       status: [...status],
     });
 
+  const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
+    setSearchPageOptions({
+      ...searchPageOptions,
+      searchAttachments: searchAttachments,
+    });
+  };
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -256,6 +263,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       disabled: !searchSettings?.searchingShowNonLiveCheckbox ?? true,
+    },
+    {
+      idSuffix: "SearchAttachmentsSelector",
+      title: searchStrings.searchAttachmentsSelector.title,
+      component: (
+        <SearchAttachmentsSelector
+          value={searchPageOptions.searchAttachments}
+          onChange={handleSearchAttachmentsChange}
+        />
+      ),
+      disabled: false,
     },
   ];
 
