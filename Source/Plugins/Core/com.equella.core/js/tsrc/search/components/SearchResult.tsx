@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import { SyntheticEvent } from "react";
+import Tooltip from "@material-ui/core/Tooltip";
 import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import ReactHtmlParser from "react-html-parser";
@@ -31,9 +32,16 @@ import {
   ListItemText,
   Theme,
   Typography,
+  Grid,
+  Badge,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
-import { AttachFile, ExpandMore, InsertDriveFile } from "@material-ui/icons";
+import {
+  AttachFile,
+  ExpandMore,
+  InsertDriveFile,
+  Search,
+} from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { Link } from "react-router-dom";
 import { routes } from "../../mainui/routes";
@@ -69,6 +77,11 @@ const useStyles = makeStyles((theme: Theme) => {
     attachmentIcon: {
       marginRight: theme.spacing(2),
     },
+    attachmentBadge: {
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.secondary.main,
+      borderRadius: "50%",
+    },
   };
 });
 
@@ -82,6 +95,7 @@ export default function SearchResult({
   status,
   displayOptions,
   attachments,
+  keywordFoundInAttachment,
   links,
 }: OEQ.Search.SearchResultItem) {
   const classes = useStyles();
@@ -167,8 +181,35 @@ export default function SearchResult({
           onClick={(event) => handleAttachmentPanelClick(event)}
         >
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <AttachFile className={classes.attachmentIcon} />
-            <Typography>{searchResultStrings.attachments}</Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item>
+                <Badge
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  badgeContent={
+                    keywordFoundInAttachment ? (
+                      <Tooltip
+                        title="Search term found in attachment content"
+                        aria-label="Search term found in attachment content"
+                      >
+                        <Search
+                          fontSize="small"
+                          className={classes.attachmentBadge}
+                        />
+                      </Tooltip>
+                    ) : undefined
+                  }
+                  overlap="circle"
+                >
+                  <AttachFile />
+                </Badge>
+              </Grid>
+              <Grid item>
+                <Typography>{searchResultStrings.attachments}</Typography>
+              </Grid>
+            </Grid>
           </AccordionSummary>
           <AccordionDetails>
             <List component="div" disablePadding>
