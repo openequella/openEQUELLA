@@ -47,3 +47,5 @@ export const SearchAttachmentsSelector = ({
     </ButtonGroup>
   );
 };
+
+export default SearchAttachmentsSelector;
