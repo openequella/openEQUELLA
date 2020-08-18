@@ -47,6 +47,7 @@ export const defaultSearchOptions: SearchOptions = {
   sortOrder: undefined,
   rawMode: false,
   status: liveStatuses,
+  searchAttachments: true,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -85,6 +86,7 @@ export const searchItems = ({
   owner,
   status = liveStatuses,
   classificationTerms,
+  searchAttachments,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -99,6 +101,7 @@ export const searchItems = ({
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
+    searchAttachments: searchAttachments,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -182,4 +185,8 @@ export interface SearchOptions {
    * A list of classification terms.
    */
   classificationTerms?: string[];
+  /**
+   * Whether to search attachments or not.
+   */
+  searchAttachments?: boolean;
 }
