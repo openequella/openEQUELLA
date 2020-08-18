@@ -7,5 +7,6 @@ export * as Schema from './Schema';
 export * as Security from './Security';
 export * as Settings from './Settings';
 export * as Search from './Search';
+export * as SearchFacets from './SearchFacets';
 export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
