@@ -59,6 +59,10 @@ export interface SearchParams {
    * single dynamic collection uuid.
    */
   dynaCollection?: string;
+  /**
+   * A flag indicating whether to search attachments or not.
+   */
+  searchAttachments?: boolean;
 }
 
 /**

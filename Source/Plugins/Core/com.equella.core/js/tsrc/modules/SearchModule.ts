@@ -47,6 +47,7 @@ export const defaultSearchOptions: SearchOptions = {
   sortOrder: undefined,
   rawMode: false,
   status: liveStatuses,
+  searchAttachments: true,
 };
 
 export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
@@ -84,6 +85,7 @@ export const searchItems = ({
   lastModifiedDateRange,
   owner,
   status = liveStatuses,
+  searchAttachments,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -99,6 +101,7 @@ export const searchItems = ({
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
+    searchAttachments: searchAttachments,
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
@@ -144,4 +147,8 @@ export interface SearchOptions {
    * Filter search results to only include items with the specified statuses.
    */
   status?: OEQ.Common.ItemStatus[];
+  /**
+   * Whether to search attachments or not.
+   */
+  searchAttachments?: boolean;
 }

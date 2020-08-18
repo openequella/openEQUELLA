@@ -152,6 +152,43 @@ const getRefineSearchComponent = (
   return e as HTMLElement;
 };
 
+describe("Refine search by searching attachments", () => {
+  let page: RenderResult;
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const getSearchAttachmentsSelector = (container: Element): HTMLElement =>
+    getRefineSearchComponent(container, "SearchAttachmentsSelector");
+  const changeOption = (selector: HTMLElement, option: string) =>
+    fireEvent.click(getByText(selector, option));
+  const { yes: yesLabel, no: noLabel } = languageStrings.common.action;
+
+  it("Should default to searching attachments", async () => {
+    expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
+  });
+
+  it("Should not search attachments if No is selected", async () => {
+    changeOption(getSearchAttachmentsSelector(page.container), noLabel);
+    await waitForSearch();
+    expect(mockSearch).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      searchAttachments: false,
+    });
+  });
+
+  it("Should search attachments if Yes is selected", async () => {
+    changeOption(getSearchAttachmentsSelector(page.container), yesLabel);
+    await waitForSearch();
+    expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
+  });
+});
+
 describe("Refine search by status", () => {
   const {
     live: liveButtonLabel,

@@ -37,3 +37,24 @@ describe('Search for items', () => {
     ).rejects.toHaveProperty('status', 404);
   });
 });
+
+describe('Search for attachments', () => {
+  test.each([
+    ['include attachments', true, 4],
+    ['exclude attachments', false, 3],
+  ])(
+    'should be possible to %s in a search',
+    async (
+      _testName: string,
+      searchAttachments: boolean,
+      expectResultCount: number
+    ) => {
+      const searchParams: OEQ.Search.SearchParams = {
+        query: 'size',
+        searchAttachments: searchAttachments,
+      };
+      const searchResult = await OEQ.Search.search(TC.API_PATH, searchParams);
+      expect(searchResult.results).toHaveLength(expectResultCount);
+    }
+  );
+});
