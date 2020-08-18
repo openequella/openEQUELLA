@@ -299,6 +299,8 @@ export const languageStrings = {
       register: "Register",
       refresh: "Refresh",
       done: "Done",
+      yes: "Yes",
+      no: "No",
     },
     result: {
       success: "Saved successfully.",
@@ -367,8 +369,6 @@ export const languageStrings = {
     },
     searchAttachmentsSelector: {
       title: "Search attachments",
-      yes: "Yes",
-      no: "No",
     },
     searchresult: {
       attachments: "Attachments",

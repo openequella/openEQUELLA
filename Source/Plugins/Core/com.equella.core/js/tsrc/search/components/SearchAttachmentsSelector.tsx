@@ -22,7 +22,6 @@ import { languageStrings } from "../../util/langstrings";
 interface SearchAttachmentsSelectorProps {
   /**
    * A boolean value indicating whether 'yes' or 'no' is selected.
-   * True if 'yes' is selected.
    */
   value?: boolean;
   /**
@@ -31,6 +30,7 @@ interface SearchAttachmentsSelectorProps {
    */
   onChange: (value: boolean) => void;
 }
+
 export const SearchAttachmentsSelector = ({
   value,
   onChange,
@@ -39,10 +39,10 @@ export const SearchAttachmentsSelector = ({
   return (
     <ButtonGroup color="secondary">
       <Button variant={variant(value)} onClick={() => onChange(true)}>
-        {languageStrings.searchpage.searchAttachmentsSelector.yes}
+        {languageStrings.common.action.yes}
       </Button>
       <Button variant={variant(!value)} onClick={() => onChange(false)}>
-        {languageStrings.searchpage.searchAttachmentsSelector.no}
+        {languageStrings.common.action.no}
       </Button>
     </ButtonGroup>
   );

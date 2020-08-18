@@ -154,6 +154,7 @@ const getRefineSearchComponent = (
 
 describe("Refine search by searching attachments", () => {
   let page: RenderResult;
+
   beforeEach(async () => {
     page = await renderSearchPage();
   });
@@ -166,10 +167,7 @@ describe("Refine search by searching attachments", () => {
     getRefineSearchComponent(container, "SearchAttachmentsSelector");
   const changeOption = (selector: HTMLElement, option: string) =>
     fireEvent.click(getByText(selector, option));
-  const {
-    yes: yesLabel,
-    no: noLabel,
-  } = languageStrings.searchpage.searchAttachmentsSelector;
+  const { yes: yesLabel, no: noLabel } = languageStrings.common.action;
 
   it("Should default to searching attachments", async () => {
     expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
