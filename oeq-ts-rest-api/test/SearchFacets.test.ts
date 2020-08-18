@@ -1,0 +1,158 @@
+/* eslint jest/expect-expect: ["warn", { "assertFunctionNames": ["expect*"] }] */
+
+import * as OEQ from '../src';
+import * as TC from './TestConfig';
+import JestMatchers = jest.JestMatchers;
+
+const API_PATH = TC.API_PATH_FACET;
+
+beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
+afterAll(() => OEQ.Auth.logout(API_PATH, true));
+
+describe('Search for facets', () => {
+  const nodeKeyword = '/item/keywords/keyword';
+  const collectionProgramming = '20d40571-e577-4cd7-a12d-d46e5cefcd3f';
+  const collectionHardware = 'b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e';
+
+  const search = async (
+    params: OEQ.SearchFacets.SearchFacetsParams
+  ): Promise<OEQ.SearchFacets.SearchFacetsResult> =>
+    OEQ.SearchFacets.searchFacets(API_PATH, params);
+
+  const termPredicate = (term: string) => (facet: OEQ.SearchFacets.Facet) =>
+    facet.term === term;
+
+  const expectResults = (results: OEQ.SearchFacets.SearchFacetsResult) =>
+    expect(results.results.length).toBeGreaterThan(0);
+
+  const expectTerm = (
+    results: OEQ.SearchFacets.SearchFacetsResult,
+    term: string
+  ): JestMatchers<OEQ.SearchFacets.Facet> =>
+    expect(results.results.find(termPredicate(term)));
+
+  const expectTermPresent = (
+    results: OEQ.SearchFacets.SearchFacetsResult,
+    term: string
+  ) => expectTerm(results, term).toBeTruthy();
+
+  const expectTermAbsent = (
+    results: OEQ.SearchFacets.SearchFacetsResult,
+    term: string
+  ) => expectTerm(results, term).toBeFalsy();
+
+  it('should be possible to search with just a single node', async () => {
+    const results = await search({
+      nodes: [nodeKeyword],
+    });
+
+    expectResults(results);
+  });
+
+  it('should be possible to search with multiple nodes', async () => {
+    const results = await search({
+      nodes: ['/item/category/@name', '/item/category/sub-category/@name'],
+    });
+
+    expectResults(results);
+    // When you specify multiple nodes, the matching combinations form a term which is comma
+    // delimited. So I know there is an item in the `epic` category an the `64` sub-category.
+    expectTermPresent(results, 'epic,64');
+  });
+
+  it('should be possible to limit to a collection', async () => {
+    const results = await search({
+      nodes: [nodeKeyword],
+      collections: [collectionHardware],
+    });
+
+    expectResults(results);
+    expectTermPresent(results, 'atmel');
+    expectTermAbsent(results, 'jvm');
+  });
+
+  it('should be possible to limit to multiple collections', async () => {
+    const results = await search({
+      nodes: [nodeKeyword],
+      collections: [collectionHardware, collectionProgramming],
+    });
+
+    expectResults(results);
+    expectTermPresent(results, 'atmel');
+    expectTermPresent(results, 'jvm');
+  });
+
+  it('should be possible to filter by owner id', async () => {
+    const params = {
+      nodes: [nodeKeyword],
+      owner: 'TLE_ADMINISTRATOR', // has contributed items
+    };
+
+    // First, search with a user which has contributed
+    expectResults(await search(params));
+
+    // Now search with a user which has not contributed
+    params.owner = 'f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a'; // demoteacher - someone who has not contributed
+    const emptyResults = await search(params);
+    expect(emptyResults.results).toHaveLength(0);
+  });
+
+  const maxResults = 24;
+  const goodStartDate = '2020-08-01';
+  const goodEndDate = '2020-08-18';
+  it.each([
+    [
+      'Open ended period covering contribution',
+      goodStartDate,
+      undefined,
+      maxResults,
+    ],
+    [
+      'Open start period covering contribution',
+      undefined,
+      goodEndDate,
+      maxResults,
+    ],
+    ['Known period of contribution', goodStartDate, goodEndDate, maxResults],
+    ['Period after contribution', goodEndDate, undefined, 0],
+  ])(
+    'should be possible to filter by dates [%s]',
+    async (_, modifiedAfter, modifiedBefore, expectedResults) => {
+      const results = await search({
+        nodes: [nodeKeyword],
+        modifiedAfter: modifiedAfter,
+        modifiedBefore: modifiedBefore,
+      });
+      expect(results.results).toHaveLength(expectedResults);
+    }
+  );
+
+  /**
+   * In this test we are looking for our single draft item which has a keyword of 'draft'. It should
+   * only be in the generated classifications/terms when `showall` is true.
+   */
+  it('should be possible to search for non-live records', async () => {
+    const params = {
+      nodes: [nodeKeyword],
+      showall: false,
+    };
+    const draftKeyword = 'draft';
+
+    // Make sure it doesn't normally appear
+    expectTermAbsent(await search(params), draftKeyword);
+
+    // Then make sure it does when we use all items
+    params.showall = true;
+    expectTermPresent(await search(params), draftKeyword);
+  });
+
+  it('should be possible to include a query string to filter items', async () => {
+    const results = await search({
+      nodes: [nodeKeyword],
+      q: 'scala',
+    });
+    expect(
+      results.results.find((f) => f.term === 'jvm' && f.count === 1)
+    ).toBeTruthy();
+  });
+});
