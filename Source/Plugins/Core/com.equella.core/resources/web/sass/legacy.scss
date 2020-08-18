@@ -1299,7 +1299,7 @@ div[class*="fancy-bg"] {
       color: $menuTextColor;
 
       a {
-        @include typography-body-1;
+        @include typography-headline-6;
       }
     }
   }
