@@ -68,4 +68,42 @@ describe("SearchModule", () => {
     });
     validateSearchQuery(`${queryTerm}`);
   });
+
+  it("should append Classification terms to query if one or more Classifications are selected", async () => {
+    mockedSearch.mockReset();
+    const query = "technology";
+    const terms = ["Java", "Scala", "SBT"];
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: query,
+      rawMode: false,
+      classificationTerms: terms,
+    });
+    validateSearchQuery(`${query}* AND (Java OR Scala OR SBT)`);
+  });
+
+  it("should not append Classification terms to query if no Classifications are selected", async () => {
+    mockedSearch.mockReset();
+    const query = "nothing";
+    const terms: string[] = [];
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: query,
+      rawMode: false,
+      classificationTerms: terms,
+    });
+    validateSearchQuery(`${query}*`);
+  });
+
+  it("should just send terms to server if query is empty", async () => {
+    mockedSearch.mockReset();
+    const terms = ["Java", "Scala"];
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: undefined,
+      rawMode: false,
+      classificationTerms: terms,
+    });
+    validateSearchQuery("(Java OR Scala)");
+  });
 });
