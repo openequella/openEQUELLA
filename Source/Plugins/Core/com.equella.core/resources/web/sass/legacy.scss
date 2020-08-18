@@ -1231,6 +1231,11 @@ div.rightPanel {
   color: $menuTextColor;
 }
 
+//portlet IDs are formatted as pportlet_{uuid}, so we must wildcard the selector with ^
+div[id^="pportlet"] {
+  margin-right: 16px;
+}
+
 //scripted portlet
 .load-action {
   .dropdown-toggle {
