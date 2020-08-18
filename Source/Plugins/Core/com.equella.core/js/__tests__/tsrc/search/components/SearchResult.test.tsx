@@ -21,16 +21,22 @@ import { getSearchResult } from "../../../../__mocks__/getSearchResult";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 
 import "@testing-library/jest-dom/extend-expect";
+import { BrowserRouter } from "react-router-dom";
 
 describe("<SearchResult/>", () => {
+  const renderSearchResult = (itemResult) => {
+    const item = itemResult;
+    return render(
+      //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error
+      <BrowserRouter>
+        <SearchResult {...item} key={item.uuid} />
+      </BrowserRouter>
+    );
+  };
+
   it("Should show indicator in Attachment panel if keyword was found inside attachment", () => {
     const itemWithSearchTermFound = getSearchResult.results[0];
-    const { container } = render(
-      <SearchResult
-        {...itemWithSearchTermFound}
-        key={itemWithSearchTermFound.uuid}
-      />
-    );
+    const { container } = renderSearchResult(itemWithSearchTermFound);
     expect(
       queryByTestId(container, "keywordFoundInAttachment")
     ).toBeInTheDocument();
@@ -38,12 +44,7 @@ describe("<SearchResult/>", () => {
 
   it("Should not show indicator in Attachment panel if keyword was found inside attachment", () => {
     const itemWithNoSearchTermFound = getSearchResult.results[1];
-    const { container } = render(
-      <SearchResult
-        {...itemWithNoSearchTermFound}
-        key={itemWithNoSearchTermFound.uuid}
-      />
-    );
+    const { container } = renderSearchResult(itemWithNoSearchTermFound);
     expect(
       queryByTestId(container, "keywordFoundInAttachment")
     ).not.toBeInTheDocument();
