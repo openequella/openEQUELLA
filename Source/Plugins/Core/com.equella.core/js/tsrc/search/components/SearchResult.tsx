@@ -74,9 +74,6 @@ const useStyles = makeStyles((theme: Theme) => {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },
-    attachmentIcon: {
-      marginRight: theme.spacing(2),
-    },
     attachmentBadge: {
       backgroundColor: theme.palette.background.paper,
       color: theme.palette.secondary.main,
@@ -188,11 +185,14 @@ export default function SearchResult({
                     vertical: "bottom",
                     horizontal: "right",
                   }}
+                  overlap="circle"
                   badgeContent={
                     keywordFoundInAttachment ? (
                       <Tooltip
-                        title="Search term found in attachment content"
-                        aria-label="Search term found in attachment content"
+                        title={searchResultStrings.keywordFoundInAttachment}
+                        aria-label={
+                          searchResultStrings.keywordFoundInAttachment
+                        }
                       >
                         <Search
                           fontSize="small"
@@ -201,7 +201,6 @@ export default function SearchResult({
                       </Tooltip>
                     ) : undefined
                   }
-                  overlap="circle"
                 >
                   <AttachFile />
                 </Badge>
