@@ -56,6 +56,7 @@ exports.getSearchResult = {
       ],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/",
@@ -74,6 +75,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -92,6 +94,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/2534e329-e37e-4851-896e-51d8b39104c4/1/",
@@ -126,6 +129,7 @@ exports.getSearchResult = {
       ],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
@@ -145,6 +149,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -164,6 +169,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -183,6 +189,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -202,6 +209,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -221,6 +229,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -240,6 +249,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -259,6 +269,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -278,6 +289,7 @@ exports.getSearchResult = {
       attachments: [],
       thumbnail: "initial",
       displayFields: [],
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
@@ -306,6 +318,7 @@ exports.getSearchResultsCustom = (numberOfResults) => ({
     attachments: [],
     thumbnail: "initial",
     displayFields: [],
+    keywordFoundInAttachment: false,
     links: {
       view:
         "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",

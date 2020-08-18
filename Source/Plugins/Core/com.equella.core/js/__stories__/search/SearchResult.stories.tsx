@@ -18,7 +18,7 @@
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../tsrc/search/components/SearchResult";
-import { number, object, text } from "@storybook/addon-knobs";
+import { boolean, number, object, text } from "@storybook/addon-knobs";
 
 export default {
   title: "Search/SearchResult",
@@ -48,6 +48,10 @@ export const BasicSearchResultComponent = () => (
     collectionId={text("collection ID", mockData.basicSearchObj.collectionId)}
     commentCount={number("comment count", mockData.basicSearchObj.commentCount)}
     thumbnail={text("thumbnail", mockData.basicSearchObj.thumbnail)}
+    keywordFoundInAttachment={boolean(
+      "keywordFoundInAttachment",
+      mockData.basicSearchObj.keywordFoundInAttachment
+    )}
   />
 );
 
@@ -80,6 +84,10 @@ export const AttachmentSearchResultComponent = () => (
       mockData.attachSearchObj.commentCount
     )}
     thumbnail={text("thumbnail", mockData.attachSearchObj.thumbnail)}
+    keywordFoundInAttachment={boolean(
+      "keywordFoundInAttachment",
+      mockData.basicSearchObj.keywordFoundInAttachment
+    )}
   />
 );
 
@@ -118,5 +126,9 @@ export const CustomMetadataSearchResultComponent = () => (
       mockData.customMetaSearchObj.commentCount
     )}
     thumbnail={text("thumbnail", mockData.customMetaSearchObj.thumbnail)}
+    keywordFoundInAttachment={boolean(
+      "keywordFoundInAttachment",
+      mockData.basicSearchObj.keywordFoundInAttachment
+    )}
   />
 );

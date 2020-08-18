@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import { SyntheticEvent } from "react";
+import Tooltip from "@material-ui/core/Tooltip";
 import { makeStyles } from "@material-ui/core/styles";
 import { languageStrings } from "../../util/langstrings";
 import ReactHtmlParser from "react-html-parser";
@@ -31,9 +32,16 @@ import {
   ListItemText,
   Theme,
   Typography,
+  Grid,
+  Badge,
 } from "@material-ui/core";
 import { Date as DateDisplay } from "../../components/Date";
-import { AttachFile, ExpandMore, InsertDriveFile } from "@material-ui/icons";
+import {
+  AttachFile,
+  ExpandMore,
+  InsertDriveFile,
+  Search,
+} from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { Link } from "react-router-dom";
 import { routes } from "../../mainui/routes";
@@ -66,8 +74,10 @@ const useStyles = makeStyles((theme: Theme) => {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },
-    attachmentIcon: {
-      marginRight: theme.spacing(2),
+    attachmentBadge: {
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.secondary.main,
+      borderRadius: "50%",
     },
   };
 });
@@ -82,6 +92,7 @@ export default function SearchResult({
   status,
   displayOptions,
   attachments,
+  keywordFoundInAttachment,
   links,
 }: OEQ.Search.SearchResultItem) {
   const classes = useStyles();
@@ -159,6 +170,28 @@ export default function SearchResult({
       }
     );
 
+    const attachFileBadge = (includeIndicator: boolean) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        overlap="circle"
+        badgeContent={
+          includeIndicator ? (
+            <Tooltip
+              title={searchResultStrings.keywordFoundInAttachment}
+              aria-label={searchResultStrings.keywordFoundInAttachment}
+            >
+              <Search fontSize="small" className={classes.attachmentBadge} />
+            </Tooltip>
+          ) : undefined
+        }
+      >
+        <AttachFile />
+      </Badge>
+    );
+
     if (attachmentsList.length > 0)
       return (
         <Accordion
@@ -167,8 +200,12 @@ export default function SearchResult({
           onClick={(event) => handleAttachmentPanelClick(event)}
         >
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <AttachFile className={classes.attachmentIcon} />
-            <Typography>{searchResultStrings.attachments}</Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
+              <Grid item>
+                <Typography>{searchResultStrings.attachments}</Typography>
+              </Grid>
+            </Grid>
           </AccordionSummary>
           <AccordionDetails>
             <List component="div" disablePadding>
