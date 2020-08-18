@@ -1233,7 +1233,8 @@ div.rightPanel {
 
 //portlet IDs are formatted as pportlet_{uuid}, so we must wildcard the selector with ^
 div[id^="pportlet"] {
-  margin-right: 16px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 //scripted portlet
