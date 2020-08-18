@@ -1279,6 +1279,25 @@ div[class*="fancy-bg"] {
   display: none;
 }
 
+#contribution_panel > h2 {
+  @include typography-headline-6;
+}
+
+#contribution_panel > table {
+  thead > tr > th {
+    @include typography-subtitle-1;
+    font-weight: bold;
+  }
+
+  tbody > tr > td {
+    @include typography-body-2;
+
+    a {
+      @include typography-body-1;
+    }
+  }
+}
+
 .modal-content-inner h3 {
   @include typography-subtitle-1;
   margin: 20px 0 10px;
