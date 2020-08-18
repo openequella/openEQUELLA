@@ -84,11 +84,11 @@ export const searchItems = ({
   lastModifiedDateRange,
   owner,
   status = liveStatuses,
+  classificationTerms,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
-  // If query is undefined, then we want to keep 'undefined'; but otherwise let's pre-process it.
-  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
+  const processedQuery = processQuery(query, rawMode, classificationTerms);
   const searchParams: OEQ.Search.SearchParams = {
     query: processedQuery,
     start: currentPage * rowsPerPage,
@@ -103,6 +103,40 @@ export const searchItems = ({
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
 
+/**
+ * This function processes the query put in the SearchBar and terms selected from Classifications.
+ * It firstly formats the query based on whether raw mode is on or off.
+ * If there are no Classifications terms selected, it returns the formatted query.
+ * Otherwise, it consolidates all terms into one Lucene query by OR, and combines the two queries
+ * by AND, and return the combined one.
+ *
+ * @param query The query put in the SearchBar.
+ * @param rawMode Whether raw mode is on or off.
+ * @param classificationTerms A list of selected Classification terms.
+ */
+export const processQuery = (
+  query: string | undefined,
+  rawMode: boolean,
+  classificationTerms: string[] | undefined
+): string | undefined => {
+  // If query is undefined, then we want to keep 'undefined'; but otherwise let's pre-process it.
+  const textQuery = query ? formatQuery(query, !rawMode) : undefined;
+
+  if (!classificationTerms || classificationTerms.length === 0) {
+    return textQuery;
+  }
+
+  const or = " OR ";
+  const and = " AND ";
+  // Each term should be concatenated by 'OR'.
+  const terms: string =
+    "(" +
+    classificationTerms.reduce((previousTerm, nextTerm) =>
+      previousTerm.concat(or, nextTerm)
+    ) +
+    ")";
+  return textQuery ? textQuery.concat(and, terms) : terms;
+};
 /**
  * Type of all search options on Search page
  */
@@ -144,4 +178,8 @@ export interface SearchOptions {
    * Filter search results to only include items with the specified statuses.
    */
   status?: OEQ.Common.ItemStatus[];
+  /**
+   * A list of classification terms.
+   */
+  classificationTerms?: string[];
 }
