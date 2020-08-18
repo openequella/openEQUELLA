@@ -56,7 +56,7 @@ exports.getSearchResult = {
       ],
       thumbnail: "initial",
       displayFields: [],
-      keywordFoundInAttachment: true,
+      keywordFoundInAttachment: false,
       links: {
         view:
           "http://localhost:8080/rest/items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/",

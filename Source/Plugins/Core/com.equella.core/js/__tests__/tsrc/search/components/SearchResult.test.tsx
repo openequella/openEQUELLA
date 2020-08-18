@@ -17,25 +17,25 @@
  */
 import { render, queryByTestId } from "@testing-library/react";
 import * as React from "react";
-import { getSearchResult } from "../../../../__mocks__/getSearchResult";
+import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
+import * as OEQ from "@openequella/rest-api-client";
 
 import "@testing-library/jest-dom/extend-expect";
 import { BrowserRouter } from "react-router-dom";
 
 describe("<SearchResult/>", () => {
-  const renderSearchResult = (itemResult) => {
-    const item = itemResult;
+  const renderSearchResult = (itemResult: OEQ.Search.SearchResultItem) => {
     return render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error
       <BrowserRouter>
-        <SearchResult {...item} key={item.uuid} />
+        <SearchResult {...itemResult} key={itemResult.uuid} />
       </BrowserRouter>
     );
   };
 
   it("Should show indicator in Attachment panel if keyword was found inside attachment", () => {
-    const itemWithSearchTermFound = getSearchResult.results[0];
+    const itemWithSearchTermFound = mockData.keywordFoundInAttachmentObj;
     const { container } = renderSearchResult(itemWithSearchTermFound);
     expect(
       queryByTestId(container, "keywordFoundInAttachment")
@@ -43,7 +43,7 @@ describe("<SearchResult/>", () => {
   });
 
   it("Should not show indicator in Attachment panel if keyword was found inside attachment", () => {
-    const itemWithNoSearchTermFound = getSearchResult.results[1];
+    const itemWithNoSearchTermFound = mockData.attachSearchObj;
     const { container } = renderSearchResult(itemWithNoSearchTermFound);
     expect(
       queryByTestId(container, "keywordFoundInAttachment")

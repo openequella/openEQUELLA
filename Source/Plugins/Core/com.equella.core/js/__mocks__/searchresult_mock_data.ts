@@ -37,6 +37,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
     standardOpen: true,
     integrationOpen: true,
   },
+  keywordFoundInAttachment: false,
   links: {
     view:
       "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
@@ -78,6 +79,49 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
     standardOpen: true,
     integrationOpen: true,
   },
+  keywordFoundInAttachment: false,
+  links: {
+    view:
+      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self:
+      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+  },
+};
+
+const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
+  uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
+  version: 1,
+  name: "Little Larry",
+  description: "A description of a bird",
+  status: "live",
+  createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
+  modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
+  collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
+  commentCount: 0,
+  attachments: [
+    {
+      attachmentType: "file",
+      id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+      description: "config.json",
+      preview: false,
+      mimeType: "image/png",
+      hasGeneratedThumb: true,
+      links: {
+        view:
+          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        thumbnail: "./thumb.jpg",
+      },
+    },
+  ],
+  thumbnail: "default",
+  displayFields: [],
+  displayOptions: {
+    attachmentType: "STRUCTURED",
+    disableThumbnail: false,
+    standardOpen: true,
+    integrationOpen: true,
+  },
+  keywordFoundInAttachment: true,
   links: {
     view:
       "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
@@ -136,6 +180,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
     standardOpen: true,
     integrationOpen: true,
   },
+  keywordFoundInAttachment: true,
   links: {
     view:
       "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
@@ -143,4 +188,9 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
       "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
 };
-export { basicSearchObj, attachSearchObj, customMetaSearchObj };
+export {
+  basicSearchObj,
+  attachSearchObj,
+  customMetaSearchObj,
+  keywordFoundInAttachmentObj,
+};
