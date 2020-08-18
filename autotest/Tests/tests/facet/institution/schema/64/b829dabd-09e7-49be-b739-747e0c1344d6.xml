@@ -1,0 +1,46 @@
+<com.tle.beans.entity.Schema>
+  <id>18975</id>
+  <uuid>b829dabd-09e7-49be-b739-747e0c1344d6</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 15:44:19.971</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 14:18:18.808</dateCreated>
+  <description>
+    <id>18976</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18977</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>A simple schema for testing facets</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>18978</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18979</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Facet</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;year attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;category&gt;&lt;name attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;sub-category type=&quot;text&quot;&gt;&lt;name attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/sub-category&gt;&lt;/category&gt;&lt;keywords&gt;&lt;keyword field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/keywords&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachment type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

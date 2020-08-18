@@ -1,0 +1,47 @@
+<list>
+  <com.tle.beans.user.TLEUser>
+    <id>18511</id>
+    <uuid>f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a</uuid>
+    <username>demoteacher</username>
+    <firstName>Demonstration</firstName>
+    <lastName>Teacher</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>18512</id>
+    <uuid>eb75a832-6533-4d72-93f4-2b7a1b108951</uuid>
+    <username>demosysadmin</username>
+    <firstName>Demonstration</firstName>
+    <lastName>Systems Administrator</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>18513</id>
+    <uuid>2027c8ff-c402-498c-bb3f-b0bfa3840dd7</uuid>
+    <username>demostudent</username>
+    <firstName>Demonstration</firstName>
+    <lastName>Student</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>18514</id>
+    <uuid>75abbd62-d91c-4ce5-b4b5-339e0d44ac0e</uuid>
+    <username>demolibrarian</username>
+    <firstName>Demonstration</firstName>
+    <lastName>Librarian</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>18515</id>
+    <uuid>1c2ff1d0-9040-4985-a450-0ff6422ba5ef</uuid>
+    <username>democontentadmin</username>
+    <firstName>Demonstration</firstName>
+    <lastName>Content Admin</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+</list>
