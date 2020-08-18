@@ -197,6 +197,7 @@ export default function SearchResult({
                         <Search
                           fontSize="small"
                           className={classes.attachmentBadge}
+                          data-testid="keywordFoundInAttachment"
                         />
                       </Tooltip>
                     ) : undefined
