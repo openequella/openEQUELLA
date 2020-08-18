@@ -31,7 +31,7 @@ export const GET = <T>(
   axios
     .get(path, {
       params: queryParams,
-      paramsSerializer: (params) => stringify(params),
+      paramsSerializer: (params) => stringify(params, { arrayFormat: 'comma' }),
     })
     .then(({ data: rawData }: AxiosResponse<unknown>) => {
       const data = transformer ? transformer(rawData) : rawData;
