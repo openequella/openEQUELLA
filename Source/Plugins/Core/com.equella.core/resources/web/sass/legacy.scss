@@ -175,7 +175,6 @@ $activeBackgroundColor: transparentize(#000, 0.7);
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.00938em;
-
 }
 
 @mixin typography-body-2 {
@@ -1272,7 +1271,8 @@ div[class*="fancy-bg"] {
 }
 
 #contribution_panel {
-  span[class='resumable'], span[class='removelink'] {
+  span[class="resumable"],
+  span[class="removelink"] {
     @include typography-body-1;
 
     a {
@@ -2039,7 +2039,7 @@ input[type="text"] {
 
 #selection-content-inner.wizard-layout
 .indent2
-  .autocompleteControl
+.autocompleteControl
   input[type="text"] {
   width: 350px;
 }
@@ -4824,23 +4824,23 @@ input[type="text"],
 
 #selection-content-inner.wizard-layout
 .multieditbox
-  div.singletranslation
+div.singletranslation
   input[type="text"],
 #selection-content-inner.wizard-layout
 .multieditbox
-  div.singletranslation
+div.singletranslation
   textarea {
   width: 512px;
 }
 
 #selection-content-inner.wizard-layout
 .indent1
-  .multieditbox
+.multieditbox
   div.singletranslation
   input[type="text"],
 #selection-content-inner.wizard-layout
 .indent1
-  .multieditbox
+.multieditbox
   div.singletranslation
   textarea {
   width: 472px;
@@ -4848,12 +4848,12 @@ input[type="text"],
 
 #selection-content-inner.wizard-layout
 .indent2
-  .multieditbox
+.multieditbox
   div.singletranslation
   input[type="text"],
 #selection-content-inner.wizard-layout
 .indent2
-  .multieditbox
+.multieditbox
   div.singletranslation
   textarea {
   width: 432px;
@@ -4861,7 +4861,7 @@ input[type="text"],
 
 #selection-content-inner.wizard-layout
 .indent3
-  .multieditbox
+.multieditbox
 div.singletranslation
 input[type="text"],
 #selection-content-inner.wizard-layout
