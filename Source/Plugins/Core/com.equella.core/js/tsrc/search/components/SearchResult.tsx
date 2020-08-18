@@ -170,6 +170,28 @@ export default function SearchResult({
       }
     );
 
+    const attachFileBadge = (includeIndicator: boolean) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        overlap="circle"
+        badgeContent={
+          includeIndicator ? (
+            <Tooltip
+              title={searchResultStrings.keywordFoundInAttachment}
+              aria-label={searchResultStrings.keywordFoundInAttachment}
+            >
+              <Search fontSize="small" className={classes.attachmentBadge} />
+            </Tooltip>
+          ) : undefined
+        }
+      >
+        <AttachFile />
+      </Badge>
+    );
+
     if (attachmentsList.length > 0)
       return (
         <Accordion
@@ -179,33 +201,7 @@ export default function SearchResult({
         >
           <AccordionSummary expandIcon={<ExpandMore />}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                <Badge
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  overlap="circle"
-                  badgeContent={
-                    keywordFoundInAttachment ? (
-                      <Tooltip
-                        title={searchResultStrings.keywordFoundInAttachment}
-                        aria-label={
-                          searchResultStrings.keywordFoundInAttachment
-                        }
-                      >
-                        <Search
-                          fontSize="small"
-                          className={classes.attachmentBadge}
-                          data-testid="keywordFoundInAttachment"
-                        />
-                      </Tooltip>
-                    ) : undefined
-                  }
-                >
-                  <AttachFile />
-                </Badge>
-              </Grid>
+              <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
               <Grid item>
                 <Typography>{searchResultStrings.attachments}</Typography>
               </Grid>

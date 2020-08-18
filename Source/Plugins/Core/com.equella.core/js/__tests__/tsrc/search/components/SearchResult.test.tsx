@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, queryByTestId } from "@testing-library/react";
+import { render, queryByLabelText } from "@testing-library/react";
 import * as React from "react";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
@@ -27,26 +27,29 @@ import { BrowserRouter } from "react-router-dom";
 describe("<SearchResult/>", () => {
   const renderSearchResult = (itemResult: OEQ.Search.SearchResultItem) => {
     return render(
-      //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error
+      //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
       <BrowserRouter>
         <SearchResult {...itemResult} key={itemResult.uuid} />
       </BrowserRouter>
     );
   };
 
+  const keywordFoundInAttachmentLabel =
+    "Search term found in attachment content";
+
   it("Should show indicator in Attachment panel if keyword was found inside attachment", () => {
     const itemWithSearchTermFound = mockData.keywordFoundInAttachmentObj;
     const { container } = renderSearchResult(itemWithSearchTermFound);
     expect(
-      queryByTestId(container, "keywordFoundInAttachment")
+      queryByLabelText(container, keywordFoundInAttachmentLabel)
     ).toBeInTheDocument();
   });
 
-  it("Should not show indicator in Attachment panel if keyword was found inside attachment", () => {
+  it("Should not show indicator in Attachment panel if keyword was not found inside attachment", () => {
     const itemWithNoSearchTermFound = mockData.attachSearchObj;
     const { container } = renderSearchResult(itemWithNoSearchTermFound);
     expect(
-      queryByTestId(container, "keywordFoundInAttachment")
+      queryByLabelText(container, keywordFoundInAttachmentLabel)
     ).not.toBeInTheDocument();
   });
 });
