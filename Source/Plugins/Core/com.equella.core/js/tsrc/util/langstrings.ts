@@ -368,7 +368,7 @@ export const languageStrings = {
     searchresult: {
       attachments: "Attachments",
       dateModified: "Modified",
-      keywordFoundInAttachment: "",
+      keywordFoundInAttachment: "Search term found in attachment content",
     },
     statusSelector: {
       all: "All",
