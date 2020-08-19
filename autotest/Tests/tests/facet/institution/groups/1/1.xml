@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>18516</id>
+  <uuid>6df16941-27fc-4c67-8c8b-49e254931bed</uuid>
+  <name>INT - Librarians</name>
+  <description></description>
+  <users>
+    <string>75abbd62-d91c-4ce5-b4b5-339e0d44ac0e</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>18520</id>
+  <uuid>d0265a33-8f89-4cea-8a36-45fd3c4cf5a1</uuid>
+  <name>INT - Systems Administrators</name>
+  <description></description>
+  <users>
+    <string>eb75a832-6533-4d72-93f4-2b7a1b108951</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

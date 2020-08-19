@@ -1,0 +1,131 @@
+<com.tle.beans.item.Item>
+  <id>19018</id>
+  <uuid>8ed43abd-0686-4dab-86ac-98370d8f3459</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 14:54:47.045</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 14:54:47.046</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-17 15:44:19.987</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>19023</id>
+      <uuid>bc4efd38-8c5d-412e-b7d8-6636781edfae</uuid>
+      <url>https://ocaml.org/</url>
+      <description>https://ocaml.org/</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Year</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_au</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_au</locale>
+              <priority>1</priority>
+              <text>1996</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="20d40571-e577-4cd7-a12d-d46e5cefcd3f"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>19027</id>
+      <url>https://ocaml.org/</url>
+      <urlHash>11d90bf8029e772f77e1952baa59f5b8</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2020-08-17 14:54:48.792</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>19020</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-17 14:54:47.045</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-17 14:54:47.045</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19024</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 14:54:47.045</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19025</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 14:54:47.045</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19026</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 14:54:47.045</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>19021</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>19032</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>OCaml</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>
