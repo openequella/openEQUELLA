@@ -18,9 +18,10 @@
 /**
  * Params to pass to a call for search facets.
  */
-import { is } from 'typescript-is/index';
+import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
+import { asCsvList } from './Utils';
 
 export interface SearchFacetsParams {
   /**
@@ -102,10 +103,14 @@ const SEARCH_FACETS_API_PATH = '/search/facet';
 
 export const searchFacets = (
   apiBasePath: string,
-  params?: SearchFacetsParams
+  params: SearchFacetsParams
 ): Promise<SearchFacetsResult> =>
   GET<SearchFacetsResult>(
     apiBasePath + SEARCH_FACETS_API_PATH,
     (data): data is SearchFacetsResult => is<SearchFacetsResult>(data),
-    params
+    {
+      ...params,
+      nodes: asCsvList<string>(params.nodes),
+      collections: asCsvList<string>(params.collections),
+    }
   );

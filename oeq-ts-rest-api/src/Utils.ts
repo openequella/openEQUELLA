@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { cloneDeep } from 'lodash';
+
 /**
  * Performs inplace conversion of specified fields with supplied converter.
  *
@@ -59,3 +60,12 @@ export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
   );
   return inputClone;
 };
+
+/**
+ * openEQUELLA has a `CsvList` type which is used to receive an array of items in a single param
+ * comma delimited. This utility function assists with those cases.
+ *
+ * @param list the list of items to be stringified and comma delimited.
+ */
+export const asCsvList = <T>(list: T[] | undefined): string | undefined =>
+  list?.join(',');
