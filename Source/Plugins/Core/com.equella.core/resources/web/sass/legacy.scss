@@ -2031,23 +2031,23 @@ div.skinnysearch {
 }
 
 #selection-content-inner.wizard-layout
-.indent1
-.autocompleteControl
-input[type="text"] {
+  .indent1
+  .autocompleteControl
+  input[type="text"] {
   width: 390px;
 }
 
 #selection-content-inner.wizard-layout
-.indent2
-.autocompleteControl
-input[type="text"] {
+  .indent2
+  .autocompleteControl
+  input[type="text"] {
   width: 350px;
 }
 
 #selection-content-inner.wizard-layout
-.indent3
-.autocompleteControl
-input[type="text"] {
+  .indent3
+  .autocompleteControl
+  input[type="text"] {
   width: 310px;
 }
 
@@ -2298,10 +2298,10 @@ ul.ui-autocomplete {
 }
 
 #searchresults-actions
-#actioncontent
-#date-range-filter
-div.input.select
-select {
+  #actioncontent
+  #date-range-filter
+  div.input.select
+  select {
   margin: 0 4px 0 0;
   width: 160px;
 }
@@ -4446,7 +4446,8 @@ input[disabled="disabled"] {
   line-height: 1.2;
   @include typography-body-1;
   padding: 0 0 0 18px;
-  background: url(../../images/baseline_arrow_right_black_18dp.png) 0 1px no-repeat;
+  background: url(../../images/baseline_arrow_right_black_18dp.png) 0 1px
+    no-repeat;
 }
 
 .browse-topics ul li span {
@@ -4483,10 +4484,10 @@ div#sssh_finishedButton {
  Selection session nav bar overrides
 *****************************************************************************/
 #selection-header
-.navbar-equella-selection.normal
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner
-.navbar-content {
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
   width: 784px;
   display: flex;
   align-content: space-around;
@@ -4495,10 +4496,10 @@ div#sssh_finishedButton {
 }
 
 #selection-header
-.navbar-equella-selection.course
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner
-.navbar-content {
+  .navbar-equella-selection.course
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
   display: flex;
   align-content: space-around;
   justify-content: center;
@@ -4506,10 +4507,10 @@ div#sssh_finishedButton {
 
 #selection-header .navbar-equella-selection.normal,
 .navbar-equella-selection.course
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner
-.navbar-content
-.centered-pills {
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content
+  .centered-pills {
   ul {
     display: flex;
     justify-content: center;
@@ -4799,76 +4800,76 @@ div#sssh_finishedButton {
 }
 
 #selection-content-inner.wizard-layout
-.indent1
-.multieditbox
-input[type="text"],
+  .indent1
+  .multieditbox
+  input[type="text"],
 #selection-content-inner.wizard-layout .indent1 .multieditbox select {
   width: 220px;
 }
 
 #selection-content-inner.wizard-layout
-.indent2
-.multieditbox
-input[type="text"],
+  .indent2
+  .multieditbox
+  input[type="text"],
 #selection-content-inner.wizard-layout .indent2 .multieditbox select {
   width: 200px;
 }
 
 #selection-content-inner.wizard-layout
-.indent3
-.multieditbox
-input[type="text"],
+  .indent3
+  .multieditbox
+  input[type="text"],
 #selection-content-inner.wizard-layout .indent3 .multieditbox select {
   width: 180px;
 }
 
 #selection-content-inner.wizard-layout
-.multieditbox
-div.singletranslation
-input[type="text"],
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
 #selection-content-inner.wizard-layout
-.multieditbox
-div.singletranslation
-textarea {
+  .multieditbox
+  div.singletranslation
+  textarea {
   width: 512px;
 }
 
 #selection-content-inner.wizard-layout
-.indent1
-.multieditbox
-div.singletranslation
-input[type="text"],
+  .indent1
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
 #selection-content-inner.wizard-layout
-.indent1
-.multieditbox
-div.singletranslation
-textarea {
+  .indent1
+  .multieditbox
+  div.singletranslation
+  textarea {
   width: 472px;
 }
 
 #selection-content-inner.wizard-layout
-.indent2
-.multieditbox
-div.singletranslation
-input[type="text"],
+  .indent2
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
 #selection-content-inner.wizard-layout
-.indent2
-.multieditbox
-div.singletranslation
-textarea {
+  .indent2
+  .multieditbox
+  div.singletranslation
+  textarea {
   width: 432px;
 }
 
 #selection-content-inner.wizard-layout
-.indent3
-.multieditbox
-div.singletranslation
-input[type="text"],
+  .indent3
+  .multieditbox
+  div.singletranslation
+  input[type="text"],
 #selection-content-inner.wizard-layout
-.indent3
-.multieditbox
-div.singletranslation
-textarea {
+  .indent3
+  .multieditbox
+  div.singletranslation
+  textarea {
   width: 392px;
 }
 
@@ -4942,7 +4943,7 @@ Login Notice Formatting
 *****************************************************************************/
 #loginNotice p {
   font-family: "Arial", "georgia", "impact", "Tahoma", "Times", "Verdana",
-  monospace;
+    monospace;
 }
 
 #loginNotice ins {
