@@ -46,9 +46,9 @@ object CommonSettings extends AutoPlugin {
   import autoImport._
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.12.6",
+    scalaVersion := "2.12.12",
     scalacOptions += "-Ypartial-unification",
-    addCompilerPlugin("io.tryp" % "splain" % "0.3.1" cross CrossVersion.patch),
+    addCompilerPlugin("io.tryp" % "splain" % "0.5.7" cross CrossVersion.patch),
     scalacOptions ++= Seq("-P:splain:implicits:true", "-P:splain:color:false"),
     javacOptions ++= Seq("-source", "1.8", "-target", "8"),
     compileOrder := CompileOrder.Mixed,

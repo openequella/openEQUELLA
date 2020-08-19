@@ -146,7 +146,7 @@ function IndexPage() {
               if (oeqRoute.component) {
                 return <oeqRoute.component {...oeqProps} />;
               }
-              return oeqRoute.render!(oeqProps);
+              return oeqRoute.render?.(oeqProps);
             }}
           />
         )

@@ -64,6 +64,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import SettingsListHeading from "../../../components/SettingsListHeading";
+import { idExtractor } from "../../../util/idExtractor";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -133,7 +134,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       : Promise.resolve([]);
 
     const deletePromise: Promise<string[]> = listOfDeleted.length
-      ? batchDelete(listOfDeleted.map((facet) => facet.id!.toString()))
+      ? batchDelete(listOfDeleted.map(idExtractor))
       : Promise.resolve([]);
 
     Promise.all([updatePromise, deletePromise])

@@ -80,7 +80,7 @@ public class RootTaskListSection extends ContextableSearchSection<RootTaskListSe
     }
   }
 
-  public class Model extends ContextableSearchSection.Model {
+  public static class Model extends ContextableSearchSection.Model {
     @Bookmarked(stateful = false, supported = true, parameter = PARAM_TASKID)
     private ItemTaskId taskId;
 

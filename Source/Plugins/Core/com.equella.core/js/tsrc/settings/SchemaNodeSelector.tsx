@@ -104,7 +104,10 @@ export default function SchemaNodeSelector({
             <Button
               className={classes.button}
               size="small"
-              onClick={() => setExpanded(getAllPaths(tree!, false))}
+              onClick={() => {
+                if (!tree) throw new TypeError("tree is not defined");
+                setExpanded(getAllPaths(tree, false));
+              }}
             >
               {strings.expandAll}
             </Button>

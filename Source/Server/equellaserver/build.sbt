@@ -92,7 +92,7 @@ libraryDependencies ++= Seq(
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
   "javax.inject"              % "javax.inject"          % "1",
   "javax.mail"                % "mail"                  % "1.4.7",
-  "javax.servlet"             % "jstl"                  % "1.1.2",
+  "javax.servlet"             % "jstl"                  % "1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
   "jdom"                      % "jdom"                  % "1.0",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
@@ -273,7 +273,8 @@ excludeDependencies ++= Seq(
   "org.bouncycastle"             % "bcprov-jdk15",
   "org.apache.geronimo.specs"    % "geronimo-javamail_1.4_spec",
   "org.apache.geronimo.specs"    % "geronimo-stax-api_1.0_spec",
-  "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec"
+  "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec",
+  "taglibs"                      % "standard"
 )
 
 run := {
