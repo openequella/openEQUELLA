@@ -150,7 +150,8 @@ export const DateRangeSelector = ({
     // Both are undefined.
     const openRange = !start && !end;
     // Both are valid dates and start is equal or less than end.
-    const closedRange = isStartValid && isEndValid && start! <= end!;
+    const closedRange =
+      start && end ? isStartValid && isEndValid && start <= end : false;
     // Call onDateRangeChange for above four cases.
     if (openStart || openEnd || openRange || closedRange) {
       onDateRangeChange(stateDateRange);
@@ -248,8 +249,8 @@ export const DateRangeSelector = ({
         value={dateRangeToDateOptionConverter(stateDateRange)}
         id="date_range_selector"
         labelId="date_range_selector_label"
-        onChange={(event) =>
-          handleQuickDateOptionChange(event.target.value as string)
+        onChange={(event: any) =>
+          handleQuickDateOptionChange(event.target.value)
         }
         label={quickOptionLabel}
       >

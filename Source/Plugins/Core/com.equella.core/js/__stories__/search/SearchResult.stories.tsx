@@ -24,13 +24,18 @@ export default {
   title: "Search/SearchResult",
   component: SearchResult,
 };
+const defaultItemName = "Item Name";
+const defaultItemDescription = "Item Description";
 
 export const BasicSearchResultComponent = () => (
   <SearchResult
-    name={text("name", mockData.basicSearchObj.name!)}
+    name={text("name", mockData.basicSearchObj.name || defaultItemName)}
     version={number("version", mockData.basicSearchObj.version)}
     uuid={text("uuid", mockData.basicSearchObj.uuid)}
-    description={text("description", mockData.basicSearchObj.description!)}
+    description={text(
+      "description",
+      mockData.basicSearchObj.description || defaultItemDescription
+    )}
     displayFields={object("display fields", [
       ...mockData.basicSearchObj.displayFields,
     ])}
@@ -57,10 +62,13 @@ export const BasicSearchResultComponent = () => (
 
 export const AttachmentSearchResultComponent = () => (
   <SearchResult
-    name={text("name", mockData.attachSearchObj.name!)}
+    name={text("name", mockData.attachSearchObj.name || defaultItemName)}
     version={number("version", mockData.attachSearchObj.version)}
     uuid={text("uuid", mockData.attachSearchObj.uuid)}
-    description={text("description", mockData.attachSearchObj.description!)}
+    description={text(
+      "description",
+      mockData.attachSearchObj.description || defaultItemDescription
+    )}
     displayFields={object("display fields", [
       ...mockData.attachSearchObj.displayFields,
     ])}
@@ -93,10 +101,13 @@ export const AttachmentSearchResultComponent = () => (
 
 export const CustomMetadataSearchResultComponent = () => (
   <SearchResult
-    name={text("name", mockData.customMetaSearchObj.name!)}
+    name={text("name", mockData.customMetaSearchObj.name || defaultItemName)}
     version={number("version", mockData.customMetaSearchObj.version)}
     uuid={text("uuid", mockData.customMetaSearchObj.uuid)}
-    description={text("description", mockData.customMetaSearchObj.description!)}
+    description={text(
+      "description",
+      mockData.customMetaSearchObj.description || defaultItemDescription
+    )}
     displayFields={object("display fields", [
       ...mockData.customMetaSearchObj.displayFields,
     ])}
