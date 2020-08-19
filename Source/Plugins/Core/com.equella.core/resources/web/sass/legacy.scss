@@ -1274,14 +1274,6 @@ div[class*="fancy-bg"] {
   span[class="resumable"],
   span[class="removelink"] {
     @include typography-body-1;
-
-    a {
-      @include typography-body-1;
-    }
-
-    abbr {
-      @include typography-body-1;
-    }
   }
 
   h2 {
