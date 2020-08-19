@@ -1114,7 +1114,7 @@ Generic layout
 }
 
 .area h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
   color: #444444;
 }
 
@@ -3494,7 +3494,7 @@ Item summary styling
 }
 
 .itemsummary-layout #col2 h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
 }
 
 .itemsummary-layout #col2 ul {
