@@ -82,19 +82,6 @@ describe("SearchModule", () => {
     validateSearchQuery(`${query}* AND (Java OR Scala OR SBT)`);
   });
 
-  it("should not append Classification terms to query if no Classifications are selected", async () => {
-    mockedSearch.mockReset();
-    const query = "nothing";
-    const terms: string[] = [];
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: query,
-      rawMode: false,
-      classificationTerms: terms,
-    });
-    validateSearchQuery(`${query}*`);
-  });
-
   it("should just send terms to server if query is empty", async () => {
     mockedSearch.mockReset();
     const terms = ["Java", "Scala"];
