@@ -249,8 +249,8 @@ export const DateRangeSelector = ({
         value={dateRangeToDateOptionConverter(stateDateRange)}
         id="date_range_selector"
         labelId="date_range_selector_label"
-        onChange={(event: any) =>
-          handleQuickDateOptionChange(event.target.value)
+        onChange={(event) =>
+          handleQuickDateOptionChange(event.currentTarget.value as string)
         }
         label={quickOptionLabel}
       >
