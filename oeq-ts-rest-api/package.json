@@ -28,7 +28,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "axios-cookiejar-support": "^1.0.0",
     "tough-cookie": "^4.0.0",
     "typescript-is": "^0.16.0"
