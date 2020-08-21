@@ -22,6 +22,7 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
+import { Classification } from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
 import { Grid } from "@material-ui/core";
 import {
@@ -60,6 +61,30 @@ export interface SearchPageOptions extends SearchOptions {
    */
   dateRangeQuickModeEnabled: boolean;
 }
+
+/**
+ * Represents a Classification that is specific to Search page.
+ */
+export interface SearchPageClassification extends Classification {
+  /**
+   * A boolean indicating if a classification has hidden categories to show.
+   */
+  showMore: boolean;
+}
+
+/**
+ * Convert a list of standard Classifications to a list of SearchPage Classifications.
+ * @param classifications The standard Classifications to be processed.
+ */
+const classificationTransformer = (
+  classifications: Classification[]
+): SearchPageClassification[] =>
+  classifications.map((c) => {
+    // If 'maxDisplay' is undefined, it will be 10 by default.
+    const maxDisplay = c.maxDisplay ?? 10;
+    const showMore = c.categories.length > maxDisplay;
+    return { ...c, showMore: showMore, maxDisplay: maxDisplay };
+  });
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
