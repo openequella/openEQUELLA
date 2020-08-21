@@ -27,15 +27,13 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import { languageStrings } from "../../util/langstrings";
 import { SearchPageClassification } from "../SearchPage";
 
 const useStyles = makeStyles({
   classificationList: {
     maxHeight: 500,
     overflow: "auto",
-  },
-  facetListItem: {
-    padding: 0,
   },
 });
 
@@ -98,7 +96,7 @@ export const FacetSelector = ({
             variant="text"
             onClick={() => onShowMore(classificationName)}
           >
-            Show more
+            {languageStrings.searchpage.facetSelector.showMoreButton}
           </Button>
         </Grid>
       </Grid>
@@ -125,10 +123,7 @@ export const FacetSelector = ({
    * @param facet A facet.
    */
   const renderFacet = (facet: OEQ.SearchFacets.Facet) => (
-    <ListItem
-      className={classes.facetListItem}
-      key={`${facet.term} ${facet.count}`}
-    >
+    <ListItem key={`${facet.term} ${facet.count}`} style={{ padding: 0 }}>
       <FormControlLabel
         control={
           <Checkbox
@@ -151,7 +146,7 @@ export const FacetSelector = ({
   const renderCategories = (classification: SearchPageClassification) => {
     const { categories, maxDisplay, showMore } = classification;
     const facets = categories.map((facet) => renderFacet(facet));
-    // The number of displayed facets Depends on whether to show more
+    // The number of displayed facets depends on whether to show more
     // and the maximum display number.
     return facets.slice(0, showMore ? maxDisplay : undefined);
   };
@@ -162,10 +157,13 @@ export const FacetSelector = ({
    * be added, depending on whether a classification has more categories to show or not.
    */
   const renderClassifications = classifications
-    .filter((c) => c.categories.length > 0)
-    .sort((c1, c2) => c1.orderIndex - c2.orderIndex)
-    .map((c) => {
-      const { name, showMore } = c;
+    .filter((classification) => classification.categories.length > 0)
+    .sort(
+      (prevClassification, nextClassification) =>
+        prevClassification.orderIndex - nextClassification.orderIndex
+    )
+    .map((classification) => {
+      const { name, showMore } = classification;
       return (
         <ListItem divider key={name} id={`classification_${name}`}>
           <Grid container direction="column">
@@ -177,7 +175,7 @@ export const FacetSelector = ({
                 dense
                 className={!showMore ? classes.classificationList : ""}
               >
-                {renderCategories(c)}
+                {renderCategories(classification)}
                 {showMore && showMoreButton(name)}
               </List>
             </Grid>

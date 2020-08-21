@@ -42,7 +42,8 @@ export const classifications: SearchPageClassification[] = [
         count: 888,
       },
       {
-        term: "purescript",
+        term:
+          "purescript - the last version is xxxxxxxxx because maintenance is so hard!!!",
         count: 1,
       },
     ],

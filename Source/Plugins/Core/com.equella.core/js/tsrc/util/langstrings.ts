@@ -338,6 +338,9 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
+    facetSelector: {
+      showMoreButton: "Show more",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
