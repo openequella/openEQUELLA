@@ -72,20 +72,6 @@ export interface SearchPageClassification extends Classification {
   showMore: boolean;
 }
 
-/**
- * Convert a list of standard Classifications to a list of SearchPage Classifications.
- * @param classifications The standard Classifications to be processed.
- */
-const classificationTransformer = (
-  classifications: Classification[]
-): SearchPageClassification[] =>
-  classifications.map((c) => {
-    // If 'maxDisplay' is undefined, it will be 10 by default.
-    const maxDisplay = c.maxDisplay ?? 10;
-    const showMore = c.categories.length > maxDisplay;
-    return { ...c, showMore: showMore, maxDisplay: maxDisplay };
-  });
-
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
   const {
