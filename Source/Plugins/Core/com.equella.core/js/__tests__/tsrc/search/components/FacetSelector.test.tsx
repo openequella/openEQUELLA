@@ -29,15 +29,17 @@ import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
 import "@testing-library/jest-dom/extend-expect";
 
 describe("<FacetSelector />", () => {
-  // Mocked callbacks.
+  // Mocked callbacks
   const onSelectTermsChange = jest.fn();
   const onShowMore = jest.fn();
 
-  // Three mocked Classifications.
+  // Mocked Classifications
   const CITY = "City";
   const LANGUAGE = "Language";
   const COLOR = "Color";
-  // The text of 'SHOW MORE' button.
+  // Mocked facet
+  const HOBART = "Hobart";
+  // The text of 'SHOW MORE' button
   const SHOW_MORE = "Show more";
 
   const renderFacetSelector = () =>
@@ -115,5 +117,12 @@ describe("<FacetSelector />", () => {
     // The order should be: CITY, Language.
     expect(classifications[0].textContent).toBe(CITY);
     expect(classifications[1].textContent).toBe(LANGUAGE);
+  });
+
+  it("should call onSelectTermsChange when a facet is selected", () => {
+    // Select the facet of Hobart.
+    const hobart = getByText(page.container, HOBART, { selector: "p" });
+    fireEvent.click(hobart);
+    expect(onSelectTermsChange).toHaveBeenLastCalledWith([HOBART]);
   });
 });
