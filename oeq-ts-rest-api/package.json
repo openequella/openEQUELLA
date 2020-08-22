@@ -41,7 +41,7 @@
     "core-js": "3.6.5",
     "eslint": "7.7.0",
     "eslint-plugin-jest": "23.20.0",
-    "jest": "26.4.1",
+    "jest": "26.4.2",
     "rollup": "2.26.5",
     "rollup-plugin-typescript2": "0.27.2",
     "ts-jest": "26.2.0",
