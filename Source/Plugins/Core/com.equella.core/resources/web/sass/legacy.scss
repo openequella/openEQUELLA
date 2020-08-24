@@ -3653,6 +3653,14 @@ table.versions td {
   right: 0;
 }
 
+div#selection-content-inner.itemsummary-layout div.mainCols div#col1 div.area div#comments-add.rating-form.comment-form div.rate {
+  position: unset;
+}
+
+#selection-content-inner.itemsummary-layout .box {
+  width: 100%;
+}
+
 .rate {
   position: absolute;
   top: -18px;
