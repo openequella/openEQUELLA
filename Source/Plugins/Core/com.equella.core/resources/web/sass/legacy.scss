@@ -1065,7 +1065,8 @@ Generic layout
 }
 
 #fancybox-inner {
-  @include buttonShadowBorder;
+  display: grid;
+  justify-content: center;
 }
 
 div#selection-content-inner.search-layout div.mainCols div#col2 div#selection-summary {
@@ -4386,10 +4387,10 @@ div#sssh_finishedButton {
  Selection session nav bar overrides
 *****************************************************************************/
 #selection-header
-  .navbar-equella-selection.normal
-  .navbar.navbar-fixed-top.navbar-inverse
-  .navbar-inner
-  .navbar-content {
+.navbar-equella-selection.normal
+.navbar.navbar-fixed-top.navbar-inverse
+.navbar-inner
+.navbar-content {
   width: 784px;
   display: flex;
   align-content: space-around;
@@ -4398,10 +4399,18 @@ div#sssh_finishedButton {
 }
 
 #selection-header
-  .navbar-equella-selection.course
-  .navbar.navbar-fixed-top.navbar-inverse
-  .navbar-inner
-  .navbar-content {
+.navbar-equella-selection.normal
+.navbar.navbar-fixed-top.navbar-inverse
+.navbar-inner {
+  display: grid;
+  justify-content: center;
+}
+
+#selection-header
+.navbar-equella-selection.course
+.navbar.navbar-fixed-top.navbar-inverse
+.navbar-inner
+.navbar-content {
   display: flex;
   align-content: space-around;
   justify-content: center;
@@ -4530,9 +4539,8 @@ div#sssh_finishedButton {
   padding-top: 50px;
   float: right;
   width: 100%;
-  #button-bar {
-    float: right;
-  }
+  display: grid;
+  justify-items: end;
 
   .btn {
     border: none;
