@@ -57,12 +57,12 @@ describe("<FacetSelector />", () => {
     container: HTMLElement,
     name: string
   ): HTMLElement => {
-    const id = `#classification_${name}`;
-    const classification = container.querySelector(id);
+    // All needed information of a Classification is contained inside a 'li'.
+    const classification = queryByText(container, name)?.closest("li");
     if (!classification) {
       throw new Error(`Unable to find Classification ${name}`);
     }
-    return classification as HTMLElement;
+    return classification;
   };
 
   // Return a Classification's 'SHOW MORE' button.

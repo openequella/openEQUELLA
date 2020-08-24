@@ -101,11 +101,7 @@ export const FacetSelector = ({
     <ListItem>
       <Grid container justify="center">
         <Grid item>
-          <Button
-            id={`${classificationName}_show_more`}
-            variant="text"
-            onClick={() => onShowMore(classificationName)}
-          >
+          <Button variant="text" onClick={() => onShowMore(classificationName)}>
             {languageStrings.searchpage.facetSelector.showMoreButton}
           </Button>
         </Grid>
@@ -176,7 +172,7 @@ export const FacetSelector = ({
     )
     .map(({ name, categories, maxDisplay, showMore }) => {
       return (
-        <ListItem divider key={name} id={`classification_${name}`}>
+        <ListItem divider key={name}>
           <Grid container direction="column">
             <Grid item>
               <Typography variant="subtitle1">{name}</Typography>
