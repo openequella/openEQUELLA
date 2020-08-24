@@ -1068,6 +1068,11 @@ Generic layout
   @include buttonShadowBorder;
 }
 
+div#selection-content-inner.search-layout div.mainCols div#col2 div#selection-summary {
+  position: sticky;
+  top: 70px;
+}
+
 #fancybox-wrap {
   height: 100%;
 }
