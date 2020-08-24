@@ -132,25 +132,17 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 }
 
 @mixin typography-headline-5 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1.5rem;
-  line-height: 2rem;
   font-weight: 400;
-  letter-spacing: normal;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.334;
+  letter-spacing: 0em;
 }
 
 @mixin typography-headline-6 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
-  line-height: 2rem;
   font-weight: 500;
-  letter-spacing: 0.0125em;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.6;
+  letter-spacing: 0.0075em;
 }
 
 @mixin typography-subtitle-1 {
@@ -176,14 +168,10 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 }
 
 @mixin typography-body-1 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1rem;
-  line-height: 1.5rem;
   font-weight: 400;
-  letter-spacing: 0.03125em;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
 }
 
 @mixin typography-body-2 {
@@ -1135,7 +1123,7 @@ div#selection-content-inner.search-layout
 }
 
 .area h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
   color: #444444;
 }
 
@@ -1294,6 +1282,33 @@ div[class*="fancy-bg"] {
   display: none;
 }
 
+#contribution_panel {
+  span[class="resumable"],
+  span[class="removelink"] {
+    @include typography-body-1;
+  }
+
+  h2 {
+    @include typography-headline-5;
+  }
+
+  table {
+    thead > tr > th {
+      @include typography-headline-6;
+      color: $menuTextColor;
+    }
+
+    tbody > tr > td {
+      @include typography-body-1;
+      color: $menuTextColor;
+
+      a {
+        @include typography-headline-6;
+      }
+    }
+  }
+}
+
 .modal-content-inner h3 {
   @include typography-subtitle-1;
   margin: 20px 0 10px;
@@ -1386,6 +1401,7 @@ a.feedlink {
     font-size: 24px;
     color: set-text-color($primaryColor);
   }
+
   padding: 5px;
   display: inline-block;
 }
@@ -1583,9 +1599,11 @@ Alerts
   animation: snackbar 6s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
+
   button {
     background-color: transparent;
     border: none;
+
     &:before {
       content: "\e5cd";
       font-family: "Material Icons";
@@ -1593,8 +1611,10 @@ Alerts
       color: white;
     }
   }
+
   &.alert-success {
     background-color: #43a047;
+
     &:after {
       content: "\e86c";
       font-family: "Material Icons";
@@ -1620,20 +1640,25 @@ Search page
 
   #col1 {
     width: 515px;
+
     .area {
       padding: 25px 17px 33px;
     }
   }
+
   #col2 {
     width: 221px;
     margin-left: 14px;
+
     .box hr {
       border-color: #c1beb0;
       border-bottom: none;
     }
+
     .action-button.remote-repo {
       background-image: url("../images/button-search-remote-repo.ltr.png");
     }
+
     .search-layout #col2 .action-button.share-search {
       background-image: url("../images/button-share-search-action.ltr.png");
     }
@@ -1743,6 +1768,7 @@ Search page
     top: -32px;
     position: absolute;
   }
+
   position: relative;
   border-bottom: none;
   background-color: transparent;
@@ -1946,6 +1972,7 @@ div.skinnysearch {
   @include typography-body-1;
   background: url(../../images/select-down.png) right 12px no-repeat #fff;
 }
+
 #searchresults-actions {
   .select2-container {
     z-index: auto;
@@ -2133,35 +2160,44 @@ ul.ui-autocomplete {
   top: 13px;
   z-index: 10;
   height: 0px;
+
   .btn {
     background-color: transparent;
     color: $primaryColor;
     margin-left: 3px;
+
     &:before {
       font-family: "Material Icons";
       font-size: 24px;
       color: $menuItemIconColor;
       padding-right: 4px;
     }
+
     &#sra_sort:before {
       content: "\E164";
     }
+
     &#sra_filter:before {
       content: "\e152";
     }
+
     &#sra_share:before {
       content: "\e80d";
     }
+
     &:hover {
       background-color: transparentize($primaryColor, 0.7);
     }
+
     &.active {
       background-color: $primaryColor;
       color: set-text-color($primaryColor);
+
       &:before {
         color: set-text-color($primaryColor);
       }
     }
+
     i:before {
       display: none;
     }
@@ -2178,15 +2214,19 @@ ul.ui-autocomplete {
   background: none repeat scroll 0 0 $primaryColor;
   padding: 20px 32px;
   margin-top: 50px;
+
   input {
     background-color: set-text-color($primaryColor);
   }
+
   .input {
     width: 230px;
   }
+
   .newListSelected {
     margin-bottom: 8px;
   }
+
   hr {
     height: 0;
     border: none;
@@ -2195,11 +2235,13 @@ ul.ui-autocomplete {
     clear: both;
     margin: 15px 0;
   }
+
   .btn {
     border: 1px solid set-text-color($primaryColor);
     background-color: transparent;
     color: set-text-color($primaryColor);
     margin-left: 3px;
+
     .icon-user:before {
       content: "\e7fd";
       font-family: "Material Icons";
@@ -2209,6 +2251,7 @@ ul.ui-autocomplete {
       font-style: normal;
       vertical-align: middle;
     }
+
     .icon-remove:before {
       content: "\e5cd";
       font-family: "Material Icons";
@@ -2218,9 +2261,11 @@ ul.ui-autocomplete {
       font-style: normal;
       vertical-align: middle;
     }
+
     &:hover {
       background-color: transparentize(set-text-color($primaryColor), 0.7);
     }
+
     &:active {
       background-color: transparentize($primaryColor, 1);
     }
@@ -2244,6 +2289,7 @@ ul.ui-autocomplete {
 
 #searchresults-actions #actioncontent label {
   color: set-text-color($primaryColor);
+
   &:not(:first-child) {
     padding-left: 8px;
   }
@@ -2292,11 +2338,13 @@ ul.ui-autocomplete {
 .richdropdown {
   ul {
     list-style-type: none;
+
     li {
       h3 {
         color: $primaryTextColor;
         @include typography-headline-6;
       }
+
       a {
       }
     }
@@ -2313,22 +2361,27 @@ ul.ui-autocomplete {
       font-style: normal;
       vertical-align: middle;
     }
+
     color: $primaryColor;
     min-width: 1px;
     margin-left: 2px;
   }
+
   .dropdown-menu {
     display: none;
   }
+
   .open {
     .dropdown-menu {
       display: block;
       border: 1px solid rgba(0, 0, 0, 0.42);
       width: 244px;
       padding: 8px;
+
       li {
         padding-top: 8px;
         padding-bottom: 8px;
+
         :hover {
           background-color: rgba(224, 224, 224, 1);
           color: set-text-color(white);
@@ -2343,6 +2396,7 @@ ul.ui-autocomplete {
 .glyphicon-cloud {
   padding-top: 4px;
   padding-right: 8px;
+
   &:before {
     content: "\e2c2";
     font-family: "Material Icons";
@@ -2578,6 +2632,7 @@ html.wait {
   cursor: pointer;
   text-align: center;
   position: relative;
+
   a:before {
     content: "\e226";
     font-family: "Material Icons";
@@ -2589,6 +2644,7 @@ html.wait {
 .paging {
   clear: both;
   text-align: center;
+
   ul li {
     display: inline;
     margin: 0 4px;
@@ -2628,10 +2684,12 @@ html.wait {
 
 .newListSelected.bulkactions {
   width: 100% !important;
+
   .onBottom {
     width: 100% !important;
     z-index: 1000;
   }
+
   td {
     cursor: pointer;
   }
@@ -2646,6 +2704,7 @@ html.wait {
   textarea {
     width: 100%;
   }
+
   width: 492px;
 }
 
@@ -2658,6 +2717,7 @@ html.wait {
     flex-direction: row;
     justify-content: flex-end;
   }
+
   height: 600px;
 }
 
@@ -2675,6 +2735,7 @@ input.term-paths {
     margin: 0 8px;
   }
 }
+
 .box_content_inner {
   .blue {
     li {
@@ -2760,6 +2821,7 @@ Contribution wizard styling
 
 #wizard-pagelist ul li.active {
   background: url(../images/rhs-nav-list-icon-dark.ltr.png) 0 0 no-repeat;
+
   :before {
     content: "\e24d";
     font-family: "Material Icons";
@@ -2772,6 +2834,7 @@ Contribution wizard styling
 
 #wizard-pagelist ul li a {
   margin: 2px 0 0 0;
+
   &:before {
     content: "\e24d";
     font-family: "Material Icons";
@@ -2866,7 +2929,7 @@ a.add {
 }
 
 .resumeables {
-  padding-bottom: 16px;
+  padding-bottom: 20px;
 }
 
 .contribution-selection-page .resumeables ul li span.resumable {
@@ -2892,6 +2955,7 @@ button + .repeater-groups {
 
 .ctrlbutton {
   margin-top: 4px;
+
   i.icon-plus {
     &:before {
       content: "\e145";
@@ -3003,9 +3067,11 @@ button + .repeater-groups {
   @include buttonShadowBorder;
   margin-bottom: 4px;
 }
+
 #d_discard {
   @include buttonShadowBorder;
 }
+
 .settingRow .settingField {
   width: auto;
   padding-left: 26px;
@@ -3015,12 +3081,15 @@ button + .repeater-groups {
   text-align: left;
   width: 266px;
 }
+
 .settingContainer {
   width: 100%;
+
   .editLinks {
     padding-top: 8px;
   }
 }
+
 #searchform-editquery {
   @include buttonShadowBorder;
 }
@@ -3041,6 +3110,7 @@ button + .repeater-groups {
   min-height: 340px;
   padding: 20px 25px;
   margin-right: 30px;
+
   h3 {
     @include typography-headline-6;
   }
@@ -3082,6 +3152,7 @@ button + .repeater-groups {
     height: 220px !important;
   }
 }
+
 .shuffle-box-controls {
   button {
     margin: 4px 0;
@@ -3097,15 +3168,18 @@ button + .repeater-groups {
   div.input label {
     display: none !important;
   }
+
   div.input {
     padding: initial;
   }
+
   button {
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
     padding-left: 8px;
     padding-right: 8px;
     margin-left: 8px;
+
     .icon-search:before {
       content: "\e8b6";
       font-family: "Material Icons";
@@ -3116,15 +3190,18 @@ button + .repeater-groups {
       vertical-align: middle;
     }
   }
+
   input[type="text"],
   #youtube-query select {
     width: 528px;
   }
 }
+
 .modal-search-results {
   p {
     @include typography-body-1;
   }
+
   p.info.results {
     background: none;
     border: none;
@@ -3138,6 +3215,7 @@ button + .repeater-groups {
     padding-left: 8px;
     padding-right: 8px;
   }
+
   i.icon-plus {
     &:before {
       content: "\e145";
@@ -3153,6 +3231,7 @@ button + .repeater-groups {
 
 .upDownButtonPanel {
   top: 8px !important;
+
   button {
     min-width: 2px;
   }
@@ -3222,15 +3301,19 @@ i.icon-arrow-left {
 .popupbrowserdialog #termChooser {
   border-right: 1px solid #e8e8e8;
 }
+
 #termChooser.ui-tabs {
   border: none;
   border-right: 2px solid #e8e8e8;
+
   ul {
     border: none;
   }
+
   li {
     border: none;
     background: none;
+
     a {
       color: $primaryColor;
     }
@@ -3249,6 +3332,7 @@ i.icon-arrow-left {
 
     a.viewterm {
       padding-left: 0px;
+
       &:before {
         content: "\e417";
         font-family: "Material Icons";
@@ -3259,8 +3343,10 @@ i.icon-arrow-left {
         font-style: normal;
       }
     }
+
     &.ui-tabs-active {
       border-bottom: 2px solid $secondaryColor;
+
       a {
         color: $primaryTextColor;
       }
@@ -3302,6 +3388,7 @@ ul.treeview {
   h3 {
     @include typography-headline-6;
   }
+
   .selectedItems {
     background-color: #e8e8e8;
   }
@@ -3309,6 +3396,7 @@ ul.treeview {
 
 a.unselect {
   background: none;
+
   &:before {
     content: "\e872";
     font-family: "Material Icons";
@@ -3329,11 +3417,13 @@ Item summary styling
     position: absolute;
     top: 80px;
     right: 0px;
+
     .btn {
       background-color: transparent;
       border: 1px solid rgba(0, 0, 0, 0.23);
       margin-right: 16px;
       color: $primaryTextColor;
+
       .icon-arrow-left:before {
         content: "\e5c4";
         font-family: "Material Icons";
@@ -3343,6 +3433,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+
       .icon-arrow-right:before {
         content: "\e5c8";
         font-family: "Material Icons";
@@ -3352,6 +3443,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+
       @include hoverHighlight;
     }
   }
@@ -3364,9 +3456,11 @@ Item summary styling
   margin: 8px 0;
   background-color: $primaryColor;
   background-repeat: no-repeat;
+
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
+
   &:active {
     background-color: transparentize($primaryColor, 0.3);
   }
@@ -3400,6 +3494,7 @@ Item summary styling
 .itemsummary-layout hr {
   display: none;
 }
+
 .itemsummary-layout #col2 {
   margin-left: 16px;
   flex-shrink: 0;
@@ -3420,7 +3515,7 @@ Item summary styling
 }
 
 .itemsummary-layout #col2 h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
 }
 
 .itemsummary-layout #col2 ul {
@@ -3533,6 +3628,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e15d";
     font-family: "Material Icons";
@@ -3545,6 +3641,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e83a";
     font-family: "Material Icons";
@@ -3558,6 +3655,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e838";
     font-family: "Material Icons";
@@ -3569,9 +3667,11 @@ table.versions td {
 .ratingwrapper {
   float: left;
 }
+
 //i'm sure this could be done much, much better, will come back if time permits
 .star-rating-static {
   float: left;
+
   div.star-rating-static-1 {
     &:before {
       content: "\e838 \e83a \e83a \e83a \e83a";
@@ -3580,6 +3680,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-2 {
     &:before {
       content: "\e838 \e838 \e83a \e83a \e83a";
@@ -3588,6 +3689,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-3 {
     &:before {
       content: "\e838 \e838 \e838 \e83a \e83a";
@@ -3596,6 +3698,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-4 {
     &:before {
       content: "\e838 \e838 \e838 \e838 \e83a";
@@ -3604,6 +3707,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-5 {
     &:before {
       content: "\e838 \e838 \e838 \e838 \e838";
@@ -3624,6 +3728,7 @@ table.versions td {
 .comment-username {
   @include typography-headline-6;
   padding: 8px;
+
   &:before {
     content: "\e7fd";
     font-family: "Material Icons";
@@ -3631,6 +3736,7 @@ table.versions td {
     color: $secondaryColor;
     vertical-align: middle;
   }
+
   .timeago {
     @include typography-subtitle-1;
   }
@@ -3928,6 +4034,7 @@ table#copyright-table tr td {
   background-position: 5px 5px;
   background-repeat: no-repeat;
   background-image: none;
+
   .link-div a:before {
     content: "\e24d";
     font-family: "Material Icons";
@@ -3960,6 +4067,7 @@ table#copyright-table tr td {
       font-style: normal;
     }
   }
+
   .icon-move {
     &:before {
       content: "\e8fe";
@@ -3971,6 +4079,7 @@ table#copyright-table tr td {
     }
   }
 }
+
 a.modal-control.modal-save {
   right: 394px;
 }
@@ -4161,9 +4270,11 @@ img.warningimg {
   background-size: 26px 26px;
   background-position: left 3px top 4px;
   @include buttonShadowBorder;
+
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
+
   &:active {
     background-color: transparentize($primaryColor, 0.3);
   }
@@ -4280,6 +4391,7 @@ img.warningimg {
   width: 368px;
   margin-left: 16px;
 }
+
 //Search query portlet
 .compactQuery {
   display: flex;
@@ -4375,6 +4487,7 @@ input[disabled="disabled"] {
 #searchresults-select {
   background-color: white;
   border: none;
+
   strong {
     border-bottom: 2px solid $secondaryColor;
     padding-bottom: 5px;
@@ -4441,6 +4554,7 @@ div#sssh_finishedButton {
     align-items: flex-end;
     @include typography-button;
   }
+
   li {
     padding: 0 12px 0 12px;
   }
@@ -4461,9 +4575,11 @@ div#sssh_finishedButton {
 .box_head {
   background-color: white;
   border: none;
+
   &:hover {
     background: none;
   }
+
   h3 {
     @include typography-headline-6;
     color: $primaryTextColor;
@@ -4488,6 +4604,7 @@ div#sssh_finishedButton {
 .contribute-div {
   text-align: right;
   margin: 8px 0 8px;
+
   .btn {
     .icon-arrow-right:after {
       content: "\e145";
@@ -4506,6 +4623,7 @@ div#sssh_finishedButton {
 #_cancelButton {
   background: none;
   color: $primaryColor;
+
   .icon-arrow-left:before {
     content: "\e5c4";
     font-family: "Material Icons";
@@ -4629,6 +4747,7 @@ div#sssh_finishedButton {
 
 .selection-courses-inner .courselisttop button {
   margin-bottom: 8px;
+
   .icon-ok:before {
     content: "\e161";
     font-family: "Material Icons";
@@ -4859,6 +4978,7 @@ Login Notice Formatting
   font-family: "Arial", "georgia", "impact", "Tahoma", "Times", "Verdana",
     monospace;
 }
+
 #loginNotice ins {
   text-decoration: underline;
 }
@@ -4986,16 +5106,20 @@ Login Notice Formatting
 #loginNotice ol li {
   margin: unset;
 }
+
 .duplicate_editbox_section {
   line-height: 2;
 }
+
 .duplicate_editbox_section li {
   list-style: disc;
   margin-left: 2.5em;
 }
+
 .duplicate_attachment_section {
   line-height: 2;
 }
+
 .duplicate_attachment_section li {
   list-style: disc;
   margin-left: 2.5em;
@@ -5005,12 +5129,15 @@ ul.treeview .hitarea {
   background-image: transparent;
   margin-right: 0;
 }
+
 ul.treeview li.expandable a.hitarea::before {
   content: none;
 }
+
 ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
+
 $loginLabelWidth: 100;
 $whitespaceWidth: 4;
 $loginTextBoxWidth: 200;
@@ -5021,20 +5148,25 @@ $loginTextBoxWidth: 200;
   width: $loginTextBoxWidth + unquote("px");
   @include boxShadow;
 }
+
 #username {
   width: $loginTextBoxWidth + unquote("px");
 }
+
 #password {
   width: $loginTextBoxWidth + unquote("px");
 }
+
 label[for="username"] {
   display: inline-block;
   width: $loginLabelWidth + unquote("px");
 }
+
 label[for="password"] {
   display: inline-block;
   width: $loginLabelWidth + unquote("px");
 }
+
 button:focus {
   outline: lightgrey dashed 1px;
 }
