@@ -129,10 +129,10 @@ export const FacetSelector = ({
   );
 
   /**
-   * Render a MUI Checkbox and a Label for a facet.
+   * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
    * @param facet A facet.
    */
-  const renderFacet = (facet: OEQ.SearchFacets.Facet) => (
+  const facetListItem = (facet: OEQ.SearchFacets.Facet) => (
     <ListItem key={`${facet.term} ${facet.count}`} style={{ padding: 0 }}>
       <FormControlLabel
         control={
@@ -147,24 +147,26 @@ export const FacetSelector = ({
   );
 
   /**
-   * Render a list for a Classification's categories. Some categories
-   * may have facets not displayed due to the configured maximum display number.
-   * @param classification A Classification..
+   * Build a list for a Classification's categories. Some categories may have facets
+   * not displayed due to the configured maximum display number.
+   *
+   * @param classification A fully defined Classification with a list of terms to build
+   * into a list - including metadata detailing how many to include.
    */
-  const renderCategories = (classification: SearchPageClassification) => {
+  const listCategories = (classification: SearchPageClassification) => {
     const { categories, maxDisplay, showMore } = classification;
-    const facets = categories.map((facet) => renderFacet(facet));
+    const facets = categories.map((facet) => facetListItem(facet));
     // The number of displayed facets depends on whether to show more
     // and the maximum display number.
     return facets.slice(0, showMore ? maxDisplay : undefined);
   };
 
   /**
-   * Sort and render Classifications that have categories.
+   * Sort and build Classifications that have categories.
    * For each Classification, a scroll bar and a 'Show more' button may or may not
    * be added, depending on whether a classification has more categories to show or not.
    */
-  const renderClassifications = classifications
+  const buildClassifications = classifications
     .filter((classification) => classification.categories.length > 0)
     .sort(
       (prevClassification, nextClassification) =>
@@ -183,7 +185,7 @@ export const FacetSelector = ({
                 dense
                 className={!showMore ? classes.classificationList : ""}
               >
-                {renderCategories(classification)}
+                {listCategories(classification)}
                 {showMore && showMoreButton(name)}
               </List>
             </Grid>
@@ -191,5 +193,6 @@ export const FacetSelector = ({
         </ListItem>
       );
     });
-  return <List>{renderClassifications}</List>;
+
+  return <List>{buildClassifications}</List>;
 };
