@@ -2052,6 +2052,9 @@ div.skinnysearch {
   input[type="text"] {
   width: 350px;
 }
+#sis_button.action-button {
+  @include buttonShadowBorder;
+}
 
 #selection-content-inner.wizard-layout
   .indent3
