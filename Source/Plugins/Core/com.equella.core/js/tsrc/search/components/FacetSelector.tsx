@@ -150,16 +150,18 @@ export const FacetSelector = ({
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
    *
-   * @param classification A fully defined Classification with a list of terms to build
-   * into a list - including metadata detailing how many to include.
+   * @param categories A list of terms to build into a list
+   * @param showMore Whether to show more facets or not
+   * @param maxDisplay Default maximum number of displayed facets
    */
-  const listCategories = (classification: SearchPageClassification) => {
-    const { categories, maxDisplay, showMore } = classification;
-    const facets = categories.map((facet) => facetListItem(facet));
-    // The number of displayed facets depends on whether to show more
-    // and the maximum display number.
-    return facets.slice(0, showMore ? maxDisplay : undefined);
-  };
+  const listCategories = (
+    categories: OEQ.SearchFacets.Facet[],
+    showMore: boolean,
+    maxDisplay?: number
+  ) =>
+    categories
+      .slice(0, showMore ? maxDisplay : undefined)
+      .map((facet) => facetListItem(facet));
 
   /**
    * Sort and build Classifications that have categories.
@@ -172,8 +174,7 @@ export const FacetSelector = ({
       (prevClassification, nextClassification) =>
         prevClassification.orderIndex - nextClassification.orderIndex
     )
-    .map((classification) => {
-      const { name, showMore } = classification;
+    .map(({ name, categories, maxDisplay, showMore }) => {
       return (
         <ListItem divider key={name} id={`classification_${name}`}>
           <Grid container direction="column">
@@ -185,7 +186,7 @@ export const FacetSelector = ({
                 dense
                 className={!showMore ? classes.classificationList : ""}
               >
-                {listCategories(classification)}
+                {listCategories(categories, showMore, maxDisplay)}
                 {showMore && showMoreButton(name)}
               </List>
             </Grid>
