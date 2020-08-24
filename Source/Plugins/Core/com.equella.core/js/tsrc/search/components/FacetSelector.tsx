@@ -28,7 +28,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageClassification } from "../SearchPage";
+import type { SearchPageClassification } from "../SearchPage";
 
 const useStyles = makeStyles({
   classificationList: {
@@ -128,7 +128,7 @@ export const FacetSelector = ({
         control={
           <Checkbox
             checked={
-              selectedTerms ? selectedTerms.indexOf(facet.term) !== -1 : false
+              selectedTerms ? selectedTerms.includes(facet.term) : false
             }
             onChange={() => handleSelectTerms(facet.term)}
           />
