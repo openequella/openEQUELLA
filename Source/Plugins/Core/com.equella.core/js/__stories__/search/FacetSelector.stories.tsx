@@ -32,39 +32,43 @@ export default {
   },
 } as Meta<FacetSelectorProps>;
 
+const FacetSelectorTemplate = (args: FacetSelectorProps) => (
+  <FacetSelector {...args} />
+);
 const selectedClassificationTerms = new Map<string, string[]>([
   ["Language", ["scala"]],
   ["City", ["Hobart"]],
 ]);
-export const termsSelected: Story<FacetSelectorProps> = (args) => (
-  <FacetSelector {...args} />
-);
-termsSelected.args = {
-  classifications: FacetSelectorMock.classifications,
-  selectedClassificationTerms: selectedClassificationTerms,
+const showMoreClassification = {
+  ...FacetSelectorMock.classifications[0],
+  showMore: true,
 };
 
-export const noTermsSelected: Story<FacetSelectorProps> = (args) => (
-  <FacetSelector {...args} />
+export const noTermsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
+  {}
 );
 noTermsSelected.args = {
   classifications: FacetSelectorMock.classifications,
 };
 
-export const showMore: Story<FacetSelectorProps> = (args) => (
-  <FacetSelector {...args} />
+export const termsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
+  {}
 );
-showMore.args = {
-  classifications: [
-    { ...FacetSelectorMock.classifications[0], showMore: true },
-  ],
+termsSelected.args = {
+  ...noTermsSelected.args,
+  selectedClassificationTerms: selectedClassificationTerms,
 };
 
-export const notShowMore: Story<FacetSelectorProps> = (args) => (
-  <FacetSelector {...args} />
+export const showMore: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
+  {}
+);
+showMore.args = {
+  classifications: [showMoreClassification],
+};
+
+export const notShowMore: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
+  {}
 );
 notShowMore.args = {
-  classifications: [
-    { ...FacetSelectorMock.classifications[0], showMore: false },
-  ],
+  classifications: [{ ...showMoreClassification, showMore: false }],
 };
