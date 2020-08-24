@@ -127,9 +127,7 @@ export const FacetSelector = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={
-              selectedTerms ? selectedTerms.includes(facet.term) : false
-            }
+            checked={selectedTerms?.includes(facet.term) ?? false}
             onChange={() => handleSelectTerms(facet.term)}
           />
         }
