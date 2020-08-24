@@ -2519,11 +2519,7 @@ html.wait {
   margin-left: 0 !important;
   margin-right: 4px;
   vertical-align: middle;
-  border-radius: 0;
-}
-
-.itemresult-rating div.float-right .btn:last-child {
-  border-radius: 0 2px 2px 0;
+  @include buttonShadowBorder;
 }
 
 .itemresult-rating div.float-right .button-expandable.unselect:hover {
@@ -2546,6 +2542,10 @@ html.wait {
 
 .itemresult-metaline {
   width: 100%;
+}
+
+#sc_attachments_selectAllAttachmentButton:hover {
+  width: 200px;
 }
 
 .itemresult-metaline .itemresult-meta-delim,
@@ -2932,6 +2932,7 @@ button + .repeater-groups {
   padding-left: 4px;
   font-style: normal;
   @include typography-subtitle-1;
+
   &:before {
     content: "\e2c6";
     font-family: "Material Icons";
@@ -3647,6 +3648,7 @@ table.versions td {
   line-height: 16px;
   padding-left: 20px;
 }
+
 .ratingwrapper {
   position: absolute;
   bottom: 0;
@@ -3769,13 +3771,20 @@ td.sectionAction {
   width: 60px;
 }
 
+.selection .selectable .attachments-browse.structured li .button-div .btn {
+  @include buttonShadowBorder;
+}
+
 .settingContainer.skinny {
   width: 100%;
+
   .button-strip {
     display: flex;
     flex-direction: row-reverse;
+
     button {
       margin: 0 8px;
+
       &.btn-equella {
         background-color: transparent;
         color: $primaryColor;
@@ -4012,8 +4021,10 @@ div.universaliframe {
 	This is what the fancybox ends up being
 	for multiple resource handler selection
 	*/
-  height: 476px;
+  height: 650px;
+  width: 1250px;
   overflow: hidden;
+  @include buttonShadowBorder;
 }
 
 div.universaliframe iframe {
