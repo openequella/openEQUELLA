@@ -27,8 +27,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import { Classification } from "../../modules/SearchFacetsModule";
 import { languageStrings } from "../../util/langstrings";
-import type { SearchPageClassification } from "../SearchPage";
 
 const useStyles = makeStyles({
   classificationList: {
@@ -36,6 +36,16 @@ const useStyles = makeStyles({
     overflow: "auto",
   },
 });
+
+/**
+ * Represents a Classification that is specific to Search page.
+ */
+export interface SearchPageClassification extends Classification {
+  /**
+   * A boolean indicating if a classification has hidden categories to show.
+   */
+  showMore: boolean;
+}
 
 interface FacetSelectorProps {
   /**

@@ -22,7 +22,6 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
-import { Classification } from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
 import { Grid } from "@material-ui/core";
 import {
@@ -60,16 +59,6 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
-}
-
-/**
- * Represents a Classification that is specific to Search page.
- */
-export interface SearchPageClassification extends Classification {
-  /**
-   * A boolean indicating if a classification has hidden categories to show.
-   */
-  showMore: boolean;
 }
 
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
