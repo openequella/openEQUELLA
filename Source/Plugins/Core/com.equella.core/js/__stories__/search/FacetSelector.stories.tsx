@@ -15,22 +15,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
 import * as React from "react";
-import { FacetSelector } from "../../tsrc/search/components/FacetSelector";
+import {
+  FacetSelector,
+  FacetSelectorProps,
+} from "../../tsrc/search/components/FacetSelector";
 import * as FacetSelectorMock from "../../__mocks__/FacetSelector.mock";
+import type { Meta, Story } from "@storybook/react";
 
 export default {
   title: "Search/FacetSelector",
   component: FacetSelector,
-};
-const commonProps = {
-  classifications: FacetSelectorMock.classifications,
-  onSelectTermsChange: action("on select terms"),
-  onShowMore: action("on Show more"),
-};
-export const termsSelected = () => (
-  <FacetSelector selectedTerms={["scala", "QLD"]} {...commonProps} />
-);
+  argType: {
+    onSelectTermsChange: { action: "on select terms" },
+    onShowMore: { action: "on Show more" },
+  },
+} as Meta<FacetSelectorProps>;
 
-export const noTermsSelected = () => <FacetSelector {...commonProps} />;
+export const termsSelected: Story<FacetSelectorProps> = (args) => (
+  <FacetSelector {...args} />
+);
+termsSelected.args = {
+  classifications: FacetSelectorMock.classifications,
+  selectedTerms: ["scala", "QLD"],
+};
+
+export const noTermsSelected: Story<FacetSelectorProps> = (args) => (
+  <FacetSelector {...args} />
+);
+noTermsSelected.args = {
+  classifications: FacetSelectorMock.classifications,
+};
+
+export const showMore: Story<FacetSelectorProps> = (args) => (
+  <FacetSelector {...args} />
+);
+showMore.args = {
+  classifications: [
+    { ...FacetSelectorMock.classifications[0], showMore: true },
+  ],
+};
+
+export const notShowMore: Story<FacetSelectorProps> = (args) => (
+  <FacetSelector {...args} />
+);
+notShowMore.args = {
+  classifications: [
+    { ...FacetSelectorMock.classifications[0], showMore: false },
+  ],
+};

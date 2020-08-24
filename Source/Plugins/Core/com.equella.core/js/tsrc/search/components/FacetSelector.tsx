@@ -47,7 +47,7 @@ export interface SearchPageClassification extends Classification {
   showMore: boolean;
 }
 
-interface FacetSelectorProps {
+export interface FacetSelectorProps {
   /**
    * A list of Classifications.
    */

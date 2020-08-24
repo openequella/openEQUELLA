@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { SearchPageClassification } from "../tsrc/search/SearchPage";
+import type { SearchPageClassification } from "../tsrc/search/components/FacetSelector";
 
 export const classifications: SearchPageClassification[] = [
   {
