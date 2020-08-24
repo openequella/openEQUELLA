@@ -4499,9 +4499,11 @@ div#sssh_finishedButton {
 *****************************************************************************/
 .itemresult-rating div.float-right {
   padding-top: 8px;
+
   .btn {
     float: right;
     margin-left: 4px;
+    margin-right: 0;
   }
 }
 
