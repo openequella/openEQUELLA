@@ -32,12 +32,16 @@ export default {
   },
 } as Meta<FacetSelectorProps>;
 
+const selectedClassificationTerms = new Map<string, string[]>([
+  ["Language", ["scala"]],
+  ["City", ["Hobart"]],
+]);
 export const termsSelected: Story<FacetSelectorProps> = (args) => (
   <FacetSelector {...args} />
 );
 termsSelected.args = {
   classifications: FacetSelectorMock.classifications,
-  selectedTerms: ["scala", "QLD"],
+  selectedClassificationTerms: selectedClassificationTerms,
 };
 
 export const noTermsSelected: Story<FacetSelectorProps> = (args) => (

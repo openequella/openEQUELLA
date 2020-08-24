@@ -25,6 +25,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { ReactElement } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { Classification } from "../../modules/SearchFacetsModule";
@@ -53,14 +54,15 @@ export interface FacetSelectorProps {
    */
   classifications: SearchPageClassification[];
   /**
-   * A list of selected facets.
+   * A map where the key is a Classification's name and value is
+   * a list of terms.
    */
-  selectedTerms?: string[];
+  selectedClassificationTerms?: Map<string, string[]>;
   /**
    * Handler for selecting/deselecting Classification terms.
    * @param terms A list of currently selected terms.
    */
-  onSelectTermsChange: (terms: string[]) => void;
+  onSelectTermsChange: (terms: Map<string, string[]>) => void;
   /**
    * Handler for clicking a 'SHOW MORE' button.
    * @param classificationName The name of a Classification.
@@ -70,7 +72,7 @@ export interface FacetSelectorProps {
 
 export const FacetSelector = ({
   classifications,
-  selectedTerms,
+  selectedClassificationTerms,
   onSelectTermsChange,
   onShowMore,
 }: FacetSelectorProps) => {
@@ -79,25 +81,31 @@ export const FacetSelector = ({
   /**
    * Updates the list of selected Classification terms. If the term exists then remove it
    * from the list. Add it to the list otherwise.
+   * A copy of the map and a copy of the array of terms are created internally
+   * to avoid mutating parent component's state.
    *
-   * @param term The selected or unselected term.
+   * @param classificationName The name of a Classification
+   * @param term The selected or unselected term
    */
-  const handleSelectTerms = (term: string) => {
-    const copiedSelectedTerms = selectedTerms ? [...selectedTerms] : [];
-    const termIndex = copiedSelectedTerms.indexOf(term);
+  const handleSelectTerms = (classificationName: string, term: string) => {
+    const terms = selectedClassificationTerms?.get(classificationName);
+    const copiedTerms = terms ? [...terms] : [];
+    const termIndex = copiedTerms.indexOf(term);
     if (termIndex === -1) {
-      copiedSelectedTerms.push(term);
+      copiedTerms.push(term);
     } else {
-      copiedSelectedTerms.splice(termIndex, 1);
+      copiedTerms.splice(termIndex, 1);
     }
-    onSelectTermsChange(copiedSelectedTerms);
+    const copiedMap = new Map(selectedClassificationTerms ?? []);
+    copiedMap.set(classificationName, copiedTerms);
+    onSelectTermsChange(copiedMap);
   };
 
   /**
    * Render a 'SHOW MORE' button for each Classification.
    * @param classificationName The name of a Classification.
    */
-  const showMoreButton = (classificationName: string) => (
+  const showMoreButton = (classificationName: string): ReactElement => (
     <ListItem>
       <Grid container justify="center">
         <Grid item>
@@ -111,66 +119,84 @@ export const FacetSelector = ({
 
   /**
    * Generate texts in the format of 'term (count)' for displaying a facet.
-   * @param facet A facet
+   * @param term The term of a facet
+   * @param count The count of a facet
    */
-  const facetLabel = (facet: OEQ.SearchFacets.Facet) => (
+  const facetLabel = ({
+    term,
+    count,
+  }: OEQ.SearchFacets.Facet): ReactElement => (
     <Grid container spacing={1}>
       <Grid item>
-        <Typography>{facet.term}</Typography>
+        <Typography>{term}</Typography>
       </Grid>
       <Grid item>
-        <Typography color="textSecondary">{`(${facet.count})`}</Typography>
+        <Typography color="textSecondary">{`(${count})`}</Typography>
       </Grid>
     </Grid>
   );
 
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
-   * @param facet A facet.
+   * @param classificationName The name of a Classification
+   * @param facet A facet
    */
-  const facetListItem = (facet: OEQ.SearchFacets.Facet) => (
-    <ListItem key={`${facet.term} ${facet.count}`} style={{ padding: 0 }}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={selectedTerms?.includes(facet.term) ?? false}
-            onChange={() => handleSelectTerms(facet.term)}
-          />
-        }
-        label={facetLabel(facet)}
-      />
-    </ListItem>
-  );
+  const facetListItem = (
+    classificationName: string,
+    facet: OEQ.SearchFacets.Facet
+  ): ReactElement => {
+    const { term, count } = facet;
+    return (
+      <ListItem key={`${facet} ${count}`} style={{ padding: 0 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={
+                selectedClassificationTerms
+                  ?.get(classificationName)
+                  ?.includes(term) ?? false
+              }
+              onChange={() => handleSelectTerms(classificationName, term)}
+            />
+          }
+          label={facetLabel(facet)}
+        />
+      </ListItem>
+    );
+  };
 
   /**
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
    *
+   * @param name The name of a Classification
    * @param categories A list of terms to build into a list
    * @param showMore Whether to show more facets or not
    * @param maxDisplay Default maximum number of displayed facets
    */
-  const listCategories = (
-    categories: OEQ.SearchFacets.Facet[],
-    showMore: boolean,
-    maxDisplay?: number
-  ) =>
+  const listCategories = ({
+    name,
+    categories,
+    showMore,
+    maxDisplay,
+  }: SearchPageClassification): ReactElement[] =>
     categories
       .slice(0, showMore ? maxDisplay : undefined)
-      .map((facet) => facetListItem(facet));
+      .map((facet) => facetListItem(name, facet));
 
   /**
    * Sort and build Classifications that have categories.
    * For each Classification, a scroll bar and a 'Show more' button may or may not
    * be added, depending on whether a classification has more categories to show or not.
    */
-  const buildClassifications = classifications
+  const buildClassifications: ReactElement[] = classifications
     .filter((classification) => classification.categories.length > 0)
     .sort(
       (prevClassification, nextClassification) =>
         prevClassification.orderIndex - nextClassification.orderIndex
     )
-    .map(({ name, categories, maxDisplay, showMore }) => {
+    .map((classification) => {
+      const { name, showMore } = classification;
       return (
         <ListItem divider key={name}>
           <Grid container direction="column">
@@ -182,7 +208,7 @@ export const FacetSelector = ({
                 dense
                 className={!showMore ? classes.classificationList : ""}
               >
-                {listCategories(categories, showMore, maxDisplay)}
+                {listCategories(classification)}
                 {showMore && showMoreButton(name)}
               </List>
             </Grid>

@@ -40,6 +40,7 @@ describe("<FacetSelector />", () => {
   const COLOR = "Color";
   // Mocked facet
   const HOBART = "Hobart";
+  const mockedSelectedTerms = new Map([[CITY, [HOBART]]]);
   // The text of 'SHOW MORE' button
   const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
 
@@ -120,6 +121,6 @@ describe("<FacetSelector />", () => {
     // Select the facet of Hobart.
     const hobart = getByText(page.container, HOBART, { selector: "p" });
     fireEvent.click(hobart);
-    expect(onSelectTermsChange).toHaveBeenLastCalledWith([HOBART]);
+    expect(onSelectTermsChange).toHaveBeenLastCalledWith(mockedSelectedTerms);
   });
 });
