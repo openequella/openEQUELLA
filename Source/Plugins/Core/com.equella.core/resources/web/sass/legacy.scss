@@ -1069,7 +1069,10 @@ Generic layout
   justify-content: center;
 }
 
-div#selection-content-inner.search-layout div.mainCols div#col2 div#selection-summary {
+div#selection-content-inner.search-layout
+  div.mainCols
+  div#col2
+  div#selection-summary {
   position: sticky;
   top: 70px;
 }
@@ -2005,20 +2008,21 @@ div.skinnysearch {
 }
 
 #selection-content-inner.wizard-layout
-.indent1
-.autocompleteControl
-input[type="text"] {
+  .indent1
+  .autocompleteControl
+  input[type="text"] {
   width: 390px;
 }
 
-.btn-plus { //to override .btn
+.btn-plus {
+  //to override .btn
   padding: 0 !important;
 }
 
 #selection-content-inner.wizard-layout
-.indent2
-.autocompleteControl
-input[type="text"] {
+  .indent2
+  .autocompleteControl
+  input[type="text"] {
   width: 350px;
 }
 
@@ -3660,7 +3664,12 @@ table.versions td {
   right: 0;
 }
 
-div#selection-content-inner.itemsummary-layout div.mainCols div#col1 div.area div#comments-add.rating-form.comment-form div.rate {
+div#selection-content-inner.itemsummary-layout
+  div.mainCols
+  div#col1
+  div.area
+  div#comments-add.rating-form.comment-form
+  div.rate {
   position: unset;
 }
 
@@ -4391,10 +4400,10 @@ div#sssh_finishedButton {
  Selection session nav bar overrides
 *****************************************************************************/
 #selection-header
-.navbar-equella-selection.normal
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner
-.navbar-content {
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
   width: 784px;
   display: flex;
   align-content: space-around;
@@ -4403,18 +4412,18 @@ div#sssh_finishedButton {
 }
 
 #selection-header
-.navbar-equella-selection.normal
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner {
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner {
   display: grid;
   justify-content: center;
 }
 
 #selection-header
-.navbar-equella-selection.course
-.navbar.navbar-fixed-top.navbar-inverse
-.navbar-inner
-.navbar-content {
+  .navbar-equella-selection.course
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+  .navbar-content {
   display: flex;
   align-content: space-around;
   justify-content: center;
