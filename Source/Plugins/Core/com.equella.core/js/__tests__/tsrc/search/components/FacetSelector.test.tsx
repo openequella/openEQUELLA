@@ -27,6 +27,7 @@ import {
 import { FacetSelector } from "../../../../tsrc/search/components/FacetSelector";
 import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
 import "@testing-library/jest-dom/extend-expect";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 describe("<FacetSelector />", () => {
   // Mocked callbacks
@@ -40,7 +41,7 @@ describe("<FacetSelector />", () => {
   // Mocked facet
   const HOBART = "Hobart";
   // The text of 'SHOW MORE' button
-  const SHOW_MORE = "Show more";
+  const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
 
   const renderFacetSelector = () =>
     render(
@@ -52,7 +53,10 @@ describe("<FacetSelector />", () => {
     );
 
   // Return a 'li' that represents a Classification.
-  const getClassificationByName = (container: HTMLElement, name: string) => {
+  const getClassificationByName = (
+    container: HTMLElement,
+    name: string
+  ): HTMLElement => {
     const id = `#classification_${name}`;
     const classification = container.querySelector(id);
     if (!classification) {
@@ -62,7 +66,7 @@ describe("<FacetSelector />", () => {
   };
 
   // Return a Classification's 'SHOW MORE' button.
-  const getShowMoreButton = (
+  const queryShowMoreButton = (
     container: HTMLElement,
     classificationName: string
   ) => {
@@ -78,10 +82,6 @@ describe("<FacetSelector />", () => {
     page = renderFacetSelector();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should display a list of classifications that have categories", () => {
     // Language and City should be displayed.
     [CITY, LANGUAGE].forEach((name) => {
@@ -92,17 +92,14 @@ describe("<FacetSelector />", () => {
   });
 
   it("should display the 'SHOW MORE' button when 'showMore' is true", () => {
-    let showMoreButton;
     // City can show more categories.
-    showMoreButton = getShowMoreButton(page.container, CITY);
-    expect(showMoreButton).toBeInTheDocument();
+    expect(queryShowMoreButton(page.container, CITY)).toBeInTheDocument();
     // Language does not have more categories to show.
-    showMoreButton = getShowMoreButton(page.container, LANGUAGE);
-    expect(showMoreButton).toBeNull();
+    expect(queryShowMoreButton(page.container, LANGUAGE)).toBeNull();
   });
 
   it("should call 'onShowMore' when a 'SHOW MORE' button is clicked", () => {
-    const showMoreButton = getShowMoreButton(page.container, CITY);
+    const showMoreButton = queryShowMoreButton(page.container, CITY);
     if (!showMoreButton) {
       throw new Error(
         "Unable to find 'SHOW MORE' button for Classification City."
