@@ -18,7 +18,7 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { LocationDescriptor } from "history";
-import { TemplateUpdate } from "./Template";
+import { TemplateUpdate, TemplateUpdateProps } from "./Template";
 import ThemePage from "../theme/ThemePage";
 import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
 import SearchPageSettings from "../settings/Search/SearchPageSettings";
@@ -29,24 +29,30 @@ import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import SearchPage from "../search/SearchPage";
 
-export interface OEQRouteComponentProps<T = any>
-  extends RouteComponentProps<T> {
+export interface OEQRouteComponentProps<T> extends RouteComponentProps<T> {
   updateTemplate(edit: TemplateUpdate): void;
   redirect(to: LocationDescriptor): void;
   setPreventNavigation(b: boolean): void;
   refreshUser(): void;
 }
 
-export interface OEQRoute {
+type To = (uuid: string, version: number) => string;
+
+export interface OEQRoute<T> {
   component?:
-    | React.ComponentType<OEQRouteComponentProps<any>>
-    | React.ComponentType<any>;
-  render?: (props: OEQRouteComponentProps<any>) => React.ReactNode;
+    | React.ComponentType<OEQRouteComponentProps<T>>
+    | React.ComponentType<T>;
+  render?: (props: OEQRouteComponentProps<T>) => React.ReactNode;
   path?: string;
   exact?: boolean;
   sensitive?: boolean;
   strict?: boolean;
-  to?: any;
+  to?: string | To;
+}
+
+export interface Routes {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [route: string]: OEQRoute<any>;
 }
 
 export const routes = {
@@ -57,23 +63,31 @@ export const routes = {
   },
   Search: {
     path: "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
+    render: (p: OEQRouteComponentProps<TemplateUpdateProps>) => (
+      <SearchPage {...p} />
+    ),
   },
   SearchSettings: {
     path: "/page/searchsettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />,
+    render: (p: OEQRouteComponentProps<TemplateUpdateProps>) => (
+      <SearchPageSettings {...p} />
+    ),
   },
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchFilterPage {...p} />,
+    render: (p: OEQRouteComponentProps<TemplateUpdateProps>) => (
+      <SearchFilterPage {...p} />
+    ),
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
-    render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />,
+    render: (p: OEQRouteComponentProps<TemplateUpdateProps>) => (
+      <ContentIndexSettings {...p} />
+    ),
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
-    render: (p: OEQRouteComponentProps<any>) => (
+    render: (p: OEQRouteComponentProps<TemplateUpdateProps>) => (
       <FacetedSearchSettingsPage {...p} />
     ),
   },

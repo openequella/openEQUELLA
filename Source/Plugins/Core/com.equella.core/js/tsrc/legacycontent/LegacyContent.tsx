@@ -23,12 +23,10 @@ import { API_BASE_URL } from "../config";
 
 declare global {
   interface Window {
-    _trigger: any;
-    eval: any;
-    EQ: { [index: string]: any };
+    EQ: { [index: string]: unknown };
   }
 
-  const _trigger: any;
+  const _trigger: undefined | ((name: string) => boolean);
 }
 
 interface ExternalRedirect {
@@ -181,7 +179,7 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   function stdSubmit(validate: boolean) {
     return function (command: string) {
-      if (window._trigger) {
+      if (_trigger) {
         _trigger("presubmit");
         if (validate) {
           if (!_trigger("validate")) {
@@ -300,8 +298,8 @@ function updateStylesheets(
       newCss.rel = "stylesheet";
       newCss.href = cssUrl;
       head.insertBefore(newCss, insertPoint);
-      const p = new Promise((resolve, reject) => {
-        newCss.addEventListener("load", resolve, false);
+      const p = new Promise<void>((resolve, reject) => {
+        newCss.addEventListener("load", () => resolve(), false);
         newCss.addEventListener(
           "error",
           (err) => {
@@ -314,8 +312,8 @@ function updateStylesheets(
       lastLink.push(p);
       return lastLink;
     }
-  }, [] as Promise<any>[]);
-  return Promise.all(cssPromises).then((_) => existingSheets);
+  }, [] as Promise<void>[]);
+  return Promise.all(cssPromises).then(() => existingSheets);
 }
 
 function deleteElements(elements: { [url: string]: HTMLElement }) {

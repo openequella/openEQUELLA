@@ -52,6 +52,13 @@ export const schemaListSummary = async (): Promise<Map<string, string>> => {
 };
 
 /**
+ * Unknown object returned via the REST API
+ */
+interface Definition {
+  [key: string]: unknown;
+}
+
+/**
  * Recursive helper function to build a simple outline of the structure of an oEQ schema.
  *
  * @param definition Typically something like a Record<string,any> returned via the REST API
@@ -59,19 +66,36 @@ export const schemaListSummary = async (): Promise<Map<string, string>> => {
  * @param parent Mainly for recursive calls to provide back linking to the parents.
  */
 export const buildSchemaTree = (
-  definition: any,
+  definition: Definition,
   name: string,
   parent?: SchemaNode
 ): SchemaNode => {
   const node: SchemaNode = { name: name, parent: parent };
-  node.children = Object.keys(definition)
-    .filter((childName: string) => typeof definition[childName] === "object")
-    .map((childName: string) =>
-      buildSchemaTree(definition[childName], childName, node)
+  node.children = Object.entries(definition)
+    .filter((pair): pair is [string, Definition] => typeof pair[1] === "object")
+    .map(([childName, childNode]) =>
+      buildSchemaTree(childNode, childName, node)
     );
 
   return node;
 };
+
+const standardRoot = "xml";
+
+/**
+ * Assert that a definition is a standard root
+ */
+function assertStandardRoot(
+  value: Definition
+): asserts value is { xml: Definition } {
+  const elements = Object.keys(value);
+
+  if (elements.length !== 1 && elements[0] !== standardRoot) {
+    throw new TypeError(
+      "Received schema does not start with the standard <xml> root element."
+    );
+  }
+}
 
 /**
  * A function to provide a structural outline of a schema. On success returns an oEQ schema
@@ -85,15 +109,10 @@ export const buildSchemaTree = (
  */
 export const schemaTree = (uuid: string): Promise<SchemaNode> =>
   OEQ.Schema.getSchema(API_BASE_URL, uuid).then(
-    (schema: OEQ.Schema.EquellaSchema) => {
-      const elements = Object.keys(schema.definition);
-      const standardRoot = "xml";
-      if (elements.length !== 1 && elements[0] !== standardRoot) {
-        throw new Error(
-          "Received schema does not start with the standard <xml> root element."
-        );
-      }
-      return buildSchemaTree(schema.definition[standardRoot], standardRoot);
+    ({ definition }: OEQ.Schema.EquellaSchema) => {
+      assertStandardRoot(definition);
+
+      return buildSchemaTree(definition[standardRoot], standardRoot);
     }
   );
 
