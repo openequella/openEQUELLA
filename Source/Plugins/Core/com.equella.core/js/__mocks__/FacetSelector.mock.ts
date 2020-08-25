@@ -19,6 +19,7 @@ import type { SearchPageClassification } from "../tsrc/search/components/FacetSe
 
 export const classifications: SearchPageClassification[] = [
   {
+    id: 766942,
     name: "Language",
     categories: [
       {
@@ -52,6 +53,7 @@ export const classifications: SearchPageClassification[] = [
     showMore: false,
   },
   {
+    id: 766943,
     name: "City",
     categories: [
       {
@@ -72,6 +74,7 @@ export const classifications: SearchPageClassification[] = [
     showMore: true,
   },
   {
+    id: 766944,
     name: "Color",
     categories: [],
     orderIndex: 2,
