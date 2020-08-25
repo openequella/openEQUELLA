@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import "@testing-library/jest-dom/extend-expect";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { mount } from "enzyme";
 import { SearchPagination } from "../../../tsrc/search/components/SearchPagination";
-import { paginatorControls } from "./SearchPaginationTestHelper";
+import { queryPaginatorControls } from "./SearchPaginationTestHelper";
 
 describe("<SearchPagination/>", () => {
   const mockOnPageChange = jest.fn();
@@ -28,7 +30,7 @@ describe("<SearchPagination/>", () => {
     currentPage: number,
     rowsPerPage: number
   ) =>
-    mount(
+    render(
       <SearchPagination
         count={resultCount}
         currentPage={currentPage}
@@ -39,87 +41,103 @@ describe("<SearchPagination/>", () => {
     );
 
   it("Goes back to the first page of results when First Page Button is clicked", () => {
-    //currently on page 3 of 3
-    const lastPage = searchPagination(30, 1, 10);
-    const { firstPageButton } = paginatorControls(lastPage);
+    // currently on page 3 of 3
+    const { container } = searchPagination(30, 1, 10);
+    const { getFirstPageButton } = queryPaginatorControls(container);
 
-    firstPageButton.simulate("click");
+    userEvent.click(getFirstPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
   });
 
   it("Goes back to the previous page of results when Previous Page Button is clicked", () => {
-    //currently on page 2 of 2
-    const lastPage = searchPagination(20, 1, 10);
-    const { previousPageButton } = paginatorControls(lastPage);
+    // currently on page 2 of 2
+    const { container } = searchPagination(20, 1, 10);
+    const { getPreviousPageButton } = queryPaginatorControls(container);
 
-    previousPageButton.simulate("click");
+    userEvent.click(getPreviousPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
   });
 
   it("Goes to the next page of results when Next Page Button is clicked", () => {
-    //currently on page 1 of 2
-    const firstPage = searchPagination(20, 0, 10);
-    const { nextPageButton } = paginatorControls(firstPage);
+    // currently on page 1 of 2
+    const { container } = searchPagination(20, 0, 10);
+    const { getNextPageButton } = queryPaginatorControls(container);
 
-    nextPageButton.simulate("click");
+    userEvent.click(getNextPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(1);
   });
 
   it("Goes to the last page of results when Last Page Button is clicked", () => {
-    //currently on page 1 of 3
-    const firstPage = searchPagination(30, 0, 10);
-    const { lastPageButton } = paginatorControls(firstPage);
+    // currently on page 1 of 3
+    const { container } = searchPagination(30, 0, 10);
+    const { getLastPageButton } = queryPaginatorControls(container);
 
-    lastPageButton.simulate("click");
-    //should now be on last page
+    userEvent.click(getLastPageButton());
+    // should now be on last page
     expect(mockOnPageChange).toHaveBeenCalledWith(2);
   });
 
   it("Disables all buttons when there are no results", () => {
-    const noResults = searchPagination(0, 0, 10);
+    const { container } = searchPagination(0, 0, 10);
     const {
-      firstPageButton,
-      previousPageButton,
-      nextPageButton,
-      lastPageButton,
-    } = paginatorControls(noResults);
+      getFirstPageButton,
+      getPreviousPageButton,
+      getNextPageButton,
+      getLastPageButton,
+    } = queryPaginatorControls(container);
 
-    expect(firstPageButton.prop("disabled")).toBeTruthy();
-    expect(previousPageButton.prop("disabled")).toBeTruthy();
-
-    expect(nextPageButton.prop("disabled")).toBeTruthy();
-    expect(lastPageButton.prop("disabled")).toBeTruthy();
+    expect(getFirstPageButton()).toBeDisabled();
+    expect(getPreviousPageButton()).toBeDisabled();
+    expect(getNextPageButton()).toBeDisabled();
+    expect(getLastPageButton()).toBeDisabled();
   });
 
   it("Disables FirstPage and PreviousPage buttons on first page of results", () => {
-    const firstPage = searchPagination(20, 0, 10);
+    const { container } = searchPagination(20, 0, 10);
     const {
-      firstPageButton,
-      previousPageButton,
-      nextPageButton,
-      lastPageButton,
-    } = paginatorControls(firstPage);
+      getFirstPageButton,
+      getPreviousPageButton,
+      getNextPageButton,
+      getLastPageButton,
+    } = queryPaginatorControls(container);
 
-    expect(firstPageButton.prop("disabled")).toBeTruthy();
-    expect(previousPageButton.prop("disabled")).toBeTruthy();
+    expect(getFirstPageButton()).toBeDisabled();
+    expect(getPreviousPageButton()).toBeDisabled();
 
-    expect(nextPageButton.prop("disabled")).toBeFalsy();
-    expect(lastPageButton.prop("disabled")).toBeFalsy();
+    expect(getNextPageButton()).not.toBeDisabled();
+    expect(getLastPageButton()).not.toBeDisabled();
   });
 
   it("Disables LastPage and NextPage buttons on last page of results", () => {
-    const lastPage = searchPagination(20, 1, 10);
+    const { container } = searchPagination(20, 1, 10);
     const {
-      firstPageButton,
-      previousPageButton,
-      nextPageButton,
-      lastPageButton,
-    } = paginatorControls(lastPage);
+      getFirstPageButton,
+      getPreviousPageButton,
+      getNextPageButton,
+      getLastPageButton,
+    } = queryPaginatorControls(container);
 
-    expect(firstPageButton.prop("disabled")).toBeFalsy();
-    expect(previousPageButton.prop("disabled")).toBeFalsy();
+    expect(getFirstPageButton()).not.toBeDisabled();
+    expect(getPreviousPageButton()).not.toBeDisabled();
 
-    expect(nextPageButton.prop("disabled")).toBeTruthy();
-    expect(lastPageButton.prop("disabled")).toBeTruthy();
+    expect(getNextPageButton()).toBeDisabled();
+    expect(getLastPageButton()).toBeDisabled();
+  });
+
+  it("Triggers the page count callback when the user changes the number of rows per page", () => {
+    const { container } = searchPagination(100, 0, 10);
+    const {
+      getItemsPerPageOption,
+      getItemsPerPageSelect,
+    } = queryPaginatorControls(container);
+
+    userEvent.click(getItemsPerPageSelect());
+
+    const itemsPerPageDesired = 25;
+    userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
+
+    expect(mockOnRowsPerPageChange).toHaveBeenLastCalledWith(
+      itemsPerPageDesired
+    );
   });
 });
