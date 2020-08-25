@@ -15,79 +15,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
-import { boolean, object } from "@storybook/addon-knobs";
+import type { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import {
-  defaultPagedSearchResult,
-  defaultSearchOptions,
-} from "../../tsrc/modules/SearchModule";
-import { SearchResultList } from "../../tsrc/search/components/SearchResultList";
-import {
-  getSearchResult as singlePageSearch,
   getEmptySearchResult as emptySearch,
+  getSearchResult as singlePageSearch,
 } from "../../__mocks__/getSearchResult";
+import { defaultSearchOptions } from "../../tsrc/modules/SearchModule";
+import {
+  SearchResultList,
+  SearchResultListProps,
+} from "../../tsrc/search/components/SearchResultList";
+import { action } from "@storybook/addon-actions";
 
 export default {
   title: "Search/SearchResultList",
   component: SearchResultList,
-};
+  argTypes: {
+    onClearSearchOptions: { action: "onClearSearchOptions called" },
+  },
+} as Meta<SearchResultListProps>;
 
-const paginationProps = {
+const sharedPaginationArgs = {
   currentPage: defaultSearchOptions.currentPage,
   rowsPerPage: defaultSearchOptions.rowsPerPage,
-  onPageChange: action("onPageChange called"),
-  onRowsPerPageChange: action("onRowsPerPageChange called"),
+  /* I wasn't able to get nested actions to work inside argTypes, so falling back to the old addon-actions for these. See https://github.com/storybookjs/storybook/issues/11525 and https://github.com/storybookjs/storybook/issues/10979#issuecomment-657640744*/
+  onPageChange: action("onRowsPerPageChange"),
+  onRowsPerPageChange: action("onRowsPerPageChange"),
 };
 
-const orderSelectProps = {
+const sharedOrderSelectProps = {
   value: defaultSearchOptions.sortOrder,
+  /* I wasn't able to get nested actions to work inside argTypes, so falling back to the old addon-actions for these. See https://github.com/storybookjs/storybook/issues/11525 and https://github.com/storybookjs/storybook/issues/10979#issuecomment-657640744*/
   onChange: action("onChange called"),
 };
 
-const clearSearchAction = action("onClearSearchOptions called");
+export const EmptyResultListComponent: Story<SearchResultListProps> = (
+  args
+) => <SearchResultList {...args}></SearchResultList>;
 
-export const EmptyResultListComponent = () => (
-  <SearchResultList
-    searchResultItems={object("results", emptySearch.results)}
-    showSpinner={boolean("showSpinner", false)}
-    orderSelectProps={object("order", {
-      ...orderSelectProps,
-    })}
-    paginationProps={object("pagination", {
-      count: emptySearch.available,
-      ...paginationProps,
-    })}
-    onClearSearchOptions={clearSearchAction}
-  ></SearchResultList>
-);
+EmptyResultListComponent.args = {
+  searchResultItems: emptySearch.results,
+  showSpinner: false,
+  paginationProps: {
+    ...sharedPaginationArgs,
+    count: emptySearch.available,
+  },
+  orderSelectProps: {
+    ...sharedOrderSelectProps,
+  },
+};
 
-export const BasicSearchResultListComponent = () => (
-  <SearchResultList
-    searchResultItems={object("results", singlePageSearch.results)}
-    showSpinner={boolean("showSpinner", false)}
-    orderSelectProps={object("order", {
-      ...orderSelectProps,
-    })}
-    paginationProps={object("pagination", {
-      count: singlePageSearch.available,
-      ...paginationProps,
-    })}
-    onClearSearchOptions={clearSearchAction}
-  ></SearchResultList>
-);
+export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
+  args
+) => <SearchResultList {...args}></SearchResultList>;
 
-export const LoadingSearchResultListComponent = () => (
-  <SearchResultList
-    searchResultItems={object("results", defaultPagedSearchResult.results)}
-    showSpinner={boolean("showSpinner", true)}
-    orderSelectProps={object("order", {
-      ...orderSelectProps,
-    })}
-    paginationProps={object("pagination", {
-      count: defaultPagedSearchResult.available,
-      ...paginationProps,
-    })}
-    onClearSearchOptions={clearSearchAction}
-  ></SearchResultList>
-);
+BasicSearchResultListComponent.args = {
+  searchResultItems: singlePageSearch.results,
+  showSpinner: false,
+  paginationProps: {
+    ...sharedPaginationArgs,
+    count: singlePageSearch.available,
+  },
+  orderSelectProps: {
+    ...sharedOrderSelectProps,
+  },
+};
+
+export const LoadingSearchResultListComponent: Story<SearchResultListProps> = (
+  args
+) => <SearchResultList {...args}></SearchResultList>;
+
+LoadingSearchResultListComponent.args = {
+  searchResultItems: singlePageSearch.results,
+  showSpinner: true,
+  paginationProps: {
+    ...sharedPaginationArgs,
+    count: singlePageSearch.available,
+  },
+  orderSelectProps: {
+    ...sharedOrderSelectProps,
+  },
+};

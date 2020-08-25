@@ -49,7 +49,7 @@ const useStyles = makeStyles({
 /**
  * Props required by component SearchResultList.
  */
-interface SearchResultListProps {
+export interface SearchResultListProps {
   /**
    * Items of a search result.
    */
