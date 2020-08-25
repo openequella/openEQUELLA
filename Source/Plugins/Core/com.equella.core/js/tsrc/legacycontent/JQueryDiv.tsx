@@ -24,7 +24,12 @@ export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: never;
 }
 
-export default React.memo(function JQueryDiv(props: JQueryDivProps) {
+export default React.memo(function JQueryDiv({
+  afterHtml,
+  script,
+  html,
+  ...withoutOthers
+}: JQueryDivProps) {
   const divElem = React.useRef<HTMLElement>();
   React.useEffect(
     () => () => {
@@ -34,21 +39,15 @@ export default React.memo(function JQueryDiv(props: JQueryDivProps) {
     },
     []
   );
-  const withoutOthers = {
-    ...props,
-  };
-  delete withoutOthers.afterHtml;
-  delete withoutOthers.script;
-  delete withoutOthers.html;
   return (
     <div
       {...withoutOthers}
       ref={(e) => {
         if (e) {
           divElem.current = e;
-          $(e).html(props.html);
-          if (props.script) window.eval(props.script);
-          if (props.afterHtml) props.afterHtml();
+          $(e).html(html);
+          if (script) window.eval(script);
+          if (afterHtml) afterHtml();
         }
       }}
     />

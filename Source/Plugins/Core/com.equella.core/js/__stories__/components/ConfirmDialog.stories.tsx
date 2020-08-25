@@ -16,24 +16,26 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import { boolean, text } from "@storybook/addon-knobs";
-import ConfirmDialog from "../../tsrc/components/ConfirmDialog";
+import type { Meta, Story } from "@storybook/react";
+import ConfirmDialog, {
+  ConfirmDialogProps,
+} from "../../tsrc/components/ConfirmDialog";
 
 export default {
   title: "ConfirmDialog",
   component: ConfirmDialog,
-};
+  argTypes: {
+    onCancel: { action: "onCancel" },
+    onConfirm: { action: "onConfirm" },
+  },
+} as Meta<ConfirmDialogProps>;
 
-export const ShowDialog = () => (
-  <ConfirmDialog
-    open={boolean("open", true)}
-    title={text(
-      "title",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-    )}
-    onCancel={action("cancel")}
-    onConfirm={action("confirm")}
-    confirmButtonText="ok"
-  />
+export const ShowDialog: Story<ConfirmDialogProps> = (args) => (
+  <ConfirmDialog {...args} />
 );
+
+ShowDialog.args = {
+  open: true,
+  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  confirmButtonText: "ok",
+};

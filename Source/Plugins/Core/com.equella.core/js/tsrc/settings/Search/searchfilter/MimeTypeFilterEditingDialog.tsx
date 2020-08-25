@@ -36,7 +36,7 @@ import MimeTypeList from "./MimeTypeList";
 import { languageStrings } from "../../../util/langstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 
-interface MimeTypeFilterEditingDialogProps {
+export interface MimeTypeFilterEditingDialogProps {
   /**
    * If true, the dialog will be shown.
    */

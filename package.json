@@ -23,8 +23,8 @@
     "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "3.9.0",
-    "@typescript-eslint/parser": "3.9.0",
+    "@typescript-eslint/eslint-plugin": "3.10.0",
+    "@typescript-eslint/parser": "3.10.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.2",
     "eslint": "7.7.0",
@@ -42,11 +42,11 @@
     "licensee": "8.1.0",
     "lint-staged": "10.2.11",
     "npm-run-all": "4.1.5",
-    "prettier": "2.0.5",
+    "prettier": "2.1.0",
     "remark-cli": "8.0.1",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "10.0.2",
-    "typescript": "3.9.7"
+    "typescript": "4.0.2"
   },
   "husky": {
     "hooks": {

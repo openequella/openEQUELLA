@@ -16,20 +16,24 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { boolean } from "@storybook/addon-knobs";
-import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
-import { action } from "@storybook/addon-actions";
+import type { Meta, Story } from "@storybook/react";
+import SettingsToggleSwitch, {
+  SettingsToggleSwitchProps,
+} from "../../tsrc/components/SettingsToggleSwitch";
 
 export default {
   title: "SettingsToggleSwitch",
   component: SettingsToggleSwitch,
-};
+  argTypes: {
+    setValue: { action: "setValue" },
+  },
+} as Meta<SettingsToggleSwitchProps>;
 
-export const ToggleSwitchControl = () => (
-  <SettingsToggleSwitch
-    disabled={boolean("Disabled", false)}
-    id="toggle"
-    setValue={action("Value of checkbox changed")}
-    value={boolean("Toggle state", false)}
-  />
+export const ToggleSwitchControl: Story<SettingsToggleSwitchProps> = (args) => (
+  <SettingsToggleSwitch {...args} />
 );
+ToggleSwitchControl.args = {
+  disabled: false,
+  id: "toggle",
+  value: false,
+};

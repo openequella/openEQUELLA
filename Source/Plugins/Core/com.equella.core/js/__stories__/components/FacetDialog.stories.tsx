@@ -16,15 +16,21 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import { boolean, object } from "@storybook/addon-knobs";
-import FacetDialog from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
-import { FacetWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
+import type { Meta, Story } from "@storybook/react";
+import FacetDialog, {
+  FacetDialogProps,
+} from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
+import type { FacetWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
 
 export default {
   title: "FacetDialog",
   component: FacetDialog,
-};
+  argTypes: {
+    onClose: { action: "onClose" },
+    addOrEdit: { action: "addOrEdit" },
+    handleError: { action: "handleError" },
+  },
+} as Meta<FacetDialogProps>;
 const facet: FacetWithFlags = {
   name: "mocked facet",
   schemaNode: "item/name",
@@ -34,21 +40,15 @@ const facet: FacetWithFlags = {
   deleted: false,
 };
 
-export const withFacetProvided = () => (
-  <FacetDialog
-    open={boolean("open", true)}
-    onClose={action("close the dialog")}
-    facet={object("facet", facet)}
-    addOrEdit={action("Add or update a facet")}
-    handleError={action("handle errors")}
-  />
+export const withFacetProvided: Story<FacetDialogProps> = (args) => (
+  <FacetDialog {...args} />
 );
+withFacetProvided.args = {
+  open: true,
+  facet,
+};
 
-export const withFacetNotProvided = () => (
-  <FacetDialog
-    open={boolean("open", true)}
-    onClose={action("close the dialog")}
-    addOrEdit={action("Add or update a facet")}
-    handleError={action("handle errors")}
-  />
+export const withFacetNotProvided: Story<FacetDialogProps> = (args) => (
+  <FacetDialog {...args} />
 );
+withFacetNotProvided.args = { open: true };

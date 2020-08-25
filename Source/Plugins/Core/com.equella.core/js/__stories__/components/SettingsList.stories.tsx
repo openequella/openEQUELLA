@@ -16,17 +16,25 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { text } from "@storybook/addon-knobs";
-import SettingsListControl from "../../tsrc/components/SettingsListControl";
-import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
+import type { Meta, Story } from "@storybook/react";
+import SettingsListControl, {
+  SettingsListControlProps,
+} from "../../tsrc/components/SettingsListControl";
+import SettingsToggleSwitch, {
+  SettingsToggleSwitchProps,
+} from "../../tsrc/components/SettingsToggleSwitch";
 import { Mark, Slider } from "@material-ui/core";
-import { action } from "@storybook/addon-actions";
-import SettingsList from "../../tsrc/components/SettingsList";
+import SettingsList, {
+  SettingsListProps,
+} from "../../tsrc/components/SettingsList";
 
 export default {
   title: "SettingsList",
   component: SettingsList,
-};
+  argTypes: {
+    setValue: { action: "setValue" },
+  },
+} as Meta<SettingsListProps>;
 
 const marks: Mark[] = [
   { label: "Off", value: 0 },
@@ -39,14 +47,18 @@ const marks: Mark[] = [
   { label: "x8", value: 7 },
 ];
 
-export const ListWithTwoItems = () => (
-  <SettingsList subHeading={text("Sub Heading", "Sub Heading")}>
+type Props = Pick<SettingsListProps, "subHeading"> &
+  Pick<SettingsToggleSwitchProps, "setValue" | "disabled"> &
+  Pick<SettingsListControlProps, "primaryText" | "secondaryText">;
+
+export const ListWithTwoItems: Story<Props> = (args) => (
+  <SettingsList subHeading={args.subHeading}>
     <SettingsListControl
       secondaryText="Box for checking"
       control={
         <SettingsToggleSwitch
-          setValue={action("Checkbox")}
-          disabled={false}
+          setValue={args.setValue}
+          disabled={args.disabled}
           id="toggle"
         />
       }
@@ -54,10 +66,16 @@ export const ListWithTwoItems = () => (
       primaryText="Checkbox"
     />
     <SettingsListControl
-      secondaryText="Slide for sliding"
+      secondaryText={args.secondaryText}
       control={<Slider marks={marks} min={0} max={7} step={null} />}
       divider={false}
-      primaryText="SliderControl"
+      primaryText={args.primaryText}
     />
   </SettingsList>
 );
+ListWithTwoItems.args = {
+  subHeading: "Sub Heading",
+  disabled: false,
+  primaryText: "SliderControl",
+  secondaryText: "Slide for sliding",
+};
