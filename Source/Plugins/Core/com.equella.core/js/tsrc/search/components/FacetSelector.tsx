@@ -145,9 +145,9 @@ export const FacetSelector = ({
     classificationID: number,
     facet: OEQ.SearchFacets.Facet
   ): ReactElement => {
-    const { term, count } = facet;
+    const { term } = facet;
     return (
-      <ListItem key={`${term} ${count}`} style={{ padding: 0 }}>
+      <ListItem key={`${classificationID}:${term}`} style={{ padding: 0 }}>
         <FormControlLabel
           control={
             <Checkbox
