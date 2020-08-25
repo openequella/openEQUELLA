@@ -51,8 +51,7 @@ export interface OEQRoute<T> {
 }
 
 export interface Routes {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [route: string]: OEQRoute<any>;
+  [route: string]: OEQRoute<TemplateUpdateProps>;
 }
 
 export const routes = {
