@@ -17,6 +17,7 @@
  */
 import * as OEQ from '../src';
 import { is } from 'typescript-is';
+import { asCsvList } from '../src/Utils';
 
 describe('Convert date fields', () => {
   interface StringDate {
@@ -66,4 +67,16 @@ describe('Convert date fields', () => {
     ]);
     expect(is<InvalidDate>(dates)).toBe(true);
   });
+});
+
+describe('Support for server CsvList params', () => {
+  it('with lists of strings', () =>
+    expect(
+      asCsvList<string>(['one', 'two', 'three'])
+    ).toEqual('one,two,three'));
+
+  it('with lists of numbers', () =>
+    expect(
+      asCsvList<number>([1, 2, 3])
+    ).toEqual('1,2,3'));
 });

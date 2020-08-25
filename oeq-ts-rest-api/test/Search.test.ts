@@ -15,15 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as TC from './TestConfig';
 import * as OEQ from '../src';
+import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
+const STATUS_LIVE = 'LIVE';
+const STATUS_PERSONAL = 'PERSONAL';
+
+const doSearch = async (params?: OEQ.Search.SearchParams) =>
+  OEQ.Search.search(TC.API_PATH, params);
+
 describe('Search for items', () => {
   it('should be able to search without params', async () => {
-    const searchResult = await OEQ.Search.search(TC.API_PATH);
+    const searchResult = await doSearch();
     // The default start is 0 and length of search results is 10.
     expect(searchResult.start).toBe(0);
     expect(searchResult).toHaveLength(10);
@@ -35,23 +41,32 @@ describe('Search for items', () => {
     const collection = 'a77112e6-3370-fd02-6ac6-6bc5aec22001';
     const searchParams: OEQ.Search.SearchParams = {
       query: 'API',
-      status: ['LIVE'],
+      status: [STATUS_LIVE],
       collections: [collection],
     };
-    const searchResult = await OEQ.Search.search(TC.API_PATH, searchParams);
+    const searchResult = await doSearch(searchParams);
     const { uuid, status, collectionId } = searchResult.results[0];
 
     expect(searchResult).toHaveLength(searchResult.results.length);
     expect(uuid).toBeTruthy();
     // Status returned is in lowercase so have to convert to uppercase.
-    expect(status.toUpperCase()).toBe<OEQ.Common.ItemStatus>('LIVE');
+    expect(status.toUpperCase()).toBe<OEQ.Common.ItemStatus>(STATUS_LIVE);
     expect(collectionId).toBe(collection);
   });
 
   it('should get 404 response if search for a non-existing collection', async () => {
     await expect(
-      OEQ.Search.search(TC.API_PATH, { collections: ['testing collection'] })
+      doSearch({ collections: ['testing collection'] })
     ).rejects.toHaveProperty('status', 404);
+  });
+
+  it('should return results which match one of multiple statuses', async () => {
+    const results = await doSearch({ status: [STATUS_LIVE, STATUS_PERSONAL] });
+    const findItemByStatus = (status: string) =>
+      results.results.find((i) => i.status.toUpperCase() === status);
+
+    expect(findItemByStatus(STATUS_LIVE)).toBeTruthy();
+    expect(findItemByStatus(STATUS_PERSONAL)).toBeTruthy();
   });
 });
 
@@ -70,7 +85,7 @@ describe('Search for attachments', () => {
         query: 'size',
         searchAttachments: searchAttachments,
       };
-      const searchResult = await OEQ.Search.search(TC.API_PATH, searchParams);
+      const searchResult = await doSearch(searchParams);
       expect(searchResult.results).toHaveLength(expectResultCount);
     }
   );
