@@ -35,9 +35,9 @@ export default {
 const FacetSelectorTemplate = (args: FacetSelectorProps) => (
   <FacetSelector {...args} />
 );
-const selectedClassificationTerms = new Map<string, string[]>([
-  ["Language", ["scala"]],
-  ["City", ["Hobart"]],
+const selectedClassificationTerms = new Map<number, string[]>([
+  [766942, ["scala"]],
+  [766943, ["Hobart"]],
 ]);
 const showMoreClassification = {
   ...FacetSelectorMock.classifications[0],

@@ -36,11 +36,12 @@ describe("<FacetSelector />", () => {
 
   // Mocked Classifications
   const CITY = "City";
+  const CITY_ID = 766943;
   const LANGUAGE = "Language";
   const COLOR = "Color";
   // Mocked facet
   const HOBART = "Hobart";
-  const mockedSelectedTerms = new Map([[CITY, [HOBART]]]);
+  const mockedSelectedTerms = new Map([[CITY_ID, [HOBART]]]);
   // The text of 'SHOW MORE' button
   const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
 
@@ -107,7 +108,7 @@ describe("<FacetSelector />", () => {
       );
     }
     fireEvent.click(showMoreButton);
-    expect(onShowMore).toHaveBeenLastCalledWith(CITY);
+    expect(onShowMore).toHaveBeenLastCalledWith(CITY_ID);
   });
 
   it("should sort Classifications based on their order indexes", () => {

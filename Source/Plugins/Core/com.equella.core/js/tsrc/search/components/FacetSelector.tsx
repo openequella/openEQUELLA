@@ -54,20 +54,20 @@ export interface FacetSelectorProps {
    */
   classifications: SearchPageClassification[];
   /**
-   * A map where the key is a Classification's name and value is
+   * A map where the key is a Classification's ID and value is
    * a list of terms.
    */
-  selectedClassificationTerms?: Map<string, string[]>;
+  selectedClassificationTerms?: Map<number, string[]>;
   /**
    * Handler for selecting/deselecting Classification terms.
    * @param terms A list of currently selected terms.
    */
-  onSelectTermsChange: (terms: Map<string, string[]>) => void;
+  onSelectTermsChange: (terms: Map<number, string[]>) => void;
   /**
    * Handler for clicking a 'SHOW MORE' button.
    * @param classificationName The name of a Classification.
    */
-  onShowMore: (classificationName: string) => void;
+  onShowMore: (classificationID: number) => void;
 }
 
 export const FacetSelector = ({
@@ -84,11 +84,11 @@ export const FacetSelector = ({
    * A copy of the map and a copy of the array of terms are created internally
    * to avoid mutating parent component's state.
    *
-   * @param classificationName The name of a Classification
+   * @param classificationID The ID of a Classification
    * @param term The selected or unselected term
    */
-  const handleSelectTerms = (classificationName: string, term: string) => {
-    const terms = selectedClassificationTerms?.get(classificationName);
+  const handleSelectTerms = (classificationID: number, term: string) => {
+    const terms = selectedClassificationTerms?.get(classificationID);
     const copiedTerms = terms ? [...terms] : [];
     const termIndex = copiedTerms.indexOf(term);
     if (termIndex === -1) {
@@ -97,19 +97,19 @@ export const FacetSelector = ({
       copiedTerms.splice(termIndex, 1);
     }
     const copiedMap = new Map(selectedClassificationTerms ?? []);
-    copiedMap.set(classificationName, copiedTerms);
+    copiedMap.set(classificationID, copiedTerms);
     onSelectTermsChange(copiedMap);
   };
 
   /**
    * Render a 'SHOW MORE' button for each Classification.
-   * @param classificationName The name of a Classification.
+   * @param classificationID The ID of a Classification.
    */
-  const showMoreButton = (classificationName: string): ReactElement => (
+  const showMoreButton = (classificationID: number): ReactElement => (
     <ListItem>
       <Grid container justify="center">
         <Grid item>
-          <Button variant="text" onClick={() => onShowMore(classificationName)}>
+          <Button variant="text" onClick={() => onShowMore(classificationID)}>
             {languageStrings.searchpage.facetSelector.showMoreButton}
           </Button>
         </Grid>
@@ -138,11 +138,11 @@ export const FacetSelector = ({
 
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
-   * @param classificationName The name of a Classification
+   * @param classificationID The name of a Classification
    * @param facet A facet
    */
   const facetListItem = (
-    classificationName: string,
+    classificationID: number,
     facet: OEQ.SearchFacets.Facet
   ): ReactElement => {
     const { term, count } = facet;
@@ -153,10 +153,10 @@ export const FacetSelector = ({
             <Checkbox
               checked={
                 selectedClassificationTerms
-                  ?.get(classificationName)
+                  ?.get(classificationID)
                   ?.includes(term) ?? false
               }
-              onChange={() => handleSelectTerms(classificationName, term)}
+              onChange={() => handleSelectTerms(classificationID, term)}
             />
           }
           label={facetLabel(facet)}
@@ -169,20 +169,20 @@ export const FacetSelector = ({
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
    *
-   * @param name The name of a Classification
+   * @param id The ID of a Classification
    * @param categories A list of terms to build into a list
    * @param showMore Whether to show more facets or not
    * @param maxDisplay Default maximum number of displayed facets
    */
   const listCategories = ({
-    name,
+    id,
     categories,
     showMore,
     maxDisplay,
   }: SearchPageClassification): ReactElement[] =>
     categories
       .slice(0, showMore ? maxDisplay : undefined)
-      .map((facet) => facetListItem(name, facet));
+      .map((facet) => facetListItem(id, facet));
 
   /**
    * Sort and build Classifications that have categories.
@@ -209,7 +209,7 @@ export const FacetSelector = ({
                 className={!showMore ? classes.classificationList : ""}
               >
                 {listCategories(classification)}
-                {showMore && showMoreButton(name)}
+                {showMore && showMoreButton(id)}
               </List>
             </Grid>
           </Grid>
