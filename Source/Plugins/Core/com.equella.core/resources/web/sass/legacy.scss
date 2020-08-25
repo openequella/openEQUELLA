@@ -1056,10 +1056,7 @@ Generic layout
   display: grid;
 }
 
-#selection-content-inner.search-layout
-  .mainCols
-  #col2
-  #selection-summary {
+#selection-content-inner.search-layout .mainCols #col2 #selection-summary {
   position: sticky;
   top: 70px;
 }
