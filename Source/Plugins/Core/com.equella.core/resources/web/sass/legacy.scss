@@ -2583,10 +2583,10 @@ html.wait {
 }
 
 .itemresult-rating div.float-right .btn {
+  @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
   vertical-align: middle;
-  @include buttonShadowBorder;
   min-width: 0;
   border-radius: 50px;
   padding: 12px;
@@ -3475,28 +3475,28 @@ Item summary styling
 }
 
 .shareButton {
-  background-image: url(../../images/baseline_share_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_share_white_18dp.png);
 }
 
 .addToFavourites {
-  background-image: url(../../images/baseline_star_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_star_white_18dp.png);
 }
 
 .removeFromFavourites {
-  background-image: url(../../images/baseline_remove_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
 .wizard-major-actions.save {
-  background-image: url(../../images/baseline_save_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
 .add-mime {
-  background-image: url(../../images/baseline_code_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
 .itemsummary-layout hr {
@@ -4153,10 +4153,8 @@ a.modal-control.modal-save {
 }
 
 div.universaliframe {
-  /*
-	This is what the fancybox ends up being
-	for multiple resource handler selection
-	*/
+  @include buttonShadowBorder;
+  overflow: hidden;
   height: 650px;
   width: 1250px;
   //workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
