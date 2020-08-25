@@ -147,7 +147,7 @@ export const FacetSelector = ({
   ): ReactElement => {
     const { term, count } = facet;
     return (
-      <ListItem key={`${facet} ${count}`} style={{ padding: 0 }}>
+      <ListItem key={`${term} ${count}`} style={{ padding: 0 }}>
         <FormControlLabel
           control={
             <Checkbox
