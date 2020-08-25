@@ -3779,12 +3779,12 @@ table.versions td {
   right: 0;
 }
 
-div#selection-content-inner.itemsummary-layout
-  div.mainCols
-  div#col1
-  div.area
-  div#comments-add.rating-form.comment-form
-  div.rate {
+#selection-content-inner.itemsummary-layout
+  .mainCols
+  #col1
+  .area
+  #comments-add.rating-form.comment-form
+  .rate {
   position: unset;
 }
 
