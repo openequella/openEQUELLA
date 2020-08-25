@@ -28,6 +28,9 @@ import { Mark, Slider, SliderProps } from "@material-ui/core";
 export default {
   title: "SettingsListControl",
   component: SettingsListControl,
+  argTypes: {
+    setValue: { action: "setValue" },
+  },
 } as Meta<SettingsListControlProps>;
 
 const marks: Mark[] = [

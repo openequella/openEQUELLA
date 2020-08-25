@@ -38,17 +38,17 @@ export default {
   },
 } as Meta<RichTextEditorProps>;
 
-export const WithHTMLInput: Story<RichTextEditorProps> = (args) => (
-  <RichTextEditor {...args} />
-);
-WithHTMLInput.args = {
-  skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
-  htmlInput: "<p>example</p>",
-};
-
 export const WithoutHTMLInput: Story<RichTextEditorProps> = (args) => (
   <RichTextEditor {...args} />
 );
 WithoutHTMLInput.args = {
   skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
+};
+
+export const WithHTMLInput: Story<RichTextEditorProps> = (args) => (
+  <RichTextEditor {...args} />
+);
+WithHTMLInput.args = {
+  ...WithoutHTMLInput.args,
+  htmlInput: "<p>example</p>",
 };

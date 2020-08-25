@@ -31,6 +31,9 @@ import SettingsList, {
 export default {
   title: "SettingsList",
   component: SettingsList,
+  argTypes: {
+    setValue: { action: "setValue" },
+  },
 } as Meta<SettingsListProps>;
 
 const marks: Mark[] = [

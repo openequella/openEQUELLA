@@ -27,21 +27,16 @@ export default {
   argTypes: { onClose: { action: "onClose" } },
 } as Meta<MessageInfoProps>;
 
-export const DynamicVariant: Story<MessageInfoProps> = (args) => (
-  <MessageInfo {...args} />
-);
-DynamicVariant.args = {
+const sharedArgs = {
   open: true,
   title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-  variant: "success",
 };
 
 export const VariantSuccess: Story<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantSuccess.args = {
-  open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  ...sharedArgs,
   variant: "success",
 };
 
@@ -49,8 +44,7 @@ export const VariantError: Story<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantError.args = {
-  open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  ...sharedArgs,
   variant: "error",
 };
 
@@ -58,8 +52,7 @@ export const VariantInfo: Story<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantInfo.args = {
-  open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  ...sharedArgs,
   variant: "info",
 };
 
@@ -67,7 +60,6 @@ export const VariantWarning: Story<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantWarning.args = {
-  open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  ...sharedArgs,
   variant: "warning",
 };
