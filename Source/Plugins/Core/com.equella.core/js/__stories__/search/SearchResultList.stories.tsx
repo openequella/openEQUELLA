@@ -44,12 +44,6 @@ const sharedPaginationArgs = {
   onRowsPerPageChange: action("onRowsPerPageChange"),
 };
 
-const sharedOrderSelectProps = {
-  value: defaultSearchOptions.sortOrder,
-  /* I wasn't able to get nested actions to work inside argTypes, so falling back to the old addon-actions for these. See https://github.com/storybookjs/storybook/issues/11525 and https://github.com/storybookjs/storybook/issues/10979#issuecomment-657640744*/
-  onChange: action("onChange called"),
-};
-
 export const EmptyResultListComponent: Story<SearchResultListProps> = (
   args
 ) => <SearchResultList {...args}></SearchResultList>;
@@ -62,7 +56,8 @@ EmptyResultListComponent.args = {
     count: emptySearch.available,
   },
   orderSelectProps: {
-    ...sharedOrderSelectProps,
+    onChange: action("onChange called"),
+    value: defaultSearchOptions.sortOrder,
   },
 };
 
@@ -71,14 +66,11 @@ export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
 ) => <SearchResultList {...args}></SearchResultList>;
 
 BasicSearchResultListComponent.args = {
+  ...EmptyResultListComponent.args,
   searchResultItems: singlePageSearch.results,
-  showSpinner: false,
   paginationProps: {
     ...sharedPaginationArgs,
     count: singlePageSearch.available,
-  },
-  orderSelectProps: {
-    ...sharedOrderSelectProps,
   },
 };
 
@@ -87,13 +79,6 @@ export const LoadingSearchResultListComponent: Story<SearchResultListProps> = (
 ) => <SearchResultList {...args}></SearchResultList>;
 
 LoadingSearchResultListComponent.args = {
-  searchResultItems: singlePageSearch.results,
+  ...BasicSearchResultListComponent.args,
   showSpinner: true,
-  paginationProps: {
-    ...sharedPaginationArgs,
-    count: singlePageSearch.available,
-  },
-  orderSelectProps: {
-    ...sharedOrderSelectProps,
-  },
 };
