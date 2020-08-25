@@ -1054,7 +1054,6 @@ Generic layout
 
 #fancybox-inner {
   display: grid;
-  justify-content: center;
 }
 
 div#selection-content-inner.search-layout
@@ -4160,8 +4159,9 @@ div.universaliframe {
 	*/
   height: 650px;
   width: 1250px;
-  overflow: hidden;
-  @include buttonShadowBorder;
+  //workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
+  // as this breaks the popup taxonomy selector
+  margin-left: -240px;
 }
 
 div.universaliframe iframe {
