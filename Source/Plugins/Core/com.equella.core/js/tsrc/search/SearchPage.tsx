@@ -22,6 +22,11 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
+
+import {
+  classificationTransformer,
+  listClassifications,
+} from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
 import { Grid } from "@material-ui/core";
 import {
@@ -38,6 +43,10 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import {
+  FacetSelector,
+  SearchPageClassification,
+} from "./components/FacetSelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -85,6 +94,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
+  const [classifications, setClassifications] = useState<
+    SearchPageClassification[]
+  >([]);
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -112,6 +124,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       isInitialSearch.current = false;
     } else {
       search();
+      // When Search page option is changed, also update the Classification list.
+      listClassifications(searchPageOptions).then((classifications) =>
+        setClassifications(classificationTransformer(classifications))
+      );
     }
   }, [searchPageOptions]);
 
@@ -214,6 +230,25 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchAttachments: searchAttachments,
     });
   };
+
+  const handleSelectedTermsChange = (
+    classificationTerms?: Map<string, string[]>
+  ) => {
+    setSearchPageOptions({
+      ...searchPageOptions,
+      classificationTerms: classificationTerms,
+    });
+  };
+
+  const handleShowMoreFacets = (classificationName: string) => {
+    // Update one Classification's showMore flag to false.
+    setClassifications(
+      classifications.map((c) =>
+        c.name !== classificationName ? c : { ...c, showMore: false }
+      )
+    );
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -274,6 +309,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       disabled: false,
+    },
+    {
+      idSuffix: "FacetSelector",
+      title: "Classifications",
+      component: (
+        <FacetSelector
+          classifications={classifications}
+          onSelectTermsChange={handleSelectedTermsChange}
+          selectedClassificationTerms={searchPageOptions.classificationTerms}
+          onShowMore={handleShowMoreFacets}
+        />
+      ),
+      disabled: classifications.length === 0,
     },
   ];
 
