@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-interface SchemaNodeSelectorProps {
+export interface SchemaNodeSelectorProps {
   /**
    * The schema tree this component will display.
    */

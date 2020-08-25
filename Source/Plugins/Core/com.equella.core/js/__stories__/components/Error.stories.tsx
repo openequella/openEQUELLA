@@ -16,16 +16,22 @@
  * limitations under the License.
  */
 import * as React from "react";
-import Error from "../../tsrc/components/Error";
+import type { Meta, Story } from "@storybook/react";
+import Error, { ErrorProps } from "../../tsrc/components/Error";
 
 export default {
   title: "Error",
   component: Error,
-};
+} as Meta<ErrorProps>;
 
-export const WithWarningMessage = () => (
-  <Error>
-    <h1>Warning</h1>
-    <p>Something has gone wrong.</p>
-  </Error>
+export const WithWarningMessage: Story<ErrorProps> = (args) => (
+  <Error {...args} />
 );
+WithWarningMessage.args = {
+  children: (
+    <>
+      <h1>Warning</h1>
+      <p>Something has gone wrong.</p>
+    </>
+  ),
+};

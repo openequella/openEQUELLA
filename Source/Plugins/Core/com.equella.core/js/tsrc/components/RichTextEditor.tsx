@@ -79,7 +79,7 @@ export interface BlobInfo {
   uri: () => string;
 }
 
-interface RichTextEditorProps {
+export interface RichTextEditorProps {
   htmlInput?: string;
   /** Optionally provide the name of the skin to use. */
   skinName?: string;
