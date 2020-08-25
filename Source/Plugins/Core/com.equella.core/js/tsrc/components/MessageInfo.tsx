@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface MessageInfoProps {
+export interface MessageInfoProps {
   open: boolean;
   onClose: () => void;
   title: string;

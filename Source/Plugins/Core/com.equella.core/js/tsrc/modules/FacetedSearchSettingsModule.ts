@@ -89,9 +89,11 @@ export const validateFacetFields = (field: string): boolean => {
 /**
  * Remove unneeded boolean fields.
  */
-export const removeFlags = (facet: FacetWithFlags): Facet => {
-  delete facet.deleted;
-  delete facet.updated;
+export const removeFlags = ({
+  deleted,
+  updated,
+  ...facet
+}: FacetWithFlags): Facet => {
   return facet;
 };
 

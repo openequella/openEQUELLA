@@ -16,14 +16,20 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import AppBarQuery from "../../tsrc/components/AppBarQuery";
+import type { Meta, Story } from "@storybook/react";
+import AppBarQuery, {
+  AppBarQueryProps,
+} from "../../tsrc/components/AppBarQuery";
 
 export default {
   title: "AppBarQuery",
   component: AppBarQuery,
-};
+  argTypes: {
+    onChange: { action: "onClick" },
+  },
+} as Meta<AppBarQueryProps>;
 
-export const QueryText = () => (
-  <AppBarQuery query="" onChange={action("change")} />
+export const QueryText: Story<AppBarQueryProps> = (args) => (
+  <AppBarQuery {...args} />
 );
+QueryText.args = { query: "" };

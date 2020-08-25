@@ -16,25 +16,29 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import { array, object } from "@storybook/addon-knobs";
-import MimeTypeList from "../../tsrc/settings/Search/searchfilter/MimeTypeList";
-import { MimeTypeEntry } from "../../tsrc/modules/SearchFilterSettingsModule";
+import type { Meta, Story } from "@storybook/react";
+import MimeTypeList, {
+  MimeTypeFilterListProps,
+} from "../../tsrc/settings/Search/searchfilter/MimeTypeList";
+import type { MimeTypeEntry } from "../../tsrc/modules/SearchFilterSettingsModule";
 
 export default {
   title: "MimeTypeList",
   component: MimeTypeList,
-};
+  argTypes: {
+    onChange: { action: "onChange" },
+  },
+} as Meta<MimeTypeFilterListProps>;
 
 const defaultMimeTypes: MimeTypeEntry[] = [
   { mimeType: "image/png", desc: "This is a Image filter" },
   { mimeType: "image/jpeg", desc: "This is a Image filter" },
 ];
 
-export const listOfMimeTypes = () => (
-  <MimeTypeList
-    entries={object("mimetypes", defaultMimeTypes)}
-    onChange={action("values of checkboxes changed")}
-    selected={array("selected MIME types", ["image/png", "image/jpeg"])}
-  />
+export const listOfMimeTypes: Story<MimeTypeFilterListProps> = (args) => (
+  <MimeTypeList {...args} />
 );
+listOfMimeTypes.args = {
+  entries: defaultMimeTypes,
+  selected: ["image/png", "image/jpeg"],
+};

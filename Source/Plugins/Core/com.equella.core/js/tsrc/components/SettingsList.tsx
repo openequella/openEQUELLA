@@ -20,7 +20,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import SettingsListHeading from "./SettingsListHeading";
 
-interface SettingsListProps {
+export interface SettingsListProps {
   /**
    * Optional subheading. Appears above the list at the top left.
    */
