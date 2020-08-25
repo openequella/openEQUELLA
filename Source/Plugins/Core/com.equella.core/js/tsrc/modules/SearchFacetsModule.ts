@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../config";
+import { SearchPageClassification } from "../search/components/FacetSelector";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
 import { SearchOptions } from "./SearchModule";
@@ -112,3 +113,17 @@ export const listClassifications = async (
       })
     )
   );
+
+/**
+ * Convert a list of standard Classifications to a list of SearchPage Classifications.
+ * @param classifications The standard Classifications to be processed.
+ */
+export const classificationTransformer = (
+  classifications: Classification[]
+): SearchPageClassification[] =>
+  classifications.map((c) => {
+    // If 'maxDisplay' is undefined, it will be 10 by default.
+    const maxDisplay = c.maxDisplay ?? 10;
+    const showMore = c.categories.length > maxDisplay;
+    return { ...c, showMore: showMore, maxDisplay: maxDisplay };
+  });
