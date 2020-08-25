@@ -27,6 +27,10 @@ import { SearchOptions } from "./SearchModule";
  */
 export interface Classification {
   /**
+   * The unique ID of a Classification.
+   */
+  id: number;
+  /**
    * The name for this group of categories - typically one which has been configured on the system.
    */
   name: string;
@@ -94,7 +98,10 @@ export const listClassifications = async (
 ): Promise<Classification[]> =>
   Promise.all(
     (await getFacetsFromServer()).map<Promise<Classification>>(
-      async (settings) => ({
+      async (settings, index) => ({
+        // We know IDs won't be undefined here, but due to its type being number | undefined,
+        // we have to do a nullish coalescing
+        id: settings.id ?? index,
         name: settings.name,
         maxDisplay: settings.maxResults,
         orderIndex: settings.orderIndex,
