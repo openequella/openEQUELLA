@@ -40,7 +40,7 @@ export interface Classification {
    * this classification. If `undefined` then the system default number of categories should be
    * displayed.
    */
-  maxDisplay?: number;
+  maxDisplay: number;
   /**
    * The actual list of categories for this classification. This will be the full list returned
    * from the server - as no paging is currently provided.
@@ -119,7 +119,8 @@ export const listClassifications = async (
         // we have to do a nullish coalescing
         id: settings.id ?? index,
         name: settings.name,
-        maxDisplay: settings.maxResults,
+        // Like ID, maxDisplay here won't be undefined. When it's 0 let it be 10 instead.
+        maxDisplay: settings.maxResults || 10,
         orderIndex: settings.orderIndex,
         categories: await listCategories({
           ...convertSearchOptions(options),
@@ -137,8 +138,5 @@ export const classificationTransformer = (
   classifications: Classification[]
 ): SearchPageClassification[] =>
   classifications.map((c) => {
-    // If 'maxDisplay' is undefined, it will be 10 by default.
-    const maxDisplay = c.maxDisplay ?? 10;
-    const showMore = c.categories.length > maxDisplay;
-    return { ...c, showMore: showMore, maxDisplay: maxDisplay };
+    return { ...c, showMore: true };
   });
