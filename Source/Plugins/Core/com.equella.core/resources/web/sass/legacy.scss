@@ -2586,8 +2586,8 @@ html.wait {
   vertical-align: middle;
   min-width: 0;
   border-radius: 50px;
-  padding: 12px;
-  line-height: 1.43rem;
+  padding: 4px;
+  line-height: 1.3rem;
 }
 
 .itemresult-rating div.float-right .button-expandable.unselect:hover {
@@ -2612,9 +2612,11 @@ html.wait {
   width: 100%;
 }
 
-#sc_attachments_selectAllAttachmentButton:hover {
-  width: 200px;
-  line-height: normal;
+#sc_attachments_selectAllAttachmentButton:hover,
+#sc_attachments_selectPackageButton:hover {
+  width: 210px;
+  line-height: 1.3rem;
+  font-size: 12px;
 }
 
 .itemresult-metaline .itemresult-meta-delim,
@@ -3898,11 +3900,11 @@ td.sectionAction {
 
 .selection .selectable .attachments-browse.structured li .button-div .btn {
   @include buttonShadowBorder;
-  margin: 0;
   border-radius: 50px;
   min-width: unset;
-  line-height: 2.25rem;
-  padding: 12px;
+  line-height: 1.3rem;
+  padding: 4px;
+  margin: 4px 0;
 }
 
 .settingContainer.skinny {
@@ -4016,6 +4018,7 @@ table#copyright-table tr td {
 }
 
 .attachments-browse.structured li.attachmentrow .droparrow {
+  display: none !important;
   background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
 }
 
@@ -4492,8 +4495,8 @@ button.package-select {
   margin: 0;
   border-radius: 50px;
   min-width: unset;
-  padding: 12px;
-  line-height: 1.43rem;
+  padding: 4px;
+  line-height: 1.3rem;
 }
 
 .browse-topics ul li span {
