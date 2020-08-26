@@ -191,10 +191,19 @@ export const FacetSelector = ({
     categories,
     showMore,
     maxDisplay,
-  }: SearchPageClassification): ReactElement[] =>
-    categories
+  }: SearchPageClassification): ReactElement[] => {
+    const selectedTerms = selectedClassificationTerms?.get(id) ?? [];
+    const selectedCategories = categories.filter((c) =>
+      selectedTerms.includes(c.term)
+    );
+    const unselectedCategories = categories.filter(
+      (c) => !selectedTerms.includes(c.term)
+    );
+    return selectedCategories
+      .concat(unselectedCategories)
       .slice(0, showMore ? maxDisplay : undefined)
       .map((facet) => facetListItem(id, facet));
+  };
 
   /**
    * Sort and build Classifications that have categories.
