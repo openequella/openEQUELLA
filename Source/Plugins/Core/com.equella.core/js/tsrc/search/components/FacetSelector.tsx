@@ -208,7 +208,7 @@ export const FacetSelector = ({
         prevClassification.orderIndex - nextClassification.orderIndex
     )
     .map((classification) => {
-      const { id, name, showMore } = classification;
+      const { id, name, showMore, categories, maxDisplay } = classification;
       return (
         <ListItem divider key={id}>
           <Grid container direction="column">
@@ -221,7 +221,7 @@ export const FacetSelector = ({
                 className={!showMore ? classes.classificationList : ""}
               >
                 {listCategories(classification)}
-                {showMoreButton(id, showMore)}
+                {categories.length > maxDisplay && showMoreButton(id, showMore)}
               </List>
             </Grid>
           </Grid>
