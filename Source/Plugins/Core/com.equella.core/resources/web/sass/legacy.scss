@@ -2614,9 +2614,10 @@ html.wait {
 
 #sc_attachments_selectAllAttachmentButton:hover,
 #sc_attachments_selectPackageButton:hover {
-  width: 210px;
+  width: 215px;
   line-height: 1.3rem;
   font-size: 12px;
+  padding-right: 8px;
 }
 
 .itemresult-metaline .itemresult-meta-delim,
@@ -2741,6 +2742,10 @@ input.term-paths {
 .itemresult-rating div.float-right {
   .btn {
     margin: 0 8px;
+  }
+  .btn:hover {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
 
