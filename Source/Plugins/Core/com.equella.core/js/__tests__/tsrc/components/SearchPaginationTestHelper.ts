@@ -16,34 +16,6 @@
  * limitations under the License.
  */
 import { screen } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
-
-interface PaginatorControls {
-  firstPageButton: ReactWrapper;
-  previousPageButton: ReactWrapper;
-  nextPageButton: ReactWrapper;
-  lastPageButton: ReactWrapper;
-  pageCount: ReactWrapper;
-}
-
-/**
- * Provides a helper function for east access to pagination controls
- * Takes a ReactWrapper, representing SearchPagination component
- * @return {ReactWrapper} Wrappers for navigating to First, Previous, Next, and Last Page, and PageCount of pagination controls
- */
-export const paginatorControls = (
-  component: ReactWrapper
-): PaginatorControls => {
-  return {
-    firstPageButton: component.find("#firstPageButton button"),
-    previousPageButton: component.find("#previousPageButton button"),
-    nextPageButton: component.find("#nextPageButton button"),
-    lastPageButton: component.find("#lastPageButton button"),
-    pageCount: component.find(".MuiTablePagination-toolbar").find("p").at(1),
-  };
-};
-
-// *** React Testing Library tests helper functions *** //
 
 const createGetQuery = (
   elementName: string,
