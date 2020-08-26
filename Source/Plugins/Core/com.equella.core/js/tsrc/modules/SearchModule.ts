@@ -66,7 +66,7 @@ export interface SearchOptions {
   /**
    * A map of selected Classifications and their terms.
    */
-  classificationTerms?: Map<string, string[]>;
+  classificationTerms?: Map<number, string[]>;
   /**
    * Whether to search attachments or not.
    */

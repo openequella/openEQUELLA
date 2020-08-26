@@ -232,7 +232,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const handleSelectedTermsChange = (
-    classificationTerms?: Map<string, string[]>
+    classificationTerms?: Map<number, string[]>
   ) => {
     setSearchPageOptions({
       ...searchPageOptions,
@@ -240,11 +240,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const handleShowMoreFacets = (classificationName: string) => {
+  const handleShowMoreFacets = (classificationID: number) => {
     // Update one Classification's showMore flag to false.
     setClassifications(
       classifications.map((c) =>
-        c.name !== classificationName ? c : { ...c, showMore: false }
+        c.id !== classificationID ? c : { ...c, showMore: false }
       )
     );
   };
