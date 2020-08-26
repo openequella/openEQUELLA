@@ -60,18 +60,33 @@ export interface Classification {
 const convertSearchOptions: (
   options: SearchOptions
 ) => OEQ.SearchFacets.SearchFacetsParams = memoize(
-  (options: SearchOptions): OEQ.SearchFacets.SearchFacetsParams => ({
-    nodes: [],
-    q: options.query,
-    collections: options.collections?.map((c) => c.uuid),
-    modifiedAfter: getISODateString(options.lastModifiedDateRange?.start),
-    modifiedBefore: getISODateString(options.lastModifiedDateRange?.end),
-    owner: options.owner?.id,
-    showall: isEqual(
-      options.status?.sort(),
-      OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
-    ),
-  })
+  (options: SearchOptions): OEQ.SearchFacets.SearchFacetsParams => {
+    const {
+      query,
+      collections,
+      lastModifiedDateRange,
+      owner,
+      status,
+    } = options;
+    let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
+      nodes: [],
+      q: query,
+      modifiedAfter: getISODateString(lastModifiedDateRange?.start),
+      modifiedBefore: getISODateString(lastModifiedDateRange?.end),
+      owner: owner?.id,
+      showall: isEqual(
+        status?.sort(),
+        OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
+      ),
+    };
+    if (collections && collections.length > 0) {
+      searchFacetsParams = {
+        ...searchFacetsParams,
+        collections: collections.map((c) => c.uuid),
+      };
+    }
+    return searchFacetsParams;
+  }
 );
 
 /**
