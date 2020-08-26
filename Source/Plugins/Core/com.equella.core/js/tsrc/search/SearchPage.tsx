@@ -310,19 +310,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
       disabled: false,
     },
-    {
-      idSuffix: "FacetSelector",
-      title: "Classifications",
-      component: (
-        <FacetSelector
-          classifications={classifications}
-          onSelectTermsChange={handleSelectedTermsChange}
-          selectedClassificationTerms={searchPageOptions.classificationTerms}
-          onShowMore={handleShowMoreFacets}
-        />
-      ),
-      disabled: classifications.length === 0,
-    },
   ];
 
   return (
@@ -360,7 +347,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Grid>
 
       <Grid item xs={3}>
-        <RefineSearchPanel controls={refinePanelControls} />
+        <Grid container direction="column" spacing={2}>
+          <Grid item>
+            <RefineSearchPanel controls={refinePanelControls} />
+          </Grid>
+          <Grid item>
+            <FacetSelector
+              classifications={classifications}
+              onSelectTermsChange={handleSelectedTermsChange}
+              selectedClassificationTerms={
+                searchPageOptions.classificationTerms
+              }
+              onShowMore={handleShowMoreFacets}
+            />
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

@@ -339,6 +339,7 @@ export const languageStrings = {
       day: "Day",
     },
     facetSelector: {
+      title: "Classifications",
       showMoreButton: "Show more",
     },
     filterOwner: {
