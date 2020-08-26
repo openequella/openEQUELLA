@@ -24,12 +24,14 @@ import {
 } from "../../../tsrc/modules/SearchFacetsModule";
 
 const CLASSIFICATION_SUBJECT: Facet = {
+  id: 0,
   name: "Classification 1",
   schemaNode: "/item/subject",
   maxResults: 1,
   orderIndex: 0,
 };
 const CLASSIFICATION_KEYWORD: Facet = {
+  id: 1,
   name: "Classification 2",
   schemaNode: "/item/keyword",
   orderIndex: 1,
@@ -104,12 +106,14 @@ describe("SearchFacetsModule", () => {
     // Expect the correct data is generated
     expect(classifications).toEqual([
       {
+        id: CLASSIFICATION_SUBJECT.id,
         name: CLASSIFICATION_SUBJECT.name,
         maxDisplay: CLASSIFICATION_SUBJECT.maxResults,
         categories: CATEGORIES_SUBJECT,
         orderIndex: CLASSIFICATION_SUBJECT.orderIndex,
       },
       {
+        id: CLASSIFICATION_KEYWORD.id,
         name: CLASSIFICATION_KEYWORD.name,
         maxDisplay: CLASSIFICATION_KEYWORD.maxResults,
         categories: CATEGORIES_KEYWORD,
