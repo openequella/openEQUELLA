@@ -250,7 +250,7 @@ export const DateRangeSelector = ({
         id="date_range_selector"
         labelId="date_range_selector_label"
         onChange={(event) =>
-          handleQuickDateOptionChange(event.currentTarget.value as string)
+          handleQuickDateOptionChange(event.target.value as string)
         }
         label={quickOptionLabel}
       >
