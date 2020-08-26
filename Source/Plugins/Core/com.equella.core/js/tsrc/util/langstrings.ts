@@ -341,6 +341,7 @@ export const languageStrings = {
     facetSelector: {
       title: "Classifications",
       showMoreButton: "Show more",
+      showLessButton: "Show less",
     },
     filterOwner: {
       title: "Owner",

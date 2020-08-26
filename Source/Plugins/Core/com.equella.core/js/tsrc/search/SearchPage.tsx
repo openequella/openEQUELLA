@@ -240,11 +240,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const handleShowMoreFacets = (classificationID: number) => {
+  const handleShowMoreFacets = (
+    classificationID: number,
+    showMore: boolean
+  ) => {
     // Update one Classification's showMore flag to false.
     setClassifications(
       classifications.map((c) =>
-        c.id !== classificationID ? c : { ...c, showMore: false }
+        c.id !== classificationID ? c : { ...c, showMore: showMore }
       )
     );
   };

@@ -67,9 +67,10 @@ export interface FacetSelectorProps {
   onSelectTermsChange: (terms: Map<number, string[]>) => void;
   /**
    * Handler for clicking a 'SHOW MORE' button.
-   * @param classificationName The name of a Classification.
+   * @param classificationID The ID of a Classification.
+   * @param showMore A flag indicating whether to show more or less.
    */
-  onShowMore: (classificationID: number) => void;
+  onShowMore: (classificationID: number, showMore: boolean) => void;
 }
 
 export const FacetSelector = ({
@@ -104,15 +105,24 @@ export const FacetSelector = ({
   };
 
   /**
-   * Render a 'SHOW MORE' button for each Classification.
+   * Create a button to help show more/less categories for each Classification.
    * @param classificationID The ID of a Classification.
+   * @param showMore Whether to display 'Show more' or 'Show less'.
    */
-  const showMoreButton = (classificationID: number): ReactElement => (
+  const showMoreButton = (
+    classificationID: number,
+    showMore: boolean
+  ): ReactElement => (
     <ListItem>
       <Grid container justify="center">
         <Grid item>
-          <Button variant="text" onClick={() => onShowMore(classificationID)}>
-            {languageStrings.searchpage.facetSelector.showMoreButton}
+          <Button
+            variant="text"
+            onClick={() => onShowMore(classificationID, !showMore)}
+          >
+            {showMore
+              ? languageStrings.searchpage.facetSelector.showMoreButton
+              : languageStrings.searchpage.facetSelector.showLessButton}
           </Button>
         </Grid>
       </Grid>
@@ -211,7 +221,7 @@ export const FacetSelector = ({
                 className={!showMore ? classes.classificationList : ""}
               >
                 {listCategories(classification)}
-                {showMore && showMoreButton(id)}
+                {showMoreButton(id, showMore)}
               </List>
             </Grid>
           </Grid>
