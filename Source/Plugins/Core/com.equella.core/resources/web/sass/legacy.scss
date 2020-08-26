@@ -4157,7 +4157,7 @@ div.universaliframe {
   overflow: hidden;
   height: 650px;
   width: 1250px;
-  //workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
+  // workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
   // as this breaks the popup taxonomy selector
   margin-left: -240px;
 }
