@@ -72,7 +72,7 @@ describe("SearchModule", () => {
   it("should append Classification terms to query if one or more Classifications are selected", async () => {
     mockedSearch.mockReset();
     const query = "technology";
-    const terms = ["Java", "Scala", "SBT"];
+    const terms = new Map([[1, ["Java", "Scala", "SBT"]]]);
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       query: query,
@@ -84,7 +84,7 @@ describe("SearchModule", () => {
 
   it("should just send terms to server if query is empty", async () => {
     mockedSearch.mockReset();
-    const terms = ["Java", "Scala"];
+    const terms = new Map([[1, ["Java", "Scala"]]]);
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       query: undefined,

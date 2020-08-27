@@ -35,6 +35,7 @@ const CLASSIFICATION_KEYWORD: Facet = {
   name: "Classification 2",
   schemaNode: "/item/keyword",
   orderIndex: 1,
+  maxResults: 10,
 };
 const CATEGORIES_SUBJECT: OEQ.SearchFacets.Facet[] = [
   { term: "subject1", count: 10 },
