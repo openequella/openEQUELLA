@@ -24,7 +24,7 @@ import {
 } from "../mainui/Template";
 
 import {
-  classificationTransformer,
+  Classification,
   listClassifications,
 } from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
@@ -43,10 +43,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import {
-  FacetSelector,
-  SearchPageClassification,
-} from "./components/FacetSelector";
+import { FacetSelector } from "./components/FacetSelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -94,12 +91,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
-  const [classifications, setClassifications] = useState<
-    SearchPageClassification[]
-  >([]);
-  const [selectedTermsMap, setSelectedTermsMap] = useState<
-    Map<number, string[]>
-  >(new Map());
+  const [classifications, setClassifications] = useState<Classification[]>([]);
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -126,14 +118,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     if (!isInitialSearch.current) {
       // When Search page option is changed, also update the Classification list.
       listClassifications(searchPageOptions).then((classifications) =>
-        setClassifications(classificationTransformer(classifications))
+        setClassifications(classifications)
       );
-    }
-  }, [searchPageOptions, selectedTermsMap]);
-
-  useEffect(() => {
-    if (!isInitialSearch.current) {
-      setSelectedTermsMap(new Map());
     }
   }, [searchPageOptions]);
 
@@ -143,7 +129,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     } else {
       search();
     }
-  }, [selectedTermsMap]);
+  }, [searchPageOptions]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -154,14 +140,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const search = (): void => {
     setShowSpinner(true);
-    const finalSearchOptions: SearchPageOptions = {
-      ...searchPageOptions,
-      classificationTerms: selectedTermsMap,
-    };
-    searchItems(finalSearchOptions)
+    searchItems(searchPageOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
-        history.replace({ ...history.location, state: finalSearchOptions });
+        history.replace({ ...history.location, state: searchPageOptions });
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
       })
@@ -177,6 +159,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       query: query,
       currentPage: 0,
+      classificationTerms: undefined,
     });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
@@ -184,6 +167,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
+      classificationTerms: undefined,
     });
   };
 
@@ -210,12 +194,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       // When the mode is changed, the date range may also need to be updated.
       // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
       lastModifiedDateRange: dateRange,
+      classificationTerms: undefined,
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
     setSearchPageOptions({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
+      classificationTerms: undefined,
     });
 
   const handleClearSearchOptions = () =>
@@ -228,18 +214,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSearchPageOptions({
       ...searchPageOptions,
       owner: { ...owner },
+      classificationTerms: undefined,
     });
 
   const handleOwnerClear = () =>
     setSearchPageOptions({
       ...searchPageOptions,
       owner: undefined,
+      classificationTerms: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
     setSearchPageOptions({
       ...searchPageOptions,
       status: [...status],
+      classificationTerms: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
@@ -251,7 +240,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleSelectedTermsChange = (
     classificationTerms: Map<number, string[]>
-  ) => setSelectedTermsMap(classificationTerms);
+  ) =>
+    setSearchPageOptions({
+      ...searchPageOptions,
+      classificationTerms: classificationTerms,
+    });
 
   const refinePanelControls: RefinePanelControl[] = [
     {
@@ -359,7 +352,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <FacetSelector
               classifications={classifications}
               onSelectTermsChange={handleSelectedTermsChange}
-              selectedClassificationTerms={selectedTermsMap}
+              selectedClassificationTerms={
+                searchPageOptions.classificationTerms
+              }
             />
           </Grid>
         </Grid>

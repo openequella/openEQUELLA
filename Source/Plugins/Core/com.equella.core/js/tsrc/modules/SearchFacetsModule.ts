@@ -18,10 +18,9 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../config";
-import { SearchPageClassification } from "../search/components/FacetSelector";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
-import { SearchOptions } from "./SearchModule";
+import { processQuery, SearchOptions } from "./SearchModule";
 
 /**
  * Represents a Classification and its generated categories ready for display.
@@ -67,10 +66,17 @@ const convertSearchOptions: (
       lastModifiedDateRange,
       owner,
       status,
+      classificationTerms,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
-      q: query,
+      q: processQuery(
+        query,
+        false,
+        classificationTerms
+          ? Array.from(classificationTerms.values()).flat()
+          : undefined
+      ),
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
       modifiedBefore: getISODateString(lastModifiedDateRange?.end),
       owner: owner?.id,
@@ -129,14 +135,3 @@ export const listClassifications = async (
       })
     )
   );
-
-/**
- * Convert a list of standard Classifications to a list of SearchPage Classifications.
- * @param classifications The standard Classifications to be processed.
- */
-export const classificationTransformer = (
-  classifications: Classification[]
-): SearchPageClassification[] =>
-  classifications.map((c) => {
-    return { ...c, showMore: true };
-  });

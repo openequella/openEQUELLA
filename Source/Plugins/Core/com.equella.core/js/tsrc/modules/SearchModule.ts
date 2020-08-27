@@ -132,7 +132,7 @@ const formatQuery = (query: string, addWildcard: boolean): string => {
  * @param rawMode Whether raw mode is on or off.
  * @param classificationTerms A list of selected Classification terms.
  */
-const processQuery = (
+export const processQuery = (
   query: string | undefined,
   rawMode: boolean,
   classificationTerms?: string[]
