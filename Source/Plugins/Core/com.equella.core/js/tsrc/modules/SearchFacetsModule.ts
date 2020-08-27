@@ -72,7 +72,7 @@ const convertSearchOptions: (
       nodes: [],
       q: processQuery(
         query,
-        false,
+        true,
         classificationTerms
           ? Array.from(classificationTerms.values()).flat()
           : undefined
