@@ -253,18 +253,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     classificationTerms: Map<number, string[]>
   ) => setSelectedTermsMap(classificationTerms);
 
-  const handleShowMoreFacets = (
-    classificationID: number,
-    showMore: boolean
-  ) => {
-    // Update one Classification's showMore flag to false.
-    setClassifications(
-      classifications.map((c) =>
-        c.id !== classificationID ? c : { ...c, showMore: showMore }
-      )
-    );
-  };
-
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -372,7 +360,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               classifications={classifications}
               onSelectTermsChange={handleSelectedTermsChange}
               selectedClassificationTerms={selectedTermsMap}
-              onShowMore={handleShowMoreFacets}
             />
           </Grid>
         </Grid>

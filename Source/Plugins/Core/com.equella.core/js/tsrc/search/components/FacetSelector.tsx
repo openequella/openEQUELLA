@@ -27,7 +27,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { Classification } from "../../modules/SearchFacetsModule";
@@ -40,21 +40,11 @@ const useStyles = makeStyles({
   },
 });
 
-/**
- * Represents a Classification that is specific to Search page.
- */
-export interface SearchPageClassification extends Classification {
-  /**
-   * A boolean indicating if a classification has hidden categories to show.
-   */
-  showMore: boolean;
-}
-
 export interface FacetSelectorProps {
   /**
    * A list of Classifications.
    */
-  classifications: SearchPageClassification[];
+  classifications: Classification[];
   /**
    * A map where the key is a Classification's ID and value is
    * a list of terms.
@@ -65,22 +55,24 @@ export interface FacetSelectorProps {
    * @param terms A list of currently selected terms.
    */
   onSelectTermsChange: (terms: Map<number, string[]>) => void;
-  /**
-   * Handler for clicking a 'SHOW MORE' button.
-   * @param classificationID The ID of a Classification.
-   * @param showMore A flag indicating whether to show more or less.
-   */
-  onShowMore: (classificationID: number, showMore: boolean) => void;
 }
 
 export const FacetSelector = ({
   classifications,
   selectedClassificationTerms,
   onSelectTermsChange,
-  onShowMore,
-}: FacetSelectorProps) => {
+}: //onShowMore,
+FacetSelectorProps) => {
   const classes = useStyles();
+  const [showMoreMap, setShowMoreMap] = useState<Map<number, boolean>>(
+    new Map(classifications.map((classification) => [classification.id, true]))
+  );
 
+  const onShowMore = (classificationID: number, showMore: boolean) => {
+    const copiedMap = new Map(showMoreMap);
+    copiedMap.set(classificationID, showMore);
+    setShowMoreMap(copiedMap);
+  };
   /**
    * Updates the list of selected Classification terms. If the term exists then remove it
    * from the list. Add it to the list otherwise.
@@ -186,12 +178,10 @@ export const FacetSelector = ({
    * @param showMore Whether to show more facets or not
    * @param maxDisplay Default maximum number of displayed facets
    */
-  const listCategories = ({
-    id,
-    categories,
-    showMore,
-    maxDisplay,
-  }: SearchPageClassification): ReactElement[] => {
+  const listCategories = (
+    { id, categories, maxDisplay }: Classification,
+    showMore: boolean
+  ): ReactElement[] => {
     const selectedTerms = selectedClassificationTerms?.get(id) ?? [];
     const selectedCategories = categories.filter((c) =>
       selectedTerms.includes(c.term)
@@ -217,7 +207,8 @@ export const FacetSelector = ({
         prevClassification.orderIndex - nextClassification.orderIndex
     )
     .map((classification) => {
-      const { id, name, showMore, categories, maxDisplay } = classification;
+      const { id, name, categories, maxDisplay } = classification;
+      const showMore = showMoreMap.get(id) ?? true;
       return (
         <ListItem divider key={id}>
           <Grid container direction="column">
@@ -229,7 +220,7 @@ export const FacetSelector = ({
                 dense
                 className={!showMore ? classes.classificationList : ""}
               >
-                {listCategories(classification)}
+                {listCategories(classification, showMore)}
                 {categories.length > maxDisplay && showMoreButton(id, showMore)}
               </List>
             </Grid>
