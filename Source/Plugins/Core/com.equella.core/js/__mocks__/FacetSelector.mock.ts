@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { SearchPageClassification } from "../tsrc/search/components/FacetSelector";
 
-export const classifications: SearchPageClassification[] = [
+import { Classification } from "../tsrc/modules/SearchFacetsModule";
+
+export const classifications: Classification[] = [
   {
     id: 766942,
     name: "Language",
@@ -50,7 +51,6 @@ export const classifications: SearchPageClassification[] = [
     ],
     maxDisplay: 7,
     orderIndex: 1,
-    showMore: false,
   },
   {
     id: 766943,
@@ -71,13 +71,12 @@ export const classifications: SearchPageClassification[] = [
     ],
     maxDisplay: 2,
     orderIndex: 0,
-    showMore: true,
   },
   {
     id: 766944,
     name: "Color",
     categories: [],
+    maxDisplay: 2,
     orderIndex: 2,
-    showMore: false,
   },
 ];

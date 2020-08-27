@@ -39,10 +39,6 @@ const selectedClassificationTerms = new Map<number, string[]>([
   [766942, ["scala"]],
   [766943, ["Hobart"]],
 ]);
-const showMoreClassification = {
-  ...FacetSelectorMock.classifications[0],
-  showMore: true,
-};
 
 export const noTermsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
   {}
@@ -57,18 +53,4 @@ export const termsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bi
 termsSelected.args = {
   ...noTermsSelected.args,
   selectedClassificationTerms: selectedClassificationTerms,
-};
-
-export const showMore: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
-  {}
-);
-showMore.args = {
-  classifications: [showMoreClassification],
-};
-
-export const notShowMore: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
-  {}
-);
-notShowMore.args = {
-  classifications: [{ ...showMoreClassification, showMore: false }],
 };

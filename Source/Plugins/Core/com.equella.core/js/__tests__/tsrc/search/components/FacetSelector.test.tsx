@@ -32,7 +32,6 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 describe("<FacetSelector />", () => {
   // Mocked callbacks
   const onSelectTermsChange = jest.fn();
-  const onShowMore = jest.fn();
 
   // Mocked Classifications
   const CITY = "City";
@@ -42,15 +41,15 @@ describe("<FacetSelector />", () => {
   // Mocked facet
   const HOBART = "Hobart";
   const mockedSelectedTerms = new Map([[CITY_ID, [HOBART]]]);
-  // The text of 'SHOW MORE' button
+  // The text of 'SHOW MORE' and 'SHOW LESS' buttons
   const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
+  const SHOW_LESS = languageStrings.searchpage.facetSelector.showLessButton;
 
   const renderFacetSelector = () =>
     render(
       <FacetSelector
         classifications={FacetSelectorMock.classifications}
         onSelectTermsChange={onSelectTermsChange}
-        onShowMore={onShowMore}
       />
     );
 
@@ -67,16 +66,17 @@ describe("<FacetSelector />", () => {
     return classification;
   };
 
-  // Return a Classification's 'SHOW MORE' button.
-  const queryShowMoreButton = (
+  // Return a Classification's 'SHOW MORE'/'SHOW LESS' button.
+  const queryButton = (
     container: HTMLElement,
-    classificationName: string
+    classificationName: string,
+    buttonText: string
   ) => {
     const classification = getClassificationByName(
       container,
       classificationName
     );
-    return queryByText(classification, SHOW_MORE);
+    return queryByText(classification, buttonText);
   };
 
   let page: RenderResult;
@@ -93,22 +93,28 @@ describe("<FacetSelector />", () => {
     expect(queryByText(page.container, COLOR)).not.toBeInTheDocument();
   });
 
-  it("should display the 'SHOW MORE' button when 'showMore' is true", () => {
+  it("should display the 'SHOW MORE' button when the number of categories is more than maximum display number", () => {
     // City can show more categories.
-    expect(queryShowMoreButton(page.container, CITY)).toBeInTheDocument();
+    expect(queryButton(page.container, CITY, SHOW_MORE)).toBeInTheDocument();
     // Language does not have more categories to show.
-    expect(queryShowMoreButton(page.container, LANGUAGE)).toBeNull();
+    expect(queryButton(page.container, LANGUAGE, SHOW_MORE)).toBeNull();
   });
 
-  it("should call 'onShowMore' when a 'SHOW MORE' button is clicked", () => {
-    const showMoreButton = queryShowMoreButton(page.container, CITY);
+  it("should show all categories and 'SHOW LESS' button when 'SHOW MORE' button is clicked", () => {
+    const showMoreButton = queryButton(page.container, CITY, SHOW_MORE);
     if (!showMoreButton) {
       throw new Error(
         "Unable to find 'SHOW MORE' button for Classification City."
       );
     }
+    expect(
+      getAllByRole(getClassificationByName(page.container, CITY), "checkbox")
+    ).toHaveLength(2);
     fireEvent.click(showMoreButton);
-    expect(onShowMore).toHaveBeenLastCalledWith(CITY_ID);
+    expect(
+      getAllByRole(getClassificationByName(page.container, CITY), "checkbox")
+    ).toHaveLength(3);
+    expect(queryButton(page.container, CITY, SHOW_LESS)).toBeInTheDocument();
   });
 
   it("should sort Classifications based on their order indexes", () => {
