@@ -17,8 +17,6 @@
  */
 import {
   Button,
-  Card,
-  CardContent,
   Checkbox,
   FormControlLabel,
   Grid,
@@ -229,14 +227,5 @@ FacetSelectorProps) => {
       );
     });
 
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5">
-          {languageStrings.searchpage.facetSelector.title}
-        </Typography>
-        <List>{buildClassifications}</List>
-      </CardContent>
-    </Card>
-  );
+  return <List>{buildClassifications}</List>;
 };

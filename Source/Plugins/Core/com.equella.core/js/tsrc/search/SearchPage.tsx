@@ -28,7 +28,7 @@ import {
   listClassifications,
 } from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
-import { Grid } from "@material-ui/core";
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -110,19 +110,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   }, []);
 
-  /**
-   * Trigger a search when state values change, but skip the initial values.
-   */
   const isInitialSearch = useRef(true);
-  useEffect(() => {
-    if (!isInitialSearch.current) {
-      // When Search page option is changed, also update the Classification list.
-      listClassifications(searchPageOptions).then((classifications) =>
-        setClassifications(classifications)
-      );
-    }
-  }, [searchPageOptions]);
 
+  // Trigger a search when Search options get changed, but skip the initial values.
   useEffect(() => {
     if (isInitialSearch.current) {
       isInitialSearch.current = false;
@@ -134,6 +124,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
   };
+
+  // When Search options get changed, also update the Classification list.
+  useEffect(() => {
+    if (!isInitialSearch.current) {
+      listClassifications(searchPageOptions).then((classifications) =>
+        setClassifications(classifications)
+      );
+    }
+  }, [searchPageOptions]);
 
   /**
    * Search items with specified search criteria and show a spinner when the search is in progress.
@@ -349,13 +348,20 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <RefineSearchPanel controls={refinePanelControls} />
           </Grid>
           <Grid item>
-            <FacetSelector
-              classifications={classifications}
-              onSelectTermsChange={handleSelectedTermsChange}
-              selectedClassificationTerms={
-                searchPageOptions.classificationTerms
-              }
-            />
+            <Card>
+              <CardContent>
+                <Typography variant="h5">
+                  {languageStrings.searchpage.facetSelector.title}
+                </Typography>
+                <FacetSelector
+                  classifications={classifications}
+                  onSelectTermsChange={handleSelectedTermsChange}
+                  selectedClassificationTerms={
+                    searchPageOptions.classificationTerms
+                  }
+                />
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Grid>
