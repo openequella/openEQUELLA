@@ -36,6 +36,7 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import * as FacetSelectorMock from "../../../__mocks__/FacetSelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -45,6 +46,7 @@ import {
 } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
+import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -56,6 +58,10 @@ import {
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
+const mockListClassification = jest.spyOn(
+  SearchFacetsModule,
+  "listClassifications"
+);
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -68,6 +74,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockListClassification.mockResolvedValue(FacetSelectorMock.classifications);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
