@@ -76,6 +76,8 @@ const defaultSearchPageOptions: SearchPageOptions = {
 };
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
+const SORTORDER_SELECT_ID = "#sort-order-select";
+
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -173,6 +175,9 @@ const changeQuery = async (
     userEvent.click(rawModeSwitch);
   }
   const _queryBar = () => getQueryBar(container);
+  // Would be nice to replace this with a userEvent.type like:
+  //   await act(async () => await userEvent.type(_queryBar(), query, {delay: 1}));
+  // But initial attempts failed - even with adding a delay (which then caused a Jest timeout).
   fireEvent.change(_queryBar(), { target: { value: query } });
   await waitFor(() => {
     expect(_queryBar()).toHaveDisplayValue(query);
@@ -408,11 +413,8 @@ describe("<SearchPage/>", () => {
   });
 
   it("should clear search options and perform a new search", async () => {
+    const { container } = page;
     const query = "clear query";
-    const queryBar = page.container.querySelector("#searchBar");
-    if (!queryBar) {
-      throw new Error("Failed to locate the search bar, unable to continue.");
-    }
     const sortingDropdown = screen.getByDisplayValue(
       SearchSettingsModule.SortOrder.RANK
     );
@@ -420,23 +422,21 @@ describe("<SearchPage/>", () => {
       languageStrings.searchpage.newSearch
     );
 
-    // We will change the debounced query so use fake timer here.
-    jest.useFakeTimers("modern");
-    // Change search options now.
-    fireEvent.change(queryBar, { target: { value: query } });
-    await waitFor(() => {
-      expect(queryBar).toHaveDisplayValue(query);
-      jest.advanceTimersByTime(1000);
-    });
-    fireEvent.change(sortingDropdown, {
-      target: { value: SearchSettingsModule.SortOrder.NAME },
-    });
+    // Change the defaults
+    await changeQuery(container, query);
+    await waitForSearch();
+    selectOption(
+      container,
+      "#sort-order-select",
+      languageStrings.settings.searching.searchPageSettings.title
+    );
+    await waitForSearch();
 
     // Perform a new search and check.
     fireEvent.click(newSearchButton);
     await waitFor(() => {
       expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.RANK);
-      expect(queryBar).toHaveValue("");
+      expect(getQueryBar(container)).toHaveValue("");
     });
     // Four searches have been performed: initial search, one for query change and
     // one for sorting change, and one for clearing.
@@ -545,12 +545,13 @@ describe("<SearchPage/>", () => {
     expect(getPageCount()).toHaveTextContent(firstPageCountText);
   });
 
-  it("sort search results based on selection", () => {
+  it("sort search results based on selection", async () => {
     selectOption(
       page.container,
-      "#sort-order-select",
+      SORTORDER_SELECT_ID,
       languageStrings.settings.searching.searchPageSettings.lastModified
     );
+    await waitForSearch();
 
     // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
     // sort order is included in the search params
@@ -597,6 +598,7 @@ describe("<SearchPage/>", () => {
       page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
     );
     userEvent.click(screen.getByText(targetCollection.name));
+    await waitForSearch();
 
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
