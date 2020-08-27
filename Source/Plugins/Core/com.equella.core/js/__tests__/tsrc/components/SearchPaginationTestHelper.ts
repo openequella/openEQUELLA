@@ -29,10 +29,16 @@ const createGetQuery = (
   return e;
 };
 
+/**
+ * Contains all the simple functions for querying the common components of the pagination controls.
+ * Following React Testing Library conventions, all queryXyz functions return either the element
+ * if found or null.
+ */
 interface PaginatorBaseQueries {
   /**
-   * The text caption for the control (e.g. "Items per page"), which then also has an #id which
-   * is the aria-labelledby to link to the pop up list for the MUI Select.
+   * Query the text caption for the control (e.g. "Items per page"), which then also has an #id which
+   * is the aria-labelledby to link to the pop up list for the MUI Select. If not found, will return
+   * null.
    */
   queryCaption: () => HTMLElement | null;
   queryFirstPageButton: () => HTMLElement | null;
@@ -44,10 +50,15 @@ interface PaginatorBaseQueries {
   queryPreviousPageButton: () => HTMLElement | null;
 }
 
+/**
+ * Builds on `PaginatorBaseQueries` to provide a collection of get queries to access the common
+ * components of pagination controls. These follow the React Testing Library convention of either
+ * returning the element if found, or otherwise throwing an error.
+ */
 interface PaginatorQueries extends PaginatorBaseQueries {
   /**
-   * The text caption for the control (e.g. "Items per page"), which then also has an #id which
-   * is the aria-labelledby to link to the pop up list for the MUI Select.
+   * Get the text caption for the control (e.g. "Items per page"), which then also has an #id which
+   * is the aria-labelledby to link to the pop up list for the MUI Select. If not found, will throw.
    */
   getCaption: () => HTMLElement;
   getFirstPageButton: () => HTMLElement;
