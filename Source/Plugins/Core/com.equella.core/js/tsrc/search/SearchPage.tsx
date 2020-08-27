@@ -111,7 +111,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, []);
 
   const isInitialSearch = useRef(true);
-
   // Trigger a search when Search options get changed, but skip the initial values.
   useEffect(() => {
     if (isInitialSearch.current) {
@@ -121,10 +120,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
   }, [searchPageOptions]);
 
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
-
   // When Search options get changed, also update the Classification list.
   useEffect(() => {
     if (!isInitialSearch.current) {
@@ -133,6 +128,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       );
     }
   }, [searchPageOptions]);
+
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  };
 
   /**
    * Search items with specified search criteria and show a spinner when the search is in progress.
