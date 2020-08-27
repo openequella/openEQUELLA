@@ -97,6 +97,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [classifications, setClassifications] = useState<
     SearchPageClassification[]
   >([]);
+  const [selectedTermsMap, setSelectedTermsMap] = useState<
+    Map<number, string[]>
+  >(new Map());
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -120,16 +123,27 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const isInitialSearch = useRef(true);
   useEffect(() => {
-    if (isInitialSearch.current) {
-      isInitialSearch.current = false;
-    } else {
-      search();
+    if (!isInitialSearch.current) {
       // When Search page option is changed, also update the Classification list.
       listClassifications(searchPageOptions).then((classifications) =>
         setClassifications(classificationTransformer(classifications))
       );
     }
+  }, [searchPageOptions, selectedTermsMap]);
+
+  useEffect(() => {
+    if (!isInitialSearch.current) {
+      setSelectedTermsMap(new Map());
+    }
   }, [searchPageOptions]);
+
+  useEffect(() => {
+    if (isInitialSearch.current) {
+      isInitialSearch.current = false;
+    } else {
+      search();
+    }
+  }, [selectedTermsMap]);
 
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
@@ -140,10 +154,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const search = (): void => {
     setShowSpinner(true);
-    searchItems(searchPageOptions)
+    const finalSearchOptions: SearchPageOptions = {
+      ...searchPageOptions,
+      classificationTerms: selectedTermsMap,
+    };
+    searchItems(finalSearchOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
-        history.replace({ ...history.location, state: searchPageOptions });
+        history.replace({ ...history.location, state: finalSearchOptions });
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
       })
@@ -232,13 +250,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const handleSelectedTermsChange = (
-    classificationTerms?: Map<number, string[]>
-  ) => {
-    setSearchPageOptions({
-      ...searchPageOptions,
-      classificationTerms: classificationTerms,
-    });
-  };
+    classificationTerms: Map<number, string[]>
+  ) => setSelectedTermsMap(classificationTerms);
 
   const handleShowMoreFacets = (
     classificationID: number,
@@ -358,9 +371,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <FacetSelector
               classifications={classifications}
               onSelectTermsChange={handleSelectedTermsChange}
-              selectedClassificationTerms={
-                searchPageOptions.classificationTerms
-              }
+              selectedClassificationTerms={selectedTermsMap}
               onShowMore={handleShowMoreFacets}
             />
           </Grid>
