@@ -41,7 +41,7 @@ describe("<SearchPagination/>", () => {
     );
 
   it("Goes back to the first page of results when First Page Button is clicked", () => {
-    // currently on page 3 of 3
+    // Start on a page other than the first, to ensure the first page button is active
     const { container } = searchPagination(30, 1, 10);
     const { getFirstPageButton } = queryPaginatorControls(container);
 
@@ -50,7 +50,7 @@ describe("<SearchPagination/>", () => {
   });
 
   it("Goes back to the previous page of results when Previous Page Button is clicked", () => {
-    // currently on page 2 of 2
+    // Start on a page other than the first, to ensure the previous page button is active
     const { container } = searchPagination(20, 1, 10);
     const { getPreviousPageButton } = queryPaginatorControls(container);
 
@@ -59,7 +59,7 @@ describe("<SearchPagination/>", () => {
   });
 
   it("Goes to the next page of results when Next Page Button is clicked", () => {
-    // currently on page 1 of 2
+    // Start on a page other than the last, to ensure the next page button is active
     const { container } = searchPagination(20, 0, 10);
     const { getNextPageButton } = queryPaginatorControls(container);
 
@@ -68,7 +68,7 @@ describe("<SearchPagination/>", () => {
   });
 
   it("Goes to the last page of results when Last Page Button is clicked", () => {
-    // currently on page 1 of 3
+    // Start on a page other than the last, to ensure the last page button is active
     const { container } = searchPagination(30, 0, 10);
     const { getLastPageButton } = queryPaginatorControls(container);
 
