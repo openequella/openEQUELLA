@@ -124,7 +124,7 @@ describe("SearchFacetsModule", () => {
     // ... and that the SearchOptions are correctly converted
     expect(mockedSearchFacets).toHaveBeenLastCalledWith("api", {
       nodes: [CLASSIFICATION_KEYWORD.schemaNode],
-      q: queryString,
+      q: `${queryString}*`,
       collections: collections,
       modifiedAfter: dateStart,
       modifiedBefore: dateEnd,

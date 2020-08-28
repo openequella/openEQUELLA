@@ -79,7 +79,7 @@ describe("SearchModule", () => {
       rawMode: false,
       classificationTerms: terms,
     });
-    validateSearchQuery(`${query}* AND (Java OR Scala OR SBT)`);
+    validateSearchQuery(`(${query}*) AND Java AND Scala AND SBT`);
   });
 
   it("should just send terms to server if query is empty", async () => {
@@ -91,6 +91,6 @@ describe("SearchModule", () => {
       rawMode: false,
       classificationTerms: terms,
     });
-    validateSearchQuery("(Java OR Scala)");
+    validateSearchQuery("Java AND Scala");
   });
 });
