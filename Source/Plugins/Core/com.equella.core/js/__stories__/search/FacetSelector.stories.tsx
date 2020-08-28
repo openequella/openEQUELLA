@@ -28,7 +28,6 @@ export default {
   component: FacetSelector,
   argType: {
     onSelectTermsChange: { action: "on select terms" },
-    onShowMore: { action: "on Show more" },
   },
 } as Meta<FacetSelectorProps>;
 

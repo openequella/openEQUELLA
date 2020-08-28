@@ -84,6 +84,9 @@ const defaultSearchPageOptions: SearchPageOptions = {
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
+const JAVA_TERM = "java";
+const CLASSIFICATION_ID = 766942;
+const termsMap = new Map([[CLASSIFICATION_ID, [JAVA_TERM]]]);
 
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
@@ -190,6 +193,10 @@ const changeQuery = async (
     expect(_queryBar()).toHaveDisplayValue(query);
     jest.advanceTimersByTime(1000);
   });
+};
+
+const selectTerm = (container: HTMLElement, term: string) => {
+  userEvent.click(getByText(container, term));
 };
 
 describe("Refine search by searching attachments", () => {
@@ -611,6 +618,24 @@ describe("<SearchPage/>", () => {
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       collections: [targetCollection],
+    });
+  });
+
+  it("should search with selected Classification terms", async () => {
+    selectTerm(page.container, JAVA_TERM);
+    await waitForSearch();
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      classificationTerms: termsMap,
+    });
+  });
+
+  it("should also update Classification list with selected terms", async () => {
+    selectTerm(page.container, JAVA_TERM);
+    await waitForSearch(); // The intention of this line is to avoid Jest act warning.
+    expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      classificationTerms: termsMap,
     });
   });
 });
