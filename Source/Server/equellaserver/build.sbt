@@ -26,6 +26,7 @@ val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
 val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
+val springVersion    = "3.2.18.RELEASE"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -208,15 +209,15 @@ libraryDependencies ++= Seq(
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
   "org.slf4j"           % "slf4j-api"              % "1.7.30",
   "org.slf4j"           % "slf4j-log4j12"          % "1.7.30",
-  "org.springframework" % "spring-aop"             % "2.5.6",
-  "org.springframework" % "spring-context"         % "2.5.6",
-  "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
+  "org.springframework" % "spring-aop"             % springVersion,
+  "org.springframework" % "spring-context"         % springVersion,
+  "org.springframework" % "spring-context-support" % springVersion excludeAll (
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % "2.5.6",
-  "org.springframework" % "spring-tx"   % "2.5.6",
-  "org.springframework" % "spring-web"  % "2.5.6",
+  "org.springframework" % "spring-jdbc" % springVersion,
+  "org.springframework" % "spring-tx"   % springVersion,
+  "org.springframework" % "spring-web"  % springVersion,
 //  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
 //    ExclusionRule(organization = "jasperreports", name = "jasperreports")
 //    ),
@@ -310,6 +311,8 @@ assemblyMergeStrategy in assembly := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // cbeach:  Due to deduplication issues.
+  case x if x.contains("overview.html") => MergeStrategy.first
   // Safe to do at least in JDK 8
   case "module-info.class" => MergeStrategy.discard
   case x =>

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Singleton
 @SystemDatabase
+@Transactional
 @Bind(DatabaseSchemaDao.class)
 public class DatabaseSchemaDaoImpl extends AbstractSystemDaoImpl<DatabaseSchema, Long>
     implements DatabaseSchemaDao {
@@ -37,13 +38,11 @@ public class DatabaseSchemaDaoImpl extends AbstractSystemDaoImpl<DatabaseSchema,
   }
 
   @Override
-  @Transactional
   public Collection<DatabaseSchema> enumerate() {
     return findAllByCriteria();
   }
 
   @Override
-  @Transactional
   public DatabaseSchema setOnline(long schemaId, boolean online) {
     DatabaseSchema schema = findById(schemaId);
     schema.setOnline(online);
@@ -51,7 +50,6 @@ public class DatabaseSchemaDaoImpl extends AbstractSystemDaoImpl<DatabaseSchema,
   }
 
   @Override
-  @Transactional
   public boolean deleteSchema(long schemaId) {
     DatabaseSchema schema = findById(schemaId);
     if (schema != null) {
@@ -62,13 +60,11 @@ public class DatabaseSchemaDaoImpl extends AbstractSystemDaoImpl<DatabaseSchema,
   }
 
   @Override
-  @Transactional
   public DatabaseSchema get(long schemaId) {
     return findById(schemaId);
   }
 
   @Override
-  @Transactional
   public long add(DatabaseSchema ds) {
     return save(ds);
   }
