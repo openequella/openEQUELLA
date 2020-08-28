@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
+import { NodeAndTerms } from "../search/components/FacetSelector";
 import { SortOrder } from "./SearchSettingsModule";
 import { Collection } from "./CollectionsModule";
 import { DateRange } from "../components/DateRangeSelector";
@@ -66,7 +67,7 @@ export interface SearchOptions {
   /**
    * A map of selected Classifications and their terms.
    */
-  classificationTerms?: Map<number, string[]>;
+  classificationTerms?: Map<number, NodeAndTerms>;
   /**
    * Whether to search attachments or not.
    */
@@ -115,39 +116,32 @@ export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchR
  * @param query the intended search query to be sent to the API
  * @param addWildcard whether a wildcard should be appended
  */
-const formatQuery = (query: string, addWildcard: boolean): string => {
+export const formatQuery = (query: string, addWildcard: boolean): string => {
   const trimmedQuery = query ? query.trim() : "";
   const appendWildcard = addWildcard && trimmedQuery.length > 0;
   return trimmedQuery + (appendWildcard ? "*" : "");
 };
 
 /**
- * This function processes the query put in the SearchBar and terms selected from Classifications.
- * It firstly formats the query based on whether raw mode is on or off.
- * If there are no Classifications terms selected, it returns the formatted query.
- * Otherwise, it consolidates all terms into one Lucene query by OR, and combines the two queries
- * by AND, and return the combined one.
+ * Generates a Where clause for search. Each condition is linked by a AND.
  *
- * @param query The query put in the SearchBar.
- * @param rawMode Whether raw mode is on or off.
  * @param classificationTerms A list of selected Classification terms.
  */
-export const processQuery = (
-  query: string | undefined,
-  rawMode: boolean,
-  classificationTerms?: string[]
+export const generateWhereQuery = (
+  classificationTerms?: Map<number, NodeAndTerms>
 ): string | undefined => {
-  // If query is undefined, then we want to keep 'undefined'; but otherwise let's pre-process it.
-  const textQuery = query ? formatQuery(query, !rawMode) : undefined;
-
-  if (!classificationTerms || classificationTerms.length === 0) {
-    return textQuery;
+  if (!classificationTerms) {
+    return undefined;
   }
 
+  // Append '/xml' back to the schema node and generate a search condition for each term.
+  const processNodeTerms = ({ node, terms }: NodeAndTerms) =>
+    terms.map((t) => `/xml${node}='${t}'`);
+  // Concatenate all clauses with AND.
   const and = " AND ";
-  // Each term should be concatenated by 'AND'.
-  const terms = classificationTerms.join(and);
-  return textQuery ? `(${textQuery})` + and + terms : terms;
+  return Array.from(classificationTerms.values())
+    .flatMap(processNodeTerms)
+    .join(and);
 };
 
 /**
@@ -170,10 +164,7 @@ export const searchItems = ({
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
-  const terms = classificationTerms
-    ? Array.from(classificationTerms.values()).flat()
-    : undefined;
-  const processedQuery = processQuery(query, rawMode, terms);
+  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   const searchParams: OEQ.Search.SearchParams = {
     query: processedQuery,
     start: currentPage * rowsPerPage,
@@ -185,6 +176,7 @@ export const searchItems = ({
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
     searchAttachments: searchAttachments,
+    whereClause: generateWhereQuery(classificationTerms),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };

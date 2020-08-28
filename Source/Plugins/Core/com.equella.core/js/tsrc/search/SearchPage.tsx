@@ -43,7 +43,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { FacetSelector } from "./components/FacetSelector";
+import { FacetSelector, NodeAndTerms } from "./components/FacetSelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -237,7 +237,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const handleSelectedTermsChange = (
-    classificationTerms: Map<number, string[]>
+    classificationTerms: Map<number, NodeAndTerms>
   ) =>
     setSearchPageOptions({
       ...searchPageOptions,

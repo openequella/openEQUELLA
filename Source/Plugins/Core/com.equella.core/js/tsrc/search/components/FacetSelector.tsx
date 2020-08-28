@@ -38,6 +38,20 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Represent a schema node and a list of terms.
+ */
+export interface NodeAndTerms {
+  /**
+   * One Schema node.
+   */
+  node: string;
+  /**
+   * Terms related to this node.
+   */
+  terms: string[];
+}
+
 export interface FacetSelectorProps {
   /**
    * A list of Classifications.
@@ -47,20 +61,19 @@ export interface FacetSelectorProps {
    * A map where the key is a Classification's ID and value is
    * a list of terms.
    */
-  selectedClassificationTerms?: Map<number, string[]>;
+  selectedClassificationTerms?: Map<number, NodeAndTerms>;
   /**
    * Handler for selecting/deselecting Classification terms.
    * @param terms A list of currently selected terms.
    */
-  onSelectTermsChange: (terms: Map<number, string[]>) => void;
+  onSelectTermsChange: (terms: Map<number, NodeAndTerms>) => void;
 }
 
 export const FacetSelector = ({
   classifications,
   selectedClassificationTerms,
   onSelectTermsChange,
-}: //onShowMore,
-FacetSelectorProps) => {
+}: FacetSelectorProps) => {
   const classes = useStyles();
   const [showMoreMap, setShowMoreMap] = useState<Map<number, boolean>>(
     new Map(classifications.map((classification) => [classification.id, true]))
@@ -78,11 +91,16 @@ FacetSelectorProps) => {
    * to avoid mutating parent component's state.
    *
    * @param classificationID The ID of a Classification
+   * @param schemaNode The Schema node of a Classification
    * @param term The selected or unselected term
    */
-  const handleSelectTerms = (classificationID: number, term: string) => {
-    const terms = selectedClassificationTerms?.get(classificationID);
-    const copiedTerms = terms ? [...terms] : [];
+  const handleSelectTerms = (
+    classificationID: number,
+    schemaNode: string,
+    term: string
+  ) => {
+    const nodeAndTerms = selectedClassificationTerms?.get(classificationID);
+    const copiedTerms = nodeAndTerms ? [...nodeAndTerms.terms] : [];
     const termIndex = copiedTerms.indexOf(term);
     if (termIndex === -1) {
       copiedTerms.push(term);
@@ -90,7 +108,7 @@ FacetSelectorProps) => {
       copiedTerms.splice(termIndex, 1);
     }
     const copiedMap = new Map(selectedClassificationTerms ?? []);
-    copiedMap.set(classificationID, copiedTerms);
+    copiedMap.set(classificationID, { node: schemaNode, terms: copiedTerms });
     onSelectTermsChange(copiedMap);
   };
 
@@ -141,10 +159,12 @@ FacetSelectorProps) => {
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
    * @param classificationID The name of a Classification
+   * @param schemaNode The Schema node of a Classification
    * @param facet A facet
    */
   const facetListItem = (
     classificationID: number,
+    schemaNode: string,
     facet: OEQ.SearchFacets.Facet
   ): ReactElement => {
     const { term } = facet;
@@ -156,9 +176,11 @@ FacetSelectorProps) => {
               checked={
                 selectedClassificationTerms
                   ?.get(classificationID)
-                  ?.includes(term) ?? false
+                  ?.terms.includes(term) ?? false
               }
-              onChange={() => handleSelectTerms(classificationID, term)}
+              onChange={() =>
+                handleSelectTerms(classificationID, schemaNode, term)
+              }
             />
           }
           label={facetLabel(facet)}
@@ -173,26 +195,27 @@ FacetSelectorProps) => {
    *
    * @param id The ID of a Classification
    * @param categories A list of terms to build into a list
-   * @param showMore Whether to show more facets or not
+   * @param schemaNode The Schema node of a Classification
    * @param maxDisplay Default maximum number of displayed facets
+   * @param showMore Whether to show more facets or not
    */
   const listCategories = (
-    { id, categories, maxDisplay }: Classification,
+    { id, categories, schemaNode, maxDisplay }: Classification,
     showMore: boolean
   ): ReactElement[] => {
-    const selectedTerms = selectedClassificationTerms?.get(id) ?? [];
+    const selectedTerms = selectedClassificationTerms?.get(id)?.terms ?? [];
     const selectedCategories = categories.filter((c) =>
       selectedTerms.includes(c.term)
     );
     const unselectedCategories = categories.filter(
       (c) => !selectedTerms.includes(c.term)
     );
+    // Concatenate again to ensure selected ones have higher priority for display.
     return selectedCategories
       .concat(unselectedCategories)
       .slice(0, showMore ? maxDisplay : undefined)
-      .map((facet) => facetListItem(id, facet));
+      .map((facet) => facetListItem(id, schemaNode, facet));
   };
-
   /**
    * Sort and build Classifications that have categories.
    * For each Classification, a scroll bar and a 'Show more' button may or may not

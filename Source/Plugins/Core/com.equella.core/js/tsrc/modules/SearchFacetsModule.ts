@@ -20,7 +20,7 @@ import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../config";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
-import { processQuery, SearchOptions } from "./SearchModule";
+import { formatQuery, generateWhereQuery, SearchOptions } from "./SearchModule";
 
 /**
  * Represents a Classification and its generated categories ready for display.
@@ -49,6 +49,10 @@ export interface Classification {
    * The configured order in which this classification should be displayed.
    */
   orderIndex: number;
+  /**
+   * The configured Schema node of this classification.
+   */
+  schemaNode: string;
 }
 
 /**
@@ -71,13 +75,7 @@ const convertSearchOptions: (
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
-      q: processQuery(
-        query,
-        rawMode,
-        classificationTerms
-          ? Array.from(classificationTerms.values()).flat()
-          : undefined
-      ),
+      q: query ? formatQuery(query, !rawMode) : undefined,
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
       modifiedBefore: getISODateString(lastModifiedDateRange?.end),
       owner: owner?.id,
@@ -85,6 +83,7 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
+      where: generateWhereQuery(classificationTerms),
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
@@ -135,6 +134,7 @@ export const listClassifications = async (
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
         }),
+        schemaNode: settings.schemaNode,
       })
     )
   );
