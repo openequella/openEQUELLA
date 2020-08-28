@@ -62,6 +62,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind
 @SuppressWarnings("nls")
@@ -99,6 +100,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage> {
   }
 
   @Override
+  @Transactional
   public void init() {
     dialect = dataSourceService.getDialect();
     checkSystemSchema();

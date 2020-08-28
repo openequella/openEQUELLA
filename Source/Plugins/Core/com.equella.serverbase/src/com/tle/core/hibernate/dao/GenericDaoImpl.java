@@ -240,6 +240,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    */
   @Override
   @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.SUPPORTS)
   public List<T> findAllByCriteria(
       @Nullable final Order order,
       final int firstResult,
