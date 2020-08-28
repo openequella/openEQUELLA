@@ -144,11 +144,10 @@ export const processQuery = (
     return textQuery;
   }
 
-  const or = " OR ";
   const and = " AND ";
-  // Each term should be concatenated by 'OR'.
-  const terms = `(${classificationTerms.join(or)})`;
-  return textQuery ? textQuery + and + terms : terms;
+  // Each term should be concatenated by 'AND'.
+  const terms = classificationTerms.join(and);
+  return textQuery ? `(${textQuery})` + and + terms : terms;
 };
 
 /**
