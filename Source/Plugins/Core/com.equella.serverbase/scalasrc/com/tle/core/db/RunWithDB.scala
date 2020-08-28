@@ -27,7 +27,7 @@ import com.tle.web.DebugSettings
 import io.doolse.simpledba.jdbc._
 import javax.sql.DataSource
 import org.slf4j.LoggerFactory
-import org.springframework.orm.hibernate3.SessionHolder
+import org.springframework.orm.hibernate5.SessionHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
 object RunWithDB {

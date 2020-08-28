@@ -26,7 +26,7 @@ val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
 val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
-val springVersion    = "3.2.18.RELEASE"
+val springVersion    = "5.2.8.RELEASE"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
