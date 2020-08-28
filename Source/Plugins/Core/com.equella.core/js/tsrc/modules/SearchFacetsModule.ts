@@ -67,12 +67,13 @@ const convertSearchOptions: (
       owner,
       status,
       classificationTerms,
+      rawMode,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
       q: processQuery(
         query,
-        true,
+        rawMode,
         classificationTerms
           ? Array.from(classificationTerms.values()).flat()
           : undefined
