@@ -40,7 +40,10 @@ describe("<FacetSelector />", () => {
   const COLOR = "Color";
   // Mocked facet
   const HOBART = "Hobart";
-  const mockedSelectedTerms = new Map([[CITY_ID, [HOBART]]]);
+  const SCHEMA_NODE = "item/city";
+  const mockedSelectedTerms = new Map([
+    [CITY_ID, { node: SCHEMA_NODE, terms: [HOBART] }],
+  ]);
   // The text of 'SHOW MORE' and 'SHOW LESS' buttons
   const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
   const SHOW_LESS = languageStrings.searchpage.facetSelector.showLessButton;

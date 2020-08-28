@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { generateWhereQuery } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
@@ -69,28 +70,14 @@ describe("SearchModule", () => {
     validateSearchQuery(`${queryTerm}`);
   });
 
-  it("should append Classification terms to query if one or more Classifications are selected", async () => {
+  it("should generate a Where clause for schema node and terms", () => {
     mockedSearch.mockReset();
-    const query = "technology";
-    const terms = new Map([[1, ["Java", "Scala", "SBT"]]]);
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: query,
-      rawMode: false,
-      classificationTerms: terms,
-    });
-    validateSearchQuery(`(${query}*) AND Java AND Scala AND SBT`);
-  });
-
-  it("should just send terms to server if query is empty", async () => {
-    mockedSearch.mockReset();
-    const terms = new Map([[1, ["Java", "Scala"]]]);
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: undefined,
-      rawMode: false,
-      classificationTerms: terms,
-    });
-    validateSearchQuery("Java AND Scala");
+    const terms = new Map([
+      [1, { node: "/item/keywords/keyword", terms: ["Java", "Scala"] }],
+    ]);
+    const whereClause = generateWhereQuery(terms);
+    expect(whereClause).toBe(
+      "/xml/item/keywords/keyword='Java' AND /xml/item/keywords/keyword='Scala'"
+    );
   });
 });

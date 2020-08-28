@@ -86,7 +86,10 @@ const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 const SORTORDER_SELECT_ID = "#sort-order-select";
 const JAVA_TERM = "java";
 const CLASSIFICATION_ID = 766942;
-const termsMap = new Map([[CLASSIFICATION_ID, [JAVA_TERM]]]);
+const SCHEMA_NODE = "item/language";
+const termsMap = new Map([
+  [CLASSIFICATION_ID, { node: SCHEMA_NODE, terms: [JAVA_TERM] }],
+]);
 
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the

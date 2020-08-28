@@ -112,6 +112,7 @@ describe("SearchFacetsModule", () => {
         maxDisplay: CLASSIFICATION_SUBJECT.maxResults,
         categories: CATEGORIES_SUBJECT,
         orderIndex: CLASSIFICATION_SUBJECT.orderIndex,
+        schemaNode: CLASSIFICATION_SUBJECT.schemaNode,
       },
       {
         id: CLASSIFICATION_KEYWORD.id,
@@ -119,6 +120,7 @@ describe("SearchFacetsModule", () => {
         maxDisplay: CLASSIFICATION_KEYWORD.maxResults,
         categories: CATEGORIES_KEYWORD,
         orderIndex: CLASSIFICATION_KEYWORD.orderIndex,
+        schemaNode: CLASSIFICATION_KEYWORD.schemaNode,
       },
     ] as Classification[]);
     // ... and that the SearchOptions are correctly converted

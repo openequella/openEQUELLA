@@ -19,6 +19,7 @@ import * as React from "react";
 import {
   FacetSelector,
   FacetSelectorProps,
+  NodeAndTerms,
 } from "../../tsrc/search/components/FacetSelector";
 import * as FacetSelectorMock from "../../__mocks__/FacetSelector.mock";
 import type { Meta, Story } from "@storybook/react";
@@ -34,9 +35,9 @@ export default {
 const FacetSelectorTemplate = (args: FacetSelectorProps) => (
   <FacetSelector {...args} />
 );
-const selectedClassificationTerms = new Map<number, string[]>([
-  [766942, ["scala"]],
-  [766943, ["Hobart"]],
+const selectedClassificationTerms = new Map<number, NodeAndTerms>([
+  [766942, { node: "item/language", terms: ["scala"] }],
+  [766943, { node: "item/city", terms: ["Hobart"] }],
 ]);
 
 export const noTermsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
