@@ -104,7 +104,9 @@ const convertSearchOptions: (
 export const listCategories = async (
   options: OEQ.SearchFacets.SearchFacetsParams
 ): Promise<OEQ.SearchFacets.Facet[]> =>
-  (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results;
+  (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results.filter(
+    (r) => r.term
+  ); // Filter out empty terms
 
 /**
  * Uses the system's configured facets/classifications to generate a set of categories for
