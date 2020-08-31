@@ -4023,8 +4023,8 @@ table#copyright-table tr td {
 }
 
 .attachments-browse.structured li.attachmentrow .droparrow {
+  //this droparrow is redundant and shouldn't be rendered.
   display: none !important;
-  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
 }
 
 .attachments-browse.thumbs li.attachmentrow .droparrow {
