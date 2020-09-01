@@ -113,7 +113,7 @@ export const FacetSelector = ({
   };
 
   /**
-   * Create a button to help show more/less categories for each Classification.
+   * Create a button to show more/less categories for each Classification.
    * @param classificationID The ID of a Classification.
    * @param showMore Whether to display 'Show more' or 'Show less'.
    */

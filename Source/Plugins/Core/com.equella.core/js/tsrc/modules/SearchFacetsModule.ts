@@ -50,7 +50,7 @@ export interface Classification {
    */
   orderIndex: number;
   /**
-   * The configured Schema node of this classification.
+   * The configured schema node of this classification.
    */
   schemaNode: string;
 }

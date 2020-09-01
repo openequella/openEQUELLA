@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Classification } from "../tsrc/modules/SearchFacetsModule";
+import type { Classification } from "../tsrc/modules/SearchFacetsModule";
 
 export const classifications: Classification[] = [
   {
