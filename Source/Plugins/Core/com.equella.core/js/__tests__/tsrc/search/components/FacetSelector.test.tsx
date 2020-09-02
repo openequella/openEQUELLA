@@ -43,7 +43,7 @@ describe("<FacetSelector />", () => {
   const HOBART = "Hobart";
   const mockedSelectedTerms = new Map([[CITY_ID, [HOBART]]]);
   // The text of 'SHOW MORE' button
-  const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
+  const SHOW_MORE = languageStrings.common.action.showmore;
 
   const renderFacetSelector = () =>
     render(
