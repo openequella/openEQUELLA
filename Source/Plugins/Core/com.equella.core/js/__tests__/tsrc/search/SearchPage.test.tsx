@@ -297,7 +297,46 @@ describe("Refine search by Owner", () => {
     );
   });
 });
+describe("Collapsible refine filter section", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const getOwnerSelector = () =>
+    queryRefineSearchComponent(page.container, "OwnerSelector");
+  const getDateRangeSelector = () =>
+    queryRefineSearchComponent(page.container, "DateRangeSelector");
+  const getSearchAttachmentsSelector = () =>
+    queryRefineSearchComponent(page.container, "SearchAttachmentsSelector");
+  const getCollectionSelector = () =>
+    queryRefineSearchComponent(page.container, "CollectionSelector");
+
+  it("Should contain the correct controls", async () => {
+    const collapsibleSection = page.container
+      .getElementsByClassName("collapsibleRefinePanel")
+      .item(0);
+
+    expect(collapsibleSection).toContainElement(getOwnerSelector());
+    expect(collapsibleSection).toContainElement(getDateRangeSelector());
+    expect(collapsibleSection).toContainElement(getSearchAttachmentsSelector());
+    expect(collapsibleSection).not.toContainElement(getCollectionSelector());
+  });
+
+  it("Should change button text when clicked", async () => {
+    const expansionButton = page.getByText(
+      languageStrings.common.action.showmore
+    );
+    fireEvent.click(expansionButton);
+    expect(expansionButton).toHaveTextContent(
+      languageStrings.common.action.showless
+    );
+  });
+});
 describe("Hide Refine Search controls", () => {
   let page: RenderResult;
   beforeEach(async () => {
