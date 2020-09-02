@@ -56,6 +56,25 @@ export interface Classification {
 }
 
 /**
+ * Represents a group which includes a list of categories and the Classification
+ * ID and schema node which these categories belong to.
+ */
+export interface SelectedCategories {
+  /**
+   * The Classification's ID which the selected categories belong to.
+   */
+  id: number;
+  /**
+   * The schema node from which the selected categories are generated.
+   * Whether it's undefined or not depends on the context of its usage.
+   */
+  schemaNode?: string;
+  /**
+   * A list of selected categories' terms.
+   */
+  categories: string[];
+}
+/**
  * Helper function to convert the commonly used `SearchOptions` into the params we need to
  * list facets. This is a memoized function, so that it can be used in an `Array.map()`
  * with reasonable performance. (Important seeing it's also doing some data conversion.)
