@@ -9,6 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.6"
 val catsVersion   = "1.6.1"
+val cxfVersion    = "3.4.0"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -28,13 +29,12 @@ libraryDependencies ++= Seq(
   "org.codehaus.jackson"      % "jackson-mapper-asl"       % "1.9.13",
   "xalan"                     % "xalan"                    % "2.7.2",
   "org.dspace.oclc"           % "oclc-srw"                 % "1.0.20080328",
-  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.3.7",
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.3.7",
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.3.7",
+  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"               % "4.5.12",
-//  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
-  "axis"       % "axis" % "1.4",
-  "com.jcraft" % "jsch" % "0.1.55",
+  "axis"                      % "axis"                     % "1.4",
+  "com.jcraft"                % "jsch"                     % "0.1.55",
 //  "jpf" % "jpf-tools" % "1.0.5",
   "org.jacoco"       % "org.jacoco.report"         % "0.8.5",
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
