@@ -28,7 +28,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { ReactElement, useState } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
-import { Classification } from "../../modules/SearchFacetsModule";
+import {
+  Classification,
+  SelectedCategories,
+} from "../../modules/SearchFacetsModule";
 import { languageStrings } from "../../util/langstrings";
 
 const useStyles = makeStyles({
@@ -37,42 +40,25 @@ const useStyles = makeStyles({
     overflow: "auto",
   },
 });
-
-/**
- * Represent a schema node and a list of terms.
- */
-export interface NodeAndTerms {
-  /**
-   * One Schema node.
-   */
-  node: string;
-  /**
-   * Terms related to this node.
-   */
-  terms: string[];
-}
-
 export interface FacetSelectorProps {
   /**
-   * A list of Classifications.
+   * A list of available Classifications returned from server.
    */
   classifications: Classification[];
   /**
-   * A map where the key is a Classification's ID and value is
-   * a list of terms.
+   * A list of selected categories which are grouped by their Classification ID.
    */
-  selectedClassificationTerms?: Map<number, NodeAndTerms>;
+  selectedCategories?: SelectedCategories[];
   /**
-   * Handler for selecting/deselecting Classification terms.
+   * Handler for selecting/deselecting categories.
    * @param terms A list of currently selected terms.
    */
-  onSelectTermsChange: (terms: Map<number, NodeAndTerms>) => void;
+  onSelectedCategoriesChange: (categories: SelectedCategories[]) => void;
 }
-
 export const FacetSelector = ({
   classifications,
-  selectedClassificationTerms,
-  onSelectTermsChange,
+  selectedCategories = [],
+  onSelectedCategoriesChange,
 }: FacetSelectorProps) => {
   const classes = useStyles();
   const [showMoreMap, setShowMoreMap] = useState<Map<number, boolean>>(
@@ -85,31 +71,46 @@ export const FacetSelector = ({
     setShowMoreMap(copiedMap);
   };
   /**
-   * Updates the list of selected Classification terms. If the term exists then remove it
-   * from the list. Add it to the list otherwise.
-   * A copy of the map and a copy of the array of terms are created internally
-   * to avoid mutating parent component's state.
+   * The list of selected categories are grouped by Classification ID.
+   * If there is a group matching the ID, then update this group's selected categories,
+   * and otherwise add a new group for the ID and its firstly selected category.
    *
    * @param classificationID The ID of a Classification
-   * @param schemaNode The Schema node of a Classification
-   * @param term The selected or unselected term
+   * @param category The selected or unselected category
    */
-  const handleSelectTerms = (
+  const handleSelectCategories = (
     classificationID: number,
-    schemaNode: string,
-    term: string
+    category: string
   ) => {
-    const nodeAndTerms = selectedClassificationTerms?.get(classificationID);
-    const copiedTerms = nodeAndTerms ? [...nodeAndTerms.terms] : [];
-    const termIndex = copiedTerms.indexOf(term);
-    if (termIndex === -1) {
-      copiedTerms.push(term);
+    const categoryGroupIndex = selectedCategories.findIndex(
+      (c) => c.id === classificationID
+    );
+    const copiedCategoryGroups = [...selectedCategories];
+
+    // If there is no group for this category then add a new group,
+    // and otherwise update the category list of this group.
+    if (categoryGroupIndex === -1) {
+      copiedCategoryGroups.push({
+        id: classificationID,
+        categories: [category],
+      });
     } else {
-      copiedTerms.splice(termIndex, 1);
+      const copiedSelectedCategories = [
+        ...selectedCategories[categoryGroupIndex].categories,
+      ];
+      const categoryIndex = copiedSelectedCategories.indexOf(category);
+      if (categoryIndex === -1) {
+        copiedSelectedCategories.push(category);
+      } else {
+        copiedSelectedCategories.splice(categoryIndex, 1);
+      }
+      copiedCategoryGroups.splice(categoryGroupIndex, 1, {
+        id: classificationID,
+        categories: copiedSelectedCategories,
+      });
     }
-    const copiedMap = new Map(selectedClassificationTerms ?? []);
-    copiedMap.set(classificationID, { node: schemaNode, terms: copiedTerms });
-    onSelectTermsChange(copiedMap);
+
+    onSelectedCategoriesChange(copiedCategoryGroups);
   };
 
   /**
@@ -159,12 +160,10 @@ export const FacetSelector = ({
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
    * @param classificationID The name of a Classification
-   * @param schemaNode The Schema node of a Classification
    * @param facet A facet
    */
   const facetListItem = (
     classificationID: number,
-    schemaNode: string,
     facet: OEQ.SearchFacets.Facet
   ): ReactElement => {
     const { term } = facet;
@@ -174,13 +173,11 @@ export const FacetSelector = ({
           control={
             <Checkbox
               checked={
-                selectedClassificationTerms
-                  ?.get(classificationID)
-                  ?.terms.includes(term) ?? false
+                selectedCategories
+                  ?.find((c) => c.id === classificationID)
+                  ?.categories?.includes(term) ?? false
               }
-              onChange={() =>
-                handleSelectTerms(classificationID, schemaNode, term)
-              }
+              onChange={() => handleSelectCategories(classificationID, term)}
             />
           }
           label={facetLabel(facet)}
@@ -195,27 +192,34 @@ export const FacetSelector = ({
    *
    * @param id The ID of a Classification
    * @param categories A list of terms to build into a list
-   * @param schemaNode The Schema node of a Classification
    * @param maxDisplay Default maximum number of displayed facets
    * @param showMore Whether to show more facets or not
    */
   const listCategories = (
-    { id, categories, schemaNode, maxDisplay }: Classification,
+    { id, categories, maxDisplay }: Classification,
     showMore: boolean
   ): ReactElement[] => {
-    const selectedTerms = selectedClassificationTerms?.get(id)?.terms ?? [];
-    const selectedCategories = categories.filter((c) =>
-      selectedTerms.includes(c.term)
-    );
-    const unselectedCategories = categories.filter(
-      (c) => !selectedTerms.includes(c.term)
-    );
-    // Concatenate again to ensure selected ones have higher priority for display.
-    return selectedCategories
-      .concat(unselectedCategories)
+    const group = selectedCategories?.find((c) => c.id === id);
+    let orderedCategories: OEQ.SearchFacets.Facet[];
+    // If this Classification does not have any category selected, don't reorder its categories.
+    if (!group) {
+      orderedCategories = categories;
+    }
+    // Otherwise reorder to ensure displaying selected categories first.
+    else {
+      const selectedCategories = categories.filter((c) =>
+        group.categories.includes(c.term)
+      );
+      const unselectedCategories = categories.filter(
+        (c) => !group.categories.includes(c.term)
+      );
+      orderedCategories = selectedCategories.concat(unselectedCategories);
+    }
+    return orderedCategories
       .slice(0, showMore ? maxDisplay : undefined)
-      .map((facet) => facetListItem(id, schemaNode, facet));
+      .map((facet) => facetListItem(id, facet));
   };
+
   /**
    * Sort and build Classifications that have categories.
    * For each Classification, a scroll bar and a 'Show more' button may or may not
