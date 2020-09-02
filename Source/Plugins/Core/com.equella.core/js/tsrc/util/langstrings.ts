@@ -301,6 +301,8 @@ export const languageStrings = {
       done: "Done",
       yes: "Yes",
       no: "No",
+      showmore: "Show more",
+      showless: "Show less",
     },
     result: {
       success: "Saved successfully.",
@@ -337,9 +339,6 @@ export const languageStrings = {
       fiveyear: "Five years",
       week: "Week",
       day: "Day",
-    },
-    facetSelector: {
-      showMoreButton: "Show more",
     },
     filterOwner: {
       title: "Owner",

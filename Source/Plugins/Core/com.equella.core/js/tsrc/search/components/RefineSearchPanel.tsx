@@ -15,16 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ReactNode } from "react";
 import {
+  Button,
   Card,
   CardContent,
+  Collapse,
   Grid,
   List,
   ListItem,
   Typography,
 } from "@material-ui/core";
+import { FilterList } from "@material-ui/icons";
+import * as React from "react";
+import { ReactNode } from "react";
 import { languageStrings } from "../../util/langstrings";
 import { RefinePanelControlHeading } from "./RefinePanelControlHeading";
 
@@ -52,31 +55,81 @@ interface RefinePanelProps {
    * Child components rendered inside this panel.
    */
   controls: RefinePanelControl[];
+  /**
+   * Handler for when the show more/show less button is clicked
+   */
+  handleClick: (expansionState: boolean) => void;
+  /**
+   * Determines the current state of the filter expansion panel
+   */
+  panelExpanded: boolean;
+  /**
+   * True if filter icon should be shown next to the 'Show more' button
+   */
+  showFilterIcon: boolean;
 }
 
-export const RefineSearchPanel = ({ controls }: RefinePanelProps) => {
+export const RefineSearchPanel = ({
+  controls,
+  handleClick,
+  panelExpanded,
+  showFilterIcon,
+}: RefinePanelProps) => {
   const { title } = languageStrings.searchpage.refineSearchPanel;
+
+  const { showmore, showless } = languageStrings.common.action;
+
+  const [collectionControl, ...collapsedControls] = controls.filter(
+    (c) => !c.disabled
+  );
+
+  const collapsibleSection = (controls: RefinePanelControl[]) => {
+    return (
+      <>
+        <Collapse className="collapsibleRefinePanel" in={panelExpanded}>
+          <List>{controls.map((control) => renderRefineControl(control))}</List>
+        </Collapse>
+        <Button
+          fullWidth
+          onClick={() => handleClick(panelExpanded)}
+          endIcon={
+            showFilterIcon && !panelExpanded ? (
+              <FilterList
+                aria-label="collapsibleFiltersSet"
+                color="secondary"
+              />
+            ) : undefined
+          }
+        >
+          {panelExpanded ? showless : showmore}
+        </Button>
+      </>
+    );
+  };
+
+  const renderRefineControl = (control: RefinePanelControl) => {
+    return (
+      <ListItem key={control.title}>
+        <Grid
+          id={`RefineSearchPanel-${control.idSuffix}`}
+          container
+          direction="column"
+        >
+          <Grid item>
+            <RefinePanelControlHeading title={control.title} />
+          </Grid>
+          <Grid item>{control.component}</Grid>
+        </Grid>
+      </ListItem>
+    );
+  };
   return (
     <Card>
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <List>
-          {controls
-            .filter((c) => !c.disabled)
-            .map((control) => (
-              <ListItem key={control.title}>
-                <Grid
-                  id={`RefineSearchPanel-${control.idSuffix}`}
-                  container
-                  direction="column"
-                >
-                  <Grid item>
-                    <RefinePanelControlHeading title={control.title} />
-                  </Grid>
-                  <Grid item>{control.component}</Grid>
-                </Grid>
-              </ListItem>
-            ))}
+          {renderRefineControl(collectionControl)}
+          {collapsibleSection(collapsedControls)}
         </List>
       </CardContent>
     </Card>
