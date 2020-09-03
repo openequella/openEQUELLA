@@ -38,7 +38,7 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 

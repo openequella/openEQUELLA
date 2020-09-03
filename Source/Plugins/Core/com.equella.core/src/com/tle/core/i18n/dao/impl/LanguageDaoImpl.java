@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 @Bind(LanguageDao.class)
 @Singleton

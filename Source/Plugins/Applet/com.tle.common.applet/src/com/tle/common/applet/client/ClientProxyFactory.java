@@ -19,20 +19,15 @@
 package com.tle.common.applet.client;
 
 import com.tle.common.applet.SessionHolder;
-import com.tle.core.plugins.PluginAwareObjectInputStream;
-import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.springframework.remoting.httpinvoker.AbstractHttpInvokerRequestExecutor;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
-import org.springframework.remoting.support.RemoteInvocation;
+
+// TODO removed as a workaround to see if Spring 5 will work.
+// import org.springframework.remoting.httpinvoker.AbstractHttpInvokerRequestExecutor;
+// import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
+// import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
+// import org.springframework.remoting.support.RemoteInvocation;
 
 public final class ClientProxyFactory {
   public static <T> T createSessionProxy(ClientService client, Class<T> api, String service) {
@@ -51,37 +46,38 @@ public final class ClientProxyFactory {
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(Class<T> api, URL url) {
-    HttpInvokerProxyFactoryBean factory = new HttpInvokerProxyFactoryBean();
-    factory.setServiceUrl(url.toString());
-    factory.setServiceInterface(api);
-    AbstractHttpInvokerRequestExecutor requestExecutor =
-        new PluginAwareSimpleHttpInvokerRequestExecutor();
-    factory.setHttpInvokerRequestExecutor(requestExecutor);
-    factory.setBeanClassLoader(api.getClassLoader());
-    factory.afterPropertiesSet();
-    return (T) factory.getObject();
+    //    HttpInvokerProxyFactoryBean factory = new HttpInvokerProxyFactoryBean();
+    //    factory.setServiceUrl(url.toString());
+    //    factory.setServiceInterface(api);
+    //    AbstractHttpInvokerRequestExecutor requestExecutor =
+    //        new PluginAwareSimpleHttpInvokerRequestExecutor();
+    //    factory.setHttpInvokerRequestExecutor(requestExecutor);
+    //    factory.setBeanClassLoader(api.getClassLoader());
+    //    factory.afterPropertiesSet();
+    //    return (T) factory.getObject();
+    return null;
   }
 
-  public static class PluginAwareSimpleHttpInvokerRequestExecutor
-      extends SimpleHttpInvokerRequestExecutor {
-    @Override
-    protected ObjectInputStream createObjectInputStream(InputStream is, String codebaseUrl)
-        throws IOException {
-      return new PluginAwareObjectInputStream(is);
-    }
-
-    @Override
-    protected void writeRemoteInvocation(RemoteInvocation invocation, OutputStream os)
-        throws IOException {
-      ObjectOutputStream oos = new PluginAwareObjectOutputStream(decorateOutputStream(os));
-      try {
-        doWriteRemoteInvocation(invocation, oos);
-        oos.flush();
-      } finally {
-        oos.close();
-      }
-    }
-  }
+  //  public static class PluginAwareSimpleHttpInvokerRequestExecutor
+  //      extends SimpleHttpInvokerRequestExecutor {
+  //    @Override
+  //    protected ObjectInputStream createObjectInputStream(InputStream is, String codebaseUrl)
+  //        throws IOException {
+  //      return new PluginAwareObjectInputStream(is);
+  //    }
+  //
+  //    @Override
+  //    protected void writeRemoteInvocation(RemoteInvocation invocation, OutputStream os)
+  //        throws IOException {
+  //      ObjectOutputStream oos = new PluginAwareObjectOutputStream(decorateOutputStream(os));
+  //      try {
+  //        doWriteRemoteInvocation(invocation, oos);
+  //        oos.flush();
+  //      } finally {
+  //        oos.close();
+  //      }
+  //    }
+  //  }
 
   @SuppressWarnings("unchecked")
   private static <T> T create(SessionHolder session, Class<T> api, Object iface) {

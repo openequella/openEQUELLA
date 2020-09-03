@@ -26,7 +26,7 @@ import java.util.Date;
 import javax.inject.Singleton;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 @Bind(HarvesterProfileDao.class)
 @Singleton
