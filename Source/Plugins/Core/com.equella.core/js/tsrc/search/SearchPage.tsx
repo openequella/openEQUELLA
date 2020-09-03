@@ -27,7 +27,7 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
-import { Collection } from "../modules/CollectionsModule";
+import type { Collection } from "../modules/CollectionsModule";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
