@@ -40,7 +40,7 @@ const useStyles = makeStyles({
     overflow: "auto",
   },
 });
-export interface FacetSelectorProps {
+export interface GategorySelectorProps {
   /**
    * A list of Classifications which will be rendered to sections for each
    * Classifications under which will be the categories as clickable checkboxes.
@@ -56,11 +56,11 @@ export interface FacetSelectorProps {
    */
   onSelectedCategoriesChange: (categories: SelectedCategories[]) => void;
 }
-export const FacetSelector = ({
+export const CategorySelector = ({
   classifications,
   selectedCategories = [],
   onSelectedCategoriesChange,
-}: FacetSelectorProps) => {
+}: GategorySelectorProps) => {
   const classes = useStyles();
   const [expandedClassifications, setExpandedClassifications] = useState<
     Map<number, boolean>
@@ -138,8 +138,8 @@ export const FacetSelector = ({
             onClick={() => onShowMore(classificationID, !expanded)}
           >
             {expanded
-              ? languageStrings.searchpage.facetSelector.showLessButton
-              : languageStrings.searchpage.facetSelector.showMoreButton}
+              ? languageStrings.searchpage.categorySelector.showLessButton
+              : languageStrings.searchpage.categorySelector.showMoreButton}
           </Button>
         </Grid>
       </Grid>
@@ -147,11 +147,11 @@ export const FacetSelector = ({
   );
 
   /**
-   * Generate texts in the format of 'term (count)' for displaying a facet.
-   * @param term The term of a facet
-   * @param count The count of a facet
+   * Generate texts in the format of 'term (count)' for displaying a Category.
+   * @param term The term of a category
+   * @param count The count of a category
    */
-  const facetLabel = ({
+  const categoryLabel = ({
     term,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
@@ -166,15 +166,15 @@ export const FacetSelector = ({
   );
 
   /**
-   * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
+   * Build a ListItem consisting of a MUI Checkbox and a Label for a category.
    * @param classificationID The ID of a Classification
-   * @param facet A facet
+   * @param category A category to be displayed
    */
-  const facetListItem = (
+  const categoryListItem = (
     classificationID: number,
-    facet: OEQ.SearchFacets.Facet
+    category: OEQ.SearchFacets.Facet
   ): ReactElement => {
-    const { term } = facet;
+    const { term } = category;
     return (
       <ListItem key={`${classificationID}:${term}`} style={{ padding: 0 }}>
         <FormControlLabel
@@ -188,7 +188,7 @@ export const FacetSelector = ({
               onChange={() => handleSelectCategories(classificationID, term)}
             />
           }
-          label={facetLabel(facet)}
+          label={categoryLabel(category)}
         />
       </ListItem>
     );
@@ -207,25 +207,25 @@ export const FacetSelector = ({
     { id, categories, maxDisplay }: Classification,
     expanded: boolean
   ): ReactElement[] => {
-    const group = selectedCategories?.find((c) => c.id === id);
+    const categoryGroup = selectedCategories?.find((c) => c.id === id);
     let orderedCategories: OEQ.SearchFacets.Facet[];
     // If this Classification does not have any category selected, don't reorder its categories.
-    if (!group) {
+    if (!categoryGroup) {
       orderedCategories = categories;
     }
     // Otherwise reorder to ensure displaying selected categories first.
     else {
       const selectedCategories = categories.filter((c) =>
-        group.categories.includes(c.term)
+        categoryGroup.categories.includes(c.term)
       );
       const unselectedCategories = categories.filter(
-        (c) => !group.categories.includes(c.term)
+        (c) => !categoryGroup.categories.includes(c.term)
       );
       orderedCategories = selectedCategories.concat(unselectedCategories);
     }
     return orderedCategories
       .slice(0, expanded ? undefined : maxDisplay)
-      .map((facet) => facetListItem(id, facet));
+      .map((facet) => categoryListItem(id, facet));
   };
 
   /**

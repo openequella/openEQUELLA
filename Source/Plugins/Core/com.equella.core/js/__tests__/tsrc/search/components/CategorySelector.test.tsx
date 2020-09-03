@@ -25,15 +25,15 @@ import {
   getAllByRole,
 } from "@testing-library/react";
 import { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
-import { FacetSelector } from "../../../../tsrc/search/components/FacetSelector";
-import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
+import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
+import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
 import "@testing-library/jest-dom/extend-expect";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
 
-describe("<FacetSelector />", () => {
+describe("<CategorySelector />", () => {
   // Mocked callbacks
-  const onSelectTermsChange = jest.fn();
+  const onSelectedCategoriesChange = jest.fn();
 
   // Mocked Classifications
   const CITY = "City";
@@ -43,14 +43,14 @@ describe("<FacetSelector />", () => {
   const HOBART = "Hobart";
 
   // The text of 'SHOW MORE' and 'SHOW LESS' buttons
-  const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
-  const SHOW_LESS = languageStrings.searchpage.facetSelector.showLessButton;
+  const SHOW_MORE = languageStrings.searchpage.categorySelector.showMoreButton;
+  const SHOW_LESS = languageStrings.searchpage.categorySelector.showLessButton;
 
-  const renderFacetSelector = () =>
+  const renderCategorySelector = () =>
     render(
-      <FacetSelector
-        classifications={FacetSelectorMock.classifications}
-        onSelectedCategoriesChange={onSelectTermsChange}
+      <CategorySelector
+        classifications={CategorySelectorMock.classifications}
+        onSelectedCategoriesChange={onSelectedCategoriesChange}
       />
     );
 
@@ -69,7 +69,7 @@ describe("<FacetSelector />", () => {
 
   let page: RenderResult;
   beforeEach(() => {
-    page = renderFacetSelector();
+    page = renderCategorySelector();
   });
 
   it("should display a list of classifications that have categories", () => {
@@ -123,6 +123,8 @@ describe("<FacetSelector />", () => {
     ];
     const hobart = getByText(page.container, HOBART, { selector: "p" });
     fireEvent.click(hobart);
-    expect(onSelectTermsChange).toHaveBeenLastCalledWith(selectedCategories);
+    expect(onSelectedCategoriesChange).toHaveBeenLastCalledWith(
+      selectedCategories
+    );
   });
 });

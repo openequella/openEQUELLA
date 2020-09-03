@@ -65,7 +65,7 @@ export interface SearchOptions {
    */
   status?: OEQ.Common.ItemStatus[];
   /**
-   * A list of categories selected in the Facet Selector and grouped by Classification ID.
+   * A list of categories selected in the Category Selector and grouped by Classification ID.
    */
   selectedCategories?: SelectedCategories[];
   /**
@@ -127,7 +127,7 @@ export const formatQuery = (query: string, addWildcard: boolean): string => {
  *
  * @param selectedCategories A list of selected Categories grouped by Classification ID.
  */
-export const generateFacetWhereQuery = (
+export const generateCategoryWhereQuery = (
   selectedCategories?: SelectedCategories[]
 ): string | undefined => {
   if (!selectedCategories || selectedCategories.length === 0) {
@@ -181,7 +181,7 @@ export const searchItems = ({
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
     searchAttachments: searchAttachments,
-    whereClause: generateFacetWhereQuery(selectedCategories),
+    whereClause: generateCategoryWhereQuery(selectedCategories),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };

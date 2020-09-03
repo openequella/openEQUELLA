@@ -44,7 +44,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { FacetSelector } from "./components/FacetSelector";
+import { CategorySelector } from "./components/CategorySelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -363,9 +363,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <Card>
               <CardContent>
                 <Typography variant="h5">
-                  {languageStrings.searchpage.facetSelector.title}
+                  {languageStrings.searchpage.categorySelector.title}
                 </Typography>
-                <FacetSelector
+                <CategorySelector
                   classifications={classifications}
                   onSelectedCategoriesChange={handleSelectedCategoriesChange}
                   selectedCategories={searchPageOptions.selectedCategories}

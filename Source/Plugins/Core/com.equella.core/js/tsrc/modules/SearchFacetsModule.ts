@@ -22,7 +22,7 @@ import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
 import {
   formatQuery,
-  generateFacetWhereQuery,
+  generateCategoryWhereQuery,
   SearchOptions,
 } from "./SearchModule";
 
@@ -106,7 +106,7 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
-      where: generateFacetWhereQuery(selectedCategories),
+      where: generateCategoryWhereQuery(selectedCategories),
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
@@ -120,6 +120,8 @@ const convertSearchOptions: (
 
 /**
  * Provides a list of categories as defined and filtered by the `options`.
+ * Categories that have empty terms will be filtered out, as although the server generates
+ * them, sending them back will generate a 500.
  *
  * @param options The control parameters for the generation of the categories
  */
@@ -128,7 +130,7 @@ export const listCategories = async (
 ): Promise<OEQ.SearchFacets.Facet[]> =>
   (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results.filter(
     (r) => r.term
-  ); // Filter out empty terms
+  );
 
 /**
  * Uses the system's configured facets/classifications to generate a set of categories for

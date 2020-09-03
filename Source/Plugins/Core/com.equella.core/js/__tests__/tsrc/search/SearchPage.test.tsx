@@ -36,10 +36,10 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import * as FacetSelectorMock from "../../../__mocks__/FacetSelector.mock";
+import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
-import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
+import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -75,7 +75,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
-mockListClassification.mockResolvedValue(FacetSelectorMock.classifications);
+mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,

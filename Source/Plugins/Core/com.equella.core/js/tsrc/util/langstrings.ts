@@ -338,7 +338,7 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
-    facetSelector: {
+    categorySelector: {
       title: "Classifications",
       showMoreButton: "Show more",
       showLessButton: "Show less",

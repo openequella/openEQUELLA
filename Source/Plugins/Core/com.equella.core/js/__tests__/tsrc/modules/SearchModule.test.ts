@@ -72,7 +72,7 @@ describe("SearchModule", () => {
     });
   });
 
-  describe("generateFacetWhereQuery", () => {
+  describe("generateCategoryWhereQuery", () => {
     const selectedCategories: SelectedCategories[] = [
       {
         id: 766942,
@@ -87,20 +87,20 @@ describe("SearchModule", () => {
     ];
     it("should generate a where clause for one category", () => {
       const singleCategory = [selectedCategories[1]];
-      expect(SearchModule.generateFacetWhereQuery(singleCategory)).toBe(
+      expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
         "/xml/item/city='Hobart'"
       );
     });
 
     it("should generate a where clause for multiple groups of categories", () => {
-      expect(SearchModule.generateFacetWhereQuery(selectedCategories)).toBe(
+      expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
         "/xml/item/language='Java' AND /xml/item/language='Scala' AND /xml/item/city='Hobart'"
       );
     });
   });
 
   it("should return undefined if no categories are selected", () => {
-    expect(SearchModule.generateFacetWhereQuery(undefined)).toBeUndefined();
-    expect(SearchModule.generateFacetWhereQuery([])).toBeUndefined();
+    expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
+    expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
   });
 });
