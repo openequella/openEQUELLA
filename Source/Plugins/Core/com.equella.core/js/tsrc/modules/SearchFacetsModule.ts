@@ -20,7 +20,11 @@ import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../config";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
-import { formatQuery, generateWhereQuery, SearchOptions } from "./SearchModule";
+import {
+  formatQuery,
+  generateFacetWhereQuery,
+  SearchOptions,
+} from "./SearchModule";
 
 /**
  * Represents a Classification and its generated categories ready for display.
@@ -89,7 +93,7 @@ const convertSearchOptions: (
       lastModifiedDateRange,
       owner,
       status,
-      classificationTerms,
+      selectedCategories,
       rawMode,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
@@ -102,7 +106,7 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
-      where: generateWhereQuery(classificationTerms),
+      where: generateFacetWhereQuery(selectedCategories),
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
