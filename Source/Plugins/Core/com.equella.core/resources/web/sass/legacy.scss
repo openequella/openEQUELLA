@@ -4158,7 +4158,8 @@ a.modal-control.modal-save {
 }
 
 .universalresourcedialog .modal-content {
-  height: calc(100% - (#{$modalFooterHeight} + #{$doubleMargin}));
+  //full size minus the height of the footer and it's margin, as well as the window margin
+  height: calc(100% - (#{$modalFooterHeight} + #{$doubleMargin * 2}));
 }
 
 .universalresourcedialog .modal-content-inner {
