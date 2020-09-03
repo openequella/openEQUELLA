@@ -51,6 +51,8 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
   0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
+$singleMargin: 8px;
+$doubleMargin: 16px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -5203,6 +5205,9 @@ button:focus {
     @include buttonShadowBorder;
     margin-top: $singleMargin;
     margin-bottom: $singleMargin;
+  }
+  #rmdfsgto_forceUpdate {
+    margin: $doubleMargin 0;
   }
   p {
     margin-left: 0;
