@@ -42,7 +42,8 @@ const useStyles = makeStyles({
 });
 export interface FacetSelectorProps {
   /**
-   * A list of available Classifications returned from server.
+   * A list of Classifications which will be rendered to sections for each
+   * Classifications under which will be the categories as clickable checkboxes.
    */
   classifications: Classification[];
   /**
@@ -61,14 +62,21 @@ export const FacetSelector = ({
   onSelectedCategoriesChange,
 }: FacetSelectorProps) => {
   const classes = useStyles();
-  const [showMoreMap, setShowMoreMap] = useState<Map<number, boolean>>(
-    new Map(classifications.map((classification) => [classification.id, true]))
+  const [expandedClassifications, setExpandedClassifications] = useState<
+    Map<number, boolean>
+  >(
+    new Map(classifications.map((classification) => [classification.id, false]))
   );
 
-  const onShowMore = (classificationID: number, showMore: boolean) => {
-    const copiedMap = new Map(showMoreMap);
-    copiedMap.set(classificationID, showMore);
-    setShowMoreMap(copiedMap);
+  /**
+   * Handler for clicking the 'SHOW MORE' and 'SHOW LESS' buttons.
+   * @param classificationID The ID of a Classification whose SHOW MORE' and 'SHOW LESS' buttons is clicked.
+   * @param expanded Whether the section of this Classification is expanded or not.
+   */
+  const onShowMore = (classificationID: number, expanded: boolean) => {
+    const copiedMap = new Map(expandedClassifications);
+    copiedMap.set(classificationID, expanded);
+    setExpandedClassifications(copiedMap);
   };
   /**
    * The list of selected categories are grouped by Classification ID.
@@ -116,22 +124,22 @@ export const FacetSelector = ({
   /**
    * Create a button to show more/less categories for each Classification.
    * @param classificationID The ID of a Classification.
-   * @param showMore Whether to display 'Show more' or 'Show less'.
+   * @param expanded Whether the section of a Classification has been expanded or not.
    */
   const showMoreButton = (
     classificationID: number,
-    showMore: boolean
+    expanded: boolean
   ): ReactElement => (
     <ListItem>
       <Grid container justify="center">
         <Grid item>
           <Button
             variant="text"
-            onClick={() => onShowMore(classificationID, !showMore)}
+            onClick={() => onShowMore(classificationID, !expanded)}
           >
-            {showMore
-              ? languageStrings.searchpage.facetSelector.showMoreButton
-              : languageStrings.searchpage.facetSelector.showLessButton}
+            {expanded
+              ? languageStrings.searchpage.facetSelector.showLessButton
+              : languageStrings.searchpage.facetSelector.showMoreButton}
           </Button>
         </Grid>
       </Grid>
@@ -159,7 +167,7 @@ export const FacetSelector = ({
 
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a facet.
-   * @param classificationID The name of a Classification
+   * @param classificationID The ID of a Classification
    * @param facet A facet
    */
   const facetListItem = (
@@ -193,11 +201,11 @@ export const FacetSelector = ({
    * @param id The ID of a Classification
    * @param categories A list of terms to build into a list
    * @param maxDisplay Default maximum number of displayed facets
-   * @param showMore Whether to show more facets or not
+   * @param expanded Whether to show more categories or not
    */
   const listCategories = (
     { id, categories, maxDisplay }: Classification,
-    showMore: boolean
+    expanded: boolean
   ): ReactElement[] => {
     const group = selectedCategories?.find((c) => c.id === id);
     let orderedCategories: OEQ.SearchFacets.Facet[];
@@ -216,7 +224,7 @@ export const FacetSelector = ({
       orderedCategories = selectedCategories.concat(unselectedCategories);
     }
     return orderedCategories
-      .slice(0, showMore ? maxDisplay : undefined)
+      .slice(0, expanded ? undefined : maxDisplay)
       .map((facet) => facetListItem(id, facet));
   };
 
@@ -233,7 +241,7 @@ export const FacetSelector = ({
     )
     .map((classification) => {
       const { id, name, categories, maxDisplay } = classification;
-      const showMore = showMoreMap.get(id) ?? true;
+      const expanded = expandedClassifications.get(id) ?? false;
       return (
         <ListItem divider key={id}>
           <Grid container direction="column">
@@ -243,10 +251,10 @@ export const FacetSelector = ({
             <Grid item>
               <List
                 dense
-                className={!showMore ? classes.classificationList : ""}
+                className={expanded ? classes.classificationList : ""}
               >
-                {listCategories(classification, showMore)}
-                {categories.length > maxDisplay && showMoreButton(id, showMore)}
+                {listCategories(classification, expanded)}
+                {categories.length > maxDisplay && showMoreButton(id, expanded)}
               </List>
             </Grid>
           </Grid>
