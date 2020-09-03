@@ -77,7 +77,7 @@ export const RefineSearchPanel = ({
 }: RefinePanelProps) => {
   const { title } = languageStrings.searchpage.refineSearchPanel;
 
-  const { showmore, showless } = languageStrings.common.action;
+  const { showMore, showLess } = languageStrings.common.action;
 
   const [collectionControl, ...collapsedControls] = controls.filter(
     (c) => !c.disabled
@@ -101,7 +101,7 @@ export const RefineSearchPanel = ({
             ) : undefined
           }
         >
-          {panelExpanded ? showless : showmore}
+          {panelExpanded ? showLess : showMore}
         </Button>
       </>
     );

@@ -329,11 +329,11 @@ describe("Collapsible refine filter section", () => {
 
   it("Should change button text when clicked", async () => {
     const expansionButton = page.getByText(
-      languageStrings.common.action.showmore
+      languageStrings.common.action.showMore
     );
     fireEvent.click(expansionButton);
     expect(expansionButton).toHaveTextContent(
-      languageStrings.common.action.showless
+      languageStrings.common.action.showLess
     );
   });
 });

@@ -110,7 +110,7 @@ export const FacetSelector = ({
       <Grid container justify="center">
         <Grid item>
           <Button variant="text" onClick={() => onShowMore(classificationID)}>
-            {languageStrings.common.action.showmore}
+            {languageStrings.common.action.showMore}
           </Button>
         </Grid>
       </Grid>

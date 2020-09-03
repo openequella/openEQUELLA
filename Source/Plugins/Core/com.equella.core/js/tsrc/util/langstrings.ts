@@ -301,8 +301,8 @@ export const languageStrings = {
       done: "Done",
       yes: "Yes",
       no: "No",
-      showmore: "Show more",
-      showless: "Show less",
+      showMore: "Show more",
+      showLess: "Show less",
     },
     result: {
       success: "Saved successfully.",
