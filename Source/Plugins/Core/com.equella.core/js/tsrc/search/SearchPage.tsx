@@ -26,6 +26,7 @@ import {
 import {
   Classification,
   listClassifications,
+  SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
@@ -43,7 +44,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { FacetSelector, NodeAndTerms } from "./components/FacetSelector";
+import { FacetSelector } from "./components/FacetSelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -157,7 +158,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       query: query,
       currentPage: 0,
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
@@ -165,7 +166,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
   };
 
@@ -192,14 +193,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       // When the mode is changed, the date range may also need to be updated.
       // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
       lastModifiedDateRange: dateRange,
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
     setSearchPageOptions({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleClearSearchOptions = () =>
@@ -212,21 +213,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSearchPageOptions({
       ...searchPageOptions,
       owner: { ...owner },
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleOwnerClear = () =>
     setSearchPageOptions({
       ...searchPageOptions,
       owner: undefined,
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
     setSearchPageOptions({
       ...searchPageOptions,
       status: [...status],
-      classificationTerms: undefined,
+      selectedCategories: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
@@ -236,13 +237,25 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const handleSelectedTermsChange = (
-    classificationTerms: Map<number, NodeAndTerms>
-  ) =>
+  const handleSelectedCategoriesChange = (
+    selectedCategories: SelectedCategories[]
+  ) => {
+    const getSchemaNode = (id: number) => {
+      const node = classifications.find((c) => c.id === id)?.schemaNode;
+      if (!node) {
+        throw new Error(`Unable to find schema node for classification ${id}.`);
+      }
+      return node;
+    };
+
     setSearchPageOptions({
       ...searchPageOptions,
-      classificationTerms: classificationTerms,
+      selectedCategories: selectedCategories.map((c) => ({
+        ...c,
+        schemaNode: getSchemaNode(c.id),
+      })),
     });
+  };
 
   const refinePanelControls: RefinePanelControl[] = [
     {
@@ -354,10 +367,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 </Typography>
                 <FacetSelector
                   classifications={classifications}
-                  onSelectTermsChange={handleSelectedTermsChange}
-                  selectedClassificationTerms={
-                    searchPageOptions.classificationTerms
-                  }
+                  onSelectedCategoriesChange={handleSelectedCategoriesChange}
+                  selectedCategories={searchPageOptions.selectedCategories}
                 />
               </CardContent>
             </Card>
