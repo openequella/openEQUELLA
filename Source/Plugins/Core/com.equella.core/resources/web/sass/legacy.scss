@@ -5207,7 +5207,12 @@ button:focus {
     margin-bottom: $singleMargin;
   }
   #rmdfsgto_forceUpdate {
+    display: flex;
     margin: $doubleMargin 0;
+    label {
+      vertical-align: center;
+      font-size: 16px;
+    }
   }
   p {
     margin-left: 0;
