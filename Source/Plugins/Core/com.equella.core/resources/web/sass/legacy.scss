@@ -5197,3 +5197,14 @@ label[for="password"] {
 button:focus {
   outline: lightgrey dashed 1px;
 }
+
+.manualdatafixes {
+  button {
+    @include buttonShadowBorder;
+    margin-top: $singleMargin;
+    margin-bottom: $singleMargin;
+  }
+  p {
+    margin-left: 0;
+  }
+}
