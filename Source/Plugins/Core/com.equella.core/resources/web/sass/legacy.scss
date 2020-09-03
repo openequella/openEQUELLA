@@ -1056,6 +1056,8 @@ Generic layout
 
 #fancybox-inner {
   display: grid;
+  width: max-content !important;
+  position: relative;
 }
 
 #selection-content-inner.search-layout .mainCols #col2 #selection-summary {
@@ -1069,6 +1071,17 @@ Generic layout
 
 #fancybox-outer {
   height: auto;
+  display: grid;
+  justify-content: center;
+  background: none;
+}
+
+#fancybox-img {
+  width: 100%;
+  height: auto;
+  max-width: 1000px;
+  max-height: 700px;
+  vertical-align: center;
 }
 
 #fancybox-inner button {
@@ -1328,6 +1341,7 @@ div[class*="fancy-bg"] {
   -moz-background-inline-policy: continuous;
   -moz-background-origin: padding;
   padding: 15px 0 0;
+  height: 100%;
   overflow-y: auto;
   /* See #6290 for why this is here */
   min-height: 0%;
@@ -2728,7 +2742,7 @@ html.wait {
     flex-direction: row;
     justify-content: flex-end;
   }
-
+  width: max-content;
   height: 600px;
 }
 
@@ -4144,7 +4158,7 @@ a.modal-control.modal-save {
 }
 
 .universalresourcedialog .modal-content {
-  height: 400px;
+  height: calc(100% - (#{$modalFooterHeight} + #{$doubleMargin}));
 }
 
 .universalresourcedialog .modal-content-inner {
@@ -4203,9 +4217,6 @@ div.universaliframe {
   overflow: hidden;
   height: 650px;
   width: 1250px;
-  // workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
-  // as this breaks the popup taxonomy selector
-  margin-left: -240px;
 }
 
 div.universaliframe iframe {
