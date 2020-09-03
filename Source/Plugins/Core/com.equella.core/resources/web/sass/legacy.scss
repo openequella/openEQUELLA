@@ -4108,6 +4108,41 @@ a.modal-control.modal-save {
   right: 394px;
 }
 
+.fileHandler {
+  @include buttonShadowBorder;
+  width: 1250px;
+  height: 668px;
+}
+
+.fileHandler
+  .modal-content
+  .modal-content-background
+  .modal-content-inner
+  .float-left {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  padding: 0;
+}
+
+.fileHandler .modal-content-inner {
+  border: none;
+}
+
+.fileHandler .attachment-details ~ .attachment-content {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.fileHandler .fileadd h3 {
+  //redundant string for handlers.file.title already in the dialog header
+  display: none;
+}
+
+.fileHandler .modal-content-inner {
+  padding-left: 0;
+}
+
 .universalresourcedialog .modal-content {
   height: 400px;
 }
