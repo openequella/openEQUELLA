@@ -50,7 +50,7 @@ import {
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import { SearchResultList } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
-import { isEqual } from "lodash";
+import { isEqual, pick } from "lodash";
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -197,24 +197,18 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Determines if any collapsible filters have been modified from their defaults
    */
   const areCollapsibleFiltersSet = (): boolean => {
-    const defaultCollapsibleFilters = (({
-      lastModifiedDateRange,
-      owner,
-      status,
-      searchAttachments,
-    }) => ({ lastModifiedDateRange, owner, status, searchAttachments }))(
-      defaultSearchOptions
-    );
+    const getCollapsibleOptions = (options: SearchOptions) =>
+      pick(options, [
+        "lastModifiedDateRange",
+        "owner",
+        "status",
+        "searchAttachments",
+      ]);
 
-    const currentCollapsibleFilters = (({
-      lastModifiedDateRange,
-      owner,
-      status,
-      searchAttachments,
-    }) => ({ lastModifiedDateRange, owner, status, searchAttachments }))(
-      searchPageOptions
+    return !isEqual(
+      getCollapsibleOptions(defaultSearchOptions),
+      getCollapsibleOptions(searchPageOptions)
     );
-    return !isEqual(defaultCollapsibleFilters, currentCollapsibleFilters);
   };
 
   const handlePageChanged = (page: number) =>
