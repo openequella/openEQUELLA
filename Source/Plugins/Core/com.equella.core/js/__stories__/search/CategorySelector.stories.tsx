@@ -21,7 +21,7 @@ import {
   CategorySelector,
   GategorySelectorProps,
 } from "../../tsrc/search/components/CategorySelector";
-import * as FacetSelectorMock from "../../__mocks__/FacetSelector.mock";
+import * as CategorySelectorMock from "../../__mocks__/CategorySelector.mock";
 import type { Meta, Story } from "@storybook/react";
 
 export default {
@@ -44,7 +44,7 @@ export const noTermsSelected: Story<GategorySelectorProps> = FacetSelectorTempla
   {}
 );
 noTermsSelected.args = {
-  classifications: FacetSelectorMock.classifications,
+  classifications: CategorySelectorMock.classifications,
 };
 
 export const termsSelected: Story<GategorySelectorProps> = FacetSelectorTemplate.bind(
