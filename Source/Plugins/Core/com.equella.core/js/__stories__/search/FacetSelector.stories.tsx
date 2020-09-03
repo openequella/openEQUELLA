@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { SelectedCategories } from "../../tsrc/modules/SearchFacetsModule";
 import {
   FacetSelector,
   FacetSelectorProps,
-  NodeAndTerms,
 } from "../../tsrc/search/components/FacetSelector";
 import * as FacetSelectorMock from "../../__mocks__/FacetSelector.mock";
 import type { Meta, Story } from "@storybook/react";
@@ -28,17 +28,17 @@ export default {
   title: "Search/FacetSelector",
   component: FacetSelector,
   argType: {
-    onSelectTermsChange: { action: "on select terms" },
+    onSelectedCategoriesChange: { action: "on select categories" },
   },
 } as Meta<FacetSelectorProps>;
 
 const FacetSelectorTemplate = (args: FacetSelectorProps) => (
   <FacetSelector {...args} />
 );
-const selectedClassificationTerms = new Map<number, NodeAndTerms>([
-  [766942, { node: "item/language", terms: ["scala"] }],
-  [766943, { node: "item/city", terms: ["Hobart"] }],
-]);
+const selectedCategories: SelectedCategories[] = [
+  { id: 766942, categories: ["scala", "java"] },
+  { id: 766943, categories: ["Hobart"] },
+];
 
 export const noTermsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bind(
   {}
@@ -52,5 +52,5 @@ export const termsSelected: Story<FacetSelectorProps> = FacetSelectorTemplate.bi
 );
 termsSelected.args = {
   ...noTermsSelected.args,
-  selectedClassificationTerms: selectedClassificationTerms,
+  selectedCategories: selectedCategories,
 };

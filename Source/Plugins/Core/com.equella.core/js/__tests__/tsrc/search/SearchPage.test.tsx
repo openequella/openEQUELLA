@@ -39,6 +39,7 @@ import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as FacetSelectorMock from "../../../__mocks__/FacetSelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -85,12 +86,9 @@ const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
 const JAVA_TERM = "java";
-const CLASSIFICATION_ID = 766942;
-const SCHEMA_NODE = "item/language";
-const termsMap = new Map([
-  [CLASSIFICATION_ID, { node: SCHEMA_NODE, terms: [JAVA_TERM] }],
-]);
-
+const mockSelectedCategories: SelectedCategories[] = [
+  { id: 766942, schemaNode: "/item/language", categories: [JAVA_TERM] },
+];
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -624,12 +622,12 @@ describe("<SearchPage/>", () => {
     });
   });
 
-  it("should search with selected Classification terms", async () => {
+  it("should search with selected Categories", async () => {
     selectTerm(page.container, JAVA_TERM);
     await waitForSearch();
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
-      classificationTerms: termsMap,
+      selectedCategories: mockSelectedCategories,
     });
   });
 
@@ -638,7 +636,7 @@ describe("<SearchPage/>", () => {
     await waitForSearch(); // The intention of this line is to avoid Jest act warning.
     expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
-      classificationTerms: termsMap,
+      selectedCategories: mockSelectedCategories,
     });
   });
 });

@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { generateWhereQuery } from "../../../tsrc/modules/SearchModule";
+import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
+import { generateFacetWhereQuery } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
@@ -72,12 +73,16 @@ describe("SearchModule", () => {
 
   it("should generate a Where clause for schema node and terms", () => {
     mockedSearch.mockReset();
-    const terms = new Map([
-      [1, { node: "/item/keywords/keyword", terms: ["Java", "Scala"] }],
-    ]);
-    const whereClause = generateWhereQuery(terms);
+    const selectedCategories: SelectedCategories[] = [
+      {
+        id: 766942,
+        schemaNode: "/item/language",
+        categories: ["Java", "Scala"],
+      },
+    ];
+    const whereClause = generateFacetWhereQuery(selectedCategories);
     expect(whereClause).toBe(
-      "/xml/item/keywords/keyword='Java' AND /xml/item/keywords/keyword='Scala'"
+      "/xml/item/language='Java' AND /xml/item/language='Scala'"
     );
   });
 });

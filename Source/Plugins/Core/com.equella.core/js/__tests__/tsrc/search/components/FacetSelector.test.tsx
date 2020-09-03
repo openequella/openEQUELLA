@@ -24,6 +24,7 @@ import {
   RenderResult,
   getAllByRole,
 } from "@testing-library/react";
+import { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
 import { FacetSelector } from "../../../../tsrc/search/components/FacetSelector";
 import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
 import "@testing-library/jest-dom/extend-expect";
@@ -35,15 +36,11 @@ describe("<FacetSelector />", () => {
 
   // Mocked Classifications
   const CITY = "City";
-  const CITY_ID = 766943;
   const LANGUAGE = "Language";
   const COLOR = "Color";
   // Mocked facet
   const HOBART = "Hobart";
-  const SCHEMA_NODE = "item/city";
-  const mockedSelectedTerms = new Map([
-    [CITY_ID, { node: SCHEMA_NODE, terms: [HOBART] }],
-  ]);
+
   // The text of 'SHOW MORE' and 'SHOW LESS' buttons
   const SHOW_MORE = languageStrings.searchpage.facetSelector.showMoreButton;
   const SHOW_LESS = languageStrings.searchpage.facetSelector.showLessButton;
@@ -52,7 +49,7 @@ describe("<FacetSelector />", () => {
     render(
       <FacetSelector
         classifications={FacetSelectorMock.classifications}
-        onSelectTermsChange={onSelectTermsChange}
+        onSelectedCategoriesChange={onSelectTermsChange}
       />
     );
 
@@ -127,10 +124,12 @@ describe("<FacetSelector />", () => {
     expect(classifications[1].textContent).toBe(LANGUAGE);
   });
 
-  it("should call onSelectTermsChange when a facet is selected", () => {
-    // Select the facet of Hobart.
+  it("should call onSelectedCategoriesChange when a facet is selected", () => {
+    const selectedCategories: SelectedCategories[] = [
+      { id: 766943, categories: ["Hobart"] },
+    ];
     const hobart = getByText(page.container, HOBART, { selector: "p" });
     fireEvent.click(hobart);
-    expect(onSelectTermsChange).toHaveBeenLastCalledWith(mockedSelectedTerms);
+    expect(onSelectTermsChange).toHaveBeenLastCalledWith(selectedCategories);
   });
 });
