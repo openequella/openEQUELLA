@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
-import { NodeAndTerms } from "../search/components/FacetSelector";
+import { SelectedCategories } from "./SearchFacetsModule";
 import { SortOrder } from "./SearchSettingsModule";
 import { Collection } from "./CollectionsModule";
 import { DateRange } from "../components/DateRangeSelector";
@@ -65,9 +65,9 @@ export interface SearchOptions {
    */
   status?: OEQ.Common.ItemStatus[];
   /**
-   * A map of selected Classifications and their terms.
+   * A list of categories selected in the Facet Selector and grouped by Classification ID.
    */
-  classificationTerms?: Map<number, NodeAndTerms>;
+  selectedCategories?: SelectedCategories[];
   /**
    * Whether to search attachments or not.
    */
@@ -125,22 +125,27 @@ export const formatQuery = (query: string, addWildcard: boolean): string => {
 /**
  * Generates a Where clause for search. Each condition is linked by a AND.
  *
- * @param classificationTerms A list of selected Classification terms.
+ * @param selectedCategories A list of selected Categories grouped by Classification ID.
  */
-export const generateWhereQuery = (
-  classificationTerms?: Map<number, NodeAndTerms>
+export const generateFacetWhereQuery = (
+  selectedCategories?: SelectedCategories[]
 ): string | undefined => {
-  if (!classificationTerms) {
+  if (!selectedCategories || selectedCategories.length === 0) {
     return undefined;
   }
+  // Convert a list of categories into a list of where clause search conditions.
+  // The format is "node='category'".
+  const processNodeTerms = (
+    categories: string[],
+    schemaNode?: string
+  ): string[] => categories.map((c) => `/xml${schemaNode}='${c}'`);
 
-  // Append '/xml' back to the schema node and generate a search condition for each term.
-  const processNodeTerms = ({ node, terms }: NodeAndTerms) =>
-    terms.map((t) => `/xml${node}='${t}'`);
-  // Concatenate all clauses with AND.
   const and = " AND ";
-  return Array.from(classificationTerms.values())
-    .flatMap(processNodeTerms)
+  // Concatenate all search conditions with AND.
+  return selectedCategories
+    .flatMap(({ schemaNode, categories }: SelectedCategories) =>
+      processNodeTerms(categories, schemaNode)
+    )
     .join(and);
 };
 
@@ -159,8 +164,8 @@ export const searchItems = ({
   lastModifiedDateRange,
   owner,
   status = liveStatuses,
-  classificationTerms,
   searchAttachments,
+  selectedCategories,
 }: SearchOptions): Promise<
   OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
 > => {
@@ -176,7 +181,7 @@ export const searchItems = ({
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
     searchAttachments: searchAttachments,
-    whereClause: generateWhereQuery(classificationTerms),
+    whereClause: generateFacetWhereQuery(selectedCategories),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
