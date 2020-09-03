@@ -29,6 +29,7 @@ import { FacetSelector } from "../../../../tsrc/search/components/FacetSelector"
 import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
 import "@testing-library/jest-dom/extend-expect";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { queryMuiButtonByText } from "../../MuiQueries";
 
 describe("<FacetSelector />", () => {
   // Mocked callbacks
@@ -66,19 +67,6 @@ describe("<FacetSelector />", () => {
     return classification;
   };
 
-  // Return a Classification's 'SHOW MORE'/'SHOW LESS' button.
-  const queryButton = (
-    container: HTMLElement,
-    classificationName: string,
-    buttonText: string
-  ) => {
-    const classification = getClassificationByName(
-      container,
-      classificationName
-    );
-    return queryByText(classification, buttonText);
-  };
-
   let page: RenderResult;
   beforeEach(() => {
     page = renderFacetSelector();
@@ -95,26 +83,31 @@ describe("<FacetSelector />", () => {
 
   it("should display the 'SHOW MORE' button when the number of categories is more than maximum display number", () => {
     // City can show more categories.
-    expect(queryButton(page.container, CITY, SHOW_MORE)).toBeInTheDocument();
+    expect(
+      queryMuiButtonByText(
+        getClassificationByName(page.container, CITY),
+        SHOW_MORE
+      )
+    ).toBeInTheDocument();
     // Language does not have more categories to show.
-    expect(queryButton(page.container, LANGUAGE, SHOW_MORE)).toBeNull();
+    expect(
+      queryMuiButtonByText(
+        getClassificationByName(page.container, LANGUAGE),
+        SHOW_MORE
+      )
+    ).toBeNull();
   });
 
   it("should show all categories and 'SHOW LESS' button when 'SHOW MORE' button is clicked", () => {
-    const showMoreButton = queryButton(page.container, CITY, SHOW_MORE);
+    const classification = getClassificationByName(page.container, CITY);
+    const showMoreButton = queryMuiButtonByText(classification, SHOW_MORE);
     if (!showMoreButton) {
-      throw new Error(
-        "Unable to find 'SHOW MORE' button for Classification City."
-      );
+      throw new Error("Unable to find 'SHOW MORE' button for Classification.");
     }
-    expect(
-      getAllByRole(getClassificationByName(page.container, CITY), "checkbox")
-    ).toHaveLength(2);
+    expect(getAllByRole(classification, "checkbox")).toHaveLength(2);
     fireEvent.click(showMoreButton);
-    expect(
-      getAllByRole(getClassificationByName(page.container, CITY), "checkbox")
-    ).toHaveLength(3);
-    expect(queryButton(page.container, CITY, SHOW_LESS)).toBeInTheDocument();
+    expect(getAllByRole(classification, "checkbox")).toHaveLength(3);
+    expect(queryMuiButtonByText(classification, SHOW_LESS)).toBeInTheDocument();
   });
 
   it("should sort Classifications based on their order indexes", () => {
