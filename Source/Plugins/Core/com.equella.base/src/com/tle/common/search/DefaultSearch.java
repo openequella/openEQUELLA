@@ -404,29 +404,26 @@ public class DefaultSearch extends VeryBasicSearch {
   }
 
   public static class QueryParser {
-    private final List<QueryToken> tokens;
+
     private final List<String> hilight;
 
     public QueryParser(String query) {
-      hilight = new ArrayList<String>();
-      tokens = new ArrayList<QueryToken>();
+      hilight = new ArrayList<>();
       parseQuery(query);
     }
 
     protected void parseQuery(final String query) {
       final List<QueryToken> newTokens = QueryToken.tokenize(query);
-      tokens.addAll(newTokens);
 
-      for (int i = 0; i < newTokens.size(); i++) {
-        final QueryToken qtok = newTokens.get(i);
+      for (final QueryToken qtok : newTokens) {
         final String token = qtok.token;
 
         boolean isFullWord = qtok.isaword;
-        isFullWord = isFullWord && !token.equalsIgnoreCase("AND"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.equalsIgnoreCase("OR"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.equalsIgnoreCase("NOT"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.startsWith("?"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.startsWith("*"); // $NON-NLS-1$
+        isFullWord = isFullWord && !token.equalsIgnoreCase("AND");
+        isFullWord = isFullWord && !token.equalsIgnoreCase("OR");
+        isFullWord = isFullWord && !token.equalsIgnoreCase("NOT");
+        isFullWord = isFullWord && !token.startsWith("?");
+        isFullWord = isFullWord && !token.startsWith("*");
 
         if (isFullWord) {
           hilight.add(token);
