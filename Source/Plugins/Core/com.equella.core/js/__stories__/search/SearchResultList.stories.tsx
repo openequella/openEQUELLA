@@ -56,7 +56,7 @@ EmptyResultListComponent.args = {
     count: emptySearch.available,
   },
   orderSelectProps: {
-    onChange: action("onChange called"),
+    onChange: action("orderSelect onChange called"),
     value: defaultSearchOptions.sortOrder,
   },
 };
