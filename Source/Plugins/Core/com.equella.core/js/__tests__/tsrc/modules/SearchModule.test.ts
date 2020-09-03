@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
-import { generateFacetWhereQuery } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
@@ -27,62 +26,81 @@ const mockedSearch = (OEQ.Search.search as jest.Mock<
 >).mockResolvedValue(getSearchResult);
 
 describe("SearchModule", () => {
-  it("should provide an list of items", async () => {
-    const searchResult = await SearchModule.searchItems(
-      SearchModule.defaultSearchOptions
-    );
-    expect(searchResult.available).toBe(12);
-    expect(searchResult.results).toHaveLength(12);
-  });
-
-  const validateSearchQuery = (expectedQuery: string) => {
-    const calls = mockedSearch.mock.calls;
-    const params = calls[0][1]; // Second parameter of the call is the 'params'
-    expect(params.query).toEqual(expectedQuery);
-  };
-
-  it("should not append a wildcard for a search which is empty when trimmed", async () => {
-    mockedSearch.mockReset();
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: "   ",
+  describe("searchItems", () => {
+    it("should provide an list of items", async () => {
+      const searchResult = await SearchModule.searchItems(
+        SearchModule.defaultSearchOptions
+      );
+      expect(searchResult.available).toBe(12);
+      expect(searchResult.results).toHaveLength(12);
     });
-    validateSearchQuery("");
-  });
 
-  it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
-    mockedSearch.mockReset();
-    const queryTerm = "non RAW";
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: queryTerm,
+    const validateSearchQuery = (expectedQuery: string) => {
+      const calls = mockedSearch.mock.calls;
+      const params = calls[0][1]; // Second parameter of the call is the 'params'
+      expect(params.query).toEqual(expectedQuery);
+    };
+
+    it("should not append a wildcard for a search which is empty when trimmed", async () => {
+      mockedSearch.mockReset();
+      await SearchModule.searchItems({
+        ...SearchModule.defaultSearchOptions,
+        query: "   ",
+      });
+      validateSearchQuery("");
     });
-    validateSearchQuery(`${queryTerm}*`);
-  });
 
-  it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
-    mockedSearch.mockReset();
-    const queryTerm = "RAW mode!";
-    await SearchModule.searchItems({
-      ...SearchModule.defaultSearchOptions,
-      query: queryTerm,
-      rawMode: true,
+    it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
+      mockedSearch.mockReset();
+      const queryTerm = "non RAW";
+      await SearchModule.searchItems({
+        ...SearchModule.defaultSearchOptions,
+        query: queryTerm,
+      });
+      validateSearchQuery(`${queryTerm}*`);
     });
-    validateSearchQuery(`${queryTerm}`);
+
+    it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
+      mockedSearch.mockReset();
+      const queryTerm = "RAW mode!";
+      await SearchModule.searchItems({
+        ...SearchModule.defaultSearchOptions,
+        query: queryTerm,
+        rawMode: true,
+      });
+      validateSearchQuery(`${queryTerm}`);
+    });
   });
 
-  it("should generate a Where clause for schema node and terms", () => {
-    mockedSearch.mockReset();
+  describe("generateFacetWhereQuery", () => {
     const selectedCategories: SelectedCategories[] = [
       {
         id: 766942,
         schemaNode: "/item/language",
         categories: ["Java", "Scala"],
       },
+      {
+        id: 766943,
+        schemaNode: "/item/city",
+        categories: ["Hobart"],
+      },
     ];
-    const whereClause = generateFacetWhereQuery(selectedCategories);
-    expect(whereClause).toBe(
-      "/xml/item/language='Java' AND /xml/item/language='Scala'"
-    );
+    it("should generate a where clause for one category", () => {
+      const singleCategory = [selectedCategories[1]];
+      expect(SearchModule.generateFacetWhereQuery(singleCategory)).toBe(
+        "/xml/item/city='Hobart'"
+      );
+    });
+
+    it("should generate a where clause for multiple groups of categories", () => {
+      expect(SearchModule.generateFacetWhereQuery(selectedCategories)).toBe(
+        "/xml/item/language='Java' AND /xml/item/language='Scala' AND /xml/item/city='Hobart'"
+      );
+    });
+  });
+
+  it("should return undefined if no categories are selected", () => {
+    expect(SearchModule.generateFacetWhereQuery(undefined)).toBeUndefined();
+    expect(SearchModule.generateFacetWhereQuery([])).toBeUndefined();
   });
 });
