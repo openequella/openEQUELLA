@@ -85,10 +85,6 @@ const defaultSearchPageOptions: SearchPageOptions = {
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
-const JAVA_TERM = "java";
-const mockSelectedCategories: SelectedCategories[] = [
-  { id: 766942, schemaNode: "/item/language", categories: [JAVA_TERM] },
-];
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -196,8 +192,8 @@ const changeQuery = async (
   });
 };
 
-const selectTerm = (container: HTMLElement, term: string) => {
-  userEvent.click(getByText(container, term));
+const clickCategory = (container: HTMLElement, category: string) => {
+  userEvent.click(getByText(container, category));
 };
 
 describe("Refine search by searching attachments", () => {
@@ -418,6 +414,11 @@ describe("Hide Refine Search controls", () => {
 });
 
 describe("<SearchPage/>", () => {
+  const JAVA_CATEGORY = "java";
+  const selectedCategories: SelectedCategories[] = [
+    { id: 766942, schemaNode: "/item/language", categories: [JAVA_CATEGORY] },
+  ];
+
   let page: RenderResult;
   beforeEach(async () => {
     page = await renderSearchPage();
@@ -623,20 +624,20 @@ describe("<SearchPage/>", () => {
   });
 
   it("should search with selected Categories", async () => {
-    selectTerm(page.container, JAVA_TERM);
+    clickCategory(page.container, JAVA_CATEGORY);
     await waitForSearch();
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
-      selectedCategories: mockSelectedCategories,
+      selectedCategories: selectedCategories,
     });
   });
 
-  it("should also update Classification list with selected terms", async () => {
-    selectTerm(page.container, JAVA_TERM);
+  it("should also update Classification list with selected categories", async () => {
+    clickCategory(page.container, JAVA_CATEGORY);
     await waitForSearch(); // The intention of this line is to avoid Jest act warning.
     expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
-      selectedCategories: mockSelectedCategories,
+      selectedCategories: selectedCategories,
     });
   });
 });
