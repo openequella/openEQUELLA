@@ -63,9 +63,9 @@ export interface SearchPageOptions extends SearchOptions {
 }
 
 /**
- * Type to keep track of values stored in history
+ * Structure of data stored in browser history state, to capture the current state of SearchPage
  */
-interface SearchHistoryProps {
+interface SearchPageHistoryState {
   /**
    * SearchPageOptions to store in history
    */
@@ -90,7 +90,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     dateRangeQuickModeEnabled: true,
   };
 
-  const defaultSearchPageHistory: SearchHistoryProps = {
+  const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
   };
@@ -98,11 +98,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    (history.location.state as SearchHistoryProps)?.searchPageOptions ??
+    (history.location.state as SearchPageHistoryState)?.searchPageOptions ??
       defaultSearchPageHistory.searchPageOptions
   );
   const [filterExpansion, setFilterExpansion] = useState(
-    (history.location.state as SearchHistoryProps)?.filterExpansion ??
+    (history.location.state as SearchPageHistoryState)?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<

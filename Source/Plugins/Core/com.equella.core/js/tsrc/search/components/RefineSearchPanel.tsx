@@ -79,7 +79,7 @@ export const RefineSearchPanel = ({
 
   const { showMore, showLess } = languageStrings.common.action;
 
-  const [collectionControl, ...collapsedControls] = controls.filter(
+  const [alwaysVisibleControl, ...collapsedControls] = controls.filter(
     (c) => !c.disabled
   );
 
@@ -128,7 +128,7 @@ export const RefineSearchPanel = ({
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <List>
-          {renderRefineControl(collectionControl)}
+          {renderRefineControl(alwaysVisibleControl)}
           {collapsibleSection(collapsedControls)}
         </List>
       </CardContent>
