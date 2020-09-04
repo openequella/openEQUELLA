@@ -54,6 +54,14 @@ import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
+import {
+  queryCollectionSelector,
+  queryDateRangeSelector,
+  queryOwnerSelector,
+  queryRefineSearchComponent,
+  querySearchAttachmentsSelector,
+  queryStatusSelector,
+} from "./SearchPageHelper";
 
 const SEARCHBAR_ID = "input[id='searchBar']";
 const RAW_SEARCH_TOGGLE_ID = "input[id='rawSearch']";
@@ -116,21 +124,6 @@ const renderSearchPage = async (): Promise<RenderResult> => {
 const reRenderSearchPage = async (page: RenderResult) => {
   page.unmount();
   return await renderSearchPage();
-};
-
-/**
- * Helper function to find individual Refine Search components based on the their `idSuffix`,
- * or return null if the component is not found.
- *
- * @param container The root container to start the search from
- * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
- */
-const queryRefineSearchComponent = (
-  container: Element,
-  componentSuffix: string
-): HTMLElement | null => {
-  const id = `#RefineSearchPanel-${componentSuffix}`;
-  return container.querySelector(id);
 };
 
 /**
@@ -297,6 +290,7 @@ describe("Refine search by Owner", () => {
     );
   });
 });
+
 describe("Collapsible refine filter section", () => {
   let page: RenderResult;
   beforeEach(async () => {
@@ -307,24 +301,27 @@ describe("Collapsible refine filter section", () => {
     jest.clearAllMocks();
   });
 
-  const getOwnerSelector = () =>
-    queryRefineSearchComponent(page.container, "OwnerSelector");
-  const getDateRangeSelector = () =>
-    queryRefineSearchComponent(page.container, "DateRangeSelector");
-  const getSearchAttachmentsSelector = () =>
-    queryRefineSearchComponent(page.container, "SearchAttachmentsSelector");
-  const getCollectionSelector = () =>
-    queryRefineSearchComponent(page.container, "CollectionSelector");
-
   it("Should contain the correct controls", async () => {
-    const collapsibleSection = page.container
-      .getElementsByClassName("collapsibleRefinePanel")
-      .item(0);
+    const pageContainer = page.container;
+    const findCollapsibleSection = page.container.getElementsByClassName(
+      "collapsibleRefinePanel"
+    );
+    expect(findCollapsibleSection).toHaveLength(1);
 
-    expect(collapsibleSection).toContainElement(getOwnerSelector());
-    expect(collapsibleSection).toContainElement(getDateRangeSelector());
-    expect(collapsibleSection).toContainElement(getSearchAttachmentsSelector());
-    expect(collapsibleSection).not.toContainElement(getCollectionSelector());
+    const collapsibleSection = findCollapsibleSection.item(0);
+
+    expect(collapsibleSection).toContainElement(
+      queryOwnerSelector(pageContainer)
+    );
+    expect(collapsibleSection).toContainElement(
+      queryDateRangeSelector(pageContainer)
+    );
+    expect(collapsibleSection).toContainElement(
+      querySearchAttachmentsSelector(pageContainer)
+    );
+    expect(collapsibleSection).not.toContainElement(
+      queryCollectionSelector(pageContainer)
+    );
   });
 
   it("Should change button text when clicked", async () => {
@@ -347,13 +344,9 @@ describe("Hide Refine Search controls", () => {
     jest.clearAllMocks();
   });
 
-  const getOwnerSelector = () =>
-    queryRefineSearchComponent(page.container, "OwnerSelector");
-  const getDateSelector = () =>
-    queryRefineSearchComponent(page.container, "DateRangeSelector");
-  const getStatusSelector = () =>
-    queryRefineSearchComponent(page.container, "StatusSelector");
-
+  const ownerSelector = () => queryOwnerSelector(page.container);
+  const dateSelector = () => queryDateRangeSelector(page.container);
+  const statusSelector = () => queryStatusSelector(page.container);
   const disableDateSelector = {
     ...SearchSettingsModule.defaultSearchSettings,
     searchingDisableDateModifiedFilter: true,
@@ -370,19 +363,19 @@ describe("Hide Refine Search controls", () => {
     // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
     [
       "Owner Selector",
-      getOwnerSelector,
+      ownerSelector,
       disableOwnerSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Date Selector",
-      getDateSelector,
+      dateSelector,
       disableDateSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Status Selector",
-      getStatusSelector,
+      statusSelector,
       SearchSettingsModule.defaultSearchSettings,
       enableStatusSelector,
     ],
