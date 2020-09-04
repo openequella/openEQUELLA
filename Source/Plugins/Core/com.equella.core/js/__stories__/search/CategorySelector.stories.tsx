@@ -27,7 +27,7 @@ import type { Meta, Story } from "@storybook/react";
 export default {
   title: "Search/CategorySelector",
   component: CategorySelector,
-  argType: {
+  argTypes: {
     onSelectedCategoriesChange: { action: "on select categories" },
   },
 } as Meta<CategorySelectorProps>;
