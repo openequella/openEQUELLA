@@ -56,15 +56,15 @@ interface RefinePanelProps {
    */
   controls: RefinePanelControl[];
   /**
-   * Handler for when the show more/show less button is clicked
+   * Handler for when the show more/show less button is clicked.
    */
   handleClick: (expansionState: boolean) => void;
   /**
-   * Determines the current state of the filter expansion panel
+   * Specifies whether the expansion panel should be expanded or collapsed.
    */
   panelExpanded: boolean;
   /**
-   * True if filter icon should be shown next to the 'Show more' button
+   * True if filter icon should be shown next to the 'Show more' button.
    */
   showFilterIcon: boolean;
 }
