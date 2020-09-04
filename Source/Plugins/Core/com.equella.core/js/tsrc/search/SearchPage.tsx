@@ -141,18 +141,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [searchPageOptions]);
 
   useEffect(() => {
-    manageSearchPageHistory();
-  }, [filterExpansion]);
-
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
-
-  const manageSearchPageHistory = () => {
     history.replace({
       ...history.location,
       state: { searchPageOptions, filterExpansion },
     });
+  }, [filterExpansion, pagedSearchResult]);
+
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
   };
 
   /**
@@ -163,7 +159,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchItems(searchPageOptions)
       .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
-        manageSearchPageHistory();
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
       })
