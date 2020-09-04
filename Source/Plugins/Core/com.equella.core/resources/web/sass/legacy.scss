@@ -54,6 +54,7 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 $modalFooterHeight: 50px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
+
 @mixin boxShadow {
   box-shadow: $boxShadow;
   -moz-box-shadow: $boxShadow;
@@ -5245,4 +5246,24 @@ label[for="password"] {
 
 button:focus {
   outline: lightgrey dashed 1px;
+}
+
+.manualdatafixes {
+  button {
+    @include buttonShadowBorder;
+    margin-top: $singleMargin;
+    margin-bottom: $singleMargin;
+  }
+  #rmdfsgto_forceUpdate {
+    // The radio buttons for the 'Generate thumbnails and previews' section
+    display: flex;
+    margin: $doubleMargin 0;
+    label {
+      vertical-align: center;
+      font-size: 16px;
+    }
+  }
+  p {
+    margin-left: 0;
+  }
 }
