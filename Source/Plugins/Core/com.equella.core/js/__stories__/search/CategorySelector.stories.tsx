@@ -19,20 +19,20 @@ import * as React from "react";
 import { SelectedCategories } from "../../tsrc/modules/SearchFacetsModule";
 import {
   CategorySelector,
-  GategorySelectorProps,
+  CategorySelectorProps,
 } from "../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../__mocks__/CategorySelector.mock";
 import type { Meta, Story } from "@storybook/react";
 
 export default {
-  title: "Search/FacetSelector",
+  title: "Search/CategorySelector",
   component: CategorySelector,
   argType: {
     onSelectedCategoriesChange: { action: "on select categories" },
   },
-} as Meta<GategorySelectorProps>;
+} as Meta<CategorySelectorProps>;
 
-const FacetSelectorTemplate = (args: GategorySelectorProps) => (
+const CategorySelectorTemplate = (args: CategorySelectorProps) => (
   <CategorySelector {...args} />
 );
 const selectedCategories: SelectedCategories[] = [
@@ -40,17 +40,17 @@ const selectedCategories: SelectedCategories[] = [
   { id: 766943, categories: ["Hobart"] },
 ];
 
-export const noTermsSelected: Story<GategorySelectorProps> = FacetSelectorTemplate.bind(
+export const noCategoriesSelected: Story<CategorySelectorProps> = CategorySelectorTemplate.bind(
   {}
 );
-noTermsSelected.args = {
+noCategoriesSelected.args = {
   classifications: CategorySelectorMock.classifications,
 };
 
-export const termsSelected: Story<GategorySelectorProps> = FacetSelectorTemplate.bind(
+export const categoriesSelected: Story<CategorySelectorProps> = CategorySelectorTemplate.bind(
   {}
 );
-termsSelected.args = {
-  ...noTermsSelected.args,
+categoriesSelected.args = {
+  ...noCategoriesSelected.args,
   selectedCategories: selectedCategories,
 };

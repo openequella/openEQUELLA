@@ -27,7 +27,7 @@ const mockedSearch = (OEQ.Search.search as jest.Mock<
 
 describe("SearchModule", () => {
   describe("searchItems", () => {
-    it("should provide an list of items", async () => {
+    it("should provide a list of items", async () => {
       const searchResult = await SearchModule.searchItems(
         SearchModule.defaultSearchOptions
       );
@@ -85,6 +85,7 @@ describe("SearchModule", () => {
         categories: ["Hobart"],
       },
     ];
+
     it("should generate a where clause for one category", () => {
       const singleCategory = [selectedCategories[1]];
       expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(

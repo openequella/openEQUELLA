@@ -40,7 +40,8 @@ const useStyles = makeStyles({
     overflow: "auto",
   },
 });
-export interface GategorySelectorProps {
+
+export interface CategorySelectorProps {
   /**
    * A list of Classifications which will be rendered to sections for each
    * Classifications under which will be the categories as clickable checkboxes.
@@ -56,11 +57,12 @@ export interface GategorySelectorProps {
    */
   onSelectedCategoriesChange: (categories: SelectedCategories[]) => void;
 }
+
 export const CategorySelector = ({
   classifications,
   selectedCategories = [],
   onSelectedCategoriesChange,
-}: GategorySelectorProps) => {
+}: CategorySelectorProps) => {
   const classes = useStyles();
   const [expandedClassifications, setExpandedClassifications] = useState<
     Map<number, boolean>
@@ -78,6 +80,7 @@ export const CategorySelector = ({
     copiedMap.set(classificationID, expanded);
     setExpandedClassifications(copiedMap);
   };
+
   /**
    * The list of selected categories are grouped by Classification ID.
    * If there is a group matching the ID, then update this group's selected categories,
@@ -148,16 +151,16 @@ export const CategorySelector = ({
 
   /**
    * Generate texts in the format of 'term (count)' for displaying a Category.
-   * @param term The term of a category
+   * @param category The text of a category
    * @param count The count of a category
    */
   const categoryLabel = ({
-    term,
+    term: category,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
     <Grid container spacing={1}>
       <Grid item>
-        <Typography>{term}</Typography>
+        <Typography>{category}</Typography>
       </Grid>
       <Grid item>
         <Typography color="textSecondary">{`(${count})`}</Typography>
