@@ -5151,7 +5151,7 @@
   <!-- Let 2020.1 know v20192.RemoveLastKnownUserConstraint-->
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveLastKnownUserConstraint20192">
     <parameter id="id" value="com.tle.core.institution.migration.v20192.RemoveLastKnownUserConstraint" />
-    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20192.RemoveLastKnownUserConstraint" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20201.RemoveLastKnownUserConstraint" />
     <parameter id="date" value="2020-06-15" />
     <parameter id="obsoletedby" value="com.tle.core.institution.migration.v20201.RemoveLastKnownUserConstraint" />
   </extension>
