@@ -210,23 +210,25 @@ export const CategorySelector = ({
     { id, categories, maxDisplay }: Classification,
     expanded: boolean
   ): ReactElement[] => {
-    const categoryGroup = selectedCategories?.find((c) => c.id === id);
-    let orderedCategories: OEQ.SearchFacets.Facet[];
-    // If this Classification does not have any category selected, don't reorder its categories.
-    if (!categoryGroup) {
-      orderedCategories = categories;
-    }
-    // Otherwise reorder to ensure displaying selected categories first.
-    else {
-      const selectedCategories = categories.filter((c) =>
-        categoryGroup.categories.includes(c.term)
-      );
-      const unselectedCategories = categories.filter(
-        (c) => !categoryGroup.categories.includes(c.term)
-      );
-      orderedCategories = selectedCategories.concat(unselectedCategories);
-    }
-    return orderedCategories
+    const selectedTerms: string[] =
+      selectedCategories?.find((c) => c.id === id)?.categories ?? [];
+    const selectedFacets: OEQ.SearchFacets.Facet[] = selectedTerms.map(
+      (selectedTerm) => {
+        const facet = categories.find((c) => selectedTerm === c.term);
+        if (!facet) {
+          throw new Error(
+            "Data integrity issue, we're unable to match a selected term."
+          );
+        }
+
+        return facet;
+      }
+    );
+    const orderedFacets = selectedFacets.concat(
+      categories.filter((c) => !selectedFacets.includes(c))
+    );
+
+    return orderedFacets
       .slice(0, expanded ? undefined : maxDisplay)
       .map((facet) => categoryListItem(id, facet));
   };
