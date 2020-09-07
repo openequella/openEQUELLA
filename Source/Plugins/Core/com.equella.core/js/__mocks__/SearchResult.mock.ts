@@ -16,15 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import * as _ from "lodash";
+import { v4 as uuidv4 } from "uuid";
 
-exports.getEmptySearchResult = {
+export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
   length: 0,
   available: 0,
   results: [],
+  highlight: [],
 };
 
-exports.getSearchResult = {
+export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
   length: 10,
   available: 12,
@@ -296,11 +300,12 @@ exports.getSearchResult = {
       },
     },
   ],
+  highlight: [],
 };
 
-const { v4: uuidv4 } = require("uuid");
-const _ = require("lodash");
-exports.getSearchResultsCustom = (numberOfResults) => ({
+export const getSearchResultsCustom = (
+  numberOfResults: number
+): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => ({
   start: 0,
   length: 10,
   available: numberOfResults,

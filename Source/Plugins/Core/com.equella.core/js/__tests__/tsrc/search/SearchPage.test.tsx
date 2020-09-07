@@ -34,7 +34,7 @@ import {
   getEmptySearchResult,
   getSearchResult,
   getSearchResultsCustom,
-} from "../../../__mocks__/getSearchResult";
+} from "../../../__mocks__/SearchResult.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";

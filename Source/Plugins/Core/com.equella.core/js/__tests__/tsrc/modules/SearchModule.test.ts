@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
-import { getSearchResult } from "../../../__mocks__/getSearchResult";
 
 jest.mock("@openequella/rest-api-client");
 const mockedSearch = (OEQ.Search.search as jest.Mock<
-  Promise<OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>>
+  Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >).mockResolvedValue(getSearchResult);
 
 describe("SearchModule", () => {
