@@ -147,7 +147,7 @@ const FacetDialog = ({
         />
         <SchemaSelector
           setSchemaNode={(node) => {
-            setSchemaNode(node);
+            setSchemaNode(node.replace("/xml", ""));
           }}
         />
       </DialogContent>

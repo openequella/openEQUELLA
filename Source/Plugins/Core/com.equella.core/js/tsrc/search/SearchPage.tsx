@@ -22,8 +22,14 @@ import {
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
+
+import {
+  Classification,
+  listClassifications,
+  SelectedCategories,
+} from "../modules/SearchFacetsModule";
 import { languageStrings } from "../util/langstrings";
-import { Grid } from "@material-ui/core";
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import {
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -38,6 +44,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import { CategorySelector } from "./components/CategorySelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -85,6 +92,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
+  const [classifications, setClassifications] = useState<Classification[]>([]);
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -103,15 +111,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   }, []);
 
-  /**
-   * Trigger a search when state values change, but skip the initial values.
-   */
   const isInitialSearch = useRef(true);
+  // Trigger a search when Search options get changed, but skip the initial values.
   useEffect(() => {
     if (isInitialSearch.current) {
       isInitialSearch.current = false;
     } else {
       search();
+    }
+  }, [searchPageOptions]);
+
+  // When Search options get changed, also update the Classification list.
+  useEffect(() => {
+    if (!isInitialSearch.current) {
+      listClassifications(searchPageOptions).then((classifications) =>
+        setClassifications(classifications)
+      );
     }
   }, [searchPageOptions]);
 
@@ -143,6 +158,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       query: query,
       currentPage: 0,
+      selectedCategories: undefined,
     });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
@@ -150,6 +166,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
+      selectedCategories: undefined,
     });
   };
 
@@ -176,12 +193,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       // When the mode is changed, the date range may also need to be updated.
       // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
       lastModifiedDateRange: dateRange,
+      selectedCategories: undefined,
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
     setSearchPageOptions({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
+      selectedCategories: undefined,
     });
 
   const handleClearSearchOptions = () =>
@@ -194,18 +213,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSearchPageOptions({
       ...searchPageOptions,
       owner: { ...owner },
+      selectedCategories: undefined,
     });
 
   const handleOwnerClear = () =>
     setSearchPageOptions({
       ...searchPageOptions,
       owner: undefined,
+      selectedCategories: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
     setSearchPageOptions({
       ...searchPageOptions,
       status: [...status],
+      selectedCategories: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
@@ -214,6 +236,27 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchAttachments: searchAttachments,
     });
   };
+
+  const handleSelectedCategoriesChange = (
+    selectedCategories: SelectedCategories[]
+  ) => {
+    const getSchemaNode = (id: number) => {
+      const node = classifications.find((c) => c.id === id)?.schemaNode;
+      if (!node) {
+        throw new Error(`Unable to find schema node for classification ${id}.`);
+      }
+      return node;
+    };
+
+    setSearchPageOptions({
+      ...searchPageOptions,
+      selectedCategories: selectedCategories.map((c) => ({
+        ...c,
+        schemaNode: getSchemaNode(c.id),
+      })),
+    });
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -312,7 +355,25 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Grid>
 
       <Grid item xs={3}>
-        <RefineSearchPanel controls={refinePanelControls} />
+        <Grid container direction="column" spacing={2}>
+          <Grid item>
+            <RefineSearchPanel controls={refinePanelControls} />
+          </Grid>
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography variant="h5">
+                  {languageStrings.searchpage.categorySelector.title}
+                </Typography>
+                <CategorySelector
+                  classifications={classifications}
+                  onSelectedCategoriesChange={handleSelectedCategoriesChange}
+                  selectedCategories={searchPageOptions.selectedCategories}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

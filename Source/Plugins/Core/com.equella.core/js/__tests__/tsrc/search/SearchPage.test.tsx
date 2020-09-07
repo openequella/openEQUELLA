@@ -36,8 +36,10 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/getSearchResult";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -45,6 +47,7 @@ import {
 } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
+import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -56,6 +59,10 @@ import {
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
+const mockListClassification = jest.spyOn(
+  SearchFacetsModule,
+  "listClassifications"
+);
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
@@ -68,6 +75,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -77,7 +85,6 @@ const defaultSearchPageOptions: SearchPageOptions = {
 const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
-
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -183,6 +190,10 @@ const changeQuery = async (
     expect(_queryBar()).toHaveDisplayValue(query);
     jest.advanceTimersByTime(1000);
   });
+};
+
+const clickCategory = (container: HTMLElement, category: string) => {
+  userEvent.click(getByText(container, category));
 };
 
 describe("Refine search by searching attachments", () => {
@@ -403,6 +414,11 @@ describe("Hide Refine Search controls", () => {
 });
 
 describe("<SearchPage/>", () => {
+  const JAVA_CATEGORY = "java";
+  const selectedCategories: SelectedCategories[] = [
+    { id: 766942, schemaNode: "/item/language", categories: [JAVA_CATEGORY] },
+  ];
+
   let page: RenderResult;
   beforeEach(async () => {
     page = await renderSearchPage();
@@ -604,6 +620,24 @@ describe("<SearchPage/>", () => {
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       collections: [targetCollection],
+    });
+  });
+
+  it("should search with selected Categories", async () => {
+    clickCategory(page.container, JAVA_CATEGORY);
+    await waitForSearch();
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      selectedCategories: selectedCategories,
+    });
+  });
+
+  it("should also update Classification list with selected categories", async () => {
+    clickCategory(page.container, JAVA_CATEGORY);
+    await waitForSearch(); // The intention of this line is to avoid Jest act warning.
+    expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      selectedCategories: selectedCategories,
     });
   });
 });

@@ -35,6 +35,7 @@ const CLASSIFICATION_KEYWORD: Facet = {
   name: "Classification 2",
   schemaNode: "/item/keyword",
   orderIndex: 1,
+  maxResults: 10,
 };
 const CATEGORIES_SUBJECT: OEQ.SearchFacets.Facet[] = [
   { term: "subject1", count: 10 },
@@ -111,6 +112,7 @@ describe("SearchFacetsModule", () => {
         maxDisplay: CLASSIFICATION_SUBJECT.maxResults,
         categories: CATEGORIES_SUBJECT,
         orderIndex: CLASSIFICATION_SUBJECT.orderIndex,
+        schemaNode: CLASSIFICATION_SUBJECT.schemaNode,
       },
       {
         id: CLASSIFICATION_KEYWORD.id,
@@ -118,12 +120,13 @@ describe("SearchFacetsModule", () => {
         maxDisplay: CLASSIFICATION_KEYWORD.maxResults,
         categories: CATEGORIES_KEYWORD,
         orderIndex: CLASSIFICATION_KEYWORD.orderIndex,
+        schemaNode: CLASSIFICATION_KEYWORD.schemaNode,
       },
     ] as Classification[]);
     // ... and that the SearchOptions are correctly converted
     expect(mockedSearchFacets).toHaveBeenLastCalledWith("api", {
       nodes: [CLASSIFICATION_KEYWORD.schemaNode],
-      q: queryString,
+      q: `${queryString}*`,
       collections: collections,
       modifiedAfter: dateStart,
       modifiedBefore: dateEnd,
