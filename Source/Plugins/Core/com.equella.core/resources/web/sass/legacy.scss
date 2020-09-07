@@ -3331,6 +3331,10 @@ i.icon-arrow-left {
   border-right: 1px solid #e8e8e8;
 }
 
+#fancybox-inner [id*="popupBrowserDialogwrap"] {
+  width: 1250px;
+}
+
 #termChooser.ui-tabs {
   border: none;
   border-right: 2px solid #e8e8e8;

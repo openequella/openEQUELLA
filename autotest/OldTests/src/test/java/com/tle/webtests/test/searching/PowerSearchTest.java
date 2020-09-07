@@ -229,7 +229,7 @@ public class PowerSearchTest extends AbstractCleanupAutoTest {
   @Test
   public void userSelector() {
     PowerSearchPage power = power();
-    power.selectUser(14).queryAndSelect("a", "AutoTest");
+    power.selectUser(14).queryAndSelect("au", "AutoTest");
     power.search();
     assertResults(FIRST);
   }
