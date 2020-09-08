@@ -133,18 +133,21 @@ export const generateCategoryWhereQuery = (
   if (!selectedCategories || selectedCategories.length === 0) {
     return undefined;
   }
-  // Convert a list of categories into a list of where clause search conditions.
-  // The format is "node='category'".
+
+  const and = " AND ";
+  const or = " OR ";
+  // Concatenate each selected category of one Classification by OR.
   const processNodeTerms = (
     categories: string[],
     schemaNode?: string
-  ): string[] => categories.map((c) => `/xml${schemaNode}='${c}'`);
+  ): string => categories.map((c) => `/xml${schemaNode}='${c}'`).join(or);
 
-  const and = " AND ";
-  // Concatenate all search conditions with AND.
+  // Concatenate each Classification that has categories selected by AND.
   return selectedCategories
-    .flatMap(({ schemaNode, categories }: SelectedCategories) =>
-      processNodeTerms(categories, schemaNode)
+    .filter((c) => c.categories.length > 0)
+    .map(
+      ({ schemaNode, categories }: SelectedCategories) =>
+        `(${processNodeTerms(categories, schemaNode)})`
     )
     .join(and);
 };
