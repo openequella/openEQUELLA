@@ -93,7 +93,6 @@ const convertSearchOptions: (
       lastModifiedDateRange,
       owner,
       status,
-      selectedCategories,
       rawMode,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
@@ -106,7 +105,6 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
-      where: generateCategoryWhereQuery(selectedCategories),
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
@@ -158,6 +156,10 @@ export const listClassifications = async (
         categories: await listCategories({
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
+          // Only use categories of other Classifications to generate a where clause.
+          where: generateCategoryWhereQuery(
+            options.selectedCategories?.filter((c) => c.id !== settings.id)
+          ),
         }),
         schemaNode: settings.schemaNode,
       })
