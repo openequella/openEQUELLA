@@ -212,21 +212,28 @@ export const CategorySelector = ({
   ): ReactElement[] => {
     const selectedTerms: string[] =
       selectedCategories?.find((c) => c.id === id)?.categories ?? [];
-    const selectedFacets: OEQ.SearchFacets.Facet[] = selectedTerms.map(
-      (selectedTerm) => {
-        const facet = categories.find((c) => selectedTerm === c.term);
-        if (!facet) {
-          throw new Error(
-            "Data integrity issue, we're unable to match a selected term."
-          );
-        }
 
-        return facet;
-      }
+    // Previously selected categories that still apply to current search criteria.
+    const selectedAndExist = categories.filter((c) =>
+      selectedTerms.includes(c.term)
     );
-    const orderedFacets = selectedFacets.concat(
-      categories.filter((c) => !selectedFacets.includes(c))
+
+    // Previously selected categories that do not apply to current search criteria.
+    // Their counts should be 0.
+    const selectedButDisappear = selectedTerms
+      .filter((t) => categories.every((c) => c.term !== t))
+      .map((t) => ({ term: t, count: 0 }));
+
+    // Categories that apply to current search criteria but have not been selected.
+    const noSelected = categories.filter(
+      (c) => !selectedTerms.includes(c.term)
     );
+    // The concatenating order is selectedAndExist -> selectedButDisappear -> noSelected.
+    const orderedFacets: OEQ.SearchFacets.Facet[] = [
+      ...selectedAndExist,
+      ...selectedButDisappear,
+      ...noSelected,
+    ];
 
     return orderedFacets
       .slice(0, expanded ? undefined : maxDisplay)
