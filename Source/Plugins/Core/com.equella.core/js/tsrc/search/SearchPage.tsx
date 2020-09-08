@@ -359,20 +359,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <Grid item>
             <RefineSearchPanel controls={refinePanelControls} />
           </Grid>
-          <Grid item>
-            <Card>
-              <CardContent>
-                <Typography variant="h5">
-                  {languageStrings.searchpage.categorySelector.title}
-                </Typography>
-                <CategorySelector
-                  classifications={classifications}
-                  onSelectedCategoriesChange={handleSelectedCategoriesChange}
-                  selectedCategories={searchPageOptions.selectedCategories}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+          {classifications.length > 0 && (
+            <Grid item>
+              <Card>
+                <CardContent>
+                  <Typography variant="h5">
+                    {languageStrings.searchpage.categorySelector.title}
+                  </Typography>
+                  <CategorySelector
+                    classifications={classifications}
+                    onSelectedCategoriesChange={handleSelectedCategoriesChange}
+                    selectedCategories={searchPageOptions.selectedCategories}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>
