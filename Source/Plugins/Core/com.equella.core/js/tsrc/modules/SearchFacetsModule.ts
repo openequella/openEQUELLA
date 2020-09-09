@@ -138,6 +138,9 @@ export const listCategories = async (
  * It is intended that this can be run alongside other search filters, and thereby provide
  * matching categories.
  *
+ * The where clause used for generating one Classification's category list should only include
+ * categories from other Classifications.
+ *
  * @param options The standard options used for searching, as these also filter the generated categories
  */
 export const listClassifications = async (
@@ -156,7 +159,6 @@ export const listClassifications = async (
         categories: await listCategories({
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
-          // Only use categories of other Classifications to generate a where clause.
           where: generateCategoryWhereQuery(
             options.selectedCategories?.filter((c) => c.id !== settings.id)
           ),
