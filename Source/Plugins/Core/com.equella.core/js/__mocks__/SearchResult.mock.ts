@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as _ from "lodash";
+import { range } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -309,7 +309,7 @@ export const getSearchResultsCustom = (
   start: 0,
   length: 10,
   available: numberOfResults,
-  results: _.range(numberOfResults).map((i) => ({
+  results: range(numberOfResults).map((i) => ({
     uuid: uuidv4(),
     name: `item ${i}`,
     version: 1,
