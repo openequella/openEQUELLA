@@ -213,26 +213,29 @@ export const CategorySelector = ({
     const selectedTerms: string[] =
       selectedCategories?.find((c) => c.id === id)?.categories ?? [];
 
-    // Previously selected categories that still apply to current search criteria.
-    const selectedAndExist = categories.filter((c) =>
-      selectedTerms.includes(c.term)
+    // Generate two arrays for previously selected categories. One for those still
+    // applicable and the other one for those not applicable.
+    const [selectedApplicable, selectedNotApplicable] = selectedTerms.reduce<
+      [OEQ.SearchFacets.Facet[], OEQ.SearchFacets.Facet[]]
+    >(
+      ([applicable, notApplicable], term) => {
+        const applicableCategory = categories.find((c) => c.term === term);
+        return applicableCategory
+          ? [applicable.concat(applicableCategory), notApplicable]
+          : [applicable, notApplicable.concat({ term: term, count: 0 })];
+      },
+      [[], []]
     );
-
-    // Previously selected categories that do not apply to current search criteria.
-    // Their counts should be 0.
-    const selectedButDisappear = selectedTerms
-      .filter((t) => categories.every((c) => c.term !== t))
-      .map((t) => ({ term: t, count: 0 }));
 
     // Categories that apply to current search criteria but have not been selected.
-    const noSelected = categories.filter(
+    const notSelected = categories.filter(
       (c) => !selectedTerms.includes(c.term)
     );
-    // The concatenating order is selectedAndExist -> selectedButDisappear -> noSelected.
+    // The concatenating order is selectedApplicable -> selectedNotApplicable -> notSelected.
     const orderedFacets: OEQ.SearchFacets.Facet[] = [
-      ...selectedAndExist,
-      ...selectedButDisappear,
-      ...noSelected,
+      ...selectedApplicable,
+      ...selectedNotApplicable,
+      ...notSelected,
     ];
 
     return orderedFacets
