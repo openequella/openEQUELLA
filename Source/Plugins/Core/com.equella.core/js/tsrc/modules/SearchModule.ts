@@ -102,11 +102,12 @@ export const defaultSearchOptions: SearchOptions = {
   searchAttachments: true,
 };
 
-export const defaultPagedSearchResult: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem> = {
+export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
   length: 10,
   available: 10,
   results: [],
+  highlight: [],
 };
 
 /**
@@ -167,7 +168,7 @@ export const searchItems = ({
   searchAttachments,
   selectedCategories,
 }: SearchOptions): Promise<
-  OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+  OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
 > => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   const searchParams: OEQ.Search.SearchParams = {

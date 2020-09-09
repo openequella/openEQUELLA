@@ -240,6 +240,32 @@ export interface SearchResultItem {
   };
 }
 
+/**
+ * Represents the results for a search query.
+ */
+export interface SearchResult<T> {
+  /**
+   * The starting offset into the total search results
+   */
+  start: number;
+  /**
+   * How many results can be found in `results`
+   */
+  length: number;
+  /**
+   * The maximum number of results available for paging
+   */
+  available: number;
+  /**
+   * The individual items which match the search
+   */
+  results: T[];
+  /**
+   * List of words to use to highlight when displaying the results
+   */
+  highlight: string[];
+}
+
 const SEARCH2_API_PATH = '/search2';
 
 /**
@@ -251,14 +277,14 @@ const SEARCH2_API_PATH = '/search2';
 export const search = (
   apiBasePath: string,
   params?: SearchParams
-): Promise<Common.PagedResult<SearchResultItem>> => {
-  return GET<Common.PagedResult<SearchResultItem>>(
+): Promise<SearchResult<SearchResultItem>> => {
+  return GET<SearchResult<SearchResultItem>>(
     apiBasePath + SEARCH2_API_PATH,
-    (data): data is Common.PagedResult<SearchResultItem> =>
-      is<Common.PagedResult<SearchResultItem>>(data),
+    (data): data is SearchResult<SearchResultItem> =>
+      is<SearchResult<SearchResultItem>>(data),
     params,
     (data) =>
-      Utils.convertDateFields<Common.PagedResult<SearchResultItem>>(data, [
+      Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
         'createdDate',
         'modifiedDate',
       ])

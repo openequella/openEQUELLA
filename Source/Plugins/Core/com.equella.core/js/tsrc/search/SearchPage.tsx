@@ -88,7 +88,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     (history.location.state as SearchPageOptions) ?? defaultSearchPageOptions
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
-    OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+    OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
@@ -140,7 +140,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const search = (): void => {
     setShowSpinner(true);
     searchItems(searchPageOptions)
-      .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
+      .then((items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
         history.replace({ ...history.location, state: searchPageOptions });
         // scroll back up to the top of the page

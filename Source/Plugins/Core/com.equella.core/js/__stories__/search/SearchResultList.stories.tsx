@@ -20,7 +20,7 @@ import * as React from "react";
 import {
   getEmptySearchResult as emptySearch,
   getSearchResult as singlePageSearch,
-} from "../../__mocks__/getSearchResult";
+} from "../../__mocks__/SearchResult.mock";
 import { defaultSearchOptions } from "../../tsrc/modules/SearchModule";
 import {
   SearchResultList,
