@@ -59,7 +59,7 @@ import "tinymce/plugins/toc";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
-import { RenderData } from "../mainui";
+import type { RenderData } from "../mainui";
 
 declare const renderData: RenderData | undefined;
 
