@@ -59,14 +59,9 @@ import "tinymce/plugins/toc";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import { RenderData } from "../mainui";
 
-declare const renderData:
-  | {
-      baseResources: string;
-      newUI: boolean;
-      autotestMode: boolean;
-    }
-  | undefined;
+declare const renderData: RenderData | undefined;
 
 // from https://github.com/tinymce/tinymce/blob/26b948ac85b75991ab9e50d0affdf4f5c0b34f65/modules/tinymce/src/core/main/ts/api/file/BlobCache.ts#L31-L39
 export interface BlobInfo {
