@@ -198,6 +198,44 @@ export const CategorySelector = ({
   };
 
   /**
+   * A category list of one Classification should include all categories that are
+   * applicable to current search criteria as well as categories that are not
+   * applicable but have been selected.
+   *
+   * The order is selectedApplicable -> selectedNotApplicable -> notSelected.
+   *
+   * @param id The ID of a Classification
+   * @param categories A list of categories to be ordered.
+   */
+  const getOrderedCategories = ({
+    id,
+    categories,
+  }: Classification): OEQ.SearchFacets.Facet[] => {
+    const selectedTerms: string[] =
+      selectedCategories?.find((c) => c.id === id)?.categories ?? [];
+
+    // Generate two arrays for previously selected categories. One for applicable categories
+    // and the other one for non-applicable categories.
+    const [selectedApplicable, selectedNotApplicable] = selectedTerms.reduce<
+      [OEQ.SearchFacets.Facet[], OEQ.SearchFacets.Facet[]]
+    >(
+      ([applicable, notApplicable], term) => {
+        const applicableCategory = categories.find((c) => c.term === term);
+        return applicableCategory
+          ? [applicable.concat(applicableCategory), notApplicable]
+          : [applicable, notApplicable.concat({ term: term, count: 0 })];
+      },
+      [[], []]
+    );
+
+    // Categories that apply to current search criteria but have not been selected.
+    const notSelected = categories.filter(
+      (c) => !selectedTerms.includes(c.term)
+    );
+
+    return [...selectedApplicable, ...selectedNotApplicable, ...notSelected];
+  };
+  /**
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
    *
@@ -209,29 +247,10 @@ export const CategorySelector = ({
   const listCategories = (
     { id, categories, maxDisplay }: Classification,
     expanded: boolean
-  ): ReactElement[] => {
-    const selectedTerms: string[] =
-      selectedCategories?.find((c) => c.id === id)?.categories ?? [];
-    const selectedFacets: OEQ.SearchFacets.Facet[] = selectedTerms.map(
-      (selectedTerm) => {
-        const facet = categories.find((c) => selectedTerm === c.term);
-        if (!facet) {
-          throw new Error(
-            "Data integrity issue, we're unable to match a selected term."
-          );
-        }
-
-        return facet;
-      }
-    );
-    const orderedFacets = selectedFacets.concat(
-      categories.filter((c) => !selectedFacets.includes(c))
-    );
-
-    return orderedFacets
+  ): ReactElement[] =>
+    categories
       .slice(0, expanded ? undefined : maxDisplay)
       .map((facet) => categoryListItem(id, facet));
-  };
 
   /**
    * Sort and build Classifications that have categories.
@@ -245,8 +264,9 @@ export const CategorySelector = ({
         prevClassification.orderIndex - nextClassification.orderIndex
     )
     .map((classification) => {
-      const { id, name, categories, maxDisplay } = classification;
+      const { id, name, maxDisplay } = classification;
       const expanded = expandedClassifications.get(id) ?? false;
+      const orderedCategories = getOrderedCategories(classification);
       return (
         <ListItem divider key={id}>
           <Grid container direction="column">
@@ -258,8 +278,12 @@ export const CategorySelector = ({
                 dense
                 className={expanded ? classes.classificationList : ""}
               >
-                {listCategories(classification, expanded)}
-                {categories.length > maxDisplay && showMoreButton(id, expanded)}
+                {listCategories(
+                  { ...classification, categories: orderedCategories },
+                  expanded
+                )}
+                {orderedCategories.length > maxDisplay &&
+                  showMoreButton(id, expanded)}
               </List>
             </Grid>
           </Grid>

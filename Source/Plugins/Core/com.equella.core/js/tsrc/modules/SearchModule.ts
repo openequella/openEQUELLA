@@ -124,7 +124,9 @@ export const formatQuery = (query: string, addWildcard: boolean): string => {
 };
 
 /**
- * Generates a Where clause for search. Each condition is linked by a AND.
+ * Generates a Where clause through Classifications.
+ * Each Classification that has categories selected is joined by AND.
+ * Each selected category of one Classification is joined by OR.
  *
  * @param selectedCategories A list of selected Categories grouped by Classification ID.
  */
@@ -134,18 +136,19 @@ export const generateCategoryWhereQuery = (
   if (!selectedCategories || selectedCategories.length === 0) {
     return undefined;
   }
-  // Convert a list of categories into a list of where clause search conditions.
-  // The format is "node='category'".
+
+  const and = " AND ";
+  const or = " OR ";
   const processNodeTerms = (
     categories: string[],
     schemaNode?: string
-  ): string[] => categories.map((c) => `/xml${schemaNode}='${c}'`);
+  ): string => categories.map((c) => `/xml${schemaNode}='${c}'`).join(or);
 
-  const and = " AND ";
-  // Concatenate all search conditions with AND.
   return selectedCategories
-    .flatMap(({ schemaNode, categories }: SelectedCategories) =>
-      processNodeTerms(categories, schemaNode)
+    .filter((c) => c.categories.length > 0)
+    .map(
+      ({ schemaNode, categories }: SelectedCategories) =>
+        `(${processNodeTerms(categories, schemaNode)})`
     )
     .join(and);
 };

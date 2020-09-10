@@ -93,7 +93,6 @@ const convertSearchOptions: (
       lastModifiedDateRange,
       owner,
       status,
-      selectedCategories,
       rawMode,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
@@ -106,7 +105,6 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
-      where: generateCategoryWhereQuery(selectedCategories),
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
@@ -140,6 +138,9 @@ export const listCategories = async (
  * It is intended that this can be run alongside other search filters, and thereby provide
  * matching categories.
  *
+ * The where clause used for generating one Classification's category list should only include
+ * categories from other Classifications.
+ *
  * @param options The standard options used for searching, as these also filter the generated categories
  */
 export const listClassifications = async (
@@ -158,6 +159,9 @@ export const listClassifications = async (
         categories: await listCategories({
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
+          where: generateCategoryWhereQuery(
+            options.selectedCategories?.filter((c) => c.id !== settings.id)
+          ),
         }),
         schemaNode: settings.schemaNode,
       })

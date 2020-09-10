@@ -89,13 +89,13 @@ describe("SearchModule", () => {
     it("should generate a where clause for one category", () => {
       const singleCategory = [selectedCategories[1]];
       expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
-        "/xml/item/city='Hobart'"
+        "(/xml/item/city='Hobart')"
       );
     });
 
     it("should generate a where clause for multiple groups of categories", () => {
       expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
-        "/xml/item/language='Java' AND /xml/item/language='Scala' AND /xml/item/city='Hobart'"
+        "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')"
       );
     });
   });
