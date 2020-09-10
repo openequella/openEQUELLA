@@ -53,6 +53,11 @@ public class RemoveLastKnownUserConstraint extends AbstractHibernateSchemaMigrat
   }
 
   @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
+
+  @Override
   protected void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     // Copy data from username1 to username.
