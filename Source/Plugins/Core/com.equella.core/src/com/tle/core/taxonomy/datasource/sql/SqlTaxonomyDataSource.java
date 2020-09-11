@@ -200,9 +200,8 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
     // It's all good
   }
 
-  // TODO - Seems like the wrong solution to have ? > Object.
   @SuppressWarnings("unchecked")
-  private List<TermResult> executeListQuery(String query, Map<String, Object> params) {
+  private List<TermResult> executeListQuery(String query, Map<String, ?> params) {
     if (Check.isEmpty(query)) {
       return Collections.emptyList();
     }

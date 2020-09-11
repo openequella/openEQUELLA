@@ -49,7 +49,7 @@ public class TLETransactionInterceptor extends TransactionInterceptor {
     return attributes;
   }
 
-  // @Override
+  @Override
   public synchronized PlatformTransactionManager getTransactionManager() {
     if (transactionManager == null) {
       transactionManager = managerProvider.get();
