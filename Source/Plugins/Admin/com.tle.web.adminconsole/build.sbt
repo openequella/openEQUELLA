@@ -6,10 +6,3 @@ resourceGenerators in Compile += Def.task {
   (jarSigner.value).apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
-
-assemblyMergeStrategy in assembly := {
-  case x if x.contains("overview.html") => MergeStrategy.first
-  case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
-    oldStrategy(x)
-}
