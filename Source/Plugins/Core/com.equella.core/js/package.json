@@ -77,7 +77,7 @@
     "@types/enzyme": "3.10.6",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/jest": "26.0.13",
-    "@types/lodash": "4.14.160",
+    "@types/lodash": "4.14.161",
     "@types/luxon": "1.24.3",
     "@types/node": "12.12.47",
     "@types/react": "16.9.48",
