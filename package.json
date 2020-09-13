@@ -89,6 +89,14 @@
       "react/jsx-no-useless-fragment": "error",
       "react/prefer-stateless-function": "error"
     },
+    "settings": {
+      "jest": {
+        "version": 26
+      },
+      "react": {
+        "version": "16.13"
+      }
+    },
     "overrides": [
       {
         "files": [
