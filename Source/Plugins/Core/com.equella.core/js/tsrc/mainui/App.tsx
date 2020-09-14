@@ -44,8 +44,8 @@ import HtmlParser from "react-html-parser";
 import SettingsPage from "../settings/SettingsPage";
 import { startHeartbeat } from "../util/heartbeat";
 
-const beforeunload = function (e: Event) {
-  e.returnValue = ("Are you sure?" as unknown) as boolean;
+const beforeunload = function (e: BeforeUnloadEvent) {
+  e.returnValue = "Are you sure?";
   return "Are you sure?";
 };
 
@@ -83,11 +83,11 @@ function IndexPage() {
     render: () => <div />,
   });
 
-  const [templateProps, setTemplateProps] = React.useState({
+  const [templateProps, setTemplateProps] = React.useState<TemplateProps>({
     title: "",
     fullscreenMode: "YES",
     children: [],
-  } as TemplateProps);
+  });
 
   const setPreventNavigation = React.useCallback(
     (prevent) => {
@@ -102,7 +102,7 @@ function IndexPage() {
     [setPreventNavMessage]
   );
 
-  const nonBlankNavMsg = preventNavMessage ? preventNavMessage : "";
+  const nonBlankNavMessage = preventNavMessage ? preventNavMessage : "";
 
   const updateTemplate = React.useCallback((edit: TemplateUpdate) => {
     setTemplateProps((tp) => {
@@ -190,11 +190,11 @@ function IndexPage() {
     >
       <Prompt
         when={Boolean(preventNavMessage) || errorShowing.current}
-        message={nonBlankNavMsg}
+        message={nonBlankNavMessage}
       />
       <NavAwayDialog
         open={Boolean(navAwayCallback)}
-        message={nonBlankNavMsg}
+        message={nonBlankNavMessage}
         navigateConfirm={(confirm) => {
           if (navAwayCallback) navAwayCallback.cb(confirm);
           if (confirm) setPreventNavMessage(undefined);
@@ -239,9 +239,11 @@ function IndexPage() {
     </BrowserRouter>
   );
 }
+
 interface AppProps {
   legacySettingsMode: boolean;
 }
+
 export const App = ({ legacySettingsMode }: AppProps) => {
   if (legacySettingsMode) {
     return (

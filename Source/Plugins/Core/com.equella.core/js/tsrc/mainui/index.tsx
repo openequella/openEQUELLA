@@ -27,13 +27,15 @@ declare const renderData:
     }
   | undefined;
 
+// Lazy import 'App' in order to initialise language strings (independent of imports)
+// before loading of the full app.
 const App = React.lazy(() => import("./App"));
 
 export default function () {
   initStrings();
   const legacySettingsMode = typeof renderData === "undefined";
   ReactDOM.render(
-    <React.Suspense fallback={null}>
+    <React.Suspense fallback={<>loading</>}>
       <App legacySettingsMode={legacySettingsMode} />
     </React.Suspense>,
     document.getElementById(legacySettingsMode ? "settingsPage" : "mainDiv")
