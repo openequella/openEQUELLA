@@ -315,8 +315,6 @@ assemblyMergeStrategy in assembly := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
-  // cbeach:  Due to deduplication issues.
-  case x if x.contains("overview.html") => MergeStrategy.first
   // Safe to do at least in JDK 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
