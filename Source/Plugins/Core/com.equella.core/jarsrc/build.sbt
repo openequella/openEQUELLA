@@ -17,6 +17,9 @@ packageOptions in assembly += Package.ManifestAttributes(
 )
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
+// Added due to a [deduplicate: different file contents found in the following] error against:
+// org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
+// org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
 assemblyMergeStrategy in assembly := {
   case x if x.contains("overview.html") => MergeStrategy.first
   case x =>

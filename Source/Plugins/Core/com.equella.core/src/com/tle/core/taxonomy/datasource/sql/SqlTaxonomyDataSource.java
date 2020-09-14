@@ -232,8 +232,7 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
         });
   }
 
-  // TODO - Seems like the wrong solution to have ? > Object.
-  private Object executeSingleResultQuery(String query, Map<String, Object> params) {
+  private Object executeSingleResultQuery(String query, Map<String, ?> params) {
     return jdbcTemplate.query(
         query,
         params,
