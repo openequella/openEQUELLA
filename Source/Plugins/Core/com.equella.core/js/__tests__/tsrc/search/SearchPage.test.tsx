@@ -58,7 +58,7 @@ import {
   queryCollectionSelector,
   queryDateRangeSelector,
   queryOwnerSelector,
-  queryRefineSearchComponent,
+  getRefineSearchComponent,
   querySearchAttachmentsSelector,
   queryStatusSelector,
 } from "./SearchPageHelper";
@@ -124,25 +124,6 @@ const renderSearchPage = async (): Promise<RenderResult> => {
 const reRenderSearchPage = async (page: RenderResult) => {
   page.unmount();
   return await renderSearchPage();
-};
-
-/**
- * Similar to queryRefineSearchComponent but throws an error if the component is not found.
- *
- * @see queryRefineSearchComponent
- * @param container The root container to start the search from
- * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
- */
-const getRefineSearchComponent = (
-  container: Element,
-  componentSuffix: string
-) => {
-  const e = queryRefineSearchComponent(container, componentSuffix);
-  if (!e) {
-    throw new Error(`Failed to find ${componentSuffix}`);
-  }
-
-  return e as HTMLElement;
 };
 
 describe("Refine search by searching attachments", () => {
@@ -303,12 +284,12 @@ describe("Collapsible refine filter section", () => {
 
   it("Should contain the correct controls", async () => {
     const pageContainer = page.container;
-    const findCollapsibleSection = page.container.getElementsByClassName(
+    const collapsibleSections = page.container.getElementsByClassName(
       "collapsibleRefinePanel"
     );
-    expect(findCollapsibleSection).toHaveLength(1);
+    expect(collapsibleSections).toHaveLength(1);
 
-    const collapsibleSection = findCollapsibleSection.item(0);
+    const collapsibleSection = collapsibleSections.item(0);
 
     expect(collapsibleSection).toContainElement(
       queryOwnerSelector(pageContainer)
@@ -334,6 +315,7 @@ describe("Collapsible refine filter section", () => {
     );
   });
 });
+
 describe("Hide Refine Search controls", () => {
   let page: RenderResult;
   beforeEach(async () => {
@@ -344,9 +326,9 @@ describe("Hide Refine Search controls", () => {
     jest.clearAllMocks();
   });
 
-  const ownerSelector = () => queryOwnerSelector(page.container);
-  const dateSelector = () => queryDateRangeSelector(page.container);
-  const statusSelector = () => queryStatusSelector(page.container);
+  const _queryOwnerSelector = () => queryOwnerSelector(page.container);
+  const _queryDateSelector = () => queryDateRangeSelector(page.container);
+  const _queryStatusSelector = () => queryStatusSelector(page.container);
   const disableDateSelector = {
     ...SearchSettingsModule.defaultSearchSettings,
     searchingDisableDateModifiedFilter: true,
@@ -363,19 +345,19 @@ describe("Hide Refine Search controls", () => {
     // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
     [
       "Owner Selector",
-      ownerSelector,
+      _queryOwnerSelector,
       disableOwnerSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Date Selector",
-      dateSelector,
+      _queryDateSelector,
       disableDateSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Status Selector",
-      statusSelector,
+      _queryStatusSelector,
       SearchSettingsModule.defaultSearchSettings,
       enableStatusSelector,
     ],

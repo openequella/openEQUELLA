@@ -15,6 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Similar to queryRefineSearchComponent but throws an error if the component is not found.
+ *
+ * @see queryRefineSearchComponent
+ * @param container The root container to start the search from
+ * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
+ */
+export const getRefineSearchComponent = (
+  container: Element,
+  componentSuffix: string
+) => {
+  const e = queryRefineSearchComponent(container, componentSuffix);
+  if (!e) {
+    throw new Error(`Failed to find ${componentSuffix}`);
+  }
+
+  return e as HTMLElement;
+};
+
 /**
  * Helper function to find individual Refine Search components based on the their `idSuffix`,
  * or return null if the component is not found.
