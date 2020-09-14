@@ -85,6 +85,18 @@ object RenderNewTemplate {
 
   val NewLayoutKey = "NEW_LAYOUT"
 
+  // Check if new UI is enabled.
+  def isNewUIEnabled: Boolean = {
+    RunWithDB
+      .executeIfInInstitution(UISettings.cachedUISettings)
+      .getOrElse(UISettings.defaultSettings)
+      .newUI
+      .enabled
+  }
+
+  // Check if New UI is being used, but there is no guarantee that New UI is enabled.
+  // An example is when Old UI is turned on, users will see New UI if they open pages
+  // that are only available in New UI such as the Facet settings page.
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
       val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
@@ -93,13 +105,7 @@ object RenderNewTemplate {
         LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
         Some(newUI)
       }
-      val newLayout = sessionOverride.getOrElse {
-        RunWithDB
-          .executeIfInInstitution(UISettings.cachedUISettings)
-          .getOrElse(UISettings.defaultSettings)
-          .newUI
-          .enabled
-      }
+      val newLayout = sessionOverride.getOrElse(isNewUIEnabled)
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
@@ -131,7 +137,7 @@ object RenderNewTemplate {
       new ObjectExpression("baseResources",
                            r.url(""),
                            "newUI",
-                           java.lang.Boolean.TRUE,
+                           java.lang.Boolean.valueOf(isNewUIEnabled),
                            "autotestMode",
                            java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode))
     val renderData =
