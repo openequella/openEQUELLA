@@ -20,7 +20,11 @@ import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../config";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
-import { SearchOptions } from "./SearchModule";
+import {
+  formatQuery,
+  generateCategoryWhereQuery,
+  SearchOptions,
+} from "./SearchModule";
 
 /**
  * Represents a Classification and its generated categories ready for display.
@@ -39,7 +43,7 @@ export interface Classification {
    * this classification. If `undefined` then the system default number of categories should be
    * displayed.
    */
-  maxDisplay?: number;
+  maxDisplay: number;
   /**
    * The actual list of categories for this classification. This will be the full list returned
    * from the server - as no paging is currently provided.
@@ -49,8 +53,31 @@ export interface Classification {
    * The configured order in which this classification should be displayed.
    */
   orderIndex: number;
+  /**
+   * The configured schema node of this classification.
+   */
+  schemaNode: string;
 }
 
+/**
+ * Represents a group which includes a list of categories and the Classification
+ * ID and schema node which these categories belong to.
+ */
+export interface SelectedCategories {
+  /**
+   * The Classification's ID which the selected categories belong to.
+   */
+  id: number;
+  /**
+   * The schema node from which the selected categories are generated.
+   * Whether it's undefined or not depends on the context of its usage.
+   */
+  schemaNode?: string;
+  /**
+   * A list of selected categories' terms.
+   */
+  categories: string[];
+}
 /**
  * Helper function to convert the commonly used `SearchOptions` into the params we need to
  * list facets. This is a memoized function, so that it can be used in an `Array.map()`
@@ -59,29 +86,49 @@ export interface Classification {
 const convertSearchOptions: (
   options: SearchOptions
 ) => OEQ.SearchFacets.SearchFacetsParams = memoize(
-  (options: SearchOptions): OEQ.SearchFacets.SearchFacetsParams => ({
-    nodes: [],
-    q: options.query,
-    collections: options.collections?.map((c) => c.uuid),
-    modifiedAfter: getISODateString(options.lastModifiedDateRange?.start),
-    modifiedBefore: getISODateString(options.lastModifiedDateRange?.end),
-    owner: options.owner?.id,
-    showall: isEqual(
-      options.status?.sort(),
-      OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
-    ),
-  })
+  (options: SearchOptions): OEQ.SearchFacets.SearchFacetsParams => {
+    const {
+      query,
+      collections,
+      lastModifiedDateRange,
+      owner,
+      status,
+      rawMode,
+    } = options;
+    let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
+      nodes: [],
+      q: query ? formatQuery(query, !rawMode) : undefined,
+      modifiedAfter: getISODateString(lastModifiedDateRange?.start),
+      modifiedBefore: getISODateString(lastModifiedDateRange?.end),
+      owner: owner?.id,
+      showall: isEqual(
+        status?.sort(),
+        OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
+      ),
+    };
+    if (collections && collections.length > 0) {
+      searchFacetsParams = {
+        ...searchFacetsParams,
+        collections: collections.map((c) => c.uuid),
+      };
+    }
+    return searchFacetsParams;
+  }
 );
 
 /**
  * Provides a list of categories as defined and filtered by the `options`.
+ * Categories that have empty terms will be filtered out, as although the server generates
+ * them, sending them back will generate a 500.
  *
  * @param options The control parameters for the generation of the categories
  */
 export const listCategories = async (
   options: OEQ.SearchFacets.SearchFacetsParams
 ): Promise<OEQ.SearchFacets.Facet[]> =>
-  (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results;
+  (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results.filter(
+    (r) => r.term
+  );
 
 /**
  * Uses the system's configured facets/classifications to generate a set of categories for
@@ -90,6 +137,9 @@ export const listCategories = async (
  *
  * It is intended that this can be run alongside other search filters, and thereby provide
  * matching categories.
+ *
+ * The where clause used for generating one Classification's category list should only include
+ * categories from other Classifications.
  *
  * @param options The standard options used for searching, as these also filter the generated categories
  */
@@ -103,12 +153,17 @@ export const listClassifications = async (
         // we have to do a nullish coalescing
         id: settings.id ?? index,
         name: settings.name,
-        maxDisplay: settings.maxResults,
+        // Like ID, maxDisplay here won't be undefined. When it's 0 let it be 10 instead.
+        maxDisplay: settings.maxResults || 10,
         orderIndex: settings.orderIndex,
         categories: await listCategories({
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
+          where: generateCategoryWhereQuery(
+            options.selectedCategories?.filter((c) => c.id !== settings.id)
+          ),
         }),
+        schemaNode: settings.schemaNode,
       })
     )
   );

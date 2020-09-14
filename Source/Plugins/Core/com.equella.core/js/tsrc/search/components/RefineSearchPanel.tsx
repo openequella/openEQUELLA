@@ -90,6 +90,7 @@ export const RefineSearchPanel = ({
           <List>{controls.map((control) => renderRefineControl(control))}</List>
         </Collapse>
         <Button
+          id="collapsibleRefinePanelButton"
           fullWidth
           onClick={() => handleClick(panelExpanded)}
           endIcon={

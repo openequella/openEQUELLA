@@ -24,33 +24,33 @@ import {
   RenderResult,
   getAllByRole,
 } from "@testing-library/react";
-import { FacetSelector } from "../../../../tsrc/search/components/FacetSelector";
-import * as FacetSelectorMock from "../../../../__mocks__/FacetSelector.mock";
+import { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
+import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
+import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
 import "@testing-library/jest-dom/extend-expect";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { queryMuiButtonByText } from "../../MuiQueries";
 
-describe("<FacetSelector />", () => {
+describe("<CategorySelector />", () => {
   // Mocked callbacks
-  const onSelectTermsChange = jest.fn();
-  const onShowMore = jest.fn();
+  const onSelectedCategoriesChange = jest.fn();
 
   // Mocked Classifications
   const CITY = "City";
-  const CITY_ID = 766943;
   const LANGUAGE = "Language";
   const COLOR = "Color";
   // Mocked facet
   const HOBART = "Hobart";
-  const mockedSelectedTerms = new Map([[CITY_ID, [HOBART]]]);
-  // The text of 'SHOW MORE' button
-  const SHOW_MORE = languageStrings.common.action.showMore;
 
-  const renderFacetSelector = () =>
+  // The text of 'SHOW MORE' and 'SHOW LESS' buttons
+  const SHOW_MORE = languageStrings.common.action.showMore;
+  const SHOW_LESS = languageStrings.common.action.showLess;
+
+  const renderCategorySelector = () =>
     render(
-      <FacetSelector
-        classifications={FacetSelectorMock.classifications}
-        onSelectTermsChange={onSelectTermsChange}
-        onShowMore={onShowMore}
+      <CategorySelector
+        classifications={CategorySelectorMock.classifications}
+        onSelectedCategoriesChange={onSelectedCategoriesChange}
       />
     );
 
@@ -67,21 +67,9 @@ describe("<FacetSelector />", () => {
     return classification;
   };
 
-  // Return a Classification's 'SHOW MORE' button.
-  const queryShowMoreButton = (
-    container: HTMLElement,
-    classificationName: string
-  ) => {
-    const classification = getClassificationByName(
-      container,
-      classificationName
-    );
-    return queryByText(classification, SHOW_MORE);
-  };
-
   let page: RenderResult;
   beforeEach(() => {
-    page = renderFacetSelector();
+    page = renderCategorySelector();
   });
 
   it("should display a list of classifications that have categories", () => {
@@ -93,22 +81,33 @@ describe("<FacetSelector />", () => {
     expect(queryByText(page.container, COLOR)).not.toBeInTheDocument();
   });
 
-  it("should display the 'SHOW MORE' button when 'showMore' is true", () => {
+  it("should display the 'SHOW MORE' button when the number of categories is more than maximum display number", () => {
     // City can show more categories.
-    expect(queryShowMoreButton(page.container, CITY)).toBeInTheDocument();
+    expect(
+      queryMuiButtonByText(
+        getClassificationByName(page.container, CITY),
+        SHOW_MORE
+      )
+    ).toBeInTheDocument();
     // Language does not have more categories to show.
-    expect(queryShowMoreButton(page.container, LANGUAGE)).toBeNull();
+    expect(
+      queryMuiButtonByText(
+        getClassificationByName(page.container, LANGUAGE),
+        SHOW_MORE
+      )
+    ).toBeNull();
   });
 
-  it("should call 'onShowMore' when a 'SHOW MORE' button is clicked", () => {
-    const showMoreButton = queryShowMoreButton(page.container, CITY);
+  it("should show all categories and 'SHOW LESS' button when 'SHOW MORE' button is clicked", () => {
+    const classification = getClassificationByName(page.container, CITY);
+    const showMoreButton = queryMuiButtonByText(classification, SHOW_MORE);
     if (!showMoreButton) {
-      throw new Error(
-        "Unable to find 'SHOW MORE' button for Classification City."
-      );
+      throw new Error("Unable to find 'SHOW MORE' button for Classification.");
     }
+    expect(getAllByRole(classification, "checkbox")).toHaveLength(2);
     fireEvent.click(showMoreButton);
-    expect(onShowMore).toHaveBeenLastCalledWith(CITY_ID);
+    expect(getAllByRole(classification, "checkbox")).toHaveLength(3);
+    expect(queryMuiButtonByText(classification, SHOW_LESS)).toBeInTheDocument();
   });
 
   it("should sort Classifications based on their order indexes", () => {
@@ -118,10 +117,14 @@ describe("<FacetSelector />", () => {
     expect(classifications[1].textContent).toBe(LANGUAGE);
   });
 
-  it("should call onSelectTermsChange when a facet is selected", () => {
-    // Select the facet of Hobart.
+  it("should call onSelectedCategoriesChange when a facet is selected", () => {
+    const selectedCategories: SelectedCategories[] = [
+      { id: 766943, categories: ["Hobart"] },
+    ];
     const hobart = getByText(page.container, HOBART, { selector: "p" });
     fireEvent.click(hobart);
-    expect(onSelectTermsChange).toHaveBeenLastCalledWith(mockedSelectedTerms);
+    expect(onSelectedCategoriesChange).toHaveBeenLastCalledWith(
+      selectedCategories
+    );
   });
 });

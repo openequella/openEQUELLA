@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InputLabel, MenuItem, Select } from "@material-ui/core";
 import * as React from "react";
-import { MenuItem, Select } from "@material-ui/core";
 import { SortOrder } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
@@ -58,18 +58,28 @@ export const SearchOrderSelect = ({
     [SortOrder.RATING, userRating],
   ]);
 
+  const baseId = "sort-order-select";
+  const labelId = baseId + "-label";
+
   return (
-    <Select
-      // If sortOrder is undefined, pass an empty string to select nothing.
-      value={value ?? ""}
-      onChange={(event) => onChange(event.target.value as SortOrder)}
-    >
-      {Array.from(sortingOptionStrings).map(([value, text]) => (
-        <MenuItem key={value} value={value}>
-          {text}
-        </MenuItem>
-      ))}
-    </Select>
+    <>
+      <InputLabel id={labelId} style={{ display: "none" }}>
+        Search Order
+      </InputLabel>
+      <Select
+        id={baseId}
+        labelId={labelId}
+        // If sortOrder is undefined, pass an empty string to select nothing.
+        value={value ?? ""}
+        onChange={(event) => onChange(event.target.value as SortOrder)}
+      >
+        {Array.from(sortingOptionStrings).map(([value, text]) => (
+          <MenuItem key={value} value={value}>
+            {text}
+          </MenuItem>
+        ))}
+      </Select>
+    </>
   );
 };
 

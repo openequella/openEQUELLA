@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -29,6 +28,13 @@ import {
 } from "../mainui/Template";
 import type { Collection } from "../modules/CollectionsModule";
 import {
+  Classification,
+  listClassifications,
+  SelectedCategories,
+} from "../modules/SearchFacetsModule";
+import { languageStrings } from "../util/langstrings";
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import {
   defaultPagedSearchResult,
   defaultSearchOptions,
   searchItems,
@@ -40,9 +46,9 @@ import {
   SortOrder,
 } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
-import { languageStrings } from "../util/langstrings";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
+import { CategorySelector } from "./components/CategorySelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -106,10 +112,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       defaultSearchPageHistory.filterExpansion
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
-    OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>
+    OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
+  const [classifications, setClassifications] = useState<Classification[]>([]);
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -128,10 +135,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   }, []);
 
-  /**
-   * Trigger a search when state values change, but skip the initial values.
-   */
   const isInitialSearch = useRef(true);
+  // Trigger a search when Search options get changed, but skip the initial values.
   useEffect(() => {
     if (isInitialSearch.current) {
       isInitialSearch.current = false;
@@ -147,6 +152,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   }, [filterExpansion, pagedSearchResult]);
 
+  // When Search options get changed, also update the Classification list.
+  useEffect(() => {
+    if (!isInitialSearch.current) {
+      listClassifications(searchPageOptions).then((classifications) =>
+        setClassifications(classifications)
+      );
+    }
+  }, [searchPageOptions]);
+
   const handleError = (error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
   };
@@ -157,7 +171,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const search = (): void => {
     setShowSpinner(true);
     searchItems(searchPageOptions)
-      .then((items: OEQ.Common.PagedResult<OEQ.Search.SearchResultItem>) => {
+      .then((items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
@@ -174,6 +188,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       query: query,
       currentPage: 0,
+      selectedCategories: undefined,
     });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
@@ -181,6 +196,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
+      selectedCategories: undefined,
     });
   };
 
@@ -229,12 +245,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       // When the mode is changed, the date range may also need to be updated.
       // For example, if a custom date range is converted to Quick option 'All', then both start and end should be undefined.
       lastModifiedDateRange: dateRange,
+      selectedCategories: undefined,
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
     setSearchPageOptions({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
+      selectedCategories: undefined,
     });
 
   const handleClearSearchOptions = () => {
@@ -249,18 +267,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setSearchPageOptions({
       ...searchPageOptions,
       owner: { ...owner },
+      selectedCategories: undefined,
     });
 
   const handleOwnerClear = () =>
     setSearchPageOptions({
       ...searchPageOptions,
       owner: undefined,
+      selectedCategories: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
     setSearchPageOptions({
       ...searchPageOptions,
       status: [...status],
+      selectedCategories: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
@@ -269,6 +290,27 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchAttachments: searchAttachments,
     });
   };
+
+  const handleSelectedCategoriesChange = (
+    selectedCategories: SelectedCategories[]
+  ) => {
+    const getSchemaNode = (id: number) => {
+      const node = classifications.find((c) => c.id === id)?.schemaNode;
+      if (!node) {
+        throw new Error(`Unable to find schema node for classification ${id}.`);
+      }
+      return node;
+    };
+
+    setSearchPageOptions({
+      ...searchPageOptions,
+      selectedCategories: selectedCategories.map((c) => ({
+        ...c,
+        schemaNode: getSchemaNode(c.id),
+      })),
+    });
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -367,12 +409,35 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Grid>
 
       <Grid item xs={3}>
-        <RefineSearchPanel
-          controls={refinePanelControls}
-          handleClick={handleCollapsibleFilterClick}
-          panelExpanded={filterExpansion}
-          showFilterIcon={areCollapsibleFiltersSet()}
-        />
+        <Grid container direction="column" spacing={2}>
+          <Grid item>
+            <RefineSearchPanel
+              controls={refinePanelControls}
+              handleClick={handleCollapsibleFilterClick}
+              panelExpanded={filterExpansion}
+              showFilterIcon={areCollapsibleFiltersSet()}
+            />
+          </Grid>
+          {classifications.length > 0 &&
+            classifications.some((c) => c.categories.length > 0) && (
+              <Grid item>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5">
+                      {languageStrings.searchpage.categorySelector.title}
+                    </Typography>
+                    <CategorySelector
+                      classifications={classifications}
+                      onSelectedCategoriesChange={
+                        handleSelectedCategoriesChange
+                      }
+                      selectedCategories={searchPageOptions.selectedCategories}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+        </Grid>
       </Grid>
     </Grid>
   );

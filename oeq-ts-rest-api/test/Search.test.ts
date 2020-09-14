@@ -47,7 +47,8 @@ describe('Search for items', () => {
     const searchResult = await doSearch(searchParams);
     const { uuid, status, collectionId } = searchResult.results[0];
 
-    expect(searchResult).toHaveLength(searchResult.results.length);
+    expect(searchResult.results).toHaveLength(searchResult.results.length);
+    expect(searchResult.highlight).toEqual([searchParams.query]);
     expect(uuid).toBeTruthy();
     // Status returned is in lowercase so have to convert to uppercase.
     expect(status.toUpperCase()).toBe<OEQ.Common.ItemStatus>(STATUS_LIVE);

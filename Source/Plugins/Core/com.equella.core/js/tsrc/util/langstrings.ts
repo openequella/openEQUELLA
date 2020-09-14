@@ -340,6 +340,9 @@ export const languageStrings = {
       week: "Week",
       day: "Day",
     },
+    categorySelector: {
+      title: "Classifications",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",

@@ -19,15 +19,16 @@
 package com.tle.web.api.search
 
 import com.tle.beans.item.ItemIdKey
+import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
-import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import com.tle.web.api.search.SearchHelper._
+import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.{BeanParam, GET, Path, Produces}
 import javax.ws.rs.core.Response
+import javax.ws.rs.{BeanParam, GET, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import scala.collection.JavaConverters._
@@ -54,10 +55,15 @@ class SearchResource {
     val itemIds                 = freetextResults.map(_.getItemIdKey)
     val serializer              = createSerializer(itemIds)
     val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
-    val result = SearchResult(searchResults.getOffset,
-                              searchResults.getCount,
-                              searchResults.getAvailable,
-                              items.map(convertToItem))
+    val highlight =
+      new DefaultSearch.QueryParser(params.query).getHilightedList.asScala.toList
+    val result = SearchResult(
+      searchResults.getOffset,
+      searchResults.getCount,
+      searchResults.getAvailable,
+      items.map(convertToItem),
+      highlight
+    )
     Response.ok.entity(result).build()
   }
 }
