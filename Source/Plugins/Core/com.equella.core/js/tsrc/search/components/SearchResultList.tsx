@@ -100,7 +100,10 @@ export const SearchResultList = ({
    * A list that consists of search result items. Lower the list's opacity when spinner displays.
    */
   const searchResultList = (
-    <List className={showSpinner ? classes.transparentList : ""}>
+    <List
+      className={showSpinner ? classes.transparentList : ""}
+      id="search_result_list"
+    >
       {searchResults.length === 0 && !showSpinner ? (
         <ListItem key={searchPageStrings.noResultsFound} divider>
           <Typography>{searchPageStrings.noResultsFound}</Typography>
