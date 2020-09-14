@@ -27,7 +27,7 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { DateRange } from "../modules/SearchModule";
+import type { DateRange } from "../modules/SearchModule";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { languageStrings } from "../util/langstrings";
