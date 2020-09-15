@@ -4110,7 +4110,7 @@ a.modal-control.modal-save {
 
 .fileHandler {
   @include buttonShadowBorder;
-  width: 1250px;
+  width: 1175px;
   height: 668px;
   position: sticky;
   //workaround to avoid editing fancybox styling
@@ -4206,7 +4206,7 @@ div.universaliframe {
   @include buttonShadowBorder;
   overflow: hidden;
   height: 650px;
-  width: 1250px;
+  width: 1175px;
   //workaround to avoid editing fancybox-styles
   margin-left: -200px;
 }

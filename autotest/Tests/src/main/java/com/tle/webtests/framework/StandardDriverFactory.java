@@ -112,7 +112,7 @@ public class StandardDriverFactory {
           options.addArguments("headless");
           options.addArguments("--lang=en-US");
         }
-        options.addArguments("window-size=1300,900");
+        options.addArguments("window-size=1200,800");
 
         Map<String, Object> prefs = Maps.newHashMap();
         prefs.put("intl.accept_languages", "en-US");
