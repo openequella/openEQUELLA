@@ -1057,8 +1057,6 @@ Generic layout
 
 #fancybox-inner {
   display: grid;
-  width: max-content !important;
-  position: relative;
 }
 
 #selection-content-inner.search-layout .mainCols #col2 #selection-summary {
@@ -1072,9 +1070,6 @@ Generic layout
 
 #fancybox-outer {
   height: auto;
-  display: grid;
-  justify-content: center;
-  background: none;
 }
 
 #fancybox-img {
@@ -1342,7 +1337,6 @@ div[class*="fancy-bg"] {
   -moz-background-inline-policy: continuous;
   -moz-background-origin: padding;
   padding: 15px 0 0;
-  height: 100%;
   overflow-y: auto;
   /* See #6290 for why this is here */
   min-height: 0%;
@@ -2743,7 +2737,6 @@ html.wait {
     flex-direction: row;
     justify-content: flex-end;
   }
-  width: max-content;
   height: 600px;
 }
 
@@ -3329,10 +3322,6 @@ i.icon-arrow-left {
 //Term browser
 .popupbrowserdialog #termChooser {
   border-right: 1px solid #e8e8e8;
-}
-
-#fancybox-inner [id*="popupBrowserDialogwrap"] {
-  width: 1250px;
 }
 
 #termChooser.ui-tabs {
@@ -4131,6 +4120,9 @@ a.modal-control.modal-save {
   @include buttonShadowBorder;
   width: 1250px;
   height: 668px;
+  position: sticky;
+  //workaround to avoid editing fancybox styling
+  margin-left: -200px;
 }
 
 .fileHandler
