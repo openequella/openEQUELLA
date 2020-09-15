@@ -4207,6 +4207,8 @@ div.universaliframe {
   overflow: hidden;
   height: 650px;
   width: 1250px;
+  //workaround to avoid editing fancybox-styles
+  margin-left: -200px;
 }
 
 div.universaliframe iframe {
