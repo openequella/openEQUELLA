@@ -216,7 +216,7 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
   @SuppressWarnings("unchecked")
   public List<Long> listIdsInOrder() {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {
@@ -238,7 +238,7 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
   @SuppressWarnings("unchecked")
   public List<Long> enumerateIdsInOrder() {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {

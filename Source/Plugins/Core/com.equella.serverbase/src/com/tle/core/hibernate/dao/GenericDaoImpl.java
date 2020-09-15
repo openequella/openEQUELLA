@@ -246,7 +246,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
       final int maxResults,
       final Criterion... criterion) {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {

@@ -38,7 +38,7 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
   @Transactional
   public List<T> enumerateAll() {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {
@@ -62,7 +62,7 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
   @Transactional
   public List<ID> enumerateAllIds() {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {
@@ -127,7 +127,7 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
   @SuppressWarnings({"unchecked", "nls"})
   protected List<T> enumerateAll(final ListCallback callback) {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             new TLEHibernateCallback() {
               @Override
               public Object doInHibernate(Session session) throws HibernateException {
