@@ -35,6 +35,7 @@ import {
   defaultSearchOptions,
   searchItems,
   SearchOptions,
+  DateRange,
 } from "../modules/SearchModule";
 import SearchBar from "../search/components/SearchBar";
 import * as OEQ from "@openequella/rest-api-client";
@@ -54,7 +55,7 @@ import { SearchResultList } from "./components/SearchResultList";
 import { CollectionSelector } from "./components/CollectionSelector";
 import { Collection } from "../modules/CollectionsModule";
 import { useHistory } from "react-router";
-import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
+import { DateRangeSelector } from "../components/DateRangeSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import StatusSelector from "./components/StatusSelector";
 
