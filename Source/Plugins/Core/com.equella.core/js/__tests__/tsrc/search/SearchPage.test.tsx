@@ -326,27 +326,32 @@ describe("Collapsible refine filter section", () => {
     jest.clearAllMocks();
   });
 
-  const getCollapsibleFilterSection = (container: HTMLElement) =>
-    container.getElementsByClassName("collapsibleRefinePanel");
-
   it("Should contain the correct controls", async () => {
-    const pageContainer = page.container;
-    const collapsibleSections = getCollapsibleFilterSection(pageContainer);
-    expect(collapsibleSections).toHaveLength(1);
+    const refineSearchPanel = page.getByText("Refine search").closest("div");
+    if (!refineSearchPanel) {
+      throw new Error("Unable to find refine search panel");
+    }
 
-    const collapsibleSection = collapsibleSections.item(0);
+    const collapsibleSection = refineSearchPanel.querySelector(
+      ".collapsibleRefinePanel"
+    );
+    if (!collapsibleSection) {
+      throw new Error(
+        "Unable to find collapsible filter section inside refine search panel"
+      );
+    }
 
     expect(collapsibleSection).toContainElement(
-      queryOwnerSelector(pageContainer)
+      queryOwnerSelector(refineSearchPanel)
     );
     expect(collapsibleSection).toContainElement(
-      queryDateRangeSelector(pageContainer)
+      queryDateRangeSelector(refineSearchPanel)
     );
     expect(collapsibleSection).toContainElement(
-      querySearchAttachmentsSelector(pageContainer)
+      querySearchAttachmentsSelector(refineSearchPanel)
     );
     expect(collapsibleSection).not.toContainElement(
-      queryCollectionSelector(pageContainer)
+      queryCollectionSelector(refineSearchPanel)
     );
   });
 
