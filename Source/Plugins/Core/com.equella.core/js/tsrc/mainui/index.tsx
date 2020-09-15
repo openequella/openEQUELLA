@@ -20,12 +20,12 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 
-declare const renderData:
-  | {
-      baseResources: string;
-      newUI: boolean;
-    }
-  | undefined;
+export interface RenderData {
+  baseResources: string;
+  newUI: boolean;
+  autotestMode: boolean;
+}
+declare const renderData: RenderData | undefined;
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
 // before loading of the full app.

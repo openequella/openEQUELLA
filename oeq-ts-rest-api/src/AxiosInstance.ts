@@ -42,7 +42,7 @@ const catchHandler = (error: AxiosError | Error): never => {
 export const GET = <T>(
   path: string,
   validator: (data: unknown) => data is T,
-  queryParams?: Parameters<typeof stringify>[0],
+  queryParams?: Parameters<typeof stringify>[0], // eslint-disable-line @typescript-eslint/ban-types
   transformer?: (data: unknown) => T
 ): Promise<T> =>
   axios
