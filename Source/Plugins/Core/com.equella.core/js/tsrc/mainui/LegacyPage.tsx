@@ -32,6 +32,7 @@ import {
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
 import { CircularProgress, Grid } from "@material-ui/core";
+import type { RenderData } from "./index";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -45,6 +46,7 @@ interface LegacyPageProps extends TemplateUpdateProps {
       cb: (p: LegacyContentProps) => LegacyContentProps
     ) => void;
   };
+  renderData?: RenderData;
 }
 
 export function templatePropsForLegacy({
@@ -79,9 +81,17 @@ export const LegacyPage = React.memo(
     updateTemplate,
     setPreventNavigation,
     redirect,
+    renderData,
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
+
+    // If New UI is actually not enabled then reload the page to display Old UI.
+    React.useEffect(() => {
+      if (renderData && !renderData.newUI) {
+        window.location.reload();
+      }
+    }, []);
 
     React.useEffect(() => {
       if (content) {

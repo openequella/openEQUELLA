@@ -13,12 +13,12 @@
     "js-md5": "0.7.3",
     "jss": "10.4.0",
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
-    "query-string": "6.13.1",
+    "query-string": "6.13.2",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
   "devDependencies": {
-    "@types/react": "16.9.47",
+    "@types/react": "16.9.49",
     "@types/react-dom": "16.9.8",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.4",
