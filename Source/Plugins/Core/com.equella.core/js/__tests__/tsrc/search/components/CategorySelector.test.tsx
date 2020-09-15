@@ -24,7 +24,7 @@ import {
   RenderResult,
   getAllByRole,
 } from "@testing-library/react";
-import { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
+import type { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
 import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
 import "@testing-library/jest-dom/extend-expect";

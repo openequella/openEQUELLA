@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { SelectedCategories } from "../../tsrc/modules/SearchFacetsModule";
+import type { SelectedCategories } from "../../tsrc/modules/SearchFacetsModule";
 import {
   CategorySelector,
   CategorySelectorProps,

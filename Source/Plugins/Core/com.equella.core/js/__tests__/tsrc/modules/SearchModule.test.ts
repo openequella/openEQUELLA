@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
+import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 
 jest.mock("@openequella/rest-api-client");
