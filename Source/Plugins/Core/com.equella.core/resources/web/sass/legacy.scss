@@ -5275,12 +5275,18 @@ button:focus {
 
 .itemdefs_container {
   padding: $singleMargin;
+  border-radius: 3px;
 
+  li {
+    display: flex;
+    padding-bottom: $singleMargin;
+  }
   input {
     padding: $singleMargin;
   }
   label {
-    margin: $singleMargin;
+    height: auto;
+    padding-left: $doubleMargin;
   }
 }
 
@@ -5290,4 +5296,7 @@ button:focus {
 
 #editUser hr {
   @include muiBorder;
+}
+#editUser .input.checkbox {
+  display: flex;
 }
