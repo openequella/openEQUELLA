@@ -414,7 +414,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <Grid item>
             <RefineSearchPanel
               controls={refinePanelControls}
-              handleClick={handleCollapsibleFilterClick}
+              onChangeExpansion={handleCollapsibleFilterClick}
               panelExpanded={filterExpansion}
               showFilterIcon={areCollapsibleFiltersSet()}
             />
