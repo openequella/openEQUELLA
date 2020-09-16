@@ -29,6 +29,7 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
+import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
   getEmptySearchResult,
@@ -36,10 +37,10 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
+import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -47,7 +48,6 @@ import {
 } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -56,6 +56,14 @@ import {
   clearSelection,
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
+import {
+  getRefineSearchComponent,
+  queryCollectionSelector,
+  queryDateRangeSelector,
+  queryOwnerSelector,
+  querySearchAttachmentsSelector,
+  queryStatusSelector,
+} from "./SearchPageHelper";
 
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
@@ -121,40 +129,6 @@ const renderSearchPage = async (): Promise<RenderResult> => {
 const reRenderSearchPage = async (page: RenderResult) => {
   page.unmount();
   return await renderSearchPage();
-};
-
-/**
- * Helper function to find individual Refine Search components based on the their `idSuffix`,
- * or return null if the component is not found.
- *
- * @param container The root container to start the search from
- * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
- */
-const queryRefineSearchComponent = (
-  container: Element,
-  componentSuffix: string
-): HTMLElement | null => {
-  const id = `#RefineSearchPanel-${componentSuffix}`;
-  return container.querySelector(id);
-};
-
-/**
- * Similar to queryRefineSearchComponent but throws an error if the component is not found.
- *
- * @see queryRefineSearchComponent
- * @param container The root container to start the search from
- * @param componentSuffix Typically the `idSuffix` provided in `SearchPage.tsx`
- */
-const getRefineSearchComponent = (
-  container: Element,
-  componentSuffix: string
-): HTMLElement => {
-  const e = queryRefineSearchComponent(container, componentSuffix);
-  if (!e) {
-    throw new Error(`Failed to find ${componentSuffix}`);
-  }
-
-  return e;
 };
 
 const getQueryBar = (container: Element): HTMLElement => {
@@ -342,6 +316,59 @@ describe("Refine search by Owner", () => {
   });
 });
 
+describe("Collapsible refine filter section", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should contain the correct controls", async () => {
+    const refineSearchPanel = page.getByText("Refine search").closest("div");
+    if (!refineSearchPanel) {
+      throw new Error("Unable to find refine search panel");
+    }
+
+    const collapsibleSection = refineSearchPanel.querySelector(
+      ".collapsibleRefinePanel"
+    );
+    if (!collapsibleSection) {
+      throw new Error(
+        "Unable to find collapsible filter section inside refine search panel"
+      );
+    }
+
+    expect(collapsibleSection).toContainElement(
+      queryOwnerSelector(refineSearchPanel)
+    );
+    expect(collapsibleSection).toContainElement(
+      queryDateRangeSelector(refineSearchPanel)
+    );
+    expect(collapsibleSection).toContainElement(
+      querySearchAttachmentsSelector(refineSearchPanel)
+    );
+    expect(collapsibleSection).not.toContainElement(
+      queryCollectionSelector(refineSearchPanel)
+    );
+  });
+
+  it("Should change button text when clicked", async () => {
+    const expansionButton = page.container.querySelector(
+      "#collapsibleRefinePanelButton"
+    );
+    if (!expansionButton) {
+      throw new Error("Unable to find collapsible refine panel button");
+    }
+    userEvent.click(expansionButton);
+    expect(expansionButton).toHaveTextContent(
+      languageStrings.common.action.showLess
+    );
+  });
+});
+
 describe("Hide Refine Search controls", () => {
   let page: RenderResult;
   beforeEach(async () => {
@@ -352,13 +379,9 @@ describe("Hide Refine Search controls", () => {
     jest.clearAllMocks();
   });
 
-  const getOwnerSelector = () =>
-    queryRefineSearchComponent(page.container, "OwnerSelector");
-  const getDateSelector = () =>
-    queryRefineSearchComponent(page.container, "DateRangeSelector");
-  const getStatusSelector = () =>
-    queryRefineSearchComponent(page.container, "StatusSelector");
-
+  const _queryOwnerSelector = () => queryOwnerSelector(page.container);
+  const _queryDateSelector = () => queryDateRangeSelector(page.container);
+  const _queryStatusSelector = () => queryStatusSelector(page.container);
   const disableDateSelector = {
     ...SearchSettingsModule.defaultSearchSettings,
     searchingDisableDateModifiedFilter: true,
@@ -376,19 +399,19 @@ describe("Hide Refine Search controls", () => {
     // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
     [
       "Owner Selector",
-      getOwnerSelector,
+      _queryOwnerSelector,
       disableOwnerSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Date Selector",
-      getDateSelector,
+      _queryDateSelector,
       disableDateSelector,
       SearchSettingsModule.defaultSearchSettings,
     ],
     [
       "Status Selector",
-      getStatusSelector,
+      _queryStatusSelector,
       SearchSettingsModule.defaultSearchSettings,
       enableStatusSelector,
     ],

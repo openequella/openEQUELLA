@@ -301,6 +301,8 @@ export const languageStrings = {
       done: "Done",
       yes: "Yes",
       no: "No",
+      showMore: "Show more",
+      showLess: "Show less",
     },
     result: {
       success: "Saved successfully.",
@@ -340,8 +342,6 @@ export const languageStrings = {
     },
     categorySelector: {
       title: "Classifications",
-      showMoreButton: "Show more",
-      showLessButton: "Show less",
     },
     filterOwner: {
       title: "Owner",

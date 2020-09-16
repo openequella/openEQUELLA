@@ -24,7 +24,7 @@ import {
   RenderResult,
   getAllByRole,
 } from "@testing-library/react";
-import { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
+import type { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
 import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
 import "@testing-library/jest-dom/extend-expect";
@@ -43,8 +43,8 @@ describe("<CategorySelector />", () => {
   const HOBART = "Hobart";
 
   // The text of 'SHOW MORE' and 'SHOW LESS' buttons
-  const SHOW_MORE = languageStrings.searchpage.categorySelector.showMoreButton;
-  const SHOW_LESS = languageStrings.searchpage.categorySelector.showLessButton;
+  const SHOW_MORE = languageStrings.common.action.showMore;
+  const SHOW_LESS = languageStrings.common.action.showLess;
 
   const renderCategorySelector = () =>
     render(

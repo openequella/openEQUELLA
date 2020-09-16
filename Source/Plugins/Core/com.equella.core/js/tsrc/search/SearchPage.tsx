@@ -15,48 +15,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
+import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router";
+import { generateFromError } from "../api/errors";
+import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
-
+import type { Collection } from "../modules/CollectionsModule";
 import {
   Classification,
   listClassifications,
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
-import { languageStrings } from "../util/langstrings";
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import {
+  DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
   searchItems,
   SearchOptions,
-  DateRange,
 } from "../modules/SearchModule";
-import SearchBar from "../search/components/SearchBar";
-import * as OEQ from "@openequella/rest-api-client";
-import { generateFromError } from "../api/errors";
 import {
   getSearchSettingsFromServer,
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import SearchBar from "../search/components/SearchBar";
+import { languageStrings } from "../util/langstrings";
 import { CategorySelector } from "./components/CategorySelector";
+import { CollectionSelector } from "./components/CollectionSelector";
+import OwnerSelector from "./components/OwnerSelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import { SearchResultList } from "./components/SearchResultList";
-import { CollectionSelector } from "./components/CollectionSelector";
-import { Collection } from "../modules/CollectionsModule";
-import { useHistory } from "react-router";
-import { DateRangeSelector } from "../components/DateRangeSelector";
-import OwnerSelector from "./components/OwnerSelector";
 import StatusSelector from "./components/StatusSelector";
 
 /**
@@ -69,6 +69,20 @@ export interface SearchPageOptions extends SearchOptions {
   dateRangeQuickModeEnabled: boolean;
 }
 
+/**
+ * Structure of data stored in browser history state, to capture the current state of SearchPage
+ */
+interface SearchPageHistoryState {
+  /**
+   * SearchPageOptions to store in history
+   */
+  searchPageOptions: SearchPageOptions;
+  /**
+   * Open/closed state of refine expansion panel
+   */
+  filterExpansion: boolean;
+}
+
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchStrings = languageStrings.searchpage;
   const {
@@ -78,15 +92,25 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 
   const history = useHistory();
-
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
   };
+
+  const defaultSearchPageHistory: SearchPageHistoryState = {
+    searchPageOptions: defaultSearchPageOptions,
+    filterExpansion: false,
+  };
+
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    (history.location.state as SearchPageOptions) ?? defaultSearchPageOptions
+    (history.location.state as SearchPageHistoryState)?.searchPageOptions ??
+      defaultSearchPageHistory.searchPageOptions
+  );
+  const [filterExpansion, setFilterExpansion] = useState(
+    (history.location.state as SearchPageHistoryState)?.filterExpansion ??
+      defaultSearchPageHistory.filterExpansion
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
     OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
@@ -122,6 +146,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
   }, [searchPageOptions]);
 
+  useEffect(() => {
+    history.replace({
+      ...history.location,
+      state: { searchPageOptions, filterExpansion },
+    });
+  }, [filterExpansion, pagedSearchResult]);
+
   // When Search options get changed, also update the Classification list.
   useEffect(() => {
     if (!isInitialSearch.current) {
@@ -143,7 +174,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchItems(searchPageOptions)
       .then((items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) => {
         setPagedSearchResult(items);
-        history.replace({ ...history.location, state: searchPageOptions });
         // scroll back up to the top of the page
         window.scrollTo(0, 0);
       })
@@ -169,6 +199,28 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       currentPage: 0,
       selectedCategories: undefined,
     });
+  };
+
+  const handleCollapsibleFilterClick = () => {
+    setFilterExpansion(!filterExpansion);
+  };
+
+  /**
+   * Determines if any collapsible filters have been modified from their defaults
+   */
+  const areCollapsibleFiltersSet = (): boolean => {
+    const getCollapsibleOptions = (options: SearchOptions) =>
+      pick(options, [
+        "lastModifiedDateRange",
+        "owner",
+        "status",
+        "searchAttachments",
+      ]);
+
+    return !isEqual(
+      getCollapsibleOptions(defaultSearchOptions),
+      getCollapsibleOptions(searchPageOptions)
+    );
   };
 
   const handlePageChanged = (page: number) =>
@@ -204,11 +256,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       selectedCategories: undefined,
     });
 
-  const handleClearSearchOptions = () =>
+  const handleClearSearchOptions = () => {
     setSearchPageOptions({
       ...defaultSearchPageOptions,
       sortOrder: searchSettings?.defaultSearchSort,
     });
+    setFilterExpansion(false);
+  };
 
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
     setSearchPageOptions({
@@ -358,7 +412,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <Grid item xs={3}>
         <Grid container direction="column" spacing={2}>
           <Grid item>
-            <RefineSearchPanel controls={refinePanelControls} />
+            <RefineSearchPanel
+              controls={refinePanelControls}
+              onChangeExpansion={handleCollapsibleFilterClick}
+              panelExpanded={filterExpansion}
+              showFilterIcon={areCollapsibleFiltersSet()}
+            />
           </Grid>
           {classifications.length > 0 &&
             classifications.some((c) => c.categories.length > 0) && (
