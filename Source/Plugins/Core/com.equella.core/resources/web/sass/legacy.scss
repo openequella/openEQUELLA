@@ -5230,73 +5230,76 @@ button:focus {
 }
 
 // User preferences page styling
-#editUser p {
-  @include typography-body-1;
-  margin-left: 0;
-}
 
-#editUser .edit h3 {
-  @include typography-headline-6;
-  color: $secondaryColor;
-}
-
-#editUser .edit:last-child,
-#editUser .edit:nth-last-child(2) {
-  h3 {
-    padding-top: $doubleMargin * 2;
-  }
+#editUser {
   p {
     @include typography-body-1;
+    margin-left: 0;
   }
-}
 
-.profile-save-button,
-.change-pass-button {
-  @include buttonShadowBorder;
-  width: 250px;
+  .edit h3 {
+    @include typography-headline-6;
+    color: $secondaryColor;
+  }
+
+  .edit.double .input.text {
+    height: 100px;
+    width: 510px;
+  }
+
+  .edit:last-child,
+  .edit:nth-last-child(2) {
+    h3 {
+      padding-top: $doubleMargin * 2;
+    }
+  }
+
+  #ed_fan {
+    margin-left: $singleMargin;
+  }
+
+  #ed_em {
+    width: 495px;
+  }
+
+  .itemdefs_container {
+    padding: $singleMargin;
+    border-radius: 3px;
+
+    li {
+      display: flex;
+      padding-bottom: $singleMargin;
+    }
+
+    input {
+      padding: $singleMargin;
+    }
+
+    label {
+      height: auto;
+      padding-left: $doubleMargin;
+    }
+  }
+
+  hr {
+    @include muiBorder;
+  }
+
+  .input.checkbox {
+    display: flex;
+  }
 }
 
 .user-details #col2 {
   width: 250px;
   margin: 0 $doubleMargin;
-}
-#editUser.area .edit.double .input.text {
-  height: 100px;
-  width: 510px;
-}
-
-#ed_fan {
-  margin-left: $singleMargin;
-}
-
-#ed_em {
-  width: 495px;
-}
-
-.itemdefs_container {
-  padding: $singleMargin;
-  border-radius: 3px;
-
-  li {
-    display: flex;
-    padding-bottom: $singleMargin;
-  }
-  input {
-    padding: $singleMargin;
-  }
-  label {
-    height: auto;
-    padding-left: $doubleMargin;
+  .profile-save-button,
+  .change-pass-button {
+    @include buttonShadowBorder;
+    width: 250px;
   }
 }
 
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
-}
-
-#editUser hr {
-  @include muiBorder;
-}
-#editUser .input.checkbox {
-  display: flex;
 }
