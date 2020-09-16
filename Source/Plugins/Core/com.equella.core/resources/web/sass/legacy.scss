@@ -42,6 +42,7 @@
 @import "whereclause.css";
 @import "myresourcecontribute.css";
 @import "htmleditorwebcontrol.css";
+@import "userdetails.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -5218,4 +5219,62 @@ button:focus {
   p {
     margin-left: 0;
   }
+}
+
+// User preferences page styling
+#editUser p {
+  @include typography-body-1;
+  margin-left: 0;
+}
+
+#editUser .edit h3 {
+  @include typography-headline-6;
+  color: $secondaryColor;
+}
+
+#editUser .edit:last-child,
+#editUser .edit:nth-last-child(2) {
+  h3 {
+    padding-top: $doubleMargin * 2;
+  }
+  p {
+    @include typography-body-1;
+  }
+}
+
+.profile-save-button,
+.change-pass-button {
+  @include buttonShadowBorder;
+  width: 250px;
+}
+
+.user-details #col2 {
+  width: 250px;
+  margin: 0 $doubleMargin;
+}
+#editUser.area .edit.double .input.text {
+  height: 100px;
+  width: 510px;
+}
+
+#ed_fan {
+  margin-left: $singleMargin;
+}
+
+#ed_em {
+  width: 495px;
+}
+
+.itemdefs_container {
+  padding: $singleMargin;
+
+  input {
+    padding: $singleMargin;
+  }
+  label {
+    margin: $singleMargin;
+  }
+}
+.newListSelected .newList {
+  padding-bottom: $doubleMargin;
 }
