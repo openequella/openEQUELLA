@@ -58,7 +58,7 @@ interface RefinePanelProps {
   /**
    * Handler for when the show more/show less button is clicked.
    */
-  handleClick: (expansionState: boolean) => void;
+  onChangeExpansion: (expansionState: boolean) => void;
   /**
    * Specifies whether the expansion panel should be expanded or collapsed.
    */
@@ -71,7 +71,7 @@ interface RefinePanelProps {
 
 export const RefineSearchPanel = ({
   controls,
-  handleClick,
+  onChangeExpansion,
   panelExpanded,
   showFilterIcon,
 }: RefinePanelProps) => {
@@ -92,7 +92,7 @@ export const RefineSearchPanel = ({
         <Button
           id="collapsibleRefinePanelButton"
           fullWidth
-          onClick={() => handleClick(panelExpanded)}
+          onClick={() => onChangeExpansion(panelExpanded)}
           endIcon={
             showFilterIcon && !panelExpanded ? (
               <FilterList
