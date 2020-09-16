@@ -3,18 +3,19 @@
 <html>
 <head>
   <style>
-    html{
+    html {
       font-family: Arial, Helvetica, sans-serif;
       background-color: #FAFAFA;
       text-align: center;
       line-height: 1.5em;
     }
-    #unsupported{
+
+    #unsupported {
       background-color: #FFFFFF;
       position: absolute;
       width: 50%;
       left: 50%;
-      box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+      box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
       padding: 16px;
       border-radius: 10px;
       -ms-transform: translate(-50%);
@@ -23,9 +24,8 @@
   </style>
 </head>
 <div id="unsupported">
-  <h1>Sorry, you are using an unsupported browser.</h1>
-  <p>For the openEQUELLA New UI you must be using a current version of Firefox, Chrome or Microsoft Edge.
+  <h1>${b.key('unsupportedbrowser.heading')}</h1>
+  <p>${b.key('unsupportedbrowser.message')}
   </p>
 </div>
-
 </html>
