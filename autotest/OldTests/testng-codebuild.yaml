@@ -4,6 +4,7 @@ threadCount: 1
 tests:
   - name: OneAfterAnother
     classes:
+      - com.tle.webtests.test.searching.NewSearchPageTest
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.CloudSearchingTest
       - com.tle.webtests.test.searching.GallerySearchTest
