@@ -65,6 +65,14 @@ $doubleMargin: 16px;
   border-radius: 4px;
   border: none;
 }
+
+@mixin muiBorder {
+  border: none;
+  height: 1px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
 @mixin hoverHighlight {
   &:hover {
     background-color: $hoverBackgroundColor;
@@ -5275,6 +5283,11 @@ button:focus {
     margin: $singleMargin;
   }
 }
+
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
+}
+
+#editUser hr {
+  @include muiBorder;
 }
