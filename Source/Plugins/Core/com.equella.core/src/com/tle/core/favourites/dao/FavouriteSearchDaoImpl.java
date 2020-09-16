@@ -56,15 +56,16 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
             freetext, dates, offset, perPage, orderby, reverse, userId, institution));
   }
 
-  @SuppressWarnings({"nls", "unchecked"})
+  @SuppressWarnings("nls")
   @Override
   public FavouriteSearch getById(long id) {
     List<FavouriteSearch> search =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from FavouriteSearch where id = :id and owner = :owner and institution = :inst",
-                new String[] {"id", "owner", "inst"},
-                new Object[] {id, CurrentUser.getUserID(), CurrentInstitution.get()});
+        (List<FavouriteSearch>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from FavouriteSearch where id = :id and owner = :owner and institution = :inst",
+                    new String[] {"id", "owner", "inst"},
+                    new Object[] {id, CurrentUser.getUserID(), CurrentInstitution.get()});
     return uniqueResult(search);
   }
 

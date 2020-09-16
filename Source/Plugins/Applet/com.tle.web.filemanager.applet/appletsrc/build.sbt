@@ -1,4 +1,4 @@
-val springVersion = "5.2.8.RELEASE"
+val springVersion = "5.2.9.RELEASE"
 
 libraryDependencies ++= Seq(
   "com.google.guava"         % "guava"           % "18.0",
@@ -8,9 +8,6 @@ libraryDependencies ++= Seq(
   "org.springframework"      % "spring-aop"      % springVersion
 )
 
-// TODO ^^^ tried added it for Spring 5 review of 'remoting' package.
-//  "org.springframework.security" % "spring-security-core" % "5.3.4.RELEASE"
-//
 dependsOn(platformSwing, LocalProject("com_tle_common_applet"))
 
 packageOptions in assembly += Package.ManifestAttributes(

@@ -26,7 +26,6 @@ import com.tle.core.dao.helpers.ScrollableResultsIterator;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import javax.inject.Singleton;
@@ -71,8 +70,7 @@ public class QtiAssessmentItemDaoImpl extends GenericInstitionalDaoImpl<QtiAsses
                 .execute(
                     new HibernateCallback() {
                       @Override
-                      public Object doInHibernate(Session session)
-                          throws HibernateException, SQLException {
+                      public Object doInHibernate(Session session) throws HibernateException {
                         final Query query =
                             session.createQuery(
                                 "FROM QtiAssessmentItem WHERE institution = :institution");
@@ -84,12 +82,12 @@ public class QtiAssessmentItemDaoImpl extends GenericInstitionalDaoImpl<QtiAsses
     return new ScrollableResultsIterator<QtiAssessmentItem>(cinnamonScroll);
   }
 
-  @SuppressWarnings("unchecked")
   private List<QtiAssessmentItem> listAll() {
-    return getHibernateTemplate()
-        .find(
-            "FROM QtiAssessmentItem WHERE institution = ?",
-            new Object[] {CurrentInstitution.get()});
+    return (List<QtiAssessmentItem>)
+        getHibernateTemplate()
+            .find(
+                "FROM QtiAssessmentItem WHERE institution = ?",
+                new Object[] {CurrentInstitution.get()});
   }
 
   @Transactional(propagation = Propagation.MANDATORY)

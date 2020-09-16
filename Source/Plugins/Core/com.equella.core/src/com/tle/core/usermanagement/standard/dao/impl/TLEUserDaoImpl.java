@@ -67,7 +67,6 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEUser> searchUsersInGroup(
       String userQuery, final String parentGroupID, boolean recurse) {
     // Prep the query by converting all *'s to %'s and lowercase it.
@@ -105,36 +104,37 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
       }
     }
 
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) {
-                Query query = session.createQuery(q.toString());
-                query.setCacheable(true);
-                query.setReadOnly(true);
+    return (List<TLEUser>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) {
+                    Query query = session.createQuery(q.toString());
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
 
-                query.setParameter("institution", CurrentInstitution.get());
+                    query.setParameter("institution", CurrentInstitution.get());
 
-                int ti = 0;
-                for (String t : tokens) {
-                  query.setParameter("token" + (ti++), '%' + t + '%');
-                }
+                    int ti = 0;
+                    for (String t : tokens) {
+                      query.setParameter("token" + (ti++), '%' + t + '%');
+                    }
 
-                if (!Check.isEmpty(parentGroupID)) {
-                  query.setParameter("groupID", parentGroupID);
-                }
+                    if (!Check.isEmpty(parentGroupID)) {
+                      query.setParameter("groupID", parentGroupID);
+                    }
 
-                return query.list();
-              }
-            });
+                    return query.list();
+                  }
+                });
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEUser> listAllUsers() {
-    return getHibernateTemplate()
-        .find("from TLEUser where institution = ?", new Object[] {CurrentInstitution.get()});
+    return (List<TLEUser>)
+        getHibernateTemplate()
+            .find("from TLEUser where institution = ?", new Object[] {CurrentInstitution.get()});
   }
 
   @Override
@@ -224,23 +224,23 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEUser> getInformationForUsers(Collection<String> ids) {
     if (Check.isEmpty(ids)) {
       return new ArrayList<TLEUser>();
     }
 
-    return getHibernateTemplate()
-        .executeFind(
-            new CollectionPartitioner<String, TLEUser>(ids) {
-              @Override
-              public List<TLEUser> doQuery(Session session, Collection<String> collection) {
-                return session
-                    .createQuery("FROM TLEUser u WHERE u.uuid in (:ids) AND u.institution = :i")
-                    .setParameterList("ids", collection)
-                    .setParameter("i", CurrentInstitution.get())
-                    .list();
-              }
-            });
+    return (List<TLEUser>)
+        getHibernateTemplate()
+            .execute(
+                new CollectionPartitioner<String, TLEUser>(ids) {
+                  @Override
+                  public List<TLEUser> doQuery(Session session, Collection<String> collection) {
+                    return session
+                        .createQuery("FROM TLEUser u WHERE u.uuid in (:ids) AND u.institution = :i")
+                        .setParameterList("ids", collection)
+                        .setParameter("i", CurrentInstitution.get())
+                        .list();
+                  }
+                });
   }
 }

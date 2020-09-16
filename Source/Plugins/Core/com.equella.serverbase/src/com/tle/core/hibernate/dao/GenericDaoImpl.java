@@ -239,31 +239,31 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * .Order, int, int, org.hibernate.criterion.Criterion[])
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> findAllByCriteria(
       @Nullable final Order order,
       final int firstResult,
       final int maxResults,
       final Criterion... criterion) {
-    return getHibernateTemplate()
-        .execute(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = createCriteria(session, criterion);
+    return (List<T>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Criteria criteria = createCriteria(session, criterion);
 
-                if (order != null) {
-                  criteria.addOrder(order);
-                }
-                if (firstResult > 0) {
-                  criteria.setFirstResult(firstResult);
-                }
-                if (maxResults >= 0) {
-                  criteria.setMaxResults(maxResults);
-                }
-                return criteria.list();
-              }
-            });
+                    if (order != null) {
+                      criteria.addOrder(order);
+                    }
+                    if (firstResult > 0) {
+                      criteria.setFirstResult(firstResult);
+                    }
+                    if (maxResults >= 0) {
+                      criteria.setMaxResults(maxResults);
+                    }
+                    return criteria.list();
+                  }
+                });
   }
 
   /**

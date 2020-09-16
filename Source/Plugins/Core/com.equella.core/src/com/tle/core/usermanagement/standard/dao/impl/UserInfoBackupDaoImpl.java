@@ -60,9 +60,11 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
 
   @Override
   public List<UserInfoBackup> getAllInfo() {
-    return getHibernateTemplate()
-        .find(
-            "from UserInfoBackup where institution_id = ?", CurrentInstitution.get().getUniqueId());
+    return (List<UserInfoBackup>)
+        getHibernateTemplate()
+            .find(
+                "from UserInfoBackup where institution_id = ?",
+                CurrentInstitution.get().getUniqueId());
   }
 
   @Transactional(propagation = Propagation.MANDATORY)

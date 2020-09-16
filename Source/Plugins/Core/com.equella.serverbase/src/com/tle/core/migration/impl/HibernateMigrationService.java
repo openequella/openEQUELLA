@@ -150,9 +150,9 @@ public class HibernateMigrationService {
     return migrations;
   }
 
-  @SuppressWarnings("unchecked")
   public MigrationsToRun findMigrationsToRun(boolean system) {
-    List<MigrationLog> logEntries = getHibernateTemplate().find("from MigrationLog");
+    List<MigrationLog> logEntries =
+        (List<MigrationLog>) getHibernateTemplate().find("from MigrationLog");
     Map<String, MigrationLog> statuses = new HashMap<String, MigrationLog>();
     for (MigrationLog logEntry : logEntries) {
       statuses.put(logEntry.getMigrationId(), logEntry);

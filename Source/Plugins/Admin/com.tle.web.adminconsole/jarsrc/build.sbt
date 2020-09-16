@@ -1,4 +1,4 @@
-val springVersion = "5.2.8.RELEASE"
+val springVersion = "5.2.9.RELEASE"
 
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"             % "1.0.7",

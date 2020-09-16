@@ -42,13 +42,13 @@ public class UserPreferenceDaoImpl
     super(UserPreference.class);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<UserPreference> enumerateAll() {
-    return getHibernateTemplate()
-        .find(
-            "from UserPreference where key.institution = ?",
-            CurrentInstitution.get().getDatabaseId());
+    return (List<UserPreference>)
+        getHibernateTemplate()
+            .find(
+                "from UserPreference where key.institution = ?",
+                CurrentInstitution.get().getDatabaseId());
   }
 
   @Override
@@ -68,13 +68,13 @@ public class UserPreferenceDaoImpl
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Set<String> getReferencedUsers() {
     final List<String> userIds =
-        getHibernateTemplate()
-            .find(
-                "select distinct u.key.userID from UserPreference u where u.key.institution = ?",
-                CurrentInstitution.get().getDatabaseId());
+        (List<String>)
+            getHibernateTemplate()
+                .find(
+                    "select distinct u.key.userID from UserPreference u where u.key.institution = ?",
+                    CurrentInstitution.get().getDatabaseId());
     final Set<String> userIdSet = new HashSet<String>(userIds.size());
     userIdSet.addAll(userIds);
     return userIdSet;

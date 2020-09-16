@@ -162,14 +162,15 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
     if (items.isEmpty()) {
       return Collections.emptyList();
     }
-    return getHibernateTemplate()
-        .findByNamedParam(query("from %p p where p.item.id in (:items)"), "items", items);
+    return (List<P>)
+        getHibernateTemplate()
+            .findByNamedParam(query("from %p p where p.item.id in (:items)"), "items", items);
   }
 
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public H getHoldingInItem(Item item) {
-    List<H> holdings = getHibernateTemplate().find(query("from %h where item = ?"), item);
+    List<H> holdings = (List<H>) getHibernateTemplate().find(query("from %h where item = ?"), item);
     if (!holdings.isEmpty()) {
       if (holdings.size() > 1) {
         throw new RuntimeException("Too many holdings for item:" + item.getId());
@@ -187,8 +188,9 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
       return holding;
     }
     List<H> holdings =
-        getHibernateTemplate()
-            .find(query("select p.holding from %p p where p.item = ?"), item); // $NON-NLS-1$
+        (List<H>)
+            getHibernateTemplate()
+                .find(query("select p.holding from %p p where p.item = ?"), item); // $NON-NLS-1$
     return holdings.isEmpty() ? null : holdings.get(0);
   }
 
@@ -197,12 +199,13 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
   public List<Item> getAllItemsForHolding(H holding) {
     // Dirty code for Oracle bug (cannot use "select distinct(p.item)")
     List<Item> items =
-        getHibernateTemplate()
-            .find(
-                query(
-                    "select p.item from %p p where p.item.id in "
-                        + "(select distinct(p2.item.id) from %p p2 where p2.holding = ?)"),
-                holding);
+        (List<Item>)
+            getHibernateTemplate()
+                .find(
+                    query(
+                        "select p.item from %p p where p.item.id in "
+                            + "(select distinct(p2.item.id) from %p p2 where p2.holding = ?)"),
+                    holding);
 
     return items;
   }
@@ -211,11 +214,12 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
   @Transactional(propagation = Propagation.MANDATORY)
   public S getSectionForAttachment(Item item, String attachmentUuid) {
     List<S> sections =
-        getHibernateTemplate()
-            .findByNamedParam(
-                query("from %s where portion.item = :item and attachment = :attachment"),
-                new String[] {"item", "attachment"},
-                new Object[] {item, attachmentUuid});
+        (List<S>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    query("from %s where portion.item = :item and attachment = :attachment"),
+                    new String[] {"item", "attachment"},
+                    new Object[] {item, attachmentUuid});
     if (sections.isEmpty()) {
       return null;
     }
@@ -263,18 +267,22 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
     Map<Long, H> holdingMap = new HashMap<Long, H>();
     if (!items.isEmpty()) {
       List<Object[]> holdingItems =
-          getHibernateTemplate()
-              .findByNamedParam(
-                  query("select p.holding, p.item from %p p where p.item.id in (:items)"),
-                  "items",
-                  items);
+          (List<Object[]>)
+              getHibernateTemplate()
+                  .findByNamedParam(
+                      query("select p.holding, p.item from %p p where p.item.id in (:items)"),
+                      "items",
+                      items);
       for (Object[] objs : holdingItems) {
         holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);
       }
       holdingItems =
-          getHibernateTemplate()
-              .findByNamedParam(
-                  query("select h, h.item from %h h where h.item.id in (:items)"), "items", items);
+          (List<Object[]>)
+              getHibernateTemplate()
+                  .findByNamedParam(
+                      query("select h, h.item from %h h where h.item.id in (:items)"),
+                      "items",
+                      items);
       for (Object[] objs : holdingItems) {
         holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);
       }
@@ -286,12 +294,13 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
   @Transactional(propagation = Propagation.MANDATORY)
   public Attachment getSectionAttachmentForFilepath(Item item, String filepath) {
     Iterator<Attachment> iter =
-        getHibernateTemplate()
-            .iterate(
-                query(
-                    "select a from %s s join s.portion as p join p.item as i join i.attachments as a"
-                        + " where a.class = FileAttachment and a.uuid = s.attachment and a.url = ? and i = ?"),
-                new Object[] {filepath, item});
+        (Iterator<Attachment>)
+            getHibernateTemplate()
+                .iterate(
+                    query(
+                        "select a from %s s join s.portion as p join p.item as i join i.attachments as a"
+                            + " where a.class = FileAttachment and a.uuid = s.attachment and a.url = ? and i = ?"),
+                    new Object[] {filepath, item});
     if (!iter.hasNext()) {
       return null;
     }

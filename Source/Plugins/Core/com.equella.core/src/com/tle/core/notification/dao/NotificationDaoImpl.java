@@ -27,7 +27,6 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.notification.beans.Notification;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,32 +66,32 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
     return getExistingNotification(itemId.toString(), reason, user);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional
   public Notification getExistingNotification(String keyAsString, String reason, String user) {
     List<Notification> notifications =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from Notification where itemid = :itemid and reason = :reason and userTo = :user and institution = :inst",
-                new String[] {ITEMID, REASON, USER, INST},
-                new Object[] {keyAsString, reason, user, CurrentInstitution.get()});
+        (List<Notification>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from Notification where itemid = :itemid and reason = :reason and userTo = :user and institution = :inst",
+                    new String[] {ITEMID, REASON, USER, INST},
+                    new Object[] {keyAsString, reason, user, CurrentInstitution.get()});
     if (notifications.isEmpty()) {
       return null;
     }
     return notifications.get(0);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Notification> getNotificationsForItem(ItemId itemId, Institution institution) {
     List<Notification> notifications =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from Notification where itemidOnly = :itemid and institution = :inst",
-                new String[] {ITEMID, INST},
-                new Object[] {itemId.toString(), institution});
+        (List<Notification>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from Notification where itemidOnly = :itemid and institution = :inst",
+                    new String[] {ITEMID, INST},
+                    new Object[] {itemId.toString(), institution});
     return notifications;
   }
 
@@ -219,8 +218,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "UPDATE Notification SET userTo = :toUserId"
@@ -243,8 +241,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "select n.userTo, i.uniqueId from Notification n join n.institution as i "
@@ -307,8 +304,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "select count(reason), reason from Notification "

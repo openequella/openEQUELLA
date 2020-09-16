@@ -36,15 +36,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.core.BridgeMethodResolver;
-import org.springframework.core.CollectionFactory;
-import org.springframework.core.JdkVersion;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -65,8 +65,8 @@ public class SecurityAttributeSource {
       ImmutableSet.of(
           BaseEntity.class, EntityPack.class, Item.class, ItemPack.class, ActivateRequest.class);
 
-  final Map<CacheKey, SecurityAttribute> attributeCache =
-      CollectionFactory.createConcurrentMapIfPossible(16);
+  // TODO - this assumes Java 5+ is required for oEQ.
+  final Map<CacheKey, SecurityAttribute> attributeCache = new ConcurrentHashMap<>(16);
 
   public SecurityAttribute getAttribute(Method method, Class<?> targetClass) {
     CacheKey cacheKey = new CacheKey(method, targetClass);
@@ -91,9 +91,12 @@ public class SecurityAttributeSource {
     // target class.
     // If the target class is null, the method will be unchanged.
     Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+
     // If we are dealing with method with generic parameters, find the
     // original method.
-    if (JdkVersion.isAtLeastJava15()) {
+    // TODO - consider just dropping the version conditional.  No one should be
+    // running oEQ or the Admin Console lower than Java 8.
+    if (SystemUtils.isJavaVersionAtLeast(5)) {
       specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
     }
 

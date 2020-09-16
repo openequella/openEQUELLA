@@ -47,10 +47,10 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
    * @see com.tle.core.dao.ItemDefinitionDao#findByType(java.lang.String)
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<ItemDefinition> findByType(String type) {
-    return getHibernateTemplate()
-        .findByNamedParam("from ItemDefinition where type = :type", "type", type);
+    return (List<ItemDefinition>)
+        getHibernateTemplate()
+            .findByNamedParam("from ItemDefinition where type = :type", "type", type);
   }
 
   /*
@@ -109,11 +109,12 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
   @Override
   public ItemDefinition getByItemId(ItemKey itemId) {
     List<Object> results =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select i.itemDefinition from Item i where i.uuid = :uuid and i.version = :version and i.institution = :institution",
-                new String[] {"uuid", "version", "institution"},
-                new Object[] {itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()});
+        (List<Object>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select i.itemDefinition from Item i where i.uuid = :uuid and i.version = :version and i.institution = :institution",
+                    new String[] {"uuid", "version", "institution"},
+                    new Object[] {itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()});
     int size = results.size();
     if (size == 0) {
       return null;
