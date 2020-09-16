@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   "com.miglayout"          % "miglayout-swing" % "4.2",
   "org.springframework"    % "spring-web"      % springVersion,
   "org.springframework"    % "spring-aop"      % springVersion,
-  "org.springframework"    % "spring-remoting" % springVersion
+  "org.springframework"    % "spring-context"  % springVersion
 )
 
 unmanagedJars in Compile += file(sys.props("java.home")) / "lib/javaws.jar"
