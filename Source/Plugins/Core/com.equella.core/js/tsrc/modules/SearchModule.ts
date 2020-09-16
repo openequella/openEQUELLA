@@ -20,7 +20,6 @@ import { API_BASE_URL } from "../config";
 import { SelectedCategories } from "./SearchFacetsModule";
 import { SortOrder } from "./SearchSettingsModule";
 import { Collection } from "./CollectionsModule";
-import { DateRange } from "../components/DateRangeSelector";
 import { getISODateString } from "../util/Date";
 
 /**
@@ -72,6 +71,20 @@ export interface SearchOptions {
    * Whether to search attachments or not.
    */
   searchAttachments?: boolean;
+}
+
+/**
+ * Represent a date range which has an optional start and end.
+ */
+export interface DateRange {
+  /**
+   * The start date of a date range.
+   */
+  start?: Date;
+  /**
+   * The end date of a date range.
+   */
+  end?: Date;
 }
 
 /**

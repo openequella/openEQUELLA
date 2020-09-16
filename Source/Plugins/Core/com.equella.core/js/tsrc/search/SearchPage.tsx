@@ -15,12 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { generateFromError } from "../api/errors";
-import { DateRange, DateRangeSelector } from "../components/DateRangeSelector";
+import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
   templateDefaults,
   templateError,
@@ -32,9 +34,8 @@ import {
   listClassifications,
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
-import { languageStrings } from "../util/langstrings";
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import {
+  DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
   searchItems,
@@ -46,9 +47,10 @@ import {
   SortOrder,
 } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
+import { languageStrings } from "../util/langstrings";
+import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
-import { CategorySelector } from "./components/CategorySelector";
 import {
   RefinePanelControl,
   RefineSearchPanel,
@@ -56,7 +58,6 @@ import {
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import { SearchResultList } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
-import { isEqual, pick } from "lodash";
 
 /**
  * Type of search options that are specific to Search page presentation layer.

@@ -51,6 +51,8 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
   0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
+$singleMargin: 8px;
+$doubleMargin: 16px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -1054,7 +1056,12 @@ div.area {
 }
 
 #fancybox-inner {
-  @include buttonShadowBorder;
+  display: grid;
+}
+
+#selection-content-inner.search-layout .mainCols #col2 #selection-summary {
+  position: sticky;
+  top: 70px;
 }
 
 #fancybox-wrap {
@@ -2033,11 +2040,21 @@ div.skinnysearch {
   width: 390px;
 }
 
+.btn-plus {
+  //to override .btn
+  padding: 0;
+  margin: 0;
+  line-height: 1.25rem;
+}
+
 #selection-content-inner.wizard-layout
   .indent2
   .autocompleteControl
   input[type="text"] {
   width: 350px;
+}
+#sis_button.action-button {
+  @include buttonShadowBorder;
 }
 
 #selection-content-inner.wizard-layout
@@ -2566,18 +2583,18 @@ html.wait {
 }
 
 .itemresult-rating div.float-right .btn {
+  @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
   vertical-align: middle;
-  border-radius: 0;
-}
-
-.itemresult-rating div.float-right .btn:last-child {
-  border-radius: 0 2px 2px 0;
+  min-width: 0;
+  border-radius: 50px;
+  padding: 4px;
+  line-height: 1.3rem;
 }
 
 .itemresult-rating div.float-right .button-expandable.unselect:hover {
-  width: 88px;
+  width: 120px;
 }
 
 .itemresult-stars,
@@ -2596,6 +2613,14 @@ html.wait {
 
 .itemresult-metaline {
   width: 100%;
+}
+
+#sc_attachments_selectAllAttachmentButton:hover,
+#sc_attachments_selectPackageButton:hover {
+  width: 215px;
+  line-height: 1.3rem;
+  font-size: 12px;
+  padding-right: 8px;
 }
 
 .itemresult-metaline .itemresult-meta-delim,
@@ -2720,6 +2745,10 @@ input.term-paths {
 .itemresult-rating div.float-right {
   .btn {
     margin: 0 8px;
+  }
+  .btn:hover {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
 
@@ -2987,6 +3016,7 @@ button + .repeater-groups {
 }
 
 .customfile-feedback {
+  text-align: left;
   background: none;
   padding-left: 4px;
   font-style: normal;
@@ -3263,10 +3293,9 @@ i.icon-minus {
   &:before {
     content: "\e15b";
     font-family: "Material Icons";
-    font-size: 24px;
+    font-size: 20px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
     font-style: normal;
   }
 }
@@ -3453,28 +3482,28 @@ Item summary styling
 }
 
 .shareButton {
-  background-image: url(../../images/baseline_share_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_share_white_18dp.png);
 }
 
 .addToFavourites {
-  background-image: url(../../images/baseline_star_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_star_white_18dp.png);
 }
 
 .removeFromFavourites {
-  background-image: url(../../images/baseline_remove_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
 .wizard-major-actions.save {
-  background-image: url(../../images/baseline_save_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
 .add-mime {
-  background-image: url(../../images/baseline_code_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
 .itemsummary-layout hr {
@@ -3756,6 +3785,19 @@ table.versions td {
   right: 0;
 }
 
+#selection-content-inner.itemsummary-layout
+  .mainCols
+  #col1
+  .area
+  #comments-add.rating-form.comment-form
+  .rate {
+  position: unset;
+}
+
+#selection-content-inner.itemsummary-layout .box {
+  width: 100%;
+}
+
 .rate {
   position: absolute;
   top: -18px;
@@ -3864,6 +3906,15 @@ td.sectionAction {
   width: 60px;
 }
 
+.selection .selectable .attachments-browse.structured li .button-div .btn {
+  @include buttonShadowBorder;
+  border-radius: 50px;
+  min-width: unset;
+  line-height: 1.3rem;
+  padding: 4px;
+  margin: 4px 0;
+}
+
 .settingContainer.skinny {
   width: 100%;
 
@@ -3885,6 +3936,10 @@ td.sectionAction {
 div.selection #copyright-table td.sectionAction {
   max-width: 14px;
   width: 12px;
+}
+
+table td.actions a {
+  line-height: 1.43rem;
 }
 
 td.sectionAction button.activate-one {
@@ -3975,7 +4030,8 @@ table#copyright-table tr td {
 }
 
 .attachments-browse.structured li.attachmentrow .droparrow {
-  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
+  //this droparrow is redundant and shouldn't be rendered.
+  display: none !important;
 }
 
 .attachments-browse.thumbs li.attachmentrow .droparrow {
@@ -4109,12 +4165,13 @@ a.modal-control.modal-save {
 }
 
 div.universaliframe {
-  /*
-	This is what the fancybox ends up being
-	for multiple resource handler selection
-	*/
-  height: 476px;
+  @include buttonShadowBorder;
   overflow: hidden;
+  height: 650px;
+  width: 1250px;
+  // workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
+  // as this breaks the popup taxonomy selector
+  margin-left: -240px;
 }
 
 div.universaliframe iframe {
@@ -4446,6 +4503,14 @@ input[disabled="disabled"] {
     no-repeat;
 }
 
+button.package-select {
+  margin: 0;
+  border-radius: 50px;
+  min-width: unset;
+  padding: 4px;
+  line-height: 1.3rem;
+}
+
 .browse-topics ul li span {
   @include typography-subtitle-2;
 }
@@ -4489,6 +4554,14 @@ div#sssh_finishedButton {
   align-content: space-around;
   justify-content: center;
   padding-top: 10px;
+}
+
+#selection-header
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner {
+  display: grid;
+  justify-content: center;
 }
 
 #selection-header
@@ -4621,6 +4694,7 @@ div#sssh_finishedButton {
   .btn {
     float: right;
     margin-left: 4px;
+    margin-right: 0;
   }
 }
 
@@ -4628,10 +4702,8 @@ div#sssh_finishedButton {
   padding-top: 50px;
   float: right;
   width: 100%;
-
-  #button-bar {
-    float: right;
-  }
+  display: grid;
+  justify-items: end;
 
   .btn {
     border: none;
@@ -4645,10 +4717,8 @@ div#sssh_finishedButton {
   font-family: "Material Icons";
   font-size: 20px;
   color: set-text-color($primaryColor);
-  padding-right: 4px;
   font-style: normal;
   vertical-align: middle;
-  padding-top: 4px;
 }
 
 .icon-chevron-up:before {
@@ -4723,12 +4793,9 @@ div#sssh_finishedButton {
 /*****************************************************************************
  Structured item summary page
 *****************************************************************************/
-#selection-content-inner.itemsummary-layout .box {
-  width: 238px;
-}
 
 #selection-content-inner.itemsummary-layout .majorActions {
-  padding-top: 30px;
+  padding-top: 48px;
 }
 
 #selection-content-inner.itemsummary-layout #searchprevnext .btn-group {
@@ -5132,4 +5199,24 @@ label[for="password"] {
 
 button:focus {
   outline: lightgrey dashed 1px;
+}
+
+.manualdatafixes {
+  button {
+    @include buttonShadowBorder;
+    margin-top: $singleMargin;
+    margin-bottom: $singleMargin;
+  }
+  #rmdfsgto_forceUpdate {
+    // The radio buttons for the 'Generate thumbnails and previews' section
+    display: flex;
+    margin: $doubleMargin 0;
+    label {
+      vertical-align: center;
+      font-size: 16px;
+    }
+  }
+  p {
+    margin-left: 0;
+  }
 }
