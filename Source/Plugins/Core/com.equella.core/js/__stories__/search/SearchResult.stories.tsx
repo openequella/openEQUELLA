@@ -15,131 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import type { Story } from "@storybook/react";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../tsrc/search/components/SearchResult";
-import { boolean, number, object, text } from "@storybook/addon-knobs";
 
 export default {
   title: "Search/SearchResult",
   component: SearchResult,
 };
-const defaultItemName = "Item Name";
-const defaultItemDescription = "Item Description";
 
-export const BasicSearchResultComponent = () => (
-  <SearchResult
-    name={text("name", mockData.basicSearchObj.name || defaultItemName)}
-    version={number("version", mockData.basicSearchObj.version)}
-    uuid={text("uuid", mockData.basicSearchObj.uuid)}
-    description={text(
-      "description",
-      mockData.basicSearchObj.description || defaultItemDescription
-    )}
-    displayFields={object("display fields", [
-      ...mockData.basicSearchObj.displayFields,
-    ])}
-    modifiedDate={object("modified date", mockData.basicSearchObj.modifiedDate)}
-    createdDate={object("created date", mockData.basicSearchObj.createdDate)}
-    status={text("item status", mockData.basicSearchObj.status)}
-    displayOptions={object(
-      "display options",
-      mockData.basicSearchObj.displayOptions
-    )}
-    attachments={object("attachments", [
-      ...mockData.basicSearchObj.attachments,
-    ])}
-    links={object("links", mockData.basicSearchObj.links)}
-    collectionId={text("collection ID", mockData.basicSearchObj.collectionId)}
-    commentCount={number("comment count", mockData.basicSearchObj.commentCount)}
-    thumbnail={text("thumbnail", mockData.basicSearchObj.thumbnail)}
-    keywordFoundInAttachment={boolean(
-      "keywordFoundInAttachment",
-      mockData.basicSearchObj.keywordFoundInAttachment
-    )}
-  />
+export const BasicSearchResult: Story<OEQ.Search.SearchResultItem> = (args) => (
+  <SearchResult {...args} />
 );
+BasicSearchResult.args = {
+  ...mockData.basicSearchObj,
+};
 
-export const AttachmentSearchResultComponent = () => (
-  <SearchResult
-    name={text("name", mockData.attachSearchObj.name || defaultItemName)}
-    version={number("version", mockData.attachSearchObj.version)}
-    uuid={text("uuid", mockData.attachSearchObj.uuid)}
-    description={text(
-      "description",
-      mockData.attachSearchObj.description || defaultItemDescription
-    )}
-    displayFields={object("display fields", [
-      ...mockData.attachSearchObj.displayFields,
-    ])}
-    modifiedDate={object(
-      "modified date",
-      mockData.attachSearchObj.modifiedDate
-    )}
-    createdDate={object("created date", mockData.attachSearchObj.createdDate)}
-    status={text("item status", mockData.attachSearchObj.status)}
-    displayOptions={object(
-      "display options",
-      mockData.attachSearchObj.displayOptions
-    )}
-    attachments={object("attachments", [
-      ...mockData.attachSearchObj.attachments,
-    ])}
-    links={object("links", mockData.attachSearchObj.links)}
-    collectionId={text("collection ID", mockData.attachSearchObj.collectionId)}
-    commentCount={number(
-      "comment count",
-      mockData.attachSearchObj.commentCount
-    )}
-    thumbnail={text("thumbnail", mockData.attachSearchObj.thumbnail)}
-    keywordFoundInAttachment={boolean(
-      "keywordFoundInAttachment",
-      mockData.basicSearchObj.keywordFoundInAttachment
-    )}
-  />
-);
+export const AttachmentSearchResult: Story<OEQ.Search.SearchResultItem> = (
+  args
+) => <SearchResult {...args} />;
+AttachmentSearchResult.args = {
+  ...mockData.attachSearchObj,
+};
 
-export const CustomMetadataSearchResultComponent = () => (
-  <SearchResult
-    name={text("name", mockData.customMetaSearchObj.name || defaultItemName)}
-    version={number("version", mockData.customMetaSearchObj.version)}
-    uuid={text("uuid", mockData.customMetaSearchObj.uuid)}
-    description={text(
-      "description",
-      mockData.customMetaSearchObj.description || defaultItemDescription
-    )}
-    displayFields={object("display fields", [
-      ...mockData.customMetaSearchObj.displayFields,
-    ])}
-    modifiedDate={object(
-      "modified date",
-      mockData.customMetaSearchObj.modifiedDate
-    )}
-    createdDate={object(
-      "created date",
-      mockData.customMetaSearchObj.createdDate
-    )}
-    status={text("item status", mockData.customMetaSearchObj.status)}
-    displayOptions={object(
-      "display options",
-      mockData.customMetaSearchObj.displayOptions
-    )}
-    attachments={object("attachments", [
-      ...mockData.customMetaSearchObj.attachments,
-    ])}
-    links={object("links", mockData.customMetaSearchObj.links)}
-    collectionId={text(
-      "collection ID",
-      mockData.customMetaSearchObj.collectionId
-    )}
-    commentCount={number(
-      "comment count",
-      mockData.customMetaSearchObj.commentCount
-    )}
-    thumbnail={text("thumbnail", mockData.customMetaSearchObj.thumbnail)}
-    keywordFoundInAttachment={boolean(
-      "keywordFoundInAttachment",
-      mockData.basicSearchObj.keywordFoundInAttachment
-    )}
-  />
-);
+export const KeywordFoundInAttachmentSearchResult: Story<OEQ.Search.SearchResultItem> = (
+  args
+) => <SearchResult {...args} />;
+KeywordFoundInAttachmentSearchResult.args = {
+  ...mockData.attachSearchObj,
+  keywordFoundInAttachment: true,
+};
+
+export const CustomMetadataSearchResult: Story<OEQ.Search.SearchResultItem> = (
+  args
+) => <SearchResult {...args} />;
+CustomMetadataSearchResult.args = {
+  ...mockData.customMetaSearchObj,
+  keywordFoundInAttachment: false,
+};
