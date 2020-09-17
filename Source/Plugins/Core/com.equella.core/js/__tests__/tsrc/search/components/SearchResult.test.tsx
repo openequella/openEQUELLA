@@ -29,7 +29,11 @@ describe("<SearchResult/>", () => {
     return render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
       <BrowserRouter>
-        <SearchResult {...itemResult} key={itemResult.uuid} />
+        <SearchResult
+          key={itemResult.uuid}
+          item={{ ...itemResult }}
+          highlights={[]}
+        />
       </BrowserRouter>
     );
   };

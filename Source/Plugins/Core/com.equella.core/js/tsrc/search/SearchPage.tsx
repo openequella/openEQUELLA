@@ -404,6 +404,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onChange: handleSortOrderChanged,
               }}
               onClearSearchOptions={handleClearSearchOptions}
+              highlights={pagedSearchResult.highlight}
             />
           </Grid>
         </Grid>

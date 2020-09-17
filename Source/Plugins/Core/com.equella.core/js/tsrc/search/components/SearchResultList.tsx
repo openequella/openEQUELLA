@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import * as OEQ from "@openequella/rest-api-client";
 import {
   Button,
   Card,
@@ -30,11 +28,13 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
-import { languageStrings } from "../../util/langstrings";
-import SearchResult from "./SearchResult";
 import { makeStyles } from "@material-ui/core/styles";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { languageStrings } from "../../util/langstrings";
+import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
+import SearchResult from "./SearchResult";
 
 const useStyles = makeStyles({
   transparentList: {
@@ -70,6 +70,10 @@ export interface SearchResultListProps {
    * Fired when the New search button is clicked.
    */
   onClearSearchOptions: () => void;
+  /**
+   * List of words which should be highlighted in the titles and descriptions of items.
+   */
+  highlights: string[];
 }
 
 /**
@@ -84,6 +88,7 @@ export const SearchResultList = ({
   orderSelectProps,
   paginationProps,
   onClearSearchOptions,
+  highlights,
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
@@ -92,7 +97,11 @@ export const SearchResultList = ({
    */
   const searchResults = searchResultItems.map(
     (item: OEQ.Search.SearchResultItem) => (
-      <SearchResult {...item} key={item.uuid} />
+      <SearchResult
+        key={item.uuid}
+        item={{ ...item }}
+        highlights={highlights}
+      />
     )
   );
 
