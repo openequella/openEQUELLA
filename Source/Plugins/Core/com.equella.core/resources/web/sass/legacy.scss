@@ -52,6 +52,8 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
 $modalFooterHeight: 50px;
+$iframeDialogWidth: 1175px;
+$iframeDialogHeight: 650px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
 
@@ -209,6 +211,11 @@ $doubleMargin: 16px;
   letter-spacing: 0.0892857143em;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+@mixin centreAlignFancyBox {
+  //workaround to avoid editing fancybox-styles
+  margin-left: -200px;
 }
 
 /*****************************************************************************
@@ -4110,11 +4117,10 @@ a.modal-control.modal-save {
 
 .fileHandler {
   @include buttonShadowBorder;
-  width: 1175px;
-  height: 668px;
+  @include centreAlignFancyBox;
+  width: $iframeDialogWidth;
+  height: $iframeDialogHeight + $doubleMargin;
   position: sticky;
-  //workaround to avoid editing fancybox styling
-  margin-left: -200px;
 }
 
 .fileHandler
@@ -4204,11 +4210,10 @@ a.modal-control.modal-save {
 
 div.universaliframe {
   @include buttonShadowBorder;
+  @include centreAlignFancyBox;
   overflow: hidden;
-  height: 650px;
-  width: 1175px;
-  //workaround to avoid editing fancybox-styles
-  margin-left: -200px;
+  height: $iframeDialogHeight;
+  width: $iframeDialogWidth;
 }
 
 div.universaliframe iframe {
