@@ -53,12 +53,12 @@ const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
   .pathname;
 const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
-declare const renderData:
-  | {
-      baseResources: string;
-      newUI: boolean;
-    }
-  | undefined;
+export interface RenderData {
+  baseResources: string;
+  newUI: boolean;
+  autotestMode: boolean;
+}
+declare const renderData: RenderData | undefined;
 
 const beforeunload = function (e: Event) {
   e.returnValue = ("Are you sure?" as unknown) as boolean;
@@ -180,6 +180,7 @@ function IndexPage() {
               {...mkRouteProps(p)}
               errorCallback={errorCallback}
               legacyContent={{ content, setLegacyContentProps }}
+              renderData={renderData}
             />
           )}
         />

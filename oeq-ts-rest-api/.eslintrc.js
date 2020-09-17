@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 module.exports = {
   root: true,
   env: {
@@ -22,4 +24,9 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {},
+  settings: {
+    jest: {
+      version: 26,
+    },
+  },
 };
