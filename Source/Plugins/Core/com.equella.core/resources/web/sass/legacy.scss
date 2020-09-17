@@ -5304,3 +5304,8 @@ $col2Width: 250px;
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
 }
+
+#finduses,
+#lmsexport {
+  min-height: 100px;
+}
