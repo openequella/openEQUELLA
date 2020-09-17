@@ -259,3 +259,65 @@ jobs:
         with:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
+
+  rest-module-testing:
+    needs: build_and_check
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: equellatests
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Download installer
+        uses: actions/download-artifact@v1
+        with:
+          name: Artefacts
+
+      - name: Extract installer from build
+        env:
+          DOWNLOAD_DIR: Artefacts
+          INSTALLER_DIR: Installer/target
+        run: |
+          tar --directory $DOWNLOAD_DIR -xvf $DOWNLOAD_DIR/artefacts.tar
+          mkdir -p $INSTALLER_DIR
+          mv -v $DOWNLOAD_DIR/equella-installer*.zip $INSTALLER_DIR
+
+      - name: Install openEquella
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+            installEquella startEquella configureInstall setupForTests
+
+      - name: Set up NVM
+        shell: bash -l {0}
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          echo "source $NVM_DIR/nvm.sh" >> "$HOME/.bash_profile"
+
+      - name: Install NodeJS
+        shell: bash -l {0}
+        run: |
+          nvm install
+
+      - name: Run tests
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm cit
