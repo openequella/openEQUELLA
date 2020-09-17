@@ -166,9 +166,8 @@ object RenderNewTemplate {
     }
   }
 
-  def isInternetExplorer(request: HttpServletRequest): Boolean = {
-    (Option(request.getHeader("User-Agent")).exists(_.contains("Trident")))
-  }
+  def isInternetExplorer(request: HttpServletRequest): Boolean =
+    Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
