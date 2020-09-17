@@ -1,23 +1,27 @@
 ### Contents
-[Download Ubuntu Desktop Software](#download-ubuntu)
-* <a href="#download-ubuntu">Download Ubuntu Desktop Software</a>
-* <a href="#install-oracle">Install Oracle Virtual Box VM Software</a>
-* <a href="#install-sdkman">Install sdkman to Run and Manage Java 8</a>
-* <a href="#install-postgres">Install Postgresql</a>
-* <a href="#install-pgadmin">Install Pgadmin4</a>
-* <a href="#install-libinfo5">Install libtinfo5</a>
-* <a href="#install-npm">Install npm</a>
-* <a href="#install-node">Install Nodejs</a>
-* <a href="#install-imagemagick">Install ImageMagick</a>
-* <a href="#install-git">Install Git</a>
-* <a href="#install-intellij">Install Intellij</a>
-* <a href="#install-ssh">Generate an SSH key and Add it to the ssh-agent</a>
-* <a href="#add-key">Add the ssh key to your openEQUELLA GitHub Repository</a>
-* <a href="#clone-repo">Clone the openEQUELLA Repository</a>
-* <a href="#install-sbt">Install SBT</a>
-* <a href="#create-branch">Create a New Branch of openEQUELLA in Git</a>
-* <a href="#import-sbt">Import sbt project into Intellij</a>
-* <a href="#compile-run">Compile and Run openEQUELLA Server</a>
+
+* [Download Ubuntu Desktop Software](#download-ubuntu)
+* [Install Oracle Virtual Box VM Software](#install-oracle)
+* [Install sdkman to Run and Manage Java 8](#install-sdkman)
+* [Install Postgresql](#install-postgres)
+* [Install Pgadmin4](#install-pgadmin)
+* [Install libtinfo5](#install-libinfo5)
+* [Install npm](#install-npm)
+* [Install Nodejs](#install-node)
+* [Install ImageMagick](#install-imagemagick)
+* [Install Git](#install-git)
+* [Install Intellij](#install-intellij)
+* [Generate an SSH key and Add it to the ssh-agent](#install-ssh)
+* [Add the ssh key to your openEQUELLA GitHub Repository](#add-key)
+* [Clone the openEQUELLA Repository](#clone-repo)
+* [Install SBT](#install-sbt)
+* [Create a New Branch of openEQUELLA in Git](#create-branch)
+* [Import sbt project into Intellij](#import-sbt)
+* [Compile and Run openEQUELLA Serve](#compile-run)
+
+
+
+
 
 
 ***
