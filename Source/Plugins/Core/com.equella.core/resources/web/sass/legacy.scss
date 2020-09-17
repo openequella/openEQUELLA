@@ -431,6 +431,7 @@ select[multiple="multiple"] {
   @include typography-body-1;
   padding-left: 8px;
   min-width: 204px;
+  float: none;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
@@ -5303,9 +5304,4 @@ $col2Width: 250px;
 
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
-}
-
-#finduses,
-#lmsexport {
-  min-height: 100px;
 }
