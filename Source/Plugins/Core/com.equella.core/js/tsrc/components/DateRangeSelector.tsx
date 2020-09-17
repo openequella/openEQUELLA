@@ -27,25 +27,12 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+import type { DateRange } from "../modules/SearchModule";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { languageStrings } from "../util/langstrings";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
-
-/**
- * Type of date range.
- */
-export interface DateRange {
-  /**
-   * The start date of a date range.
-   */
-  start?: Date;
-  /**
-   * The end date of a date range.
-   */
-  end?: Date;
-}
 
 interface DatePickerProps {
   /**

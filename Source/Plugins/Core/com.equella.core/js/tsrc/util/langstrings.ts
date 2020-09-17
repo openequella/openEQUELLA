@@ -90,7 +90,10 @@ export function initStrings() {
   for (const key of Object.keys(languageStrings) as Array<
     keyof typeof languageStrings
   >) {
-    prepLangStrings(key, languageStrings[key]);
+    (languageStrings as LanguageStrings)[key] = prepLangStrings(
+      key,
+      languageStrings[key]
+    );
   }
 }
 
@@ -301,6 +304,8 @@ export const languageStrings = {
       done: "Done",
       yes: "Yes",
       no: "No",
+      showMore: "Show more",
+      showLess: "Show less",
     },
     result: {
       success: "Saved successfully.",
@@ -340,8 +345,6 @@ export const languageStrings = {
     },
     categorySelector: {
       title: "Classifications",
-      showMoreButton: "Show more",
-      showLessButton: "Show less",
     },
     filterOwner: {
       title: "Owner",
