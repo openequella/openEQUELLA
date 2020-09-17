@@ -262,7 +262,9 @@ jobs:
 
   rest-module-testing:
     needs: build_and_check
+
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:9.6
@@ -278,6 +280,10 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
+
+    env:
+      AUTOTEST_CONFIG: autotest/github-actions.conf
+
     steps:
       - uses: actions/checkout@v1
 
