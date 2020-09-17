@@ -1,22 +1,22 @@
 ### Contents
-
+[Download Ubuntu Desktop Software](#download-ubuntu)
 * <a href="#download-ubuntu">Download Ubuntu Desktop Software</a>
 * <a href="#install-oracle">Install Oracle Virtual Box VM Software</a>
-* <a href="#install-sdkman">Install sdkman to Run and Manage Java 8</a>	
-* <a href="#install-postgres">Install Postgresql</a>	
-* <a href="#install-pgadmin">Install Pgadmin4</a>	
-* <a href="#install-libinfo5">Install libtinfo5</a>	
-* <a href="#install-npm">Install npm</a>	
-* <a href="#install-node">Install Nodejs</a>	
-* <a href="#install-imagemagick">Install ImageMagick</a>	
-* <a href="#install-git">Install Git</a>	
-* <a href="#install-intellij">Install Intellij</a>	
-* <a href="#install-ssh">Generate an SSH key and Add it to the ssh-agent</a>	
-* <a href="#add-key">Add the ssh key to your openEQUELLA GitHub Repository</a>	
-* <a href="#clone-repo">Clone the openEQUELLA Repository</a>	
-* <a href="#install-sbt">Install SBT</a>	
-* <a href="#create-branch">Create a New Branch of openEQUELLA in Git</a>	
-* <a href="#import-sbt">Import sbt project into Intellij</a>	
+* <a href="#install-sdkman">Install sdkman to Run and Manage Java 8</a>
+* <a href="#install-postgres">Install Postgresql</a>
+* <a href="#install-pgadmin">Install Pgadmin4</a>
+* <a href="#install-libinfo5">Install libtinfo5</a>
+* <a href="#install-npm">Install npm</a>
+* <a href="#install-node">Install Nodejs</a>
+* <a href="#install-imagemagick">Install ImageMagick</a>
+* <a href="#install-git">Install Git</a>
+* <a href="#install-intellij">Install Intellij</a>
+* <a href="#install-ssh">Generate an SSH key and Add it to the ssh-agent</a>
+* <a href="#add-key">Add the ssh key to your openEQUELLA GitHub Repository</a>
+* <a href="#clone-repo">Clone the openEQUELLA Repository</a>
+* <a href="#install-sbt">Install SBT</a>
+* <a href="#create-branch">Create a New Branch of openEQUELLA in Git</a>
+* <a href="#import-sbt">Import sbt project into Intellij</a>
 * <a href="#compile-run">Compile and Run openEQUELLA Server</a>
 
 
@@ -161,7 +161,7 @@ Now you can download Oracle Virtual Box
 
 ![Show applications](images/29%20Show%20applications.png)
 
-29. Type displays in the applications search box. 
+29. Type displays in the applications search box.
 
 ![Type displays](images/30%20Type%20displays.png)
 
@@ -171,7 +171,7 @@ Now you can download Oracle Virtual Box
 
 ### <a id="user-content-install-sdkman" class="anchor" aria-hidden="true" href="#install-sdkman"></a>Install sdkman to Run and Manage Java 8
 
-1. From the applications waffle menu type “terminal” in the search box. 
+1. From the applications waffle menu type “terminal” in the search box.
 
 ![get terminal2](images/34%20get%20terminal2.PNG)
 
@@ -187,7 +187,7 @@ Now you can download Oracle Virtual Box
 
 5. This will show the commands to install sdkman and Java 8, but I will provide the commands below.
 
-6. In the terminal window type the following command. 
+6. In the terminal window type the following command.
 
 `$ curl -s "https://get.sdkman.io" | bash`
 
@@ -538,7 +538,7 @@ Verify you are on currently on the develop branch.
 
 ### <a id="user-content-compile-run" class="anchor" aria-hidden="true" href="#compile-run"></a>Compile and Run openEQUELLA Server
 
-1. f you don't have enough RAM on your host OS, please bring your max heap config down to 3072 or even lower to 2048 if sbt fails ( via the -mem in **.sbtopts** ). 
+1. f you don't have enough RAM on your host OS, please bring your max heap config down to 3072 or even lower to 2048 if sbt fails ( via the -mem in **.sbtopts** ).
 
 NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type cntr +H which will reveal hidden files. The other options is to
  access the file from a terminal windows. Navigate to the openEquella directory and type the command below.
@@ -553,7 +553,7 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 
 `$ sbt installerZip`
 
-4. Run the commands in the following order. 
+4. Run the commands in the following order.
 
 `Sbt:Equella> compile`</br>
 `Sbt:Equella> prepareDevConfig`
@@ -597,7 +597,7 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 ![add institution](images/postgresql/add%20institution.png)
 
 14. Configure the institution. I have chosen port 8080 as to not conflict with port 80 which is the default port for http protocol. Add a password Click “Import new Institution.”
- 
+
 ![install](images/postgresql/eq%2001%20install.png)
 
 15. Enter the password you created previously when configuring the institution.
