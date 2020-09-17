@@ -42,6 +42,7 @@
 @import "whereclause.css";
 @import "myresourcecontribute.css";
 @import "htmleditorwebcontrol.css";
+@import "userdetails.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -59,11 +60,26 @@ $doubleMargin: 16px;
   -moz-box-shadow: $boxShadow;
   -webkit-box-shadow: $boxShadow;
 }
+
+@mixin curvedCorners {
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
 @mixin buttonShadowBorder {
   @include boxShadow;
-  border-radius: 4px;
+  @include curvedCorners;
   border: none;
 }
+
+@mixin muiBorder {
+  border: none;
+  height: 1px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
 @mixin hoverHighlight {
   &:hover {
     background-color: $hoverBackgroundColor;
@@ -350,6 +366,7 @@ Buttons
 *****************************************************************************/
 
 .btn {
+  @include curvedCorners;
   padding: 0 8px 0 8px;
   display: inline-flex;
   position: relative;
@@ -358,7 +375,6 @@ Buttons
   box-sizing: border-box;
   min-width: 64px;
   border: none;
-  border-radius: 4px;
   outline: none;
   cursor: pointer;
   background-color: $primaryColor;
@@ -374,8 +390,8 @@ Buttons
 }
 
 .button-expandable {
+  @include curvedCorners;
   font-size: 0;
-  border-radius: 4px;
   &:hover {
     @include typography-button();
   }
@@ -475,15 +491,12 @@ select[multiple="multiple"] {
 }
 
 .modal-search-result.youtube img {
+  @include curvedCorners;
   margin: 0 20px 10px 0;
   padding: 4px;
   background: #fff;
   border: 1px solid #ddd;
   float: left;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .modal-search-result.youtube input {
@@ -1579,11 +1592,9 @@ Alerts
 *****************************************************************************/
 
 .alert {
+  @include curvedCorners;
   padding: 14px 35px 8px 35px;
   background-color: #fcf8e3;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   position: fixed;
   color: white;
@@ -4265,15 +4276,11 @@ img.warningimg {
 }
 
 .universalresources .progress-bar {
+  @include curvedCorners;
   width: 200px;
   height: 14px;
   border: 1px solid #aaa;
   margin: 0 10px 0 0;
-
-  -moz-border-radius: 3px;
-  -o-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
   float: right;
 }
 
@@ -5218,4 +5225,82 @@ button:focus {
   p {
     margin-left: 0;
   }
+}
+
+// User preferences page styling
+
+#editUser {
+  p {
+    @include typography-body-1;
+    margin-left: 0;
+  }
+
+  .edit h3 {
+    @include typography-headline-6;
+    color: $secondaryColor;
+  }
+
+  .edit.double .input.text {
+    height: 100px;
+    width: 510px;
+  }
+
+  .edit:last-child,
+  .edit:nth-last-child(2) {
+    //the last two edit sections on the page - needs an extra margin because of the drop downs
+    h3 {
+      padding-top: $doubleMargin * 2;
+    }
+  }
+
+  #ed_fan {
+    margin-left: $singleMargin;
+  }
+
+  #ed_em {
+    width: 495px;
+  }
+
+  .itemdefs_container {
+    @include curvedCorners;
+    padding: $singleMargin;
+
+    li {
+      display: flex;
+      padding-bottom: $singleMargin;
+    }
+
+    input {
+      padding: $singleMargin;
+    }
+
+    label {
+      height: auto;
+      padding-left: $doubleMargin;
+    }
+  }
+
+  hr {
+    @include muiBorder;
+  }
+
+  .input.checkbox {
+    display: flex;
+  }
+}
+
+$col2Width: 250px;
+
+.user-details #col2 {
+  width: $col2Width;
+  margin: 0 $doubleMargin;
+  .profile-save-button,
+  .change-pass-button {
+    @include buttonShadowBorder;
+    width: $col2Width;
+  }
+}
+
+.newListSelected .newList {
+  padding-bottom: $doubleMargin;
 }
