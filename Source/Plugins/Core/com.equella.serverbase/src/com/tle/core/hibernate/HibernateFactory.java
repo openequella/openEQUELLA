@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.engine.spi.Mapping;
 
 @SuppressWarnings("nls")
 public class HibernateFactory {

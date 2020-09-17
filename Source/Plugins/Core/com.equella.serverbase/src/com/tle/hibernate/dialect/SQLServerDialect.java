@@ -36,12 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.spi.Mapping;
+import org.hibernate.internal.util.StringHelper;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.util.StringHelper;
+
+// TODO [SpringHib5] - StringHelper is now internal and should not be used directly.
 
 @SuppressWarnings("nls")
 public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect

@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.annotations.CollectionOfElements;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -43,10 +43,10 @@ public class Schema extends BaseEntity {
   @Transient private transient PropBagEx definition;
   @Transient private transient SchemaNode rootSchemaNode;
 
-  @CollectionOfElements(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.LAZY)
   private List<SchemaTransform> expTransforms = new ArrayList<SchemaTransform>();
 
-  @CollectionOfElements(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.LAZY)
   private List<SchemaTransform> impTransforms = new ArrayList<SchemaTransform>();
 
   private String itemNamePath;
@@ -54,7 +54,7 @@ public class Schema extends BaseEntity {
 
   @Lob private String serialisedDefinition;
 
-  @CollectionOfElements(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.LAZY)
   @JoinColumn
   private List<Citation> citations = new ArrayList<Citation>();
 

@@ -22,11 +22,11 @@ import com.tle.common.DoNotClone;
 import com.tle.common.DoNotSimplify;
 import java.lang.annotation.Annotation;
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import org.hibernate.annotations.CollectionOfElements;
 
 public abstract class Property {
   private Boolean isCascade;
@@ -87,8 +87,8 @@ public abstract class Property {
     if (manyToOne != null) {
       return hasCascadeAll(manyToOne.cascade());
     }
-    // CollectionOfElements is a 'default' cascade all
-    if (getAnnotation(CollectionOfElements.class) != null) {
+    // ElementCollection is a 'default' cascade all
+    if (getAnnotation(ElementCollection.class) != null) {
       return true;
     }
 

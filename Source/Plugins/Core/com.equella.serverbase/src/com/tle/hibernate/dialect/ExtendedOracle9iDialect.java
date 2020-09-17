@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import org.hibernate.dialect.Oracle9iDialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.StandardBasicTypes;

@@ -28,6 +28,8 @@ import io.doolse.simpledba.jdbc._
 import javax.sql.DataSource
 import org.slf4j.LoggerFactory
 import org.springframework.orm.hibernate5.SessionHolder
+// TODO - ideally we should not be accessing the concrete impl.  See note below.
+import org.hibernate.internal.SessionImpl
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
 object RunWithDB {
@@ -46,7 +48,9 @@ object RunWithDB {
     if (sessionHolder == null) {
       sys.error("There is no hibernate session - make sure it's inside @Transactional")
     }
-    val con = sessionHolder.getSession().connection()
+    // TODO this is not the ideal solution.  Need to consider options, such as Work API.
+    // https://stackoverflow.com/questions/3526556/session-connection-deprecated-on-hibernate
+    val con = sessionHolder.getSession().asInstanceOf[SessionImpl].connection()
     val uc  = UserContext.fromThreadLocals()
     jdbc.run(uc).runA(con).unsafeRunSync()
   }

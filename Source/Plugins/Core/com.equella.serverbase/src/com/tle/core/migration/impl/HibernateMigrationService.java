@@ -50,9 +50,9 @@ import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 @Bind

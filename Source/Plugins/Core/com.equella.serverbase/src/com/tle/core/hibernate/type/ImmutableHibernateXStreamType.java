@@ -27,9 +27,9 @@ import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
-import org.hibernate.util.EqualsHelper;
 
 public class ImmutableHibernateXStreamType implements UserType {
   // XStream is thread-safe, and this class gets instantiated **a lot**.
@@ -55,7 +55,7 @@ public class ImmutableHibernateXStreamType implements UserType {
   @Override
   public boolean equals(Object x, Object y) throws HibernateException // NOSONAR
       {
-    return EqualsHelper.equals(x, y);
+    return Objects.equals(x, y);
   }
 
   @Override

@@ -3,12 +3,10 @@ lazy val CustomCompile = config("compile") extend Hibernate
 val springVersion      = "5.2.9.RELEASE"
 
 libraryDependencies := Seq(
-  "org.hibernate"    % "hibernate-core"      % "3.6.8.Final",
-  "org.hibernate"    % "hibernate-validator" % "4.2.0.Final",
-  "javax.validation" % "validation-api"      % "1.0.0.GA",
-//  "org.hibernate" % "hibernate-validator-annotation-processor" % "4.2.0.Final",
-  "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
-  "com.thoughtworks.xstream"        % "xstream-hibernate"     % "1.4.11.1" excludeAll (
+  "org.hibernate"            % "hibernate-core"        % "5.4.21.Final",
+  "org.hibernate"            % "hibernate-validator"   % "6.1.5.Final",
+  "javax.persistence"        % "javax.persistence-api" % "2.2",
+  "com.thoughtworks.xstream" % "xstream-hibernate"     % "1.4.13" excludeAll (
     ExclusionRule(organization = "org.hibernate")
   ),
   "org.springframework" % "spring-orm" % springVersion excludeAll (

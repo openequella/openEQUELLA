@@ -21,7 +21,7 @@ package com.tle.core.hibernate;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 

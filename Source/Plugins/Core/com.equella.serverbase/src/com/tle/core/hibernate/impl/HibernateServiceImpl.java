@@ -75,8 +75,8 @@ public class HibernateServiceImpl implements HibernateService {
     // TODO - likely need to reconfigure this.  SpringTransactionFactory doesn't exist in
     // Spring 5 / Hib5.   -
     // https://stackoverflow.com/questions/43057858/where-did-the-class-org-hibernate-transaction-jdbctransactionfactory-go-in-hiber
-    // factory.setProperty(Environment.TRANSACTION_STRATEGY,
-    // SpringTransactionFactory.class.getName());
+    //    factory.setProperty(Environment.TRANSACTION_STRATEGY,
+    //     SpringTransactionFactory.class.getName());
     factory.setProperty(
         Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.class.getName());
     return factory;

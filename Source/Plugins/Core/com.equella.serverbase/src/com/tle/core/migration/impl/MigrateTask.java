@@ -35,8 +35,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 
 public final class MigrateTask extends SingleShotTask {
   private static String KEY_PFX = AbstractPluginService.getMyPluginId(MigrateTask.class) + ".";

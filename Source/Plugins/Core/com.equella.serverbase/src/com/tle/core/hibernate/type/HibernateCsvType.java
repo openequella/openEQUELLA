@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
-import org.hibernate.util.SerializationHelper;
+
+// TODO [SpringHib5] - SerializationHelper is now internal and should not be used directly.
 
 public class HibernateCsvType implements UserType {
   private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);

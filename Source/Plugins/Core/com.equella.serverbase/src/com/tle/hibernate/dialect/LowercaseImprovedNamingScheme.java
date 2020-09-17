@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.hibernate.AssertionFailure;
 import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.util.StringHelper;
+import org.hibernate.internal.util.StringHelper;
+
+// TODO [SpringHib5] - StringHelper is now internal and should not be used directly.
 
 /**
  * Extends the ImprovedNamingScheme to make sure that the resulting table name is all lowercase.
