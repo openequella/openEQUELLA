@@ -131,6 +131,7 @@ function IndexPage() {
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
+      reloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
     };
   }
 
@@ -180,7 +181,6 @@ function IndexPage() {
               {...mkRouteProps(p)}
               errorCallback={errorCallback}
               legacyContent={{ content, setLegacyContentProps }}
-              renderData={renderData}
             />
           )}
         />
@@ -269,7 +269,12 @@ export default function () {
     ReactDOM.render(
       <BrowserRouter basename={basePath} forceRefresh>
         <ThemeProvider theme={oeqTheme}>
-          <SettingsPage refreshUser={() => {}} updateTemplate={() => {}} />
+          {/* Opening Settings page in Old UI does not required reloading the page.*/}
+          <SettingsPage
+            refreshUser={() => {}}
+            updateTemplate={() => {}}
+            reloadNeeded={false}
+          />
         </ThemeProvider>
       </BrowserRouter>,
       document.getElementById("settingsPage")
