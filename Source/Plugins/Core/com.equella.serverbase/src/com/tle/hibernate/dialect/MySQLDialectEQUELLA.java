@@ -21,10 +21,12 @@ package com.tle.hibernate.dialect;
 import java.sql.Types;
 
 public class MySQLDialectEQUELLA extends org.hibernate.dialect.MySQLDialect {
+
+  // TODO [SpringHib5] Had to remove the capacity parameter.  Worth a bit deeper review
   @Override
-  protected void registerColumnType(int code, int capacity, String name) {
+  protected void registerColumnType(int code, String name) {
     if (code != Types.CLOB) {
-      super.registerColumnType(code, capacity, name);
+      super.registerColumnType(code, name);
     }
   }
 }

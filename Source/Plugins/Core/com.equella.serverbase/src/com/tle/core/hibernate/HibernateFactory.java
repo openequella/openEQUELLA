@@ -19,19 +19,14 @@
 package com.tle.core.hibernate;
 
 import com.tle.hibernate.dialect.LowercaseImprovedNamingScheme;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
-import javax.sql.DataSource;
-import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 import org.hibernate.engine.spi.Mapping;
 
 @SuppressWarnings("nls")
 public class HibernateFactory {
-  private static final String KEY_DATASOURCE = "datasource";
   private Mapping mapping;
   private ExtendedAnnotationConfiguration config;
   private SessionFactory sessionFactory;
@@ -58,8 +53,11 @@ public class HibernateFactory {
         ExtendedDialect dialect = dataSourceHolder.getDialect();
         this.config = new ExtendedAnnotationConfiguration(dialect);
         config.setProperties(properties);
-        config.setProperty(Environment.CONNECTION_PROVIDER, DataSourceProvider.class.getName());
-        properties.put(KEY_DATASOURCE, dataSourceHolder.getDataSource());
+        // TODO [SpringHib5] opted for the default impl.  Might be some massaging with the props vs
+        // map
+        config.setProperty(
+            Environment.CONNECTION_PROVIDER, DatasourceConnectionProviderImpl.class.getName());
+        properties.put(Environment.DATASOURCE, dataSourceHolder.getDataSource());
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
         config.setProperty("javax.persistence.validation.mode", "DDL");
@@ -74,22 +72,23 @@ public class HibernateFactory {
     return config;
   }
 
-  public synchronized Mapping getMapping() {
-    if (mapping == null) {
-      ClassLoader oldLoader = oldLoader();
-      try {
-        setContextLoader(classLoader);
-        mapping = getConfiguration().buildMapping();
-      } finally {
-        setContextLoader(oldLoader);
-      }
-    }
-    return mapping;
-  }
+  //  public synchronized Mapping getMapping() {
+  //    if (mapping == null) {
+  //      ClassLoader oldLoader = oldLoader();
+  //      try {
+  //        setContextLoader(classLoader);
+  //        mapping = getConfiguration().buildMapping();
+  //      } finally {
+  //        setContextLoader(oldLoader);
+  //      }
+  //    }
+  //    return mapping;
+  //  }
 
   public synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      getMapping();
+      // TODO [SpringHib5] need to initialize the mappings
+      // getMapping();
       ClassLoader oldLoader = oldLoader();
       try {
         setContextLoader(classLoader);
@@ -111,35 +110,6 @@ public class HibernateFactory {
 
   public String getDefaultSchema() {
     return dataSourceHolder.getDefaultSchema();
-  }
-
-  public static class DataSourceProvider implements ConnectionProvider {
-    private DataSource dataSource;
-
-    @Override
-    public void configure(Properties props) throws HibernateException {
-      dataSource = (DataSource) props.get(KEY_DATASOURCE);
-    }
-
-    @Override
-    public Connection getConnection() throws SQLException {
-      return dataSource.getConnection();
-    }
-
-    @Override
-    public void closeConnection(Connection conn) throws SQLException {
-      conn.close();
-    }
-
-    @Override
-    public void close() throws HibernateException {
-      // nothing
-    }
-
-    @Override
-    public boolean supportsAggressiveRelease() {
-      return true;
-    }
   }
 
   public void setClassLoader(ClassLoader classLoader) {
