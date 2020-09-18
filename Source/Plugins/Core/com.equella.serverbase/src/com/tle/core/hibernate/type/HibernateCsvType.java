@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
@@ -74,7 +75,11 @@ public class HibernateCsvType implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
+  public Object nullSafeGet(
+      ResultSet rs, String[] names, SharedSessionContractImplementor implementor, Object owner)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
     String name = names[0];
     String clob = rs.getString(name);
     if (clob == null) {
@@ -122,7 +127,11 @@ public class HibernateCsvType implements UserType {
   }
 
   @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
+  public void nullSafeSet(
+      PreparedStatement st, Object value, int index, SharedSessionContractImplementor implementor)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
     String res = null;
     if (value instanceof String) {
       // Only pass in a String if you don't care about the type of value being included.

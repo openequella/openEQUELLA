@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 public class ImmutableHibernateXStreamType implements UserType {
@@ -64,7 +65,11 @@ public class ImmutableHibernateXStreamType implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
+  public Object nullSafeGet(
+      ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
     Reader reader = rs.getCharacterStream(names[0]);
     if (reader == null) {
       return null;
@@ -87,7 +92,11 @@ public class ImmutableHibernateXStreamType implements UserType {
   }
 
   @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
+  public void nullSafeSet(
+      PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
     if (value != null) {
       String string = xstream.serialiseToXml(value);
       StringReader reader = new StringReader(string);

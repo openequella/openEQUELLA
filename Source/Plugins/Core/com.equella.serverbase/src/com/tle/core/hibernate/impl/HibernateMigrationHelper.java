@@ -216,9 +216,9 @@ public class HibernateMigrationHelper {
           StringBuilder buf = new StringBuilder("alter table ");
           buf.append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema));
           buf.append(" add constraint ");
-          buf.append(extDialect.getRandomIdentifier());
-          buf.append(' ');
-          String constraint = uk.sqlConstraintString(dialect);
+          String constraint =
+              uk.sqlConstraintString(
+                  dialect, extDialect.getRandomIdentifier(), defaultCatalog, defaultSchema);
           if (constraint != null) {
             buf.append(constraint);
             sqlStrings.add(buf.toString());

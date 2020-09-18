@@ -22,9 +22,10 @@ import java.sql.Types;
 
 public class MySQL5DialectEQUELLA extends org.hibernate.dialect.MySQL5Dialect {
   @Override
-  protected void registerColumnType(int code, int capacity, String name) {
+  protected void registerColumnType(int code, String name) {
+    // TODO [SpringHib5] Had to remove the capacity parameter.  Worth a bit deeper review
     if (code != Types.CLOB) {
-      super.registerColumnType(code, capacity, name);
+      super.registerColumnType(code, name);
     }
   }
 }

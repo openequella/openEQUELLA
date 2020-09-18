@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -79,8 +80,12 @@ public class HibernateEscapedString implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
-    String dbValue = Hibernate.STRING.nullSafeGet(rs, names[0]);
+  public Object nullSafeGet(
+      ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
+    String dbValue = StandardBasicTypes.STRING.nullSafeGet(rs, names[0], session);
     if (dbValue != null) {
       return unescape(dbValue);
     } else {
@@ -89,9 +94,13 @@ public class HibernateEscapedString implements UserType {
   }
 
   @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
+  public void nullSafeSet(
+      PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+      throws SQLException {
+    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
+    // parameter?
     String v = value == null ? null : escape((String) value);
-    Hibernate.STRING.nullSafeSet(st, v, index);
+    StandardBasicTypes.STRING.nullSafeSet(st, v, index, session);
   }
 
   @Override
