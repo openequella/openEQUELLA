@@ -9,7 +9,7 @@ test("That we're able to login", async () => {
   const userDetails = await OEQ.LegacyContent.getCurrentUserDetails(
     TC.API_PATH
   );
-  expect(userDetails).toHaveProperty('id', TC.USERNAME);
+  expect(userDetails).toHaveProperty('username', TC.USERNAME);
 });
 
 test('An attempt to login with bad credentials fails',async () => {
@@ -23,7 +23,7 @@ test("That having logged in, we're able to properly log out.", async () => {
   const userDetails = await OEQ.LegacyContent.getCurrentUserDetails(
     TC.API_PATH
   );
-  expect(userDetails).toHaveProperty('id', TC.USERNAME);
+  expect(userDetails).toHaveProperty('username', TC.USERNAME);
 
   await OEQ.Auth.logout(TC.API_PATH);
   const guestDetails = await OEQ.LegacyContent.getCurrentUserDetails(
