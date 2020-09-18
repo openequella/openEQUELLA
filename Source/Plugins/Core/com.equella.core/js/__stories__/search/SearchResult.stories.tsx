@@ -31,9 +31,7 @@ export const BasicSearchResult: Story<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
 BasicSearchResult.args = {
-  item: {
-    ...mockData.basicSearchObj,
-  },
+  item: mockData.basicSearchObj,
   highlights: [],
 };
 
@@ -42,7 +40,7 @@ export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (
 );
 AttachmentSearchResult.args = {
   ...BasicSearchResult.args,
-  item: { ...mockData.attachSearchObj },
+  item: mockData.attachSearchObj,
 };
 
 export const KeywordFoundInAttachmentSearchResult: Story<SearchResultProps> = (
