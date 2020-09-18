@@ -46,7 +46,7 @@ const sharedPaginationArgs = {
 
 export const EmptyResultListComponent: Story<SearchResultListProps> = (
   args
-) => <SearchResultList {...args}></SearchResultList>;
+) => <SearchResultList {...args} />;
 
 EmptyResultListComponent.args = {
   searchResultItems: emptySearch.results,
@@ -63,7 +63,7 @@ EmptyResultListComponent.args = {
 
 export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
   args
-) => <SearchResultList {...args}></SearchResultList>;
+) => <SearchResultList {...args} />;
 
 BasicSearchResultListComponent.args = {
   ...EmptyResultListComponent.args,
@@ -72,11 +72,12 @@ BasicSearchResultListComponent.args = {
     ...sharedPaginationArgs,
     count: singlePageSearch.available,
   },
+  highlights: [],
 };
 
 export const LoadingSearchResultListComponent: Story<SearchResultListProps> = (
   args
-) => <SearchResultList {...args}></SearchResultList>;
+) => <SearchResultList {...args} />;
 
 LoadingSearchResultListComponent.args = {
   ...BasicSearchResultListComponent.args,
