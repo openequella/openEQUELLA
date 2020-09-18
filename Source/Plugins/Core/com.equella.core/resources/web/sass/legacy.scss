@@ -439,6 +439,7 @@ select[multiple="multiple"] {
   @include typography-body-1;
   padding-left: $singleMargin;
   min-width: 204px;
+  float: none;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
