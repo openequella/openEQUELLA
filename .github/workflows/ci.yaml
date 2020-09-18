@@ -318,17 +318,14 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
-      - name: Set up NVM
-        shell: bash -l {0}
-        run: |
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          echo "source $NVM_DIR/nvm.sh" >> "$HOME/.bash_profile"
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
 
-      - name: Install NodeJS
-        shell: bash -l {0}
-        run: |
-          nvm install
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Run tests
         working-directory: oeq-ts-rest-api
