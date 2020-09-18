@@ -60,7 +60,29 @@ export const highlight = (
     return text;
   }
 
-  const re = new RegExp("^(.*?)\\b(" + highlightsRegex + ")\\b(.*)$", "is");
+  // The follow Regex attempts to break a block of string into:
+  // * Group 1 (optional) - text before that which is to be highlighted
+  //   /^(.*?)/ : Non-greedily match anything from the start of the line upto the next group
+  // * Group 2 - The text which should be highlighted
+  //   /(<highlightsRegex>)\b/ : Using the generated highlightsRegex (typically in the form
+  //                             of /word|word|word/) match up to the next word boundary (/\b/)
+  // * Group 3 (optional) - The remaining text (after that which should be highlighted)
+  //   /(.*)$/ : Match zero or more characters up to the end of the line of text.
+  //
+  // Basic example use cases:
+  // 1. Input: "This and that other thing"; highlightsRegex: "and"
+  //  Group 1: "This "
+  //  Group 2: "and"
+  //  Group 3: " that other thing"
+  // 2. Input: "This and that other thing"; highlightsRegex: "this"
+  //  Group 1: ""
+  //  Group 2: "This"
+  //  Group 3: " and that other thing"
+  // 3. Input: "This and that other thing"; highlightsRegex: "thing"
+  //  Group 1: "This and that other "
+  //  Group 2: "thing"
+  //  Group 3: ""
+  const re = new RegExp("^(.*?)(" + highlightsRegex + ")\\b(.*)$", "is");
   const highlightWords = (_text: string): string => {
     const matches = _text.match(re);
     if (!matches) {
