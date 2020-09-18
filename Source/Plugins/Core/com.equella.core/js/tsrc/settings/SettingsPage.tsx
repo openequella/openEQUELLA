@@ -65,13 +65,13 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface SettingsPageProps extends TemplateUpdateProps {
   refreshUser: () => void;
-  reloadNeeded: boolean;
+  isReloadNeeded: boolean;
 }
 
 const SettingsPage = ({
   refreshUser,
   updateTemplate,
-  reloadNeeded,
+  isReloadNeeded,
 }: SettingsPageProps) => {
   const classes = useStyles();
 
@@ -80,7 +80,7 @@ const SettingsPage = ({
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
 
   React.useEffect(() => {
-    if (reloadNeeded) {
+    if (isReloadNeeded) {
       window.location.reload();
     }
   }, []);

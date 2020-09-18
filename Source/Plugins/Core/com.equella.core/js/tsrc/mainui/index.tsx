@@ -131,7 +131,7 @@ function IndexPage() {
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
-      reloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
+      isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
     };
   }
 
@@ -273,7 +273,7 @@ export default function () {
           <SettingsPage
             refreshUser={() => {}}
             updateTemplate={() => {}}
-            reloadNeeded={false}
+            isReloadNeeded={false}
           />
         </ThemeProvider>
       </BrowserRouter>,

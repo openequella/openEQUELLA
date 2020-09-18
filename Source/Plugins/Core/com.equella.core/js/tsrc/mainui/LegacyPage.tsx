@@ -44,7 +44,7 @@ interface LegacyPageProps extends TemplateUpdateProps {
       cb: (p: LegacyContentProps) => LegacyContentProps
     ) => void;
   };
-  reloadNeeded: boolean;
+  isReloadNeeded: boolean;
 }
 
 export function templatePropsForLegacy({
@@ -79,14 +79,14 @@ export const LegacyPage = React.memo(
     updateTemplate,
     setPreventNavigation,
     redirect,
-    reloadNeeded,
+    isReloadNeeded,
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
 
     // If New UI is actually not enabled then reload the page to display Old UI.
     React.useEffect(() => {
-      if (reloadNeeded) {
+      if (isReloadNeeded) {
         window.location.reload();
       }
     }, []);
