@@ -69,6 +69,12 @@ public interface ItemCommentService {
       ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit);
 
   /**
+   * Check the permission of viewing an item's comments and return a list of comments if the
+   * permission is granted.
+   */
+  List<Comment> getCommentsWithACLCheck(
+      ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit);
+  /**
    * Add a new comment to an item.
    *
    * @param commentText Comment text to add. Blank if only a rating.
