@@ -42,6 +42,7 @@
 @import "whereclause.css";
 @import "myresourcecontribute.css";
 @import "htmleditorwebcontrol.css";
+@import "userdetails.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -51,17 +52,37 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
   0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
+$modalFooterHeight: 50px;
+$iframeDialogWidth: 1175px;
+$iframeDialogHeight: 650px;
+$singleMargin: 8px;
+$doubleMargin: 16px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
   -moz-box-shadow: $boxShadow;
   -webkit-box-shadow: $boxShadow;
 }
+
+@mixin curvedCorners {
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
 @mixin buttonShadowBorder {
   @include boxShadow;
-  border-radius: 4px;
+  @include curvedCorners;
   border: none;
 }
+
+@mixin muiBorder {
+  border: none;
+  height: 1px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
 @mixin hoverHighlight {
   &:hover {
     background-color: $hoverBackgroundColor;
@@ -132,25 +153,17 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 }
 
 @mixin typography-headline-5 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1.5rem;
-  line-height: 2rem;
   font-weight: 400;
-  letter-spacing: normal;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.334;
+  letter-spacing: 0em;
 }
 
 @mixin typography-headline-6 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
-  line-height: 2rem;
   font-weight: 500;
-  letter-spacing: 0.0125em;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.6;
+  letter-spacing: 0.0075em;
 }
 
 @mixin typography-subtitle-1 {
@@ -176,14 +189,10 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 }
 
 @mixin typography-body-1 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   font-size: 1rem;
-  line-height: 1.5rem;
   font-weight: 400;
-  letter-spacing: 0.03125em;
-  text-decoration: inherit;
-  text-transform: inherit;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
 }
 
 @mixin typography-body-2 {
@@ -218,6 +227,11 @@ $activeBackgroundColor: transparentize(#000, 0.7);
   letter-spacing: 0.0892857143em;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+@mixin centreAlignFancyBox {
+  //workaround to avoid editing fancybox-styles
+  margin-left: -200px;
 }
 
 /*****************************************************************************
@@ -360,7 +374,8 @@ Buttons
 *****************************************************************************/
 
 .btn {
-  padding: 0 8px 0 8px;
+  @include curvedCorners;
+  padding: 0 $singleMargin 0 $singleMargin;
   display: inline-flex;
   position: relative;
   align-items: center;
@@ -368,7 +383,6 @@ Buttons
   box-sizing: border-box;
   min-width: 64px;
   border: none;
-  border-radius: 4px;
   outline: none;
   cursor: pointer;
   background-color: $primaryColor;
@@ -384,8 +398,8 @@ Buttons
 }
 
 .button-expandable {
+  @include curvedCorners;
   font-size: 0;
-  border-radius: 4px;
   &:hover {
     @include typography-button();
   }
@@ -404,8 +418,11 @@ select[multiple="multiple"] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 4px 4px 0 0;
   background-color: #f5f5f5;
-  height: 56px;
-
+  &:not(#q):not(.prompt) {
+    //so as to avoid affecting searchbars
+    padding: $doubleMargin;
+    font-size: 16px;
+  }
   &:hover {
     border-bottom: 2px solid rgba(0, 0, 0, 0.42);
   }
@@ -423,8 +440,9 @@ select[multiple="multiple"] {
 }
 .newListSelected {
   @include typography-body-1;
-  padding-left: 8px;
+  padding-left: $singleMargin;
   min-width: 204px;
+  float: none;
   background: url(../../images/stylishSelect/select-down.png) right 10px
     no-repeat #fff;
   &.showUp {
@@ -485,15 +503,12 @@ select[multiple="multiple"] {
 }
 
 .modal-search-result.youtube img {
+  @include curvedCorners;
   margin: 0 20px 10px 0;
   padding: 4px;
   background: #fff;
   border: 1px solid #ddd;
   float: left;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .modal-search-result.youtube input {
@@ -531,19 +546,19 @@ select[multiple="multiple"] {
 
 .select-area-placeholder {
   height: 1px;
-  margin-top: 8px;
+  margin-top: $singleMargin;
 }
 
 .input {
-  padding-top: 8px;
+  padding-top: $singleMargin;
   label {
-    padding-right: 8px;
+    padding-right: $singleMargin;
     padding-left: 4px;
   }
 }
 
 .lineItem span {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 ul.select_options li {
@@ -553,7 +568,7 @@ ul.select_options li {
     position: static;
   }
   label {
-    padding-left: 8px;
+    padding-left: $singleMargin;
   }
 }
 
@@ -922,7 +937,7 @@ a[title="move-down"]:before {
 }
 /************************/
 #searchform .wizard-controls div.input {
-  margin: 8px 0;
+  margin: $singleMargin 0;
   padding: 0px;
 }
 
@@ -933,7 +948,7 @@ a[title="move-down"]:before {
 }
 
 #searchform .wizard-controls div.input.calendar {
-  margin: 8px 40px 8px 0;
+  margin: $singleMargin 40px $singleMargin 0;
 }
 
 #searchform .wizard-controls div.input.calendar input[type="text"] {
@@ -1015,7 +1030,7 @@ Generic layout
 }
 
 .area .indent {
-  padding: 0 0 0 16px;
+  padding: 0 0 0 $doubleMargin;
 }
 
 #mainDiv .dashboard #topwide {
@@ -1065,7 +1080,12 @@ Generic layout
 }
 
 #fancybox-inner {
-  @include buttonShadowBorder;
+  display: grid;
+}
+
+#selection-content-inner.search-layout .mainCols #col2 #selection-summary {
+  position: sticky;
+  top: 70px;
 }
 
 #fancybox-wrap {
@@ -1089,7 +1109,7 @@ Generic layout
 #mainDiv #content-body {
   float: none;
   width: auto;
-  padding: 8px 0 32px 0;
+  padding: $singleMargin 0 32px 0;
 }
 
 #mainDiv .mainCols {
@@ -1115,7 +1135,7 @@ Generic layout
   @include typography-headline-6;
   color: #444444;
   word-wrap: break-word;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .area p,
@@ -1126,16 +1146,16 @@ Generic layout
 }
 
 .area h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
   color: #444444;
 }
 
 .button-strip {
   display: flex;
   flex-direction: row-reverse;
-  padding: 8px;
+  padding: $singleMargin;
   .btn {
-    margin-right: 8px;
+    margin-right: $singleMargin;
   }
 }
 
@@ -1188,7 +1208,7 @@ div.rightPanel {
 
   .checkbox {
     :first-child {
-      padding-top: 8px;
+      padding-top: $singleMargin;
     }
     padding-top: 4px;
     padding-bottom: 4px;
@@ -1201,7 +1221,7 @@ div.rightPanel {
 
 .checklist {
   li {
-    padding-bottom: 8px;
+    padding-bottom: $singleMargin;
   }
 }
 
@@ -1211,8 +1231,8 @@ div.rightPanel {
 
 .extension-buttons {
   button {
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: $singleMargin;
+    margin-bottom: $singleMargin;
   }
 }
 
@@ -1231,13 +1251,19 @@ div.rightPanel {
   color: $menuTextColor;
 }
 
+//portlet IDs are formatted as pportlet_{uuid}, so we must wildcard the selector with ^
+div[id^="pportlet"] {
+  margin-left: $singleMargin;
+  margin-right: $singleMargin;
+}
+
 //scripted portlet
 .load-action {
   .dropdown-toggle {
     b:before {
       content: "\e313";
       font-family: "Material Icons";
-      font-size: 16px;
+      font-size: $doubleMargin;
       color: white;
       font-style: normal;
       vertical-align: middle;
@@ -1254,10 +1280,10 @@ div.rightPanel {
       display: block;
       border: 1px solid rgba(0, 0, 0, 0.42);
       width: 244px;
-      padding: 8px;
+      padding: $singleMargin;
       li {
-        padding-top: 8px;
-        padding-bottom: 8px;
+        padding-top: $singleMargin;
+        padding-bottom: $singleMargin;
         :hover {
           background-color: rgba(224, 224, 224, 1);
           color: set-text-color(white);
@@ -1277,6 +1303,33 @@ div.load-action button.dropdown-toggle {
   *****************************************************************************/
 div[class*="fancy-bg"] {
   display: none;
+}
+
+#contribution_panel {
+  span[class="resumable"],
+  span[class="removelink"] {
+    @include typography-body-1;
+  }
+
+  h2 {
+    @include typography-headline-5;
+  }
+
+  table {
+    thead > tr > th {
+      @include typography-headline-6;
+      color: $menuTextColor;
+    }
+
+    tbody > tr > td {
+      @include typography-body-1;
+      color: $menuTextColor;
+
+      a {
+        @include typography-headline-6;
+      }
+    }
+  }
 }
 
 .modal-content-inner h3 {
@@ -1342,7 +1395,7 @@ div[class*="fancy-bg"] {
   background: white;
   clear: both;
   width: 100%;
-  height: 50px;
+  height: $modalFooterHeight;
 }
 
 .modal-footer-inner {
@@ -1371,6 +1424,7 @@ a.feedlink {
     font-size: 24px;
     color: set-text-color($primaryColor);
   }
+
   padding: 5px;
   display: inline-block;
 }
@@ -1486,7 +1540,7 @@ table.zebra tr td.nowrap {
 table.zebra tr td {
   text-align: left;
   vertical-align: top;
-  padding: 16px 10px;
+  padding: $doubleMargin 10px;
 }
 
 table.zebra.large tr td {
@@ -1516,8 +1570,8 @@ table.zebra th.sortable {
 }
 
 table.zebra th.sortable div.sortArrow {
-  width: 8px;
-  height: 8px;
+  width: $singleMargin;
+  height: $singleMargin;
   display: inline-block;
   background-repeat: no-repeat;
   margin-left: 1em;
@@ -1550,11 +1604,9 @@ Alerts
 *****************************************************************************/
 
 .alert {
-  padding: 14px 35px 8px 35px;
+  @include curvedCorners;
+  padding: 14px 35px $singleMargin 35px;
   background-color: #fcf8e3;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   position: fixed;
   color: white;
@@ -1568,9 +1620,11 @@ Alerts
   animation: snackbar 6s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
+
   button {
     background-color: transparent;
     border: none;
+
     &:before {
       content: "\e5cd";
       font-family: "Material Icons";
@@ -1578,14 +1632,16 @@ Alerts
       color: white;
     }
   }
+
   &.alert-success {
     background-color: #43a047;
+
     &:after {
       content: "\e86c";
       font-family: "Material Icons";
       font-size: 24px;
       color: white;
-      padding-right: 8px;
+      padding-right: $singleMargin;
     }
   }
 }
@@ -1605,20 +1661,25 @@ Search page
 
   #col1 {
     width: 515px;
+
     .area {
       padding: 25px 17px 33px;
     }
   }
+
   #col2 {
     width: 221px;
     margin-left: 14px;
+
     .box hr {
       border-color: #c1beb0;
       border-bottom: none;
     }
+
     .action-button.remote-repo {
       background-image: url("../images/button-search-remote-repo.ltr.png");
     }
+
     .search-layout #col2 .action-button.share-search {
       background-image: url("../images/button-share-search-action.ltr.png");
     }
@@ -1683,7 +1744,7 @@ Search page
 }
 
 #cloudy img {
-  margin-right: 8px;
+  margin-right: $singleMargin;
 }
 
 .search-layout .sortandfilter div.input.text input,
@@ -1728,6 +1789,7 @@ Search page
     top: -32px;
     position: absolute;
   }
+
   position: relative;
   border-bottom: none;
   background-color: transparent;
@@ -1791,7 +1853,7 @@ div.skinnysearch {
 }
 
 .skinnysearch .sortandfilter div.input {
-  margin: 8px 0 16px;
+  margin: $singleMargin 0 $doubleMargin;
 }
 
 #querycontainer {
@@ -1810,7 +1872,7 @@ div.skinnysearch {
 
 #searchform-search {
   height: 38px;
-  padding-left: 8px;
+  padding-left: $singleMargin;
   border-radius: 0px 20px 20px 0px;
   height: 38px;
   margin-left: -6px;
@@ -1821,7 +1883,7 @@ div.skinnysearch {
   height: 36px;
   border: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 1em 0 0 1em;
-  padding-left: 8px;
+  padding-left: $singleMargin;
   background: none;
   border-right: none;
 }
@@ -1931,6 +1993,7 @@ div.skinnysearch {
   @include typography-body-1;
   background: url(../../images/select-down.png) right 12px no-repeat #fff;
 }
+
 #searchresults-actions {
   .select2-container {
     z-index: auto;
@@ -1944,7 +2007,7 @@ div.skinnysearch {
   display: block;
   font: menu;
   font-size: 12px;
-  line-height: 16px;
+  line-height: $doubleMargin;
   overflow: hidden;
 }
 
@@ -1999,11 +2062,21 @@ div.skinnysearch {
   width: 390px;
 }
 
+.btn-plus {
+  //to override .btn
+  padding: 0;
+  margin: 0;
+  line-height: 1.25rem;
+}
+
 #selection-content-inner.wizard-layout
   .indent2
   .autocompleteControl
   input[type="text"] {
   width: 350px;
+}
+#sis_button.action-button {
+  @include buttonShadowBorder;
 }
 
 #selection-content-inner.wizard-layout
@@ -2113,35 +2186,44 @@ ul.ui-autocomplete {
   top: 13px;
   z-index: 10;
   height: 0px;
+
   .btn {
     background-color: transparent;
     color: $primaryColor;
     margin-left: 3px;
+
     &:before {
       font-family: "Material Icons";
       font-size: 24px;
       color: $menuItemIconColor;
       padding-right: 4px;
     }
+
     &#sra_sort:before {
       content: "\E164";
     }
+
     &#sra_filter:before {
       content: "\e152";
     }
+
     &#sra_share:before {
       content: "\e80d";
     }
+
     &:hover {
       background-color: transparentize($primaryColor, 0.7);
     }
+
     &.active {
       background-color: $primaryColor;
       color: set-text-color($primaryColor);
+
       &:before {
         color: set-text-color($primaryColor);
       }
     }
+
     i:before {
       display: none;
     }
@@ -2158,15 +2240,19 @@ ul.ui-autocomplete {
   background: none repeat scroll 0 0 $primaryColor;
   padding: 20px 32px;
   margin-top: 50px;
+
   input {
     background-color: set-text-color($primaryColor);
   }
+
   .input {
     width: 230px;
   }
+
   .newListSelected {
-    margin-bottom: 8px;
+    margin-bottom: $singleMargin;
   }
+
   hr {
     height: 0;
     border: none;
@@ -2175,11 +2261,13 @@ ul.ui-autocomplete {
     clear: both;
     margin: 15px 0;
   }
+
   .btn {
     border: 1px solid set-text-color($primaryColor);
     background-color: transparent;
     color: set-text-color($primaryColor);
     margin-left: 3px;
+
     .icon-user:before {
       content: "\e7fd";
       font-family: "Material Icons";
@@ -2189,6 +2277,7 @@ ul.ui-autocomplete {
       font-style: normal;
       vertical-align: middle;
     }
+
     .icon-remove:before {
       content: "\e5cd";
       font-family: "Material Icons";
@@ -2198,9 +2287,11 @@ ul.ui-autocomplete {
       font-style: normal;
       vertical-align: middle;
     }
+
     &:hover {
       background-color: transparentize(set-text-color($primaryColor), 0.7);
     }
+
     &:active {
       background-color: transparentize($primaryColor, 1);
     }
@@ -2224,8 +2315,9 @@ ul.ui-autocomplete {
 
 #searchresults-actions #actioncontent label {
   color: set-text-color($primaryColor);
+
   &:not(:first-child) {
-    padding-left: 8px;
+    padding-left: $singleMargin;
   }
 }
 
@@ -2257,7 +2349,7 @@ ul.ui-autocomplete {
 #searchresults-select,
 .searchresults-infobar {
   @include typography-subtitle-1;
-  margin: 8px 8px;
+  margin: $singleMargin $singleMargin;
 }
 
 .icon-envelope:before {
@@ -2272,11 +2364,13 @@ ul.ui-autocomplete {
 .richdropdown {
   ul {
     list-style-type: none;
+
     li {
       h3 {
         color: $primaryTextColor;
         @include typography-headline-6;
       }
+
       a {
       }
     }
@@ -2288,27 +2382,32 @@ ul.ui-autocomplete {
     b:before {
       content: "\e313";
       font-family: "Material Icons";
-      font-size: 16px;
+      font-size: $doubleMargin;
       color: white;
       font-style: normal;
       vertical-align: middle;
     }
+
     color: $primaryColor;
     min-width: 1px;
     margin-left: 2px;
   }
+
   .dropdown-menu {
     display: none;
   }
+
   .open {
     .dropdown-menu {
       display: block;
       border: 1px solid rgba(0, 0, 0, 0.42);
       width: 244px;
-      padding: 8px;
+      padding: $singleMargin;
+
       li {
-        padding-top: 8px;
-        padding-bottom: 8px;
+        padding-top: $singleMargin;
+        padding-bottom: $singleMargin;
+
         :hover {
           background-color: rgba(224, 224, 224, 1);
           color: set-text-color(white);
@@ -2322,7 +2421,8 @@ ul.ui-autocomplete {
 
 .glyphicon-cloud {
   padding-top: 4px;
-  padding-right: 8px;
+  padding-right: $singleMargin;
+
   &:before {
     content: "\e2c2";
     font-family: "Material Icons";
@@ -2350,7 +2450,7 @@ ul.ui-autocomplete {
 .icon-comment:before {
   content: "\e253";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2359,7 +2459,7 @@ ul.ui-autocomplete {
 .icon-picture:before {
   content: "\e40b";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2368,7 +2468,7 @@ ul.ui-autocomplete {
 .icon-th-list:before {
   content: "\e335";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2505,18 +2605,18 @@ html.wait {
 }
 
 .itemresult-rating div.float-right .btn {
+  @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
   vertical-align: middle;
-  border-radius: 0;
-}
-
-.itemresult-rating div.float-right .btn:last-child {
-  border-radius: 0 2px 2px 0;
+  min-width: 0;
+  border-radius: 50px;
+  padding: 4px;
+  line-height: 1.3rem;
 }
 
 .itemresult-rating div.float-right .button-expandable.unselect:hover {
-  width: 88px;
+  width: 120px;
 }
 
 .itemresult-stars,
@@ -2537,6 +2637,14 @@ html.wait {
   width: 100%;
 }
 
+#sc_attachments_selectAllAttachmentButton:hover,
+#sc_attachments_selectPackageButton:hover {
+  width: 215px;
+  line-height: 1.3rem;
+  font-size: 12px;
+  padding-right: $singleMargin;
+}
+
 .itemresult-metaline .itemresult-meta-delim,
 .itemresult-metaline abbr {
   color: $menuTextColor;
@@ -2554,10 +2662,11 @@ html.wait {
 
 .itemresult-content .toggler {
   display: inline;
-  margin: 0 8px;
+  margin: 0 $singleMargin;
   cursor: pointer;
   text-align: center;
   position: relative;
+
   a:before {
     content: "\e226";
     font-family: "Material Icons";
@@ -2569,6 +2678,7 @@ html.wait {
 .paging {
   clear: both;
   text-align: center;
+
   ul li {
     display: inline;
     margin: 0 4px;
@@ -2608,10 +2718,12 @@ html.wait {
 
 .newListSelected.bulkactions {
   width: 100% !important;
+
   .onBottom {
     width: 100% !important;
     z-index: 1000;
   }
+
   td {
     cursor: pointer;
   }
@@ -2626,6 +2738,7 @@ html.wait {
   textarea {
     width: 100%;
   }
+
   width: 492px;
 }
 
@@ -2652,9 +2765,14 @@ input.term-paths {
 
 .itemresult-rating div.float-right {
   .btn {
-    margin: 0 8px;
+    margin: 0 $singleMargin;
+  }
+  .btn:hover {
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
   }
 }
+
 .box_content_inner {
   .blue {
     li {
@@ -2681,7 +2799,7 @@ td.unselect a {
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -2715,7 +2833,7 @@ Contribution wizard styling
 }
 
 .wizard-layout #col2 {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 #wizard-pagelist {
@@ -2740,25 +2858,27 @@ Contribution wizard styling
 
 #wizard-pagelist ul li.active {
   background: url(../images/rhs-nav-list-icon-dark.ltr.png) 0 0 no-repeat;
+
   :before {
     content: "\e24d";
     font-family: "Material Icons";
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
   }
 }
 
 #wizard-pagelist ul li a {
   margin: 2px 0 0 0;
+
   &:before {
     content: "\e24d";
     font-family: "Material Icons";
     font-size: 20px;
     color: $primaryColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
   }
 }
 
@@ -2840,13 +2960,13 @@ a.add {
     font-size: 20px;
     color: $primaryColor;
     vertical-align: middle;
-    padding-right: 8px;
-    padding-left: 8px;
+    padding-right: $singleMargin;
+    padding-left: $singleMargin;
   }
 }
 
 .resumeables {
-  padding-bottom: 16px;
+  padding-bottom: 20px;
 }
 
 .contribution-selection-page .resumeables ul li span.resumable {
@@ -2872,6 +2992,7 @@ button + .repeater-groups {
 
 .ctrlbutton {
   margin-top: 4px;
+
   i.icon-plus {
     &:before {
       content: "\e145";
@@ -2916,17 +3037,19 @@ button + .repeater-groups {
 }
 
 .customfile-feedback {
+  text-align: left;
   background: none;
   padding-left: 4px;
   font-style: normal;
   @include typography-subtitle-1;
+
   &:before {
     content: "\e2c6";
     font-family: "Material Icons";
     font-size: 20px;
     color: $secondaryColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -2938,7 +3061,7 @@ button + .repeater-groups {
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -2953,7 +3076,7 @@ button + .repeater-groups {
 }
 
 .uploadsprogress .file-upload .file-name {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 .uploadsprogress .file-upload {
@@ -2974,16 +3097,18 @@ button + .repeater-groups {
 }
 
 .settingRow {
-  padding: 8px 0px;
+  padding: $singleMargin 0px;
 }
 
 #r_resume {
   @include buttonShadowBorder;
   margin-bottom: 4px;
 }
+
 #d_discard {
   @include buttonShadowBorder;
 }
+
 .settingRow .settingField {
   width: auto;
   padding-left: 26px;
@@ -2993,19 +3118,22 @@ button + .repeater-groups {
   text-align: left;
   width: 266px;
 }
+
 .settingContainer {
   width: 100%;
+
   .editLinks {
-    padding-top: 8px;
+    padding-top: $singleMargin;
   }
 }
+
 #searchform-editquery {
   @include buttonShadowBorder;
 }
 
 .spacer {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: $singleMargin;
+  padding-bottom: $singleMargin;
 }
 
 .fileHandler {
@@ -3019,6 +3147,7 @@ button + .repeater-groups {
   min-height: 340px;
   padding: 20px 25px;
   margin-right: 30px;
+
   h3 {
     @include typography-headline-6;
   }
@@ -3035,7 +3164,7 @@ button + .repeater-groups {
 
 //workflow related content
 #moderate .task-name {
-  padding-right: 16px;
+  padding-right: $doubleMargin;
 }
 
 .modcomment-content {
@@ -3060,6 +3189,7 @@ button + .repeater-groups {
     height: 220px !important;
   }
 }
+
 .shuffle-box-controls {
   button {
     margin: 4px 0;
@@ -3075,15 +3205,18 @@ button + .repeater-groups {
   div.input label {
     display: none !important;
   }
+
   div.input {
     padding: initial;
   }
+
   button {
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
-    padding-left: 8px;
-    padding-right: 8px;
-    margin-left: 8px;
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
+    margin-left: $singleMargin;
+
     .icon-search:before {
       content: "\e8b6";
       font-family: "Material Icons";
@@ -3094,15 +3227,18 @@ button + .repeater-groups {
       vertical-align: middle;
     }
   }
+
   input[type="text"],
   #youtube-query select {
     width: 528px;
   }
 }
+
 .modal-search-results {
   p {
     @include typography-body-1;
   }
+
   p.info.results {
     background: none;
     border: none;
@@ -3113,9 +3249,10 @@ button + .repeater-groups {
 .addRemovePanel {
   button {
     width: auto;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
   }
+
   i.icon-plus {
     &:before {
       content: "\e145";
@@ -3130,7 +3267,8 @@ button + .repeater-groups {
 }
 
 .upDownButtonPanel {
-  top: 8px !important;
+  top: $singleMargin !important;
+
   button {
     min-width: 2px;
   }
@@ -3176,10 +3314,9 @@ i.icon-minus {
   &:before {
     content: "\e15b";
     font-family: "Material Icons";
-    font-size: 24px;
+    font-size: 20px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
     font-style: normal;
   }
 }
@@ -3200,15 +3337,19 @@ i.icon-arrow-left {
 .popupbrowserdialog #termChooser {
   border-right: 1px solid #e8e8e8;
 }
+
 #termChooser.ui-tabs {
   border: none;
   border-right: 2px solid #e8e8e8;
+
   ul {
     border: none;
   }
+
   li {
     border: none;
     background: none;
+
     a {
       color: $primaryColor;
     }
@@ -3227,6 +3368,7 @@ i.icon-arrow-left {
 
     a.viewterm {
       padding-left: 0px;
+
       &:before {
         content: "\e417";
         font-family: "Material Icons";
@@ -3237,8 +3379,10 @@ i.icon-arrow-left {
         font-style: normal;
       }
     }
+
     &.ui-tabs-active {
       border-bottom: 2px solid $secondaryColor;
+
       a {
         color: $primaryTextColor;
       }
@@ -3280,6 +3424,7 @@ ul.treeview {
   h3 {
     @include typography-headline-6;
   }
+
   .selectedItems {
     background-color: #e8e8e8;
   }
@@ -3287,6 +3432,7 @@ ul.treeview {
 
 a.unselect {
   background: none;
+
   &:before {
     content: "\e872";
     font-family: "Material Icons";
@@ -3307,11 +3453,13 @@ Item summary styling
     position: absolute;
     top: 80px;
     right: 0px;
+
     .btn {
       background-color: transparent;
       border: 1px solid rgba(0, 0, 0, 0.23);
-      margin-right: 16px;
+      margin-right: $doubleMargin;
       color: $primaryTextColor;
+
       .icon-arrow-left:before {
         content: "\e5c4";
         font-family: "Material Icons";
@@ -3321,6 +3469,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+
       .icon-arrow-right:before {
         content: "\e5c8";
         font-family: "Material Icons";
@@ -3330,6 +3479,7 @@ Item summary styling
         font-style: normal;
         vertical-align: middle;
       }
+
       @include hoverHighlight;
     }
   }
@@ -3339,47 +3489,50 @@ Item summary styling
   @include typography-button;
   color: set-text-color($primaryColor);
   width: 100%;
-  margin: 8px 0;
+  margin: $singleMargin 0;
   background-color: $primaryColor;
   background-repeat: no-repeat;
+
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
+
   &:active {
     background-color: transparentize($primaryColor, 0.3);
   }
 }
 
 .shareButton {
-  background-image: url(../../images/baseline_share_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_share_white_18dp.png);
 }
 
 .addToFavourites {
-  background-image: url(../../images/baseline_star_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_star_white_18dp.png);
 }
 
 .removeFromFavourites {
-  background-image: url(../../images/baseline_remove_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_remove_white_18dp.png);
 }
 
 .wizard-major-actions.save {
-  background-image: url(../../images/baseline_save_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_save_white_18dp.png);
 }
 
 .add-mime {
-  background-image: url(../../images/baseline_code_white_18dp.png);
   @include buttonShadowBorder;
+  background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
 .itemsummary-layout hr {
   display: none;
 }
+
 .itemsummary-layout #col2 {
-  margin-left: 16px;
+  margin-left: $doubleMargin;
   flex-shrink: 0;
   width: 260px;
 }
@@ -3394,11 +3547,11 @@ Item summary styling
 
 .itemsummary-layout #col2 h3 {
   @include typography-headline-5;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .itemsummary-layout #col2 h2 {
-  @include typography-headline-4;
+  @include typography-headline-5;
 }
 
 .itemsummary-layout #col2 ul {
@@ -3420,7 +3573,7 @@ Item summary styling
 
 .itemsummary-layout #col2 ul li {
   line-height: 1.5;
-  margin: 4px 8px;
+  margin: 4px $singleMargin;
 }
 
 .itemsummary-layout .box {
@@ -3464,7 +3617,7 @@ Item summary styling
 }
 
 .itemdetails {
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 div.in-selection .itemdetails-left {
@@ -3511,6 +3664,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e15d";
     font-family: "Material Icons";
@@ -3523,6 +3677,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e83a";
     font-family: "Material Icons";
@@ -3536,6 +3691,7 @@ table.versions td {
   a {
     font-size: 0;
   }
+
   a:before {
     content: "\e838";
     font-family: "Material Icons";
@@ -3547,9 +3703,11 @@ table.versions td {
 .ratingwrapper {
   float: left;
 }
+
 //i'm sure this could be done much, much better, will come back if time permits
 .star-rating-static {
   float: left;
+
   div.star-rating-static-1 {
     &:before {
       content: "\e838 \e83a \e83a \e83a \e83a";
@@ -3558,6 +3716,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-2 {
     &:before {
       content: "\e838 \e838 \e83a \e83a \e83a";
@@ -3566,6 +3725,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-3 {
     &:before {
       content: "\e838 \e838 \e838 \e83a \e83a";
@@ -3574,6 +3734,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-4 {
     &:before {
       content: "\e838 \e838 \e838 \e838 \e83a";
@@ -3582,6 +3743,7 @@ table.versions td {
       color: $secondaryColor;
     }
   }
+
   div.star-rating-static-5 {
     &:before {
       content: "\e838 \e838 \e838 \e838 \e838";
@@ -3601,7 +3763,8 @@ table.versions td {
 
 .comment-username {
   @include typography-headline-6;
-  padding: 8px;
+  padding: $singleMargin;
+
   &:before {
     content: "\e7fd";
     font-family: "Material Icons";
@@ -3609,6 +3772,7 @@ table.versions td {
     color: $secondaryColor;
     vertical-align: middle;
   }
+
   .timeago {
     @include typography-subtitle-1;
   }
@@ -3627,18 +3791,32 @@ table.versions td {
 .comment-delete {
   height: 1.5em;
   float: right;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .comment-delete a {
   float: right;
-  line-height: 16px;
+  line-height: $doubleMargin;
   padding-left: 20px;
 }
+
 .ratingwrapper {
   position: absolute;
   bottom: 0;
   right: 0;
+}
+
+#selection-content-inner.itemsummary-layout
+  .mainCols
+  #col1
+  .area
+  #comments-add.rating-form.comment-form
+  .rate {
+  position: unset;
+}
+
+#selection-content-inner.itemsummary-layout .box {
+  width: 100%;
 }
 
 .rate {
@@ -3656,7 +3834,7 @@ table.versions td {
 
 .rating-form {
   position: relative;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .rating-form div.input {
@@ -3749,13 +3927,25 @@ td.sectionAction {
   width: 60px;
 }
 
+.selection .selectable .attachments-browse.structured li .button-div .btn {
+  @include buttonShadowBorder;
+  border-radius: 50px;
+  min-width: unset;
+  line-height: 1.3rem;
+  padding: 4px;
+  margin: 4px 0;
+}
+
 .settingContainer.skinny {
   width: 100%;
+
   .button-strip {
     display: flex;
     flex-direction: row-reverse;
+
     button {
-      margin: 0 8px;
+      margin: 0 $singleMargin;
+
       &.btn-equella {
         background-color: transparent;
         color: $primaryColor;
@@ -3767,6 +3957,10 @@ td.sectionAction {
 div.selection #copyright-table td.sectionAction {
   max-width: 14px;
   width: 12px;
+}
+
+table td.actions a {
+  line-height: 1.43rem;
 }
 
 td.sectionAction button.activate-one {
@@ -3788,8 +3982,8 @@ td.sectionAction button.add {
 }
 
 img.copyright-sectionlink {
-  height: 16px;
-  width: 16px;
+  height: $doubleMargin;
+  width: $doubleMargin;
   margin-right: 5px;
   vertical-align: middle;
 }
@@ -3825,7 +4019,7 @@ table#copyright-table tr td {
 }
 
 .history-options label {
-  padding-right: 8px;
+  padding-right: $singleMargin;
 }
 
 //Attachments - Structured view
@@ -3857,7 +4051,8 @@ table#copyright-table tr td {
 }
 
 .attachments-browse.structured li.attachmentrow .droparrow {
-  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
+  //this droparrow is redundant and shouldn't be rendered.
+  display: none !important;
 }
 
 .attachments-browse.thumbs li.attachmentrow .droparrow {
@@ -3869,7 +4064,7 @@ table#copyright-table tr td {
 .attachments-browse.structured li.attachmentrow.active .droparrow {
   background-image: url(../../images/baseline_arrow_drop_up_black_18dp.png);
   background-position: 0;
-  top: 8px;
+  top: $singleMargin;
 }
 
 .attachments-browse.thumbs li.attachmentrow.active {
@@ -3881,10 +4076,11 @@ table#copyright-table tr td {
   position: relative;
   border-top: 1px solid transparent;
   border-bottom: 1px solid rgba(224, 224, 224, 1);
-  padding: 8px 20px 8px 12px;
+  padding: $singleMargin 20px $singleMargin 12px;
   background-position: 5px 5px;
   background-repeat: no-repeat;
   background-image: none;
+
   .link-div a:before {
     content: "\e24d";
     font-family: "Material Icons";
@@ -3917,6 +4113,7 @@ table#copyright-table tr td {
       font-style: normal;
     }
   }
+
   .icon-move {
     &:before {
       content: "\e8fe";
@@ -3928,12 +4125,51 @@ table#copyright-table tr td {
     }
   }
 }
+
 a.modal-control.modal-save {
   right: 394px;
 }
 
+.fileHandler {
+  @include buttonShadowBorder;
+  @include centreAlignFancyBox;
+  width: $iframeDialogWidth;
+  height: $iframeDialogHeight + $doubleMargin;
+  position: sticky;
+}
+
+.fileHandler
+  .modal-content
+  .modal-content-background
+  .modal-content-inner
+  .float-left {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  padding: 0;
+}
+
+.fileHandler .modal-content-inner {
+  border: none;
+}
+
+.fileHandler .attachment-details ~ .attachment-content {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.fileHandler .fileadd h3 {
+  //redundant string for handlers.file.title already in the dialog header
+  display: none;
+}
+
+.fileHandler .modal-content-inner {
+  padding-left: 0;
+}
+
 .universalresourcedialog .modal-content {
-  height: 400px;
+  //full size minus the height of the footer and it's margin, as well as the window margin
+  height: calc(100% - (#{$modalFooterHeight} + #{$doubleMargin * 2}));
 }
 
 .universalresourcedialog .modal-content-inner {
@@ -3988,12 +4224,11 @@ a.modal-control.modal-save {
 }
 
 div.universaliframe {
-  /*
-	This is what the fancybox ends up being
-	for multiple resource handler selection
-	*/
-  height: 476px;
+  @include buttonShadowBorder;
+  @include centreAlignFancyBox;
   overflow: hidden;
+  height: $iframeDialogHeight;
+  width: $iframeDialogWidth;
 }
 
 div.universaliframe iframe {
@@ -4088,15 +4323,11 @@ img.warningimg {
 }
 
 .universalresources .progress-bar {
+  @include curvedCorners;
   width: 200px;
   height: 14px;
   border: 1px solid #aaa;
   margin: 0 10px 0 0;
-
-  -moz-border-radius: 3px;
-  -o-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
   float: right;
 }
 
@@ -4116,9 +4347,11 @@ img.warningimg {
   background-size: 26px 26px;
   background-position: left 3px top 4px;
   @include buttonShadowBorder;
+
   &:hover {
     background-color: transparentize($primaryColor, 0.1);
   }
+
   &:active {
     background-color: transparentize($primaryColor, 0.3);
   }
@@ -4233,15 +4466,16 @@ img.warningimg {
 
 .selectiondashboard #col2 {
   width: 368px;
-  margin-left: 16px;
+  margin-left: $doubleMargin;
 }
+
 //Search query portlet
 .compactQuery {
   display: flex;
 }
 
 .compactQuery .autocomplete-container {
-  margin-right: 8px;
+  margin-right: $singleMargin;
 }
 
 #col .compactQuery .autocomplete-container {
@@ -4306,7 +4540,7 @@ input[disabled="disabled"] {
 }
 
 .browse-layout #col .area.browse-topics {
-  padding-bottom: 16px;
+  padding-bottom: $doubleMargin;
 }
 
 .browse-layout .browse-topics ul {
@@ -4314,12 +4548,20 @@ input[disabled="disabled"] {
 }
 
 .browse-topics ul li {
-  margin: 8px 0;
+  margin: $singleMargin 0;
   line-height: 1.2;
   @include typography-body-1;
   padding: 0 0 0 18px;
   background: url(../../images/baseline_arrow_right_black_18dp.png) 0 1px
     no-repeat;
+}
+
+button.package-select {
+  margin: 0;
+  border-radius: 50px;
+  min-width: unset;
+  padding: 4px;
+  line-height: 1.3rem;
 }
 
 .browse-topics ul li span {
@@ -4330,6 +4572,7 @@ input[disabled="disabled"] {
 #searchresults-select {
   background-color: white;
   border: none;
+
   strong {
     border-bottom: 2px solid $secondaryColor;
     padding-bottom: 5px;
@@ -4367,6 +4610,14 @@ div#sssh_finishedButton {
 }
 
 #selection-header
+  .navbar-equella-selection.normal
+  .navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner {
+  display: grid;
+  justify-content: center;
+}
+
+#selection-header
   .navbar-equella-selection.course
   .navbar.navbar-fixed-top.navbar-inverse
   .navbar-inner
@@ -4388,6 +4639,7 @@ div#sssh_finishedButton {
     align-items: flex-end;
     @include typography-button;
   }
+
   li {
     padding: 0 12px 0 12px;
   }
@@ -4408,9 +4660,11 @@ div#sssh_finishedButton {
 .box_head {
   background-color: white;
   border: none;
+
   &:hover {
     background: none;
   }
+
   h3 {
     @include typography-headline-6;
     color: $primaryTextColor;
@@ -4434,7 +4688,8 @@ div#sssh_finishedButton {
 
 .contribute-div {
   text-align: right;
-  margin: 8px 0 8px;
+  margin: $singleMargin 0 $singleMargin;
+
   .btn {
     .icon-arrow-right:after {
       content: "\e145";
@@ -4453,6 +4708,7 @@ div#sssh_finishedButton {
 #_cancelButton {
   background: none;
   color: $primaryColor;
+
   .icon-arrow-left:before {
     content: "\e5c4";
     font-family: "Material Icons";
@@ -4479,17 +4735,19 @@ div#sssh_finishedButton {
 }
 
 #selection-content-inner .mainCols #col1 {
-  margin-right: 16px;
+  margin-right: $doubleMargin;
 }
 
 /*****************************************************************************
  Selection session search page
 *****************************************************************************/
 .itemresult-rating div.float-right {
-  padding-top: 8px;
+  padding-top: $singleMargin;
+
   .btn {
     float: right;
     margin-left: 4px;
+    margin-right: 0;
   }
 }
 
@@ -4497,9 +4755,8 @@ div#sssh_finishedButton {
   padding-top: 50px;
   float: right;
   width: 100%;
-  #button-bar {
-    float: right;
-  }
+  display: grid;
+  justify-items: end;
 
   .btn {
     border: none;
@@ -4513,10 +4770,8 @@ div#sssh_finishedButton {
   font-family: "Material Icons";
   font-size: 20px;
   color: set-text-color($primaryColor);
-  padding-right: 4px;
   font-style: normal;
   vertical-align: middle;
-  padding-top: 4px;
 }
 
 .icon-chevron-up:before {
@@ -4574,7 +4829,8 @@ div#sssh_finishedButton {
 }
 
 .selection-courses-inner .courselisttop button {
-  margin-bottom: 8px;
+  margin-bottom: $singleMargin;
+
   .icon-ok:before {
     content: "\e161";
     font-family: "Material Icons";
@@ -4590,16 +4846,13 @@ div#sssh_finishedButton {
 /*****************************************************************************
  Structured item summary page
 *****************************************************************************/
-#selection-content-inner.itemsummary-layout .box {
-  width: 238px;
-}
 
 #selection-content-inner.itemsummary-layout .majorActions {
-  padding-top: 30px;
+  padding-top: 48px;
 }
 
 #selection-content-inner.itemsummary-layout #searchprevnext .btn-group {
-  top: 8px;
+  top: $singleMargin;
 }
 
 #selection-content-inner.itemsummary-layout #col2 {
@@ -4808,6 +5061,7 @@ Login Notice Formatting
   font-family: "Arial", "georgia", "impact", "Tahoma", "Times", "Verdana",
     monospace;
 }
+
 #loginNotice ins {
   text-decoration: underline;
 }
@@ -4935,16 +5189,20 @@ Login Notice Formatting
 #loginNotice ol li {
   margin: unset;
 }
+
 .duplicate_editbox_section {
   line-height: 2;
 }
+
 .duplicate_editbox_section li {
   list-style: disc;
   margin-left: 2.5em;
 }
+
 .duplicate_attachment_section {
   line-height: 2;
 }
+
 .duplicate_attachment_section li {
   list-style: disc;
   margin-left: 2.5em;
@@ -4954,36 +5212,181 @@ ul.treeview .hitarea {
   background-image: transparent;
   margin-right: 0;
 }
+
 ul.treeview li.expandable a.hitarea::before {
   content: none;
 }
+
 ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
-$loginLabelWidth: 100;
-$whitespaceWidth: 4;
-$loginTextBoxWidth: 200;
+
+$loginLabelWidth: 100px;
+$whitespaceWidth: 4px;
+$loginTextBoxWidth: 200px;
 #_logonButton {
   display: block;
-  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
-  margin-top: 16px;
-  width: $loginTextBoxWidth + unquote("px");
+  margin-left: $loginLabelWidth + $whitespaceWidth;
+  margin-top: $doubleMargin;
+  width: $loginTextBoxWidth;
   @include boxShadow;
 }
+
 #username {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
+
 #password {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
+
 label[for="username"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
+
 label[for="password"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
+
 button:focus {
   outline: lightgrey dashed 1px;
+}
+
+.manualdatafixes {
+  button {
+    @include buttonShadowBorder;
+    margin-top: $singleMargin;
+    margin-bottom: $singleMargin;
+  }
+  #rmdfsgto_forceUpdate {
+    // The radio buttons for the 'Generate thumbnails and previews' section
+    display: flex;
+    margin: $doubleMargin 0;
+    label {
+      vertical-align: center;
+      font-size: 16px;
+    }
+  }
+  p {
+    margin-left: 0;
+  }
+}
+
+// User preferences page styling
+
+#editUser {
+  p {
+    @include typography-body-1;
+    margin-left: 0;
+  }
+
+  .edit h3 {
+    @include typography-headline-6;
+    color: $secondaryColor;
+  }
+
+  .edit.double .input.text {
+    height: 100px;
+    width: 510px;
+  }
+
+  .edit:last-child,
+  .edit:nth-last-child(2) {
+    //the last two edit sections on the page - needs an extra margin because of the drop downs
+    h3 {
+      padding-top: $doubleMargin * 2;
+    }
+  }
+
+  #ed_fan {
+    margin-left: $singleMargin;
+  }
+
+  #ed_em {
+    width: 495px;
+  }
+
+  .itemdefs_container {
+    @include curvedCorners;
+    padding: $singleMargin;
+
+    li {
+      display: flex;
+      padding-bottom: $singleMargin;
+    }
+
+    input {
+      padding: $singleMargin;
+    }
+
+    label {
+      height: auto;
+      padding-left: $doubleMargin;
+    }
+  }
+
+  hr {
+    @include muiBorder;
+  }
+
+  .input.checkbox {
+    display: flex;
+  }
+}
+
+$col2Width: 250px;
+
+.user-details #col2 {
+  width: $col2Width;
+  margin: 0 $doubleMargin;
+  .profile-save-button,
+  .change-pass-button {
+    @include buttonShadowBorder;
+    width: $col2Width;
+  }
+}
+
+#bss_moderateSelectedButton,
+#bss_clearSelectedButton {
+  @include buttonShadowBorder;
+}
+
+.newListSelected .newList {
+  padding-bottom: $doubleMargin;
+}
+
+.save-scrapbook-page.action-button {
+  @include buttonShadowBorder;
+  width: $col2Width;
+  margin-left: $doubleMargin;
+}
+.controldialog .area {
+  box-shadow: none;
+}
+
+// select user/select group dialogs need a specified width. Annoyingly they only have a unique ID
+// wherever they are used.
+// #1wrap and #2wrap don't work directly as selectors because they start with numbers
+#dul_userGroupsDialog,
+#dul_selectGroupDialog,
+#fbo_sowrap,
+#lce_selectInstructorwrap,
+#lce_selectOtherwrap,
+#lce_selectCustomwrap,
+#fpbo_sowrap,
+#fbm_sowrap,
+#fba_sowrap,
+#_selectUserDialogwrap,
+#_audwrap,
+[id="1wrap"],
+[id="2wrap"] {
+  @include buttonShadowBorder;
+  width: 550px;
+}
+
+#ed_fin,
+#ed_fan {
+  width: 200px;
 }

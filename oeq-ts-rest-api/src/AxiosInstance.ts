@@ -16,10 +16,10 @@ const catchHandler = (error: AxiosError | Error): never => {
 export const GET = <T>(
   path: string,
   validator?: (data: unknown) => boolean,
-  queryParams?: object
+  queryParams?: object // eslint-disable-line @typescript-eslint/ban-types
 ): Promise<T> =>
   axios
-    .get<T>(path, {params: queryParams})
+    .get<T>(path, { params: queryParams })
     .then((response: AxiosResponse<T>) => {
       if (validator && !validator(response.data)) {
         // If a validator is provided, but it fails to validate the provided data...

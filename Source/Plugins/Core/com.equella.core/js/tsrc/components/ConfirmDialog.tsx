@@ -27,7 +27,7 @@ import {
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 
-interface ConfirmDialogProps {
+export interface ConfirmDialogProps {
   /**
    * Open the dialog when true.
    */

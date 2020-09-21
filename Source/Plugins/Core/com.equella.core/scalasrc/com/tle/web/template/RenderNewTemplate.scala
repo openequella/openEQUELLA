@@ -35,6 +35,7 @@ import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
+import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 
@@ -85,6 +86,18 @@ object RenderNewTemplate {
 
   val NewLayoutKey = "NEW_LAYOUT"
 
+  // Check if new UI is enabled.
+  def isNewUIEnabled: Boolean = {
+    RunWithDB
+      .executeIfInInstitution(UISettings.cachedUISettings)
+      .getOrElse(UISettings.defaultSettings)
+      .newUI
+      .enabled
+  }
+
+  // Check if New UI is being used, but there is no guarantee that New UI is enabled.
+  // An example is when Old UI is turned on, users will see New UI if they open pages
+  // that are only available in New UI such as the Facet settings page.
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
       val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
@@ -93,13 +106,7 @@ object RenderNewTemplate {
         LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
         Some(newUI)
       }
-      val newLayout = sessionOverride.getOrElse {
-        RunWithDB
-          .executeIfInInstitution(UISettings.cachedUISettings)
-          .getOrElse(UISettings.defaultSettings)
-          .newUI
-          .enabled
-      }
+      val newLayout = sessionOverride.getOrElse(isNewUIEnabled)
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
@@ -131,7 +138,7 @@ object RenderNewTemplate {
       new ObjectExpression("baseResources",
                            r.url(""),
                            "newUI",
-                           java.lang.Boolean.TRUE,
+                           java.lang.Boolean.valueOf(isNewUIEnabled),
                            "autotestMode",
                            java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode))
     val renderData =
@@ -149,7 +156,7 @@ object RenderNewTemplate {
   }
 
   def supportIEPolyFills(context: PreRenderContext): Unit = {
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+    if (isInternetExplorer(context.getRequest)) {
       context.addJs(
         "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes")
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
@@ -158,6 +165,9 @@ object RenderNewTemplate {
       RenderTemplate.IE11_COMPAT_CSS.preRender(context)
     }
   }
+
+  def isInternetExplorer(request: HttpServletRequest): Boolean =
+    Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
@@ -168,8 +178,12 @@ object RenderNewTemplate {
     }
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
-    viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(body, renderData, tempResult, ""))
+    val template =
+      if (isInternetExplorer(context.getRequest)) "layouts/outer/unsupportedbrowser.ftl"
+      else "layouts/outer/react.ftl"
+
+    viewFactory.createResultWithModel(template, TemplateScript(body, renderData, tempResult, ""))
+
   }
 
   case class TemplateScript(getBody: String,

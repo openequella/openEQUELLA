@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface ErrorProps {
+export interface ErrorProps {
   children: React.ReactNode;
 }
 

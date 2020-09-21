@@ -81,10 +81,10 @@ In ubuntu:
 
 **Download and install Image Magick binaries**
 
-<https://www.imagemagick.org/script/binary-releases.php>
+<https://imagemagick.org/script/download.php>
 
 _Note: For ubuntu follow the install from Unix Source instructions:_
-<https://www.imagemagick.org/script/install-source.php>
+<https://imagemagick.org/script/install-source.php>
 
 To confirm the installation directory in Ubuntu for the openEquella installer, run the command:
 

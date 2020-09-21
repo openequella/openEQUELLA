@@ -33,7 +33,7 @@ import {
 } from "./FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
 
-interface FacetDialogProps {
+export interface FacetDialogProps {
   /**
    * If true, the dialog will be shown.
    */

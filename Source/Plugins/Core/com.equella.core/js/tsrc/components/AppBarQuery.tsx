@@ -24,7 +24,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { commonString } from "../util/commonstrings";
 import { debounce } from "lodash";
 
-interface AppBarQueryProps {
+export interface AppBarQueryProps {
   onChange: (query: string) => void;
   query: string;
 }

@@ -6024,6 +6024,23 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.CreateFacetedSearchClassificationTable" />
     <parameter id="date" value="2020-04-22" />
   </extension>
+  <!-- Let 2020.2 know v20192 and v20201 of RemoveLastKnownUserConstraint.
+       Firstly, below two extension's IDs must match the ID of v20192 and v20201.
+       Secondly, Because we don't have a bean for v20192 and v20201 in 2020.2, we must reuse v20202's bean.
+       Lastly, make the two extensions obsoleted by v20202.
+  -->
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveLastKnownUserConstraint20192">
+    <parameter id="id" value="com.tle.core.institution.migration.v20192.RemoveLastKnownUserConstraint" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
+    <parameter id="date" value="2020-06-10" />
+    <parameter id="obsoletedby" value="com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveLastKnownUserConstraint20201">
+    <parameter id="id" value="com.tle.core.institution.migration.v20201.RemoveLastKnownUserConstraint" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
+    <parameter id="date" value="2020-06-10" />
+    <parameter id="obsoletedby" value="com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveLastKnownUserConstraint">
     <parameter id="id" value="com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
