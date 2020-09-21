@@ -5356,6 +5356,7 @@ $col2Width: 250px;
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
 }
+
 .save-scrapbook-page.action-button {
   @include buttonShadowBorder;
   width: $col2Width;
@@ -5375,6 +5376,8 @@ $col2Width: 250px;
 #lce_selectOtherwrap,
 #lce_selectCustomwrap,
 #fpbo_sowrap,
+#fbm_sowrap,
+#fba_sowrap,
 #_selectUserDialogwrap,
 #_audwrap,
 [id="1wrap"],
@@ -5384,4 +5387,9 @@ $col2Width: 250px;
 
 .schedulersettings .dayprefix {
   margin-left: $doubleMargin;
+}
+
+#ed_fin,
+#ed_fan {
+  width: 200px;
 }
