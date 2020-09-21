@@ -5356,3 +5356,32 @@ $col2Width: 250px;
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
 }
+.save-scrapbook-page.action-button {
+  @include buttonShadowBorder;
+  width: $col2Width;
+  margin-left: $doubleMargin;
+}
+.controldialog .area {
+  box-shadow: none;
+}
+
+// select user/select group dialogs need a specified width. Annoyingly they only have a unique ID
+// wherever they are used.
+// #1wrap and #2wrap don't work directly as selectors because they start with numbers
+#dul_userGroupsDialog,
+#dul_selectGroupDialog,
+#fbo_sowrap,
+#lce_selectInstructorwrap,
+#lce_selectOtherwrap,
+#lce_selectCustomwrap,
+#fpbo_sowrap,
+#_selectUserDialogwrap,
+#_audwrap,
+[id="1wrap"],
+[id="2wrap"] {
+  width: 550px;
+}
+
+.schedulersettings .dayprefix {
+  margin-left: $doubleMargin;
+}
