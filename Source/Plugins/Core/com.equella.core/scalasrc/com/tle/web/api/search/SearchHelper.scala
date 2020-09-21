@@ -24,7 +24,7 @@ import java.util.Date
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{ItemIdKey, ItemStatus}
+import com.tle.beans.item.{Comment, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.Utils.parseDate
 import com.tle.common.beans.exception.NotFoundException
@@ -185,9 +185,8 @@ object SearchHelper {
     * @return An instance of SearchResultItem.
     */
   def convertToItem(item: SearchItem): SearchResultItem = {
-    val key          = item.idKey
-    val bean         = item.bean
-    val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
+    val key  = item.idKey
+    val bean = item.bean
     SearchResultItem(
       uuid = key.getUuid,
       version = key.getVersion,
@@ -197,7 +196,7 @@ object SearchHelper {
       createdDate = bean.getCreatedDate,
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
-      commentCount,
+      commentCount = getItemComments(key).map(_.size),
       attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
@@ -225,6 +224,10 @@ object SearchHelper {
             links = getLinksFromBean(att)
         ))
       .toList
+  }
+
+  def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] = {
+    Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
   }
 
   /**
