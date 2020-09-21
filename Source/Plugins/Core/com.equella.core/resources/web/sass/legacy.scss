@@ -5382,6 +5382,7 @@ $col2Width: 250px;
 #_audwrap,
 [id="1wrap"],
 [id="2wrap"] {
+  @include buttonShadowBorder;
   width: 550px;
 }
 
