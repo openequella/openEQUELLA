@@ -58,53 +58,52 @@ object PagedResults {
 
     val allReqPriv = if (full) forFull ++ privilege else privilege
 
+    val baseEntities = res.getEntityService.query(
+      new EnumerateOptions(q, -1, MaxEntities, system, if (includeDisabled) null else false))
+
+    val availableEntities = baseEntities.asScala.collect {
+      case be if !LegacyGuice.aclManager.filterNonGrantedPrivileges(be, privilege.asJava).isEmpty =>
+        be
+    }
+
+    def getPrivilegeMap(offset: Int) =
+      LegacyGuice.aclManager
+        .getPrivilegesForObjects(allReqPriv.asJavaCollection, availableEntities.drop(offset).asJava)
+        .asScala
+
     @tailrec
     def collectMore(
         len: Int,
         offset: Int,
-        tried: Int,
-        vec: Vector[(BE, Boolean, Set[String])]): (Int, Vector[(BE, Boolean, Set[String])]) = {
-      if (len <= 0 || tried >= MaxEntities) (offset, vec)
-      else {
-        val amountToTry = if (tried == 0) len * 2 else MaxEntities - tried
-        val nextLot = res.getEntityService.query(
-          new EnumerateOptions(q,
-                               offset,
-                               amountToTry,
-                               system,
-                               if (includeDisabled) null else false))
-        val nextOffset = offset + nextLot.size()
-        if (nextOffset == offset) {
-          (offset, vec)
-        } else {
-          val privMap = LegacyGuice.aclManager
-            .getPrivilegesForObjects(allReqPriv.asJavaCollection, nextLot)
-            .asScala
-          object ExtraPrivs {
-            def unapply(be: BE): Option[(BE, Set[String])] = privMap.get(be).map { p =>
+        vec: Vector[(BE, Boolean, Set[String])]): (Vector[(BE, Boolean, Set[String])]) = {
+      if (len <= 0 || availableEntities.length < offset) {
+        (vec)
+      } else {
+        object ExtraPrivs {
+          def unapply(be: BE): Option[(BE, Set[String])] = getPrivilegeMap(offset).get(be).map {
+            p =>
               (be, allReqPriv & p.asScala.keySet)
-            }
           }
-          val withPriv = nextLot.asScala
-            .collect {
-              case ExtraPrivs(be, privs) if privs.count(privilege) > 0 =>
-                (be, full && privs.exists(forFull), privs)
-            }
-            .take(len)
-          collectMore(len - withPriv.size, nextOffset, tried + amountToTry, vec ++ withPriv)
         }
+        val withPriv = availableEntities
+          .collect {
+            case ExtraPrivs(be, privs) if privs.count(privilege) > 0 =>
+              (be, full && privs.exists(forFull), privs)
+          }
+          .take(len)
+        val nextOffset = offset + len
+        collectMore(len - withPriv.size, nextOffset, vec ++ withPriv)
       }
+
     }
     def addPrivs(privs: Set[String], b: BEB): BEB = {
       b.setReadonly(new BaseEntityReadOnly(privs.asJavaCollection))
       b
     }
 
-    val (_, results) = collectMore(_length, firstOffset, 0, Vector.empty)
-    val pb           = new PagingBean[BEB]
-    val available = res.getEntityService
-      .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
-      .toInt
+    val (results) = collectMore(_length, firstOffset, Vector.empty)
+    val available = availableEntities.length
+    val pb        = new PagingBean[BEB]
     pb.setStart(firstOffset)
     pb.setLength(results.length)
     pb.setAvailable(available)
