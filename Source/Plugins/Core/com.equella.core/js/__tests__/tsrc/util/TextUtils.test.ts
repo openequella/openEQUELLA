@@ -30,6 +30,13 @@ describe("Highlighting of Text", () => {
       ["kelp*"],
       `The life of <span class="${className}">kelpies</span> explained`,
     ],
+    [
+      // Test we're only matching from the start of words - i.e. `an` at the end
+      // of Australian should not be highlighted.
+      "There was an Australian",
+      ["an*"],
+      `There was <span class="${className}">an</span> Australian`,
+    ],
   ])(
     "Produces a string containing the text highlighted with <span>s - %s",
     (text, highlights, expected) => {
