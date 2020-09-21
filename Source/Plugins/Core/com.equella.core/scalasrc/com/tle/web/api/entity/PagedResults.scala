@@ -58,18 +58,21 @@ object PagedResults {
 
     val allReqPriv = if (full) forFull ++ privilege else privilege
 
+    // All Collections, including dynamic Collections.
     val baseEntities = res.getEntityService.query(
       new EnumerateOptions(q, -1, MaxEntities, system, if (includeDisabled) null else false))
-
+    // A list of Collections which users have permissions to access.
     val availableEntities = baseEntities.asScala.collect {
       case be if !LegacyGuice.aclManager.filterNonGrantedPrivileges(be, privilege.asJava).isEmpty =>
         be
     }
-
-    def getPrivilegeMap(offset: Int) =
+    // Return a map where the key is a base entity and the value is a another map for the entity's ACLs.
+    // Depending on the value of offset, some available entities are not added into the map.
+    def getPrivilegeMap(offset: Int): Map[BE, java.util.Map[String, java.lang.Boolean]] =
       LegacyGuice.aclManager
         .getPrivilegesForObjects(allReqPriv.asJavaCollection, availableEntities.drop(offset).asJava)
         .asScala
+        .toMap
 
     @tailrec
     def collectMore(
