@@ -31,6 +31,7 @@ export interface UserData {
   guest: boolean;
   autoLoggedIn: boolean;
   prefsEditable: boolean;
+  username: string;
   counts?: {
     tasks: number;
     notifications: number;
@@ -40,6 +41,7 @@ export interface UserData {
 
 export const guestUser: UserData = {
   id: "guest",
+  username: "guest",
   guest: true,
   autoLoggedIn: false,
   prefsEditable: false,
