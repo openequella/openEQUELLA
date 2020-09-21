@@ -5348,6 +5348,11 @@ $col2Width: 250px;
   }
 }
 
+#bss_moderateSelectedButton,
+#bss_clearSelectedButton {
+  @include buttonShadowBorder;
+}
+
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
 }
