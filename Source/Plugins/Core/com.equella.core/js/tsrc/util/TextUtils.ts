@@ -64,8 +64,9 @@ export const highlight = (
   // * Group 1 (optional) - text before that which is to be highlighted
   //   /^(.*?)/ : Non-greedily match anything from the start of the line upto the next group
   // * Group 2 - The text which should be highlighted
-  //   /(<highlightsRegex>)\b/ : Using the generated highlightsRegex (typically in the form
-  //                             of /word|word|word/) match up to the next word boundary (/\b/)
+  //   /\b(<highlightsRegex>)\b/ : Using the generated highlightsRegex (typically in the form
+  //                               of /word|word|word/) match whole words. (Using word boundary
+  //                               specifiers on either side - /\b/.)
   // * Group 3 (optional) - The remaining text (after that which should be highlighted)
   //   /(.*)$/ : Match zero or more characters up to the end of the line of text.
   //
@@ -82,7 +83,7 @@ export const highlight = (
   //  Group 1: "This and that other "
   //  Group 2: "thing"
   //  Group 3: ""
-  const re = new RegExp("^(.*?)(" + highlightsRegex + ")\\b(.*)$", "is");
+  const re = new RegExp("^(.*?)\\b(" + highlightsRegex + ")\\b(.*)$", "is");
   const highlightWords = (_text: string): string => {
     const matches = _text.match(re);
     if (!matches) {
