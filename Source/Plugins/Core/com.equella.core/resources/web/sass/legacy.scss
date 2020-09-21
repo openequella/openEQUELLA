@@ -418,8 +418,11 @@ select[multiple="multiple"] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 4px 4px 0 0;
   background-color: #f5f5f5;
-  height: 56px;
-
+  &:not(#q):not(.prompt) {
+    //so as to avoid affecting searchbars
+    padding: $doubleMargin;
+    font-size: 16px;
+  }
   &:hover {
     border-bottom: 2px solid rgba(0, 0, 0, 0.42);
   }
@@ -5218,33 +5221,33 @@ ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
 
-$loginLabelWidth: 100;
-$whitespaceWidth: 4;
-$loginTextBoxWidth: 200;
+$loginLabelWidth: 100px;
+$whitespaceWidth: 4px;
+$loginTextBoxWidth: 200px;
 #_logonButton {
   display: block;
-  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
+  margin-left: $loginLabelWidth + $whitespaceWidth;
   margin-top: $doubleMargin;
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth;
   @include boxShadow;
 }
 
 #username {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 #password {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 label[for="username"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 label[for="password"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 button:focus {
@@ -5345,6 +5348,45 @@ $col2Width: 250px;
   }
 }
 
+#bss_moderateSelectedButton,
+#bss_clearSelectedButton {
+  @include buttonShadowBorder;
+}
+
 .newListSelected .newList {
   padding-bottom: $doubleMargin;
+}
+
+.save-scrapbook-page.action-button {
+  @include buttonShadowBorder;
+  width: $col2Width;
+  margin-left: $doubleMargin;
+}
+.controldialog .area {
+  box-shadow: none;
+}
+
+// select user/select group dialogs need a specified width. Annoyingly they only have a unique ID
+// wherever they are used.
+// #1wrap and #2wrap don't work directly as selectors because they start with numbers
+#dul_userGroupsDialog,
+#dul_selectGroupDialog,
+#fbo_sowrap,
+#lce_selectInstructorwrap,
+#lce_selectOtherwrap,
+#lce_selectCustomwrap,
+#fpbo_sowrap,
+#fbm_sowrap,
+#fba_sowrap,
+#_selectUserDialogwrap,
+#_audwrap,
+[id="1wrap"],
+[id="2wrap"] {
+  @include buttonShadowBorder;
+  width: 550px;
+}
+
+#ed_fin,
+#ed_fan {
+  width: 200px;
 }
