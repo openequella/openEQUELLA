@@ -31,7 +31,6 @@ import {
   LegacyContentProps,
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
-import type { RenderData } from "./index";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -45,7 +44,7 @@ interface LegacyPageProps extends TemplateUpdateProps {
       cb: (p: LegacyContentProps) => LegacyContentProps
     ) => void;
   };
-  renderData?: RenderData;
+  isReloadNeeded: boolean;
 }
 
 export function templatePropsForLegacy({
@@ -80,14 +79,14 @@ export const LegacyPage = React.memo(
     updateTemplate,
     setPreventNavigation,
     redirect,
-    renderData,
+    isReloadNeeded,
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
 
     // If New UI is actually not enabled then reload the page to display Old UI.
     React.useEffect(() => {
-      if (renderData && !renderData.newUI) {
+      if (isReloadNeeded) {
         window.location.reload();
       }
     }, []);
