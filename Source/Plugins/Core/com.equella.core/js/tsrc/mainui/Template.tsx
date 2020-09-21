@@ -512,7 +512,7 @@ export const Template = React.memo(function Template({
                 topBarString.notifications
               )}
             </Hidden>
-            <Tooltip title={strings.menu.title}>
+            <Tooltip title={currentUser?.username}>
               <IconButton
                 aria-label={strings.menu.title}
                 onClick={(e) => setMenuAnchorEl(e.currentTarget)}
