@@ -5221,33 +5221,33 @@ ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
 
-$loginLabelWidth: 100;
-$whitespaceWidth: 4;
-$loginTextBoxWidth: 200;
+$loginLabelWidth: 100px;
+$whitespaceWidth: 4px;
+$loginTextBoxWidth: 200px;
 #_logonButton {
   display: block;
-  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
+  margin-left: $loginLabelWidth + $whitespaceWidth;
   margin-top: $doubleMargin;
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth;
   @include boxShadow;
 }
 
 #username {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 #password {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 label[for="username"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 label[for="password"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 button:focus {
