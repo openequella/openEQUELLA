@@ -15,43 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios from "axios";
+import * as OEQ from "@openequella/rest-api-client";
+import { API_BASE_URL } from "../config";
 
-export interface MenuItem {
-  route?: string;
-  href?: string;
-  title: string;
-  systemIcon?: string;
-  iconUrl?: string;
-  newWindow: boolean;
-}
-
-export interface UserData {
-  id: string;
-  guest: boolean;
-  autoLoggedIn: boolean;
-  prefsEditable: boolean;
-  username: string;
-  counts?: {
-    tasks: number;
-    notifications: number;
-  };
-  menuGroups: MenuItem[][];
-}
-
-export const guestUser: UserData = {
-  id: "guest",
-  username: "guest",
-  guest: true,
-  autoLoggedIn: false,
-  prefsEditable: false,
-  counts: {
-    tasks: 0,
-    notifications: 0,
-  },
-  menuGroups: [],
-};
-
-export function getCurrentUser(): Promise<UserData> {
-  return Axios.get<UserData>("api/content/currentuser").then((r) => r.data);
-}
+/**
+ * Gets the current user's info from the server as OEQ.LegacyContent.CurrentUserDetails.
+ */
+export const getCurrentUserDetails = () =>
+  OEQ.LegacyContent.getCurrentUserDetails(API_BASE_URL).then(
+    (result: OEQ.LegacyContent.CurrentUserDetails) => {
+      return result;
+    }
+  );
