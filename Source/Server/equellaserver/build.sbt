@@ -240,7 +240,10 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.90"
+  "io.github.classgraph"   % "classgraph"                % "4.8.90",
+  "com.fasterxml"          % "classmate"                 % "1.5.1",
+  "org.glassfish"          % "javax.el"                  % "3.0.1-b11",
+  "javax.el"               % "javax.el-api"              % "3.0.1-b06"
 )
 
 libraryDependencies ++= {
@@ -280,7 +283,14 @@ excludeDependencies ++= Seq(
   "org.apache.geronimo.specs"    % "geronimo-javamail_1.4_spec",
   "org.apache.geronimo.specs"    % "geronimo-stax-api_1.0_spec",
   "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec",
-  "taglibs"                      % "standard"
+  "taglibs"                      % "standard",
+  // Spring 5 added a default logging bridge.  In oEQ, this results in
+  // a [deduplicate: different file contents found in the following] error
+  // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.2.9.RELEASE.jar:org/apache/commons/logging/Log.class
+  // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
+  // since we already have logging in place, we can safely exclude the dep from spring.
+  "org.springframework" % "spring-jcl"
 )
 
 run := {

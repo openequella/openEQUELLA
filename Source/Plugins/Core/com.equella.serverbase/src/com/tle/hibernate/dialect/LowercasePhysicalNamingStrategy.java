@@ -20,6 +20,7 @@ package com.tle.hibernate.dialect;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.log4j.Logger;
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
@@ -33,6 +34,8 @@ import org.hibernate.internal.util.StringHelper;
  */
 @SuppressWarnings("nls")
 public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStandardImpl {
+  private static final Logger LOGGER = Logger.getLogger(LowercasePhysicalNamingStrategy.class);
+
   private static final long serialVersionUID = 1L;
 
   private final Map<String, String> overrides = new HashMap<String, String>();
@@ -150,6 +153,13 @@ public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStand
           break;
         }
     }
-    return new Identifier(resultantName, name.isQuoted());
+    LOGGER.trace(
+        "Transformed (possible noop) of ["
+            + name.getText()
+            + "] to ["
+            + resultantName
+            + "].  Quoted="
+            + Identifier.isQuoted(resultantName));
+    return Identifier.toIdentifier(resultantName);
   }
 }

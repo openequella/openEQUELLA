@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.log4j.Logger;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
@@ -44,6 +45,8 @@ import org.hibernate.type.BasicType;
 
 public class ExtendedAnnotationConfiguration extends Configuration {
   private static final long serialVersionUID = 1L;
+
+  private static final Logger LOGGER = Logger.getLogger(ExtendedAnnotationConfiguration.class);
 
   private static class MetadataCapture implements Integrator {
     private Metadata metadata;
@@ -71,9 +74,12 @@ public class ExtendedAnnotationConfiguration extends Configuration {
 
   public ExtendedAnnotationConfiguration(ExtendedDialect dialect) {
     super(new BootstrapServiceRegistryBuilder().applyIntegrator(METADATA_CAPTURE).build());
-
+    LOGGER.trace("Starting up a new configuration");
     Iterable<? extends BasicType> types = dialect.getExtraTypeOverrides();
     for (BasicType basicType : types) {
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("Registering basic type [" + basicType.getName() + "]");
+      }
       registerTypeOverride(basicType);
     }
   }

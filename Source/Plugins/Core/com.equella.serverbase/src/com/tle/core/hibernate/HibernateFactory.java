@@ -20,6 +20,7 @@ package com.tle.core.hibernate;
 
 import com.tle.hibernate.dialect.LowercasePhysicalNamingStrategy;
 import java.util.Properties;
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.cfg.Environment;
@@ -28,6 +29,8 @@ import org.hibernate.engine.spi.Mapping;
 
 @SuppressWarnings("nls")
 public class HibernateFactory {
+  private static final Logger LOGGER = Logger.getLogger(HibernateFactory.class);
+
   private Mapping mapping;
   private ExtendedAnnotationConfiguration config;
   private SessionFactory sessionFactory;
@@ -66,6 +69,7 @@ public class HibernateFactory {
         config.setImplicitNamingStrategy(new ImplicitNamingStrategyJpaCompliantImpl());
         config.setPhysicalNamingStrategy(new LowercasePhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {
+          LOGGER.trace("Adding annotated class: " + class1.getCanonicalName());
           config.addAnnotatedClass(class1);
         }
       } finally {
@@ -90,7 +94,6 @@ public class HibernateFactory {
 
   public synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      getMapping();
       ClassLoader oldLoader = oldLoader();
       try {
         setContextLoader(classLoader);
@@ -98,6 +101,7 @@ public class HibernateFactory {
       } finally {
         setContextLoader(oldLoader);
       }
+      getMapping();
     }
     return sessionFactory;
   }
