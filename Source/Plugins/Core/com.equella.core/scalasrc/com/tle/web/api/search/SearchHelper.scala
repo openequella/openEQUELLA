@@ -196,7 +196,7 @@ object SearchHelper {
       createdDate = bean.getCreatedDate,
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
-      commentCount = getItemComments(key).map(_.size),
+      commentCount = getItemCommentCount(key),
       attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
@@ -226,8 +226,15 @@ object SearchHelper {
       .toList
   }
 
-  def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] = {
+  def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
     Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
+
+  def getItemCommentCount(key: ItemIdKey): Option[Int] = {
+    val count = LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key)
+    if (count == -1) {
+      return None
+    }
+    Some(count)
   }
 
   /**

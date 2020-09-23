@@ -26,18 +26,18 @@ import java.util.EnumSet;
 import java.util.List;
 
 public interface ItemCommentService {
-  public enum CommentFilter {
+  enum CommentFilter {
     MUST_HAVE_COMMENT,
     MUST_HAVE_RATING,
     NOT_ANONYMOUS_OR_GUEST,
-    ONLY_MOST_RECENT_PER_USER;
+    ONLY_MOST_RECENT_PER_USER
   }
 
-  public enum CommentOrder {
+  enum CommentOrder {
     REVERSE_CHRONOLOGICAL,
     CHRONOLOGICAL,
     HIGHEST_RATED,
-    LOWEST_RATED;
+    LOWEST_RATED
   }
 
   float getAverageRatingForItem(ItemKey itemId);
@@ -74,6 +74,13 @@ public interface ItemCommentService {
    */
   List<Comment> getCommentsWithACLCheck(
       ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit);
+
+  /**
+   * Check the permission of viewing an item's comments and return the number of comments if the
+   * permission is granted.
+   */
+  int getCommentCountWithACLCheck(ItemKey itemId);
+
   /**
    * Add a new comment to an item.
    *

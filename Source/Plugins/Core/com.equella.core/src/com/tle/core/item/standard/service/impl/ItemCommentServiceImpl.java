@@ -45,6 +45,7 @@ import com.tle.core.item.standard.dao.ItemCommentDao;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.security.impl.SecureOnCall;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -97,6 +98,16 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
       return getComments(item, filter, order, limit);
     }
     return null;
+  }
+
+  @Override
+  @Transactional
+  public int getCommentCountWithACLCheck(ItemKey itemId) {
+    Item item = itemDao.getExistingItem(itemId);
+    if (canViewComment(item)) {
+      return itemDao.getCommentCounts(Collections.singletonList(item)).get(0);
+    }
+    return -1;
   }
 
   @Override
