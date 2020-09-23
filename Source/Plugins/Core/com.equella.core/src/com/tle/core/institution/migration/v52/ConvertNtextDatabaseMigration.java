@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.inject.Singleton;
 import org.apache.log4j.Logger;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.jdbc.Work;

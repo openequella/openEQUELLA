@@ -28,7 +28,7 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 @Singleton

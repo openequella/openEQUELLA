@@ -18,30 +18,32 @@
 
 package com.tle.core.hibernate;
 
-import com.tle.hibernate.dialect.LowercaseImprovedNamingScheme;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.integrator.spi.Integrator;
-import org.hibernate.mapping.AuxiliaryDatabaseObject;
+import org.hibernate.mapping.Collection;
+import org.hibernate.mapping.IdentifierCollection;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.Table;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.hibernate.type.BasicType;
 
 public class ExtendedAnnotationConfiguration extends Configuration {
   private static final long serialVersionUID = 1L;
-
-  public void setNamingStrategy(LowercaseImprovedNamingScheme lowercaseImprovedNamingScheme) {
-    // TODO [SpringHib5] need to figure out how to do the equiv in hib5.
-
-  }
 
   private static class MetadataCapture implements Integrator {
     private Metadata metadata;
@@ -93,8 +95,9 @@ public class ExtendedAnnotationConfiguration extends Configuration {
       throw new IllegalStateException(
           "Cannot access Hibernate Metadata before a SessionFactory has been created");
     }
-    // TODO [SpringHib5] need to figure out how to find the equiv hib5.
-    return new ArrayList<>(); // auxiliaryDatabaseObjects;
+    List<AuxiliaryDatabaseObject> ados = new ArrayList<>();
+    ados.addAll(METADATA_CAPTURE.getMetadata().getDatabase().getAuxiliaryDatabaseObjects());
+    return ados;
   }
 
   public java.util.Collection<PersistentIdentifierGenerator> getGenerators(
@@ -104,52 +107,65 @@ public class ExtendedAnnotationConfiguration extends Configuration {
           "Cannot access Hibernate Metadata before a SessionFactory has been created");
     }
 
-    //    TreeMap<Object, PersistentIdentifierGenerator> generators =
-    //        new TreeMap<Object, PersistentIdentifierGenerator>();
-    //
-    //    Iterator<PersistentClass> iter = classes.values().iterator();
-    //    while (iter.hasNext()) {
-    //      PersistentClass pc = iter.next();
-    //
-    //      if (!pc.isInherited()) {
-    //        IdentifierGenerator ig =
-    //            pc.getIdentifier()
-    //                .createIdentifierGenerator(
-    //                    getIdentifierGeneratorFactory(),
-    //                    dialect,
-    //                    defaultCatalog,
-    //                    defaultSchema,
-    //                    (RootClass) pc);
-    //
-    //        if (ig instanceof PersistentIdentifierGenerator) {
-    //          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
-    //          generators.put(pig.generatorKey(), pig);
-    //        }
-    //      }
-    //    }
-    //
-    //    Iterator<Collection> coliter = collections.values().iterator();
-    //    while (coliter.hasNext()) {
-    //      Collection collection = coliter.next();
-    //
-    //      if (collection.isIdentified()) {
-    //
-    //        IdentifierGenerator ig =
-    //            ((IdentifierCollection) collection)
-    //                .getIdentifier()
-    //                .createIdentifierGenerator(
-    //                    getIdentifierGeneratorFactory(), dialect, defaultCatalog, defaultSchema,
-    // null);
-    //
-    //        if (ig instanceof PersistentIdentifierGenerator) {
-    //          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
-    //          generators.put(pig.generatorKey(), pig);
-    //        }
-    //      }
-    //    }
-    //
-    //    return generators.values();
-    // TODO [SpringHib5] need to figure out how to find the equiv hib5.
-    return new ArrayList<>();
+    TreeMap<Object, PersistentIdentifierGenerator> generators =
+        new TreeMap<Object, PersistentIdentifierGenerator>();
+
+    Iterator<PersistentClass> iter = METADATA_CAPTURE.getMetadata().getEntityBindings().iterator();
+    while (iter.hasNext()) {
+      PersistentClass pc = iter.next();
+
+      if (!pc.isInherited()) {
+        IdentifierGenerator ig =
+            pc.getIdentifier()
+                .createIdentifierGenerator(
+                    // TODO [SpringHib5] What is the replacement for this method?
+                    // (getIdentifierGeneratorFactory() is deprecated)
+                    METADATA_CAPTURE.getMetadata().getIdentifierGeneratorFactory(),
+                    dialect,
+                    defaultCatalog,
+                    defaultSchema,
+                    (RootClass) pc);
+
+        if (ig instanceof PersistentIdentifierGenerator) {
+          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
+          generators.put(pig.generatorKey(), pig);
+        }
+      }
+    }
+
+    Iterator<Collection> coliter =
+        METADATA_CAPTURE.getMetadata().getCollectionBindings().iterator();
+    while (coliter.hasNext()) {
+      Collection collection = coliter.next();
+
+      if (collection.isIdentified()) {
+
+        IdentifierGenerator ig =
+            ((IdentifierCollection) collection)
+                .getIdentifier()
+                .createIdentifierGenerator(
+                    // Note - in Hibernate 5, `getIdentifierGeneratorFactory()` is deprecated
+                    METADATA_CAPTURE.getMetadata().getIdentifierGeneratorFactory(),
+                    dialect,
+                    defaultCatalog,
+                    defaultSchema,
+                    null);
+
+        if (ig instanceof PersistentIdentifierGenerator) {
+          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
+          generators.put(pig.generatorKey(), pig);
+        }
+      }
+    }
+
+    return generators.values();
+  }
+
+  public Mapping buildMapping() {
+    if (METADATA_CAPTURE.getMetadata() == null) {
+      throw new IllegalStateException(
+          "Cannot access Hibernate Metadata before a SessionFactory has been created");
+    }
+    return METADATA_CAPTURE.getMetadata();
   }
 }

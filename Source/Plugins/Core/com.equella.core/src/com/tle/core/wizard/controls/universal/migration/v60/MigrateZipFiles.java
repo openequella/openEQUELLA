@@ -41,8 +41,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.Type;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton

@@ -36,13 +36,14 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.hibernate.Session;
+import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jdbc.Work;
-import org.hibernate.mapping.AuxiliaryDatabaseObject;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Index;
@@ -133,7 +134,9 @@ public class HibernateMigrationHelper {
 
     for (AuxiliaryDatabaseObject object : configuration.getAuxiliaryDatabaseObjects()) {
       if (object.appliesToDialect(dialect) && filter.includeObject(object)) {
-        sqlStrings.add(object.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+        // TODO [SpringHib5] Need some due diligence if removing the extra parameters and switching
+        // packages is appropriate.
+        sqlStrings.addAll(Lists.newArrayList(object.sqlCreateStrings(dialect)));
       }
     }
     return sqlStrings;
@@ -322,8 +325,8 @@ public class HibernateMigrationHelper {
    * @param tableName
    * @param columnName
    * @param changeNotNull
-   * @param nullable Pass in null to use the annotation on the column. This is not always possible
-   *     (see Redmine #3329).
+   * @param changeType nullable Pass in null to use the annotation on the column. This is not always
+   *     possible (see Redmine #3329).
    * @param changeType
    * @return
    */

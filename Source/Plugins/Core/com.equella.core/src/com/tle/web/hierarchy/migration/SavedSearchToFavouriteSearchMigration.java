@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import org.hibernate.Query;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 public class SavedSearchToFavouriteSearchMigration extends AbstractHibernateSchemaMigration {

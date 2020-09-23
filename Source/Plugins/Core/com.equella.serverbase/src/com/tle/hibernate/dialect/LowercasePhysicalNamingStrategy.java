@@ -20,25 +20,31 @@ package com.tle.hibernate.dialect;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.hibernate.AssertionFailure;
-import org.hibernate.cfg.ImprovedNamingStrategy;
+import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.internal.util.StringHelper;
 
 // TODO [SpringHib5] - StringHelper is now internal and should not be used directly.
 
 /**
- * Extends the ImprovedNamingScheme to make sure that the resulting table name is all lowercase.
- * This helps with Enums on Postgresql.
- *
- * @author Nicholas Read
+ * Extends the PhysicalNamingStrategyStandardImpl to make sure that the resulting table name is all
+ * lowercase. This helps with Enums on Postgresql.
  */
 @SuppressWarnings("nls")
-public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
+public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStandardImpl {
   private static final long serialVersionUID = 1L;
+
   private final Map<String, String> overrides = new HashMap<String, String>();
   private final Map<String, String> columnOverrides = new HashMap<String, String>();
 
-  public LowercaseImprovedNamingScheme() {
+  private enum Transform {
+    COLUMN,
+    TABLE,
+    OTHER
+  }
+
+  public LowercasePhysicalNamingStrategy() {
     // MySQL5 can't handle schemas and `schemas` doesn't work
     // SQLServer can't handle schema
     registerOverride("schema", "tleschemas");
@@ -64,40 +70,6 @@ public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
     columnOverrides.put("position", "`position`");
 
     columnOverrides.put("timestamp", "`timestamp`");
-  }
-
-  @Override
-  /** Copied from EJB3NamingStrategy */
-  public String foreignKeyColumnName(
-      String propertyName,
-      String propertyEntityName,
-      String propertyTableName,
-      String referencedColumnName) {
-    String header = propertyName != null ? StringHelper.unqualify(propertyName) : propertyTableName;
-    if (header == null) {
-      throw new AssertionFailure("NammingStrategy not properly filled");
-    }
-    return columnName(header + "_" + referencedColumnName);
-  }
-
-  @Override
-  public String propertyToColumnName(String propertyName) {
-    return super.propertyToColumnName(getColumnName(propertyName));
-  }
-
-  @Override
-  public String classToTableName(String className) {
-    return postProcess(super.classToTableName(className));
-  }
-
-  @Override
-  public String tableName(String tableName) {
-    return postProcess(super.tableName(tableName));
-  }
-
-  @Override
-  public String logicalColumnName(String columnName, String propertyName) {
-    return super.logicalColumnName(getColumnName(columnName), propertyName);
   }
 
   private String getColumnName(String columnName) {
@@ -127,5 +99,57 @@ public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
 
   private void registerOverride(String from, String to) {
     overrides.put(from.toLowerCase(), to.toLowerCase());
+  }
+
+  @Override
+  public Identifier toPhysicalCatalogName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalSchemaName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.TABLE);
+  }
+
+  @Override
+  public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.COLUMN);
+  }
+
+  private Identifier apply(Identifier name, Transform transform) {
+    if (name == null) {
+      return null;
+    }
+
+    String resultantName = null;
+    switch (transform) {
+      case COLUMN:
+        {
+          resultantName = getColumnName(name.getText());
+          break;
+        }
+      case TABLE:
+        {
+          resultantName = postProcess(name.getText());
+          break;
+        }
+      case OTHER:
+      default:
+        {
+          resultantName = name.getText();
+          break;
+        }
+    }
+    return new Identifier(resultantName, name.isQuoted());
   }
 }

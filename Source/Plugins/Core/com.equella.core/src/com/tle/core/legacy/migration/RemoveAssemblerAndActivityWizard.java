@@ -65,12 +65,11 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -312,7 +311,7 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
   @AccessType("field")
   @Entity(name = "ActivityWizard")
   public static class FakeActivityWizard extends FakeBaseEntity {
-    @CollectionOfElements(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "actwiz_id")
     List<WebLink> links = new ArrayList<WebLink>();

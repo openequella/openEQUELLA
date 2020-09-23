@@ -18,9 +18,10 @@
 
 package com.tle.core.hibernate;
 
-import com.tle.hibernate.dialect.LowercaseImprovedNamingScheme;
+import com.tle.hibernate.dialect.LowercasePhysicalNamingStrategy;
 import java.util.Properties;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.cfg.Environment;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 import org.hibernate.engine.spi.Mapping;
@@ -57,11 +58,13 @@ public class HibernateFactory {
         // map
         config.setProperty(
             Environment.CONNECTION_PROVIDER, DatasourceConnectionProviderImpl.class.getName());
+        // TODO [SpringHib5] seems weird to set the properties here.
         properties.put(Environment.DATASOURCE, dataSourceHolder.getDataSource());
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
-        config.setProperty("javax.persistence.validation.mode", "DDL");
-        config.setNamingStrategy(new LowercaseImprovedNamingScheme());
+        config.setProperty(Environment.JPA_VALIDATION_MODE, "DDL");
+        config.setImplicitNamingStrategy(new ImplicitNamingStrategyJpaCompliantImpl());
+        config.setPhysicalNamingStrategy(new LowercasePhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {
           config.addAnnotatedClass(class1);
         }
@@ -72,23 +75,22 @@ public class HibernateFactory {
     return config;
   }
 
-  //  public synchronized Mapping getMapping() {
-  //    if (mapping == null) {
-  //      ClassLoader oldLoader = oldLoader();
-  //      try {
-  //        setContextLoader(classLoader);
-  //        mapping = getConfiguration().buildMapping();
-  //      } finally {
-  //        setContextLoader(oldLoader);
-  //      }
-  //    }
-  //    return mapping;
-  //  }
+  public synchronized Mapping getMapping() {
+    if (mapping == null) {
+      ClassLoader oldLoader = oldLoader();
+      try {
+        setContextLoader(classLoader);
+        mapping = getConfiguration().buildMapping();
+      } finally {
+        setContextLoader(oldLoader);
+      }
+    }
+    return mapping;
+  }
 
   public synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      // TODO [SpringHib5] need to initialize the mappings
-      // getMapping();
+      getMapping();
       ClassLoader oldLoader = oldLoader();
       try {
         setContextLoader(classLoader);

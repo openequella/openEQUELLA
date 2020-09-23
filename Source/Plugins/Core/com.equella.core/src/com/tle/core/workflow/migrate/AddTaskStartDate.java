@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.ScrollableResults;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 @SuppressWarnings("nls")

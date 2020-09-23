@@ -36,8 +36,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import org.apache.log4j.Logger;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 /**
  * Solution for Redmine #7946. Older youtube attachments record only the playUrl, and not the

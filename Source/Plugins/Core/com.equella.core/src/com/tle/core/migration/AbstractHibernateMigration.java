@@ -25,9 +25,9 @@ import com.tle.core.hibernate.HibernateFactoryService;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import java.util.List;
 import javax.inject.Inject;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 
 public abstract class AbstractHibernateMigration extends AbstractMigration {
   @Inject private HibernateFactoryService hibernateService;

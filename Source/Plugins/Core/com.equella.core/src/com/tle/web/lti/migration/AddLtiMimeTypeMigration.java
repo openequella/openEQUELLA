@@ -44,11 +44,11 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import net.sf.json.JSONObject;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.MapKeyType;
 import org.hibernate.annotations.Type;
-import org.hibernate.classic.Session;
 
 /** @author larry */
 @Bind

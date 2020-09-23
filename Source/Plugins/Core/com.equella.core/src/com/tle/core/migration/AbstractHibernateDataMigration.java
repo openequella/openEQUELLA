@@ -21,7 +21,7 @@ package com.tle.core.migration;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import org.hibernate.Query;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 public abstract class AbstractHibernateDataMigration extends AbstractHibernateMigration {
   private static String prefix =

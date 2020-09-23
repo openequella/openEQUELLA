@@ -39,9 +39,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 /** @author aholland */
 @SuppressWarnings("nls")
