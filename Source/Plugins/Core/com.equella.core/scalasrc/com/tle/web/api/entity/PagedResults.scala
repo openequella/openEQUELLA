@@ -58,43 +58,60 @@ object PagedResults {
 
     val allReqPriv = if (full) forFull ++ privilege else privilege
 
-    // All Collections, including dynamic Collections.
-    val baseEntities = res.getEntityService.query(
-      new EnumerateOptions(q, -1, MaxEntities, system, if (includeDisabled) null else false))
-    // A list of Collections which users have permissions to access.
-    val availableEntities = baseEntities.asScala.collect {
-      case be if !LegacyGuice.aclManager.filterNonGrantedPrivileges(be, privilege.asJava).isEmpty =>
-        be
-    }
-    // Return a map where the key is a base entity and the value is a another map for the entity's ACLs.
-    // Depending on the value of offset, some available entities are not added into the map.
-    def getPrivilegeMap(offset: Int): Map[BE, java.util.Map[String, java.lang.Boolean]] =
+    def getBaseEntities(offset: Int, max: Int): List[BE] =
+      res.getEntityService
+        .query(new EnumerateOptions(q, offset, max, system, if (includeDisabled) null else false))
+        .asScala
+        .toList
+
+    def getPrivilegeMap(entities: List[BE]): Map[BE, java.util.Map[String, java.lang.Boolean]] =
       LegacyGuice.aclManager
-        .getPrivilegesForObjects(allReqPriv.asJavaCollection, availableEntities.drop(offset).asJava)
+        .getPrivilegesForObjects(allReqPriv.asJavaCollection, entities.asJava)
         .asScala
         .toMap
+
+    val available: Int = {
+      val entities = getBaseEntities(0, -1)
+      entities.collect {
+        case entity
+            if !LegacyGuice.aclManager
+              .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
+              .isEmpty =>
+          entity
+      }.length
+    }
 
     @tailrec
     def collectMore(
         len: Int,
         offset: Int,
-        vec: Vector[(BE, Boolean, Set[String])]): (Vector[(BE, Boolean, Set[String])]) = {
-      if (len <= 0 || availableEntities.length < offset) {
-        (vec)
+        vec: Vector[(BE, Boolean, Set[String])]): (Int, Vector[(BE, Boolean, Set[String])]) = {
+      val baseEntities = getBaseEntities(offset, MaxEntities)
+      val privilegeMap = getPrivilegeMap(baseEntities)
+      if (len <= 0 || baseEntities.isEmpty) {
+        (offset, vec)
       } else {
         object ExtraPrivs {
-          def unapply(be: BE): Option[(BE, Set[String])] = getPrivilegeMap(offset).get(be).map {
-            p =>
-              (be, allReqPriv & p.asScala.keySet)
+          def unapply(be: BE): Option[(BE, Set[String])] = privilegeMap.get(be).map { p =>
+            (be, allReqPriv & p.asScala.keySet)
           }
         }
-        val withPriv = availableEntities
+        val withPriv = baseEntities
           .collect {
             case ExtraPrivs(be, privs) if privs.count(privilege) > 0 =>
               (be, full && privs.exists(forFull), privs)
           }
           .take(len)
-        val nextOffset = offset + len
+
+        // When there are no entities available due do ACL, next offset is the sum of
+        // current offset and the size of the entity list.
+        // When available entities are found, next offset is the sum of current offset,
+        // index of the last available entity in the list and 1.
+        val nextOffset = withPriv.lastOption match {
+          case Some(lastEntity) => offset + baseEntities.indexOf(lastEntity._1) + 1
+          case None             => offset + baseEntities.size
+        }
+
         collectMore(len - withPriv.size, nextOffset, vec ++ withPriv)
       }
 
@@ -104,15 +121,17 @@ object PagedResults {
       b
     }
 
-    val (results) = collectMore(_length, firstOffset, Vector.empty)
-    val available = availableEntities.length
-    val pb        = new PagingBean[BEB]
+    val (nextOffset, results) = collectMore(_length, firstOffset, Vector.empty)
+    // query all and filter and count
+    val pb = new PagingBean[BEB]
     pb.setStart(firstOffset)
     pb.setLength(results.length)
     pb.setAvailable(available)
-    // Include resumption token if there are items which can be retrieved in next request.
-    if (results.length + firstOffset < available)
-      pb.setResumptionToken(s"${firstOffset + results.length}:${_length}")
+    // Say length is 10, then the recursive call of collectMore will try to get entities until
+    // it gets 10 entities. But if it can't, that means no more entities are available. So
+    // do not return resumption token.
+    if (results.length == _length)
+      pb.setResumptionToken(s"${nextOffset}:${_length}")
     pb.setResults(results.map {
       case (be, canFull, privs) => addPrivs(privs, res.serialize(be, null, canFull))
     }.asJava)
