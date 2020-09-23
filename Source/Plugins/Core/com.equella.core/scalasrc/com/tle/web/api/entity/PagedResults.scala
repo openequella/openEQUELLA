@@ -122,8 +122,7 @@ object PagedResults {
     }
 
     val (nextOffset, results) = collectMore(_length, firstOffset, Vector.empty)
-    // query all and filter and count
-    val pb = new PagingBean[BEB]
+    val pb                    = new PagingBean[BEB]
     pb.setStart(firstOffset)
     pb.setLength(results.length)
     pb.setAvailable(available)
