@@ -435,9 +435,16 @@ select[multiple="multiple"] {
 .calendar {
   padding-top: 4px;
   display: inline;
-  img {
+  &:after {
+    content: "\e916"; //material ui calendar icon
+    font-family: "Material Icons";
+    font-size: 30px;
+    color: #ffffff;
+    margin-left: $singleMargin;
     vertical-align: middle;
-    padding-left: $doubleMargin;
+  }
+  img {
+    display: none;
   }
 }
 .newListSelected {
