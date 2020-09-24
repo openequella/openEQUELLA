@@ -307,21 +307,20 @@ If installed correctly you will get a message "NVM" like below.
 
 `$ nvm ls-remote`
 
-The numerous version will scroll across the screen
+The numerous version will scroll across the screen.
 
 ![show nvm versions](images/nvm/03%20show%20versions.png)
 
 4. The openEQUELLA dev environment uses a .nvmrc file which tells nvm which version of node.js to use. In order to
-invoke the .nvmrc file type the command below
+invoke the .nvmrc file type the command below.
 
 `$ nvm ls-remote`
 
 ![use nvmrc file](images/nvm/04%20invoce%20nvmrc.png)
 
-5. If you do not already have the correct version of node.js installed, you will be prompted to install the
-correct version.
+5. If you do not already have the correct version of node.js nvm will look at the .nvmrc and install the correct version.
 
-`$ nvm install 12.8.3`
+`$ nvm install`
 
 ![nvm install node](images/nvm/05%20nvm%20install.png)
 
