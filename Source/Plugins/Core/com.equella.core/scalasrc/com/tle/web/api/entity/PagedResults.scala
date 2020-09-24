@@ -87,7 +87,7 @@ object PagedResults {
         len: Int,
         offset: Int,
         vec: Vector[(BE, Boolean, Set[String])]): (Int, Vector[(BE, Boolean, Set[String])]) = {
-      val baseEntities = getBaseEntities(offset, MaxEntities)
+      val baseEntities = getBaseEntities(offset, _length)
       val privilegeMap = getPrivilegeMap(baseEntities)
       if (len <= 0 || baseEntities.isEmpty) {
         (offset, vec)
