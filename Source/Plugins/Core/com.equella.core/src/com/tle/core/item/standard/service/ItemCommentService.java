@@ -79,7 +79,7 @@ public interface ItemCommentService {
    * Check the permission of viewing an item's comments and return the number of comments if the
    * permission is granted.
    */
-  int getCommentCountWithACLCheck(ItemKey itemId);
+  Integer getCommentCountWithACLCheck(ItemKey itemId);
 
   /**
    * Add a new comment to an item.

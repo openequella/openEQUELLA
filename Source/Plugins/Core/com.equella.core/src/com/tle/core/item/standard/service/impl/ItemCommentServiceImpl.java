@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,21 +94,14 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
   @Transactional
   public List<Comment> getCommentsWithACLCheck(
       ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit) {
-    Item item = itemDao.getExistingItem(itemId);
-    if (canViewComment(item)) {
-      return getComments(item, filter, order, limit);
-    }
-    return null;
+    return canViewComment(itemId, (item) -> getComments(item, filter, order, limit));
   }
 
   @Override
   @Transactional
-  public int getCommentCountWithACLCheck(ItemKey itemId) {
-    Item item = itemDao.getExistingItem(itemId);
-    if (canViewComment(item)) {
-      return itemDao.getCommentCounts(Collections.singletonList(item)).get(0);
-    }
-    return -1;
+  public Integer getCommentCountWithACLCheck(ItemKey itemId) {
+    return canViewComment(
+        itemId, (item) -> itemDao.getCommentCounts(Collections.singletonList(item)).get(0));
   }
 
   @Override
@@ -185,9 +179,15 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
         @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
   }
 
-  private boolean canViewComment(Item item) {
+  // If view comment permission is granted, execute f and return the result.
+  // Return null if the permission is missing.
+  private <T> T canViewComment(ItemKey itemId, Function<Item, T> f) {
+    Item item = itemDao.getExistingItem(itemId);
     Set<String> privileges = tleAclManager.filterNonGrantedPrivileges(item, COMMENT_VIEW_ITEM);
-    return !privileges.isEmpty();
+    if (!privileges.isEmpty()) {
+      return f.apply(item);
+    }
+    return null;
   }
 }
 

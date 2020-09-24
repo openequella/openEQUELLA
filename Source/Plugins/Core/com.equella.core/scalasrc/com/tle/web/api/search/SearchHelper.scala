@@ -229,13 +229,8 @@ object SearchHelper {
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
     Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
 
-  def getItemCommentCount(key: ItemIdKey): Option[Int] = {
-    val count = LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key)
-    if (count == -1) {
-      return None
-    }
-    Some(count)
-  }
+  def getItemCommentCount(key: ItemIdKey): Option[Integer] =
+    Option(LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key))
 
   /**
     * Determines if attachment contains a generated thumbnail in filestore
