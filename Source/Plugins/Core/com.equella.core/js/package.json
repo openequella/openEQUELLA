@@ -74,7 +74,7 @@
     "@storybook/addon-a11y": "6.0.21",
     "@storybook/addon-essentials": "6.0.21",
     "@storybook/react": "6.0.21",
-    "@types/enzyme": "3.10.6",
+    "@types/enzyme": "3.10.7",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/jest": "26.0.14",
     "@types/lodash": "4.14.161",
