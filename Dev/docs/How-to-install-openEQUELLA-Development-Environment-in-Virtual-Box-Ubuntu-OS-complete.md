@@ -4,19 +4,24 @@
 * [Install Oracle Virtual Box VM Software](#install-oracle)
 * [Install sdkman to Run and Manage Java 8](#install-sdkman)
 * [Install Postgresql](#install-postgres)
-* [Install Pgadmin4 (optional)](install-pgadmin.md)
+* [Install Pgadmin4](#install-pgadmin)
 * [Install libtinfo5](#install-libinfo5)
-* [Install npm and node.js](#install-npm)
+* [Install npm](#install-npm)
+* [Install Nodejs](#install-node)
 * [Install ImageMagick](#install-imagemagick)
 * [Install Git](#install-git)
-* [Install Intellij (optional)](install-intellij.md)
+* [Install Intellij](#install-intellij)
 * [Generate an SSH key and Add it to the ssh-agent](#install-ssh)
 * [Add the ssh key to your openEQUELLA GitHub Repository](#add-key)
-* [Fork and Clone the openEQUELLA Repository](#clone-repo)
+* [Clone the openEQUELLA Repository](#clone-repo)
 * [Install SBT](#install-sbt)
 * [Create a New Branch of openEQUELLA in Git](#create-branch)
 * [Import sbt project into Intellij](#import-sbt)
 * [Compile and Run openEQUELLA Serve](#compile-run)
+
+
+
+
 
 
 ***
@@ -280,57 +285,104 @@ The output will look like this.
 
 8. Type “exit” to escape root.
 
+### <a id="user-content-install-pgadmin" class="anchor" aria-hidden="true" href="#install-pgadmin"></a>Install Pgadmin4
+
+1. Now install the PostgreSQL admin tool. All of the command will be provided below. The website from where these commands were taken is found here:  [Click here to view Pgadmin Install for Ubuntu 20.40.4](https://yallalabs.com/linux/how-to-install-pgadmin4-ubuntu-20-04/)
+
+2. Run the command below to install the pgAdmin4 key.
+
+`$ curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add`
+
+3. pgAdmin4 requires you to add an external repository.
+
+`$ sudo sh -c 'echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt update'`
+
+4. Now install pgAdmin as server mode.
+
+`$ sudo apt install pgadmin4-web`
+
+5. Now configure pgAdmin by running the command below.
+
+`$ sudo /usr/pgadmin4/bin/setup-web.sh`
+
+`The output should look like what you see below. You will be prompted for an email address and password. You will also be prompted to restart the apache server. `
+
+`Setting up pgAdmin 4 in web mode on a Debian platform...`
+`Creating configuration database...`
+`NOTE: Configuring authentication for SERVER mode.`
+
+`Enter the email address and password to use for the initial pgAdmin user account:`
+
+`Email address: salmon@salmon.com`
+`Password:`
+`Retype password:`
+`pgAdmin 4 - Application Initialisation`
+`======================================`
+
+`Creating storage and log directories...`
+`We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? y`
+`The Apache web server is running. A restart is required for the pgAdmin 4 installation to complete. Would you like to continue (y/n)? y`
+`Apache successfully restarted. You can now start using pgAdmin 4 in web mode`
+
+6. Now you can run pgAdmin by opening a web browser and entering the URL below.
+
+[http://localhost/pgadmin4/](http://localhost/pgadmin4/)
+
+7. Login with the email address and password you previously created in step 9.
+
+![change postgres password](images/pgadmin%2001-1%20login.PNG)
+
+8. Right click on Servers -> Create -> Server
+
+![server add](images/pgadmin%2002%20server%20add.PNG)
+
+9. Add name to General tab.
+
+![Add Name](images/pgadmin%2003%20Add%20Name.PNG)
+
+10. Fill out the fields in the Connection tab.
+
+![Add Connection](images/pgadmin%2004%20Add%20Connection.PNG)
+
+11. Right click on the Login/Group Roles icon.
+
+![Add User](images/pgadmin%2005%20Add%20User.PNG)
+
+12. On the General tab type “equellauser” for the Name field.
+
+![Add User Name gen](images/pgadmin%2005%20Add%20User%20Name%20gen.PNG)
+
+13. On the Definition tab enter the password.
+
+![Add password](images/pgadmin%2005%20Add%20password.PNG)
+
+14. On the Privileges tab make sure and enable login.
+
+![Add Role](images/pgadmin%2005%20Add%20Role.PNG)
+
+15. Right click on the Databases icon => Create => Database.
+
+![Add Database](images/pgadmin%2006%20Add%20Database.PNG)
+
+16. On the General tab type “equella” for Database field and select “equellauser” from the owner dropdown. Then click save.
+
+![Add Database name](images/pgadmin%2007%20Add%20Database%20name.PNG)
+
 ### <a id="user-content-install-libinfo5" class="anchor" aria-hidden="true" href="#install-libinfo5"></a>Install libtinfo5
 
 1. Libtinfo5 is sometimes missing from the build.
 
 `$ sudo apt install libtinfo5`
 
-### <a id="user-content-install-nvm" class="anchor" aria-hidden="true" href="#install-npm"></a>Install NVM
+### <a id="user-content-install-npm" class="anchor" aria-hidden="true" href="#install-npm"></a>Install npm
 
-1. Download NVM
+`$ sudo apt install npm`
 
-`$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
+### <a id="user-content-install-node" class="anchor" aria-hidden="true" href="#install-node"></a>Install Nodejs
 
-![Download NVM](images/nvm/01%20run%20curl.png)
+Nodejs is necessary for the project
 
-2. Close the terminal window and open a new terminal window and type the following.
-
-`$ command -v nvm`
-
-If installed correctly you will get a message "NVM" like below.
-
-![install nvm](images/nvm/02%20verify%20install.png)
-
-
-3. Show the list of available node.js versions by typing the command below.
-
-`$ nvm ls-remote`
-
-The numerous version will scroll across the screen
-
-![show nvm versions](images/nvm/03%20show%20versions.png)
-
-4. The openEQUELLA dev environment uses a .nvmrc file which tells nvm which version of node.js to use. In order to
-invoke the .nvmrc file type the command below
-
-`$ nvm ls-remote`
-
-![use nvmrc file](images/nvm/04%20invoce%20nvmrc.png)
-
-5. If you do not already have the correct version of node.js installed, you will be prompted to install the
-correct version.
-
-`$ nvm install 12.8.3`
-
-![nvm install node](images/nvm/05%20nvm%20install.png)
-
-6. To ensure that you are know working with the correct version of node.js type the command below.
-
-`$ node -v`
-
-![check nvm version](images/nvm/05%20nvm%20install.png)
-
+`$ sudo apt install nodejs`
 
 ### <a id="user-content-install-imagemagick" class="anchor" aria-hidden="true" href="#install-imagemagick"></a>Install ImageMagick
 
@@ -350,6 +402,10 @@ Run the command. (Some of these instructions were copied directly from GitHub Do
 [Click here for Github docs](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
 `$ sudo apt-get install git`
+
+### <a id="user-content-install-intellij" class="anchor" aria-hidden="true" href="#install-intellij"></a>Install Intellij
+
+`$ sudo snap install intellij-idea-educational --classic`
 
 ### <a id="user-content-install-ssh" class="anchor" aria-hidden="true" href="#install-ssh"></a>Generate an SSH key and Add it to the ssh-agent
 
@@ -408,7 +464,7 @@ output: `Generating public/private rsa key pair.`
 
 ![paste key](images/github/07%20paste%20key.png)
 
-### <a id="user-content-clone-repo" class="anchor" aria-hidden="true" href="#clone-repo"></a>Fork and Clone the openEQUELLA Repository
+### <a id="user-content-clone-repo" class="anchor" aria-hidden="true" href="#clone-repo"></a>Clone the openEQUELLA Repository
 
 1. Navigate to the home page of the openEQUELLA repository and click on the green “Code” button. Then copy the git command to “Clone with SSH”.
 
