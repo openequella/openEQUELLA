@@ -286,7 +286,7 @@ The output will look like this.
 
 `$ sudo apt install libtinfo5`
 
-### <a id="user-content-install-nvm" class="anchor" aria-hidden="true" href="#install-npm"></a>Install NVM
+### <a id="user-content-install-nvm" class="anchor" aria-hidden="true" href="#install-nvm"></a>Install NVM
 
 1. Download NVM
 
