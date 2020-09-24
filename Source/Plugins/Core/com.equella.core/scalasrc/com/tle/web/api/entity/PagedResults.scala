@@ -71,6 +71,7 @@ object PagedResults {
         .toMap
 
     val available: Int = {
+      // It's acceptable to retrieve all because targeted BaseEntities are all small datasets.
       val entities = getBaseEntities(0, -1)
       entities.collect {
         case entity
