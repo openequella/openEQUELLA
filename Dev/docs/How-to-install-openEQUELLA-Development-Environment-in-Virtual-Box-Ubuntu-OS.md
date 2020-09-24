@@ -6,7 +6,7 @@
 * [Install Postgresql](#install-postgres)
 * [Install Pgadmin4 (optional)](install-pgadmin.md)
 * [Install libtinfo5](#install-libinfo5)
-* [Install npm and node.js](#install-npm)
+* [Install npm and node.js](#install-nvm)
 * [Install ImageMagick](#install-imagemagick)
 * [Install Git](#install-git)
 * [Install Intellij (optional)](install-intellij.md)
