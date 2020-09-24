@@ -242,8 +242,7 @@ libraryDependencies ++= Seq(
   "io.bit3"                % "jsass"                     % "5.10.3",
   "io.github.classgraph"   % "classgraph"                % "4.8.90",
   "com.fasterxml"          % "classmate"                 % "1.5.1",
-  "org.glassfish"          % "javax.el"                  % "3.0.1-b11",
-  "javax.el"               % "javax.el-api"              % "3.0.1-b06"
+  "org.glassfish"          % "javax.el"                  % "3.0.1-b11"
 )
 
 libraryDependencies ++= {
@@ -290,7 +289,11 @@ excludeDependencies ++= Seq(
   // ...org.springframework/spring-jcl/jars/spring-jcl-5.2.9.RELEASE.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
-  "org.springframework" % "spring-jcl"
+  "org.springframework" % "spring-jcl",
+  // Hib 5 upgrade showed the following errors.  Solution was to remove tomcat-el-api
+  // - Caused by: java.lang.ClassNotFoundException: org.apache.el.ExpressionFactoryImpl from org.hibernate
+  // - HV000183: Unable to initialize 'javax.el.ExpressionFactory'. Check that you have the EL dependencies on the classpath, or use ParameterMessageInterpolator instead
+  "org.apache.tomcat" % "tomcat-el-api"
 )
 
 run := {
