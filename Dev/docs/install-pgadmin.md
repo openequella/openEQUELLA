@@ -1,4 +1,4 @@
-** Install pgadmin
+### Install pgadmin
 
 1. Now install the PostgreSQL admin tool. All of the command will be provided below. The website from where these commands were taken is found here:  [Click here to view Pgadmin Install for Ubuntu 20.40.4](https://yallalabs.com/linux/how-to-install-pgadmin4-ubuntu-20-04/)
 
