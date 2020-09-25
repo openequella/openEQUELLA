@@ -2611,7 +2611,7 @@ html.wait {
   white-space: nowrap;
 }
 
-.itemresult-rating div.float-right .btn {
+#selection-page .itemresult-rating div.float-right .btn {
   @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
@@ -4563,7 +4563,7 @@ input[disabled="disabled"] {
     no-repeat;
 }
 
-button.package-select {
+#selection-page button.package-select {
   margin: 0;
   border-radius: 50px;
   min-width: unset;
