@@ -208,7 +208,7 @@ export interface SearchResultItem {
   /**
    * Item's attachments.
    */
-  attachments: Attachment[];
+  attachments?: Attachment[];
   /**
    * Item's thumbnail.
    */
