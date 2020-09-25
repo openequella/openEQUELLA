@@ -52,6 +52,7 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
+  val privileges = Array("VIEW_ITEM")
 
   /**
     * Create a new search with search criteria.
@@ -175,7 +176,7 @@ object SearchHelper {
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
     val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
     val category = List(ItemSerializerService.CATEGORY_ALL).asJavaCollection
-    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false)
+    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
   }
 
   /**
@@ -211,20 +212,21 @@ object SearchHelper {
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
-                          itemKey: ItemIdKey): List[SearchResultAttachment] = {
-    attachmentBeans.asScala
-      .map(
-        att =>
-          SearchResultAttachment(
-            attachmentType = att.getRawAttachmentType,
-            id = att.getUuid,
-            description = Option(att.getDescription),
-            preview = att.isPreview,
-            mimeType = getMimetypeForAttachment(att),
-            hasGeneratedThumb = thumbExists(itemKey, att),
-            links = getLinksFromBean(att)
-        ))
-      .toList
+                          itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
+    Option(attachmentBeans).map(
+      beans =>
+        beans.asScala
+          .map(att =>
+            SearchResultAttachment(
+              attachmentType = att.getRawAttachmentType,
+              id = att.getUuid,
+              description = Option(att.getDescription),
+              preview = att.isPreview,
+              mimeType = getMimetypeForAttachment(att),
+              hasGeneratedThumb = thumbExists(itemKey, att),
+              links = getLinksFromBean(att)
+          ))
+          .toList)
   }
 
   /**

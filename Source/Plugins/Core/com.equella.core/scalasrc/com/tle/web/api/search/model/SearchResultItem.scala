@@ -50,7 +50,7 @@ case class SearchResultItem(
     modifiedDate: Date,
     collectionId: String,
     commentCount: Int,
-    attachments: List[SearchResultAttachment],
+    attachments: Option[List[SearchResultAttachment]],
     thumbnail: String,
     displayFields: List[DisplayField],
     displayOptions: Option[DisplayOptions],
