@@ -50,10 +50,8 @@ import MessageInfo from "../components/MessageInfo";
 import { Link } from "react-router-dom";
 import { LocationDescriptor } from "history";
 import { routes } from "./routes";
-import type {
-  CurrentUserDetails,
-  MenuItem as MI,
-} from "@openequella/rest-api-client/dist/LegacyContent";
+
+import * as OEQ from "@openequella/rest-api-client";
 import { guestUser } from "../legacycontent/LegacyContent";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
@@ -80,7 +78,7 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  currentUser?: CurrentUserDetails;
+  currentUser?: OEQ.LegacyContent.CurrentUserDetails;
   /* Extra meta tags */
   metaTags?: string;
 }
@@ -403,7 +401,7 @@ export const Template = React.memo(function Template({
     );
   }
 
-  function navItem(item: MI, ind: number) {
+  function navItem(item: OEQ.LegacyContent.MenuItem, ind: number) {
     return (
       <ListItem
         component={(p) => {

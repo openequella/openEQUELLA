@@ -47,8 +47,8 @@ import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
 import { LegacyForm } from "../legacycontent/LegacyForm";
 import SettingsPage from "../settings/SettingsPage";
-import type { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
-import { getCurrentUserDetails } from "../modules/UserDetailsModule";
+import * as OEQ from "@openequella/rest-api-client";
+import { getCurrentUserDetails } from "../modules/UserModule";
 
 const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
   .pathname;
@@ -67,7 +67,7 @@ const beforeunload = function (e: Event) {
 };
 
 function IndexPage() {
-  const [currentUser, setCurrentUser] = React.useState<CurrentUserDetails>();
+  const [currentUser, setCurrentUser] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
 

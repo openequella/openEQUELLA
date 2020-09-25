@@ -20,7 +20,7 @@ import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
 import { Config } from "../config";
-import type { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
+import * as OEQ from "@openequella/rest-api-client";
 
 declare global {
   interface Window {
@@ -32,7 +32,7 @@ declare global {
   const _trigger: any;
 }
 
-export const guestUser: CurrentUserDetails = {
+export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
   accessibilityMode: false,
   firstName: "guest",
   lastName: "guest",
