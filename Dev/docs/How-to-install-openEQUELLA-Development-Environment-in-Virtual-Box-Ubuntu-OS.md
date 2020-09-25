@@ -10,7 +10,7 @@
 * [Install ImageMagick](#install-imagemagick)
 * [Install Git](#install-git)
 * [Install Intellij (optional)](install-intellij.md)
-* [Generate an SSH key and Add it to the ssh-agent](#install-ssh)
+* [Generate an SSH key and Add it to the ssh-agent](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh))
 * [Add the ssh key to your openEQUELLA GitHub Repository](#add-key)
 * [Fork and Clone the openEQUELLA Repository](#clone-repo)
 * [Install SBT](#install-sbt)
@@ -409,7 +409,15 @@ output: `Generating public/private rsa key pair.`
 
 ### <a id="user-content-clone-repo" class="anchor" aria-hidden="true" href="#clone-repo"></a>Fork and Clone the openEQUELLA Repository
 
-1. Navigate to the home page of the openEQUELLA repository and click on the green “Code” button. Then copy the git command to “Clone with SSH”.
+1. You want to fork the openEQUELLA repository and then clone your forked repository. For an explanation how forking and cloning
+work, [CLICK HERE](https://guides.github.com/activities/forking/)
+
+2. To fork the openEQUELLA repository navigate to [https://github.com/openequella/openEQUELLA](https://github.com/openequella/openEQUELLA) and
+click on the Fork button in the upper right hand corner of the screen.
+
+![fork](images/github/fork.png)
+
+1. Navigate to the home page of the forked openEQUELLA repository and click on the green “Code” button. Then copy the git command to “Clone with SSH”.
 
 ![get code](images/clone/01%20get%20code.png)
 
