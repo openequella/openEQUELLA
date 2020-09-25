@@ -439,19 +439,25 @@ select[multiple="multiple"] {
   }
 }
 .newListSelected {
-  @include typography-body-1;
-  padding-left: $singleMargin;
+  @include curvedCorners;
+  font-size: 16px;
+  border: 1px solid #f5f5f5;
+  padding: $doubleMargin;
+  width: auto;
   min-width: 204px;
   float: none;
-  background: url(../../images/stylishSelect/select-down.png) right 10px
+  background: url(../../images/stylishSelect/select-down.png) right 20px
     no-repeat #fff;
   &.showUp {
-    background: url(../../images/stylishSelect/select-up.png) right 10px
+    background: url(../../images/stylishSelect/select-up.png) right 20px
       no-repeat #fff;
   }
+
   .newList {
-    top: 34px;
+    top: 34px + $doubleMargin;
+    margin: $singleMargin 0;
     border: none;
+    width: 100% !important;
     li a {
       border: none;
       padding: 10px 5px;
@@ -2112,6 +2118,7 @@ html[dir="rtl"] .autocomplete-container input {
 
 .autocomplete-container .prompt {
   z-index: 888;
+  height: 53px;
 }
 
 ul.ui-autocomplete {
