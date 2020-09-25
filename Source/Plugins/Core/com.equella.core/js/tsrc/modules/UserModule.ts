@@ -23,7 +23,4 @@ import { API_BASE_URL } from "../config";
  */
 export const getCurrentUserDetails = () =>
   OEQ.LegacyContent.getCurrentUserDetails(API_BASE_URL).then(
-    (result: OEQ.LegacyContent.CurrentUserDetails) => {
-      return result;
-    }
-  );
+    (result: OEQ.LegacyContent.CurrentUserDetails) => result);
