@@ -31,6 +31,7 @@ import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
@@ -52,7 +53,7 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
-  val privileges = Array("VIEW_ITEM")
+  val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
   /**
     * Create a new search with search criteria.
