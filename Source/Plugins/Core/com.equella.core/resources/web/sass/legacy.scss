@@ -234,6 +234,16 @@ $doubleMargin: 16px;
   margin-left: -200px;
 }
 
+// Replaces the image in an img tag with any other present in the resources/web/images folder.
+@mixin replaceImageTag($fileName, $width, $height) {
+  box-sizing: border-box;
+  background: url("../../p/r/2020.2.0/com.equella.core/images/" + $fileName)
+    no-repeat;
+  width: $width;
+  height: $height;
+  padding-left: $width;
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -434,9 +444,19 @@ select[multiple="multiple"] {
 }
 .calendar {
   padding-top: 4px;
+  display: inline;
   img {
-    padding-left: 4px;
+    @include replaceImageTag("date-picker.png", 41px, 41px);
+    @include curvedCorners;
+    border: 1px solid #fff;
+    margin-left: $doubleMargin;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    cursor: pointer;
   }
+}
+.modal_close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
 }
 .newListSelected {
   @include typography-body-1;
@@ -4409,6 +4429,7 @@ img.warningimg {
 }
 
 #selection-header-content .close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
   margin-top: 10px;
   margin-left: 10px;
   cursor: pointer;
@@ -5382,8 +5403,7 @@ $col2Width: 250px;
 #_audwrap,
 [id="1wrap"],
 [id="2wrap"] {
-  @include buttonShadowBorder;
-  width: 550px;
+  max-width: 550px;
 }
 
 #ed_fin,
