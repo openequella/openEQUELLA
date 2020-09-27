@@ -4504,6 +4504,7 @@ img.warningimg {
 }
 
 .compactQuery .compactQueryButton {
+  margin: $singleMargin;
   .icon-search:before {
     font-family: "Material Icons";
     font-size: 24px;
