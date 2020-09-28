@@ -234,6 +234,16 @@ $doubleMargin: 16px;
   margin-left: -200px;
 }
 
+// Replaces the image in an img tag with any other present in the resources/web/images folder.
+@mixin replaceImageTag($fileName, $width, $height) {
+  box-sizing: border-box;
+  background: url("../../p/r/2020.2.0/com.equella.core/images/" + $fileName)
+    no-repeat;
+  width: $width;
+  height: $height;
+  padding-left: $width;
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -434,24 +444,40 @@ select[multiple="multiple"] {
 }
 .calendar {
   padding-top: 4px;
+  display: inline;
   img {
-    padding-left: 4px;
+    @include replaceImageTag("date-picker.png", 41px, 41px);
+    @include curvedCorners;
+    border: 1px solid #fff;
+    margin-left: $doubleMargin;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    cursor: pointer;
   }
 }
+.modal_close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
+}
 .newListSelected {
-  @include typography-body-1;
-  padding-left: $singleMargin;
+  @include curvedCorners;
+  font-size: 16px;
+  border: 1px solid #f5f5f5;
+  padding: $doubleMargin;
+  width: auto;
   min-width: 204px;
   float: none;
-  background: url(../../images/stylishSelect/select-down.png) right 10px
+  background: url(../../images/stylishSelect/select-down.png) right 20px
     no-repeat #fff;
   &.showUp {
-    background: url(../../images/stylishSelect/select-up.png) right 10px
+    background: url(../../images/stylishSelect/select-up.png) right 20px
       no-repeat #fff;
   }
+
   .newList {
-    top: 34px;
+    top: 34px + $doubleMargin;
+    margin: $singleMargin 0;
     border: none;
+    width: 100% !important;
     li a {
       border: none;
       padding: 10px 5px;
@@ -2112,6 +2138,7 @@ html[dir="rtl"] .autocomplete-container input {
 
 .autocomplete-container .prompt {
   z-index: 888;
+  height: 53px;
 }
 
 ul.ui-autocomplete {
@@ -2604,7 +2631,7 @@ html.wait {
   white-space: nowrap;
 }
 
-.itemresult-rating div.float-right .btn {
+#selection-page .itemresult-rating div.float-right .btn {
   @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
@@ -4409,6 +4436,7 @@ img.warningimg {
 }
 
 #selection-header-content .close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
   margin-top: 10px;
   margin-left: 10px;
   cursor: pointer;
@@ -4497,6 +4525,7 @@ img.warningimg {
 }
 
 .compactQuery .compactQueryButton {
+  margin: $singleMargin;
   .icon-search:before {
     font-family: "Material Icons";
     font-size: 24px;
@@ -4556,7 +4585,7 @@ input[disabled="disabled"] {
     no-repeat;
 }
 
-button.package-select {
+#selection-page button.package-select {
   margin: 0;
   border-radius: 50px;
   min-width: unset;
@@ -5382,8 +5411,7 @@ $col2Width: 250px;
 #_audwrap,
 [id="1wrap"],
 [id="2wrap"] {
-  @include buttonShadowBorder;
-  width: 550px;
+  max-width: 550px;
 }
 
 #ed_fin,
