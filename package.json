@@ -86,7 +86,7 @@
     },
     "rules": {
       "jest/consistent-test-it": "error",
-      "jest/no-mocks-import": "warn",
+      "jest/no-mocks-import": "off",
       "jest/require-top-level-describe": "error",
       "notice/notice": [
         "error",
