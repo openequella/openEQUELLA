@@ -103,5 +103,6 @@ export const lookup = (
 ): Promise<SearchResult> =>
   POST<LookupParams, SearchResult>(
     apiBasePath + USERQUERY_ROOT_PATH + '/lookup',
+    isSearchResult,
     params
   );
