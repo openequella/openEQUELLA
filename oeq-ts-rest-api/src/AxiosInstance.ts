@@ -68,4 +68,10 @@ export const PUT = <T, R>(path: string, data?: T): Promise<R> =>
     .then((response: AxiosResponse<R>) => response.data)
     .catch(catchHandler);
 
+export const POST = <T, R>(path: string, data?: T): Promise<R> =>
+  axios
+    .post(path, data)
+    .then((response: AxiosResponse<R>) => response.data)
+    .catch(catchHandler);
+
 export default axios;

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GET } from './AxiosInstance';
+import { GET, POST } from './AxiosInstance';
 import { is } from 'typescript-is';
 import { UuidString } from './Common';
 
@@ -61,6 +61,15 @@ export interface SearchParams {
   users: boolean;
 }
 
+export interface LookupParams {
+  /** String array of User IDs to lookup. */
+  users: string[];
+  /** String array of Group IDs to lookup. */
+  groups: string[];
+  /** String array of Role IDs to lookup. */
+  roles: string[];
+}
+
 const isSearchResult = (instance: unknown): instance is SearchResult =>
   is<SearchResult>(instance);
 
@@ -79,5 +88,20 @@ export const search = (
   GET<SearchResult>(
     apiBasePath + USERQUERY_ROOT_PATH + '/search',
     isSearchResult,
+    params
+  );
+
+/**
+ * Lookup for users and related entities (i.e. groups and roles).
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param params Query parameters to customize result
+ */
+export const lookup = (
+  apiBasePath: string,
+  params: LookupParams
+): Promise<SearchResult> =>
+  POST<LookupParams, SearchResult>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/lookup',
     params
   );
