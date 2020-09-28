@@ -545,7 +545,7 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 
 ![initialize2](images/postgresql/eq%2004%20initialize.png)
 
-12. Download the sample institution file to your local machine. [Click here to download Sample Institution File](https://raw.githubusercontent.com/wiki/matjmiles/openEQUELLA/vanilla-scrubbed-institution.tgz)
+12. Download the sample institution file to your local machine. [Click here to download Sample Institution File](https://github.com/openequella/openequella.github.io/blob/master/guides/6.4VanillaReferenceInstitution.tgz)
 
 13. Navigate to the location where you downloaded the institution file and import the file. Do not unzip or untar the file.
 
