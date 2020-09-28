@@ -82,7 +82,7 @@ export const POST = <T, R>(
 ): Promise<R> =>
   axios
     .post(path, data)
-    .then((response: AxiosResponse<R>) => {
+    .then((response: AxiosResponse<unknown>) => {
       const data = response.data;
       if (!validator(data)) {
         throw new TypeError(
