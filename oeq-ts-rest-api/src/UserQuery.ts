@@ -62,11 +62,11 @@ export interface SearchParams {
 }
 
 export interface LookupParams {
-  /** String array of User IDs to lookup. */
+  /** List of User IDs to lookup. */
   users: string[];
-  /** String array of Group IDs to lookup. */
+  /** List of Group IDs to lookup. */
   groups: string[];
-  /** String array of Role IDs to lookup. */
+  /** List of Role IDs to lookup. */
   roles: string[];
 }
 
@@ -92,7 +92,7 @@ export const search = (
   );
 
 /**
- * Lookup for users and related entities (i.e. groups and roles).
+ * Lookup users and related entities (i.e. groups and roles) by id.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param params Query parameters to customize result
