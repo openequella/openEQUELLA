@@ -561,7 +561,7 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 
 16. Confirm password
 
-![confirm password](images/postgresql/eq%2010%20confirm password.png)
+![confirm password](images/postgresql/eq%2010%20confirm%20password.png)
 
 17. Institution will be imported. When completed scroll to the bottom of the screen and press “Return to System Management.”
 
