@@ -46,11 +46,13 @@ import {
 import luxonUtils from "@date-io/luxon";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { languageStrings } from "../util/langstrings";
-import { guestUser, MenuItem as MI, UserData } from "../api/currentuser";
 import MessageInfo from "../components/MessageInfo";
 import { Link } from "react-router-dom";
 import { LocationDescriptor } from "history";
 import { routes } from "./routes";
+
+import * as OEQ from "@openequella/rest-api-client";
+import { guestUser } from "../legacycontent/LegacyContent";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -76,7 +78,7 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  currentUser?: UserData;
+  currentUser?: OEQ.LegacyContent.CurrentUserDetails;
   /* Extra meta tags */
   metaTags?: string;
 }
@@ -399,7 +401,7 @@ export const Template = React.memo(function Template({
     );
   }
 
-  function navItem(item: MI, ind: number) {
+  function navItem(item: OEQ.LegacyContent.MenuItem, ind: number) {
     return (
       <ListItem
         component={(p) => {
@@ -512,7 +514,13 @@ export const Template = React.memo(function Template({
                 topBarString.notifications
               )}
             </Hidden>
-            <Tooltip title={strings.menu.title}>
+            <Tooltip
+              title={
+                currentUser
+                  ? currentUser.username
+                  : strings.menu.usernameUnknown
+              }
+            >
               <IconButton
                 aria-label={strings.menu.title}
                 onClick={(e) => setMenuAnchorEl(e.currentTarget)}
