@@ -10,13 +10,13 @@
 * [Install ImageMagick](#install-imagemagick)
 * [Install Git](#install-git)
 * [Install Intellij (optional)](install-intellij.md)
-* [Generate an SSH key and Add it to the ssh-agent](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh))
+* [Generate an SSH key and Add it to the ssh-agent](#install-ssh)
 * [Add the ssh key to your openEQUELLA GitHub Repository](#add-key)
 * [Fork and Clone the openEQUELLA Repository](#clone-repo)
 * [Install SBT](#install-sbt)
 * [Create a New Branch of openEQUELLA in Git](#create-branch)
 * [Import sbt project into Intellij](#import-sbt)
-* [Compile and Run openEQUELLA Serve](#compile-run)
+* [Compile and Run openEQUELLA Server](#compile-run)
 
 
 ***
@@ -352,32 +352,7 @@ Run the command. (Some of these instructions were copied directly from GitHub Do
 
 ### <a id="user-content-install-ssh" class="anchor" aria-hidden="true" href="#install-ssh"></a>Generate an SSH key and Add it to the ssh-agent
 
-1. Ask for access to the BYUI openEquella repository in GitHub or fork your own branch.
-
-2. Generate a new SSH key (this is necessary to check the code in and out from GitHub. Open a terminal and run the command below.
-
-`$ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
-
-output: `Generating public/private rsa key pair.`
-
-3. When you're prompted to "Enter a file in which to save the key," press Enter. This accepts the default file location.
-
-`> Enter a file in which to save the key (/home/you/.ssh/id_rsa): [Press enter]`
-
-4. At the prompt, type a secure passphrase. For more information, [see "Working with SSH key passphrases".](https://docs.github.com/en/articles/working-with-ssh-key-passphrases)
-
-`> Enter passphrase (empty for no passphrase): [Type a passphrase]`
-`> Enter same passphrase again: [Type passphrase again]`
-
-5. Now you just add the SSH key to the ssh-agent. To do this start the ssh agent in the background.
-
-`$ eval "$(ssh-agent -s)"`
-`> Agent pid 59566`
-
-6. Now add the SSH private key to the ssh-agent. Use the same name that you specified in step four (id_rsa)
-
-`$ ssh-add ~/.ssh/id_rsa`</br>
-`> Enter passphrase for /home/developer/.ssh/id_rsa`
+[Click Here to get Instructions on Generating an SSH key](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)
 
 ### <a id="user-content-add-key" class="anchor" aria-hidden="true" href="#add-key"></a>Add the ssh key to your openEQUELLA GitHub Repository
 
@@ -415,7 +390,7 @@ work, [CLICK HERE](https://guides.github.com/activities/forking/)
 2. To fork the openEQUELLA repository navigate to [https://github.com/openequella/openEQUELLA](https://github.com/openequella/openEQUELLA) and
 click on the Fork button in the upper right hand corner of the screen.
 
-![fork](images/github/fork.png)
+![fork](images/clone/fork.png)
 
 1. Navigate to the home page of the forked openEQUELLA repository and click on the green “Code” button. Then copy the git command to “Clone with SSH”.
 
