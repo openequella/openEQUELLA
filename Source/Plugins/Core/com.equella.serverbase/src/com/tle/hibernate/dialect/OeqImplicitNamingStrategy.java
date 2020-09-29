@@ -63,17 +63,21 @@ public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaComplian
     } else if (source.getOwningPhysicalTableName().equals("Item")
         && source.getNonOwningPhysicalTableName().equals("ReferencedURL")) {
       resp = Identifier.toIdentifier("item_referenced_urls");
+    } else if (source.getOwningPhysicalTableName().equals("HierarchyTopic")
+        && source.getNonOwningPhysicalTableName().equals("Item")) {
+      resp = Identifier.toIdentifier("hierarchy_topic_key_resources");
     } else {
       resp = super.determineJoinTableName(source);
     }
     final String respText = (resp == null) ? "NULL" : resp.getText();
     LOGGER.trace(
-        "determineJoinTableName - "
-            + source.getOwningEntityNaming().getEntityName()
-            + ", "
-            + source.getNonOwningEntityNaming().getEntityName()
-            + "Result="
-            + respText);
+        String.format(
+            "determineJoinTableName - %s (%s), %s (%s) - Result=[%s]",
+            source.getOwningEntityNaming().getEntityName(),
+            source.getOwningEntityNaming().getJpaEntityName(),
+            source.getNonOwningEntityNaming().getEntityName(),
+            source.getNonOwningEntityNaming().getJpaEntityName(),
+            respText));
     return resp;
   }
 
