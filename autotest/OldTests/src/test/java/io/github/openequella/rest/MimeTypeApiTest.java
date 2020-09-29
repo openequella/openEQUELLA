@@ -38,6 +38,14 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
     }
   }
 
+  @Test
+  public void testMimeTypeConfigurationNotFoundHandling() throws IOException {
+    final String noSuchMimeType = "blah/blah";
+    final HttpMethod method =
+        new GetMethod(MIMETYPE_API_ENDPOINT + "/viewerconfig/" + noSuchMimeType);
+    assertEquals(HttpStatus.SC_NOT_FOUND, makeClientRequest(method));
+  }
+
   private List<MimeTypeDetail> getMimeTypes() throws IOException {
     final HttpMethod method = new GetMethod(MIMETYPE_API_ENDPOINT);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));

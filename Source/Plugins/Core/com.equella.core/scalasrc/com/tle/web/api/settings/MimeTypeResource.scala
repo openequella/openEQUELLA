@@ -25,6 +25,7 @@ import com.tle.web.viewurl.ResourceViewerConfig
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
+import org.apache.http.HttpStatus
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import scala.collection.JavaConverters._
@@ -89,28 +90,32 @@ class MimeTypeResource {
   )
   def getMimeTypeViewer(@PathParam("type") mimeType: String,
                         @PathParam("sub") mimeTypeSub: String): Response = {
-    val mts   = LegacyGuice.mimeTypeService
-    val entry = mts.getEntryForMimeType(s"$mimeType/$mimeTypeSub")
-    val enabledViewers = mutable.Buffer[String]() ++= mts
-      .getListFromAttribute(entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, classOf[String])
-      .asScala
-    if (entry.getAttribute(MimeTypeConstants.KEY_DISABLE_FILEVIEWER) == null)
-      enabledViewers += MimeTypeConstants.VAL_DEFAULT_VIEWERID
+    val mts = LegacyGuice.mimeTypeService
 
-    val config = MimeTypeViewerConfiguration(
-      defaultViewer = Option(entry.getAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID)) match {
-        case Some(value) => value
-        case None        => MimeTypeConstants.VAL_DEFAULT_VIEWERID
-      },
-      viewers = enabledViewers
-        .map(
-          v =>
-            MimeTypeViewerDetail(
-              viewerId = v,
-              config = mts.getBeanFromAttribute(entry,
-                                                MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + v,
-                                                classOf[ResourceViewerConfig])))
-    )
-    Response.ok().entity(config).build()
+    Option(mts.getEntryForMimeType(s"$mimeType/$mimeTypeSub")) match {
+      case Some(entry) =>
+        val enabledViewers = mutable.Buffer[String]() ++= mts
+          .getListFromAttribute(entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, classOf[String])
+          .asScala
+        if (entry.getAttribute(MimeTypeConstants.KEY_DISABLE_FILEVIEWER) == null)
+          enabledViewers += MimeTypeConstants.VAL_DEFAULT_VIEWERID
+
+        val config = MimeTypeViewerConfiguration(
+          defaultViewer = Option(entry.getAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID)) match {
+            case Some(value) => value
+            case None        => MimeTypeConstants.VAL_DEFAULT_VIEWERID
+          },
+          viewers = enabledViewers
+            .map(
+              v =>
+                MimeTypeViewerDetail(
+                  viewerId = v,
+                  config = mts.getBeanFromAttribute(entry,
+                                                    MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + v,
+                                                    classOf[ResourceViewerConfig])))
+        )
+        Response.ok().entity(config).build()
+      case None => Response.status(HttpStatus.SC_NOT_FOUND).build()
+    }
   }
 }
