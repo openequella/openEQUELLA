@@ -20,7 +20,10 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
   @Test
   public void testRetrieveMimeTypes() throws Exception {
     final List<MimeTypeDetail> initialFilters = getMimeTypes();
-    assertEquals(153, initialFilters.size());
+    assertEquals(
+        "The number of returned filters should match the institution total.",
+        153,
+        initialFilters.size());
   }
 
   @Test
