@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import { listMimeTypes } from '../src/MimeType';
+import { getViewersForMimeType, listMimeTypes } from '../src/MimeType';
 import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
@@ -27,5 +27,18 @@ describe('listMimeTypes', () => {
   it('lists MIME types for the collection', async () => {
     const mimeTypes = await listMimeTypes(TC.API_PATH);
     expect(mimeTypes.length).toBeGreaterThan(0);
+  });
+});
+
+describe('getViewersForMimeType', () => {
+  it('can retrieve the viewer configuration for each MIME type on the server', async () => {
+    const allMimeTypes = await listMimeTypes(TC.API_PATH);
+    for (const mt of allMimeTypes) {
+      const viewerConfig = await getViewersForMimeType(
+        TC.API_PATH,
+        mt.mimeType
+      );
+      expect(viewerConfig.defaultViewer).toBeTruthy();
+    }
   });
 });
