@@ -1,0 +1,153 @@
+<com.tle.beans.item.Item>
+  <id>33882</id>
+  <uuid>111fcd17-b628-47da-97de-20bb4e717e27</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 15:24:48.811</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 15:24:48.812</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-09-29 14:41:59.949</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>33887</id>
+      <uuid>e394bb12-ab89-4156-91aa-612b5d3b5ba5</uuid>
+      <url>https://en.wikipedia.org/wiki/Itanium</url>
+      <description>https://en.wikipedia.org/wiki/Itanium</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Year</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_au</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_au</locale>
+              <priority>1</priority>
+              <text>2001</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>29406</id>
+      <url>https://en.wikipedia.org/wiki/Itanium</url>
+      <urlHash>5724aa114a21360f00e9a2ec4a2e89ed</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.io.IOException: Too many connections per host 2</message>
+      <tries>1</tries>
+      <lastChecked class="sql-timestamp">2020-09-29 14:12:38.177</lastChecked>
+      <lastIndexed class="sql-timestamp">2020-09-29 14:12:38.177</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>33884</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-17 15:24:48.811</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-17 15:24:48.811</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>33888</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:24:48.811</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>33889</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:24:48.811</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>33890</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:24:48.811</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>33885</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>34156</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Itanium</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>34154</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>34155</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Itanium (/aɪˈteɪniəm/ eye-TAY-nee-əm) is a family of 64-bit Intel microprocessors that implement the Intel Itanium architecture (formerly called IA-64). Intel marketed the processors for enterprise servers and high-performance computing systems. The Itanium architecture originated at Hewlett-Packard (HP), and was later jointly developed by HP and Intel.
+
+Itanium-based systems have been produced by HP (the HP Integrity Servers line) and several other manufacturers. In 2008, Itanium was the fourth-most deployed microprocessor architecture for enterprise-class systems, behind x86-64, Power ISA, and SPARC.[2][needs update]
+
+In February 2017, Intel released the final generation, Kittson, to test customers, and in May began shipping in volume.[3][4] It is used exclusively in mission-critical servers from Hewlett Packard Enterprise.
+
+  Intel officially announced the discontinuation of the Itanium CPU family on January 30, 2019.[1] </text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

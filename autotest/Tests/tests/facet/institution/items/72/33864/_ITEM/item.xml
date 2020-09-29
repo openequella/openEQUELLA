@@ -1,0 +1,7 @@
+<xml><item year=""><description>The AVR32 is a 32-bit RISC microcontroller architecture produced by Atmel. The microcontroller architecture was designed by a handful of people educated at the Norwegian University of Science and Technology, including lead designer &#x00d8;yvind Str&#x00f8;m and CPU architect Erik Renno in Atmel's Norwegian design center.
+
+Most instructions are executed in a single-cycle. The multiply&#x2013;accumulate unit can perform a 32-bit &#x00d7; 16-bit + 48-bit arithmetic operation in two cycles (result latency), issued once per cycle.
+
+It does not resemble the 8-bit AVR microcontroller family, even though they were both designed at Atmel Norway, in Trondheim. Some of the debug-tools are similar.
+
+  Support for AVR32 has been dropped from Linux as of kernel 4.12;[1] Atmel has switched mostly to M variants of the ARM architecture. </description><category name="risc"><sub-category name="32"/></category><name>AVR32</name><attachment>d131abe5-b8c9-4c0a-8527-14191f2ccf32</attachment><keywords><keyword>avr</keyword></keywords><keywords><keyword>atmel</keyword></keywords><keywords><keyword>AVR32A</keyword></keywords><keywords><keyword>AVR32B</keyword></keywords></item></xml>
