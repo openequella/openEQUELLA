@@ -78,7 +78,7 @@ libraryDependencies ++= Seq(
   "io.swagger"                %% "swagger-scala-module" % "1.0.6",
   "com.zaxxer"                % "HikariCP"              % "3.4.5",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.14",
+  "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.2.2",
