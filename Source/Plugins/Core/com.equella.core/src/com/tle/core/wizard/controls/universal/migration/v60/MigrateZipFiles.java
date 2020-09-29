@@ -68,7 +68,7 @@ public class MigrateZipFiles extends AbstractHibernateDataMigration {
       Long itemId = scroll.getLong(0);
       List<FakeAttachment> attachments =
           session
-              .createQuery("from Attachment where item.id = ? and type in ('zip', 'file')")
+              .createQuery("from Attachment where item.id = ?0 and type in ('zip', 'file')")
               .setParameter(0, itemId)
               .list();
       Map<String, String> zipMap = Maps.newHashMap();

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.hibernate.boot.Metadata;
@@ -60,12 +61,14 @@ public class ExtendedAnnotationConfiguration extends Configuration {
         Metadata metadata,
         SessionFactoryImplementor sessionFactory,
         SessionFactoryServiceRegistry serviceRegistry) {
+      LOGGER.trace("integrating metadata");
       this.metadata = metadata;
     }
 
     @Override
     public void disintegrate(
         SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
+      LOGGER.trace("disintegrating metadata");
       this.metadata = null;
     }
   }
@@ -82,6 +85,7 @@ public class ExtendedAnnotationConfiguration extends Configuration {
       }
       registerTypeOverride(basicType);
     }
+    logProps(super.getProperties(), "Hibernate properties after the forced removal of hib un/pw");
   }
 
   public Map<String, Table> getTableMap() {
@@ -173,5 +177,27 @@ public class ExtendedAnnotationConfiguration extends Configuration {
           "Cannot access Hibernate Metadata before a SessionFactory has been created");
     }
     return METADATA_CAPTURE.getMetadata();
+  }
+
+  @Override
+  public Properties getProperties() {
+    Properties p = super.getProperties();
+    logProps(p, "Hibernate property");
+    return p;
+  }
+
+  @Override
+  public Configuration addProperties(Properties properties) {
+    logProps(super.getProperties(), "Existing hibernate property");
+    logProps(properties, "New hibernate property");
+    return super.addProperties(properties);
+  }
+
+  private void logProps(Properties p, String prefix) {
+    if (LOGGER.isTraceEnabled()) {
+      for (String s : p.stringPropertyNames()) {
+        LOGGER.trace(prefix + ": k=[" + s + "] v=[" + p.getProperty(s) + "]");
+      }
+    }
   }
 }

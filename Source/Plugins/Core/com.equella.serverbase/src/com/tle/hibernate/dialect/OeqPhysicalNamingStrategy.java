@@ -18,11 +18,13 @@
 
 package com.tle.hibernate.dialect;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.boot.model.naming.Identifier;
-import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.internal.util.StringHelper;
 
@@ -33,8 +35,9 @@ import org.hibernate.internal.util.StringHelper;
  * lowercase. This helps with Enums on Postgresql.
  */
 @SuppressWarnings("nls")
-public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStandardImpl {
-  private static final Logger LOGGER = Logger.getLogger(LowercasePhysicalNamingStrategy.class);
+public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
+    implements PhysicalNamingStrategy, Serializable {
+  private static final Logger LOGGER = Logger.getLogger(OeqPhysicalNamingStrategy.class);
 
   private static final long serialVersionUID = 1L;
 
@@ -47,7 +50,7 @@ public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStand
     OTHER
   }
 
-  public LowercasePhysicalNamingStrategy() {
+  public OeqPhysicalNamingStrategy() {
     // MySQL5 can't handle schemas and `schemas` doesn't work
     // SQLServer can't handle schema
     registerOverride("schema", "tleschemas");
@@ -138,12 +141,12 @@ public class LowercasePhysicalNamingStrategy extends PhysicalNamingStrategyStand
     switch (transform) {
       case COLUMN:
         {
-          resultantName = getColumnName(name.getText());
+          resultantName = super.propertyToColumnName(getColumnName(name.getText()));
           break;
         }
       case TABLE:
         {
-          resultantName = postProcess(name.getText());
+          resultantName = postProcess(super.classToTableName(name.getText()));
           break;
         }
       case OTHER:

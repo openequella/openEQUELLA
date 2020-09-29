@@ -199,7 +199,7 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
     return (List<T>)
         getHibernateTemplate()
             .find(
-                "from " + getPersistentClass().getName() + " where institution = ?",
+                "from " + getPersistentClass().getName() + " where institution = ?0",
                 CurrentInstitution.get());
   }
 

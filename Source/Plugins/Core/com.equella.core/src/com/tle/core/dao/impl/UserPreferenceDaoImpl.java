@@ -47,7 +47,7 @@ public class UserPreferenceDaoImpl
     return (List<UserPreference>)
         getHibernateTemplate()
             .find(
-                "from UserPreference where key.institution = ?",
+                "from UserPreference where key.institution = ?0",
                 CurrentInstitution.get().getDatabaseId());
   }
 
@@ -73,7 +73,7 @@ public class UserPreferenceDaoImpl
         (List<String>)
             getHibernateTemplate()
                 .find(
-                    "select distinct u.key.userID from UserPreference u where u.key.institution = ?",
+                    "select distinct u.key.userID from UserPreference u where u.key.institution = ?0",
                     CurrentInstitution.get().getDatabaseId());
     final Set<String> userIdSet = new HashSet<String>(userIds.size());
     userIdSet.addAll(userIds);

@@ -63,7 +63,7 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
     return (List<UserInfoBackup>)
         getHibernateTemplate()
             .find(
-                "from UserInfoBackup where institution_id = ?",
+                "from UserInfoBackup where institution_id = ?0",
                 CurrentInstitution.get().getUniqueId());
   }
 

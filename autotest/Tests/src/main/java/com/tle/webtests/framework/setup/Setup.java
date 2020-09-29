@@ -48,6 +48,9 @@ import org.apache.http.protocol.HTTP;
 
 @SuppressWarnings("serial")
 public class Setup extends JPanel {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
+
   private static final String CONNECTION_URL = "jdbc:postgresql://appserver01:5432/autotestsync";
   private JTable institutionTable;
   private InstitutionModel institutionModel;

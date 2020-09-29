@@ -134,7 +134,7 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
   public List<TLEUser> listAllUsers() {
     return (List<TLEUser>)
         getHibernateTemplate()
-            .find("from TLEUser where institution = ?", new Object[] {CurrentInstitution.get()});
+            .find("from TLEUser where institution = ?0", new Object[] {CurrentInstitution.get()});
   }
 
   @Override

@@ -41,50 +41,50 @@ public class RelationDaoImpl extends GenericInstitionalDaoImpl<Relation, Long>
 
   @Override
   public Collection<Relation> getAllByFromItem(Item from) {
-    String query = "from Relation where firstItem = ?"; // $NON-NLS-1$
+    String query = "from Relation where firstItem = ?0"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, from);
   }
 
   @Override
   public Collection<Relation> getAllByToItem(Item to) {
-    String query = "from Relation where secondItem = ?"; // $NON-NLS-1$
+    String query = "from Relation where secondItem = ?0"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, to);
   }
 
   @Override
   public Collection<Relation> getAllByType(String type) {
-    String query = "from Relation where relationType = ?"; // $NON-NLS-1$
+    String query = "from Relation where relationType = ?0"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, type);
   }
 
   @Override
   public Collection<Relation> getAllByFromItemAndType(Item from, String type) {
-    String query = "from Relation where firstItem = ? and relationType = ?"; // $NON-NLS-1$
+    String query = "from Relation where firstItem = ?0 and relationType = ?1"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {from, type});
   }
 
   @Override
   public Collection<Relation> getAllByToItemAndType(Item to, String type) {
-    String query = "from Relation where secondItem = ? and relationType = ?"; // $NON-NLS-1$
+    String query = "from Relation where secondItem = ?0 and relationType = ?1"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {to, type});
   }
 
   @Override
   public Collection<Long> getAllIdsForInstitution() {
-    String query = "select r.id from Relation r where r.firstItem.institution = ?"; // $NON-NLS-1$
+    String query = "select r.id from Relation r where r.firstItem.institution = ?0"; // $NON-NLS-1$
     return (Collection<Long>)
         getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get()});
   }
 
   @Override
   public Collection<Relation> getAllMentioningItem(Item item) {
-    String query = "from Relation where firstItem = ? or secondItem = ?"; // $NON-NLS-1$
+    String query = "from Relation where firstItem = ?0 or secondItem = ?1"; // $NON-NLS-1$
     return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {item, item});
   }
 
   @Override
   public void delete(Item item) {
-    String query = "delete from Relation where firstItem = ? or secondItem = ?"; // $NON-NLS-1$
+    String query = "delete from Relation where firstItem = ?0 or secondItem = ?1"; // $NON-NLS-1$
     getHibernateTemplate().bulkUpdate(query, new Object[] {item, item});
   }
 

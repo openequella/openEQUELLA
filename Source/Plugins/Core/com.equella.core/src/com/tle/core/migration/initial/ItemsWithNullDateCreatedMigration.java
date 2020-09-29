@@ -79,7 +79,7 @@ public class ItemsWithNullDateCreatedMigration extends AbstractHibernateSchemaMi
     final Date now = new Date();
     session
         .createQuery(
-            "UPDATE Item SET date_created = ?, date_modified = ?"
+            "UPDATE Item SET date_created = ?0, date_modified = ?1"
                 + " WHERE date_created IS NULL AND date_modified IS NULL")
         .setParameter(0, now)
         .setParameter(1, now)

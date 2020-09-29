@@ -28,6 +28,8 @@ import shapeless.{::, Generic, HNil}
 import io.doolse.simpledba.syntax._
 
 object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with StdOracleColumns {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
 
   implicit lazy val config = {
     val escaped = StandardJDBC.escapeReserved(oracleReserved + "key") _

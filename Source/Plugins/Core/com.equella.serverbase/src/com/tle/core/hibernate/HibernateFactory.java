@@ -18,14 +18,23 @@
 
 package com.tle.core.hibernate;
 
-import com.tle.hibernate.dialect.LowercasePhysicalNamingStrategy;
+import com.tle.hibernate.dialect.OeqImplicitNamingStrategy;
+import com.tle.hibernate.dialect.OeqPhysicalNamingStrategy;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
+import javax.sql.DataSource;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.cfg.Environment;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.spi.Mapping;
+import org.hibernate.service.UnknownUnwrapTypeException;
+import org.hibernate.service.spi.Configurable;
+import org.hibernate.service.spi.Stoppable;
 
 @SuppressWarnings("nls")
 public class HibernateFactory {
@@ -56,18 +65,17 @@ public class HibernateFactory {
         setContextLoader(classLoader);
         ExtendedDialect dialect = dataSourceHolder.getDialect();
         this.config = new ExtendedAnnotationConfiguration(dialect);
-        config.setProperties(properties);
         // TODO [SpringHib5] opted for the default impl.  Might be some massaging with the props vs
         // map
-        config.setProperty(
-            Environment.CONNECTION_PROVIDER, DatasourceConnectionProviderImpl.class.getName());
+        config.setProperty(Environment.CONNECTION_PROVIDER, DataSourceProvider.class.getName());
         // TODO [SpringHib5] seems weird to set the properties here.
         properties.put(Environment.DATASOURCE, dataSourceHolder.getDataSource());
+        config.addProperties(properties);
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
         config.setProperty(Environment.JPA_VALIDATION_MODE, "DDL");
-        config.setImplicitNamingStrategy(new ImplicitNamingStrategyJpaCompliantImpl());
-        config.setPhysicalNamingStrategy(new LowercasePhysicalNamingStrategy());
+        config.setImplicitNamingStrategy(new OeqImplicitNamingStrategy());
+        config.setPhysicalNamingStrategy(new OeqPhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {
           LOGGER.trace("Adding annotated class: " + class1.getCanonicalName());
           config.addAnnotatedClass(class1);
@@ -116,6 +124,67 @@ public class HibernateFactory {
 
   public String getDefaultSchema() {
     return dataSourceHolder.getDefaultSchema();
+  }
+
+  public static class DataSourceProvider implements ConnectionProvider, Configurable, Stoppable {
+    private DataSource dataSource;
+
+    @Override
+    public void configure(Map configValues) {
+      if (this.dataSource == null) {
+        final Object dataSource = configValues.get(Environment.DATASOURCE);
+        if (DataSource.class.isInstance(dataSource)) {
+          this.dataSource = (DataSource) dataSource;
+        } else {
+          throw new HibernateException(
+              "DataSource to use was not specified by ["
+                  + Environment.DATASOURCE
+                  + "] configuration property");
+        }
+      }
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+      if (dataSource == null) {
+        throw new HibernateException("DataSource is null.  Unable to retrieve a connection");
+      }
+      return dataSource.getConnection();
+    }
+
+    @Override
+    public void closeConnection(Connection conn) throws SQLException {
+      conn.close();
+    }
+
+    @Override
+    public boolean supportsAggressiveRelease() {
+      return true;
+    }
+
+    @Override
+    public boolean isUnwrappableAs(Class unwrapType) {
+      return ConnectionProvider.class.equals(unwrapType)
+          || DataSourceProvider.class.isAssignableFrom(unwrapType)
+          || DataSource.class.isAssignableFrom(unwrapType);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> unwrapType) {
+      if (ConnectionProvider.class.equals(unwrapType)
+          || DatasourceConnectionProviderImpl.class.isAssignableFrom(unwrapType)) {
+        return (T) this;
+      } else if (DataSource.class.isAssignableFrom(unwrapType)) {
+        return (T) dataSource;
+      } else {
+        throw new UnknownUnwrapTypeException(unwrapType);
+      }
+    }
+
+    @Override
+    public void stop() {
+      this.dataSource = null;
+    }
   }
 
   public void setClassLoader(ClassLoader classLoader) {

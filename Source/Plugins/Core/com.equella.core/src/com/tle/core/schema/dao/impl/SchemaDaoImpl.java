@@ -39,7 +39,7 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
     return (List<String>)
         getHibernateTemplate()
             .find(
-                "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t WHERE s.institution = ? ORDER BY t.type",
+                "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t WHERE s.institution = ?0 ORDER BY t.type",
                 CurrentInstitution.get());
   }
 
@@ -48,7 +48,7 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
     return (List<String>)
         getHibernateTemplate()
             .find(
-                "select distinct t.type from Schema s inner join s.impTransforms as t where s.id = ? order by t.type",
+                "select distinct t.type from Schema s inner join s.impTransforms as t where s.id = ?0 order by t.type",
                 id);
   }
 
@@ -57,7 +57,7 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
     return (List<Schema>)
         getHibernateTemplate()
             .find(
-                "SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ? AND LOWER(t.type) = ?",
+                "SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ?0 AND LOWER(t.type) = ?1",
                 new Object[] {CurrentInstitution.get(), type.toLowerCase()});
   }
 

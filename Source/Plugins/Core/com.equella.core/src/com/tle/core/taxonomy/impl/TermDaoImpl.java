@@ -74,11 +74,11 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
       };
 
   private static final String ROOT_TERMS_QUERY =
-      "FROM Term t WHERE t.taxonomy = ? AND t.parent IS NULL ORDER BY t.left ASC";
+      "FROM Term t WHERE t.taxonomy = ?0 AND t.parent IS NULL ORDER BY t.left ASC";
   private static final String ROOT_TERM_RESULTS_QUERY = TERM_RESULT_PROJECTION + ROOT_TERMS_QUERY;
 
   private static final String CHILD_TERMS_QUERY =
-      "FROM Term t WHERE t.parent = ? ORDER BY t.left ASC";
+      "FROM Term t WHERE t.parent = ?0 ORDER BY t.left ASC";
   private static final String CHILD_TERM_RESULTS_QUERY = TERM_RESULT_PROJECTION + CHILD_TERMS_QUERY;
 
   private static final PluginResourceHelper resources =
@@ -94,7 +94,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
         (List<String>)
             getHibernateTemplate()
                 .find(
-                    "SELECT ta.value FROM TermAttributes ta WHERE ta.term = ? AND ta.key = ?",
+                    "SELECT ta.value FROM TermAttributes ta WHERE ta.term = ?0 AND ta.key = ?1",
                     new Object[] {term, key});
     return Check.isEmpty(results) ? null : results.get(0);
   }
@@ -103,7 +103,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
   public List<Term> getAllTermsInOrder(Taxonomy taxonomy) {
     return (List<Term>)
         getHibernateTemplate()
-            .find("FROM Term t WHERE t.taxonomy = ? ORDER BY t.left", new Object[] {taxonomy});
+            .find("FROM Term t WHERE t.taxonomy = ?0 ORDER BY t.left", new Object[] {taxonomy});
   }
 
   @Override

@@ -52,7 +52,7 @@ public class AddNewVersionOnHarvestFlag extends AbstractHibernateSchemaMigration
   protected void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     session
-        .createQuery("UPDATE HarvesterProfile SET newVersionOnHarvest = ?")
+        .createQuery("UPDATE HarvesterProfile SET newVersionOnHarvest = ?0")
         .setBoolean(0, true)
         .executeUpdate();
   }

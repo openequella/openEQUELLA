@@ -86,7 +86,7 @@ public class QtiAssessmentItemDaoImpl extends GenericInstitionalDaoImpl<QtiAsses
     return (List<QtiAssessmentItem>)
         getHibernateTemplate()
             .find(
-                "FROM QtiAssessmentItem WHERE institution = ?",
+                "FROM QtiAssessmentItem WHERE institution = ?0",
                 new Object[] {CurrentInstitution.get()});
   }
 

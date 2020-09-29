@@ -104,7 +104,7 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration {
     for (WorkflowNodeStatus status : statuses) {
       String nodeId = status.nodeId;
       Query statusQuery =
-          session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?");
+          session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?0");
       statusQuery.setParameter(0, status);
       ModerationStatus modStatus = (ModerationStatus) statusQuery.uniqueResult();
       if (modStatus != null) {

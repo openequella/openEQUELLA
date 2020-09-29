@@ -72,7 +72,7 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
   public List<TLEGroup> listAllGroups() {
     return (List<TLEGroup>)
         getHibernateTemplate()
-            .find("from TLEGroup where institution = ?", CurrentInstitution.get());
+            .find("from TLEGroup where institution = ?0", CurrentInstitution.get());
   }
 
   @Override

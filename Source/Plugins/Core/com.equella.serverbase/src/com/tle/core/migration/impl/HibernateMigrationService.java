@@ -336,7 +336,7 @@ public class HibernateMigrationService {
     Session session = openSession();
     try {
       String uuid = UUID.randomUUID().toString();
-      session.createQuery("update SchemaId set uuid = ?").setParameter(0, uuid).executeUpdate();
+      session.createQuery("update SchemaId set uuid = ?0").setParameter(0, uuid).executeUpdate();
       return uuid;
     } catch (Exception e) {
       return null;

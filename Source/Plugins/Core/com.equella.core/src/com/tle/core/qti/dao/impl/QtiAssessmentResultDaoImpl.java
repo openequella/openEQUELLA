@@ -58,7 +58,7 @@ public class QtiAssessmentResultDaoImpl extends GenericDaoImpl<QtiAssessmentResu
   @Override
   public List<QtiAssessmentResult> findByAssessmentTest(QtiAssessmentTest test) {
     return (List<QtiAssessmentResult>)
-        getHibernateTemplate().find("from QtiAssessmentResult where test = ?", test);
+        getHibernateTemplate().find("from QtiAssessmentResult where test = ?0", test);
   }
 
   private Criterion[] getBaseCriteria(

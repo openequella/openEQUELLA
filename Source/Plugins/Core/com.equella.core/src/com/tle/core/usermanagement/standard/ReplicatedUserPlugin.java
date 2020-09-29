@@ -54,6 +54,9 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 @Bind
 public class ReplicatedUserPlugin extends AbstractUserDirectory {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
+
   private static Logger LOGGER = Logger.getLogger(ReplicatedUserPlugin.class);
 
   // need to chunk the IN statement into manageable chunks (there is a 1000

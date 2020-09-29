@@ -190,7 +190,7 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
     for (Long itemId : itemIds) {
       Query query =
           session.createQuery(
-              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ? order by a.attindex");
+              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ?0 order by a.attindex");
       query.setParameter(0, itemId);
       int index = 0;
       List<Object[]> attList = query.list();

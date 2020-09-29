@@ -41,13 +41,13 @@ public class EntityLockingDaoImpl extends GenericDaoImpl<EntityLock, String>
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public void deleteForEntity(BaseEntity entity) {
-    getHibernateTemplate().bulkUpdate("DELETE FROM EntityLock WHERE entity = ?", entity);
+    getHibernateTemplate().bulkUpdate("DELETE FROM EntityLock WHERE entity = ?0", entity);
   }
 
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public void deleteAll() {
     getHibernateTemplate()
-        .bulkUpdate("DELETE FROM ItemLock WHERE institution = ?", CurrentInstitution.get());
+        .bulkUpdate("DELETE FROM ItemLock WHERE institution = ?0", CurrentInstitution.get());
   }
 }

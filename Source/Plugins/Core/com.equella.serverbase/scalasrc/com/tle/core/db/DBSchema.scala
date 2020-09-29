@@ -35,6 +35,8 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 trait DBSchema extends StdColumns {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
 
   implicit def config: JDBCConfig.Aux[C]
 

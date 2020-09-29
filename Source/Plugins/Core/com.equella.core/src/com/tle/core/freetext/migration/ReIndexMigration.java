@@ -65,7 +65,7 @@ public class ReIndexMigration extends AbstractHibernateMigration {
           @Override
           public void run(Session session) throws Exception {
             session
-                .createSQLQuery("update item set date_for_index = ?")
+                .createSQLQuery("update item set date_for_index = ?0")
                 .setParameter(0, new Date())
                 .executeUpdate();
           }

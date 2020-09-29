@@ -98,7 +98,7 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
     List<Class<?>> usage = new ArrayList<Class<?>>();
     if (((List<Long>)
                 getHibernateTemplate()
-                    .find("select count(*) from Item where itemDefinition.id = ?", id))
+                    .find("select count(*) from Item where itemDefinition.id = ?0", id))
             .get(0)
         != 0) {
       usage.add(Item.class);

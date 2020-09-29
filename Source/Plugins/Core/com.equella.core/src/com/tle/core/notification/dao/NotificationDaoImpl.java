@@ -99,7 +99,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   @Transactional(propagation = Propagation.MANDATORY)
   public void deleteAllForInstitution(Institution institution) {
     getHibernateTemplate()
-        .bulkUpdate("delete from Notification where institution = ?", institution);
+        .bulkUpdate("delete from Notification where institution = ?0", institution);
   }
 
   @Override
@@ -107,7 +107,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   public void deleteAllForItem(ItemId itemId) {
     getHibernateTemplate()
         .bulkUpdate(
-            "delete from Notification where institution = ? and itemidOnly = ?",
+            "delete from Notification where institution = ?0 and itemidOnly = ?1",
             new Object[] {CurrentInstitution.get(), itemId.toString()});
   }
 
@@ -328,8 +328,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   public int updateLastAttempt(String user, boolean batched, Date date, String attemptId) {
     return getHibernateTemplate()
         .bulkUpdate(
-            "update Notification set lastAttempt = ?, attemptId = ? "
-                + "where institution = ? and userTo = ? and processed = false and batched = ?",
+            "update Notification set lastAttempt = ?0, attemptId = ?1 "
+                + "where institution = ?2 and userTo = ?3 and processed = false and batched = ?4",
             new Object[] {date, attemptId, CurrentInstitution.get(), user, batched});
   }
 

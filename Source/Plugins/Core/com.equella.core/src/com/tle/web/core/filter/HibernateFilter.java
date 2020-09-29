@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
@@ -58,7 +59,7 @@ public class HibernateFilter extends AbstractWebFilter {
         // TODO - previous code with SessionFactoryUtils:
         // https://docs.spring.io/spring/docs/2.5.x/javadoc-api/org/springframework/orm/hibernate3/SessionFactoryUtils.html#getSession(org.hibernate.SessionFactory,%20boolean)
         // Need  to ensure this is equivalent logic.
-        Session session = sessionFactory.getCurrentSession();
+        Session session = openSession(sessionFactory);
         TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
         result.setCallback(
             new WebFilterCallback() {
@@ -76,5 +77,11 @@ public class HibernateFilter extends AbstractWebFilter {
       }
     }
     return result;
+  }
+
+  private Session openSession(SessionFactory sessionFactory) {
+    Session session = sessionFactory.openSession();
+    session.setHibernateFlushMode(FlushMode.MANUAL);
+    return session;
   }
 }

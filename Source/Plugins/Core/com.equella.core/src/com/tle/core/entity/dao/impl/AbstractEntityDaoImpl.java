@@ -167,7 +167,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                 .find(
                     "FROM "
                         + getPersistentClass().getName()
-                        + " WHERE institution = ? AND uuid = ?",
+                        + " WHERE institution = ?0 AND uuid = ?1",
                     new Object[] {CurrentInstitution.get(), uuid});
     return results.isEmpty() ? null : results.get(0);
   }

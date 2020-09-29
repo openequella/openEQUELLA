@@ -107,7 +107,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     long itemDefInstId = item.getItemDefinition().getInstitution().getUniqueId();
     if (itemInstId != itemDefInstId) {
       throw new RuntimeException(
-          "Illegal attempt to save an item in an instituion ("
+          "Illegal attempt to save an item in an institution ("
               + itemInstId
               + ") that differs from the institution of the collection ("
               + itemDefInstId
@@ -413,7 +413,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
 
   @Override
   public List<Item> getAllVersionsOfItem(String uuid) {
-    String query = "from Item where institution = ? and uuid = ? order by version desc";
+    String query = "from Item where institution = ?0 and uuid = ?1 order by version desc";
     return (List<Item>)
         getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get(), uuid});
   }
@@ -439,6 +439,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     hql.append(" FROM Item i WHERE ");
 
     int i = 0;
+    int paramCounter = 0;
     hql.append('(');
     for (ItemKey key : keys) {
       if (i > 0) {
@@ -446,12 +447,15 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       }
       keyArray[i++] = key.getUuid();
       keyArray[i++] = key.getVersion();
-      hql.append("(i.uuid = ? and i.version = ?)");
+      hql.append("(i.uuid = ?")
+          .append(paramCounter++)
+          .append(" and i.version = ?")
+          .append(paramCounter++);
     }
     hql.append(") ");
 
     keyArray[i] = CurrentInstitution.get();
-    hql.append(" and i.institution = ?");
+    hql.append(" and i.institution = ?").append(paramCounter++);
 
     List<Object[]> results = (List<Object[]>) getHibernateTemplate().find(hql.toString(), keyArray);
 
@@ -490,7 +494,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   public List<ItemIdKey> listAll(Institution institution) {
     String hql =
         "select new com.tle.beans.item.ItemIdKey(id, uuid, version)"
-            + " from Item where institution = ?";
+            + " from Item where institution = ?0";
     return (List<ItemIdKey>) getHibernateTemplate().find(hql, institution);
   }
 
@@ -511,7 +515,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     return (List<Integer>)
         getHibernateTemplate()
             .find(
-                "select version from Item where uuid = ? and institution = ? order by version asc",
+                "select version from Item where uuid = ?0 and institution = ?1 order by version asc",
                 new Object[] {uuid, CurrentInstitution.get()});
   }
 
@@ -531,7 +535,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Integer>)
             getHibernateTemplate()
                 .find(
-                    "select version from Item where uuid = ? and status = ? and institution = ? order by version desc",
+                    "select version from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
                     new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return 1;
@@ -546,7 +550,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<ItemIdKey>)
             getHibernateTemplate()
                 .find(
-                    "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid = ? and status = ? and institution = ? order by version desc",
+                    "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
                     new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return null;

@@ -30,6 +30,8 @@ import io.doolse.simpledba.jdbc._
 import scala.collection.JavaConverters._
 
 object AclChecks {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
 
   private val OBJECT_PRIORITY_DB_FORMAT =
     f"${SecurityConstants.PRIORITY_OBJECT_INSTANCE + SecurityConstants.PRIORITY_MAX}%04d"

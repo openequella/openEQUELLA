@@ -48,6 +48,9 @@ import org.hibernate.type.StandardBasicTypes;
 @SuppressWarnings("nls")
 public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
     implements ExtendedDialect {
+  // [SpringHib5] Note - these queries with '?' in them do not need to be
+  // ordinal since they aren't piped through JPA / Hibernate logic.
+
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.NVARCHAR), new String[] {"blankable"});
   private static final CustomType TYPE_XSTREAM =
