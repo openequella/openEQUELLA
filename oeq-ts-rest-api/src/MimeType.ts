@@ -15,16 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as Auth from './Auth';
-export * as Collection from './Collection';
-export * as Common from './Common';
-export * as LegacyContent from './LegacyContent';
-export * as MimeType from './MimeType';
-export * as Errors from './Errors';
-export * as Schema from './Schema';
-export * as Security from './Security';
-export * as Settings from './Settings';
-export * as Search from './Search';
-export * as SearchFacets from './SearchFacets';
-export * as UserQuery from './UserQuery';
-export * as Utils from './Utils';
+import { is } from 'typescript-is';
+import { GET } from './AxiosInstance';
+
+export interface MimeTypeEntry {
+  /**
+   * The name of a Mime type.
+   */
+  mimeType: string;
+  /**
+   * The description of a Mime type.
+   */
+  desc?: string;
+}
+
+const isMimeTypeEntryList = (instance: unknown): instance is MimeTypeEntry[] =>
+  is<MimeTypeEntry[]>(instance);
+
+const MIMETYPE_ROOT_PATH = '/mimetype';
+
+/**
+ * List all available MIME types for the institution.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ */
+export const listMimeTypes = (apiBasePath: string): Promise<MimeTypeEntry[]> =>
+  GET(apiBasePath + MIMETYPE_ROOT_PATH, isMimeTypeEntryList);

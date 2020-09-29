@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as Auth from './Auth';
-export * as Collection from './Collection';
-export * as Common from './Common';
-export * as LegacyContent from './LegacyContent';
-export * as MimeType from './MimeType';
-export * as Errors from './Errors';
-export * as Schema from './Schema';
-export * as Security from './Security';
-export * as Settings from './Settings';
-export * as Search from './Search';
-export * as SearchFacets from './SearchFacets';
-export * as UserQuery from './UserQuery';
-export * as Utils from './Utils';
+import * as OEQ from '../src';
+import { listMimeTypes } from '../src/MimeType';
+import * as TC from './TestConfig';
+
+beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
+
+afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+
+describe('listMimeTypes', () => {
+  it('lists MIME types for the collection', async () => {
+    const mimeTypes = await listMimeTypes(TC.API_PATH);
+    expect(mimeTypes.length).toBeGreaterThan(0);
+  });
+});
