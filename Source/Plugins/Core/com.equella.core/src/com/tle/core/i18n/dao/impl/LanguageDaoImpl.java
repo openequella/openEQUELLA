@@ -167,12 +167,13 @@ public class LanguageDaoImpl extends GenericInstitionalDaoImpl<Language, Long>
   @Override
   public void deleteBundles(Collection<Long> bundles) {
     if (!bundles.isEmpty()) {
+      int paramCounter = 0;
       StringBuilder query = new StringBuilder("("); // $NON-NLS-1$
       for (int i = 0; i < bundles.size(); i++) {
         if (i > 0) {
           query.append(',');
         }
-        query.append('?');
+        query.append('?').append(paramCounter++);
       }
       query.append(')');
       getHibernateTemplate()

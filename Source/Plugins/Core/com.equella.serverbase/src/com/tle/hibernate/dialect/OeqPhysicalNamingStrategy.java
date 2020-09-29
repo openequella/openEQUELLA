@@ -68,6 +68,7 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
     columnOverrides.put("order", "`order`");
     columnOverrides.put("comment", "`comment`");
     columnOverrides.put("index", "`index`");
+    columnOverrides.put("group", "`group`");
 
     // Oracle specific
     columnOverrides.put("successful", "`successful`");

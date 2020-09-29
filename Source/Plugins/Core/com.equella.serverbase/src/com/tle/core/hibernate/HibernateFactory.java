@@ -74,6 +74,10 @@ public class HibernateFactory {
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
         config.setProperty(Environment.JPA_VALIDATION_MODE, "DDL");
+        // Due to https://hibernate.atlassian.net/browse/HHH-12665 , certain operations,
+        // like importing a institution would fail with a
+        // `javax.persistence.TransactionRequiredException: no transaction is in progress`
+        config.setProperty(Environment.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true");
         config.setImplicitNamingStrategy(new OeqImplicitNamingStrategy());
         config.setPhysicalNamingStrategy(new OeqPhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {

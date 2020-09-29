@@ -18,6 +18,8 @@
 
 package com.tle.hibernate.dialect;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.ImplicitAnyDiscriminatorColumnNameSource;
@@ -41,6 +43,21 @@ import org.hibernate.boot.model.naming.ImplicitUniqueKeyNameSource;
 public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompliantImpl {
   private static final Logger LOGGER = Logger.getLogger(OeqImplicitNamingStrategy.class);
 
+  private final Map<String, String> joinTableOverrides = new HashMap<String, String>();
+
+  public OeqImplicitNamingStrategy() {
+    // The default strategies for join tables are not sufficient for all cases in oEQ.
+    // There doesn't appear to be a pattern for the discrepancies, so this override
+    // map contains all the special cases.
+    joinTableOverrides.put("PortletRecentContrib.ItemDefinition", "portlet_recent_contrib_collect");
+    joinTableOverrides.put("Item.HistoryEvent", "item_history");
+    joinTableOverrides.put("Item.ReferencedURL", "item_referenced_urls");
+    joinTableOverrides.put("HierarchyTopic.Item", "hierarchy_topic_key_resources");
+    joinTableOverrides.put("TLEGroup.TLEGroup", "tlegroup_all_parents");
+    joinTableOverrides.put("HierarchyTopic.HierarchyTopic", "hierarchy_topic_all_parents");
+    joinTableOverrides.put("PowerSearch.ItemDefinition", "power_search_itemdefs");
+  }
+
   @Override
   public Identifier determinePrimaryTableName(ImplicitEntityNameSource source) {
     LOGGER.trace(
@@ -56,16 +73,10 @@ public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaComplian
   @Override
   public Identifier determineJoinTableName(ImplicitJoinTableNameSource source) {
     Identifier resp;
-    // TODO [SpringHib5] Consider if this should be handled ... differently.
-    if (source.getOwningPhysicalTableName().equals("Item")
-        && source.getNonOwningPhysicalTableName().equals("HistoryEvent")) {
-      resp = Identifier.toIdentifier("item_history");
-    } else if (source.getOwningPhysicalTableName().equals("Item")
-        && source.getNonOwningPhysicalTableName().equals("ReferencedURL")) {
-      resp = Identifier.toIdentifier("item_referenced_urls");
-    } else if (source.getOwningPhysicalTableName().equals("HierarchyTopic")
-        && source.getNonOwningPhysicalTableName().equals("Item")) {
-      resp = Identifier.toIdentifier("hierarchy_topic_key_resources");
+    final String joinKey =
+        source.getOwningPhysicalTableName() + "." + source.getNonOwningPhysicalTableName();
+    if (joinTableOverrides.containsKey(joinKey)) {
+      resp = Identifier.toIdentifier(joinTableOverrides.get(joinKey));
     } else {
       resp = super.determineJoinTableName(source);
     }
