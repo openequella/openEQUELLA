@@ -20,11 +20,11 @@ import { GET } from './AxiosInstance';
 
 export interface MimeTypeEntry {
   /**
-   * The name of a Mime type.
+   * The name of a MIME type.
    */
   mimeType: string;
   /**
-   * The description of a Mime type.
+   * The description of a MIME type.
    */
   desc?: string;
 }
@@ -99,7 +99,7 @@ export interface MimeTypeViewerDetail {
  */
 export interface MimeTypeViewerConfiguration {
   /**
-   * Which viewer should be used by default - .e.g. on search result pages.
+   * Which viewer should be used by default - e.g. on search result pages.
    */
   defaultViewer: string;
   /**
