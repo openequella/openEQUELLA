@@ -30,12 +30,18 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
   public void testRetrieveMimeTypeConfiguration() throws Exception {
     // Let's process all the known mimetypes to ensure we can
     for (MimeTypeDetail detail : getMimeTypes()) {
-      final HttpMethod method =
-          new GetMethod(MIMETYPE_API_ENDPOINT + "/viewerconfig/" + detail.getMimeType());
+      final HttpMethod method = new GetMethod(buildViewerConfigPath(detail.getMimeType()));
       assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
       JsonNode viewConfig = mapper.readTree(method.getResponseBodyAsString());
       assertNotNull(viewConfig.findValue("defaultViewer"));
     }
+  }
+
+  @Test
+  public void testMimeTypeConfigurationNotFoundHandling() throws IOException {
+    final String noSuchMimeType = "blah/blah";
+    final HttpMethod method = new GetMethod(buildViewerConfigPath(noSuchMimeType));
+    assertEquals(HttpStatus.SC_NOT_FOUND, makeClientRequest(method));
   }
 
   private List<MimeTypeDetail> getMimeTypes() throws IOException {
@@ -43,6 +49,10 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     return mapper.readValue(
         method.getResponseBodyAsString(), new TypeReference<List<MimeTypeDetail>>() {});
+  }
+
+  private String buildViewerConfigPath(String mimeType) {
+    return MIMETYPE_API_ENDPOINT + "/viewerconfig/" + mimeType;
   }
 
   // Mirror of com.tle.web.api.settings.MimeTypeDetail
