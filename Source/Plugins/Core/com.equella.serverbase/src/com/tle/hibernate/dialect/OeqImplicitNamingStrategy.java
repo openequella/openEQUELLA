@@ -43,7 +43,7 @@ import org.hibernate.boot.model.naming.ImplicitUniqueKeyNameSource;
 public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompliantImpl {
   private static final Logger LOGGER = Logger.getLogger(OeqImplicitNamingStrategy.class);
 
-  private final Map<String, String> joinTableOverrides = new HashMap<String, String>();
+  private final Map<String, String> joinTableOverrides = new HashMap<>();
 
   public OeqImplicitNamingStrategy() {
     // The default strategies for join tables are not sufficient for all cases in oEQ.

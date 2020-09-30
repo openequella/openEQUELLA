@@ -68,6 +68,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -82,6 +83,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"nls", "unchecked"})
 public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements ItemDao {
+  private static final Logger LOGGER = Logger.getLogger(ItemDaoImpl.class);
+
   @Inject private ItemLockingDao itemLockingDao;
 
   private PluginTracker<ItemDaoExtension> itemDaoTracker;
@@ -450,13 +453,14 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       hql.append("(i.uuid = ?")
           .append(paramCounter++)
           .append(" and i.version = ?")
-          .append(paramCounter++);
+          .append(paramCounter++)
+          .append(") ");
     }
     hql.append(") ");
 
     keyArray[i] = CurrentInstitution.get();
     hql.append(" and i.institution = ?").append(paramCounter++);
-
+    LOGGER.trace("selectForIds sql: " + hql);
     List<Object[]> results = (List<Object[]>) getHibernateTemplate().find(hql.toString(), keyArray);
 
     Map<ItemId, U> map = new HashMap<ItemId, U>();
