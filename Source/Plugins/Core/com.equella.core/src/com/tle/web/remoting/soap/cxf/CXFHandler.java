@@ -48,7 +48,6 @@ import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.bus.extension.ExtensionManagerBus;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.apache.cxf.helpers.CastUtils;
-import org.apache.cxf.helpers.MethodComparator;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.jaxws.context.WebServiceContextImpl;
@@ -61,7 +60,6 @@ import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.ServiceImpl;
-import org.apache.cxf.service.factory.ReflectionServiceFactoryBean;
 import org.apache.cxf.service.invoker.AbstractInvoker;
 import org.apache.cxf.service.invoker.MethodDispatcher;
 import org.apache.cxf.service.model.BindingOperationInfo;
@@ -71,16 +69,11 @@ import org.apache.cxf.service.model.MessagePartInfo;
 import org.apache.cxf.service.model.OperationInfo;
 import org.apache.cxf.service.model.ServiceInfo;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
+import org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// Will be needed as we upgrade cxf
-// import org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean;
-
-// Likely going to completely remove this as we upgrade cxf
-// import org.apache.cxf.helpers.MethodComparator;
 
 /**
  * TODO: should probably extends AbstractRemoteHandler
@@ -311,8 +304,9 @@ public class CXFHandler extends CXFNonSpringServlet {
           allMethods.add(method);
         }
       }
-      // TODO - once we upgrade cxf, MethodComparator in CXF is no longer a visible class.
-      Collections.sort(allMethods, new MethodComparator());
+      // TODO [SpringHib5] Does this need to be sorted?  MethodComparator in CXF is no longer a
+      // visible class.
+      // Collections.sort(allMethods, new MethodComparator());
       for (Method method : allMethods) {
         createOperation(serviceInfo, info, method);
       }
