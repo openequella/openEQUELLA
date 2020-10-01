@@ -120,8 +120,8 @@
               </title>
               <targetnodes>
                 <com.dytech.edge.wizard.TargetNode>
-                  <target>/item/</target>
-                  <attribute>description</attribute>
+                  <target>/item/description</target>
+                  <attribute></attribute>
                 </com.dytech.edge.wizard.TargetNode>
               </targetnodes>
               <items/>
