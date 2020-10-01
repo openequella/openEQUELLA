@@ -15,19 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
+  Checkbox,
   List,
   ListItem,
   ListItemText,
-  Checkbox,
   Typography,
 } from "@material-ui/core";
-import {
-  getMimeTypeDetail,
-  MimeTypeEntry,
-} from "../../../modules/SearchFilterSettingsModule";
 import { makeStyles } from "@material-ui/core/styles";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { getMimeTypeDetail } from "../../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../../util/langstrings";
 
 const useStyles = makeStyles({
@@ -47,7 +45,7 @@ export interface MimeTypeFilterListProps {
   /**
    * A list of MIME types to be displayed.
    */
-  entries: MimeTypeEntry[];
+  entries: OEQ.MimeType.MimeTypeEntry[];
   /**
    * Fired when the value of each Checkbox is changed.
    */
