@@ -108,7 +108,7 @@ export default function SearchResult({
     modifiedDate,
     status,
     displayOptions,
-    attachments,
+    attachments = [],
     keywordFoundInAttachment,
   },
   highlights,
