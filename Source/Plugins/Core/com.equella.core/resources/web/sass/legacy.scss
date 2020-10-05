@@ -71,6 +71,12 @@ $doubleMargin: 16px;
   -moz-border-radius: 4px;
 }
 
+@mixin editDialogCommonStyles {
+  height: 100%;
+  box-shadow: none;
+  padding: 0;
+}
+
 @mixin buttonShadowBorder {
   @include boxShadow;
   @include curvedCorners;
@@ -4154,9 +4160,7 @@ a.modal-control.modal-save {
 .fileHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
     width: 100%;
-    height: 100%;
-    box-shadow: none;
-    padding: 0;
+    @include editDialogCommonStyles;
   }
 
   .modal-content-inner {
@@ -4167,9 +4171,7 @@ a.modal-control.modal-save {
 
 .urlHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
-    height: 100%;
-    box-shadow: none;
-    padding: 0;
+    @include editDialogCommonStyles;
   }
 
   .modal-content-inner {
