@@ -1,6 +1,8 @@
 package io.github.openequella.rest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -14,6 +16,7 @@ import org.testng.annotations.Test;
 public class BaseEntityAPITest extends AbstractRestApiTest {
   private static final String COLLECTION_API_ENDPOINT =
       TEST_CONFIG.getInstitutionUrl() + "api/collection";
+  private final String PERMISSION = "SEARCH_COLLECTION";
 
   @DataProvider(name = "initialResumptionTokens")
   public static Object[][] tokens() {
@@ -26,7 +29,6 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
       dataProvider = "initialResumptionTokens",
       description = "Use Collection as the testing entity.")
   public void getEntities(String initialToken) throws IOException {
-    final String PERMISSION = "SEARCH_COLLECTION";
     final HttpMethod method = new GetMethod(COLLECTION_API_ENDPOINT);
     int count = 0;
     String token = initialToken;
@@ -49,6 +51,27 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     assertEquals(count, 12);
   }
 
+  @Test
+  public void getFullInformation() throws IOException {
+    final HttpMethod method = new GetMethod(COLLECTION_API_ENDPOINT);
+    final NameValuePair[] queryParams = new NameValuePair[3];
+    queryParams[0] = new NameValuePair("privilege", PERMISSION);
+    queryParams[1] = new NameValuePair("full", "true");
+    queryParams[2] = new NameValuePair("q", "Basic");
+    method.setQueryString(queryParams);
+
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, HttpStatus.SC_OK);
+
+    JsonNode results = getResultList(mapper.readTree(method.getResponseBody()));
+
+    // There are two Collections named 'Basic xxx'. Full information of the first one
+    // is accessible whereas that of the second is not accessible.
+    assertEquals(results.size(), 2);
+    assertNotNull(results.get(0).get("security"));
+    assertNull(results.get(1).get("security"));
+  }
+
   private int getResultLength(JsonNode result) {
     return result.get("results").size();
   }
@@ -59,5 +82,9 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
       return token.asText();
     }
     return null;
+  }
+
+  private JsonNode getResultList(JsonNode result) {
+    return result.get("results");
   }
 }
