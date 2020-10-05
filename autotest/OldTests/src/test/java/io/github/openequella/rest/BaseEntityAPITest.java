@@ -67,13 +67,15 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
 
     // There are two Collections named 'Basic xxx'. Full information of the first one
     // is accessible whereas that of the second is not accessible.
+    // The purpose of checking 'security' is to confirm whether full details is returned
+    // because 'security' is only available when an entity's full detail is accessible.
     assertEquals(results.size(), 2);
     assertNotNull(results.get(0).get("security"));
     assertNull(results.get(1).get("security"));
   }
 
   private int getResultLength(JsonNode result) {
-    return result.get("results").size();
+    return getResultList(result).size();
   }
 
   private String getTokenFromResponse(JsonNode result) {
