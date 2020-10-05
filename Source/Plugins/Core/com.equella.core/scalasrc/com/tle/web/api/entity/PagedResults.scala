@@ -62,16 +62,18 @@ object PagedResults {
         .asScala
         .toList
 
-    val available: Int = {
+    def filterByPermission(entities: List[BE]): List[BE] = {
+      entities.filter(
+        entity =>
+          !LegacyGuice.aclManager
+            .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
+            .isEmpty)
+    }
+
+    def getAvailable: Int = {
       // It's acceptable to retrieve all because targeted BaseEntities are all small datasets.
       val entities = getBaseEntities(0, -1)
-      entities.collect {
-        case entity
-            if !LegacyGuice.aclManager
-              .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
-              .isEmpty =>
-          entity
-      }.length
+      filterByPermission(entities).length
     }
 
     def collectMore(length: Int, initialOffset: Int): (Int, List[BE]) = {
@@ -85,11 +87,8 @@ object PagedResults {
         }
 
         // Filter entities by permissions.
-        val filteredEntities = entities.filter(
-          entity =>
-            !LegacyGuice.aclManager
-              .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
-              .isEmpty)
+        val filteredEntities = filterByPermission(entities)
+
         results ++= filteredEntities.take(filteredEntityQuota)
 
         // If there is no enough quota for all filtered entities, find out index of the
@@ -114,7 +113,7 @@ object PagedResults {
     val pb                    = new PagingBean[BEB]
     pb.setStart(firstOffset)
     pb.setLength(results.length)
-    pb.setAvailable(available)
+    pb.setAvailable(getAvailable)
     // When there are no enough entities retrieved, do not return a resumption token.
     if (results.length == _length)
       pb.setResumptionToken(s"${nextOffset}:${_length}")
