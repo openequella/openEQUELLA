@@ -121,6 +121,24 @@
       </entry>
     </strings>
   </name>
+  <description>
+    <id>13377</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Clojure (/&#x02c8;klo&#x028a;&#x0292;&#x0259;r/, like closure)[15][16] is a modern, dynamic, and functional dialect of the Lisp programming language on the Java platform.[17][18] Like other Lisp dialects, Clojure treats code as data and has a Lisp macro system.[19] The current development process is community-driven,[20] overseen by Rich Hickey as its benevolent dictator for life (BDFL).[21]
+
+            Clojure advocates immutability and immutable data structures and encourages programmers to be explicit about managing identity and its states.[22] This focus on programming with immutable values and explicit progression-of-time constructs is intended to facilitate developing more robust, especially concurrent, programs that are simple and fast.[23][24][15] While its type system is entirely dynamic, recent efforts have also sought the implementation of gradual typing.[25]
+            Commercial support for Clojure is provided by Cognitect.[26] Clojure conferences are organized every year across the globe, the most famous of them being Clojure/conj.[27] </text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>

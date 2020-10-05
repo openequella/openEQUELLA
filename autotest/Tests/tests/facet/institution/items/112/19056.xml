@@ -121,6 +121,21 @@
       </entry>
     </strings>
   </name>
+  <description>
+    <id>14490</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>The Intel 8080 (&quot;eighty-eighty&quot;) is the second 8-bit microprocessor designed and manufactured by Intel. It first appeared in April 1974 and is an extended and enhanced variant of the earlier 8008 design, although without binary compatibility.[2] The initial specified clock rate or frequency limit was 2 MHz, and with common instructions using 4, 5, 7, 10, or 11 cycles this meant that it operated at a typical speed of a few hundred thousand instructions per second. A faster variant 8080A-1 (Sometimes called the 8080B) became available later with clock frequency limit up to 3.125 MHz.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>

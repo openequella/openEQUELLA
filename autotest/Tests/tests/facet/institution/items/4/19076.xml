@@ -121,6 +121,21 @@
       </entry>
     </strings>
   </name>
+  <description>
+    <id>13056</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>The Atmel AVR instruction set is the machine language for the Atmel AVR, a modified Harvard architecture 8-bit RISC single chip microcontroller which was developed by Atmel in 1996. The AVR was one of the first microcontroller families to use on-chip flash memory for program storage. </text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>

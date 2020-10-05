@@ -31,6 +31,7 @@ import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
@@ -52,6 +53,7 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
+  val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
   /**
     * Create a new search with search criteria.
@@ -175,7 +177,7 @@ object SearchHelper {
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
     val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
     val category = List(ItemSerializerService.CATEGORY_ALL).asJavaCollection
-    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false)
+    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
   }
 
   /**
@@ -210,20 +212,21 @@ object SearchHelper {
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
-                          itemKey: ItemIdKey): List[SearchResultAttachment] = {
-    attachmentBeans.asScala
-      .map(
-        att =>
-          SearchResultAttachment(
-            attachmentType = att.getRawAttachmentType,
-            id = att.getUuid,
-            description = Option(att.getDescription),
-            preview = att.isPreview,
-            mimeType = getMimetypeForAttachment(att),
-            hasGeneratedThumb = thumbExists(itemKey, att),
-            links = getLinksFromBean(att)
-        ))
-      .toList
+                          itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
+    Option(attachmentBeans).map(
+      beans =>
+        beans.asScala
+          .map(att =>
+            SearchResultAttachment(
+              attachmentType = att.getRawAttachmentType,
+              id = att.getUuid,
+              description = Option(att.getDescription),
+              preview = att.isPreview,
+              mimeType = getMimetypeForAttachment(att),
+              hasGeneratedThumb = thumbExists(itemKey, att),
+              links = getLinksFromBean(att)
+          ))
+          .toList)
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =

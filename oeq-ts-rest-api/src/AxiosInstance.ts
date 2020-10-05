@@ -68,4 +68,29 @@ export const PUT = <T, R>(path: string, data?: T): Promise<R> =>
     .then((response: AxiosResponse<R>) => response.data)
     .catch(catchHandler);
 
+/**
+ * Executes a HTTP POST for a given path.
+ *
+ * @param path The URL path for the target POST
+ * @param validator A function to perform runtime type checking against the result - typically with typescript-is
+ * @param data The data to be sent in POST request
+ */
+export const POST = <T, R>(
+  path: string,
+  validator: (data: unknown) => data is R,
+  data?: T
+): Promise<R> =>
+  axios
+    .post(path, data)
+    .then((response: AxiosResponse<unknown>) => {
+      const data = response.data;
+      if (!validator(data)) {
+        throw new TypeError(
+          `Data format mismatch with data received from server, on request to: "${path}"`
+        );
+      }
+      return data;
+    })
+    .catch(catchHandler);
+
 export default axios;

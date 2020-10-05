@@ -15,12 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
-import { encodeQuery } from "../util/encodequery";
 import {
   BatchOperationResponse,
   groupErrorMessages,
 } from "../api/BatchOperationResponse";
+import { API_BASE_URL } from "../config";
+import { encodeQuery } from "../util/encodequery";
 
 export interface MimeTypeFilter {
   /**
@@ -38,25 +40,14 @@ export interface MimeTypeFilter {
   mimeTypes: string[];
 }
 
-export interface MimeTypeEntry {
-  /**
-   * The name of a Mime type.
-   */
-  mimeType: string;
-  /**
-   * The description of a Mime type.
-   */
-  desc: string;
-}
-
 const MIME_TYPE_FILTERS_URL = "api/settings/search/filter";
-const MIME_TYPE_URL = "api/mimetype";
 
 export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
   Axios.get(MIME_TYPE_FILTERS_URL).then((res) => res.data);
 
-export const getMIMETypesFromServer = (): Promise<MimeTypeEntry[]> =>
-  Axios.get(MIME_TYPE_URL).then((res) => res.data);
+export const getMIMETypesFromServer = (): Promise<
+  OEQ.MimeType.MimeTypeEntry[]
+> => OEQ.MimeType.listMimeTypes(API_BASE_URL);
 
 export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
   Axios.put<BatchOperationResponse[]>(
@@ -69,7 +60,7 @@ export const batchDelete = (ids: string[]) =>
     `${MIME_TYPE_FILTERS_URL}/${encodeQuery({ ids: ids })}`
   ).then((res) => groupErrorMessages(res.data));
 
-export const getMimeTypeDetail = (entry: MimeTypeEntry) => {
+export const getMimeTypeDetail = (entry: OEQ.MimeType.MimeTypeEntry) => {
   const { mimeType, desc } = entry;
   if (desc) {
     return `${desc} (${mimeType})`;

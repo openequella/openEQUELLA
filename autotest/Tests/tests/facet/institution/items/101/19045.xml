@@ -121,6 +121,21 @@
       </entry>
     </strings>
   </name>
+  <description>
+    <id>14444</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>SPARC (Scalable Processor Architecture) is a reduced instruction set computing (RISC) instruction set architecture (ISA) originally developed by Sun Microsystems.[1][2] Its design was strongly influenced by the experimental Berkeley RISC system developed in the early 1980s. First developed in 1986 and released in 1987,[3][2] SPARC was one of the most successful early commercial RISC systems, and its success led to the introduction of similar RISC designs from a number of vendors through the 1980s and 90s. </text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>
