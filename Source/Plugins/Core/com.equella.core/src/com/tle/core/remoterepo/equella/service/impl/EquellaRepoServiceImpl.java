@@ -60,10 +60,10 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.frontend.ClientProxyFactoryBean;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.service.factory.AbstractServiceConfiguration;
 import org.apache.cxf.service.model.OperationInfo;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.apache.cxf.wsdl.service.factory.AbstractServiceConfiguration;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
