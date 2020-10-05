@@ -91,9 +91,13 @@ object PagedResults {
 
         results ++= filteredEntities.take(filteredEntityQuota)
 
-        // If there is no enough quota for all filtered entities, find out index of the
-        // entity which is the last one in the result list. Then, plus the index to offset.
-        // If quota is enough then simply plus the length of entities to offset.
+        // The offset for subsequent calls needs to take into account the potential
+        // skipping of entities due to filtering by ACLs.
+        // If there is not enough quota after filtering entities, calculate the offset
+        // for the next call by adding the index of the last entity in the result list
+        // to the current offset.
+        // If there is enough for the quota, then simply return the current offset plus
+        // the length of retrieved entities.
         if (filteredEntityQuota < filteredEntities.length && results.nonEmpty) {
           offset += entities.indexOf(results.last) + 1
         } else {
@@ -114,7 +118,8 @@ object PagedResults {
     pb.setStart(firstOffset)
     pb.setLength(results.length)
     pb.setAvailable(getAvailable)
-    // When there are no enough entities retrieved, do not return a resumption token.
+    // When the number of results returned are less than asked for, we have reached the end.
+    // So do not return a resumption token.
     if (results.length == _length)
       pb.setResumptionToken(s"${nextOffset}:${_length}")
     // todo: Support getting full information.
