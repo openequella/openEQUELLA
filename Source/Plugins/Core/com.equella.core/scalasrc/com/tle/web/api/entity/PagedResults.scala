@@ -66,7 +66,7 @@ object PagedResults {
       entities.filter(
         entity =>
           !LegacyGuice.aclManager
-            .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
+            .filterNonGrantedPrivileges(entity, privilege.asJavaCollection)
             .isEmpty)
     }
 
@@ -76,10 +76,10 @@ object PagedResults {
       filterByPermission(entities).length
     }
 
-    def collectMore(length: Int, initialOffset: Int): (Int, List[BE]) = {
-      val results: ListBuffer[BE] = ListBuffer()
-      var offset                  = initialOffset
-      var filteredEntityQuota     = length // Indicate how many entities can be put in the result list.
+    def collectMore(length: Int, initialOffset: Int): (Int, List[(BE, Boolean, Set[String])]) = {
+      val results: ListBuffer[(BE, Boolean, Set[String])] = ListBuffer()
+      var offset                                          = initialOffset
+      var filteredEntityQuota                             = length // Indicate how many entities can be put in the result list.
       while (filteredEntityQuota > 0) {
         val entities: List[BE] = getBaseEntities(offset, length)
         if (entities.isEmpty) {
@@ -89,7 +89,15 @@ object PagedResults {
         // Filter entities by permissions.
         val filteredEntities = filterByPermission(entities)
 
-        results ++= filteredEntities.take(filteredEntityQuota)
+        results ++= filteredEntities.take(filteredEntityQuota).map { entity =>
+          // Check whether all required permissions for getting full details are granted.
+          val grantedPrivileges = LegacyGuice.aclManager
+            .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
+            .asScala
+            .toSet
+          val canViewFullDetails = full && allReqPriv.forall(p => grantedPrivileges.contains(p))
+          (entity, canViewFullDetails, grantedPrivileges)
+        }
 
         // The offset for subsequent calls needs to take into account the potential
         // skipping of entities due to filtering by ACLs.
@@ -99,7 +107,7 @@ object PagedResults {
         // If there is enough for the quota, then simply return the current offset plus
         // the length of retrieved entities.
         if (filteredEntityQuota < filteredEntities.length && results.nonEmpty) {
-          offset += entities.indexOf(results.last) + 1
+          offset += entities.indexOf(results.last._1) + 1
         } else {
           offset += entities.length
         }
@@ -122,9 +130,9 @@ object PagedResults {
     // So do not return a resumption token.
     if (results.length == _length)
       pb.setResumptionToken(s"${nextOffset}:${_length}")
-    // todo: Support getting full information.
-    pb.setResults(results.map { be =>
-      addPrivs(privilege, res.serialize(be, null, false))
+    pb.setResults(results.map {
+      case (baseEntity: BE, canViewFullDetails: Boolean, grantedPrivileges: Set[String]) =>
+        addPrivs(grantedPrivileges, res.serialize(baseEntity, null, canViewFullDetails))
     }.asJava)
     pb
   }
