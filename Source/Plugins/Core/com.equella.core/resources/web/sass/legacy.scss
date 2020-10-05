@@ -71,7 +71,7 @@ $doubleMargin: 16px;
   -moz-border-radius: 4px;
 }
 
-@mixin editDialogCommonStyles {
+@mixin editAttachmentDialogStyles {
   height: 100%;
   box-shadow: none;
   padding: 0;
@@ -4160,7 +4160,7 @@ a.modal-control.modal-save {
 .fileHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
     width: 100%;
-    @include editDialogCommonStyles;
+    @include editAttachmentDialogStyles;
   }
 
   .modal-content-inner {
@@ -4171,7 +4171,7 @@ a.modal-control.modal-save {
 
 .urlHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
-    @include editDialogCommonStyles;
+    @include editAttachmentDialogStyles;
   }
 
   .modal-content-inner {
