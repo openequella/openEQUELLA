@@ -27,6 +27,16 @@ import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, Pag
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
+/**
+  * Represent an Base Entity and whether its full detail is accessible and its granted ACLs.
+  * @param entity An Base Entity instance such as a Collection.
+  * @param canViewFullDetail Whether the Base Entity's full detail is accessible.
+  * @param grantedPrivileges A set of granted ACLs, including user-specified privileges and those required to support viewing full detail.
+  */
+case class PagedEntity[BE <: BaseEntity](entity: BE,
+                                         canViewFullDetail: Boolean,
+                                         grantedPrivileges: Set[String])
+
 object PagedResults {
 
   def decodeOffsetStart(resumption: String): (Int, Option[Int]) = {
@@ -76,10 +86,10 @@ object PagedResults {
       filterByPermission(entities).length
     }
 
-    def collectMore(length: Int, initialOffset: Int): (Int, List[(BE, Boolean, Set[String])]) = {
-      val results: ListBuffer[(BE, Boolean, Set[String])] = ListBuffer()
-      var offset                                          = initialOffset
-      var filteredEntityQuota                             = length // Indicate how many entities can be put in the result list.
+    def collectMore(length: Int, initialOffset: Int): (Int, List[PagedEntity[BE]]) = {
+      val results: ListBuffer[PagedEntity[BE]] = ListBuffer()
+      var offset                               = initialOffset
+      var filteredEntityQuota                  = length // Indicate how many entities can be put in the result list.
       while (filteredEntityQuota > 0) {
         val entities: List[BE] = getBaseEntities(offset, length)
         if (entities.isEmpty) {
@@ -96,7 +106,7 @@ object PagedResults {
             .asScala
             .toSet
           val canViewFullDetails = full && allReqPriv.forall(p => grantedPrivileges.contains(p))
-          (entity, canViewFullDetails, grantedPrivileges)
+          PagedEntity(entity, canViewFullDetails, grantedPrivileges)
         }
 
         // The offset for subsequent calls needs to take into account the potential
@@ -107,7 +117,7 @@ object PagedResults {
         // If there is enough for the quota, then simply return the current offset plus
         // the length of retrieved entities.
         if (filteredEntityQuota < filteredEntities.length && results.nonEmpty) {
-          offset += entities.indexOf(results.last._1) + 1
+          offset += entities.indexOf(results.last.entity) + 1
         } else {
           offset += entities.length
         }
@@ -130,9 +140,9 @@ object PagedResults {
     // So do not return a resumption token.
     if (results.length == _length)
       pb.setResumptionToken(s"${nextOffset}:${_length}")
-    pb.setResults(results.map {
-      case (baseEntity: BE, canViewFullDetails: Boolean, grantedPrivileges: Set[String]) =>
-        addPrivs(grantedPrivileges, res.serialize(baseEntity, null, canViewFullDetails))
+    pb.setResults(results.map { pagedEntity =>
+      addPrivs(pagedEntity.grantedPrivileges,
+               res.serialize(pagedEntity.entity, null, pagedEntity.canViewFullDetail))
     }.asJava)
     pb
   }
