@@ -403,4 +403,32 @@
     <string>security.shared.secrets.0.ignoreFailure</string>
     <string>true</string>
   </entry>
+  <entry>
+    <string>search.disableVideos</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>search.authenticatefeedsbydefault</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>search.defaultsort</string>
+    <string>DATEMODIFIED</string>
+  </entry>
+  <entry>
+    <string>search.shownonlivecheckbox</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>search.disableOwnerFilter</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>search.disableDateModifiedFilter</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>search.disableGallery</string>
+    <string>false</string>
+  </entry>
 </map>
