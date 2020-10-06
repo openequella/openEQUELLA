@@ -18,13 +18,14 @@
 import { ThemeProvider } from "@material-ui/core";
 import { oeqTheme } from "../theme";
 import * as React from "react";
-import { getCurrentUser, UserData } from "../api/currentuser";
+import { getCurrentUserDetails } from "../modules/UserModule";
 import { ErrorResponse } from "../api/errors";
 import {
   LegacyContent,
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
+import { RenderData } from "./index";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { shallowEqual } from "shallow-equal-object";
@@ -43,6 +44,7 @@ import { LegacyForm } from "../legacycontent/LegacyForm";
 import HtmlParser from "react-html-parser";
 import SettingsPage from "../settings/SettingsPage";
 import { startHeartbeat } from "../util/heartbeat";
+import * as OEQ from "@openequella/rest-api-client";
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
@@ -53,13 +55,17 @@ const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
   .pathname;
 export const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
+declare const renderData: RenderData | undefined;
+
 function IndexPage() {
-  const [currentUser, setCurrentUser] = React.useState<UserData>();
+  const [currentUser, setCurrentUser] = React.useState<
+    OEQ.LegacyContent.CurrentUserDetails
+  >();
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
 
   const refreshUser = React.useCallback(() => {
-    getCurrentUser().then(setCurrentUser);
+    getCurrentUserDetails().then(setCurrentUser);
   }, []);
 
   React.useEffect(() => refreshUser(), []);
@@ -119,6 +125,7 @@ function IndexPage() {
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
+      isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
     };
   }
 
@@ -249,7 +256,11 @@ export const App = ({ legacySettingsMode }: AppProps) => {
     return (
       <BrowserRouter basename={basePath} forceRefresh>
         <ThemeProvider theme={oeqTheme}>
-          <SettingsPage refreshUser={() => {}} updateTemplate={() => {}} />
+          <SettingsPage
+            refreshUser={() => {}}
+            updateTemplate={() => {}}
+            isReloadNeeded={false}
+          />
         </ThemeProvider>
       </BrowserRouter>
     );

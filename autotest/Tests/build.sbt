@@ -28,15 +28,15 @@ libraryDependencies ++= Seq(
   "org.codehaus.jackson"      % "jackson-mapper-asl"       % "1.9.13",
   "xalan"                     % "xalan"                    % "2.7.2",
   "org.dspace.oclc"           % "oclc-srw"                 % "1.0.20080328",
-  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.3.7",
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.3.7",
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.3.7",
+  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.4.0",
+  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.4.0",
+  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.4.0",
   "org.apache.httpcomponents" % "httpclient"               % "4.5.12",
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis"       % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.55",
 //  "jpf" % "jpf-tools" % "1.0.5",
-  "org.jacoco"       % "org.jacoco.report"         % "0.8.5",
+  "org.jacoco"       % "org.jacoco.report"         % "0.8.6",
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.4.0",
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,
   "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "5.1.0"
+  "com.unboundid"    % "unboundid-ldapsdk"         % "5.1.1"
 )
 
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"

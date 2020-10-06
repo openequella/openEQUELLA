@@ -38,7 +38,9 @@ export interface DateProps {
 export default function Date({ displayRelative, date }: DateProps) {
   const classes = useStyles();
   const luxDate = DateTime.fromJSDate(date);
-  let primaryDate = luxDate.toLocaleString(DateTime.DATETIME_MED);
+  let primaryDate: string | null = luxDate.toLocaleString(
+    DateTime.DATETIME_MED
+  );
   let hoverDate = luxDate.toRelative();
   if (displayRelative) {
     //swap 'em around

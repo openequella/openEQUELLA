@@ -25,6 +25,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,15 @@ public class SettingsMenuContributor extends AbstractUpdatableMenuContributor {
       hls.setLabel(LABEL_KEY);
 
       MenuContribution mc =
-          new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "/page/settings");
+          new MenuContribution(
+              hls,
+              ICON_PATH,
+              30,
+              30,
+              "settings",
+              // If New UI is off the route can be null here because LegacyContentApi
+              // will update the route to be '/access/settings.do'.
+              RenderNewTemplate.isNewUIEnabled() ? "/page/settings" : null);
       mcs.add(mc);
     }
 

@@ -11,8 +11,8 @@ libraryDependencies ++= Seq(
   "commons-io"           % "commons-io"         % "2.7",
   "log4j"                % "log4j"              % "1.2.17",
   "org.slf4j"            % "slf4j-log4j12"      % "1.7.30",
-  "commons-daemon"       % "commons-daemon"     % "1.2.2",
-  "commons-codec"        % "commons-codec"      % "1.14"
+  "commons-daemon"       % "commons-daemon"     % "1.2.3",
+  "commons-codec"        % "commons-codec"      % "1.15"
 )
 
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)

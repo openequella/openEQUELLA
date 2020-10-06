@@ -17,14 +17,14 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.2"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.37"
+val TomcatVersion    = "9.0.38"
 val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
-val fs2Version       = "2.4.2"
+val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
 
 libraryDependencies ++= Seq(
@@ -56,7 +56,7 @@ libraryDependencies ++= Seq(
                   name = "axis")
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.10",
-  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200617-1.30.9",
+  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200717-1.30.10",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
@@ -78,10 +78,10 @@ libraryDependencies ++= Seq(
   "io.swagger"                %% "swagger-scala-module" % "1.0.6",
   "com.zaxxer"                % "HikariCP"              % "3.4.5",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.14",
+  "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.2.2",
+  "commons-daemon"            % "commons-daemon"        % "1.2.3",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.7",

@@ -10,7 +10,7 @@
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
     "check:license": "cd Source/Plugins/Core/com.equella.core/js && licensee --production --errors-only && cd -",
-    "check:md": "remark -q -f -u remark-validate-links -u remark-lint-no-dead-urls --ignore-pattern NOTICE.md .",
+    "check:md": "remark -q --ignore-pattern NOTICE.md .",
     "check:scss": "prettier --check ${npm_package_config_stylesheet_glob}",
     "check:ts": "eslint ${npm_package_config_typescript_glob}",
     "check:ts-types-source": "tsc --noEmit --project \"Source/Plugins/Core/com.equella.core/js/tsconfig.json\"",
@@ -23,30 +23,30 @@
     "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.1.0",
-    "@typescript-eslint/parser": "4.1.0",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.2",
-    "eslint": "7.9.0",
-    "eslint-config-prettier": "6.11.0",
+    "eslint": "7.10.0",
+    "eslint-config-prettier": "6.12.0",
     "eslint-config-react-app": "5.2.1",
     "eslint-plugin-flowtype": "5.2.0",
-    "eslint-plugin-import": "2.22.0",
-    "eslint-plugin-jest": "24.0.1",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-jest": "24.0.2",
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-notice": "0.9.10",
     "eslint-plugin-prettier": "3.1.4",
-    "eslint-plugin-react": "7.20.6",
+    "eslint-plugin-react": "7.21.2",
     "eslint-plugin-react-hooks": "4.1.2",
     "husky": "4.3.0",
     "licensee": "8.1.0",
-    "lint-staged": "10.3.0",
+    "lint-staged": "10.4.0",
     "npm-run-all": "4.1.5",
-    "prettier": "2.1.1",
+    "prettier": "2.1.2",
     "remark-cli": "8.0.1",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "10.0.2",
-    "typescript": "4.0.2"
+    "typescript": "4.0.3"
   },
   "husky": {
     "hooks": {
@@ -58,6 +58,17 @@
     "*.{css,scss}": "prettier --write",
     "*.java": "google-java-format --replace",
     "*.{scala,sbt}": "scalafmt"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "remark-validate-links",
+      [
+        "remark-lint-no-dead-urls",
+        {
+          "skipLocalhost": true
+        }
+      ]
+    ]
   },
   "eslintConfig": {
     "root": true,
@@ -75,7 +86,7 @@
     },
     "rules": {
       "jest/consistent-test-it": "error",
-      "jest/no-mocks-import": "warn",
+      "jest/no-mocks-import": "off",
       "jest/require-top-level-describe": "error",
       "notice/notice": [
         "error",

@@ -20,6 +20,7 @@ import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
 import { API_BASE_URL } from "../config";
+import * as OEQ from "@openequella/rest-api-client";
 
 declare global {
   interface Window {
@@ -30,6 +31,22 @@ declare global {
 
   const _trigger: any;
 }
+
+export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
+  accessibilityMode: false,
+  firstName: "guest",
+  lastName: "guest",
+  id: "guest",
+  username: "guest",
+  guest: true,
+  autoLoggedIn: false,
+  prefsEditable: false,
+  counts: {
+    tasks: 0,
+    notifications: 0,
+  },
+  menuGroups: [],
+};
 
 interface ExternalRedirect {
   href: string;

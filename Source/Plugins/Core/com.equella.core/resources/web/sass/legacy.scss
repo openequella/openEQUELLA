@@ -42,6 +42,8 @@
 @import "whereclause.css";
 @import "myresourcecontribute.css";
 @import "htmleditorwebcontrol.css";
+@import "userdetails.css";
+@import "auth.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -51,6 +53,9 @@ $boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
   0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
+$modalFooterHeight: 50px;
+$iframeDialogWidth: 1175px;
+$iframeDialogHeight: 650px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
 
@@ -59,11 +64,32 @@ $doubleMargin: 16px;
   -moz-box-shadow: $boxShadow;
   -webkit-box-shadow: $boxShadow;
 }
+
+@mixin curvedCorners {
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
+@mixin editAttachmentDialogStyles {
+  height: 100%;
+  box-shadow: none;
+  padding: 0;
+}
+
 @mixin buttonShadowBorder {
   @include boxShadow;
-  border-radius: 4px;
+  @include curvedCorners;
   border: none;
 }
+
+@mixin muiBorder {
+  border: none;
+  height: 1px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
 @mixin hoverHighlight {
   &:hover {
     background-color: $hoverBackgroundColor;
@@ -210,6 +236,21 @@ $doubleMargin: 16px;
   text-transform: uppercase;
 }
 
+@mixin centreAlignFancyBox {
+  //workaround to avoid editing fancybox-styles
+  margin-left: -200px;
+}
+
+// Replaces the image in an img tag with any other present in the resources/web/images folder.
+@mixin replaceImageTag($fileName, $width, $height) {
+  box-sizing: border-box;
+  background: url("../../p/r/2020.2.0/com.equella.core/images/" + $fileName)
+    no-repeat;
+  width: $width;
+  height: $height;
+  padding-left: $width;
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -350,7 +391,8 @@ Buttons
 *****************************************************************************/
 
 .btn {
-  padding: 0 8px 0 8px;
+  @include curvedCorners;
+  padding: 0 $singleMargin 0 $singleMargin;
   display: inline-flex;
   position: relative;
   align-items: center;
@@ -358,7 +400,6 @@ Buttons
   box-sizing: border-box;
   min-width: 64px;
   border: none;
-  border-radius: 4px;
   outline: none;
   cursor: pointer;
   background-color: $primaryColor;
@@ -374,8 +415,8 @@ Buttons
 }
 
 .button-expandable {
+  @include curvedCorners;
   font-size: 0;
-  border-radius: 4px;
   &:hover {
     @include typography-button();
   }
@@ -394,8 +435,11 @@ select[multiple="multiple"] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 4px 4px 0 0;
   background-color: #f5f5f5;
-  height: 56px;
-
+  &:not(#q):not(.prompt) {
+    //so as to avoid affecting searchbars
+    padding: $doubleMargin;
+    font-size: 16px;
+  }
   &:hover {
     border-bottom: 2px solid rgba(0, 0, 0, 0.42);
   }
@@ -407,23 +451,40 @@ select[multiple="multiple"] {
 }
 .calendar {
   padding-top: 4px;
+  display: inline;
   img {
-    padding-left: 4px;
+    @include replaceImageTag("date-picker.png", 41px, 41px);
+    @include curvedCorners;
+    border: 1px solid #fff;
+    margin-left: $doubleMargin;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    cursor: pointer;
   }
 }
+.modal_close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
+}
 .newListSelected {
-  @include typography-body-1;
-  padding-left: 8px;
+  @include curvedCorners;
+  font-size: 16px;
+  border: 1px solid #f5f5f5;
+  padding: $doubleMargin;
+  width: auto;
   min-width: 204px;
-  background: url(../../images/stylishSelect/select-down.png) right 10px
+  float: none;
+  background: url(../../images/stylishSelect/select-down.png) right 20px
     no-repeat #fff;
   &.showUp {
-    background: url(../../images/stylishSelect/select-up.png) right 10px
+    background: url(../../images/stylishSelect/select-up.png) right 20px
       no-repeat #fff;
   }
+
   .newList {
-    top: 34px;
+    top: 34px + $doubleMargin;
+    margin: $singleMargin 0;
     border: none;
+    width: 100% !important;
     li a {
       border: none;
       padding: 10px 5px;
@@ -475,15 +536,12 @@ select[multiple="multiple"] {
 }
 
 .modal-search-result.youtube img {
+  @include curvedCorners;
   margin: 0 20px 10px 0;
   padding: 4px;
   background: #fff;
   border: 1px solid #ddd;
   float: left;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .modal-search-result.youtube input {
@@ -521,19 +579,19 @@ select[multiple="multiple"] {
 
 .select-area-placeholder {
   height: 1px;
-  margin-top: 8px;
+  margin-top: $singleMargin;
 }
 
 .input {
-  padding-top: 8px;
+  padding-top: $singleMargin;
   label {
-    padding-right: 8px;
+    padding-right: $singleMargin;
     padding-left: 4px;
   }
 }
 
 .lineItem span {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 ul.select_options li {
@@ -543,7 +601,7 @@ ul.select_options li {
     position: static;
   }
   label {
-    padding-left: 8px;
+    padding-left: $singleMargin;
   }
 }
 
@@ -912,7 +970,7 @@ a[title="move-down"]:before {
 }
 /************************/
 #searchform .wizard-controls div.input {
-  margin: 8px 0;
+  margin: $singleMargin 0;
   padding: 0px;
 }
 
@@ -923,7 +981,7 @@ a[title="move-down"]:before {
 }
 
 #searchform .wizard-controls div.input.calendar {
-  margin: 8px 40px 8px 0;
+  margin: $singleMargin 40px $singleMargin 0;
 }
 
 #searchform .wizard-controls div.input.calendar input[type="text"] {
@@ -1006,7 +1064,7 @@ div.area {
 }
 
 .area .indent {
-  padding: 0 0 0 16px;
+  padding: 0 0 0 $doubleMargin;
 }
 
 #mainDiv .dashboard #topwide {
@@ -1085,7 +1143,7 @@ div.area {
 #mainDiv #content-body {
   float: none;
   width: auto;
-  padding: 8px 0 32px 0;
+  padding: $singleMargin 0 32px 0;
 }
 
 #mainDiv .mainCols {
@@ -1111,7 +1169,7 @@ div.area {
   @include typography-headline-6;
   color: $primaryTextColor;
   word-wrap: break-word;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .area p,
@@ -1129,9 +1187,9 @@ div.area {
 .button-strip {
   display: flex;
   flex-direction: row-reverse;
-  padding: 8px;
+  padding: $singleMargin;
   .btn {
-    margin-right: 8px;
+    margin-right: $singleMargin;
   }
 }
 
@@ -1184,7 +1242,7 @@ div.rightPanel {
 
   .checkbox {
     :first-child {
-      padding-top: 8px;
+      padding-top: $singleMargin;
     }
     padding-top: 4px;
     padding-bottom: 4px;
@@ -1197,7 +1255,7 @@ div.rightPanel {
 
 .checklist {
   li {
-    padding-bottom: 8px;
+    padding-bottom: $singleMargin;
   }
 }
 
@@ -1207,8 +1265,8 @@ div.rightPanel {
 
 .extension-buttons {
   button {
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: $singleMargin;
+    margin-bottom: $singleMargin;
   }
 }
 
@@ -1229,8 +1287,8 @@ div.rightPanel {
 
 //portlet IDs are formatted as pportlet_{uuid}, so we must wildcard the selector with ^
 div[id^="pportlet"] {
-  margin-left: 8px;
-  margin-right: 8px;
+  margin-left: $singleMargin;
+  margin-right: $singleMargin;
 }
 
 //scripted portlet
@@ -1239,7 +1297,7 @@ div[id^="pportlet"] {
     b:before {
       content: "\e313";
       font-family: "Material Icons";
-      font-size: 16px;
+      font-size: $doubleMargin;
       color: white;
       font-style: normal;
       vertical-align: middle;
@@ -1256,10 +1314,10 @@ div[id^="pportlet"] {
       display: block;
       border: 1px solid rgba(0, 0, 0, 0.42);
       width: 244px;
-      padding: 8px;
+      padding: $singleMargin;
       li {
-        padding-top: 8px;
-        padding-bottom: 8px;
+        padding-top: $singleMargin;
+        padding-bottom: $singleMargin;
         :hover {
           background-color: rgba(224, 224, 224, 1);
           color: set-text-color(white);
@@ -1371,7 +1429,7 @@ div[class*="fancy-bg"] {
   background: white;
   clear: both;
   width: 100%;
-  height: 50px;
+  height: $modalFooterHeight;
 }
 
 .modal-footer-inner {
@@ -1516,7 +1574,7 @@ table.zebra tr td.nowrap {
 table.zebra tr td {
   text-align: left;
   vertical-align: top;
-  padding: 16px 10px;
+  padding: $doubleMargin 10px;
 }
 
 table.zebra.large tr td {
@@ -1546,8 +1604,8 @@ table.zebra th.sortable {
 }
 
 table.zebra th.sortable div.sortArrow {
-  width: 8px;
-  height: 8px;
+  width: $singleMargin;
+  height: $singleMargin;
   display: inline-block;
   background-repeat: no-repeat;
   margin-left: 1em;
@@ -1580,11 +1638,9 @@ Alerts
 *****************************************************************************/
 
 .alert {
-  padding: 14px 35px 8px 35px;
+  @include curvedCorners;
+  padding: 14px 35px $singleMargin 35px;
   background-color: #fcf8e3;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   position: fixed;
   color: white;
@@ -1619,7 +1675,7 @@ Alerts
       font-family: "Material Icons";
       font-size: 24px;
       color: white;
-      padding-right: 8px;
+      padding-right: $singleMargin;
     }
   }
 }
@@ -1722,7 +1778,7 @@ Search page
 }
 
 #cloudy img {
-  margin-right: 8px;
+  margin-right: $singleMargin;
 }
 
 .search-layout .sortandfilter div.input.text input,
@@ -1831,7 +1887,7 @@ div.skinnysearch {
 }
 
 .skinnysearch .sortandfilter div.input {
-  margin: 8px 0 16px;
+  margin: $singleMargin 0 $doubleMargin;
 }
 
 #querycontainer {
@@ -1850,7 +1906,7 @@ div.skinnysearch {
 
 #searchform-search {
   height: 38px;
-  padding-left: 8px;
+  padding-left: $singleMargin;
   border-radius: 0px 20px 20px 0px;
   height: 38px;
   margin-left: -6px;
@@ -1861,7 +1917,7 @@ div.skinnysearch {
   height: 36px;
   border: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 1em 0 0 1em;
-  padding-left: 8px;
+  padding-left: $singleMargin;
   background: none;
   border-right: none;
 }
@@ -1985,7 +2041,7 @@ div.skinnysearch {
   display: block;
   font: menu;
   font-size: 12px;
-  line-height: 16px;
+  line-height: $doubleMargin;
   overflow: hidden;
 }
 
@@ -2090,6 +2146,7 @@ html[dir="rtl"] .autocomplete-container input {
 
 .autocomplete-container .prompt {
   z-index: 888;
+  height: 53px;
 }
 
 ul.ui-autocomplete {
@@ -2228,7 +2285,7 @@ ul.ui-autocomplete {
   }
 
   .newListSelected {
-    margin-bottom: 8px;
+    margin-bottom: $singleMargin;
   }
 
   hr {
@@ -2295,7 +2352,7 @@ ul.ui-autocomplete {
   color: set-text-color($primaryColor);
 
   &:not(:first-child) {
-    padding-left: 8px;
+    padding-left: $singleMargin;
   }
 }
 
@@ -2327,7 +2384,7 @@ ul.ui-autocomplete {
 #searchresults-select,
 .searchresults-infobar {
   @include typography-subtitle-1;
-  margin: 8px 8px;
+  margin: $singleMargin $singleMargin;
 }
 
 .icon-envelope:before {
@@ -2360,7 +2417,7 @@ ul.ui-autocomplete {
     b:before {
       content: "\e313";
       font-family: "Material Icons";
-      font-size: 16px;
+      font-size: $doubleMargin;
       color: white;
       font-style: normal;
       vertical-align: middle;
@@ -2380,11 +2437,11 @@ ul.ui-autocomplete {
       display: block;
       border: 1px solid rgba(0, 0, 0, 0.42);
       width: 244px;
-      padding: 8px;
+      padding: $singleMargin;
 
       li {
-        padding-top: 8px;
-        padding-bottom: 8px;
+        padding-top: $singleMargin;
+        padding-bottom: $singleMargin;
 
         :hover {
           background-color: rgba(224, 224, 224, 1);
@@ -2399,7 +2456,7 @@ ul.ui-autocomplete {
 
 .glyphicon-cloud {
   padding-top: 4px;
-  padding-right: 8px;
+  padding-right: $singleMargin;
 
   &:before {
     content: "\e2c2";
@@ -2428,7 +2485,7 @@ ul.ui-autocomplete {
 .icon-comment:before {
   content: "\e253";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2437,7 +2494,7 @@ ul.ui-autocomplete {
 .icon-picture:before {
   content: "\e40b";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2446,7 +2503,7 @@ ul.ui-autocomplete {
 .icon-th-list:before {
   content: "\e335";
   font-family: "Material Icons";
-  font-size: 16px;
+  font-size: $doubleMargin;
   color: white;
   font-style: normal;
   vertical-align: middle;
@@ -2582,7 +2639,7 @@ html.wait {
   white-space: nowrap;
 }
 
-.itemresult-rating div.float-right .btn {
+#selection-page .itemresult-rating div.float-right .btn {
   @include buttonShadowBorder;
   margin-left: 0 !important;
   margin-right: 4px;
@@ -2620,7 +2677,7 @@ html.wait {
   width: 215px;
   line-height: 1.3rem;
   font-size: 12px;
-  padding-right: 8px;
+  padding-right: $singleMargin;
 }
 
 .itemresult-metaline .itemresult-meta-delim,
@@ -2640,7 +2697,7 @@ html.wait {
 
 .itemresult-content .toggler {
   display: inline;
-  margin: 0 8px;
+  margin: 0 $singleMargin;
   cursor: pointer;
   text-align: center;
   position: relative;
@@ -2729,7 +2786,6 @@ html.wait {
     flex-direction: row;
     justify-content: flex-end;
   }
-
   height: 600px;
 }
 
@@ -2744,11 +2800,11 @@ input.term-paths {
 
 .itemresult-rating div.float-right {
   .btn {
-    margin: 0 8px;
+    margin: 0 $singleMargin;
   }
   .btn:hover {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
   }
 }
 
@@ -2778,7 +2834,7 @@ td.unselect a {
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -2812,7 +2868,7 @@ Contribution wizard styling
 }
 
 .wizard-layout #col2 {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 #wizard-pagelist {
@@ -2844,7 +2900,7 @@ Contribution wizard styling
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
   }
 }
 
@@ -2857,7 +2913,7 @@ Contribution wizard styling
     font-size: 20px;
     color: $primaryColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
   }
 }
 
@@ -2939,8 +2995,8 @@ a.add {
     font-size: 20px;
     color: $primaryColor;
     vertical-align: middle;
-    padding-right: 8px;
-    padding-left: 8px;
+    padding-right: $singleMargin;
+    padding-left: $singleMargin;
   }
 }
 
@@ -3028,7 +3084,7 @@ button + .repeater-groups {
     font-size: 20px;
     color: $secondaryColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -3040,7 +3096,7 @@ button + .repeater-groups {
     font-size: 20px;
     color: $menuItemIconColor;
     vertical-align: middle;
-    padding-right: 8px;
+    padding-right: $singleMargin;
     font-style: normal;
   }
 }
@@ -3055,7 +3111,7 @@ button + .repeater-groups {
 }
 
 .uploadsprogress .file-upload .file-name {
-  padding-left: 8px;
+  padding-left: $singleMargin;
 }
 
 .uploadsprogress .file-upload {
@@ -3076,7 +3132,7 @@ button + .repeater-groups {
 }
 
 .settingRow {
-  padding: 8px 0px;
+  padding: $singleMargin 0px;
 }
 
 #r_resume {
@@ -3102,7 +3158,7 @@ button + .repeater-groups {
   width: 100%;
 
   .editLinks {
-    padding-top: 8px;
+    padding-top: $singleMargin;
   }
 }
 
@@ -3111,15 +3167,8 @@ button + .repeater-groups {
 }
 
 .spacer {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-.fileHandler {
-  .modal-content-inner {
-    display: flex;
-    flex-direction: row-reverse;
-  }
+  padding-top: $singleMargin;
+  padding-bottom: $singleMargin;
 }
 
 .attachment-content {
@@ -3143,7 +3192,7 @@ button + .repeater-groups {
 
 //workflow related content
 #moderate .task-name {
-  padding-right: 16px;
+  padding-right: $doubleMargin;
 }
 
 .modcomment-content {
@@ -3192,9 +3241,9 @@ button + .repeater-groups {
   button {
     background-color: $primaryColor;
     color: set-text-color($primaryColor);
-    padding-left: 8px;
-    padding-right: 8px;
-    margin-left: 8px;
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
+    margin-left: $singleMargin;
 
     .icon-search:before {
       content: "\e8b6";
@@ -3228,8 +3277,8 @@ button + .repeater-groups {
 .addRemovePanel {
   button {
     width: auto;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
   }
 
   i.icon-plus {
@@ -3246,7 +3295,7 @@ button + .repeater-groups {
 }
 
 .upDownButtonPanel {
-  top: 8px !important;
+  top: $singleMargin !important;
 
   button {
     min-width: 2px;
@@ -3436,7 +3485,7 @@ Item summary styling
     .btn {
       background-color: transparent;
       border: 1px solid rgba(0, 0, 0, 0.23);
-      margin-right: 16px;
+      margin-right: $doubleMargin;
       color: $primaryTextColor;
 
       .icon-arrow-left:before {
@@ -3468,7 +3517,7 @@ Item summary styling
   @include typography-button;
   color: set-text-color($primaryColor);
   width: 100%;
-  margin: 8px 0;
+  margin: $singleMargin 0;
   background-color: $primaryColor;
   background-repeat: no-repeat;
 
@@ -3511,7 +3560,7 @@ Item summary styling
 }
 
 .itemsummary-layout #col2 {
-  margin-left: 16px;
+  margin-left: $doubleMargin;
   flex-shrink: 0;
   width: 260px;
 }
@@ -3526,7 +3575,7 @@ Item summary styling
 
 .itemsummary-layout #col2 h3 {
   @include typography-headline-5;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .itemsummary-layout #col2 h2 {
@@ -3552,7 +3601,7 @@ Item summary styling
 
 .itemsummary-layout #col2 ul li {
   line-height: 1.5;
-  margin: 4px 8px;
+  margin: 4px $singleMargin;
 }
 
 .itemsummary-layout .box {
@@ -3596,7 +3645,7 @@ Item summary styling
 }
 
 .itemdetails {
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 div.in-selection .itemdetails-left {
@@ -3742,7 +3791,7 @@ table.versions td {
 
 .comment-username {
   @include typography-headline-6;
-  padding: 8px;
+  padding: $singleMargin;
 
   &:before {
     content: "\e7fd";
@@ -3770,12 +3819,12 @@ table.versions td {
 .comment-delete {
   height: 1.5em;
   float: right;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .comment-delete a {
   float: right;
-  line-height: 16px;
+  line-height: $doubleMargin;
   padding-left: 20px;
 }
 
@@ -3813,7 +3862,7 @@ table.versions td {
 
 .rating-form {
   position: relative;
-  padding-top: 8px;
+  padding-top: $singleMargin;
 }
 
 .rating-form div.input {
@@ -3923,7 +3972,7 @@ td.sectionAction {
     flex-direction: row-reverse;
 
     button {
-      margin: 0 8px;
+      margin: 0 $singleMargin;
 
       &.btn-equella {
         background-color: transparent;
@@ -3961,8 +4010,8 @@ td.sectionAction button.add {
 }
 
 img.copyright-sectionlink {
-  height: 16px;
-  width: 16px;
+  height: $doubleMargin;
+  width: $doubleMargin;
   margin-right: 5px;
   vertical-align: middle;
 }
@@ -3998,7 +4047,7 @@ table#copyright-table tr td {
 }
 
 .history-options label {
-  padding-right: 8px;
+  padding-right: $singleMargin;
 }
 
 //Attachments - Structured view
@@ -4043,7 +4092,7 @@ table#copyright-table tr td {
 .attachments-browse.structured li.attachmentrow.active .droparrow {
   background-image: url(../../images/baseline_arrow_drop_up_black_18dp.png);
   background-position: 0;
-  top: 8px;
+  top: $singleMargin;
 }
 
 .attachments-browse.thumbs li.attachmentrow.active {
@@ -4055,7 +4104,7 @@ table#copyright-table tr td {
   position: relative;
   border-top: 1px solid transparent;
   border-bottom: 1px solid rgba(224, 224, 224, 1);
-  padding: 8px 20px 8px 12px;
+  padding: $singleMargin 20px $singleMargin 12px;
   background-position: 5px 5px;
   background-repeat: no-repeat;
   background-image: none;
@@ -4109,8 +4158,58 @@ a.modal-control.modal-save {
   right: 394px;
 }
 
+.fileHandler {
+  .modal-content .modal-content-background .modal-content-inner .float-left {
+    width: 100%;
+    @include editAttachmentDialogStyles;
+  }
+
+  .modal-content-inner {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+}
+
+.urlHandler {
+  .modal-content .modal-content-background .modal-content-inner .float-left {
+    @include editAttachmentDialogStyles;
+  }
+
+  .modal-content-inner {
+    flex-direction: row;
+  }
+}
+
+.fileHandler,
+.urlHandler {
+  @include buttonShadowBorder;
+  @include centreAlignFancyBox;
+  width: $iframeDialogWidth;
+  height: $iframeDialogHeight + $doubleMargin;
+  position: sticky;
+
+  .modal-content-inner {
+    border: none;
+  }
+
+  .attachment-details ~ .attachment-content {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  .fileadd h3 {
+    //redundant string for handlers.file.title already in the dialog header
+    display: none;
+  }
+
+  .modal-content-inner {
+    padding-left: 0;
+  }
+}
+
 .universalresourcedialog .modal-content {
-  height: 400px;
+  //full size minus the height of the footer and it's margin, as well as the window margin
+  height: calc(100% - (#{$modalFooterHeight} + #{$doubleMargin * 2}));
 }
 
 .universalresourcedialog .modal-content-inner {
@@ -4166,12 +4265,10 @@ a.modal-control.modal-save {
 
 div.universaliframe {
   @include buttonShadowBorder;
+  @include centreAlignFancyBox;
   overflow: hidden;
-  height: 650px;
-  width: 1250px;
-  // workaround - offset leftwards to centre panel. Can't use justify-content on fancybox-inner,
-  // as this breaks the popup taxonomy selector
-  margin-left: -240px;
+  height: $iframeDialogHeight;
+  width: $iframeDialogWidth;
 }
 
 div.universaliframe iframe {
@@ -4266,15 +4363,11 @@ img.warningimg {
 }
 
 .universalresources .progress-bar {
+  @include curvedCorners;
   width: 200px;
   height: 14px;
   border: 1px solid #aaa;
   margin: 0 10px 0 0;
-
-  -moz-border-radius: 3px;
-  -o-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
   float: right;
 }
 
@@ -4356,6 +4449,7 @@ img.warningimg {
 }
 
 #selection-header-content .close {
+  @include replaceImageTag("material_design_close.png", 24px, 24px);
   margin-top: 10px;
   margin-left: 10px;
   cursor: pointer;
@@ -4413,7 +4507,7 @@ img.warningimg {
 
 .selectiondashboard #col2 {
   width: 368px;
-  margin-left: 16px;
+  margin-left: $doubleMargin;
 }
 
 //Search query portlet
@@ -4422,7 +4516,7 @@ img.warningimg {
 }
 
 .compactQuery .autocomplete-container {
-  margin-right: 8px;
+  margin-right: $singleMargin;
 }
 
 #col .compactQuery .autocomplete-container {
@@ -4444,6 +4538,7 @@ img.warningimg {
 }
 
 .compactQuery .compactQueryButton {
+  margin: $singleMargin;
   .icon-search:before {
     font-family: "Material Icons";
     font-size: 24px;
@@ -4487,7 +4582,7 @@ input[disabled="disabled"] {
 }
 
 .browse-layout #col .area.browse-topics {
-  padding-bottom: 16px;
+  padding-bottom: $doubleMargin;
 }
 
 .browse-layout .browse-topics ul {
@@ -4495,7 +4590,7 @@ input[disabled="disabled"] {
 }
 
 .browse-topics ul li {
-  margin: 8px 0;
+  margin: $singleMargin 0;
   line-height: 1.2;
   @include typography-body-1;
   padding: 0 0 0 18px;
@@ -4503,7 +4598,7 @@ input[disabled="disabled"] {
     no-repeat;
 }
 
-button.package-select {
+#selection-page button.package-select {
   margin: 0;
   border-radius: 50px;
   min-width: unset;
@@ -4635,7 +4730,7 @@ div#sssh_finishedButton {
 
 .contribute-div {
   text-align: right;
-  margin: 8px 0 8px;
+  margin: $singleMargin 0 $singleMargin;
 
   .btn {
     .icon-arrow-right:after {
@@ -4682,14 +4777,14 @@ div#sssh_finishedButton {
 }
 
 #selection-content-inner .mainCols #col1 {
-  margin-right: 16px;
+  margin-right: $doubleMargin;
 }
 
 /*****************************************************************************
  Selection session search page
 *****************************************************************************/
 .itemresult-rating div.float-right {
-  padding-top: 8px;
+  padding-top: $singleMargin;
 
   .btn {
     float: right;
@@ -4776,7 +4871,7 @@ div#sssh_finishedButton {
 }
 
 .selection-courses-inner .courselisttop button {
-  margin-bottom: 8px;
+  margin-bottom: $singleMargin;
 
   .icon-ok:before {
     content: "\e161";
@@ -4799,7 +4894,7 @@ div#sssh_finishedButton {
 }
 
 #selection-content-inner.itemsummary-layout #searchprevnext .btn-group {
-  top: 8px;
+  top: $singleMargin;
 }
 
 #selection-content-inner.itemsummary-layout #col2 {
@@ -5168,33 +5263,33 @@ ul.treeview li.collapsable a.hitarea::before {
   content: none;
 }
 
-$loginLabelWidth: 100;
-$whitespaceWidth: 4;
-$loginTextBoxWidth: 200;
+$loginLabelWidth: 100px;
+$whitespaceWidth: 4px;
+$loginTextBoxWidth: 200px;
 #_logonButton {
   display: block;
-  margin-left: $loginLabelWidth + $whitespaceWidth + unquote("px");
-  margin-top: 16px;
-  width: $loginTextBoxWidth + unquote("px");
+  margin-left: $loginLabelWidth + $whitespaceWidth;
+  margin-top: $doubleMargin;
+  width: $loginTextBoxWidth;
   @include boxShadow;
 }
 
 #username {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 #password {
-  width: $loginTextBoxWidth + unquote("px");
+  width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
 
 label[for="username"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 label[for="password"] {
   display: inline-block;
-  width: $loginLabelWidth + unquote("px");
+  width: $loginLabelWidth;
 }
 
 button:focus {
@@ -5219,4 +5314,121 @@ button:focus {
   p {
     margin-left: 0;
   }
+}
+
+// User preferences page styling
+
+#editUser {
+  p {
+    @include typography-body-1;
+    margin-left: 0;
+  }
+
+  .edit h3 {
+    @include typography-headline-6;
+    color: $secondaryColor;
+  }
+
+  .edit.double .input.text {
+    height: 100px;
+    width: 510px;
+  }
+
+  .edit:last-child,
+  .edit:nth-last-child(2) {
+    //the last two edit sections on the page - needs an extra margin because of the drop downs
+    h3 {
+      padding-top: $doubleMargin * 2;
+    }
+  }
+
+  #ed_fan {
+    margin-left: $singleMargin;
+  }
+
+  #ed_em {
+    width: 495px;
+  }
+
+  .itemdefs_container {
+    @include curvedCorners;
+    padding: $singleMargin;
+
+    li {
+      display: flex;
+      padding-bottom: $singleMargin;
+    }
+
+    input {
+      padding: $singleMargin;
+    }
+
+    label {
+      height: auto;
+      padding-left: $doubleMargin;
+    }
+  }
+
+  hr {
+    @include muiBorder;
+  }
+
+  .input.checkbox {
+    display: flex;
+  }
+}
+
+$col2Width: 250px;
+
+.user-details #col2 {
+  width: $col2Width;
+  margin: 0 $doubleMargin;
+
+  .profile-save-button,
+  .change-pass-button {
+    @include buttonShadowBorder;
+    width: $col2Width;
+  }
+}
+
+#bss_moderateSelectedButton,
+#bss_clearSelectedButton {
+  @include buttonShadowBorder;
+}
+
+.newListSelected .newList {
+  padding-bottom: $doubleMargin;
+}
+
+.save-scrapbook-page.action-button {
+  @include buttonShadowBorder;
+  width: $col2Width;
+  margin-left: $doubleMargin;
+}
+.controldialog .area {
+  box-shadow: none;
+}
+
+// select user/select group dialogs need a specified width. Annoyingly they only have a unique ID
+// wherever they are used.
+// #1wrap and #2wrap don't work directly as selectors because they start with numbers
+#dul_userGroupsDialog,
+#dul_selectGroupDialog,
+#fbo_sowrap,
+#lce_selectInstructorwrap,
+#lce_selectOtherwrap,
+#lce_selectCustomwrap,
+#fpbo_sowrap,
+#fbm_sowrap,
+#fba_sowrap,
+#_selectUserDialogwrap,
+#_audwrap,
+[id="1wrap"],
+[id="2wrap"] {
+  max-width: 550px;
+}
+
+#ed_fin,
+#ed_fan {
+  width: 200px;
 }

@@ -235,6 +235,7 @@ export const languageStrings = {
       title: "My Account",
       logout: "Logout",
       prefs: "My preferences",
+      usernameUnknown: "Username unknown",
     },
   },
   "com.equella.core": {

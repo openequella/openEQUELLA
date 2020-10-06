@@ -35,6 +35,7 @@ import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
+import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 
@@ -155,7 +156,7 @@ object RenderNewTemplate {
   }
 
   def supportIEPolyFills(context: PreRenderContext): Unit = {
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+    if (isInternetExplorer(context.getRequest)) {
       context.addJs(
         "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes")
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
@@ -164,6 +165,9 @@ object RenderNewTemplate {
       RenderTemplate.IE11_COMPAT_CSS.preRender(context)
     }
   }
+
+  def isInternetExplorer(request: HttpServletRequest): Boolean =
+    Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
@@ -174,8 +178,12 @@ object RenderNewTemplate {
     }
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
-    viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(body, renderData, tempResult, ""))
+    val template =
+      if (isInternetExplorer(context.getRequest)) "layouts/outer/unsupportedbrowser.ftl"
+      else "layouts/outer/react.ftl"
+
+    viewFactory.createResultWithModel(template, TemplateScript(body, renderData, tempResult, ""))
+
   }
 
   case class TemplateScript(getBody: String,
