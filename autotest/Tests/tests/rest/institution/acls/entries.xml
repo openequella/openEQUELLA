@@ -1,5 +1,31 @@
 <list>
   <com.tle.beans.security.AccessEntry>
+    <id>798288</id>
+    <expression>
+      <id>780779</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:116618</targetObject>
+    <privilege>EDIT_COLLECTION</privilege>
+    <aggregateOrdering>2000 0000 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>788759</id>
+    <expression>
+      <id>780779</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:788751</targetObject>
+    <privilege>SEARCH_COLLECTION</privilege>
+    <aggregateOrdering>2000 0000 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
     <id>117706</id>
     <expression>
       <id>474</id>

@@ -158,10 +158,6 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
                           hql.append(callback.getAdditionalWhere());
                         }
 
-                        if (callback != null && callback.getOrderBy() != null) {
-                          hql.append(" ORDER BY " + callback.getOrderBy());
-                        }
-
                         Query query = session.createQuery(hql.toString());
                         query.setParameter("institution", CurrentInstitution.get());
                         query.setCacheable(true);
