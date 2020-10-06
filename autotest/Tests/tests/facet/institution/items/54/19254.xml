@@ -106,6 +106,25 @@
       </entry>
     </strings>
   </name>
+  <description>
+    <id>13331</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Rust is a multi-paradigm programming language focused on performance and safety, especially safe concurrency.[16][17] Rust is syntactically similar to C++,[18] and provides memory safety without using garbage collection.
+
+            Rust was originally designed by Graydon Hoare at Mozilla Research, with contributions from Dave Herman, Brendan Eich, and others.[19][20] The designers refined the language while writing the Servo layout or browser engine,[21] and the Rust compiler. The compiler is free and open-source software dual-licensed under the MIT License and Apache License 2.0. It has gained increasing use in industry and is now Microsoft's language of choice for secure and safety-critical software components.[22] [23]
+
+            Rust has been the &quot;most loved programming language&quot; in the Stack Overflow Developer Survey every year since 2016.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
   <totalFileSize>0</totalFileSize>
   <navigationSettings>
     <showNextPrev>false</showNextPrev>

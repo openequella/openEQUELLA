@@ -38,7 +38,6 @@ class SearchSettingsResource {
     notes = "This endpoint is used to retrieve general search settings excluding search filters."
   )
   def listSearchSettings: SearchSettings = {
-    LegacyGuice.searchPrivProvider.checkAuthorised()
     loadSettings(new SearchSettings)
   }
 

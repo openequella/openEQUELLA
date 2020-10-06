@@ -24,13 +24,14 @@ import java.util.Date
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{ItemIdKey, ItemStatus}
+import com.tle.beans.item.{Comment, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.Utils.parseDate
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
@@ -52,6 +53,7 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
+  val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
   /**
     * Create a new search with search criteria.
@@ -175,7 +177,7 @@ object SearchHelper {
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
     val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
     val category = List(ItemSerializerService.CATEGORY_ALL).asJavaCollection
-    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false)
+    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
   }
 
   /**
@@ -185,9 +187,8 @@ object SearchHelper {
     * @return An instance of SearchResultItem.
     */
   def convertToItem(item: SearchItem): SearchResultItem = {
-    val key          = item.idKey
-    val bean         = item.bean
-    val commentCount = LegacyGuice.itemCommentService.getComments(key, null, null, -1).size()
+    val key  = item.idKey
+    val bean = item.bean
     SearchResultItem(
       uuid = key.getUuid,
       version = key.getVersion,
@@ -197,7 +198,7 @@ object SearchHelper {
       createdDate = bean.getCreatedDate,
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
-      commentCount,
+      commentCount = getItemCommentCount(key),
       attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
@@ -211,21 +212,28 @@ object SearchHelper {
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
-                          itemKey: ItemIdKey): List[SearchResultAttachment] = {
-    attachmentBeans.asScala
-      .map(
-        att =>
-          SearchResultAttachment(
-            attachmentType = att.getRawAttachmentType,
-            id = att.getUuid,
-            description = Option(att.getDescription),
-            preview = att.isPreview,
-            mimeType = getMimetypeForAttachment(att),
-            hasGeneratedThumb = thumbExists(itemKey, att),
-            links = getLinksFromBean(att)
-        ))
-      .toList
+                          itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
+    Option(attachmentBeans).map(
+      beans =>
+        beans.asScala
+          .map(att =>
+            SearchResultAttachment(
+              attachmentType = att.getRawAttachmentType,
+              id = att.getUuid,
+              description = Option(att.getDescription),
+              preview = att.isPreview,
+              mimeType = getMimetypeForAttachment(att),
+              hasGeneratedThumb = thumbExists(itemKey, att),
+              links = getLinksFromBean(att)
+          ))
+          .toList)
   }
+
+  def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
+    Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
+
+  def getItemCommentCount(key: ItemIdKey): Option[Integer] =
+    Option(LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key))
 
   /**
     * Determines if attachment contains a generated thumbnail in filestore

@@ -43,13 +43,17 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.item.standard.dao.ItemCommentDao;
 import com.tle.core.item.standard.service.ItemCommentService;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.security.impl.SecureOnCall;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +69,7 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
   @Inject private ItemService itemService;
   @Inject private ItemOperationFactory workflowFactory;
   @Inject private CommentOperationFactory commentOpFactory;
+  @Inject private TLEAclManager tleAclManager;
 
   @Override
   public float getAverageRatingForItem(ItemKey itemId) {
@@ -83,6 +88,20 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
       ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit) {
     Item item = itemDao.getExistingItem(itemId);
     return getComments(item, filter, order, limit);
+  }
+
+  @Override
+  @Transactional
+  public List<Comment> getCommentsWithACLCheck(
+      ItemKey itemId, EnumSet<CommentFilter> filter, CommentOrder order, int limit) {
+    return canViewComment(itemId, (item) -> getComments(item, filter, order, limit));
+  }
+
+  @Override
+  @Transactional
+  public Integer getCommentCountWithACLCheck(ItemKey itemId) {
+    return canViewComment(
+        itemId, (item) -> itemDao.getCommentCounts(Collections.singletonList(item)).get(0));
   }
 
   @Override
@@ -158,6 +177,17 @@ public class ItemCommentServiceImpl implements ItemCommentService, UserChangeLis
 
     ReassignOperation reassign(
         @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
+  }
+
+  // If view comment permission is granted, execute f and return the result.
+  // Return null if the permission is missing.
+  private <T> T canViewComment(ItemKey itemId, Function<Item, T> f) {
+    Item item = itemDao.getExistingItem(itemId);
+    Set<String> privileges = tleAclManager.filterNonGrantedPrivileges(item, COMMENT_VIEW_ITEM);
+    if (!privileges.isEmpty()) {
+      return f.apply(item);
+    }
+    return null;
   }
 }
 

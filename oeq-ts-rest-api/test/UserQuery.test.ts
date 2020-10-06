@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import * as TC from './TestConfig';
 import { SearchResult } from '../src/UserQuery';
+import * as TC from './TestConfig';
 
 // We use Vanilla for this one so that we also have 'roles' to test with.
 const API_PATH = TC.API_PATH_VANILLA;
@@ -85,5 +85,53 @@ describe('/userquery/search', () => {
       testValue.search(query) === -1;
     // There should be no names in the list which don't contain the query
     expect(names.find(doesNotContainQuery)).toBeFalsy();
+  });
+});
+
+describe('/userquery/lookup', () => {
+  const demoSystemAdminUser = {
+    id: 'eb75a832-6533-4d72-93f4-2b7a1b108951',
+    username: 'demosysadmin',
+    firstName: 'Demonstration',
+    lastName: 'Systems Administrator',
+    email: '',
+  };
+  const systemAdministratorGroup = {
+    id: 'd0265a33-8f89-4cea-8a36-45fd3c4cf5a1',
+    name: 'INT - Systems Administrators',
+  };
+  const systemAdministratorRole = {
+    id: '351c2f38-b78a-4049-88d5-dc33693c9a9f',
+    name: 'System Administration Role',
+  };
+
+  it('should be possible to lookup a combination', async () => {
+    const result = await OEQ.UserQuery.lookup(API_PATH, {
+      users: [demoSystemAdminUser.id],
+      groups: [systemAdministratorGroup.id],
+      roles: [],
+    });
+    expect(result).toBeTruthy();
+    expect(result.users).toHaveLength(1);
+    expect(result.groups).toHaveLength(1);
+    expect(result.roles).toHaveLength(0);
+  });
+
+  test.each<[keyof SearchResult, string]>([
+    ['users', demoSystemAdminUser.id],
+    ['groups', systemAdministratorGroup.id],
+    ['roles', systemAdministratorRole.id],
+  ])('Should be possible to lookup a %s with id of %s', async (type, id) => {
+    const result = await OEQ.UserQuery.lookup(API_PATH, {
+      users: [],
+      groups: [],
+      roles: [],
+      //overwrite the one that is being tested
+      [type]: [id],
+    });
+    const entities = result[type];
+    expect(entities).toBeTruthy();
+    expect(entities).toHaveLength(1);
+    expect(entities).toMatchObject([{ id: id }]);
   });
 });

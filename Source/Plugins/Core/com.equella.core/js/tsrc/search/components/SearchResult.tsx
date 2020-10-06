@@ -15,27 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { SyntheticEvent } from "react";
-import Tooltip from "@material-ui/core/Tooltip";
-import { makeStyles } from "@material-ui/core/styles";
-import { languageStrings } from "../../util/langstrings";
-import ReactHtmlParser from "react-html-parser";
 import {
-  Divider,
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Badge,
+  Divider,
+  Grid,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Theme,
   Typography,
-  Grid,
-  Badge,
 } from "@material-ui/core";
-import { Date as DateDisplay } from "../../components/Date";
+import { makeStyles } from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
 import {
   AttachFile,
   ExpandMore,
@@ -43,9 +38,15 @@ import {
   Search,
 } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { SyntheticEvent } from "react";
+import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
-import { routes } from "../../mainui/routes";
+import { Date as DateDisplay } from "../../components/Date";
 import OEQThumb from "../../components/OEQThumb";
+import { routes } from "../../mainui/routes";
+import { languageStrings } from "../../util/langstrings";
+import { highlight } from "../../util/TextUtils";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -79,34 +80,51 @@ const useStyles = makeStyles((theme: Theme) => {
       color: theme.palette.secondary.main,
       borderRadius: "50%",
     },
+    highlight: {
+      color: theme.palette.secondary.main,
+    },
   };
 });
 
+export interface SearchResultProps {
+  /**
+   * The details of the items to display.
+   */
+  item: OEQ.Search.SearchResultItem;
+
+  /**
+   * The list of words which should be highlighted.
+   */
+  highlights: string[];
+}
+
 export default function SearchResult({
-  name,
-  version,
-  uuid,
-  description,
-  displayFields,
-  modifiedDate,
-  status,
-  displayOptions,
-  attachments,
-  keywordFoundInAttachment,
-  links,
-}: OEQ.Search.SearchResultItem) {
+  item: {
+    name,
+    version,
+    uuid,
+    description,
+    displayFields,
+    modifiedDate,
+    status,
+    displayOptions,
+    attachments = [],
+    keywordFoundInAttachment,
+  },
+  highlights,
+}: SearchResultProps) {
   const classes = useStyles();
 
   const searchResultStrings = languageStrings.searchpage.searchresult;
 
-  const [attachExapanded, setAttachExpanded] = React.useState(
+  const [attachExpanded, setAttachExpanded] = React.useState(
     displayOptions?.standardOpen ?? false
   );
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
-    setAttachExpanded(!attachExapanded);
+    setAttachExpanded(!attachExpanded);
   };
 
   const itemMetadata = (
@@ -196,7 +214,7 @@ export default function SearchResult({
       return (
         <Accordion
           className={classes.attachmentExpander}
-          expanded={attachExapanded}
+          expanded={attachExpanded}
           onClick={(event) => handleAttachmentPanelClick(event)}
         >
           <AccordionSummary expandIcon={<ExpandMore />}>
@@ -217,8 +235,13 @@ export default function SearchResult({
     return null;
   };
 
+  const highlightField = (fieldValue: string) =>
+    ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
+
   const itemLink = (
-    <Link to={routes.ViewItem.to(uuid, version)}>{name ?? uuid}</Link>
+    <Link to={routes.ViewItem.to(uuid, version)}>
+      {name ? highlightField(name) : uuid}
+    </Link>
   );
 
   return (
@@ -232,7 +255,7 @@ export default function SearchResult({
         secondary={
           <>
             <Typography className={classes.itemDescription}>
-              {description}
+              {highlightField(description ?? "")}
             </Typography>
             <List disablePadding>{customDisplayMetadata}</List>
             {generateAttachmentList()}

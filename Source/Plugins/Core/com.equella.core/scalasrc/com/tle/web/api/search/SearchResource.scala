@@ -84,7 +84,6 @@ object SearchItem {
     itemBean.setVersion(itemId.getVersion)
     serializer.writeItemBeanResult(itemBean, itemId.getKey)
     LegacyGuice.itemLinkService.addLinks(itemBean)
-    itemId -> itemBean
     SearchItem(itemId, itemBean, keywordFoundInAttachment)
   }
 }

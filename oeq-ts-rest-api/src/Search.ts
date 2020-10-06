@@ -204,11 +204,11 @@ export interface SearchResultItem {
   /**
    * The number of item's comments.
    */
-  commentCount: number;
+  commentCount?: number;
   /**
    * Item's attachments.
    */
-  attachments: Attachment[];
+  attachments?: Attachment[];
   /**
    * Item's thumbnail.
    */

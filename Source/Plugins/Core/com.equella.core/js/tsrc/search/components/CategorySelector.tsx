@@ -141,8 +141,8 @@ export const CategorySelector = ({
             onClick={() => onShowMore(classificationID, !expanded)}
           >
             {expanded
-              ? languageStrings.searchpage.categorySelector.showLessButton
-              : languageStrings.searchpage.categorySelector.showMoreButton}
+              ? languageStrings.common.action.showLess
+              : languageStrings.common.action.showMore}
           </Button>
         </Grid>
       </Grid>
