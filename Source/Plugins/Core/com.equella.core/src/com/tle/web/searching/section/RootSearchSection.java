@@ -37,6 +37,9 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
+import com.tle.web.settings.UISettings;
+import com.tle.web.settings.UISettingsJava;
+import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import javax.inject.Inject;
@@ -46,7 +49,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     implements BlueBarEventListener {
   public static final String SEARCHURL = "/searching.do";
   public static final String SEARCH_SESSIONKEY = "searchContext";
-  private static PluginResourceHelper urlHelper =
+  private static final PluginResourceHelper urlHelper =
       ResourcesService.getResourceHelper(RootSearchSection.class);
 
   @PlugKey("searching.search.title")
@@ -79,6 +82,15 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
       }
       throw new AccessDeniedException(
           urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+    }
+
+    // Check if new search page is enabled. If yes, then render the new page.
+    // This is primarily for the ope
+    // ning search page from Selection Sections
+    // via 'searching.do'.
+    UISettings settings = UISettingsJava.getUISettings();
+    if (settings.newUI().enabled() && settings.newUI().newSearch()) {
+      return RenderNewSearchPage.renderNewSearchPage(context);
     }
     return super.renderHtml(context);
   }
