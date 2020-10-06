@@ -9,7 +9,7 @@ import com.tle.webtests.test.AbstractCleanupAutoTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
-@TestInstitution("fiveo")
+@TestInstitution("facet")
 public class NewSearchPageTest extends AbstractCleanupAutoTest {
   private NewSearchPage searchPage;
 
@@ -17,39 +17,37 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
   public void initialSearch() {
     searchPage = new NewSearchPage(context).load();
     // The initial search should return 10 items.
-    searchPage.waitForSearchCompleted(45);
+    searchPage.waitForSearchCompleted(16);
   }
 
   @Test(dependsOnMethods = "initialSearch", description = "Search with a query and refine controls")
   public void searchByFilters() {
     searchPage.newSearch();
     // Search by Collections.
-    searchPage.selectCollection("Basic Items", "DRM Attachment Only");
-    searchPage.waitForSearchCompleted(21);
-    // Search by date ranges.
-    searchPage.selectDateRangeQuickOption("Today");
-    searchPage.waitForSearchCompleted(0);
-    searchPage.selectDateRangeQuickOption("All");
-    searchPage.waitForSearchCompleted(21);
-    searchPage.selectCustomDateRange("2011-03-24", "2020-09-16");
-    searchPage.waitForSearchCompleted(14);
-    // Search by a query.
-    searchPage.changeQuery("item");
-    searchPage.waitForSearchCompleted(8);
+    searchPage.selectCollection("programming");
+    searchPage.waitForSearchCompleted(9);
+    // Expand the Refine control panel.
+    searchPage.expandRefineControlPanel();
     // Search by Item status.
     searchPage.selectStatus(true);
-    searchPage.waitForSearchCompleted(9);
+    searchPage.waitForSearchCompleted(10);
+    // Search by a query.
+    searchPage.changeQuery("Java");
+    searchPage.waitForSearchCompleted(4);
     // Exclude attachments in a search.
     searchPage.selectSearchAttachments(false);
-    searchPage.waitForSearchCompleted(8);
+    searchPage.waitForSearchCompleted(4);
+    // Search by date ranges.
+    searchPage.selectCustomDateRange("2020-10-01", "2020-10-06");
+    searchPage.waitForSearchCompleted(1);
     // Search by an owner.
-    searchPage.selectOwner("DoNotUse");
+    searchPage.selectOwner("AutoTest");
     searchPage.waitForSearchCompleted(1);
   }
 
   @Test(description = "open an item's summary page", dependsOnMethods = "searchByFilters")
   public void openItemSummaryPage() {
-    final String ITEM_TITLE = "SearchFilters - Basic Item";
+    final String ITEM_TITLE = "Java (cloned)";
     WebElement titleLink = searchPage.getItemTitleLink(ITEM_TITLE);
     titleLink.click();
     SummaryPage summary = new SummaryPage(context).get();
@@ -62,7 +60,12 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
   public void backToSearchPage() {
     context.getDriver().navigate().back();
     WebElement searchBar = searchPage.getSearchBar();
-    assertEquals(searchBar.getAttribute("value"), "item");
+    assertEquals(searchBar.getAttribute("value"), "Java");
     searchPage.waitForSearchCompleted(1);
+  }
+
+  @Override
+  protected void cleanupAfterClass() throws Exception {
+    // This test does not need to clean anything.
   }
 }

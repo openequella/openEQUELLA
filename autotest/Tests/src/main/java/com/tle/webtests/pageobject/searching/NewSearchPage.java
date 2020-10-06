@@ -65,6 +65,10 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     return driver.findElement(By.linkText(title));
   }
 
+  public void expandRefineControlPanel() {
+    WebElement showMore = driver.findElement(By.id("collapsibleRefinePanelButton"));
+    showMore.click();
+  }
   /**
    * Select Collections by typing keywords in the Selector's TextField.
    *
