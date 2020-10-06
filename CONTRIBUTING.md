@@ -133,10 +133,10 @@ All code should be formatted using the following formatting tools:
 - Typescript/JS/Markdown/YAML + more... - [Prettier](https://prettier.io/)
 
 Each formatter has various IDE plugins, in particular IntelliJ is well supported:
-- TODO [SpringHib5] - bring the links back before merging.
-- Google Java Format
+
+- [Google Java Format](https://plugins.jetbrains.com/plugin/8527-google-java-format)
 - scalafmt is built in
-- Prettier
+- [Prettier](https://plugins.jetbrains.com/plugin/10456-prettier)
 
 #### Pre-commit hook
 
