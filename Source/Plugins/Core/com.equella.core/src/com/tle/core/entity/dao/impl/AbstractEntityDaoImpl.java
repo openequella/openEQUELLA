@@ -374,6 +374,13 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
     }
 
     @Override
+    protected String createOrderBy() {
+      // Sort the list of paged entities by their IDs.
+      // Because the alias of those entity tables is 'be', we use 'be.id'.
+      return "be.id";
+    }
+
+    @Override
     public void processQuery(Query query) {
       super.processQuery(query);
       if (offset > 0) {
