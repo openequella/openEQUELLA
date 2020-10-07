@@ -27,10 +27,9 @@ val sttpVersion      = "1.7.2"
 val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
 val springVersion    = "5.2.9.RELEASE"
-//val tikaVersion      = "1.24.1"
-val tikaVersion  = "1.24.1"
-val cxfVersion   = "3.4.0"
-val guiceVersion = "3.0"
+val tikaVersion      = "1.24.1"
+val cxfVersion       = "3.4.0"
+val guiceVersion     = "3.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -170,10 +169,16 @@ libraryDependencies ++= Seq(
   "org.apache.struts" % "struts-taglib" % "1.3.10",
   "org.apache.tika"   % "tika-core"     % tikaVersion,
   "org.apache.tika"   % "tika-parsers"  % tikaVersion excludeAll (
-    // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
     ExclusionRule(
-      organization = "com.zaxxer",
-      name = "HikariCP-java7"
+                  // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
+                  organization = "com.zaxxer",
+                  name = "HikariCP-java7"),
+    ExclusionRule(
+      // Due to a deduplication issue with the first-order CXF dep. (tika @ 1.24.1 pulls in cxf 3.3.6).
+      // oEQ merges all the bus-extensions.txt together, and excluding 3.3.6 here keeps the same version
+      // for all merged bus-extensions.txt files.
+      organization = "org.apache.cxf",
+      name = "cxf-rt-rs-client"
     )
   ),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
@@ -379,13 +384,13 @@ assemblyMergeStrategy in assembly := {
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
 
-  // TODO [SpringHib5] needs a deeper review of bus-extensions.txt
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxrs/bundles/cxf-rt-frontend-jaxrs-3.3.6.jar:META-INF/cxf/bus-extensions.txt
   //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.0.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.0.jar:META-INF/cxf/bus-extensions.txt
   // ...
-  case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.first
+  // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
+  case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
 
   // TODO [SpringHib5] needs a deeper review of blueprint.handlers
   // Due to the error: deduplicate: different file contents found in the following:
