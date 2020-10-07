@@ -16,7 +16,7 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
   @Test(description = "open the new Search page and wait for initial search completed")
   public void initialSearch() {
     searchPage = new NewSearchPage(context).load();
-    // The initial search should return 10 items.
+    // The initial search should return 16 items.
     searchPage.waitForSearchCompleted(16);
   }
 
@@ -60,6 +60,8 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
   public void backToSearchPage() {
     context.getDriver().navigate().back();
     WebElement searchBar = searchPage.getSearchBar();
+    // Expect when going 'back' to the search page, the previous search
+    // settings have been remembered.
     assertEquals(searchBar.getAttribute("value"), "Java");
     searchPage.waitForSearchCompleted(1);
   }
