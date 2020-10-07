@@ -42,6 +42,11 @@ public class NewSearchPageTest extends AbstractSessionTest {
     // Exclude attachments in a search.
     searchPage.selectSearchAttachments(false);
     searchPage.waitForSearchCompleted(4);
+    // Search by date range quick options/
+    searchPage.selectDateRangeQuickOption("Today");
+    searchPage.waitForSearchCompleted(0);
+    searchPage.selectDateRangeQuickOption("All");
+    searchPage.waitForSearchCompleted(4);
     // Search by date ranges.
     searchPage.selectCustomDateRange("2020-10-01", "2020-10-06");
     searchPage.waitForSearchCompleted(1);
