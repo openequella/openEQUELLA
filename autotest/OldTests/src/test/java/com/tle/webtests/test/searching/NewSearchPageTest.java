@@ -5,13 +5,18 @@ import static org.testng.Assert.assertEquals;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.searching.NewSearchPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import com.tle.webtests.test.AbstractCleanupAutoTest;
+import com.tle.webtests.test.AbstractSessionTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("facet")
-public class NewSearchPageTest extends AbstractCleanupAutoTest {
+public class NewSearchPageTest extends AbstractSessionTest {
   private NewSearchPage searchPage;
+
+  @Override
+  protected void prepareBrowserSession() {
+    logon();
+  }
 
   @Test(description = "open the new Search page and wait for initial search completed")
   public void initialSearch() {
@@ -62,10 +67,5 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
     // settings have been remembered.
     assertEquals(searchBar.getAttribute("value"), "Java");
     searchPage.waitForSearchCompleted(1);
-  }
-
-  @Override
-  protected void cleanupAfterClass() throws Exception {
-    // This test does not need to clean anything.
   }
 }

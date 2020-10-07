@@ -8,6 +8,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AbstractSessionTest extends AbstractTest {
   public static String GENERIC_TESTING_COLLECTION = "Generic Testing Collection";
+  public static final String AUTOTEST_LOGON = "AutoTest";
+  public static final String AUTOTEST_PASSWD = "automated";
 
   protected String lastUsername;
   protected String lastPassword;
@@ -27,6 +29,10 @@ public class AbstractSessionTest extends AbstractTest {
 
   public HomePage logon(String username, String password, PageContext context) {
     return logon(context, username, password);
+  }
+
+  public HomePage logon() {
+    return logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
   }
 
   public void logonOnly(String username, String password) {

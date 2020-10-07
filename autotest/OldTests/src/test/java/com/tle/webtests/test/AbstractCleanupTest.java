@@ -1,7 +1,6 @@
 package com.tle.webtests.test;
 
 import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.LoginPage;
 import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
@@ -9,9 +8,6 @@ import java.lang.reflect.Method;
 import org.testng.annotations.BeforeMethod;
 
 public class AbstractCleanupTest extends AbstractSessionTest {
-  public static final String AUTOTEST_LOGON = "AutoTest";
-  public static final String AUTOTEST_PASSWD = "automated";
-
   protected String namePrefix;
   private String usernameForDelete;
   private String passwordForDelete;
@@ -22,10 +18,6 @@ public class AbstractCleanupTest extends AbstractSessionTest {
 
   public AbstractCleanupTest(String namePrefix) {
     this.namePrefix = namePrefix;
-  }
-
-  public HomePage logon() {
-    return logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
   }
 
   @Override
