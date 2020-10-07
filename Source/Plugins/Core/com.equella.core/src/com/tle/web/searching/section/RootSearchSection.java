@@ -85,9 +85,8 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     }
 
     // Check if new search page is enabled. If yes, then render the new page.
-    // This is primarily for the ope
-    // ning search page from Selection Sections
-    // via 'searching.do'.
+    // This is primarily for the opening search page from Selection Sections
+    // via 'xxx/searching.do'.
     UISettings settings = UISettingsJava.getUISettings();
     if (settings.newUI().enabled() && settings.newUI().newSearch()) {
       return RenderNewSearchPage.renderNewSearchPage(context);
