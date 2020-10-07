@@ -31,7 +31,7 @@ const renderSearchPage = () => {
         <SearchPage {...searchPageProps} />
       </ThemeProvider>
     </BrowserRouter>,
-    document.getElementById("newSearchPage")
+    document.getElementById("new-search-page")
   );
 };
 renderSearchPage();
