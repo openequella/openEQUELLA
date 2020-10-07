@@ -48,10 +48,8 @@ public class NewSearchPageTest extends AbstractCleanupAutoTest {
   @Test(description = "open an item's summary page", dependsOnMethods = "searchByFilters")
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
-    WebElement titleLink = searchPage.getItemTitleLink(ITEM_TITLE);
-    titleLink.click();
-    SummaryPage summary = new SummaryPage(context).get();
-    assertEquals(summary.getItemTitle(), ITEM_TITLE);
+    SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
+    assertEquals(summaryPage.getItemTitle(), ITEM_TITLE);
   }
 
   @Test(
