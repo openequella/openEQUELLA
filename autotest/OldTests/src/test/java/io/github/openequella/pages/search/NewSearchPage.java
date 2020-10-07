@@ -6,9 +6,18 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class NewSearchPage extends AbstractPage<NewSearchPage> {
+  @FindBy(id = "searchBar")
+  private WebElement searchBar;
+
+  @FindBy(xpath = "//button[span=('New search')]")
+  private WebElement newSearchButton;
+
+  @FindBy(id = "collapsibleRefinePanelButton")
+  private WebElement collapsibleRefinePanelButton;
 
   public NewSearchPage(PageContext context) {
     super(context);
@@ -19,15 +28,14 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     driver.get(context.getBaseUrl() + "page/search");
   }
 
-  /** Find the Search query bar. */
-  public WebElement getSearchBar() {
-    return driver.findElement(By.id("searchBar"));
-  }
-
   @Override
   protected WebElement findLoadedElement() {
     // When the Search bar is visible, the page is loaded.
-    return getSearchBar();
+    return searchBar;
+  }
+
+  public WebElement getSearchBar() {
+    return searchBar;
   }
 
   /**
@@ -53,7 +61,6 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
 
   /** Perform a new search. */
   public void newSearch() {
-    WebElement newSearchButton = driver.findElement(By.xpath("//button[span=('New search')]"));
     newSearchButton.click();
   }
 
@@ -63,13 +70,11 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * @param query A text used as search query.
    */
   public void changeQuery(String query) {
-    WebElement searchBar = getSearchBar();
     searchBar.sendKeys(query);
   }
 
   public void expandRefineControlPanel() {
-    WebElement showMore = driver.findElement(By.id("collapsibleRefinePanelButton"));
-    showMore.click();
+    collapsibleRefinePanelButton.click();
   }
   /**
    * Select Collections by typing keywords in the Selector's TextField.
