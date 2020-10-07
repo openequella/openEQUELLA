@@ -1,4 +1,4 @@
-package com.tle.webtests.pageobject.searching;
+package io.github.openequella.pages.search;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;

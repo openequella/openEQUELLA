@@ -1,11 +1,11 @@
-package com.tle.webtests.test.searching;
+package io.github.openequella.search;
 
 import static org.testng.Assert.assertEquals;
 
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.pageobject.searching.NewSearchPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
+import io.github.openequella.pages.search.NewSearchPage;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
