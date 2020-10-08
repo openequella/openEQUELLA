@@ -77,7 +77,8 @@ export type ViewerId =
   | 'livNavTreeViewer'
   | 'qtiTestViewer'
   | 'tohtml'
-  | 'toimg';
+  | 'toimg'
+  | 'save';
 
 /**
  * Basic details for each viewer, including optional configuration. If `config` is not present, then
