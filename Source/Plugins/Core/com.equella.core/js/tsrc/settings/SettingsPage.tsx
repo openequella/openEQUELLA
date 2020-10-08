@@ -65,14 +65,25 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface SettingsPageProps extends TemplateUpdateProps {
   refreshUser: () => void;
+  isReloadNeeded: boolean;
 }
 
-const SettingsPage = ({ refreshUser, updateTemplate }: SettingsPageProps) => {
+const SettingsPage = ({
+  refreshUser,
+  updateTemplate,
+  isReloadNeeded,
+}: SettingsPageProps) => {
   const classes = useStyles();
 
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
+
+  React.useEffect(() => {
+    if (isReloadNeeded) {
+      window.location.reload();
+    }
+  }, []);
 
   useEffect(() => {
     updateTemplate(templateDefaults(languageStrings["com.equella.core"].title));

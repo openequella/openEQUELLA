@@ -35,6 +35,7 @@ export interface OEQRouteComponentProps<T = any>
   redirect(to: LocationDescriptor): void;
   setPreventNavigation(b: boolean): void;
   refreshUser(): void;
+  isReloadNeeded: boolean;
 }
 
 export interface OEQRoute {

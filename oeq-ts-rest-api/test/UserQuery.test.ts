@@ -89,25 +89,25 @@ describe('/userquery/search', () => {
 });
 
 describe('/userquery/lookup', () => {
-  const demoSystemAdminUser = {
-    id: 'eb75a832-6533-4d72-93f4-2b7a1b108951',
-    username: 'demosysadmin',
-    firstName: 'Demonstration',
-    lastName: 'Systems Administrator',
-    email: '',
+  const autoTestUser = {
+    id: '20c8cfd5-6318-4251-a353-5b0b5a7994c3',
+    username: 'AutoTest',
+    firstName: 'auto',
+    lastName: 'test',
+    email: 'AutoTest@autotest.com',
   };
   const systemAdministratorGroup = {
-    id: 'd0265a33-8f89-4cea-8a36-45fd3c4cf5a1',
-    name: 'INT - Systems Administrators',
+    id: 'e91205b0-684e-51e2-a1be-3ab646aa98dd',
+    name: 'Users with Administrator Role',
   };
-  const systemAdministratorRole = {
-    id: '351c2f38-b78a-4049-88d5-dc33693c9a9f',
-    name: 'System Administration Role',
+  const ssoRole = {
+    id: '2237ce17-de72-57a8-7321-aadca36b3ec4',
+    name: 'Role from SSO',
   };
 
   it('should be possible to lookup a combination', async () => {
     const result = await OEQ.UserQuery.lookup(API_PATH, {
-      users: [demoSystemAdminUser.id],
+      users: [autoTestUser.id],
       groups: [systemAdministratorGroup.id],
       roles: [],
     });
@@ -118,9 +118,9 @@ describe('/userquery/lookup', () => {
   });
 
   test.each<[keyof SearchResult, string]>([
-    ['users', demoSystemAdminUser.id],
+    ['users', autoTestUser.id],
     ['groups', systemAdministratorGroup.id],
-    ['roles', systemAdministratorRole.id],
+    ['roles', ssoRole.id],
   ])('Should be possible to lookup a %s with id of %s', async (type, id) => {
     const result = await OEQ.UserQuery.lookup(API_PATH, {
       users: [],

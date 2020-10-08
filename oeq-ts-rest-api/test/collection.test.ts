@@ -30,6 +30,8 @@ describe('Listing collections', () => {
   });
 
   it('should be possible to retrieve a custom list of collections via params', async () => {
+    await OEQ.Auth.logout(TC.API_PATH, true);
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
     const howMany = 8;
     const result = await OEQ.Collection.listCollections(TC.API_PATH, {
       length: howMany,

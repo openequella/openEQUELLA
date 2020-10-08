@@ -32,3 +32,11 @@ export const listUsers = (
     groups: false,
     roles: false,
   }).then((result: OEQ.UserQuery.SearchResult) => result.users);
+
+/**
+ * Gets the current user's info from the server as OEQ.LegacyContent.CurrentUserDetails.
+ */
+export const getCurrentUserDetails = () =>
+  OEQ.LegacyContent.getCurrentUserDetails(API_BASE_URL).then(
+    (result: OEQ.LegacyContent.CurrentUserDetails) => result
+  );

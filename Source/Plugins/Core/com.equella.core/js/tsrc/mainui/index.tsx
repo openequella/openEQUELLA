@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../util/polyfill";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
+import "../util/polyfill";
 
 export interface RenderData {
   baseResources: string;
