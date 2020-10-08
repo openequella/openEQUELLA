@@ -23,7 +23,7 @@ import JestMatchers = jest.JestMatchers;
 
 const API_PATH = TC.API_PATH_FACET;
 
-beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
+beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER));
 afterAll(() => OEQ.Auth.logout(API_PATH, true));
 
 describe('Search for facets', () => {

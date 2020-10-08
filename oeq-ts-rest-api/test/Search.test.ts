@@ -18,7 +18,9 @@
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 
-beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
+beforeAll(() =>
+  OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER)
+);
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
 const STATUS_LIVE = 'LIVE';
