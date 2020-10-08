@@ -131,7 +131,7 @@ describe('Search for facets', () => {
       maxResults,
     ],
     ['Known period of contribution', goodStartDate, goodEndDate, maxResults],
-    ['Period after contribution', goodEndDate, undefined, 0],
+    ['Period after contribution', goodEndDate, undefined, 3],
   ])(
     'should be possible to filter by dates [%s]',
     async (_, modifiedAfter, modifiedBefore, expectedResults) => {
