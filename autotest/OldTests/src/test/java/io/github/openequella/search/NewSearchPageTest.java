@@ -73,4 +73,17 @@ public class NewSearchPageTest extends AbstractSessionTest {
     assertEquals(searchBar.getAttribute("value"), "Java");
     searchPage.waitForSearchCompleted(1);
   }
+
+  @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
+  public void searchWithLessACLS() {
+    // This account can only access the Collection 'Hardware platforms' and items of this
+    // Collection.
+    // But it has no access to attachments and comments.
+    logon(AUTOTEST_LOW_PRIVILEGE_LOGON, AUTOTEST_PASSWD);
+
+    searchPage = new NewSearchPage(context).load();
+    searchPage.waitForSearchCompleted(7);
+    searchPage.selectCollection("Hardware");
+    searchPage.waitForSearchCompleted(7);
+  }
 }

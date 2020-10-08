@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class AbstractSessionTest extends AbstractTest {
   public static String GENERIC_TESTING_COLLECTION = "Generic Testing Collection";
   public static final String AUTOTEST_LOGON = "AutoTest";
+  public static final String AUTOTEST_LOW_PRIVILEGE_LOGON = "AutoTest_Low_Privileged";
   public static final String AUTOTEST_PASSWD = "automated";
 
   protected String lastUsername;
