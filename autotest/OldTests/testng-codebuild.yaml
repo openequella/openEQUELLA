@@ -4,7 +4,6 @@ threadCount: 1
 tests:
   - name: OneAfterAnother
     classes:
-      - com.tle.webtests.test.searching.NewSearchPageTest
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.CloudSearchingTest
       - com.tle.webtests.test.searching.GallerySearchTest
@@ -136,6 +135,7 @@ tests:
       - io.github.openequella.rest.AuthApiTest
       - io.github.openequella.rest.Search2ApiTest
       - io.github.openequella.rest.BaseEntityAPITest
+      - io.github.openequella.search.NewSearchPageTest
       - com.tle.webtests.test.webservices.soap.Soap51Test
       - com.tle.webtests.test.webservices.soap.SoapServicesTest
       - com.tle.webtests.test.webservices.OAIEndpointTest
