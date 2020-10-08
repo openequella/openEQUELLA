@@ -136,7 +136,10 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public void unlinkFromSession(Object obj) {
-    getHibernateTemplate().evict(obj);
+    // Hibernate now throws an NullPointerException if we try evicting a null object
+    if (obj != null) {
+      getHibernateTemplate().evict(obj);
+    }
   }
 
   /*

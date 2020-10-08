@@ -7,6 +7,7 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-simple"    % "1.7.30",
   "org.springframework"    % "spring-web"      % springVersion,
   "org.springframework"    % "spring-aop"      % springVersion,
+  "org.springframework"    % "spring-context"  % springVersion,
   "com.fifesoft"           % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout"          % "miglayout-swing" % "4.2",
   xstreamDep

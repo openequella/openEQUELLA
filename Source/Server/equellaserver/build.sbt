@@ -59,16 +59,28 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.11",
-  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200925-1.30.10",
-  "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
-  "com.google.code.gson"         % "gson"                        % "2.8.6",
-  "com.google.gdata"             % "core"                        % "1.47.1",
-  "com.google.guava"             % "guava"                       % "18.0",
-  "com.google.inject"            % "guice"                       % guiceVersion,
-  "com.google.inject.extensions" % "guice-assistedinject"        % guiceVersion,
-  "com.google.inject.extensions" % "guice-spring"                % guiceVersion,
-  "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
+  "com.google.api-client" % "google-api-client"           % "1.30.11",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20200925-1.30.10",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
+  "com.google.code.gson"  % "gson"                        % "2.8.6",
+  "com.google.gdata"      % "core"                        % "1.47.1",
+  "com.google.guava"      % "guava"                       % "18.0",
+  "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    ExclusionRule(organization = "aopalliance",
+                  name = "aopalliance")
+  ),
+  "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    ExclusionRule(organization = "aopalliance",
+                  name = "aopalliance")
+  ),
+  "com.google.inject.extensions" % "guice-spring" % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    ExclusionRule(organization = "aopalliance",
+                  name = "aopalliance")
+  ),
+  "com.ibm.icu" % "icu4j" % "4.8.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -379,7 +391,6 @@ assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
   case PathList("javax", "activation", _*)                  => MergeStrategy.first
   case PathList("org", "xmlpull", "v1", _*)                 => MergeStrategy.first
-  case PathList("org", "aopalliance", _*)                   => MergeStrategy.first
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
