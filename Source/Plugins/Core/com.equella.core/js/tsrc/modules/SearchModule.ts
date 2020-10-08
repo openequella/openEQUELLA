@@ -17,10 +17,11 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
+import { getISODateString } from "../util/Date";
+import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
 import { SortOrder } from "./SearchSettingsModule";
-import { Collection } from "./CollectionsModule";
-import { getISODateString } from "../util/Date";
+import { resolveUsers } from "./UserModule";
 
 /**
  * Type of all search options on Search page
@@ -201,4 +202,75 @@ export const searchItems = ({
     whereClause: generateCategoryWhereQuery(selectedCategories),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
+};
+
+export const convertParamsToSearchOptions = async (location: string) => {
+  if (!location) return undefined;
+
+  const params = new URLSearchParams(location);
+
+  const getUserDetails = async (
+    userId: string
+  ): Promise<OEQ.UserQuery.UserDetails> => {
+    const userDetails = await resolveUsers([userId]);
+    return userDetails[0];
+  };
+
+  const getCollectionDetails = async (
+    collectionUuid: string
+  ): Promise<Collection[] | undefined> => {
+    const collectionList = await collectionListSummary(["SEARCH_COLLECTION"]);
+    return collectionList.filter((c) => {
+      return c.uuid === collectionUuid;
+    });
+  };
+
+  const getLastModifiedDateRange = (
+    rangeType: string,
+    primaryDate: Date,
+    secondaryDate?: Date
+  ): DateRange => {
+    let dr: DateRange = {};
+
+    switch (rangeType.toLocaleLowerCase()) {
+      case "":
+        break;
+      case "between":
+        dr = { start: primaryDate, end: secondaryDate };
+        break;
+      case "after":
+        dr = { start: primaryDate ?? undefined };
+        break;
+      case "before":
+        dr = { end: primaryDate };
+        break;
+      case "on":
+        dr = { start: primaryDate, end: primaryDate };
+        break;
+      default:
+        throw new TypeError("Invalid range");
+        break;
+    }
+    return dr;
+  };
+
+  const getParam = (paramName: string) => {
+    return params.get(paramName) ?? "";
+  };
+
+  const searchOptions: SearchOptions = {
+    ...defaultSearchOptions,
+    collections: getParam("in")
+      ? await getCollectionDetails(getParam("in")?.substring(1))
+      : undefined,
+    query: getParam("q"),
+    owner: await getUserDetails(getParam("owner")),
+    lastModifiedDateRange: getLastModifiedDateRange(
+      getParam("dr"),
+      new Date(parseInt(getParam("dp"))),
+      new Date(parseInt(getParam("ds")))
+    ),
+    sortOrder: (getParam("sort")?.toUpperCase() as SortOrder) || undefined,
+  };
+  return searchOptions;
 };

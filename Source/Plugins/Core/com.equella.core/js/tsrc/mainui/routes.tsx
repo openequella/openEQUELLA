@@ -57,7 +57,7 @@ export const routes = {
     component: SettingsPage,
   },
   Search: {
-    path: "/page/search",
+    path: "(/page/search|/searching.do)",
     render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
   },
   SearchSettings: {
