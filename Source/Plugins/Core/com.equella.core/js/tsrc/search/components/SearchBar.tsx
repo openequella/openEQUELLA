@@ -84,8 +84,8 @@ export default function SearchBar({
   doSearch,
 }: SearchBarProps) {
   const classes = useStyles();
-  const searchStrings = languageStrings.searchpage;
 
+  const searchStrings = languageStrings.searchpage;
   const [currentQuery, setCurrentQuery] = useState<string>(query);
 
   const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), [
@@ -94,14 +94,12 @@ export default function SearchBar({
 
   // Update state when search query is cleared.
   useEffect(() => {
-    if (!query) {
-      setCurrentQuery(query);
-    }
+    setCurrentQuery(query);
   }, [query]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
-      // iff there is a current query, clear it out and trigger a search
+      // if there is a current query, clear it out and trigger a search
       setCurrentQuery("");
       onQueryChange("");
     }
@@ -109,6 +107,7 @@ export default function SearchBar({
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedQuery = event.target.value;
+
     setCurrentQuery(updatedQuery);
     debouncedOnQueryChange(updatedQuery);
   };
