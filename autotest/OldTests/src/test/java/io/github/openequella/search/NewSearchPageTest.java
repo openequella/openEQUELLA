@@ -8,10 +8,8 @@ import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
-import retry.SkipOldUITest;
 
 @TestInstitution("facet")
-@SkipOldUITest(skip = true)
 public class NewSearchPageTest extends AbstractSessionTest {
   private NewSearchPage searchPage;
 
