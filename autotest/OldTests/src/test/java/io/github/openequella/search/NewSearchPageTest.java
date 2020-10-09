@@ -6,7 +6,6 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
@@ -16,7 +15,6 @@ public class NewSearchPageTest extends AbstractSessionTest {
 
   @Override
   protected void prepareBrowserSession() {
-    context.getDriver().manage().window().setSize(new Dimension(1920, 1080));
     logon();
   }
 
@@ -45,8 +43,6 @@ public class NewSearchPageTest extends AbstractSessionTest {
     searchPage.selectSearchAttachments(false);
     searchPage.waitForSearchCompleted(4);
     // Search by date range quick options/
-    searchPage.selectDateRangeQuickOption("Today");
-    searchPage.waitForSearchCompleted(0);
     searchPage.selectDateRangeQuickOption("All");
     searchPage.waitForSearchCompleted(4);
     // Search by date ranges.
