@@ -67,6 +67,10 @@ public class NewSearchPageTest extends AbstractSessionTest {
       dependsOnMethods = "openItemSummaryPage")
   public void backToSearchPage() {
     context.getDriver().navigate().back();
+    // todo: remove this when we can skip this test suite in Old UI mode.
+    if (!testConfig.isNewUI()) {
+      context.getDriver().navigate().refresh();
+    }
     WebElement searchBar = searchPage.getSearchBar();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
