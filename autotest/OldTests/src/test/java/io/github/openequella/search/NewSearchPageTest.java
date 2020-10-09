@@ -6,6 +6,7 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
@@ -15,6 +16,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
 
   @Override
   protected void prepareBrowserSession() {
+    context.getDriver().manage().window().setSize(new Dimension(1920, 1080));
     logon();
   }
 
@@ -71,6 +73,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
     if (!testConfig.isNewUI()) {
       context.getDriver().navigate().refresh();
     }
+    searchPage.get();
     WebElement searchBar = searchPage.getSearchBar();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
