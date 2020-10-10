@@ -180,7 +180,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement confirmButton =
         ownerSelectDialog.findElement(By.xpath(".//button[span=('Select')]"));
     confirmButton.click();
-    waiter.until(ExpectedConditions.invisibilityOf(ownerSelectDialog));
+    // Wait until the dialog is closed.
+    waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
   }
 
   /**
