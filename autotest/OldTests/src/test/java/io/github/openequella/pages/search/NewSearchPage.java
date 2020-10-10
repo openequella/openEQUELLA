@@ -101,10 +101,12 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectDateRangeQuickOption(String quickOption) {
     WebElement dateRangeSelector = getRefineControl("DateRangeSelector");
     WebElement quickOptionSelector = dateRangeSelector.findElement(By.id("date_range_selector"));
-    getWaiter().until(ExpectedConditions.elementToBeClickable(quickOptionSelector));
     quickOptionSelector.click();
     WebElement option = driver.findElement(By.xpath(".//li[@data-value='" + quickOption + "']"));
     option.click();
+    // Wait until the popup menu disappears.
+    getWaiter()
+        .until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiPopover-root")));
   }
 
   /**

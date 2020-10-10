@@ -66,15 +66,14 @@ public class NewSearchPageTest extends AbstractSessionTest {
   public void backToSearchPage() {
     context.getDriver().navigate().back();
     // todo: remove this when we can skip this test suite in Old UI mode.
-    if (!testConfig.isNewUI()) {
-      context.getDriver().navigate().refresh();
+    if (searchPage.usingNewUI()) {
+      searchPage.get();
+      WebElement searchBar = searchPage.getSearchBar();
+      // Expect when going 'back' to the search page, the previous search
+      // settings have been remembered.
+      assertEquals(searchBar.getAttribute("value"), "Java");
+      searchPage.waitForSearchCompleted(1);
     }
-    searchPage.get();
-    WebElement searchBar = searchPage.getSearchBar();
-    // Expect when going 'back' to the search page, the previous search
-    // settings have been remembered.
-    assertEquals(searchBar.getAttribute("value"), "Java");
-    searchPage.waitForSearchCompleted(1);
   }
 
   @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
