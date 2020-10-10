@@ -2,11 +2,11 @@ package io.github.openequella.search;
 
 import static org.testng.Assert.assertEquals;
 
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("facet")
@@ -65,15 +65,20 @@ public class NewSearchPageTest extends AbstractSessionTest {
       dependsOnMethods = "openItemSummaryPage")
   public void backToSearchPage() {
     context.getDriver().navigate().back();
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(),
+        context.getTestConfig().getScreenshotFolder(),
+        "NewSearchPageTest - check Summary Page " + context.getTestConfig().isNewUI(),
+        true);
     // todo: remove this when we can skip this test suite in Old UI mode.
-    if (searchPage.usingNewUI()) {
-      searchPage.get();
-      WebElement searchBar = searchPage.getSearchBar();
-      // Expect when going 'back' to the search page, the previous search
-      // settings have been remembered.
-      assertEquals(searchBar.getAttribute("value"), "Java");
-      searchPage.waitForSearchCompleted(1);
-    }
+    //    if(searchPage.usingNewUI()) {
+    //      context.getDriver().navigate().refresh();
+    //    }
+    searchPage.get();
+    // Expect when going 'back' to the search page, the previous search
+    // settings have been remembered.
+    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Java1");
+    searchPage.waitForSearchCompleted(1);
   }
 
   @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
