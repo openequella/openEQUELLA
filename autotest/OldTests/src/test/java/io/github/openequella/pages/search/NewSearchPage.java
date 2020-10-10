@@ -180,6 +180,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement confirmButton =
         ownerSelectDialog.findElement(By.xpath(".//button[span=('Select')]"));
     confirmButton.click();
+    waiter.until(ExpectedConditions.invisibilityOf(ownerSelectDialog));
   }
 
   /**
