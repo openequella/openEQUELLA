@@ -57,6 +57,11 @@ public class NewSearchPageTest extends AbstractSessionTest {
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
     SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(),
+        context.getTestConfig().getScreenshotFolder(),
+        "NewSearchPageTest - check Summary Page " + context.getTestConfig().isNewUI(),
+        true);
     assertEquals(summaryPage.getItemTitle(), ITEM_TITLE);
   }
 
@@ -65,19 +70,14 @@ public class NewSearchPageTest extends AbstractSessionTest {
       dependsOnMethods = "openItemSummaryPage")
   public void backToSearchPage() {
     context.getDriver().navigate().back();
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(),
-        context.getTestConfig().getScreenshotFolder(),
-        "NewSearchPageTest - check Summary Page " + context.getTestConfig().isNewUI(),
-        true);
     // todo: remove this when we can skip this test suite in Old UI mode.
-    //    if(searchPage.usingNewUI()) {
-    //      context.getDriver().navigate().refresh();
-    //    }
+    if (!searchPage.usingNewUI()) {
+      context.getDriver().navigate().refresh();
+    }
     searchPage.get();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
-    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Java1");
+    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Java");
     searchPage.waitForSearchCompleted(1);
   }
 
