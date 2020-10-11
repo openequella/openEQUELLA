@@ -2,7 +2,6 @@ package io.github.openequella.pages.search;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -39,16 +38,6 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   }
 
   /**
-   * Click one Item's title link and open the Item Summary page.
-   *
-   * @param itemTitle The title of an Item.
-   */
-  public SummaryPage selectItem(String itemTitle) {
-    WebElement titleLink = driver.findElement(By.linkText(itemTitle));
-    titleLink.click();
-    return new SummaryPage(context).get();
-  }
-  /**
    * Wait until the correct number of items are displayed.
    *
    * @param itemCount The expected number of items
@@ -71,6 +60,15 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    */
   public void changeQuery(String query) {
     searchBar.sendKeys(query);
+  }
+
+  /**
+   * Get the link of an Item's title which links to the Item's summary page.
+   *
+   * @param title The text of an Item's title
+   */
+  public WebElement getItemTitleLink(String title) {
+    return driver.findElement(By.linkText(title));
   }
 
   public void expandRefineControlPanel() {
