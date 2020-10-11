@@ -103,6 +103,9 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     dateRangeSelector.click();
     WebElement option = driver.findElement(By.xpath(".//li[@data-value='" + quickOption + "']"));
     option.click();
+    // Wait until the popup menu disappears.
+    getWaiter()
+        .until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiPopover-root")));
   }
 
   /**
@@ -176,6 +179,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement confirmButton =
         ownerSelectDialog.findElement(By.xpath(".//button[span=('Select')]"));
     confirmButton.click();
+    // Wait until the dialog disappears.
+    waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
   }
 
   /**
