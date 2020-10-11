@@ -2,11 +2,11 @@ package io.github.openequella.search;
 
 import static org.testng.Assert.assertEquals;
 
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("facet")
@@ -56,10 +56,8 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @Test(description = "open an item's summary page", dependsOnMethods = "searchByFilters")
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
-    WebElement titleLink = searchPage.getItemTitleLink(ITEM_TITLE);
-    titleLink.click();
-    SummaryPage summary = new SummaryPage(context).get();
-    assertEquals(summary.getItemTitle(), ITEM_TITLE);
+    SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
+    assertEquals(summaryPage.getItemTitle(), ITEM_TITLE);
   }
 
   @Test(
@@ -67,14 +65,19 @@ public class NewSearchPageTest extends AbstractSessionTest {
       dependsOnMethods = "openItemSummaryPage")
   public void backToSearchPage() {
     context.getDriver().navigate().back();
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(),
+        context.getTestConfig().getScreenshotFolder(),
+        "NewSearchPageTest - check Summary Page " + context.getTestConfig().isNewUI(),
+        true);
     // todo: remove this when we can skip this test suite in Old UI mode.
-    if (!searchPage.usingNewUI()) {
-      context.getDriver().navigate().refresh();
-    }
+    //    if(searchPage.usingNewUI()) {
+    //      context.getDriver().navigate().refresh();
+    //    }
     searchPage.get();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
-    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Java");
+    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Java1");
     searchPage.waitForSearchCompleted(1);
   }
 
