@@ -62,7 +62,7 @@ export const NavigationGuard = ({ when }: NavigationGuardProps) => {
     if (confirmedNavigation && navigateTo) {
       history.push(navigateTo.pathname);
     }
-  }, [confirmedNavigation, navigateTo]);
+  }, [confirmedNavigation, navigateTo, history]);
 
   /**
    * Handle 'beforeunload' event when preventing navigation is required.
