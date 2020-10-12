@@ -16,11 +16,49 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { memoize } from "lodash";
 import { API_BASE_URL } from "../config";
 
 export const getMIMETypesFromServer = (): Promise<
   OEQ.MimeType.MimeTypeEntry[]
 > => OEQ.MimeType.listMimeTypes(API_BASE_URL);
+
+/**
+ * Retrieve the Viewer Configuration for the specified MIME type from the server - or from cache.
+ * Note this function is cached (memoized) and so any server side changes will not take effect
+ * until the app is reloaded.
+ *
+ * @param mimeType the MIME type to get the configuration for
+ */
+export const getMimeTypeViewerConfiguration: (
+  mimeType: string
+) => Promise<OEQ.MimeType.MimeTypeViewerConfiguration> = memoize(
+  async (mimeType: string): Promise<OEQ.MimeType.MimeTypeViewerConfiguration> =>
+    await OEQ.MimeType.getViewersForMimeType(API_BASE_URL, mimeType)
+);
+
+/**
+ * Retrieve the default viewer details for the specified MIME type from the server - or from cache.
+ * This function relies on `getMimeTypeViewerConfiguration` which is cached (memoized) and so any
+ * server side changes will not take effect until the app is reloaded.
+ *
+ * @param mimeType the MIME type to get default viewer details for
+ */
+export const getMimeTypeDefaultViewerDetails = async (
+  mimeType: string
+): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
+  const cfg = await getMimeTypeViewerConfiguration(mimeType);
+  const viewerDetails = cfg.viewers.find(
+    (v) => v.viewerId === cfg.defaultViewer
+  );
+  if (!viewerDetails) {
+    throw new ReferenceError(
+      `Missing viewer details for default viewer with id: "${cfg.defaultViewer}"`
+    );
+  }
+
+  return viewerDetails;
+};
 
 /**
  * Given a MIME Type of the form `<type>/<sub-type>`, validate correct form and then return

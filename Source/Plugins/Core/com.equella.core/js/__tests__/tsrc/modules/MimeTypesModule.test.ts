@@ -16,10 +16,18 @@
  * limitations under the License.
  */
 import {
+  getMimeTypeDefaultViewerDetails,
   isBrowserSupportedAudio,
   isBrowserSupportedVideo,
   splitMimeType,
 } from "../../../tsrc/modules/MimeTypesModule";
+import * as OEQ from "@openequella/rest-api-client";
+
+jest.mock("@openequella/rest-api-client");
+const mockedGetViewersForMimeType = OEQ.MimeType
+  .getViewersForMimeType as jest.Mock<
+  Promise<OEQ.MimeType.MimeTypeViewerConfiguration>
+>;
 
 describe("splitMimeTypes()", () => {
   it.each<[string, string, string]>([
@@ -49,7 +57,7 @@ describe("isBrowserSupportedAudio()", () => {
   it("returns false for unsupported MIME types", () =>
     expect(isBrowserSupportedAudio("audio/aac")).toEqual(false));
 
-  it("returns true for unsupported MIME types", () =>
+  it("returns true for supported MIME types", () =>
     expect(isBrowserSupportedAudio("audio/ogg")).toEqual(true));
 
   it("disregards MIME type attributes", () =>
@@ -60,9 +68,51 @@ describe("isBrowserSupportedVideo()", () => {
   it("returns false for unsupported MIME types", () =>
     expect(isBrowserSupportedVideo("video/quicktime")).toEqual(false));
 
-  it("returns true for unsupported MIME types", () =>
+  it("returns true for supported MIME types", () =>
     expect(isBrowserSupportedVideo("video/ogg")).toEqual(true));
 
   it("disregards MIME type attributes", () =>
     expect(isBrowserSupportedVideo("video/ogg; attribute1=one")).toEqual(true));
+});
+
+describe("getMimeTypeDefaultViewerDetails()", () => {
+  const defaultViewerId = "file";
+  const simpleFileViewerConfig: OEQ.MimeType.MimeTypeViewerConfiguration = {
+    defaultViewer: defaultViewerId,
+    viewers: [
+      {
+        viewerId: "save",
+      },
+      {
+        viewerId: defaultViewerId,
+        config: {
+          attr: {},
+          height: "",
+          openInNewWindow: true,
+          thickbox: false,
+          width: "",
+        },
+      },
+    ],
+  };
+
+  it("gets the correct default viewer details", async () => {
+    mockedGetViewersForMimeType.mockResolvedValue(simpleFileViewerConfig);
+    const viewerDetails = await getMimeTypeDefaultViewerDetails(
+      "application/pdf"
+    );
+    expect(viewerDetails.viewerId).toEqual(defaultViewerId);
+    expect(viewerDetails.config).toBeTruthy();
+  });
+
+  it("throws an error if there is a data issue", async () => {
+    const htmlFiveViewerId = "htmlFiveViewer";
+    mockedGetViewersForMimeType.mockResolvedValue({
+      ...simpleFileViewerConfig,
+      defaultViewer: htmlFiveViewerId,
+    });
+    await expect(getMimeTypeDefaultViewerDetails("image/jpeg")).rejects.toThrow(
+      ReferenceError
+    );
+  });
 });
