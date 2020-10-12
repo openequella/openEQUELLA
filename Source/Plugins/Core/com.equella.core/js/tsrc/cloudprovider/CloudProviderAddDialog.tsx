@@ -75,10 +75,10 @@ class CloudProviderAddDialog extends React.Component<
 
   validateUrl = (): boolean => {
     const url = this.state.cloudProviderUrl;
-    if (url == "") {
+    if (url === "") {
       return true;
     } else {
-      return url.search(/^[Hh][Tt][Tt][Pp]([Ss]?):\/\//) == 0;
+      return url.search(/^[Hh][Tt][Tt][Pp]([Ss]?):\/\//) === 0;
     }
   };
 
