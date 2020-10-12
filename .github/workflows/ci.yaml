@@ -318,6 +318,9 @@ jobs:
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
+      - name: Check oEQ freetext index
+        run:  echo "number of index  $(ls autotest/equella-install/freetext/ | wc -l)"
+
       - name: Run tests
         working-directory: oeq-ts-rest-api
         run: |
