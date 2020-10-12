@@ -58,6 +58,7 @@ $iframeDialogWidth: 1175px;
 $iframeDialogHeight: 650px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
+$col2Width: 250px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -5377,8 +5378,6 @@ button:focus {
     display: flex;
   }
 }
-
-$col2Width: 250px;
 
 .user-details #col2 {
   width: $col2Width;
