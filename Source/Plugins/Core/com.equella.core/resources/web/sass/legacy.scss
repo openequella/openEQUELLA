@@ -3551,6 +3551,7 @@ Item summary styling
 
 .add-mime {
   @include buttonShadowBorder;
+  width: $col2Width;
   background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
