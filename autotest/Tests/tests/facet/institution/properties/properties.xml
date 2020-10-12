@@ -324,10 +324,6 @@
     <string>System Administration Role</string>
   </entry>
   <entry>
-    <string>ui</string>
-    <string>{&quot;newUI&quot;:{&quot;enabled&quot;:true,&quot;newSearch&quot;:true}}</string>
-  </entry>
-  <entry>
     <string>wrapper.role.roles.4.expression</string>
     <string>G:c3e5541c-a13c-4b76-a07d-290e36f97bbb </string>
   </entry>
