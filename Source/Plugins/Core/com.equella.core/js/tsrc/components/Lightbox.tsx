@@ -82,7 +82,7 @@ export interface LightboxProps {
   /** URL for the item to display in the Lightbox. */
   src: string;
   /** Title to display at the top of the Lightbox. */
-  title: string;
+  title?: string;
 }
 
 const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
