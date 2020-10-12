@@ -322,3 +322,10 @@ jobs:
         working-directory: oeq-ts-rest-api
         run: |
           npm cit
+
+      - name: Save oEQ Logs for REST Module
+        if: failure()
+        uses: actions/upload-artifact@v2.0.1
+        with:
+          name: oEQLogs-rest-module
+          path: autotest/equella-install/logs

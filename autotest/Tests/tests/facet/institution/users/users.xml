@@ -1,5 +1,23 @@
 <list>
   <com.tle.beans.user.TLEUser>
+    <id>806860</id>
+    <uuid>84a761e8-a973-4bd6-93c0-aa2703a6d262</uuid>
+    <username>AutoTest_Low_Privileged</username>
+    <firstName>low</firstName>
+    <lastName>privileged</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>804181</id>
+    <uuid>f40e91d5-2024-4bb0-87d6-1a0fa22ebae5</uuid>
+    <username>AutoTest</username>
+    <firstName>auto</firstName>
+    <lastName>test</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
     <id>18511</id>
     <uuid>f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a</uuid>
     <username>demoteacher</username>

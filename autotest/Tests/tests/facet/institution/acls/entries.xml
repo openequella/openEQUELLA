@@ -1,5 +1,57 @@
 <list>
   <com.tle.beans.security.AccessEntry>
+    <id>816952</id>
+    <expression>
+      <id>813563</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:18989</targetObject>
+    <privilege>SEARCH_COLLECTION</privilege>
+    <aggregateOrdering>2000 0001 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>816953</id>
+    <expression>
+      <id>813563</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:18989</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>0600 0000 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1400</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>816954</id>
+    <expression>
+      <id>813563</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:19034</targetObject>
+    <privilege>COMMENT_VIEW_ITEM</privilege>
+    <aggregateOrdering>0600 0001 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>-1400</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>816955</id>
+    <expression>
+      <id>813563</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:19034</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>0600 0000 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1400</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
     <id>18926</id>
     <expression>
       <id>18775</id>
@@ -687,6 +739,45 @@
     <grantRevoke>G</grantRevoke>
     <aclOrder>5</aclOrder>
     <aclPriority>-1425</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>806279</id>
+    <expression>
+      <id>777860</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>SEARCH_COLLECTION</privilege>
+    <aggregateOrdering>0100 0002 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>2</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>806280</id>
+    <expression>
+      <id>777860</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>0100 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>806281</id>
+    <expression>
+      <id>777860</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>DISCOVER_ITEM</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
     <id>18870</id>
