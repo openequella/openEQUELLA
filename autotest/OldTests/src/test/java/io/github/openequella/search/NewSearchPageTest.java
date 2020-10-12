@@ -2,7 +2,6 @@ package io.github.openequella.search;
 
 import static org.testng.Assert.assertEquals;
 
-import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
@@ -57,11 +56,6 @@ public class NewSearchPageTest extends AbstractSessionTest {
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
     SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(),
-        context.getTestConfig().getScreenshotFolder(),
-        "NewSearchPageTest - check Summary Page " + context.getTestConfig().isNewUI(),
-        true);
     assertEquals(summaryPage.getItemTitle(), ITEM_TITLE);
   }
 
@@ -84,8 +78,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
   public void searchWithLessACLS() {
     // This account can only access the Collection 'Hardware platforms' and items of this
-    // Collection.
-    // But it has no access to attachments and comments.
+    // Collection. But it has no access to attachments and comments.
     logon(AUTOTEST_LOW_PRIVILEGE_LOGON, AUTOTEST_PASSWD);
 
     searchPage = new NewSearchPage(context).load();
