@@ -57,6 +57,7 @@ export const GET = <T>(
           `Data format mismatch with data received from server, on request to: "${path}"`
         );
       }
+
       return data;
     })
     .catch(catchHandler);
