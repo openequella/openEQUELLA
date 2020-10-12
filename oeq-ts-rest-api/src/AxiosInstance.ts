@@ -57,10 +57,6 @@ export const GET = <T>(
           `Data format mismatch with data received from server, on request to: "${path}"`
         );
       }
-      console.log('rawData received from server: ');
-      console.log(rawData);
-      console.log('transformed data: ');
-      console.log(data);
       return data;
     })
     .catch(catchHandler);
