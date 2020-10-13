@@ -17,3 +17,8 @@ hibernate.connection.password = password
 #hibernate.connection.url = jdbc:sqlserver://localhost;databaseName=equella
 #hibernate.connection.username = equellauser
 #hibernate.connection.password = password
+
+# Use the Legacy ID generators.  Not a requirement, but
+#   may break installs on certain databases, such as SQL Server
+# https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/appendices/Configurations.html
+hibernate.id.new_generator_mappings=false
