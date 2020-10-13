@@ -78,19 +78,19 @@ jobs:
         run: |
           npm ci
 
-      - name: Run checks
-        run: |
-          npm run check
-          ./sbt headerCheck checkJavaCodeStyle
-
-      - name: Run unit tests (java/scala)
-        run: |
-          ./sbt test
-
-      - name: Run unit tests (javascript)
-        working-directory: Source/Plugins/Core/com.equella.core/js
-        run: |
-          npm cit
+#      - name: Run checks
+#        run: |
+#          npm run check
+#          ./sbt headerCheck checkJavaCodeStyle
+#
+#      - name: Run unit tests (java/scala)
+#        run: |
+#          ./sbt test
+#
+#      - name: Run unit tests (javascript)
+#        working-directory: Source/Plugins/Core/com.equella.core/js
+#        run: |
+#          npm cit
 
       - name: Build primary artefacts
         run: |
@@ -290,6 +290,11 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Install PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends  postgresql-client
+
       - name: Download installer
         uses: actions/download-artifact@v1
         with:
@@ -327,9 +332,36 @@ jobs:
         run: |
           npm cit
 
+      - name: Stop oEQ
+        if: failure()
+        run: |
+          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          stopEquella
+
+      - name: Dump database to a SQL file
+        if: failure()
+        run: |
+          sudo pg_dump equellatests -U equellatests -h localhost > $DOWNLOAD_DIR/db-rest-module.sql
+
       - name: Save freetext index files for REST Module
         if: failure()
         uses: actions/upload-artifact@v2.0.1
         with:
           name: oEQ-freetext-index-files
           path: autotest/equella-install/freetext
+
+      - name: Save oEQ logs for REST Module
+        if: failure()
+        uses: actions/upload-artifact@v2.0.1
+        with:
+          name: oEQ-logs-rest-module
+          path: autotest/equella-install/logs
+
+      - name: Save oEQ DB SQL file
+        if: failure()
+        uses: actions/upload-artifact@v2.0.1
+        with:
+          name: oEQ-DB-SQL
+          path: $DOWNLOAD_DIR/db-rest-module.sql
+
+
