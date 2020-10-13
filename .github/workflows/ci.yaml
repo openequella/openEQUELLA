@@ -309,9 +309,6 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
-      - name: Check Freetext index files
-        run: ../check-index.sh
-
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
         id: nvm
@@ -320,6 +317,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Check Freetext index files
+        working-directory: .github
+        run: ./check-index.sh
 
       - name: Run tests
         working-directory: oeq-ts-rest-api
