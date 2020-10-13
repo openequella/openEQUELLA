@@ -12,7 +12,7 @@ NEW_FOLDER_SIZE=
 
 while [[ $NEW_FOLDER_SIZE != $LAST_FOLDER_SIZE ]]
 do
- sleep 1m
+ sleep 3m
  ((TIMER++))
  echo "timer: $TIMER"
 

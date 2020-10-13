@@ -327,9 +327,9 @@ jobs:
         run: |
           npm cit
 
-      - name: Save oEQ Logs for REST Module
+      - name: Save freetext index files for REST Module
         if: failure()
         uses: actions/upload-artifact@v2.0.1
         with:
-          name: oEQLogs-rest-module
-          path: autotest/equella-install/logs
+          name: oEQ-freetext-index-files
+          path: autotest/equella-install/freetext
