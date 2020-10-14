@@ -81,7 +81,7 @@ describe("<SearchResult/>", () => {
     );
 
     // Given a user clicks on an attachment
-    userEvent.click(getByText(attachSearchObj.attachments[0].description!));
+    userEvent.click(getByText(attachSearchObj.attachments![0].description!));
 
     // Then they see the lightbox
     expect(
