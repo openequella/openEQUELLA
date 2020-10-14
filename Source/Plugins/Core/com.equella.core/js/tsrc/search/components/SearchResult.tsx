@@ -39,12 +39,15 @@ import {
 } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { Date as DateDisplay } from "../../components/Date";
+import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
+import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { determineViewer } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 
@@ -88,6 +91,15 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export interface SearchResultProps {
   /**
+   * Optional function to dependency inject for retrieval of viewers (good for storybook etc). Will
+   * default to using `getMimeTypeDefaultViewerDetails` from MimeTypesModule.
+   *
+   * @param mimeType MIME type to determine the viewer setup for
+   */
+  getViewerDetails?: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
+  /**
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
@@ -99,6 +111,7 @@ export interface SearchResultProps {
 }
 
 export default function SearchResult({
+  getViewerDetails = getMimeTypeDefaultViewerDetails,
   item: {
     name,
     version,
@@ -113,13 +126,58 @@ export default function SearchResult({
   },
   highlights,
 }: SearchResultProps) {
+  interface AttachmentAndViewerDetails {
+    attachment: OEQ.Search.Attachment;
+    viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
+  }
+
   const classes = useStyles();
+
+  const [attachExpanded, setAttachExpanded] = useState(
+    displayOptions?.standardOpen ?? false
+  );
+  const [
+    attachmentsWithViewerDetails,
+    setAttachmentsWithViewerDetails,
+  ] = useState<AttachmentAndViewerDetails[]>([]);
 
   const searchResultStrings = languageStrings.searchpage.searchresult;
 
-  const [attachExpanded, setAttachExpanded] = React.useState(
-    displayOptions?.standardOpen ?? false
-  );
+  // Responsible for determining the MIME type viewer for the provided attachments
+  useEffect(() => {
+    let mounted = true;
+
+    if (!attachments) {
+      // If there are no attachments, skip this effect
+      return;
+    }
+
+    const transform = async (
+      a: OEQ.Search.Attachment
+    ): Promise<AttachmentAndViewerDetails> => {
+      const viewerDetails = a.mimeType
+        ? await getViewerDetails(a.mimeType)
+        : undefined;
+      return {
+        attachment: a,
+        viewerDetails: viewerDetails,
+      };
+    };
+
+    (async () => {
+      const viewerDetails = await Promise.all(
+        attachments.map<Promise<AttachmentAndViewerDetails>>(transform)
+      );
+      if (mounted) {
+        setAttachmentsWithViewerDetails(viewerDetails);
+      }
+    })();
+
+    return () => {
+      // Short circuit if this component is unmounted before all it's comms is done.
+      mounted = false;
+    };
+  }, [attachments, getViewerDetails]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
@@ -175,14 +233,34 @@ export default function SearchResult({
   );
 
   const generateAttachmentList = () => {
-    const attachmentsList = attachments.map(
-      (attachment: OEQ.Search.Attachment) => {
+    const attachmentsList = attachmentsWithViewerDetails.map(
+      ({
+        attachment: {
+          attachmentType,
+          description,
+          id,
+          links: { view: url },
+          mimeType,
+        },
+        viewerDetails,
+      }: AttachmentAndViewerDetails) => {
         return (
-          <ListItem key={attachment.id} button className={classes.nested}>
+          <ListItem key={id} button className={classes.nested}>
             <ListItemIcon>
               <InsertDriveFile />
             </ListItemIcon>
-            <ListItemText color="primary" primary={attachment.description} />
+            <ItemAttachmentLink
+              description={description}
+              mimeType={mimeType}
+              viewerDetails={determineViewer(
+                attachmentType,
+                url,
+                mimeType,
+                viewerDetails?.viewerId
+              )}
+            >
+              <ListItemText color="primary" primary={description} />
+            </ItemAttachmentLink>
           </ListItem>
         );
       }

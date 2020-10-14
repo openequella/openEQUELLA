@@ -51,9 +51,9 @@ const useStyles = makeStyles({
  */
 export interface SearchResultListProps {
   /**
-   * Items of a search result.
+   * Ideally a collection of `<SearchResult>` elements.
    */
-  searchResultItems: OEQ.Search.SearchResultItem[];
+  children?: React.ReactNode;
   /**
    * True if showing the spinner is required.
    */
@@ -70,10 +70,6 @@ export interface SearchResultListProps {
    * Fired when the New search button is clicked.
    */
   onClearSearchOptions: () => void;
-  /**
-   * List of words which should be highlighted in the titles and descriptions of items.
-   */
-  highlights: string[];
 }
 
 /**
@@ -83,39 +79,26 @@ export interface SearchResultListProps {
  * The pagination is displayed in CardActions.
  */
 export const SearchResultList = ({
-  searchResultItems,
+  children,
   showSpinner,
   orderSelectProps,
   paginationProps,
   onClearSearchOptions,
-  highlights,
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
-  /**
-   * A SearchResult that represents one of the search result items.
-   */
-  const searchResults = searchResultItems.map(
-    (item: OEQ.Search.SearchResultItem) => (
-      <SearchResult
-        key={item.uuid}
-        item={{ ...item }}
-        highlights={highlights}
-      />
-    )
-  );
 
   /**
    * A list that consists of search result items. Lower the list's opacity when spinner displays.
    */
   const searchResultList = (
     <List className={showSpinner ? classes.transparentList : ""}>
-      {searchResults.length === 0 && !showSpinner ? (
+      {!children && !showSpinner ? (
         <ListItem key={searchPageStrings.noResultsFound} divider>
           <Typography>{searchPageStrings.noResultsFound}</Typography>
         </ListItem>
       ) : (
-        searchResults
+        children
       )}
     </List>
   );
@@ -147,9 +130,7 @@ export const SearchResultList = ({
         {showSpinner && (
           <CircularProgress
             variant="indeterminate"
-            className={
-              searchResultItems.length > 0 ? classes.centralSpinner : ""
-            }
+            className={children ? classes.centralSpinner : ""}
           />
         )}
         {searchResultList}
@@ -174,3 +155,27 @@ export const SearchResultList = ({
     </Card>
   );
 };
+
+/**
+ * Helper function for generating a collection of child `<SearchResult>` elements (for use inside
+ * `<SearchResultList>`) from a collection of OEQ.Search.SearchResultItem[].
+ *
+ * @param items the search result items to map over
+ * @param highlights a list of highlight terms
+ * @param getViewerDetails optional function to override retrieval of viewer details
+ */
+export const mapSearchResultItems = (
+  items: OEQ.Search.SearchResultItem[],
+  highlights: string[],
+  getViewerDetails?: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+): React.ReactNode[] =>
+  items.map((item) => (
+    <SearchResult
+      key={item.uuid}
+      item={{ ...item }}
+      highlights={highlights}
+      getViewerDetails={getViewerDetails}
+    />
+  ));
