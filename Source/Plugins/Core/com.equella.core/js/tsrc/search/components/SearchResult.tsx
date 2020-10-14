@@ -47,6 +47,7 @@ import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
 import { languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { HashLink } from "react-router-hash-link";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -110,6 +111,7 @@ export default function SearchResult({
     displayOptions,
     attachments = [],
     keywordFoundInAttachment,
+    commentCount,
   },
   highlights,
 }: SearchResultProps) {
@@ -119,6 +121,15 @@ export default function SearchResult({
 
   const [attachExpanded, setAttachExpanded] = React.useState(
     displayOptions?.standardOpen ?? false
+  );
+
+  const divider = (
+    <Divider
+      flexItem
+      component="span"
+      variant="middle"
+      orientation="vertical"
+    />
   );
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
@@ -132,16 +143,26 @@ export default function SearchResult({
       <Typography component="span" className={classes.status}>
         {status}
       </Typography>
-      <Divider
-        flexItem
-        component="span"
-        variant="middle"
-        orientation="vertical"
-      />
+
+      {divider}
       <Typography component="span">
         {searchResultStrings.dateModified}&nbsp;
         <DateDisplay displayRelative date={new Date(modifiedDate)} />
       </Typography>
+
+      {commentCount !== undefined && (
+        <>
+          {divider}
+          <Typography component="span">
+            <HashLink
+              to={`${routes.ViewItem.to(uuid, version)}#comments-list`}
+              smooth
+            >
+              {`${commentCount} comments`}
+            </HashLink>
+          </Typography>
+        </>
+      )}
     </div>
   );
 
