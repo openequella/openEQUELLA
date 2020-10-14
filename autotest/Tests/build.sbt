@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.12.1"
-val http4sVersion = "0.21.6"
+val http4sVersion = "0.21.7"
 val catsVersion   = "1.6.1"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.10",
+  "org.apache.commons"        % "commons-lang3"            % "3.11",
   "org.seleniumhq.selenium"   % "selenium-java"            % "3.141.59",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.4.0",
   "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.4.0",
   "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.4.0",
-  "org.apache.httpcomponents" % "httpclient"               % "4.5.12",
+  "org.apache.httpcomponents" % "httpclient"               % "4.5.13",
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis"       % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.55",

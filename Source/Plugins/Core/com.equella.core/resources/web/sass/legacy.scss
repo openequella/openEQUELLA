@@ -58,6 +58,7 @@ $iframeDialogWidth: 1175px;
 $iframeDialogHeight: 650px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
+$col2Width: 250px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -3552,6 +3553,9 @@ Item summary styling
 
 .add-mime {
   @include buttonShadowBorder;
+  width: $col2Width;
+  background-position-x: $singleMargin;
+  padding-left: $singleMargin;
   background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
@@ -5377,8 +5381,6 @@ button:focus {
     display: flex;
   }
 }
-
-$col2Width: 250px;
 
 .user-details #col2 {
   width: $col2Width;
