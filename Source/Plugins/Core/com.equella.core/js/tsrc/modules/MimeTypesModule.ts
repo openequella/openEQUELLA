@@ -68,7 +68,12 @@ export const getMimeTypeDefaultViewerDetails = async (
  * @param mimeType a MIME type of the form `<type>/<sub-type>`
  */
 export const splitMimeType = (mimeType: string): [string, string] => {
-  const validMimeTypeRegex = /^\w+\/[+.=; \w\-]+$/i;
+  // Regex break down:
+  // ^\w+          Starting with 1 or more word characters
+  // \/            Followed by a forward slash
+  // [+.=; \w-]+$  Ending with 1 or more of the allowed characters: + . = ; <space> - or word characters
+  // /i            And all done with case insensitivity
+  const validMimeTypeRegex = /^\w+\/[+.=; \w-]+$/i;
   if (!validMimeTypeRegex.test(mimeType)) {
     throw new TypeError(
       `Provided string [${mimeType}] is NOT a validly formatted MIME type.`
