@@ -56,7 +56,7 @@ libraryDependencies ++= Seq(
                   name = "axis")
   ),
   "com.google.api-client"        % "google-api-client"           % "1.30.10",
-  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200717-1.30.10",
+  "com.google.apis"              % "google-api-services-books"   % "v1-rev20200925-1.30.10",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
   "com.google.gdata"             % "core"                        % "1.47.1",
@@ -84,7 +84,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.2.3",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.7",
+  "commons-io"                % "commons-io"            % "2.8.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "dom4j"                     % "dom4j"                 % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
@@ -134,7 +134,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.5.12",
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
   "org.apache.httpcomponents" % "httpcore"         % "4.4.13",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
@@ -229,12 +229,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"           % "xml-resolver"              % "1.2",
-  "org.scala-sbt"          %% "io"                       % "1.3.4",
-  "org.mozilla"            % "rhino"                     % "1.7.12",
+  "org.scala-sbt"          %% "io"                       % "1.4.0",
+  "org.mozilla"            % "rhino"                     % "1.7.13",
   "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.87"
+  "io.github.classgraph"   % "classgraph"                % "4.8.90"
 )
 
 libraryDependencies ++= {
