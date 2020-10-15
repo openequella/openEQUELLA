@@ -1,0 +1,148 @@
+<com.tle.beans.item.Item>
+  <id>19066</id>
+  <uuid>32e2ce52-b64d-4c0a-ac9e-f8f23fc7033a</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 15:18:13.911</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 15:18:13.911</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-17 15:44:19.987</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>19071</id>
+      <uuid>2e499bc0-8570-45b4-9b6c-cfea1ffcc959</uuid>
+      <url>https://en.wikipedia.org/wiki/Intel_8086</url>
+      <description>https://en.wikipedia.org/wiki/Intel_8086</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Year</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_gb</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_gb</locale>
+              <priority>1</priority>
+              <text>1978</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>19075</id>
+      <url>https://en.wikipedia.org/wiki/Intel_8086</url>
+      <urlHash>99e47fbfd1dd80541289670c6010e2ac</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2020-08-17 15:18:15.267</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>19068</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-17 15:18:13.911</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-17 15:18:13.911</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19072</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:18:13.911</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19073</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:18:13.911</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19074</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:18:13.911</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>19069</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>19070</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Intel 8086</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>14490</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>The 8086[2] (also called iAPX 86)[3] is a 16-bit microprocessor chip designed by Intel between early 1976 and June 8, 1978, when it was released. The Intel 8088, released July 1, 1979,[4] is a slightly modified chip with an external 8-bit data bus (allowing the use of cheaper and fewer supporting ICs),[note 1] and is notable as the processor used in the original IBM PC design.
+
+            The 8086 gave rise to the x86 architecture, which eventually became Intel's most successful line of processors. On June 5, 2018, Intel released a limited-edition CPU celebrating the 40th anniversary of the Intel 8086, called the Intel Core i7-8086K.[4]</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

@@ -26,12 +26,12 @@ import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import {
   Card,
   CardActions,
+  CardContent,
   IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
   makeStyles,
   Typography,
 } from "@material-ui/core";
@@ -45,7 +45,7 @@ import {
   getHighestOrderIndex,
   removeFacetFromList,
   reorder,
-} from "./FacetedSearchSettingsModule";
+} from "../../../modules/FacetedSearchSettingsModule";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -63,15 +63,10 @@ import {
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
+import SettingsListHeading from "../../../components/SettingsListHeading";
 import { idExtractor } from "../../../util/idExtractor";
 
 const useStyles = makeStyles({
-  spacedCards: {
-    margin: "16px",
-    width: "75%",
-    padding: "16px",
-    float: "left",
-  },
   cardAction: {
     display: "flex",
     justifyContent: "flex-end",
@@ -272,20 +267,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppableFacetList">
         {(droppable: DroppableProvided) => (
-          <List
-            ref={droppable.innerRef}
-            subheader={
-              <>
-                <ListSubheader disableGutters>
-                  {facetedsearchsettingStrings.subHeading}
-                </ListSubheader>
-                <Typography variant="caption">
-                  {facetedsearchsettingStrings.explanationText}
-                </Typography>
-              </>
-            }
-            {...droppable.droppableProps}
-          >
+          <List ref={droppable.innerRef} {...droppable.droppableProps}>
             {facetListItems}
             {droppable.placeholder}
           </List>
@@ -302,8 +284,16 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       snackBarOnClose={() => setShowSnackBar(false)}
       preventNavigation={changesUnsaved}
     >
-      <Card className={classes.spacedCards}>
-        {facetList}
+      <Card>
+        <CardContent>
+          <SettingsListHeading
+            heading={facetedsearchsettingStrings.subHeading}
+          />
+          <Typography variant="caption">
+            {facetedsearchsettingStrings.explanationText}
+          </Typography>
+          {facetList}
+        </CardContent>
         <CardActions className={classes.cardAction}>
           <IconButton
             onClick={() => {

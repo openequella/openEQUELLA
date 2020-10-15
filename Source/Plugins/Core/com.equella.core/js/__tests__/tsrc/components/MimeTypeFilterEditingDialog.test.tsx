@@ -19,7 +19,7 @@ import * as React from "react";
 
 import { shallow } from "enzyme";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import { MimeTypeFilter } from "../../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
 
 describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();

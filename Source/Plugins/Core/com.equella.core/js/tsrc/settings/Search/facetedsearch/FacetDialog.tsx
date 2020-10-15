@@ -30,7 +30,7 @@ import { languageStrings } from "../../../util/langstrings";
 import {
   FacetWithFlags,
   validateFacetFields,
-} from "./FacetedSearchSettingsModule";
+} from "../../../modules/FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
 
 export interface FacetDialogProps {
@@ -147,7 +147,7 @@ const FacetDialog = ({
         />
         <SchemaSelector
           setSchemaNode={(node) => {
-            setSchemaNode(node);
+            setSchemaNode(node.replace("/xml", ""));
           }}
         />
       </DialogContent>

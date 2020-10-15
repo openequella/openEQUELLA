@@ -1,0 +1,93 @@
+<com.tle.beans.item.Item>
+  <id>15116</id>
+  <uuid>724fda1c-11d0-4304-9653-8e3bc17a2fa0</uuid>
+  <version>1</version>
+  <owner>45e552c2-e4e8-4061-a19b-22f4e0a7c608</owner>
+  <dateModified class="sql-timestamp">2020-08-13 14:42:57.661</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-13 14:42:57.662</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-13 14:42:57.661</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>15122</id>
+      <uuid>c409f228-36aa-4979-ab0c-f05a9f43ba7a</uuid>
+      <url>amphibians.pdf</url>
+      <description>amphibians.pdf</description>
+      <value1>9594</value1>
+      <thumbnail>_THUMBS/amphibians.pdf.jpeg</thumbnail>
+      <md5sum>a813ac2e09d3b6da32cf7db1596ef1b7</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>15119</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-13 14:42:57.661</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-13 14:42:57.661</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>15123</id>
+      <user>45e552c2-e4e8-4061-a19b-22f4e0a7c608</user>
+      <date class="sql-timestamp">2020-08-13 14:42:57.661</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>15124</id>
+      <user>45e552c2-e4e8-4061-a19b-22f4e0a7c608</user>
+      <date class="sql-timestamp">2020-08-13 14:42:57.661</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>15125</id>
+      <user>45e552c2-e4e8-4061-a19b-22f4e0a7c608</user>
+      <date class="sql-timestamp">2020-08-13 14:42:57.661</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>15120</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>15121</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Keyword found in attachment test item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>15117</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

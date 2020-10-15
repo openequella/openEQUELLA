@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
   Button,
   Dialog,
@@ -24,17 +23,18 @@ import {
   DialogTitle,
   TextField,
 } from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   getMIMETypesFromServer,
   MimeTypeFilter,
-  MimeTypeEntry,
   vaidateMimeTypeName,
-} from "./SearchFilterSettingsModule";
-import { useEffect, useState } from "react";
+} from "../../../modules/SearchFilterSettingsModule";
 import { commonString } from "../../../util/commonstrings";
-import MimeTypeList from "./MimeTypeList";
-import { languageStrings } from "../../../util/langstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
+import { languageStrings } from "../../../util/langstrings";
+import MimeTypeList from "./MimeTypeList";
 
 export interface MimeTypeFilterEditingDialogProps {
   /**
@@ -73,7 +73,9 @@ const MimeTypeFilterEditingDialog = ({
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
 
-  const [mimeTypeEntries, setMimeTypeEntries] = useState<MimeTypeEntry[]>([]);
+  const [mimeTypeEntries, setMimeTypeEntries] = useState<
+    OEQ.MimeType.MimeTypeEntry[]
+  >([]);
   // Used to store the name of a MIME type filter.
   const [filterName, setFilterName] = useState<string>("");
   // Used to store the MIME types of a MIME type filter.

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { buildSchemaTree, SchemaNode } from "../tsrc/schema/SchemaModule";
+import { buildSchemaTree, SchemaNode } from "../tsrc/modules/SchemaModule";
 import { TreeItem } from "@material-ui/lab";
 import * as React from "react";
 

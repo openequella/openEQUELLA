@@ -90,7 +90,10 @@ export function initStrings() {
   for (const key of Object.keys(languageStrings) as Array<
     keyof typeof languageStrings
   >) {
-    prepLangStrings(key, languageStrings[key]);
+    (languageStrings as LanguageStrings)[key] = prepLangStrings(
+      key,
+      languageStrings[key]
+    );
   }
 }
 
@@ -201,18 +204,13 @@ export const languageStrings = {
       title: "Warning",
       confirm: "Are you sure you want to clear this login notice?",
     },
-    prelogin: {
-      label: "Before login notice",
+    preLogin: {
+      title: "Before login notice",
     },
-    postlogin: {
-      label: "After login notice",
+    postLogin: {
+      title: "After login notice",
       description:
         "Write a plaintext message to be displayed after login as an alert...",
-    },
-    notifications: {
-      saved: "Login notice saved successfully.",
-      cleared: "Login notice cleared successfully.",
-      cancelled: "Cancelled changes to login notice.",
     },
     errors: {
       permissions: "You do not have permission to edit these settings.",
@@ -257,18 +255,19 @@ export const languageStrings = {
       primarycolour: "Primary Colour",
       menubackgroundcolour: "Menu Background Colour",
       backgroundcolour: "Background Colour",
+      paperColor: "Paper Colour",
       secondarycolour: "Secondary Colour",
       sidebartextcolour: "Sidebar Text Colour",
       primarytextcolour: "Primary Text Colour",
       secondarytextcolour: "Secondary Text Colour",
       sidebariconcolour: "Icon Colour",
     },
-    logosettings: {
+    logoSettings: {
       alt: "Logo",
       title: "Logo Settings",
-      imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
-      current: "Current Logo: ",
-      nofileselected: "No file selected.",
+      siteLogo: "Site Logo",
+      siteLogoDescription:
+        "The main logo for the site, primarily displayed in the top left of pages. (Use a PNG file of 230x36 pixels for best results.)",
     },
     errors: {
       invalidimagetitle: "Image Processing Error",
@@ -277,6 +276,9 @@ export const languageStrings = {
       nofiledescription: "Please select an image file to upload.",
       permissiontitle: "Permission Error",
       permissiondescription: "You do not have permission to edit the settings.",
+    },
+    colorPicker: {
+      dialogTitle: "Select a Color",
     },
   },
   common: {
@@ -300,6 +302,11 @@ export const languageStrings = {
       revertchanges: "Revert Changes",
       register: "Register",
       refresh: "Refresh",
+      done: "Done",
+      yes: "Yes",
+      no: "No",
+      showMore: "Show more",
+      showLess: "Show less",
     },
     result: {
       success: "Saved successfully.",
@@ -311,20 +318,20 @@ export const languageStrings = {
     roles: "Roles",
   },
   searchpage: {
+    title: "Search",
+    subtitle: "Search results",
     resultsAvailable: "results available",
+    noResultsFound: "No results found.",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
-    order: {
-      relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
-    },
-    filterOwner: {
-      title: "Owner",
-      chip: "Owner: ",
-      selectTitle: "Select user to filter by",
+    rawSearch: "Raw search",
+    rawSearchEnabledPlaceholder: "Search (raw mode)",
+    rawSearchDisabledPlaceholder: "Search",
+    rawSearchTooltip: "Supports use of Apache Lucene search syntax",
+    newSearch: "New search",
+    newSearchHelperText: "Clears search text and filters",
+    collectionSelector: {
+      title: "Collections",
     },
     filterLast: {
       label: "Modified within last",
@@ -336,6 +343,51 @@ export const languageStrings = {
       fiveyear: "Five years",
       week: "Week",
       day: "Day",
+    },
+    categorySelector: {
+      title: "Classifications",
+    },
+    filterOwner: {
+      title: "Owner",
+      chip: "Owner: ",
+      clear: "Clear owner selector",
+      selectTitle: "Select user to filter by",
+    },
+    lastModifiedDateSelector: {
+      title: "Date modified",
+      startDatePicker: "Modified after",
+      endDatePicker: "Modified before",
+      quickOptionDropdown: "Last modified date",
+    },
+    order: {
+      relevance: "Relevance",
+      name: "Name",
+      datemodified: "Date modifed",
+      datecreated: "Date created",
+      rating: "Rating",
+    },
+    pagination: {
+      firstPageButton: "First page",
+      previousPageButton: "Previous page",
+      nextPageButton: "Next page",
+      lastPageButton: "Last page",
+      itemsPerPage: "Items per page",
+    },
+    refineSearchPanel: {
+      title: "Refine search",
+    },
+    searchAttachmentsSelector: {
+      title: "Search attachments",
+    },
+    searchresult: {
+      attachments: "Attachments",
+      dateModified: "Modified",
+      keywordFoundInAttachment: "Search term found in attachment content",
+    },
+    statusSelector: {
+      all: "All",
+      live: "Live",
+      title: "Status",
     },
   },
   "com.equella.core.searching.search": {
@@ -377,9 +429,9 @@ export const languageStrings = {
         dateCreated: "Date created",
         title: "Title",
         userRating: "User rating",
-        allowNonLive: "Non-live results",
-        allowNonLiveLabel:
-          "Show the 'Include results that are not live' checkbox",
+        allowStatusControl: "Enable status selector",
+        allowStatusControlLabel:
+          "Allow users to toggle between live and all statuses via the status selector",
         authFeed: "Authenticated feeds",
         authFeedLabel: "Generate authenticated RSS and Atom feed links ",
         gallery: "Gallery",
@@ -454,6 +506,8 @@ export const languageStrings = {
         schemaSelector: {
           schema: "Schema",
           selectASchema: "Select a schema...",
+          permissionsHelperText:
+            "The LIST_SCHEMA permission is required to select a schema",
           nodeSelector: {
             expandAll: "Expand All",
             collapseAll: "Collapse All",
@@ -521,5 +575,22 @@ export const languageStrings = {
     title: "Close without saving?",
     message:
       "You have unsaved changes. Are you sure you want to leave this page without saving?",
+  },
+  dateRangeSelector: {
+    defaultStartDatePickerLabel: "From",
+    defaultEndDatePickerLabel: "To",
+    defaultDropdownLabel: "Quick date ranges",
+    quickOptionSwitchLabel: "Enable quick options",
+    quickOptionLabels: {
+      all: "All",
+      today: "Today",
+      lastSevenDays: "Last seven days",
+      lastMonth: "Last month",
+      thisYear: "This year",
+    },
+  },
+  userSearchComponent: {
+    failedToFindUsersMessage: "Unable to find any users matching '%s'",
+    queryFieldLabel: "Username, first or last name",
   },
 };

@@ -1,0 +1,119 @@
+<com.tle.beans.item.Item>
+  <id>19086</id>
+  <uuid>dc88f2aa-c15e-4a5b-9814-1c5cf7a023d3</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 15:22:43.902</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 15:22:43.902</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-17 15:44:19.987</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>19091</id>
+      <uuid>d131abe5-b8c9-4c0a-8527-14191f2ccf32</uuid>
+      <url>https://en.wikipedia.org/wiki/AVR32</url>
+      <description>https://en.wikipedia.org/wiki/AVR32</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>19095</id>
+      <url>https://en.wikipedia.org/wiki/AVR32</url>
+      <urlHash>1b0b5584c87c0e53d24dfb29928952d1</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2020-08-17 15:22:45.103</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>19088</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-17 15:22:43.902</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-17 15:22:43.902</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19092</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:22:43.902</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19093</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:22:43.902</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19094</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:22:43.902</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>19089</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>19090</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>AVR32</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>13086</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>The AVR32 is a 32-bit RISC microcontroller architecture produced by Atmel. The microcontroller architecture was designed by a handful of people educated at the Norwegian University of Science and Technology, including lead designer &#x00d8;yvind Str&#x00f8;m and CPU architect Erik Renno in Atmel's Norwegian design center.
+
+            Most instructions are executed in a single-cycle. The multiply&#x2013;accumulate unit can perform a 32-bit &#x00d7; 16-bit + 48-bit arithmetic operation in two cycles (result latency), issued once per cycle.
+
+            It does not resemble the 8-bit AVR microcontroller family, even though they were both designed at Atmel Norway, in Trondheim. Some of the debug-tools are similar.
+
+            Support for AVR32 has been dropped from Linux as of kernel 4.12;[1] Atmel has switched mostly to M variants of the ARM architecture.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

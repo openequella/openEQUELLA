@@ -1,9 +1,29 @@
-import * as Security from './Security';
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
+import * as Security from './Security';
 
 export type i18nString = string;
 
 export type I18nStrings = Record<string, string>;
+
+export type UuidString = string;
 
 export interface User {
   id: string;
@@ -45,6 +65,28 @@ export interface BaseEntity {
   links: Record<string, string>;
 }
 
+export interface BaseEntityReference {
+  uuid: string;
+  name?: i18nString;
+
+  // BEWARE: The server model (com.tle.common.interfaces.BaseEntityReference) has 'extras'
+  // which means there's potential for additional fields added dynamically at runtime.
+}
+
+export const ItemStatuses = Union(
+  Literal('ARCHIVED'),
+  Literal('DELETED'),
+  Literal('DRAFT'),
+  Literal('LIVE'),
+  Literal('MODERATING'),
+  Literal('PERSONAL'),
+  Literal('REJECTED'),
+  Literal('REVIEW'),
+  Literal('SUSPENDED')
+);
+
+export type ItemStatus = Static<typeof ItemStatuses>;
+
 export interface PagedResult<T> {
   start: number;
   length: number;
@@ -59,5 +101,32 @@ export interface PagedResult<T> {
  *
  * @param instance An instance to validate.
  */
-export const isPagedBaseEntity = (instance: unknown): boolean =>
-  is<PagedResult<BaseEntity>>(instance);
+export const isPagedBaseEntity = (
+  instance: unknown
+): instance is PagedResult<BaseEntity> => is<PagedResult<BaseEntity>>(instance);
+
+/**
+ * Query params for common to listing endpoints. All are optional!
+ */
+export interface ListCommonParams {
+  /**
+   * Search name and description
+   */
+  q?: string;
+  /**
+   * Privilege(s) to filter by
+   */
+  privilege?: string[];
+  /**
+   * Resumption token for paging
+   */
+  resumption?: string;
+  /**
+   * Number of results
+   */
+  length?: number;
+  /**
+   * Return full entity (needs VIEW or EDIT privilege)
+   */
+  full?: boolean;
+}

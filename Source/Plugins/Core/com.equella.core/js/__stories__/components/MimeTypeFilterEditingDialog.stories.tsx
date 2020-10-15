@@ -20,7 +20,7 @@ import type { Meta, Story } from "@storybook/react";
 import MimeTypeFilterEditingDialog, {
   MimeTypeFilterEditingDialogProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import type { MimeTypeFilter } from "../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import type { MimeTypeFilter } from "../../tsrc/modules/SearchFilterSettingsModule";
 
 export default {
   title: "MimeTypeFilterDialog",

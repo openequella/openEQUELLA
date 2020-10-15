@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { List, ListSubheader } from "@material-ui/core";
+import { List } from "@material-ui/core";
 import * as React from "react";
 import { ReactNode } from "react";
+import SettingsListHeading from "./SettingsListHeading";
 
 export interface SettingsListProps {
   /**
@@ -38,10 +39,9 @@ export default function SettingsList({
   children,
 }: SettingsListProps) {
   return (
-    <List
-      subheader={<ListSubheader disableGutters>{subHeading}</ListSubheader>}
-    >
-      {children}
-    </List>
+    <>
+      {subHeading && <SettingsListHeading heading={subHeading} />}
+      <List>{children}</List>
+    </>
   );
 }

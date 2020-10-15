@@ -18,6 +18,8 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 import {
+  Card,
+  CardContent,
   FormControl,
   FormControlLabel,
   Grid,
@@ -28,23 +30,23 @@ import {
 import {
   clearPreLoginNotice,
   getPreLoginNotice,
-  NotificationType,
   PreLoginNotice,
   ScheduleTypeSelection,
   strings,
   submitPreLoginNotice,
   unMarshallPreLoginNotice,
   uploadPreLoginNoticeImage,
-} from "./LoginNoticeModule";
+} from "../modules/LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
-import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import { DateTimePicker } from "material-ui-pickers";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import SettingsListHeading from "../components/SettingsListHeading";
+import LuxonUtils from "@date-io/luxon";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
 const RichTextEditor = React.lazy(() => import("../components/RichTextEditor"));
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
-  notify: (notificationType: NotificationType) => void;
   preventNav: (prevNav: boolean) => void;
 }
 
@@ -75,41 +77,11 @@ class PreLoginNoticeConfigurator extends React.Component<
     };
   }
 
-  handleSubmitPreNotice = () => {
-    if (this.state.current.notice == "") {
-      clearPreLoginNotice()
-        .then(() => {
-          this.props.notify(NotificationType.Clear);
-          this.setState(
-            {
-              db: this.state.current,
-            },
-            () => this.setPreventNav()
-          );
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
-    } else {
-      submitPreLoginNotice(this.state.current)
-        .then(() => {
-          this.props.notify(NotificationType.Save);
-          this.setDBToValues();
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
-    }
-  };
-
-  setDBToValues = () => {
-    this.setState(
-      {
-        db: this.state.current,
-      },
-      () => this.setPreventNav()
-    );
-  };
+  save = async () =>
+    (this.state.current.notice
+      ? submitPreLoginNotice(this.state.current)
+      : clearPreLoginNotice()
+    ).then(() => this.setState({ db: this.state.current }));
 
   componentDidMount = () => {
     getPreLoginNotice()
@@ -193,41 +165,52 @@ class PreLoginNoticeConfigurator extends React.Component<
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
-          <DateTimePicker
-            id="startDatePicker"
-            okLabel={<span id="ok">OK</span>}
-            onChange={this.handleStartDateChange}
-            format="d MMM yyyy - h:mm a"
-            value={this.state.current.startDate}
-          />
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <DateTimePicker
+              id="startDatePicker"
+              okLabel={<span id="ok">OK</span>}
+              onChange={this.handleStartDateChange}
+              format="d MMM yyyy - h:mm a"
+              value={this.state.current.startDate}
+            />
 
-          <Typography color="textSecondary" variant="subtitle1">
-            {strings.scheduling.end}
-          </Typography>
+            <Typography color="textSecondary" variant="subtitle1">
+              {strings.scheduling.end}
+            </Typography>
 
-          <DateTimePicker
-            id="endDatePicker"
-            onChange={this.handleEndDateChange}
-            format="d MMM yyyy - h:mm a"
-            value={this.state.current.endDate}
-          />
+            <DateTimePicker
+              id="endDatePicker"
+              onChange={this.handleEndDateChange}
+              format="d MMM yyyy - h:mm a"
+              value={this.state.current.endDate}
+            />
+          </MuiPickersUtilsProvider>
         </div>
       </FormControl>
     );
   };
 
-  handleStartDateChange = (startDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, startDate: new Date(startDate) } },
-      () => this.setPreventNav()
-    );
+  handleStartDateChange = (startDate: MaterialUiPickersDate) => {
+    if (startDate) {
+      this.setState(
+        { current: { ...this.state.current, startDate: startDate.toJSDate() } },
+        () => this.setPreventNav()
+      );
+    }
   };
 
-  handleEndDateChange = (endDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, endDate: new Date(endDate) } },
-      () => this.setPreventNav()
-    );
+  handleEndDateChange = (endDate: MaterialUiPickersDate) => {
+    if (endDate) {
+      this.setState(
+        {
+          current: {
+            ...this.state.current,
+            endDate: new Date(endDate.toJSDate()),
+          },
+        },
+        () => this.setPreventNav()
+      );
+    }
   };
 
   handleScheduleTypeSelectionChange = (
@@ -249,22 +232,25 @@ class PreLoginNoticeConfigurator extends React.Component<
   render() {
     const ScheduleSettings = this.ScheduleSettings;
     return (
-      <SettingsMenuContainer>
-        <Grid id="preLoginConfig" container spacing={8} direction="column">
-          <Grid item>
-            <React.Suspense fallback={<div>Loading editor...</div>}>
-              <RichTextEditor
-                htmlInput={this.state.db.notice}
-                onStateChange={this.handleEditorChange}
-                imageUploadCallBack={uploadPreLoginNoticeImage}
-              />
-            </React.Suspense>
+      <Card>
+        <CardContent>
+          <SettingsListHeading heading={strings.preLogin.title} />
+          <Grid id="preLoginConfig" container spacing={2} direction="column">
+            <Grid item>
+              <React.Suspense fallback={<div>Loading editor...</div>}>
+                <RichTextEditor
+                  htmlInput={this.state.db.notice}
+                  onStateChange={this.handleEditorChange}
+                  imageUploadCallBack={uploadPreLoginNoticeImage}
+                />
+              </React.Suspense>
+            </Grid>
+            <Grid item>
+              <ScheduleSettings />
+            </Grid>
           </Grid>
-          <Grid item>
-            <ScheduleSettings />
-          </Grid>
-        </Grid>
-      </SettingsMenuContainer>
+        </CardContent>
+      </Card>
     );
   }
 }

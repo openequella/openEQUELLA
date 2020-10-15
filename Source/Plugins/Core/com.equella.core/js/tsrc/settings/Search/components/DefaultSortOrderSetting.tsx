@@ -21,7 +21,7 @@ import {
   OutlinedInput,
   Select,
 } from "@material-ui/core";
-import { SortOrder } from "../SearchSettingsModule";
+import { SortOrder } from "../../../modules/SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import { makeStyles } from "@material-ui/core/styles";

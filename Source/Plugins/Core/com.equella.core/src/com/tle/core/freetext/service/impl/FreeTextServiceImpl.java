@@ -258,9 +258,16 @@ public class FreeTextServiceImpl
 
   @Override
   public <T extends FreetextResult> FreetextSearchResults<T> search(
-      Search searchreq, int nStart, int nCount) {
-    SearchResults<T> fTextResults = indexer.search(searchreq, nStart, nCount);
-    return new StdFreetextResults<T>(itemService, fTextResults, searchreq);
+      Search searchReq, int start, int count) {
+    SearchResults<T> results = indexer.search(searchReq, start, count);
+    return new StdFreetextResults<T>(itemService, results, searchReq);
+  }
+
+  @Override
+  public <T extends FreetextResult> FreetextSearchResults<T> search(
+      Search searchReq, int start, int count, boolean searchAttachments) {
+    SearchResults<T> results = indexer.search(searchReq, start, count, searchAttachments);
+    return new StdFreetextResults<T>(itemService, results, searchReq);
   }
 
   @Override

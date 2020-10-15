@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>18519</id>
+  <uuid>e810bee1-f2da-4145-8bc3-dc6fec827429</uuid>
+  <name>INT - Content Administrators</name>
+  <description></description>
+  <users>
+    <string>1c2ff1d0-9040-4985-a450-0ff6422ba5ef</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

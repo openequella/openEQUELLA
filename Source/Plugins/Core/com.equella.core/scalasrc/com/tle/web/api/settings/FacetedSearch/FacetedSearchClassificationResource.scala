@@ -49,7 +49,6 @@ class FacetedSearchClassificationResource {
     responseContainer = "List"
   )
   def getAll: Response = {
-    privilegeChecker.checkAuthorised()
     val classifications = service.enumerateAll()
     Response.ok().entity(classifications).build()
   }

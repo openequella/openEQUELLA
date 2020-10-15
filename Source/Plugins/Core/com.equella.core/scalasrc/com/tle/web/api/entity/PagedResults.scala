@@ -24,8 +24,18 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource
 import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, PagingBean}
 
-import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.collection.mutable.ListBuffer
+
+/**
+  * Represent an Base Entity and whether its full detail is accessible and its granted ACLs.
+  * @param entity An Base Entity instance such as a Collection.
+  * @param canViewFullDetail Whether the Base Entity's full detail is accessible.
+  * @param grantedPrivileges A set of granted ACLs, including user-specified privileges and those required to support viewing full detail.
+  */
+case class PagedEntity[BE <: BaseEntity](entity: BE,
+                                         canViewFullDetail: Boolean,
+                                         grantedPrivileges: Set[String])
 
 object PagedResults {
 
@@ -38,8 +48,6 @@ object PagedResults {
       .getOrElse((0, None))
   }
 
-  val MaxEntities = 200
-
   def pagedResults[BE <: BaseEntity, BEB <: BaseEntityBean](
       res: AbstractBaseEntityResource[BE, _, BEB],
       q: String,
@@ -51,68 +59,90 @@ object PagedResults {
       includeDisabled: Boolean): PagingBean[BEB] = {
     val (firstOffset, lengthFromToken) = decodeOffsetStart(resumption)
     // If resumption token provides a length then use it, or otherwise use the one from params.
-    val _length = if (lengthFromToken.isDefined) lengthFromToken.get else length
+    val _length = lengthFromToken.getOrElse(length)
     val privilege =
       if (_privilege.isEmpty) Set("LIST_" + res.getPrivilegeType) else _privilege.asScala.toSet
     val forFull = Set("VIEW_" + res.getPrivilegeType, "EDIT_" + res.getPrivilegeType)
 
     val allReqPriv = if (full) forFull ++ privilege else privilege
 
-    @tailrec
-    def collectMore(
-        len: Int,
-        offset: Int,
-        tried: Int,
-        vec: Vector[(BE, Boolean, Set[String])]): (Int, Vector[(BE, Boolean, Set[String])]) = {
-      if (len <= 0 || tried >= MaxEntities) (offset, vec)
-      else {
-        val amountToTry = if (tried == 0) len * 2 else MaxEntities - tried
-        val nextLot = res.getEntityService.query(
-          new EnumerateOptions(q,
-                               offset,
-                               amountToTry,
-                               system,
-                               if (includeDisabled) null else false))
-        val nextOffset = offset + nextLot.size()
-        if (nextOffset == offset) {
-          (offset, vec)
-        } else {
-          val privMap = LegacyGuice.aclManager
-            .getPrivilegesForObjects(allReqPriv.asJavaCollection, nextLot)
-            .asScala
-          object ExtraPrivs {
-            def unapply(be: BE): Option[(BE, Set[String])] = privMap.get(be).map { p =>
-              (be, allReqPriv & p.asScala.keySet)
-            }
-          }
-          val withPriv = nextLot.asScala
-            .collect {
-              case ExtraPrivs(be, privs) if privs.count(privilege) > 0 =>
-                (be, full && privs.exists(forFull), privs)
-            }
-            .take(len)
-          collectMore(len - withPriv.size, nextOffset, tried + amountToTry, vec ++ withPriv)
-        }
-      }
+    def getBaseEntities(offset: Int, max: Int): List[BE] =
+      res.getEntityService
+        .query(new EnumerateOptions(q, offset, max, system, if (includeDisabled) null else false))
+        .asScala
+        .toList
+
+    def filterByPermission(entities: List[BE]): List[BE] = {
+      entities.filter(
+        entity =>
+          !LegacyGuice.aclManager
+            .filterNonGrantedPrivileges(entity, privilege.asJavaCollection)
+            .isEmpty)
     }
+
+    def getAvailable: Int = {
+      // It's acceptable to retrieve all because targeted BaseEntities are all small datasets.
+      val entities = getBaseEntities(0, -1)
+      filterByPermission(entities).length
+    }
+
+    def collectMore(length: Int, initialOffset: Int): (Int, List[PagedEntity[BE]]) = {
+      val results: ListBuffer[PagedEntity[BE]] = ListBuffer()
+      var offset                               = initialOffset
+      var filteredEntityQuota                  = length // Indicate how many entities can be put in the result list.
+      while (filteredEntityQuota > 0) {
+        val entities: List[BE] = getBaseEntities(offset, length)
+        if (entities.isEmpty) {
+          return (offset, results.toList)
+        }
+
+        // Filter entities by permissions.
+        val filteredEntities = filterByPermission(entities)
+
+        results ++= filteredEntities.take(filteredEntityQuota).map { entity =>
+          // Check whether all required permissions for getting full details are granted.
+          val grantedPrivileges = LegacyGuice.aclManager
+            .filterNonGrantedPrivileges(entity, allReqPriv.asJavaCollection)
+            .asScala
+            .toSet
+          val canViewFullDetails = full && allReqPriv.forall(p => grantedPrivileges.contains(p))
+          PagedEntity(entity, canViewFullDetails, grantedPrivileges)
+        }
+
+        // The offset for subsequent calls needs to take into account the potential
+        // skipping of entities due to filtering by ACLs.
+        // If there is not enough quota after filtering entities, calculate the offset
+        // for the next call by adding the index of the last entity in the result list
+        // to the current offset.
+        // If there is enough for the quota, then simply return the current offset plus
+        // the length of retrieved entities.
+        if (filteredEntityQuota < filteredEntities.length && results.nonEmpty) {
+          offset += entities.indexOf(results.last.entity) + 1
+        } else {
+          offset += entities.length
+        }
+        filteredEntityQuota = length - results.length
+      }
+      (offset, results.toList)
+    }
+
     def addPrivs(privs: Set[String], b: BEB): BEB = {
       b.setReadonly(new BaseEntityReadOnly(privs.asJavaCollection))
       b
     }
 
-    val (_, results) = collectMore(_length, firstOffset, 0, Vector.empty)
-    val pb           = new PagingBean[BEB]
-    val available = res.getEntityService
-      .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
-      .toInt
+    val (nextOffset, results) = collectMore(_length, firstOffset)
+    val pb                    = new PagingBean[BEB]
     pb.setStart(firstOffset)
     pb.setLength(results.length)
-    pb.setAvailable(available)
-    // Include resumption token if there are items which can be retrieved in next request.
-    if (results.length + firstOffset < available)
-      pb.setResumptionToken(s"${firstOffset + results.length}:${_length}")
-    pb.setResults(results.map {
-      case (be, canFull, privs) => addPrivs(privs, res.serialize(be, null, canFull))
+    pb.setAvailable(getAvailable)
+    // When the number of results returned are less than asked for, we have reached the end.
+    // So do not return a resumption token.
+    if (results.length == _length)
+      pb.setResumptionToken(s"${nextOffset}:${_length}")
+    pb.setResults(results.map { pagedEntity =>
+      addPrivs(pagedEntity.grantedPrivileges,
+               res.serialize(pagedEntity.entity, null, pagedEntity.canViewFullDetail))
     }.asJava)
     pb
   }

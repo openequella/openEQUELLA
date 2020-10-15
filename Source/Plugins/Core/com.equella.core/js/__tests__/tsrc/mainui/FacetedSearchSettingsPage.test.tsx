@@ -18,8 +18,8 @@
 import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
-import * as FacetedSearchSettingsModule from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
-import { FacetWithFlags } from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
+import { FacetWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { act } from "react-dom/test-utils";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";

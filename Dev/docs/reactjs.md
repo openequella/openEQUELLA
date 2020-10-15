@@ -69,12 +69,6 @@ npm run clean
 
 ---
 
-## Purescript/Typescript bridge
-
-In order to prevent a cyclic dependency, Typescript must access any Purescript components using a global "bridge" variable.
-
-The bridge's type is declared in [bridge.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/api/bridge.ts).
-
 ## Typescript notes
 
 - Typescript 3.3.3333

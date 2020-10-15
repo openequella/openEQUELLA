@@ -30,12 +30,16 @@
   "dependencies": {
     "axios": "^0.20.0",
     "axios-cookiejar-support": "^1.0.0",
+    "lodash": "^4.17.15",
+    "query-string": "^6.12.1",
+    "runtypes": "^5.0.1",
     "tough-cookie": "^4.0.0",
     "typescript-is": "^0.16.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.14",
     "@types/tough-cookie": "^4.0.0",
+    "@types/lodash": "^4.14.155",
     "@typescript-eslint/eslint-plugin": "4.4.1",
     "@typescript-eslint/parser": "4.4.1",
     "core-js": "3.6.5",

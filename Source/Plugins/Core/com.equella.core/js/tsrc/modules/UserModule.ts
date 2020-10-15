@@ -19,6 +19,21 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../config";
 
 /**
+ * List users known in oEQ. Useful for filtering by users, or assigning permissions etc.
+ *
+ * @param query A wildcard supporting string to filter the result based on name
+ */
+export const listUsers = (
+  query?: string
+): Promise<OEQ.UserQuery.UserDetails[]> =>
+  OEQ.UserQuery.search(API_BASE_URL, {
+    q: query,
+    users: true,
+    groups: false,
+    roles: false,
+  }).then((result: OEQ.UserQuery.SearchResult) => result.users);
+
+/**
  * Gets the current user's info from the server as OEQ.LegacyContent.CurrentUserDetails.
  */
 export const getCurrentUserDetails = () =>

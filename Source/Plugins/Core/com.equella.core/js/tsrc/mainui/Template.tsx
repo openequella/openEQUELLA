@@ -17,7 +17,6 @@
  */
 import * as React from "react";
 import { ErrorResponse } from "../api/errors";
-import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import MenuIcon from "@material-ui/icons/Menu";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import AccountIcon from "@material-ui/icons/AccountCircle";
@@ -43,7 +42,6 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import luxonUtils from "@date-io/luxon";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { languageStrings } from "../util/langstrings";
 import MessageInfo from "../components/MessageInfo";
@@ -191,6 +189,7 @@ export const useStyles = makeStyles((theme: Theme) => {
       flexGrow: 1,
       flexBasis: 0,
       minHeight: 0,
+      padding: theme.spacing(2),
     },
     toolbar: theme.mixins.toolbar,
     tabs: {
@@ -609,12 +608,12 @@ export const Template = React.memo(function Template({
   }
 
   return (
-    <MuiPickersUtilsProvider utils={luxonUtils}>
+    <>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
         {errorResponse && renderError(errorResponse)}
       </div>
-    </MuiPickersUtilsProvider>
+    </>
   );
 });

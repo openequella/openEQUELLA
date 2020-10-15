@@ -20,7 +20,7 @@ import type { Meta, Story } from "@storybook/react";
 import FacetDialog, {
   FacetDialogProps,
 } from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
-import type { FacetWithFlags } from "../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsModule";
+import type { FacetWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
 
 export default {
   title: "FacetDialog",

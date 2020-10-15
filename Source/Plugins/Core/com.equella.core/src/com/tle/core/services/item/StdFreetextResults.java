@@ -63,6 +63,16 @@ public class StdFreetextResults<T extends FreetextResult> implements FreetextSea
     return results.getResults().get(index).getItemKey();
   }
 
+  /**
+   * This method was mainly added to provide better Java->Scala interoperability for the Search2 api
+   *
+   * @return A list of items from a StdFreetextResult.
+   */
+  @Override
+  public List<T> getSearchResults() {
+    return results.getResults();
+  }
+
   @Override
   public int getAvailable() {
     return results.getAvailable();

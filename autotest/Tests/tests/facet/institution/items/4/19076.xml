@@ -1,0 +1,146 @@
+<com.tle.beans.item.Item>
+  <id>19076</id>
+  <uuid>e3e9e28c-6c13-4f4e-86e0-06c593940a71</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-17 15:20:39.984</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-17 15:20:39.984</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-17 15:44:19.987</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>19081</id>
+      <uuid>431fcde0-6e44-4cac-8f7c-45fda5f83f01</uuid>
+      <url>https://en.wikipedia.org/wiki/Atmel_AVR_instruction_set</url>
+      <description>https://en.wikipedia.org/wiki/Atmel_AVR_instruction_set</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Year</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_gb</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_gb</locale>
+              <priority>1</priority>
+              <text>1996</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>19085</id>
+      <url>https://en.wikipedia.org/wiki/Atmel_AVR_instruction_set</url>
+      <urlHash>25e3329842fcfb3b5ac51addf3e8e7c8</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2020-08-17 15:20:41.151</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>19078</id>
+    <liveApprovalDate class="sql-timestamp">2020-08-17 15:20:39.984</liveApprovalDate>
+    <lastAction class="sql-timestamp">2020-08-17 15:20:39.984</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19082</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:20:39.984</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19083</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:20:39.984</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19084</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-17 15:20:39.984</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>19079</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>19080</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Atmel AVR</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>13056</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>The Atmel AVR instruction set is the machine language for the Atmel AVR, a modified Harvard architecture 8-bit RISC single chip microcontroller which was developed by Atmel in 1996. The AVR was one of the first microcontroller families to use on-chip flash memory for program storage. </text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

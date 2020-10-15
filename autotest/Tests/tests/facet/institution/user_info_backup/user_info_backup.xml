@@ -1,0 +1,10 @@
+<list>
+  <com.tle.beans.user.UserInfoBackup>
+    <id>18963</id>
+    <username>TLE_ADMINISTRATOR</username>
+    <firstName>TLE_ADMINISTRATOR</firstName>
+    <lastName>TLE_ADMINISTRATOR</lastName>
+    <institutionId>23</institutionId>
+    <uniqueId>TLE_ADMINISTRATOR</uniqueId>
+  </com.tle.beans.user.UserInfoBackup>
+</list>

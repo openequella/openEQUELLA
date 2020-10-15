@@ -20,7 +20,7 @@ import type { Meta, Story } from "@storybook/react";
 import MimeTypeList, {
   MimeTypeFilterListProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeList";
-import type { MimeTypeEntry } from "../../tsrc/settings/Search/searchfilter/SearchFilterSettingsModule";
+import * as OEQ from "@openequella/rest-api-client";
 
 export default {
   title: "MimeTypeList",
@@ -30,7 +30,7 @@ export default {
   },
 } as Meta<MimeTypeFilterListProps>;
 
-const defaultMimeTypes: MimeTypeEntry[] = [
+const defaultMimeTypes: OEQ.MimeType.MimeTypeEntry[] = [
   { mimeType: "image/png", desc: "This is a Image filter" },
   { mimeType: "image/jpeg", desc: "This is a Image filter" },
 ];

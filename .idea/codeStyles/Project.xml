@@ -65,6 +65,7 @@
       <option name="FORMATTER" value="1" />
     </ScalaCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
+      <option name="IMPORT_SORT_MODULE_NAME" value="true" />
       <option name="USE_PATH_MAPPING" value="NEVER" />
     </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="JAVA">
