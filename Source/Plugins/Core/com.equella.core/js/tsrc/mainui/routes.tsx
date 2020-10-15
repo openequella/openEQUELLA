@@ -16,18 +16,31 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { RouteComponentProps } from "react-router";
-import { LocationDescriptor } from "history";
-import { TemplateUpdate } from "./Template";
-import ThemePage from "../theme/ThemePage";
-import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
-import SearchPageSettings from "../settings/Search/SearchPageSettings";
-import SettingsPage from "../settings/SettingsPage";
-import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
-import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
-import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
-import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
-import SearchPage from "../search/SearchPage";
+import type { RouteComponentProps } from "react-router";
+import type { LocationDescriptor } from "history";
+import type { TemplateUpdate } from "./Template";
+
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
+const ThemePage = React.lazy(() => import("../theme/ThemePage"));
+const CloudProviderListPage = React.lazy(
+  () => import("../cloudprovider/CloudProviderListPage")
+);
+const SearchPageSettings = React.lazy(
+  () => import("../settings/Search/SearchPageSettings")
+);
+const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
+const SearchFilterPage = React.lazy(
+  () => import("../settings/Search/searchfilter/SearchFilterSettingsPage")
+);
+const LoginNoticeConfigPage = React.lazy(
+  () => import("../loginnotice/LoginNoticeConfigPage")
+);
+const FacetedSearchSettingsPage = React.lazy(
+  () => import("../settings/Search/facetedsearch/FacetedSearchSettingsPage")
+);
+const ContentIndexSettings = React.lazy(
+  () => import("../settings/Search/ContentIndexSettings")
+);
 
 export interface OEQRouteComponentProps<T = any>
   extends RouteComponentProps<T> {

@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeProvider } from "@material-ui/core";
-import { oeqTheme } from "../theme";
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "@material-ui/core";
+import { oeqTheme } from "../theme";
 import { startHeartbeat } from "../util/heartbeat";
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
