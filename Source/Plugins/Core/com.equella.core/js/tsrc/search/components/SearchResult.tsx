@@ -111,7 +111,7 @@ export default function SearchResult({
     displayOptions,
     attachments = [],
     keywordFoundInAttachment,
-    commentCount,
+    commentCount = 0,
   },
   highlights,
 }: SearchResultProps) {
@@ -154,7 +154,7 @@ export default function SearchResult({
           <DateDisplay displayRelative date={new Date(modifiedDate)} />
         </Typography>
 
-        {commentCount !== undefined && (
+        {commentCount > 0 && (
           <>
             {metaDataDivider}
             <Typography component="span">
