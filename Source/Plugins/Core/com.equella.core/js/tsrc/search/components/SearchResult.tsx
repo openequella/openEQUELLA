@@ -147,7 +147,7 @@ export default function SearchResult({
   useEffect(() => {
     let mounted = true;
 
-    if (!attachments) {
+    if (!attachments || !attachments.length) {
       // If there are no attachments, skip this effect
       return;
     }
