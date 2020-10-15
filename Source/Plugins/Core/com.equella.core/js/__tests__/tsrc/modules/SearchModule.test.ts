@@ -16,9 +16,20 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import { users } from "../../../__mocks__/UserSearch.mock";
+import * as CollectionModule from "../../../tsrc/modules/CollectionsModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
+import {
+  convertParamsToSearchOptions,
+  DateRange,
+  defaultSearchOptions,
+  SearchOptions,
+} from "../../../tsrc/modules/SearchModule";
+import { SortOrder } from "../../../tsrc/modules/SearchSettingsModule";
+import * as UserModule from "../../../tsrc/modules/UserModule";
 
 jest.mock("@openequella/rest-api-client");
 const mockedSearch = (OEQ.Search.search as jest.Mock<
@@ -103,5 +114,102 @@ describe("SearchModule", () => {
   it("should return undefined if no categories are selected", () => {
     expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
     expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
+  });
+
+  describe("convertParamsToSearchOptions", () => {
+    const mockedUser = jest.spyOn(UserModule, "resolveUsers");
+    const mockedCollection = jest.spyOn(
+      CollectionModule,
+      "collectionListSummary"
+    );
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return undefined if no query string parameters are defined", async () => {
+      const convertedParamsPromise = await convertParamsToSearchOptions("");
+      expect(convertedParamsPromise).toBeUndefined();
+    });
+
+    it("should convert legacy search parameters to searchOptions", async () => {
+      mockedUser.mockResolvedValue(users);
+      mockedCollection.mockResolvedValue(getCollectionMap);
+
+      //Query string was obtained from legacy UI searching.do->Share URL
+      const fullQueryString =
+        "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER";
+
+      const convertedParamsPromise = await convertParamsToSearchOptions(
+        fullQueryString
+      );
+
+      const expectedSearchOptions: SearchOptions = {
+        ...defaultSearchOptions,
+        sortOrder: SortOrder.DATECREATED,
+        searchAttachments: true,
+        collections: [
+          {
+            uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
+            name: "DRM Test Collection",
+          },
+        ],
+        query: "test",
+        owner: {
+          id: "680f5eb7-22e2-4ab6-bcea-25205165e36e",
+          username: "user200",
+          firstName: "Fabienne",
+          lastName: "Hobson",
+        },
+        lastModifiedDateRange: { start: new Date("2020-10-01T00:00:00.000Z") },
+      };
+
+      expect(convertedParamsPromise).toEqual(expectedSearchOptions);
+    });
+
+    // All combinations of Date Modified parameters that legacy UI uses. Epoch Unix Time Stamp formatted
+    // dp: DatePrimary ds: DateSecondary dr: DateRange
+
+    // dp=15 October 2020 00:00:00
+    const beforeDateQuery = "?dp=1602720000000&dr=BEFORE";
+    // dp=15 October 2020 00:00:00
+    const afterDateQuery = "?dp=1602720000000&dr=AFTER";
+    // dp=13 October 2020 00:00:00 ds=15 October 2020 00:00:00
+    const betweenDateQuery = "?dp=1602547200000&ds=1602720000000&dr=BETWEEN";
+    // dp=15 October 2020 00:00:00 ds=16 October 2020 00:00:00
+    const onDateQuery = "?dp=1602720000000&dr=ON";
+
+    const expectedBeforeRange = {
+      end: new Date("2020-10-15T00:00:00.000+00:00"),
+    };
+    const expectedAfterRange = {
+      start: new Date("2020-10-15T00:00:00.000+00:00"),
+    };
+    const expectedBetweenRange = {
+      start: new Date("2020-10-13T00:00:00.000+00:00"),
+      end: new Date("2020-10-15T00:00:00.000+00:00"),
+    };
+    const expectedOnRange = {
+      start: new Date("2020-10-15T00:00:00.000+00:00"),
+      end: new Date("2020-10-15T00:00:00.000+00:00"),
+    };
+
+    it.each([
+      [beforeDateQuery, expectedBeforeRange],
+      [afterDateQuery, expectedAfterRange],
+      [betweenDateQuery, expectedBetweenRange],
+      [onDateQuery, expectedOnRange],
+    ])(
+      `converts legacy date range query params: %s to search options containing lastModifiedDateRange of %s`,
+      async (queryString, expectedRange: DateRange) => {
+        const convertedSearchOptions = await convertParamsToSearchOptions(
+          queryString
+        );
+        expect(convertedSearchOptions).toEqual({
+          ...defaultSearchOptions,
+          lastModifiedDateRange: expectedRange,
+        });
+      }
+    );
   });
 });

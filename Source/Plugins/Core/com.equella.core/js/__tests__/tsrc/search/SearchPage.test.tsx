@@ -76,6 +76,10 @@ const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
+const mockQueryParamSearchOptions = jest.spyOn(
+  SearchModule,
+  "convertParamsToSearchOptions"
+);
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
@@ -661,6 +665,25 @@ describe("<SearchPage/>", () => {
     expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       selectedCategories: selectedCategories,
+    });
+  });
+});
+
+describe("conversion of legacy query parameters to SearchPageOptions", () => {
+  const searchPageOptions: SearchPageOptions = {
+    ...defaultSearchPageOptions,
+    dateRangeQuickModeEnabled: false,
+  };
+  mockQueryParamSearchOptions.mockResolvedValueOnce(searchPageOptions);
+
+  it("should call convertParamsToSearchOptions if there were query paramaters in url", async () => {
+    await renderSearchPage();
+    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledTimes(1);
+
+    await waitForSearch();
+    expect(mockSearch).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      dateRangeQuickModeEnabled: false,
     });
   });
 });

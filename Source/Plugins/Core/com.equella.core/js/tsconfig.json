@@ -2,6 +2,8 @@
   "compilerOptions": {
     "outDir": "target/ts",
     "module": "CommonJS",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "es5",
     "lib": ["es2020", "dom"],
     "inlineSourceMap": true,

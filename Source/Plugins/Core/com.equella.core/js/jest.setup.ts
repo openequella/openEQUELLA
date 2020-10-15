@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 import { configure } from "enzyme";
-import * as Adapter from "enzyme-adapter-react-16";
-
-configure({ adapter: new Adapter() });
+import * as ReactSixteenAdapter from "enzyme-adapter-react-16";
+const adapter = ReactSixteenAdapter as any;
+configure({ adapter: new adapter.default() });
