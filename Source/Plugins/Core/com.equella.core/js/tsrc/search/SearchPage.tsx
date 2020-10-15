@@ -121,6 +121,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
   const location = useLocation();
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -128,29 +129,31 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
-
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
-    getSearchSettingsFromServer()
-      .then((settings: SearchSettings) => {
-        setSearchSettings(settings);
-      })
-      .then(() => convertParamsToSearchOptions(location.search))
-      .then((queryOptions) => {
-        if (!queryOptions) {
-          setSearchPageOptions({
-            sortOrder:
-              searchPageOptions.sortOrder ?? searchSettings?.defaultSearchSort,
-            ...searchPageOptions,
-          });
-        } else
-          setSearchPageOptions({
-            dateRangeQuickModeEnabled: false,
-            sortOrder:
-              queryOptions.sortOrder ?? searchSettings?.defaultSearchSort,
-            ...queryOptions,
-          });
-      });
+
+    Promise.all([
+      getSearchSettingsFromServer(),
+      convertParamsToSearchOptions(location.search),
+    ]).then((results) => {
+      const [searchSettings, queryStringSearchOptions] = results;
+      setSearchSettings(searchSettings);
+
+      if (queryStringSearchOptions)
+        setSearchPageOptions({
+          ...queryStringSearchOptions,
+          dateRangeQuickModeEnabled: false,
+          sortOrder:
+            queryStringSearchOptions.sortOrder ??
+            searchSettings.defaultSearchSort,
+        });
+      else
+        setSearchPageOptions({
+          ...searchPageOptions,
+          sortOrder:
+            searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+        });
+    });
   }, []);
 
   const isInitialSearch = useRef(true);
