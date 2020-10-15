@@ -674,7 +674,14 @@ describe("conversion of legacy query parameters to SearchPageOptions", () => {
     ...defaultSearchPageOptions,
     dateRangeQuickModeEnabled: false,
   };
-  mockQueryParamSearchOptions.mockResolvedValueOnce(searchPageOptions);
+
+  beforeEach(() => {
+    mockQueryParamSearchOptions.mockResolvedValueOnce(searchPageOptions);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it("should call convertParamsToSearchOptions if there were query paramaters in url", async () => {
     await renderSearchPage();
@@ -682,8 +689,7 @@ describe("conversion of legacy query parameters to SearchPageOptions", () => {
 
     await waitForSearch();
     expect(mockSearch).toHaveBeenLastCalledWith({
-      ...defaultSearchPageOptions,
-      dateRangeQuickModeEnabled: false,
+      ...searchPageOptions,
     });
   });
 });
