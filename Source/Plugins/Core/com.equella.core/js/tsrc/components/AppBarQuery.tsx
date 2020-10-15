@@ -18,7 +18,7 @@
 import * as React from "react";
 import { useState, FunctionComponent, ChangeEvent } from "react";
 import { Theme } from "@material-ui/core";
-import { Search } from "@material-ui/icons";
+import Search from "@material-ui/icons/Search";
 import { fade } from "@material-ui/core/styles/colorManipulator";
 import { makeStyles } from "@material-ui/core/styles";
 import { commonString } from "../util/commonstrings";

@@ -17,7 +17,8 @@
  */
 import * as React from "react";
 import { TreeItem, TreeView } from "@material-ui/lab";
-import { Add, Remove } from "@material-ui/icons";
+import Add from "@material-ui/icons/Add";
+import Remove from "@material-ui/icons/Remove";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
 import { Button, Grid } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
