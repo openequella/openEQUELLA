@@ -89,6 +89,19 @@ export interface DateRange {
 }
 
 /**
+ * Legacy searching.do parameters currently supported by SearchPage component.
+ */
+export enum LegacySearchParams {
+  PRIMARYDATE = "dp",
+  SECONDARYDATE = "ds",
+  DATERANGE = "dr",
+  QUERY = "q",
+  SORT = "sort",
+  OWNER = "owner",
+  IN = "in",
+}
+
+/**
  * List of status which are considered 'live'.
  */
 export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
@@ -204,10 +217,23 @@ export const searchItems = ({
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
 
-export const convertParamsToSearchOptions = async (location: string) => {
-  if (!location) return undefined;
+/**
+ * A function that takes query string params from a shared searching.do url and converts all applicable params to Search options
+ * @param queryString query string params from a shared searching.do url
+ * @return SearchOptions object
+ */
+export const convertParamsToSearchOptions = async (queryString: string) => {
+  if (!queryString) return undefined;
 
-  const params = new URLSearchParams(location);
+  const params = new URLSearchParams(queryString);
+
+  const getQueryParam = (paramName: string) => {
+    return params.get(paramName) ?? undefined;
+  };
+
+  const collection = getQueryParam(LegacySearchParams.IN)?.substring(1);
+  const owner = getQueryParam(LegacySearchParams.OWNER);
+  const dateRange = getQueryParam(LegacySearchParams.DATERANGE);
 
   const getUserDetails = async (
     userId: string
@@ -218,7 +244,7 @@ export const convertParamsToSearchOptions = async (location: string) => {
 
   const getCollectionDetails = async (
     collectionUuid: string
-  ): Promise<Collection[] | undefined> => {
+  ): Promise<Collection[]> => {
     const collectionList = await collectionListSummary(["SEARCH_COLLECTION"]);
     return collectionList.filter((c) => {
       return c.uuid === collectionUuid;
@@ -231,9 +257,8 @@ export const convertParamsToSearchOptions = async (location: string) => {
     secondaryDate?: Date
   ): DateRange => {
     let dr: DateRange = {};
-
-    switch (rangeType.toLocaleLowerCase()) {
-      case "":
+    switch (rangeType?.toLocaleLowerCase()) {
+      case undefined:
         break;
       case "between":
         dr = { start: primaryDate, end: secondaryDate };
@@ -254,23 +279,21 @@ export const convertParamsToSearchOptions = async (location: string) => {
     return dr;
   };
 
-  const getParam = (paramName: string) => {
-    return params.get(paramName) ?? "";
-  };
-
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
-    collections: getParam("in")
-      ? await getCollectionDetails(getParam("in")?.substring(1))
+    collections: collection
+      ? await getCollectionDetails(collection)
       : undefined,
-    query: getParam("q"),
-    owner: await getUserDetails(getParam("owner")),
+    query: getQueryParam(LegacySearchParams.QUERY),
+    owner: owner ? await getUserDetails(owner) : undefined,
     lastModifiedDateRange: getLastModifiedDateRange(
-      getParam("dr"),
-      new Date(parseInt(getParam("dp"))),
-      new Date(parseInt(getParam("ds")))
+      dateRange ?? "",
+      new Date(parseInt(getQueryParam(LegacySearchParams.PRIMARYDATE) ?? "")),
+      new Date(parseInt(getQueryParam(LegacySearchParams.SECONDARYDATE) ?? ""))
     ),
-    sortOrder: (getParam("sort")?.toUpperCase() as SortOrder) || undefined,
+    sortOrder:
+      (getQueryParam(LegacySearchParams.SORT)?.toUpperCase() as SortOrder) ||
+      undefined,
   };
   return searchOptions;
 };
