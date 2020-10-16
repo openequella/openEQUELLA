@@ -25,7 +25,7 @@ import {
   ListItem,
   Typography,
 } from "@material-ui/core";
-import { FilterList } from "@material-ui/icons";
+import FilterList from "@material-ui/icons/FilterList";
 import * as React from "react";
 import { ReactNode } from "react";
 import { languageStrings } from "../../util/langstrings";
