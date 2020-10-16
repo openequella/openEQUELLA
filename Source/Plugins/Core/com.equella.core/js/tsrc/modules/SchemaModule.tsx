@@ -51,6 +51,13 @@ export const schemaListSummary = async (): Promise<Map<string, string>> => {
   );
 };
 
+interface Definition {
+  [key: string]: Definition | unknown;
+}
+
+const isDefinition = (value: unknown): value is Definition =>
+  typeof value === "object";
+
 /**
  * Recursive helper function to build a simple outline of the structure of an oEQ schema.
  *
@@ -59,15 +66,17 @@ export const schemaListSummary = async (): Promise<Map<string, string>> => {
  * @param parent Mainly for recursive calls to provide back linking to the parents.
  */
 export const buildSchemaTree = (
-  definition: any,
+  definition: Definition | unknown,
   name: string,
   parent?: SchemaNode
 ): SchemaNode => {
   const node: SchemaNode = { name: name, parent: parent };
-  node.children = Object.keys(definition)
-    .filter((childName: string) => typeof definition[childName] === "object")
-    .map((childName: string) =>
-      buildSchemaTree(definition[childName], childName, node)
+  if (!isDefinition(definition))
+    throw new TypeError("definition is not an indexable object");
+  node.children = Object.entries(definition)
+    .filter((entry): entry is [string, Definition] => isDefinition(entry[1]))
+    .map(([childName, childDefinition]) =>
+      buildSchemaTree(childDefinition, childName, node)
     );
 
   return node;

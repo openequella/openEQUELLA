@@ -235,7 +235,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       : Promise.resolve()
     )
       .then(
-        (): Promise<any> =>
+        (): Promise<number | void> =>
           changedMimeTypeFilters.length
             ? batchUpdateOrAdd(changedMimeTypeFilters)
                 .then((messages) => errorMessages.push(...messages))
@@ -243,7 +243,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
             : Promise.resolve()
       )
       .then(
-        (): Promise<any> =>
+        (): Promise<number | void> =>
           // Filters stored in 'deletedMimeTypeFilters' always have an ID.
           deletedMimeTypeFilters.length
             ? batchDelete(deletedMimeTypeFilters.map(idExtractor))
