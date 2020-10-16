@@ -32,7 +32,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@material-ui/core";
-import { AccountCircle } from "@material-ui/icons";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 import DeleteIcon from "@material-ui/icons/Delete";
 import UserSearch from "../../components/UserSearch";
 import { languageStrings } from "../../util/langstrings";

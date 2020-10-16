@@ -31,12 +31,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
-import {
-  AttachFile,
-  ExpandMore,
-  InsertDriveFile,
-  Search,
-} from "@material-ui/icons";
+import AttachFile from "@material-ui/icons/AttachFile";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
+import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent } from "react";

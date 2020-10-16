@@ -21,7 +21,7 @@ import { commonString } from "../util/commonstrings";
 import MessageInfo from "./MessageInfo";
 import { NavigationGuard } from "./NavigationGuard";
 import { Button, Grid } from "@material-ui/core";
-import { Save } from "@material-ui/icons";
+import Save from "@material-ui/icons/Save";
 
 export interface SettingPageTemplateProps {
   /**
