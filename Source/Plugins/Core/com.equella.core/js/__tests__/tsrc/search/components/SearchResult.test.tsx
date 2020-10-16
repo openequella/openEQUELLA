@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, queryByLabelText, getByText } from "@testing-library/react";
+import { render, queryByLabelText } from "@testing-library/react";
 import * as React from "react";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
@@ -23,7 +23,7 @@ import * as OEQ from "@openequella/rest-api-client";
 
 import "@testing-library/jest-dom/extend-expect";
 import { BrowserRouter } from "react-router-dom";
-import { formatSize, languageStrings } from "../../../../tsrc/util/langstrings";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 describe("<SearchResult/>", () => {
   const renderSearchResult = (itemResult: OEQ.Search.SearchResultItem) => {
@@ -54,29 +54,29 @@ describe("<SearchResult/>", () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each([
-    ["singular comment", mockData.basicSearchObj],
-    ["plural comments", mockData.attachSearchObj],
+  it.each<[string, OEQ.Search.SearchResultItem, string]>([
+    ["singular comment", mockData.basicSearchObj, "1 comment"],
+    ["plural comments", mockData.attachSearchObj, "2 comments"],
   ])(
     "should show comment count as a link for %s",
-    (testName: string, item: OEQ.Search.SearchResultItem) => {
-      const { container } = renderSearchResult(item);
-      const countLink = getByText(
-        container,
-        formatSize(item.commentCount ?? 0, languageStrings.searchpage.comments),
-        { selector: "a" }
-      );
-
-      expect(countLink).toBeInTheDocument();
+    (
+      testName: string,
+      item: OEQ.Search.SearchResultItem,
+      expectedLinkText: string
+    ) => {
+      const { queryByText } = renderSearchResult(item);
+      expect(
+        queryByText(expectedLinkText, { selector: "a" })
+      ).toBeInTheDocument();
     }
   );
 
   it("should hide comment count link if count is 0", () => {
-    const { container } = renderSearchResult(
+    const { queryByText } = renderSearchResult(
       mockData.keywordFoundInAttachmentObj
     );
     expect(
-      queryByLabelText(container, `No comments`, { selector: "a" })
+      queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
     ).toBeNull();
   });
 });
