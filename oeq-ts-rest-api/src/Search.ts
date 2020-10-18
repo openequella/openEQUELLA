@@ -166,9 +166,9 @@ export interface Attachment {
 }
 
 /**
- * Type of search result item.
+ * Shared properties or raw and transformed search result item
  */
-export interface SearchResultItem {
+interface SearchResultItemBase {
   /**
    * Item's unique ID.
    */
@@ -189,14 +189,6 @@ export interface SearchResultItem {
    * Item's status
    */
   status: string;
-  /**
-   * The date when item is created.
-   */
-  createdDate: Date;
-  /**
-   * The last date when item is modified.
-   */
-  modifiedDate: Date;
   /**
    * The ID of item's collection.
    */
@@ -241,6 +233,34 @@ export interface SearchResultItem {
 }
 
 /**
+ * Search result item as it is returned by the API
+ */
+interface SearchResultItemRaw extends SearchResultItemBase {
+  /**
+   * The date when item is created.
+   */
+  createdDate: string;
+  /**
+   * The last date when item is modified.
+   */
+  modifiedDate: string;
+}
+
+/**
+ * Type of search result item.
+ */
+export interface SearchResultItem extends SearchResultItemBase {
+  /**
+   * The date when item is created.
+   */
+  createdDate: Date;
+  /**
+   * The last date when item is modified.
+   */
+  modifiedDate: Date;
+}
+
+/**
  * Represents the results for a search query.
  */
 export interface SearchResult<T> {
@@ -278,15 +298,15 @@ export const search = (
   apiBasePath: string,
   params?: SearchParams
 ): Promise<SearchResult<SearchResultItem>> => {
-  return GET<SearchResult<SearchResultItem>>(
+  return GET<SearchResult<SearchResultItemRaw>>(
     apiBasePath + SEARCH2_API_PATH,
-    (data): data is SearchResult<SearchResultItem> =>
-      is<SearchResult<SearchResultItem>>(data),
-    params,
-    (data) =>
-      Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
-        'createdDate',
-        'modifiedDate',
-      ])
+    (data): data is SearchResult<SearchResultItemRaw> =>
+      is<SearchResult<SearchResultItemRaw>>(data),
+    params
+  ).then((data) =>
+    Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
+      'createdDate',
+      'modifiedDate',
+    ])
   );
 };
