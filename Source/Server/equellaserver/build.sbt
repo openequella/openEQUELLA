@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.11.2"
+val jacksonVersion   = "2.11.3"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "9.0.39"
 val SwaggerVersion   = "1.6.2"
