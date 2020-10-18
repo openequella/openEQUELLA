@@ -427,9 +427,10 @@ Buttons
 Inputs
 *****************************************************************************/
 
-input[type="text"],
-input[type="password"],
-input[type="number"],
+// Don't apply below styles to MUI inputs,
+input[type="text"]:not(.MuiInputBase-input),
+input[type="password"]:not(.MuiInputBase-input),
+input[type="number"]:not(.MuiInputBase-input),
 textarea,
 select[multiple="multiple"] {
   border: 1px solid #f5f5f5;
@@ -1087,8 +1088,10 @@ div.area {
 }
 
 #mainDiv #selection-content-inner {
-  padding: 0px 17px 0;
+  padding: 0 10px;
   display: flex;
+  align-items: flex-start;
+  width: 100%;
 }
 
 #mainDiv #selection-content #breadcrumbs {
@@ -1149,8 +1152,8 @@ div.area {
 
 #mainDiv .mainCols {
   display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
+  justify-content: center;
+  width: 80%;
   #col2 {
     min-width: 0;
   }
@@ -4461,20 +4464,31 @@ img.warningimg {
 }
 
 #selection-page {
-  margin: 0 auto;
-  width: 784px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // The width of this div is Full viewport width minus vertical scrollbar width.
+  // Ideally we should us JS to get scrollbar width.
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 #selection-content {
   background: url(../images/content-middle.gif) repeat-y 0px 0px;
-  position: relative;
-  width: 784px;
-  float: left;
+  width: 98%;
 }
 
 #selection-content #breadcrumb-inner {
   margin-left: 18px;
+}
+
+#selection-content #new-search-page {
+  margin: 0 15px 0 0;
+  width: 80%;
+}
+
+#selection-content #contribution_panel {
+  width: 100%;
 }
 
 #selection-header-content h3 a {
@@ -4499,7 +4513,6 @@ img.warningimg {
   min-height: 400px;
   padding: 32px 17px 0;
   float: left;
-  width: 750px;
 }
 
 /*****************************************************************************
@@ -4800,7 +4813,7 @@ div#sssh_finishedButton {
 #helpAndOptions {
   padding-top: 50px;
   float: right;
-  width: 100%;
+  width: 98%;
   display: grid;
   justify-items: end;
 
@@ -4809,6 +4822,12 @@ div#sssh_finishedButton {
     background-color: transparent;
     color: $primaryColor;
   }
+}
+
+.selection-lmscontent {
+  @extend div.area;
+  padding: 5px;
+  width: 20%;
 }
 
 .icon-plus:before {
@@ -4847,6 +4866,12 @@ div#sssh_finishedButton {
 *****************************************************************************/
 #selection-content-inner.search-layout .mainCols #col2 {
   width: auto;
+}
+
+.selection-courses {
+  width: 100%;
+  /*there shouldn't be any*/
+  overflow: hidden;
 }
 
 .selection-courses-inner .folder.rootfolder {
