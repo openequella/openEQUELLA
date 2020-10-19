@@ -190,7 +190,7 @@ export default function SearchResult({
           </>
         )}
 
-        {starRatings > 0 && (
+        {starRatings >= 0 && (
           <>
             {metaDataDivider}
             {showStar()}
