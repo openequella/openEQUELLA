@@ -387,7 +387,7 @@ export const Template = React.memo(function Template({
       <Tooltip title={title}>
         <Link to={uri}>
           <IconButton aria-label={title}>
-            {count == 0 ? (
+            {count === 0 ? (
               icon
             ) : (
               <Badge badgeContent={count} color="secondary">

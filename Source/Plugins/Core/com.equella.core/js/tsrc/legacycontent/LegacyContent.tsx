@@ -146,8 +146,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   function toRelativeUrl(url: string) {
     const relUrl =
-      url.indexOf(baseUrl) == 0 ? url.substring(baseUrl.length) : url;
-    return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
+      url.indexOf(baseUrl) === 0 ? url.substring(baseUrl.length) : url;
+    return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
   }
 
   function updatePageContent(content: LegacyContent, scrollTop: boolean) {
@@ -302,7 +302,7 @@ function updateStylesheets(
 
   while (
     current != null &&
-    current.tagName == "LINK" &&
+    current.tagName === "LINK" &&
     current instanceof HTMLLinkElement
   ) {
     existingSheets[current.href] = current;

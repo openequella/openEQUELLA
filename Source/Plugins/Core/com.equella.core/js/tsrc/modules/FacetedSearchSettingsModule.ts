@@ -102,7 +102,7 @@ export const removeFlags = ({
  * If the list is empty then return -1.
  */
 export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
-  if (facets.length == 0) {
+  if (facets.length === 0) {
     return -1;
   }
   return Math.max(

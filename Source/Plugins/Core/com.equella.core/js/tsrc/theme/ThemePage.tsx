@@ -221,7 +221,7 @@ class ThemePage extends React.Component<
 
   handleError = (error: AxiosError) => {
     let errResponse: ErrorResponse;
-    if (error.response != undefined) {
+    if (error.response !== undefined) {
       switch (error.response.status) {
         case 500:
           errResponse = generateNewErrorID(

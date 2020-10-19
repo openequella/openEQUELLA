@@ -89,7 +89,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         const preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
           response.data
         );
-        if (preLoginNotice.notice != undefined) {
+        if (preLoginNotice.notice !== undefined) {
           this.setState({
             db: preLoginNotice,
             current: preLoginNotice,
@@ -103,10 +103,10 @@ class PreLoginNoticeConfigurator extends React.Component<
 
   setPreventNav = () => {
     this.props.preventNav(
-      this.state.db.scheduleSettings != this.state.current.scheduleSettings ||
-        this.state.db.endDate != this.state.current.endDate ||
-        this.state.db.startDate != this.state.current.startDate ||
-        this.state.db.notice != this.state.current.notice
+      this.state.db.scheduleSettings !== this.state.current.scheduleSettings ||
+        this.state.db.endDate !== this.state.current.endDate ||
+        this.state.db.startDate !== this.state.current.startDate ||
+        this.state.db.notice !== this.state.current.notice
     );
   };
 
@@ -153,7 +153,7 @@ class PreLoginNoticeConfigurator extends React.Component<
 
         <div
           hidden={
-            this.state.current.scheduleSettings !=
+            this.state.current.scheduleSettings !==
             ScheduleTypeSelection.SCHEDULED
           }
         >
