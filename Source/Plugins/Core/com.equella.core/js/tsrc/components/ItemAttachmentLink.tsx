@@ -22,7 +22,7 @@ import Lightbox from "./Lightbox";
 
 export interface ItemAttachmentLinkProps {
   /**
-   * Content to be surrounded byt he link.
+   * Content to be surrounded by the link.
    */
   children: React.ReactNode;
   /**
