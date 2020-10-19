@@ -174,7 +174,7 @@ export const mapSearchResultItems = (
   items.map((item) => (
     <SearchResult
       key={item.uuid}
-      item={{ ...item }}
+      item={item}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
     />
