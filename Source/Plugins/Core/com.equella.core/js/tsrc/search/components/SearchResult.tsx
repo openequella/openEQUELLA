@@ -174,7 +174,7 @@ export default function SearchResult({
     })();
 
     return () => {
-      // Short circuit if this component is unmounted before all it's comms is done.
+      // Short circuit if this component is unmounted before all its comms are done.
       mounted = false;
     };
   }, [attachments, getViewerDetails]);
