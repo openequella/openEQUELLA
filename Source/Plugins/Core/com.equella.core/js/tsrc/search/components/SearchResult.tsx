@@ -153,14 +153,14 @@ export default function SearchResult({
       const rating = Math.round(starRatings * 2) / 2;
       return [1, 2, 3, 4, 5].map((i) => {
         if (i <= rating) {
-          return <Star />;
+          return <Star aria-label="full-star" />;
         }
 
         if (i - 0.5 === rating) {
-          return <StarHalf />;
+          return <StarHalf aria-label="half-star" />;
         }
 
-        return <StarBorder />;
+        return <StarBorder aria-label="empty-star" />;
       });
     };
 
