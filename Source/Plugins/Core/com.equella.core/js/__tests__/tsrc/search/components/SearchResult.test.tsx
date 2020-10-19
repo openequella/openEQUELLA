@@ -23,6 +23,7 @@ import * as OEQ from "@openequella/rest-api-client";
 
 import "@testing-library/jest-dom/extend-expect";
 import { BrowserRouter } from "react-router-dom";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 describe("<SearchResult/>", () => {
   const renderSearchResult = (itemResult: OEQ.Search.SearchResultItem) => {
@@ -51,5 +52,31 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(container, keywordFoundInAttachmentLabel)
     ).not.toBeInTheDocument();
+  });
+
+  it.each<[string, OEQ.Search.SearchResultItem, string]>([
+    ["singular comment", mockData.basicSearchObj, "1 comment"],
+    ["plural comments", mockData.attachSearchObj, "2 comments"],
+  ])(
+    "should show comment count as a link for %s",
+    (
+      testName: string,
+      item: OEQ.Search.SearchResultItem,
+      expectedLinkText: string
+    ) => {
+      const { queryByText } = renderSearchResult(item);
+      expect(
+        queryByText(expectedLinkText, { selector: "a" })
+      ).toBeInTheDocument();
+    }
+  );
+
+  it("should hide comment count link if count is 0", () => {
+    const { queryByText } = renderSearchResult(
+      mockData.keywordFoundInAttachmentObj
+    );
+    expect(
+      queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
+    ).toBeNull();
   });
 });

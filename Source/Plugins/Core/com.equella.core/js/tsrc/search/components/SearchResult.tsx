@@ -43,8 +43,9 @@ import { Link } from "react-router-dom";
 import { Date as DateDisplay } from "../../components/Date";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
-import { languageStrings } from "../../util/langstrings";
+import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { HashLink } from "react-router-hash-link";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -108,12 +109,16 @@ export default function SearchResult({
     displayOptions,
     attachments = [],
     keywordFoundInAttachment,
+    commentCount = 0,
   },
   highlights,
 }: SearchResultProps) {
   const classes = useStyles();
 
-  const searchResultStrings = languageStrings.searchpage.searchresult;
+  const {
+    searchresult: searchResultStrings,
+    comments: commentStrings,
+  } = languageStrings.searchpage;
 
   const [attachExpanded, setAttachExpanded] = React.useState(
     displayOptions?.standardOpen ?? false
@@ -125,23 +130,44 @@ export default function SearchResult({
     setAttachExpanded(!attachExpanded);
   };
 
-  const itemMetadata = (
-    <div className={classes.additionalDetails}>
-      <Typography component="span" className={classes.status}>
-        {status}
-      </Typography>
+  const generateItemMetadata = () => {
+    const metaDataDivider = (
       <Divider
         flexItem
         component="span"
         variant="middle"
         orientation="vertical"
       />
-      <Typography component="span">
-        {searchResultStrings.dateModified}&nbsp;
-        <DateDisplay displayRelative date={new Date(modifiedDate)} />
-      </Typography>
-    </div>
-  );
+    );
+
+    return (
+      <div className={classes.additionalDetails}>
+        <Typography component="span" className={classes.status}>
+          {status}
+        </Typography>
+
+        {metaDataDivider}
+        <Typography component="span">
+          {searchResultStrings.dateModified}&nbsp;
+          <DateDisplay displayRelative date={new Date(modifiedDate)} />
+        </Typography>
+
+        {commentCount > 0 && (
+          <>
+            {metaDataDivider}
+            <Typography component="span">
+              <HashLink
+                to={`${routes.ViewItem.to(uuid, version)}#comments-list`}
+                smooth
+              >
+                {formatSize(commentCount, commentStrings)}
+              </HashLink>
+            </Typography>
+          </>
+        )}
+      </div>
+    );
+  };
 
   const customDisplayMetadata = displayFields.map(
     (element: OEQ.Search.DisplayFields, index: number) => {
@@ -257,7 +283,7 @@ export default function SearchResult({
             </Typography>
             <List disablePadding>{customDisplayMetadata}</List>
             {generateAttachmentList()}
-            {itemMetadata}
+            {generateItemMetadata()}
           </>
         }
         primaryTypographyProps={{ color: "primary", variant: "h6" }}
