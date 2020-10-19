@@ -43,7 +43,11 @@ export interface ItemAttachmentLinkProps {
 }
 
 /**
- * A component to be used for viewing attachments in a uniform manner.
+ * A component to be used for viewing attachments in a uniform manner. If the viewer specified
+ * in `viewerDetails` is anything other than `lightbox` then a simple link will be created. In
+ * future versions of oEQ when the balance of New UI is undertaken, then in theory this component
+ * will need to handle the other types of viewers - e.g. generating links for google docs, or
+ * downloading attachments, etc.
  */
 const ItemAttachmentLink = ({
   children,
@@ -53,49 +57,44 @@ const ItemAttachmentLink = ({
 }: ItemAttachmentLinkProps) => {
   const [showLightbox, setShowLightbox] = useState<boolean>(false);
 
-  let link: JSX.Element = (
+  const buildLightboxLink = (): JSX.Element => {
+    if (!mimeType) {
+      throw new Error(
+        "'mimeType' must be specified when viewer is 'lightbox'."
+      );
+    }
+
+    return (
+      <>
+        <a
+          onClick={(event: SyntheticEvent) => {
+            setShowLightbox(!showLightbox);
+            event.stopPropagation();
+          }}
+        >
+          {children}
+        </a>
+        {showLightbox && ( // minor optimisation to minimise DOM
+          <Lightbox
+            mimeType={mimeType}
+            onClose={() => setShowLightbox(false)}
+            open={showLightbox}
+            src={url}
+            title={description}
+          />
+        )}
+      </>
+    );
+  };
+
+  return viewer === "lightbox" ? (
+    buildLightboxLink()
+  ) : (
+    // Lightbox viewer not specified, so go with the default of a simple link.
     <a href={url} target="_blank" rel="noreferrer">
       {children}
     </a>
   );
-  switch (viewer) {
-    case "lightbox":
-      if (!mimeType) {
-        throw new Error(
-          "'mimeType' must be specified when viewer is 'lightbox'."
-        );
-      }
-      link = (
-        <>
-          <a
-            onClick={(event: SyntheticEvent) => {
-              setShowLightbox(!showLightbox);
-              event.stopPropagation();
-            }}
-          >
-            {children}
-          </a>
-          {showLightbox && ( // minor optimisation to minimise DOM
-            <Lightbox
-              mimeType={mimeType}
-              onClose={() => setShowLightbox(false)}
-              open={showLightbox}
-              src={url}
-              title={description}
-            />
-          )}
-        </>
-      );
-      break;
-    case "link":
-      // NOP - go with default which is a link
-      break;
-    default:
-    // NOP - go with default (a simple link) and hope server has provided a suitable link.
-    // Will probably need to be further developed when full UI replacement is done.
-  }
-
-  return link ?? children;
 };
 
 export default ItemAttachmentLink;
