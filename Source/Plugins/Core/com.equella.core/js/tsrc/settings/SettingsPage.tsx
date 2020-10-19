@@ -158,8 +158,15 @@ const SettingsPage = ({
     } else if (setting.id === languageStrings.adminconsoledownload.id) {
       link = (
         <MUILink
-          href="javascript:void(0)"
-          onClick={() => setAdminDialogOpen(true)}
+          style={{ cursor: "pointer" }}
+          onClick={(
+            e:
+              | React.MouseEvent<HTMLAnchorElement>
+              | React.MouseEvent<HTMLSpanElement>
+          ) => {
+            e.preventDefault();
+            setAdminDialogOpen(true);
+          }}
         >
           {setting.name}
         </MUILink>
