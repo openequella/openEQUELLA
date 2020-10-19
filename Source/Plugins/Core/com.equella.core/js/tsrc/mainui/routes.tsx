@@ -28,6 +28,9 @@ import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
 import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
 import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import SearchPage from "../search/SearchPage";
+import { RenderData } from "./index";
+
+declare const renderData: RenderData | undefined;
 
 export interface OEQRouteComponentProps<T = any>
   extends RouteComponentProps<T> {
@@ -57,7 +60,9 @@ export const routes = {
     component: SettingsPage,
   },
   Search: {
-    path: "(/page/search|/searching.do)",
+    path: renderData?.newSearch
+      ? "(/page/search|/searching.do)"
+      : "/page/search",
     render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
   },
   SearchSettings: {
