@@ -238,6 +238,7 @@ export const LegacyContent = React.memo(function LegacyContent({
         cb: () => void
       ) {
         updateIncludes(includes.js, includes.css).then((_) => {
+          // eslint-disable-next-line no-eval
           window.eval(includes.script);
           cb();
         });
