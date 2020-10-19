@@ -251,8 +251,10 @@ export const convertParamsToSearchOptions = async (queryString: string) => {
     });
   };
 
+  type RangeType = "between" | "after" | "before" | "on";
+
   const getLastModifiedDateRange = (
-    rangeType: string,
+    rangeType: RangeType,
     primaryDate: Date,
     secondaryDate?: Date
   ): DateRange => {
@@ -287,7 +289,7 @@ export const convertParamsToSearchOptions = async (queryString: string) => {
     query: getQueryParam(LegacySearchParams.QUERY),
     owner: owner ? await getUserDetails(owner) : undefined,
     lastModifiedDateRange: getLastModifiedDateRange(
-      dateRange ?? "",
+      (dateRange as RangeType) ?? "",
       new Date(parseInt(getQueryParam(LegacySearchParams.PRIMARYDATE) ?? "")),
       new Date(parseInt(getQueryParam(LegacySearchParams.SECONDARYDATE) ?? ""))
     ),
