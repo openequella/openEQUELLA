@@ -1159,6 +1159,11 @@ div.area {
   }
 }
 
+// Override the width of mainCols when it's also wrapped by 'selection-content-bottom'
+#selection-content-bottom .mainCols {
+  width: 100%;
+}
+
 #mainDiv .selectiondashboard #col1 {
   width: 368px;
 }
@@ -4503,7 +4508,6 @@ img.warningimg {
 
 #selection-content-bottom {
   background: url(../images/content-bottom.gif) no-repeat 1px 100%;
-  float: left;
   /* This is to ensure the above background logo shows */
   padding-bottom: 90px;
 }
