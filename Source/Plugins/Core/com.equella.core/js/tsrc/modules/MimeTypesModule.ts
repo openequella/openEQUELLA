@@ -97,7 +97,7 @@ export const isBrowserSupportedAudio = (mimeType: string): boolean =>
     "audio/wav",
     // oEQ standard types
     "audio/x-mp3",
-  ].find((supported) => mimeType.startsWith(supported)) !== undefined;
+  ].some((supported) => mimeType.startsWith(supported));
 
 /**
  * Provides a quick check to see if the `mimeType` is a MIME type which can typically be
@@ -106,6 +106,6 @@ export const isBrowserSupportedAudio = (mimeType: string): boolean =>
  * @param mimeType A MIME type to be checked
  */
 export const isBrowserSupportedVideo = (mimeType: string): boolean =>
-  ["video/mp4", "video/webm", "video/ogg"].find((supported) =>
+  ["video/mp4", "video/webm", "video/ogg"].some((supported) =>
     mimeType.startsWith(supported)
-  ) !== undefined;
+  );
