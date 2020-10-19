@@ -66,7 +66,7 @@ interface FormUpdate {
   partial: boolean;
 }
 
-interface LegacyContent {
+interface ILegacyContent {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];
@@ -111,10 +111,10 @@ export interface LegacyContentProps {
   children?: never;
 }
 
-type SubmitResponse = ExternalRedirect | LegacyContent | ChangeRoute;
+type SubmitResponse = ExternalRedirect | ILegacyContent | ChangeRoute;
 
-function isPageContent(response: SubmitResponse): response is LegacyContent {
-  return (response as LegacyContent).html !== undefined;
+function isPageContent(response: SubmitResponse): response is ILegacyContent {
+  return (response as ILegacyContent).html !== undefined;
 }
 
 function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
@@ -150,7 +150,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
   }
 
-  function updatePageContent(content: LegacyContent, scrollTop: boolean) {
+  function updatePageContent(content: ILegacyContent, scrollTop: boolean) {
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,

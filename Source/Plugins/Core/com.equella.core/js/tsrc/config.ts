@@ -18,11 +18,11 @@
 // MUST end in /
 //export const INST_URL = 'http://localhost:8080/reports/';
 
-interface Config {
+interface IConfig {
   baseUrl: string;
 }
 
-export const Config: Config = {
+export const Config: IConfig = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };
 
