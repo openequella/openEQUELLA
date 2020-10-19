@@ -79,4 +79,13 @@ describe("<SearchResult/>", () => {
       queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
     ).toBeNull();
   });
+
+  it("should show MUI empty star, half star and full star as Item ratings", () => {
+    const { queryAllByLabelText } = renderSearchResult(
+      mockData.attachSearchObj
+    );
+    expect(queryAllByLabelText("full-star")).toHaveLength(1);
+    expect(queryAllByLabelText("empty-star")).toHaveLength(3);
+    expect(queryAllByLabelText("half-star")).toHaveLength(1);
+  });
 });
