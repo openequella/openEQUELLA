@@ -88,6 +88,12 @@
       "jest/consistent-test-it": "error",
       "jest/no-mocks-import": "off",
       "jest/require-top-level-describe": "error",
+      "jest/expect-expect": [
+        "warn",
+        {
+          "assertFunctionNames": ["expect*"]
+        }
+      ],
       "notice/notice": [
         "error",
         {
