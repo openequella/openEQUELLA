@@ -26,11 +26,13 @@ export interface ItemAttachmentLinkProps {
    */
   children: React.ReactNode;
   /**
-   * Optional description that will be passed to chosen viewer - e.g. Lightbox.
+   * Optional description that will be passed to chosen viewer - e.g. The viewer provided by
+   * the `<Lightbox/>` component.
    */
   description?: string;
   /**
-   * Optional mimeType that will be passed to chosen viewer - e.g. Lightbox.
+   * Optional mimeType that will be passed to chosen viewer - e.g. The viewer provided by
+   * the `<Lightbox/>` component.
    */
   mimeType?: string;
   /**
