@@ -47,9 +47,11 @@ export const determineViewer = (
   // When determining viewer for files we also need MIME type and the configured
   // MIME type viewer ID
   if (!mimeType || !mimeTypeViewerId) {
-    throw new Error(
-      "When determining viewer for 'file' attachments, please supply both mimeType and mimeTypeViewerId."
+    console.warn(
+      "When determining viewer for 'file' attachments, please supply both mimeType and mimeTypeViewerId. Falling back to simple link viewer."
     );
+
+    return simpleLinkView;
   }
 
   if (

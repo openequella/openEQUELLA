@@ -29,10 +29,10 @@ describe("determineViewer()", () => {
     expect(determineViewer("blah", testLink)).toEqual([linkViewerId, testLink]);
   });
 
-  it("throws an error if full parameters aren't provided for 'file' attachments", () =>
-    expect(() => determineViewer(fileAttachmentType, fileViewUrl)).toThrow(
-      Error
-    ));
+  it("returns a 'link' viewer if full parameters aren't provided for 'file' attachments", () => {
+    const [viewer] = determineViewer(fileAttachmentType, fileViewUrl);
+    expect(viewer).toEqual(linkViewerId);
+  });
 
   it("determines link viewer with modified link for 'save' MIME type viewer", () => {
     const [viewer, url] = determineViewer(

@@ -161,11 +161,13 @@ export const SearchResultList = ({
  * `<SearchResultList>`) from a collection of OEQ.Search.SearchResultItem[].
  *
  * @param items the search result items to map over
+ * @param handleError function which will be called on error (e.g. comms errors)
  * @param highlights a list of highlight terms
  * @param getViewerDetails optional function to override retrieval of viewer details
  */
 export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
+  handleError: (error: Error) => void,
   highlights: string[],
   getViewerDetails?: (
     mimeType: string
@@ -175,6 +177,7 @@ export const mapSearchResultItems = (
     <SearchResult
       key={item.uuid}
       item={item}
+      handleError={handleError}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
     />

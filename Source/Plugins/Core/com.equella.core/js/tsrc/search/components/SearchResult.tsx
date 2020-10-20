@@ -100,18 +100,23 @@ export interface SearchResultProps {
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
-   * The details of the items to display.
+   * Error handler for standard management of errors during processing - especially comms errors.
    */
-  item: OEQ.Search.SearchResultItem;
-
+  handleError: (error: Error) => void;
   /**
    * The list of words which should be highlighted.
    */
   highlights: string[];
+  /**
+   * The details of the items to display.
+   */
+  item: OEQ.Search.SearchResultItem;
 }
 
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
+  handleError,
+  highlights,
   item: {
     name,
     version,
@@ -124,7 +129,6 @@ export default function SearchResult({
     attachments = [],
     keywordFoundInAttachment,
   },
-  highlights,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -141,13 +145,13 @@ export default function SearchResult({
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
 
-  const searchResultStrings = languageStrings.searchpage.searchresult;
+  const searchResultStrings = languageStrings.searchpage.searchResult;
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
     let mounted = true;
 
-    if (!attachments || !attachments.length) {
+    if (!attachments.length) {
       // If there are no attachments, skip this effect
       return;
     }
@@ -155,9 +159,18 @@ export default function SearchResult({
     const transform = async (
       a: OEQ.Search.Attachment
     ): Promise<AttachmentAndViewerDetails> => {
-      const viewerDetails = a.mimeType
-        ? await getViewerDetails(a.mimeType)
-        : undefined;
+      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
+      try {
+        viewerDetails = a.mimeType
+          ? await getViewerDetails(a.mimeType)
+          : undefined;
+      } catch (error) {
+        handleError({
+          ...error,
+          message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
+        });
+      }
+
       return {
         attachment: a,
         viewerDetails: viewerDetails,

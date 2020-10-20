@@ -380,10 +380,14 @@ export const languageStrings = {
     searchAttachmentsSelector: {
       title: "Search attachments",
     },
-    searchresult: {
+    searchResult: {
       attachments: "Attachments",
       dateModified: "Modified",
       keywordFoundInAttachment: "Search term found in attachment content",
+      errors: {
+        getAttachmentViewerDetailsFailure:
+          "Failed to get attachment viewer details",
+      },
     },
     statusSelector: {
       all: "All",

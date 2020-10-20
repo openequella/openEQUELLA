@@ -413,7 +413,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               onClearSearchOptions={handleClearSearchOptions}
             >
               {searchResults.length > 0 &&
-                mapSearchResultItems(searchResults, highlights)}
+                mapSearchResultItems(searchResults, handleError, highlights)}
             </SearchResultList>
           </Grid>
         </Grid>
