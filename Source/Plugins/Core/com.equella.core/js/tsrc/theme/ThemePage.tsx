@@ -37,7 +37,7 @@ import {
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import { routes } from "../mainui/routes";
 import {
   templateDefaults,

@@ -21,7 +21,7 @@ import {
   BatchOperationResponse,
   groupErrorMessages,
 } from "../api/BatchOperationResponse";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import { encodeQuery } from "../util/encodequery";
 
 export interface MimeTypeFilter {

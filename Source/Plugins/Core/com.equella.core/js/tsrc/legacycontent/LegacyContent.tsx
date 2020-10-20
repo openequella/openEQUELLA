@@ -19,7 +19,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
 declare global {
@@ -66,7 +66,7 @@ interface FormUpdate {
   partial: boolean;
 }
 
-interface ILegacyContent {
+interface LegacyContentResponse {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];
@@ -111,10 +111,12 @@ export interface LegacyContentProps {
   children?: never;
 }
 
-type SubmitResponse = ExternalRedirect | ILegacyContent | ChangeRoute;
+type SubmitResponse = ExternalRedirect | LegacyContentResponse | ChangeRoute;
 
-function isPageContent(response: SubmitResponse): response is ILegacyContent {
-  return (response as ILegacyContent).html !== undefined;
+function isPageContent(
+  response: SubmitResponse
+): response is LegacyContentResponse {
+  return (response as LegacyContentResponse).html !== undefined;
 }
 
 function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
@@ -150,7 +152,10 @@ export const LegacyContent = React.memo(function LegacyContent({
     return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
   }
 
-  function updatePageContent(content: ILegacyContent, scrollTop: boolean) {
+  function updatePageContent(
+    content: LegacyContentResponse,
+    scrollTop: boolean
+  ) {
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
