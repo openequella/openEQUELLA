@@ -18,7 +18,11 @@ hibernate.connection.password = password
 #hibernate.connection.username = equellauser
 #hibernate.connection.password = password
 
-# Use the Legacy ID generators.  Not a requirement, but
-#   may break installs on certain databases, such as SQL Server
+# Use the Legacy ID generators.  Not a requirement, but recommended.
+# May break installs on certain databases, such as SQL Server if not configured.
 # https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/appendices/Configurations.html
 hibernate.id.new_generator_mappings=false
+
+# Due to @Inheritance(strategy = InheritanceType.JOINED),
+#   turn off this feature.
+hibernate.query.omit_join_of_superclass_tables=false

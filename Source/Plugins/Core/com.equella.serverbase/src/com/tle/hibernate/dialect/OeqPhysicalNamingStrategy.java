@@ -51,6 +51,10 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
   }
 
   public OeqPhysicalNamingStrategy() {
+    // Reserved database keywords need to be quoted.
+    // It's recommended to only quote what the application
+    // needs, as opposed to ALL database object names.
+
     // MySQL5 can't handle schemas and `schemas` doesn't work
     // SQLServer can't handle schema
     registerOverride("schema", "tleschemas");
@@ -72,10 +76,11 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
 
     // Oracle specific
     columnOverrides.put("successful", "`successful`");
+    columnOverrides.put("online", "`online`");
+    columnOverrides.put("resource", "`resource`");
 
     // HSQL Specific
     columnOverrides.put("position", "`position`");
-
     columnOverrides.put("timestamp", "`timestamp`");
   }
 
