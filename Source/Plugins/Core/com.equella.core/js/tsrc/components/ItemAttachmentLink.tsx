@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Link } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import { ViewerDefinition } from "../modules/ViewerModule";
@@ -66,14 +67,15 @@ const ItemAttachmentLink = ({
 
     return (
       <>
-        <a
+        <Link
+          component="button"
           onClick={(event: SyntheticEvent) => {
             setShowLightbox(!showLightbox);
             event.stopPropagation();
           }}
         >
           {children}
-        </a>
+        </Link>
         {showLightbox && ( // minor optimisation to minimise DOM
           <Lightbox
             mimeType={mimeType}
@@ -91,9 +93,9 @@ const ItemAttachmentLink = ({
     buildLightboxLink()
   ) : (
     // Lightbox viewer not specified, so go with the default of a simple link.
-    <a href={url} target="_blank" rel="noreferrer">
+    <Link href={url} target="_blank" rel="noreferrer">
       {children}
-    </a>
+    </Link>
   );
 };
 
