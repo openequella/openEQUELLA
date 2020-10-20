@@ -110,9 +110,15 @@ export default function IndexPage() {
       return shallowEqual(edited, tp) ? tp : edited;
     });
   }, []);
-  const oeqRoutes: { [key: string]: OEQRoute } = routes;
+  interface Routes {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: OEQRoute<any>;
+  }
+  const oeqRoutes: Routes = routes;
 
-  function mkRouteProps(p: RouteComponentProps<any>): OEQRouteComponentProps {
+  function mkRouteProps<T>(
+    p: RouteComponentProps<T>
+  ): OEQRouteComponentProps<T> {
     return {
       ...p,
       updateTemplate,

@@ -17,7 +17,7 @@
  */
 import { sprintf } from "sprintf-js";
 
-declare let bundle: any;
+declare let bundle: { [prefix: string]: string };
 
 export interface Sizes {
   zero: string;

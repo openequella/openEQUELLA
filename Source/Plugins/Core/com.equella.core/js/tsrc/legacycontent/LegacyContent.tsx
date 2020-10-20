@@ -24,12 +24,11 @@ import * as OEQ from "@openequella/rest-api-client";
 
 declare global {
   interface Window {
-    _trigger: any;
-    eval: any;
-    EQ: { [index: string]: any };
+    _trigger: undefined | ((value: string) => boolean);
+    EQ: { [index: string]: unknown };
   }
 
-  const _trigger: any;
+  const _trigger: (value: string) => boolean;
 }
 
 export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
@@ -331,7 +330,7 @@ function updateStylesheets(
       lastLink.push(p);
       return lastLink;
     }
-  }, [] as Promise<any>[]);
+  }, [] as Promise<unknown>[]);
   return Promise.all(cssPromises).then((_) => existingSheets);
 }
 
