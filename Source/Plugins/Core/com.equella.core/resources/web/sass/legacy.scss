@@ -1094,6 +1094,10 @@ div.area {
   width: 100%;
 }
 
+#mainDiv #selection-content-bottom #selection-content-inner {
+  padding: 0; // Override padding if it's wrapped by #selection-content-bottom
+}
+
 #mainDiv #selection-content #breadcrumbs {
   margin-top: 10px;
 }
@@ -1152,16 +1156,15 @@ div.area {
 
 #mainDiv .mainCols {
   display: flex;
-  justify-content: center;
-  width: 80%;
+  flex-grow: 1;
+  justify-content: space-between;
   #col2 {
     min-width: 0;
   }
 }
 
-// Override the width of mainCols when it's also wrapped by 'selection-content-bottom'
-#selection-content-bottom .mainCols {
-  width: 100%;
+#mainDiv #selection-content-bottom .mainCols {
+  padding: 10px; // Add padding if it's wrapped by #selection-content-bottom
 }
 
 #mainDiv .selectiondashboard #col1 {
