@@ -41,7 +41,14 @@ describe("<SearchResult/>", () => {
     const renderResult = render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
       <BrowserRouter>
-        <SearchResult key={itemResult.uuid} item={itemResult} highlights={[]} />
+        <SearchResult
+          key={itemResult.uuid}
+          item={itemResult}
+          handleError={(error) =>
+            console.warn(`Testing error handler: ${error}`)
+          }
+          highlights={[]}
+        />
       </BrowserRouter>
     );
 
@@ -72,6 +79,32 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(keywordFoundInAttachmentLabel)
     ).not.toBeInTheDocument();
+  });
+
+  it.each<[string, OEQ.Search.SearchResultItem, string]>([
+    ["singular comment", mockData.basicSearchObj, "1 comment"],
+    ["plural comments", mockData.attachSearchObj, "2 comments"],
+  ])(
+    "should show comment count as a link for %s",
+    async (
+      testName: string,
+      item: OEQ.Search.SearchResultItem,
+      expectedLinkText: string
+    ) => {
+      const { queryByText } = await renderSearchResult(item);
+      expect(
+        queryByText(expectedLinkText, { selector: "a" })
+      ).toBeInTheDocument();
+    }
+  );
+
+  it("should hide comment count link if count is 0", async () => {
+    const { queryByText } = await renderSearchResult(
+      mockData.keywordFoundInAttachmentObj
+    );
+    expect(
+      queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
+    ).toBeNull();
   });
 
   it("displays the lightbox when an image attachment is clicked", async () => {

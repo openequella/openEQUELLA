@@ -31,12 +31,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
-import {
-  AttachFile,
-  ExpandMore,
-  InsertDriveFile,
-  Search,
-} from "@material-ui/icons";
+import AttachFile from "@material-ui/icons/AttachFile";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
+import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -48,8 +46,9 @@ import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { determineViewer } from "../../modules/ViewerModule";
-import { languageStrings } from "../../util/langstrings";
+import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { HashLink } from "react-router-hash-link";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -128,6 +127,7 @@ export default function SearchResult({
     displayOptions,
     attachments = [],
     keywordFoundInAttachment,
+    commentCount = 0,
   },
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
@@ -145,7 +145,10 @@ export default function SearchResult({
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
 
-  const searchResultStrings = languageStrings.searchpage.searchResult;
+  const {
+    searchResult: searchResultStrings,
+    comments: commentStrings,
+  } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
@@ -198,23 +201,44 @@ export default function SearchResult({
     setAttachExpanded(!attachExpanded);
   };
 
-  const itemMetadata = (
-    <div className={classes.additionalDetails}>
-      <Typography component="span" className={classes.status}>
-        {status}
-      </Typography>
+  const generateItemMetadata = () => {
+    const metaDataDivider = (
       <Divider
         flexItem
         component="span"
         variant="middle"
         orientation="vertical"
       />
-      <Typography component="span">
-        {searchResultStrings.dateModified}&nbsp;
-        <DateDisplay displayRelative date={new Date(modifiedDate)} />
-      </Typography>
-    </div>
-  );
+    );
+
+    return (
+      <div className={classes.additionalDetails}>
+        <Typography component="span" className={classes.status}>
+          {status}
+        </Typography>
+
+        {metaDataDivider}
+        <Typography component="span">
+          {searchResultStrings.dateModified}&nbsp;
+          <DateDisplay displayRelative date={new Date(modifiedDate)} />
+        </Typography>
+
+        {commentCount > 0 && (
+          <>
+            {metaDataDivider}
+            <Typography component="span">
+              <HashLink
+                to={`${routes.ViewItem.to(uuid, version)}#comments-list`}
+                smooth
+              >
+                {formatSize(commentCount, commentStrings)}
+              </HashLink>
+            </Typography>
+          </>
+        )}
+      </div>
+    );
+  };
 
   const customDisplayMetadata = displayFields.map(
     (element: OEQ.Search.DisplayFields, index: number) => {
@@ -350,7 +374,7 @@ export default function SearchResult({
             </Typography>
             <List disablePadding>{customDisplayMetadata}</List>
             {generateAttachmentList()}
-            {itemMetadata}
+            {generateItemMetadata()}
           </>
         }
         primaryTypographyProps={{ color: "primary", variant: "h6" }}

@@ -394,6 +394,11 @@ export const languageStrings = {
       live: "Live",
       title: "Status",
     },
+    comments: {
+      zero: "No comments",
+      one: "%d comment",
+      more: "%d comments",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",

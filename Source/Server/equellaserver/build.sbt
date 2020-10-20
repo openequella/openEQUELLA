@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.2"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.38"
+val TomcatVersion    = "9.0.39"
 val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.9"
@@ -55,7 +55,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.10",
+  "com.google.api-client"        % "google-api-client"           % "1.30.11",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20200925-1.30.10",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"         % "gson"                        % "2.8.6",
