@@ -29,6 +29,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
 import { SyntheticEvent } from "react";
+import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
   isBrowserSupportedVideo,
@@ -95,7 +96,7 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
     unsupportedContent: labelUnsupportedContent,
   } = languageStrings.lightboxComponent;
 
-  let content = (
+  const unsupportedContent = (
     <Card>
       <CardContent>
         <Typography variant="h5" component="h2">
@@ -105,39 +106,47 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
     </Card>
   );
 
-  switch (splitMimeType(mimeType)[0]) {
-    case "image":
-      content = (
+  const content = match(
+    [
+      Literal("image"),
+      () => (
         <img
           className={`${classes.lightboxContent} ${classes.lightboxImage}`}
           src={src}
           alt={title}
         />
-      );
-      break;
-    case "video":
-      isBrowserSupportedVideo(mimeType) &&
-        (content = (
+      ),
+    ],
+    [
+      Literal("video"),
+      () =>
+        isBrowserSupportedVideo(mimeType) ? (
           <video
             className={classes.lightboxContent}
             controls
             src={src}
             aria-label={title}
           />
-        ));
-      break;
-    case "audio":
-      isBrowserSupportedAudio(mimeType) &&
-        (content = (
+        ) : (
+          unsupportedContent
+        ),
+    ],
+    [
+      Literal("audio"),
+      () =>
+        isBrowserSupportedAudio(mimeType) ? (
           <audio
             className={classes.lightboxAudio}
             controls
             src={src}
             aria-label={title}
           />
-        ));
-      break;
-  }
+        ) : (
+          unsupportedContent
+        ),
+    ],
+    [Unknown, () => unsupportedContent]
+  )(splitMimeType(mimeType)[0]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
