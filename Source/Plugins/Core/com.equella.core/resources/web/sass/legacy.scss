@@ -4495,6 +4495,10 @@ img.warningimg {
   width: 80%;
 }
 
+#selection-content #col1 #new-search-page {
+  width: 100%; // Override the width if new search UI is also wrapped by 'col1'
+}
+
 #selection-content #contribution_panel {
   width: 100%;
 }
