@@ -60,7 +60,7 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
     {
       attachmentType: "file",
       id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-      description: "config.json",
+      description: "image.png",
       preview: false,
       mimeType: "image/png",
       hasGeneratedThumb: true,

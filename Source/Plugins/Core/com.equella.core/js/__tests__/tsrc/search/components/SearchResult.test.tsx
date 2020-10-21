@@ -15,42 +15,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, queryByLabelText } from "@testing-library/react";
-import * as React from "react";
-import * as mockData from "../../../../__mocks__/searchresult_mock_data";
-import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import * as OEQ from "@openequella/rest-api-client";
 
 import "@testing-library/jest-dom/extend-expect";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import * as React from "react";
+import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
+import * as mockData from "../../../../__mocks__/searchresult_mock_data";
+import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
+const defaultViewerPromise = jest
+  .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
+  .mockResolvedValue({
+    viewerId: "fancy",
+  } as OEQ.MimeType.MimeTypeViewerDetail);
+
 describe("<SearchResult/>", () => {
-  const renderSearchResult = (itemResult: OEQ.Search.SearchResultItem) => {
-    return render(
+  const renderSearchResult = async (
+    itemResult: OEQ.Search.SearchResultItem
+  ) => {
+    const renderResult = render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
       <BrowserRouter>
-        <SearchResult key={itemResult.uuid} item={itemResult} highlights={[]} />
+        <SearchResult
+          key={itemResult.uuid}
+          item={itemResult}
+          handleError={(error) =>
+            console.warn(`Testing error handler: ${error}`)
+          }
+          highlights={[]}
+        />
       </BrowserRouter>
     );
+
+    // Make sure we wait for the resolution of viewers - which will update the attachment lists
+    await act(async () => {
+      await defaultViewerPromise;
+    });
+
+    return renderResult;
   };
 
   const keywordFoundInAttachmentLabel =
     "Search term found in attachment content";
 
-  it("Should show indicator in Attachment panel if keyword was found inside attachment", () => {
+  it("Should show indicator in Attachment panel if keyword was found inside attachment", async () => {
     const itemWithSearchTermFound = mockData.keywordFoundInAttachmentObj;
-    const { container } = renderSearchResult(itemWithSearchTermFound);
-    expect(
-      queryByLabelText(container, keywordFoundInAttachmentLabel)
-    ).toBeInTheDocument();
+    const { queryByLabelText } = await renderSearchResult(
+      itemWithSearchTermFound
+    );
+    expect(queryByLabelText(keywordFoundInAttachmentLabel)).toBeInTheDocument();
   });
 
-  it("Should not show indicator in Attachment panel if keyword was not found inside attachment", () => {
+  it("Should not show indicator in Attachment panel if keyword was not found inside attachment", async () => {
     const itemWithNoSearchTermFound = mockData.attachSearchObj;
-    const { container } = renderSearchResult(itemWithNoSearchTermFound);
+    const { queryByLabelText } = await renderSearchResult(
+      itemWithNoSearchTermFound
+    );
     expect(
-      queryByLabelText(container, keywordFoundInAttachmentLabel)
+      queryByLabelText(keywordFoundInAttachmentLabel)
     ).not.toBeInTheDocument();
   });
 
@@ -59,24 +86,39 @@ describe("<SearchResult/>", () => {
     ["plural comments", mockData.attachSearchObj, "2 comments"],
   ])(
     "should show comment count as a link for %s",
-    (
+    async (
       testName: string,
       item: OEQ.Search.SearchResultItem,
       expectedLinkText: string
     ) => {
-      const { queryByText } = renderSearchResult(item);
+      const { queryByText } = await renderSearchResult(item);
       expect(
         queryByText(expectedLinkText, { selector: "a" })
       ).toBeInTheDocument();
     }
   );
 
-  it("should hide comment count link if count is 0", () => {
-    const { queryByText } = renderSearchResult(
+  it("should hide comment count link if count is 0", async () => {
+    const { queryByText } = await renderSearchResult(
       mockData.keywordFoundInAttachmentObj
     );
     expect(
       queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
     ).toBeNull();
+  });
+
+  it("displays the lightbox when an image attachment is clicked", async () => {
+    const { attachSearchObj } = mockData;
+    const { getByText, queryByLabelText } = await renderSearchResult(
+      attachSearchObj
+    );
+
+    // Given a user clicks on an attachment
+    userEvent.click(getByText(attachSearchObj.attachments![0].description!));
+
+    // Then they see the lightbox
+    expect(
+      queryByLabelText(languageStrings.common.action.openInNewWindow)
+    ).toBeInTheDocument();
   });
 });

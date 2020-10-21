@@ -29,6 +29,7 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
+import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
@@ -84,6 +85,13 @@ const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
+
+// Mock out a collaborator of SearchResult
+jest
+  .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
+  .mockResolvedValue({
+    viewerId: "fancy",
+  } as OEQ.MimeType.MimeTypeViewerDetail);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
