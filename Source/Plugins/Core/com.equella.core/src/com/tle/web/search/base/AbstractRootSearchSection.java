@@ -36,6 +36,8 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.SimpleSectionResult;
+import com.tle.web.sections.render.TemplateRenderable;
 import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
@@ -104,6 +106,20 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
     templateResult.addNamedResult(
         OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
 
+    // If new search UI should be rendered, keep the right column content and override
+    // the body content with new search UI.
+    if (model.isNewSearchUIInNormalLayout()) {
+      TemplateRenderable rightColumnContent =
+          templateResult.getNamedResult(info, TwoColumnLayout.RIGHT);
+
+      CombinedTemplateResult twoColumnLayoutForNewSearchUI = new CombinedTemplateResult();
+      twoColumnLayoutForNewSearchUI.addNamedResult(
+          OneColumnLayout.BODY, model.getNewSearchUIContent());
+      twoColumnLayoutForNewSearchUI.addNamedResult(TwoColumnLayout.RIGHT, rightColumnContent);
+
+      return twoColumnLayoutForNewSearchUI;
+    }
+
     addBlueBarBits(info, templateResult);
     return templateResult;
   }
@@ -142,6 +158,8 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
   public static class Model extends TwoColumnLayout.TwoColumnModel {
     private InfoBookmark permanentUrl;
+    private boolean newSearchUIInNormalLayout;
+    private SimpleSectionResult newSearchUIContent;
 
     public InfoBookmark getPermanentUrl() {
       return permanentUrl;
@@ -149,6 +167,22 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
     public void setPermanentUrl(InfoBookmark permanentUrl) {
       this.permanentUrl = permanentUrl;
+    }
+
+    public boolean isNewSearchUIInNormalLayout() {
+      return newSearchUIInNormalLayout;
+    }
+
+    public void setNewSearchUIInNormalLayout(boolean newSearchUIInNormalLayout) {
+      this.newSearchUIInNormalLayout = newSearchUIInNormalLayout;
+    }
+
+    public SimpleSectionResult getNewSearchUIContent() {
+      return newSearchUIContent;
+    }
+
+    public void setNewSearchUIContent(SimpleSectionResult newSearchUIContent) {
+      this.newSearchUIContent = newSearchUIContent;
     }
   }
 }

@@ -37,9 +37,9 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
-import com.tle.web.settings.UISettings;
 import com.tle.web.settings.UISettingsJava;
 import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.section.event.BlueBarEvent;
@@ -88,11 +88,16 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 
     // If this method is triggered from Selection Section, then check if Selection Section
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
-    final SelectionSession session = selectionService.getCurrentSession(context);
-    if (session != null && session.getLayout() == Layout.COURSE) {
-      UISettings settings = UISettingsJava.getUISettings();
-      if (settings.newUI().enabled() && settings.newUI().newSearch()) {
-        return RenderNewSearchPage.renderNewSearchPage(context);
+    SelectionSession selectionSession = selectionService.getCurrentSession(context);
+    if (isNewSearchUIInSelectionSession(selectionSession)) {
+      SimpleSectionResult newSearchUIContent = RenderNewSearchPage.renderNewSearchPage(context);
+      // For 'structured' layout, output the new search UI content directly.
+      // For 'addOrSelected' layout, save the content in model.
+      if (selectionSession.getLayout() == Layout.COURSE) {
+        return newSearchUIContent;
+      } else {
+        getModel(context).setNewSearchUIInNormalLayout(true);
+        getModel(context).setNewSearchUIContent(newSearchUIContent);
       }
     }
     return super.renderHtml(context);
@@ -117,5 +122,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
   @Override
   protected String getPageName() {
     return SEARCHURL;
+  }
+
+  private boolean isNewSearchUIInSelectionSession(SelectionSession selectionSession) {
+    if (selectionSession != null) {
+      return UISettingsJava.getUISettings().isNewSearchActive();
+    }
+    return false;
   }
 }

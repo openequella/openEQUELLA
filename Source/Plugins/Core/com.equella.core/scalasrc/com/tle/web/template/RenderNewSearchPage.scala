@@ -23,7 +23,7 @@ import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.render.SimpleSectionResult
 
 object RenderNewSearchPage {
-  def renderNewSearchPage(context: RenderEventContext): SectionResult = {
+  def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
     val (p, body) = RenderNewTemplate.parseEntryHtml("NewSearchPage.html")
     context.getBody.addPreRenderable(p)
     new SimpleSectionResult(body.body().children())
