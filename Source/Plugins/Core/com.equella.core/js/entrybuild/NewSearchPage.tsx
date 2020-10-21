@@ -22,16 +22,24 @@ import { BrowserRouter } from "react-router-dom";
 import { basePath } from "../tsrc/mainui/App";
 import SearchPage from "../tsrc/search/SearchPage";
 import { oeqTheme } from "../tsrc/theme";
+import { StylesProvider, createGenerateClassName } from "@material-ui/core";
 
 const searchPageProps = { updateTemplate: () => {} };
+const generateClassName = createGenerateClassName({
+  productionPrefix: "new-search-page",
+});
+
 const renderSearchPage = () => {
   ReactDOM.render(
     <BrowserRouter basename={basePath}>
-      <ThemeProvider theme={oeqTheme}>
-        <SearchPage {...searchPageProps} />
-      </ThemeProvider>
+      <StylesProvider generateClassName={generateClassName}>
+        <ThemeProvider theme={oeqTheme}>
+          <SearchPage {...searchPageProps} />
+        </ThemeProvider>
+      </StylesProvider>
     </BrowserRouter>,
     document.getElementById("new-search-page")
   );
 };
+
 renderSearchPage();
