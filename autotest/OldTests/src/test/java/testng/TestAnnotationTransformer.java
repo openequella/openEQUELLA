@@ -1,9 +1,10 @@
-package retry;
+package testng;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITestAnnotation;
+import testng.annotation.RetryTest;
 
 public class TestAnnotationTransformer implements IAnnotationTransformer {
 
@@ -12,7 +13,9 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
       ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
     if (testMethod == null) return;
     RetryTest maxRetryCount = testMethod.getAnnotation(RetryTest.class);
-    if (maxRetryCount == null || maxRetryCount.value() < 1) return;
-    annotation.setRetryAnalyzer(FailureRetryAnalyzer.class);
+
+    if (maxRetryCount != null && maxRetryCount.value() > 1) {
+      annotation.setRetryAnalyzer(FailureRetryAnalyzer.class);
+    }
   }
 }
