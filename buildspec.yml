@@ -5,6 +5,7 @@ env:
     KALTURA_BRANCH: master
     AUTOTEST_CONFIG: "autotest/codebuild.conf"
     EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
+    OLD_TEST_NEWUI: true
 phases:
   pre_build:
     commands:
