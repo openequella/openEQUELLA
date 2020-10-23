@@ -17,10 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import {
-  StarRating,
-  StarRatingProps,
-} from "../../__tests__/tsrc/components/StarRating";
+import { StarRating, StarRatingProps } from "../../tsrc/components/StarRating";
 
 export default {
   title: "StarRating",

@@ -45,14 +45,14 @@ export const StarRating = ({ numberOfStars, rating }: StarRatingProps) => {
         // As the end is not included in the range, ned to plus the end with 1.
         range(1, numberOfStars + 1).map((i) => {
           if (i <= roundedRating) {
-            return <Star />;
+            return <Star aria-label="full-star" key={i} />;
           }
 
           if (i - 0.5 === roundedRating) {
-            return <StarHalf />;
+            return <StarHalf aria-label="half-star" key={i} />;
           }
 
-          return <StarBorder />;
+          return <StarBorder aria-label="empty-star" key={i} />;
         })
       }
     </>

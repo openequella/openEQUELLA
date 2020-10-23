@@ -35,9 +35,6 @@ import AttachFile from "@material-ui/icons/AttachFile";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
-import Star from "@material-ui/icons/Star";
-import StarBorder from "@material-ui/icons/StarBorder";
-import StarHalf from "@material-ui/icons/StarHalf";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent } from "react";
@@ -45,6 +42,7 @@ import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { Date as DateDisplay } from "../../components/Date";
 import OEQThumb from "../../components/OEQThumb";
+import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -144,26 +142,6 @@ export default function SearchResult({
       />
     );
 
-    /**
-     * Generate star icons for Item's ratings.
-     * Each rating will be rounded to its nearest 0.5.
-     * For example, 3.33 will be 3.5 and 3.23 will be 3.
-     */
-    const showStar = () => {
-      const rating = Math.round(starRatings * 2) / 2;
-      return [1, 2, 3, 4, 5].map((i) => {
-        if (i <= rating) {
-          return <Star aria-label="full-star" key={i} />;
-        }
-
-        if (i - 0.5 === rating) {
-          return <StarHalf aria-label="half-star" key={i} />;
-        }
-
-        return <StarBorder aria-label="empty-star" key={i} />;
-      });
-    };
-
     return (
       <div className={classes.additionalDetails}>
         <Typography component="span" className={classes.status}>
@@ -193,7 +171,9 @@ export default function SearchResult({
         {starRatings >= 0 && (
           <>
             {metaDataDivider}
-            {showStar()}
+            <div aria-label={`item rating: ${starRatings}`}>
+              <StarRating numberOfStars={5} rating={starRatings} />
+            </div>
           </>
         )}
       </div>
