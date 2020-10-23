@@ -80,12 +80,11 @@ describe("<SearchResult/>", () => {
     ).toBeNull();
   });
 
-  it("should show MUI empty star, half star and full star as Item ratings", () => {
+  it("should show Star icons to represent Item ratings", () => {
+    const { starRatings } = mockData.attachSearchObj;
     const { queryAllByLabelText } = renderSearchResult(
       mockData.attachSearchObj
     );
-    expect(queryAllByLabelText("full-star")).toHaveLength(1);
-    expect(queryAllByLabelText("empty-star")).toHaveLength(3);
-    expect(queryAllByLabelText("half-star")).toHaveLength(1);
+    expect(queryAllByLabelText(`item rating: ${starRatings}`)).toHaveLength(1);
   });
 });
