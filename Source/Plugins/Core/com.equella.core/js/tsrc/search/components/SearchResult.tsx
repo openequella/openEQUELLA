@@ -37,13 +37,16 @@ import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { Date as DateDisplay } from "../../components/Date";
+import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
+import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { HashLink } from "react-router-hash-link";
@@ -88,17 +91,32 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export interface SearchResultProps {
   /**
-   * The details of the items to display.
+   * Optional function to dependency inject for retrieval of viewers (good for storybook etc). Will
+   * default to using `getMimeTypeDefaultViewerDetails` from MimeTypesModule.
+   *
+   * @param mimeType MIME type to determine the viewer setup for
    */
-  item: OEQ.Search.SearchResultItem;
-
+  getViewerDetails?: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
+  /**
+   * Error handler for standard management of errors during processing - especially comms errors.
+   */
+  handleError: (error: Error) => void;
   /**
    * The list of words which should be highlighted.
    */
   highlights: string[];
+  /**
+   * The details of the items to display.
+   */
+  item: OEQ.Search.SearchResultItem;
 }
 
 export default function SearchResult({
+  getViewerDetails = getMimeTypeDefaultViewerDetails,
+  handleError,
+  highlights,
   item: {
     name,
     version,
@@ -113,18 +131,71 @@ export default function SearchResult({
     commentCount = 0,
     starRatings,
   },
-  highlights,
 }: SearchResultProps) {
+  interface AttachmentAndViewerDetails {
+    attachment: OEQ.Search.Attachment;
+    viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
+  }
+
   const classes = useStyles();
 
+  const [attachExpanded, setAttachExpanded] = useState(
+    displayOptions?.standardOpen ?? false
+  );
+  const [
+    attachmentsWithViewerDetails,
+    setAttachmentsWithViewerDetails,
+  ] = useState<AttachmentAndViewerDetails[]>([]);
+
   const {
-    searchresult: searchResultStrings,
+    searchResult: searchResultStrings,
     comments: commentStrings,
   } = languageStrings.searchpage;
 
-  const [attachExpanded, setAttachExpanded] = React.useState(
-    displayOptions?.standardOpen ?? false
-  );
+  // Responsible for determining the MIME type viewer for the provided attachments
+  useEffect(() => {
+    let mounted = true;
+
+    if (!attachments.length) {
+      // If there are no attachments, skip this effect
+      return;
+    }
+
+    const transform = async (
+      a: OEQ.Search.Attachment
+    ): Promise<AttachmentAndViewerDetails> => {
+      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
+      try {
+        viewerDetails = a.mimeType
+          ? await getViewerDetails(a.mimeType)
+          : undefined;
+      } catch (error) {
+        handleError({
+          ...error,
+          message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
+        });
+      }
+
+      return {
+        attachment: a,
+        viewerDetails: viewerDetails,
+      };
+    };
+
+    (async () => {
+      const viewerDetails = await Promise.all(
+        attachments.map<Promise<AttachmentAndViewerDetails>>(transform)
+      );
+      if (mounted) {
+        setAttachmentsWithViewerDetails(viewerDetails);
+      }
+    })();
+
+    return () => {
+      // Short circuit if this component is unmounted before all its comms are done.
+      mounted = false;
+    };
+  }, [attachments, getViewerDetails]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
@@ -210,14 +281,34 @@ export default function SearchResult({
   );
 
   const generateAttachmentList = () => {
-    const attachmentsList = attachments.map(
-      (attachment: OEQ.Search.Attachment) => {
+    const attachmentsList = attachmentsWithViewerDetails.map(
+      ({
+        attachment: {
+          attachmentType,
+          description,
+          id,
+          links: { view: url },
+          mimeType,
+        },
+        viewerDetails,
+      }: AttachmentAndViewerDetails) => {
         return (
-          <ListItem key={attachment.id} button className={classes.nested}>
+          <ListItem key={id} button className={classes.nested}>
             <ListItemIcon>
               <InsertDriveFile />
             </ListItemIcon>
-            <ListItemText color="primary" primary={attachment.description} />
+            <ItemAttachmentLink
+              description={description}
+              mimeType={mimeType}
+              viewerDetails={determineViewer(
+                attachmentType,
+                url,
+                mimeType,
+                viewerDetails?.viewerId
+              )}
+            >
+              <ListItemText color="primary" primary={description} />
+            </ItemAttachmentLink>
           </ListItem>
         );
       }

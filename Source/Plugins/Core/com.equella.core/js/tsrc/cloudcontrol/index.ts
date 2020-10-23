@@ -76,6 +76,7 @@ interface CommandsPromise {
 }
 
 interface Registration {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mount: (api: ControlApi<any>) => void;
   unmount: (removed: Element) => void;
 }

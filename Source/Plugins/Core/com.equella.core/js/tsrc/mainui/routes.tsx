@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
+
 import type { RouteComponentProps } from "react-router";
 import type { LocationDescriptor } from "history";
-import type { TemplateUpdate } from "./Template";
+import type { TemplateUpdate, TemplateUpdateProps } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -42,7 +43,7 @@ const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings")
 );
 
-export interface OEQRouteComponentProps<T = any>
+export interface OEQRouteComponentProps<T = TemplateUpdateProps>
   extends RouteComponentProps<T> {
   updateTemplate(edit: TemplateUpdate): void;
   redirect(to: LocationDescriptor): void;
@@ -51,16 +52,18 @@ export interface OEQRouteComponentProps<T = any>
   isReloadNeeded: boolean;
 }
 
-export interface OEQRoute {
+type To = (uuid: string, version: number) => string;
+
+export interface OEQRoute<T> {
   component?:
-    | React.ComponentType<OEQRouteComponentProps<any>>
-    | React.ComponentType<any>;
-  render?: (props: OEQRouteComponentProps<any>) => React.ReactNode;
+    | React.ComponentType<OEQRouteComponentProps<T>>
+    | React.ComponentType<T>;
+  render?: (props: OEQRouteComponentProps<T>) => React.ReactNode;
   path?: string;
   exact?: boolean;
   sensitive?: boolean;
   strict?: boolean;
-  to?: any;
+  to?: string | To;
 }
 
 export const routes = {
@@ -71,25 +74,23 @@ export const routes = {
   },
   Search: {
     path: "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
   SearchSettings: {
     path: "/page/searchsettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchPageSettings {...p} />,
   },
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchFilterPage {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchFilterPage {...p} />,
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
-    render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />,
+    render: (p: OEQRouteComponentProps) => <ContentIndexSettings {...p} />,
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
-    render: (p: OEQRouteComponentProps<any>) => (
-      <FacetedSearchSettingsPage {...p} />
-    ),
+    render: (p: OEQRouteComponentProps) => <FacetedSearchSettingsPage {...p} />,
   },
   ViewItem: {
     to: function (uuid: string, version: number) {
