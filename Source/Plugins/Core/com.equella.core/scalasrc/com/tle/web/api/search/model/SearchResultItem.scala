@@ -33,6 +33,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   * @param modifiedDate The last date when an item is modified.
   * @param collectionId The ID of a collection which the item belongs to.
   * @param commentCount The count of an item's comments.
+  * @param starRatings The star ratings of an Item.
   * @param attachments A list of Item's attachments.
   * @param thumbnail Item's thumbnail.
   * @param displayFields A list of Item's displayFields.
