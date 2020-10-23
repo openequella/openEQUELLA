@@ -1,6 +1,8 @@
 name: SingleSuite
 threadCount: 1
-
+listeners:
+  - testng.TestAnnotationTransformer
+  -
 tests:
   - name: OneAfterAnother
     classes:
