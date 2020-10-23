@@ -69,10 +69,6 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @SkipTest(skipOldUI = true)
   public void backToSearchPage() {
     context.getDriver().navigate().back();
-    // todo: remove this when we can skip this test suite in Old UI mode.
-    if (!searchPage.usingNewUI()) {
-      context.getDriver().navigate().refresh();
-    }
     searchPage.get();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
