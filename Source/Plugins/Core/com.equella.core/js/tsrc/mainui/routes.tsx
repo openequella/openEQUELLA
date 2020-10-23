@@ -60,6 +60,7 @@ export const routes = {
     component: SettingsPage,
   },
   Search: {
+    //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
     path: renderData?.newSearch
       ? "(/page/search|/searching.do)"
       : "/page/search",

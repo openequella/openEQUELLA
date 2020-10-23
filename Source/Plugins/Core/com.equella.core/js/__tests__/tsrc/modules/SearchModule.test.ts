@@ -117,8 +117,8 @@ describe("SearchModule", () => {
   });
 
   describe("convertParamsToSearchOptions", () => {
-    const mockedUser = jest.spyOn(UserModule, "resolveUsers");
-    const mockedCollection = jest.spyOn(
+    const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
+    const mockedCollectionListSummary = jest.spyOn(
       CollectionModule,
       "collectionListSummary"
     );
@@ -133,8 +133,8 @@ describe("SearchModule", () => {
     });
 
     it("should convert legacy search parameters to searchOptions", async () => {
-      mockedUser.mockResolvedValue(users);
-      mockedCollection.mockResolvedValue(getCollectionMap);
+      mockedResolvedUser.mockResolvedValue(users);
+      mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
 
       //Query string was obtained from legacy UI searching.do->Share URL
       const fullQueryString =
@@ -194,14 +194,14 @@ describe("SearchModule", () => {
       end: new Date("2020-10-15T00:00:00.000+00:00"),
     };
 
-    it.each([
+    it.each<[string, DateRange]>([
       [beforeDateQuery, expectedBeforeRange],
       [afterDateQuery, expectedAfterRange],
       [betweenDateQuery, expectedBetweenRange],
       [onDateQuery, expectedOnRange],
     ])(
-      `converts legacy date range query params: %s to search options containing lastModifiedDateRange of %s`,
-      async (queryString, expectedRange: DateRange) => {
+      "converts legacy date range query params: %s to search options containing lastModifiedDateRange of %s",
+      async (queryString, expectedRange) => {
         const convertedSearchOptions = await convertParamsToSearchOptions(
           queryString
         );

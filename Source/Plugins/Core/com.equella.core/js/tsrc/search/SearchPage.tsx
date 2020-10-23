@@ -204,14 +204,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleSortOrderChanged = (order: SortOrder) =>
     setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
-  const handleQueryChanged = (query: string) => {
+  const handleQueryChanged = (query: string) =>
     setSearchPageOptions({
       ...searchPageOptions,
       query: query,
       currentPage: 0,
       selectedCategories: undefined,
     });
-  };
+
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
     setSearchPageOptions({
       ...searchPageOptions,
