@@ -31,10 +31,10 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
   private void checkSkipTestAnnotation(ITestAnnotation annotation, Method testMethod) {
     NewUIOnly newUIOnly = testMethod.getAnnotation(NewUIOnly.class);
     // Read the configuration of using new UI or not from environment variable.
-    boolean isNewUIEnabled = Boolean.parseBoolean(System.getProperty(OLD_TEST_NEWUI));
+    boolean isNewUIEnabled = Boolean.parseBoolean(System.getenv(OLD_TEST_NEWUI));
     if (newUIOnly != null && newUIOnly.value()) {
       System.out.println("method name :" + testMethod);
-      System.out.println(System.getProperty(OLD_TEST_NEWUI));
+      System.out.println(System.getenv(OLD_TEST_NEWUI));
       System.out.println(isNewUIEnabled);
     }
 
