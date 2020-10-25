@@ -24,10 +24,34 @@ export default {
   component: StarRating,
 } as Meta<StarRatingProps>;
 
-export const FiveStars: Story<StarRatingProps> = (args) => (
+export const HalfStar: Story<StarRatingProps> = (args) => (
   <StarRating {...args} />
 );
-FiveStars.args = {
-  rating: 3.33,
+HalfStar.args = {
+  rating: 0.5,
+  numberOfStars: 1,
+};
+
+export const FullStar: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+FullStar.args = {
+  ...HalfStar.args,
+  rating: 5,
+};
+
+export const EmptyStar: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+EmptyStar.args = {
+  ...HalfStar.args,
+  rating: 0,
+};
+
+export const MixedStars: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+MixedStars.args = {
+  rating: 2.5,
   numberOfStars: 5,
 };
