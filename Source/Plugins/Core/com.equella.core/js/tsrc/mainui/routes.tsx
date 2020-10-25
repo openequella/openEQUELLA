@@ -61,9 +61,10 @@ export const routes = {
   },
   Search: {
     //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
-    path: renderData?.newSearch
-      ? "(/page/search|/searching.do)"
-      : "/page/search",
+    path:
+      typeof renderData !== "undefined" && renderData?.newSearch
+        ? "(/page/search|/searching.do)"
+        : "/page/search",
     render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
   },
   SearchSettings: {
