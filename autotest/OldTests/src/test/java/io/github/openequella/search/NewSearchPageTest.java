@@ -7,7 +7,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
 import org.testng.annotations.Test;
-import testng.annotation.SkipTest;
+import testng.annotation.NewUIOnly;
 
 @TestInstitution("facet")
 public class NewSearchPageTest extends AbstractSessionTest {
@@ -19,7 +19,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "open the new Search page and wait for initial search completed")
-  @SkipTest(skipOldUI = true)
+  @NewUIOnly(true)
   public void initialSearch() {
     searchPage = new NewSearchPage(context).load();
     // The initial search should return 16 items.
@@ -27,7 +27,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(dependsOnMethods = "initialSearch", description = "Search with a query and refine controls")
-  @SkipTest(skipOldUI = true)
+  @NewUIOnly(true)
   public void searchByFilters() {
     searchPage.newSearch();
     // Search by Collections.
@@ -56,7 +56,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "open an item's summary page", dependsOnMethods = "searchByFilters")
-  @SkipTest(skipOldUI = true)
+  @NewUIOnly(true)
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
     SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
@@ -66,7 +66,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @Test(
       description = "Go back to the Search page from another page",
       dependsOnMethods = "openItemSummaryPage")
-  @SkipTest(skipOldUI = true)
+  @NewUIOnly(true)
   public void backToSearchPage() {
     context.getDriver().navigate().back();
     searchPage.get();
@@ -77,7 +77,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
-  @SkipTest(skipOldUI = true)
+  @NewUIOnly(true)
   public void searchWithLessACLS() {
     // This account can only access the Collection 'Hardware platforms' and items of this
     // Collection. But it has no access to attachments and comments.
