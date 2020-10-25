@@ -93,17 +93,7 @@ export interface DateRange {
 /**
  * Legacy searching.do parameters currently supported by SearchPage component.
  */
-export enum LegacySearchParams {
-  PRIMARYDATE = "dp",
-  SECONDARYDATE = "ds",
-  DATERANGE = "dr",
-  QUERY = "q",
-  SORT = "sort",
-  OWNER = "owner",
-  IN = "in",
-}
-
-const LegacySearchParams2 = Union(
+const LegacySearchParams = Union(
   Literal("dp"),
   Literal("ds"),
   Literal("dr"),
@@ -113,7 +103,7 @@ const LegacySearchParams2 = Union(
   Literal("in")
 );
 
-type LegacyParams = Static<typeof LegacySearchParams2>;
+type LegacyParams = Static<typeof LegacySearchParams>;
 
 /**
  * List of status which are considered 'live'.
@@ -315,7 +305,7 @@ export const convertParamsToSearchOptions = async (
         new Date(parseInt(getQueryParam("ds") ?? ""))
       ) ?? defaultSearchOptions.lastModifiedDateRange,
     sortOrder:
-      (getQueryParam(LegacySearchParams.SORT)?.toUpperCase() as SortOrder) ??
+      (getQueryParam("sort")?.toUpperCase() as SortOrder) ??
       defaultSearchOptions.sortOrder,
   };
   return searchOptions;
