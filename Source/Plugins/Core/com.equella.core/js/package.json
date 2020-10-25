@@ -36,7 +36,7 @@
     "@material-ui/pickers": "3.2.10",
     "@openequella/rest-api-client": "file:../../../../../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "3.6.1",
-    "axios": "0.20.0",
+    "axios": "0.21.0",
     "es6-object-assign": "1.1.0",
     "history": "4.10.1",
     "jspolyfill-array.prototype.find": "0.1.3",
