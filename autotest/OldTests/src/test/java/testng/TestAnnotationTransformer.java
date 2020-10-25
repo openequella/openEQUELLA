@@ -23,6 +23,12 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
     SkipTest skipTest = testMethod.getAnnotation(SkipTest.class);
     // Read the configuration of using new UI or not from environment variable.
     boolean isNewUIEnabled = Boolean.parseBoolean(System.getProperty(OLD_TEST_NEWUI));
+    if (skipTest != null && skipTest.skipOldUI()) {
+      System.out.println("method name :" + testMethod);
+      System.out.println(System.getProperty(OLD_TEST_NEWUI));
+      System.out.println(isNewUIEnabled);
+    }
+
     // Skip tests that should not run against Old UI when CI is running in Old UI.
     if (skipTest != null && skipTest.skipOldUI() && !isNewUIEnabled) {
       annotation.setEnabled(false);
