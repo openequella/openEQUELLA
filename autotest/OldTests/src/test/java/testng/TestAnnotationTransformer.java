@@ -32,12 +32,6 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
     NewUIOnly newUIOnly = testMethod.getAnnotation(NewUIOnly.class);
     // Read the configuration of using new UI or not from environment variable.
     boolean isNewUIEnabled = Boolean.parseBoolean(System.getenv(OLD_TEST_NEWUI));
-    if (newUIOnly != null && newUIOnly.value()) {
-      System.out.println("method name :" + testMethod);
-      System.out.println(System.getenv(OLD_TEST_NEWUI));
-      System.out.println(isNewUIEnabled);
-    }
-
     // Skip tests that should not run against Old UI when CI is running in Old UI.
     if (newUIOnly != null && newUIOnly.value() && !isNewUIEnabled) {
       annotation.setEnabled(false);
