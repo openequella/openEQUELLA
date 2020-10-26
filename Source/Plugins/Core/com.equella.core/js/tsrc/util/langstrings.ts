@@ -17,7 +17,7 @@
  */
 import { sprintf } from "sprintf-js";
 
-declare let bundle: any;
+declare let bundle: { [prefix: string]: string };
 
 export interface Sizes {
   zero: string;
@@ -283,30 +283,31 @@ export const languageStrings = {
   },
   common: {
     action: {
-      save: "Save",
-      cancel: "Cancel",
-      undo: "Undo",
       add: "Add",
-      edit: "Edit",
-      ok: "OK",
-      discard: "Discard",
-      select: "Select",
-      delete: "Delete",
-      search: "Search",
+      apply: "Apply",
+      browse: "Browse...",
+      cancel: "Cancel",
       clear: "Clear",
       close: "Close",
+      delete: "Delete",
+      discard: "Discard",
       dismiss: "Dismiss",
-      browse: "Browse...",
-      apply: "Apply",
+      done: "Done",
+      edit: "Edit",
+      no: "No",
+      ok: "OK",
+      openInNewWindow: "Open in new window",
+      refresh: "Refresh",
+      register: "Register",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
-      register: "Register",
-      refresh: "Refresh",
-      done: "Done",
-      yes: "Yes",
-      no: "No",
-      showMore: "Show more",
+      save: "Save",
+      search: "Search",
+      select: "Select",
       showLess: "Show less",
+      showMore: "Show more",
+      undo: "Undo",
+      yes: "Yes",
     },
     result: {
       success: "Saved successfully.",
@@ -379,15 +380,24 @@ export const languageStrings = {
     searchAttachmentsSelector: {
       title: "Search attachments",
     },
-    searchresult: {
+    searchResult: {
       attachments: "Attachments",
       dateModified: "Modified",
       keywordFoundInAttachment: "Search term found in attachment content",
+      errors: {
+        getAttachmentViewerDetailsFailure:
+          "Failed to get attachment viewer details",
+      },
     },
     statusSelector: {
       all: "All",
       live: "Live",
       title: "Status",
+    },
+    comments: {
+      zero: "No comments",
+      one: "%d comment",
+      more: "%d comments",
     },
   },
   "com.equella.core.searching.search": {
@@ -592,5 +602,8 @@ export const languageStrings = {
   userSearchComponent: {
     failedToFindUsersMessage: "Unable to find any users matching '%s'",
     queryFieldLabel: "Username, first or last name",
+  },
+  lightboxComponent: {
+    unsupportedContent: "Provided content is not supported",
   },
 };

@@ -45,10 +45,6 @@ const MIME_TYPE_FILTERS_URL = "api/settings/search/filter";
 export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
   Axios.get(MIME_TYPE_FILTERS_URL).then((res) => res.data);
 
-export const getMIMETypesFromServer = (): Promise<
-  OEQ.MimeType.MimeTypeEntry[]
-> => OEQ.MimeType.listMimeTypes(API_BASE_URL);
-
 export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
   Axios.put<BatchOperationResponse[]>(
     MIME_TYPE_FILTERS_URL,
@@ -68,7 +64,7 @@ export const getMimeTypeDetail = (entry: OEQ.MimeType.MimeTypeEntry) => {
   return mimeType;
 };
 
-export const vaidateMimeTypeName = (name: string | undefined): boolean =>
+export const validateMimeTypeName = (name: string | undefined): boolean =>
   !!name?.trim();
 
 /**

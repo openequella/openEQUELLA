@@ -56,7 +56,10 @@ import {
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
-import { SearchResultList } from "./components/SearchResultList";
+import {
+  mapSearchResultItems,
+  SearchResultList,
+} from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
 
 /**
@@ -375,6 +378,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
+  const {
+    available: totalCount,
+    highlight: highlights,
+    results: searchResults,
+  } = pagedSearchResult;
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
@@ -390,10 +398,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Grid>
           <Grid item xs={12}>
             <SearchResultList
-              searchResultItems={pagedSearchResult.results}
               showSpinner={showSpinner}
               paginationProps={{
-                count: pagedSearchResult.available,
+                count: totalCount,
                 currentPage: searchPageOptions.currentPage,
                 rowsPerPage: searchPageOptions.rowsPerPage,
                 onPageChange: handlePageChanged,
@@ -404,8 +411,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onChange: handleSortOrderChanged,
               }}
               onClearSearchOptions={handleClearSearchOptions}
-              highlights={pagedSearchResult.highlight}
-            />
+            >
+              {searchResults.length > 0 &&
+                mapSearchResultItems(searchResults, handleError, highlights)}
+            </SearchResultList>
           </Grid>
         </Grid>
       </Grid>
