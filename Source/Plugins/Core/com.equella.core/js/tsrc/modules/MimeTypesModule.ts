@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { memoize } from "lodash";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 
 export const getMIMETypesFromServer = (): Promise<
   OEQ.MimeType.MimeTypeEntry[]
