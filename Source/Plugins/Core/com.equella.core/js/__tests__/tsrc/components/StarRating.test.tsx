@@ -22,25 +22,48 @@ import { StarRating } from "../../../tsrc/components/StarRating";
 
 describe("<StarRating />", () => {
   it.each([
-    ["5 stars", 3.5, 3, 1, 1],
-    ["10 stars", 6.5, 6, 1, 3],
+    ["zero", 0],
+    ["half max", 2.5],
+    ["max", 5],
+    ["max plus 1", 6],
+  ])("supports ratings of %s", (_, rating: number) => {
+    const { container } = render(
+      <StarRating numberOfStars={5} rating={rating} />
+    );
+    const starIcons = container.querySelectorAll("svg");
+    // Regardless of the rating, 5 stars should be always displayed.
+    expect(starIcons).toHaveLength(5);
+  });
+
+  it.each([0, 5, 10])(
+    "displays a specified number of stars: %d",
+    (numberOfStars: number) => {
+      const { container } = render(
+        <StarRating numberOfStars={numberOfStars} rating={1} />
+      );
+      const starIcons = container.querySelectorAll("svg");
+      // Regardless of the rating, the maximum number of stars should be displayed.
+      expect(starIcons).toHaveLength(numberOfStars);
+    }
+  );
+
+  it.each([
+    [3.22, 3, 3, 0],
+    [3.33, 3.5, 3, 1],
+    [3.67, 3.5, 3, 1],
+    [3.77, 4, 4, 0],
   ])(
-    "should display %s",
+    "rounds %f to %f",
     (
-      _,
       rating: number,
+      roundRating: number,
       fullStarNumber: number,
-      halfStarNumber: number,
-      emptyStarNumber: number
+      halfStarNumber
     ) => {
       const { queryAllByLabelText } = render(
-        <StarRating
-          numberOfStars={fullStarNumber + halfStarNumber + emptyStarNumber}
-          rating={rating}
-        />
+        <StarRating numberOfStars={5} rating={rating} />
       );
       expect(queryAllByLabelText("full-star")).toHaveLength(fullStarNumber);
-      expect(queryAllByLabelText("empty-star")).toHaveLength(emptyStarNumber);
       expect(queryAllByLabelText("half-star")).toHaveLength(halfStarNumber);
     }
   );
