@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import { ThemeProvider } from "@material-ui/core";
+import { ReactNode } from "react";
+import SearchPage from "../search/SearchPage";
 import { oeqTheme } from "../theme";
 import * as React from "react";
 import { getCurrentUserDetails } from "../modules/UserModule";
@@ -25,7 +27,7 @@ import {
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
-import { RenderData } from "./index";
+import { JsEntry, RenderData } from "./index";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { shallowEqual } from "shallow-equal-object";
@@ -45,6 +47,8 @@ import HtmlParser from "react-html-parser";
 import SettingsPage from "../settings/SettingsPage";
 import { startHeartbeat } from "../util/heartbeat";
 import * as OEQ from "@openequella/rest-api-client";
+import { Literal, match } from "runtypes";
+import { StylesProvider, createGenerateClassName } from "@material-ui/core";
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
@@ -247,31 +251,66 @@ function IndexPage() {
   );
 }
 
+const renderNewPage = (
+  page: ReactNode,
+  forceRefresh: boolean,
+  classPrefix: string
+) => {
+  const generateClassName = createGenerateClassName({
+    productionPrefix: classPrefix,
+  });
+  return (
+    <BrowserRouter basename={basePath} forceRefresh={forceRefresh}>
+      <StylesProvider generateClassName={generateClassName}>
+        <ThemeProvider theme={oeqTheme}>{page}</ThemeProvider>
+      </StylesProvider>
+    </BrowserRouter>
+  );
+};
+
 interface AppProps {
-  legacySettingsMode: boolean;
+  jsEntry: JsEntry;
 }
 
-export const App = ({ legacySettingsMode }: AppProps) => {
-  if (legacySettingsMode) {
-    return (
-      <BrowserRouter basename={basePath} forceRefresh>
-        <ThemeProvider theme={oeqTheme}>
+const App = ({ jsEntry }: AppProps) => {
+  const renderApp = match(
+    [
+      Literal("mainDiv"),
+      () => {
+        startHeartbeat();
+        return (
+          <ThemeProvider theme={oeqTheme}>
+            <IndexPage />
+          </ThemeProvider>
+        );
+      },
+    ],
+    [
+      Literal("searchPage"),
+      () => {
+        return renderNewPage(
+          <SearchPage updateTemplate={() => {}} />,
+          false,
+          "oeq-nsp"
+        );
+      },
+    ],
+    [
+      Literal("settingsPage"),
+      () => {
+        return renderNewPage(
           <SettingsPage
             refreshUser={() => {}}
             updateTemplate={() => {}}
             isReloadNeeded={false}
-          />
-        </ThemeProvider>
-      </BrowserRouter>
-    );
-  } else {
-    startHeartbeat();
-    return (
-      <ThemeProvider theme={oeqTheme}>
-        <IndexPage />
-      </ThemeProvider>
-    );
-  }
+          />,
+          true,
+          "oeq-nst"
+        );
+      },
+    ]
+  );
+  return renderApp(jsEntry);
 };
 
 export default App;

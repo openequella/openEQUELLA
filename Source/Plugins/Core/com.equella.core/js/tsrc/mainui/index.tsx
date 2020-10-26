@@ -25,7 +25,6 @@ export interface RenderData {
   newUI: boolean;
   autotestMode: boolean;
 }
-declare const renderData: RenderData | undefined;
 export type JsEntry = "mainDiv" | "searchPage" | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
@@ -34,10 +33,9 @@ const App = React.lazy(() => import("./App"));
 
 export default function (entry: JsEntry) {
   initStrings();
-  const legacySettingsMode = typeof renderData === "undefined";
   ReactDOM.render(
     <React.Suspense fallback={<>loading</>}>
-      <App legacySettingsMode={legacySettingsMode} />
+      <App jsEntry={entry} />
     </React.Suspense>,
     document.getElementById(entry)
   );
