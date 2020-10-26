@@ -119,7 +119,7 @@ const renderSearchPage = async (
 ): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
-  if (queryString) history.push("?q=test");
+  if (queryString) history.push(queryString);
 
   const page = render(
     <Router history={history}>
