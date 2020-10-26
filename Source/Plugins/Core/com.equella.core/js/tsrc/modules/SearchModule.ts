@@ -240,23 +240,28 @@ export const convertParamsToSearchOptions = async (
   const collectionId = getQueryParam("in")?.substring(1);
   const ownerId = getQueryParam("owner");
   const dateRange = getQueryParam("dr");
+  const datePrimary = getQueryParam("dp");
+  const dateSecondary = getQueryParam("ds");
 
   const getUserDetails = async (
     userId: string
   ): Promise<OEQ.UserQuery.UserDetails | undefined> => {
     const userDetails = await resolveUsers([userId]);
-    return userDetails[0];
+    return userDetails.length > 0 ? userDetails[0] : defaultSearchOptions.owner;
   };
 
   const getCollectionDetails = async (
     collectionUuid: string
-  ): Promise<Collection[]> => {
+  ): Promise<Collection[] | undefined> => {
     const collectionList = await collectionListSummary([
       OEQ.Acl.ACL_SEARCH_COLLECTION,
     ]);
-    return collectionList.filter((c) => {
+    const filteredCollectionList = collectionList.filter((c) => {
       return c.uuid === collectionUuid;
     });
+    return filteredCollectionList.length > 0
+      ? filteredCollectionList
+      : defaultSearchOptions.collections;
   };
 
   const RangeType = Union(
@@ -273,7 +278,9 @@ export const convertParamsToSearchOptions = async (
     primaryDate?: Date,
     secondaryDate?: Date
   ): DateRange | undefined => {
-    if (!primaryDate && !secondaryDate) return undefined;
+    if (!primaryDate && !secondaryDate) {
+      return undefined;
+    }
     return match(
       [
         Literal("between"),
@@ -301,8 +308,8 @@ export const convertParamsToSearchOptions = async (
     lastModifiedDateRange:
       getLastModifiedDateRange(
         dateRange as RangeType,
-        new Date(parseInt(getQueryParam("dp") ?? "")),
-        new Date(parseInt(getQueryParam("ds") ?? ""))
+        datePrimary ? new Date(parseInt(datePrimary)) : undefined,
+        dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
       ) ?? defaultSearchOptions.lastModifiedDateRange,
     sortOrder:
       (getQueryParam("sort")?.toUpperCase() as SortOrder) ??

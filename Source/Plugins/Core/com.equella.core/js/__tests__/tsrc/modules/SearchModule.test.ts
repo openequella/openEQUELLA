@@ -132,6 +132,13 @@ describe("SearchModule", () => {
       expect(convertedParamsPromise).toBeUndefined();
     });
 
+    it("should return default search for any parameters that aren't supported", async () => {
+      const unsupportedQueryString = "?test=nothing&cool=beans";
+      expect(
+        await convertParamsToSearchOptions(unsupportedQueryString)
+      ).toEqual(defaultSearchOptions);
+    });
+
     it("should convert legacy search parameters to searchOptions", async () => {
       mockedResolvedUser.mockResolvedValue(users);
       mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
@@ -211,5 +218,15 @@ describe("SearchModule", () => {
         });
       }
     );
+
+    it("should return default search options when collectionId and userId do not exist", async () => {
+      mockedResolvedUser.mockResolvedValue([]);
+      mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
+      const collectionQueryString = "?in=Cunknowncollection&owner=unknown";
+      const convertedSearchOptions = await convertParamsToSearchOptions(
+        collectionQueryString
+      );
+      expect(convertedSearchOptions).toEqual(defaultSearchOptions);
+    });
   });
 });
