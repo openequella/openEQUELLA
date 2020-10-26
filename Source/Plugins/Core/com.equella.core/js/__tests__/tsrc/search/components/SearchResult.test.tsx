@@ -117,7 +117,7 @@ describe("<SearchResult/>", () => {
       queryByLabelText(
         sprintf(languageStrings.searchpage.starRatings.label, starRatings)
       )
-    ).toHaveLength(1);
+    ).toBeInTheDocument();
   });
 
   it("displays the lightbox when an image attachment is clicked", async () => {
