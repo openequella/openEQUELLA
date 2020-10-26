@@ -40,6 +40,7 @@ import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
+import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
@@ -150,6 +151,7 @@ export default function SearchResult({
   const {
     searchResult: searchResultStrings,
     comments: commentStrings,
+    starRatings: ratingStrings,
   } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
@@ -242,7 +244,7 @@ export default function SearchResult({
         {starRatings >= 0 && (
           <>
             {metaDataDivider}
-            <div aria-label={`item rating: ${starRatings}`}>
+            <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
           </>
