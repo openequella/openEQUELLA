@@ -30,6 +30,7 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
+import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
