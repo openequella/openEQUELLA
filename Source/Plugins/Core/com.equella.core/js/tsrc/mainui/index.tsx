@@ -25,17 +25,17 @@ export interface RenderData {
   newUI: boolean;
   autotestMode: boolean;
 }
-export type JsEntry = "mainDiv" | "searchPage" | "settingsPage";
+export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
 // before loading of the full app.
 const App = React.lazy(() => import("./App"));
 
-export default function (entry: JsEntry) {
+export default function (entry: EntryPage) {
   initStrings();
   ReactDOM.render(
     <React.Suspense fallback={<>loading</>}>
-      <App jsEntry={entry} />
+      <App entryPage={entry} />
     </React.Suspense>,
     document.getElementById(entry)
   );

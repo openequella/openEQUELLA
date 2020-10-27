@@ -15,7 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeProvider } from "@material-ui/core";
+import {
+  ThemeProvider,
+  StylesProvider,
+  createGenerateClassName,
+} from "@material-ui/core";
 import { ReactNode } from "react";
 import SearchPage from "../search/SearchPage";
 import { oeqTheme } from "../theme";
@@ -27,7 +31,7 @@ import {
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
-import { JsEntry, RenderData } from "./index";
+import { EntryPage, RenderData } from "./index";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { shallowEqual } from "shallow-equal-object";
@@ -48,7 +52,6 @@ import SettingsPage from "../settings/SettingsPage";
 import { startHeartbeat } from "../util/heartbeat";
 import * as OEQ from "@openequella/rest-api-client";
 import { Literal, match } from "runtypes";
-import { StylesProvider, createGenerateClassName } from "@material-ui/core";
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
@@ -61,6 +64,9 @@ export const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
 declare const renderData: RenderData | undefined;
 
+/**
+ * Build the full oEQ Index page.
+ */
 function IndexPage() {
   const [currentUser, setCurrentUser] = React.useState<
     OEQ.LegacyContent.CurrentUserDetails
@@ -187,130 +193,145 @@ function IndexPage() {
   }
 
   return (
-    <BrowserRouter
-      basename={basePath}
-      getUserConfirmation={(message, cb) => {
-        if (errorShowing.current) {
-          errorShowing.current = false;
-          setFullPageError(undefined);
-          cb(true);
-        } else {
-          setNavAwayCallback({ message, cb });
-        }
-      }}
-    >
-      <Prompt
-        when={Boolean(preventNavMessage) || errorShowing.current}
-        message={nonBlankNavMessage}
-      />
-      <NavAwayDialog
-        open={Boolean(navAwayCallback)}
-        message={nonBlankNavMessage}
-        navigateConfirm={(confirm) => {
-          if (navAwayCallback) navAwayCallback.cb(confirm);
-          if (confirm) setPreventNavMessage(undefined);
-          setNavAwayCallback(undefined);
+    <ThemeProvider theme={oeqTheme}>
+      <BrowserRouter
+        basename={basePath}
+        getUserConfirmation={(message, cb) => {
+          if (errorShowing.current) {
+            errorShowing.current = false;
+            setFullPageError(undefined);
+            cb(true);
+          } else {
+            setNavAwayCallback({ message, cb });
+          }
         }}
-      />
-      <LegacyContent
-        {...legacyContentProps}
-        render={(content) => {
-          const tp = content
-            ? templatePropsForLegacy(content)
-            : {
-                ...templateProps,
-                fullscreenMode: legacyContentProps.enabled
-                  ? templateProps.fullscreenMode
-                  : undefined,
-              };
-          const withErr = fullPageError
-            ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
-            : tp;
-          const template = (
-            <Template {...withErr} currentUser={currentUser}>
-              {routeSwitch(content)}
-            </Template>
-          );
-          const render = () => {
-            if (!content || content.noForm) {
-              return template;
-            } else {
-              const { form } = content.html;
-              return (
-                <>
-                  <LegacyForm state={content.state}>{template}</LegacyForm>
-                  {form && HtmlParser(form)}
-                </>
-              );
-            }
-          };
-          return render();
-        }}
-      />
-    </BrowserRouter>
+      >
+        <Prompt
+          when={Boolean(preventNavMessage) || errorShowing.current}
+          message={nonBlankNavMessage}
+        />
+        <NavAwayDialog
+          open={Boolean(navAwayCallback)}
+          message={nonBlankNavMessage}
+          navigateConfirm={(confirm) => {
+            if (navAwayCallback) navAwayCallback.cb(confirm);
+            if (confirm) setPreventNavMessage(undefined);
+            setNavAwayCallback(undefined);
+          }}
+        />
+        <LegacyContent
+          {...legacyContentProps}
+          render={(content) => {
+            const tp = content
+              ? templatePropsForLegacy(content)
+              : {
+                  ...templateProps,
+                  fullscreenMode: legacyContentProps.enabled
+                    ? templateProps.fullscreenMode
+                    : undefined,
+                };
+            const withErr = fullPageError
+              ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
+              : tp;
+            const template = (
+              <Template {...withErr} currentUser={currentUser}>
+                {routeSwitch(content)}
+              </Template>
+            );
+            const render = () => {
+              if (!content || content.noForm) {
+                return template;
+              } else {
+                const { form } = content.html;
+                return (
+                  <>
+                    <LegacyForm state={content.state}>{template}</LegacyForm>
+                    {form && HtmlParser(form)}
+                  </>
+                );
+              }
+            };
+            return render();
+          }}
+        />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
-const renderNewPage = (
-  page: ReactNode,
-  forceRefresh: boolean,
-  classPrefix: string
-) => {
+interface NewPageProps {
+  page: ReactNode;
+  classPrefix: string;
+  isOpenInSelectonSession: boolean;
+}
+
+/**
+ * Build a single oEQ new UI page.
+ * @param page A tsx page such as SearchPage.tsx
+ * @param forceRefresh Whether to refresh the page when navigating to different route
+ * @param classPrefix The prefix added in MUI styles
+ */
+function NewPage({ page, isOpenInSelectonSession, classPrefix }: NewPageProps) {
   const generateClassName = createGenerateClassName({
     productionPrefix: classPrefix,
   });
-  return (
-    <BrowserRouter basename={basePath} forceRefresh={forceRefresh}>
-      <StylesProvider generateClassName={generateClassName}>
-        <ThemeProvider theme={oeqTheme}>{page}</ThemeProvider>
-      </StylesProvider>
-    </BrowserRouter>
-  );
-};
 
-interface AppProps {
-  jsEntry: JsEntry;
+  return (
+    <StylesProvider generateClassName={generateClassName}>
+      <ThemeProvider theme={oeqTheme}>
+        <BrowserRouter
+          basename={basePath}
+          forceRefresh={!isOpenInSelectonSession}
+        >
+          {page}
+        </BrowserRouter>
+      </ThemeProvider>
+    </StylesProvider>
+  );
 }
 
-const App = ({ jsEntry }: AppProps) => {
+interface AppProps {
+  entryPage: EntryPage;
+}
+
+const App = ({ entryPage }: AppProps) => {
+  const emptyFunc = () => {};
   const renderApp = match(
     [
       Literal("mainDiv"),
       () => {
         startHeartbeat();
-        return (
-          <ThemeProvider theme={oeqTheme}>
-            <IndexPage />
-          </ThemeProvider>
-        );
+        return <IndexPage />;
       },
     ],
     [
       Literal("searchPage"),
-      () => {
-        return renderNewPage(
-          <SearchPage updateTemplate={() => {}} />,
-          false,
-          "oeq-nsp"
-        );
-      },
+      () => (
+        <NewPage
+          page={<SearchPage updateTemplate={emptyFunc} />}
+          classPrefix="oeq-nsp"
+          isOpenInSelectonSession
+        />
+      ),
     ],
     [
       Literal("settingsPage"),
-      () => {
-        return renderNewPage(
-          <SettingsPage
-            refreshUser={() => {}}
-            updateTemplate={() => {}}
-            isReloadNeeded={false}
-          />,
-          true,
-          "oeq-nst"
-        );
-      },
+      () => (
+        <NewPage
+          page={
+            <SettingsPage
+              refreshUser={emptyFunc}
+              updateTemplate={emptyFunc}
+              isReloadNeeded={false}
+            />
+          }
+          classPrefix="oeq-nst"
+          isOpenInSelectonSession={false}
+        />
+      ),
     ]
   );
-  return renderApp(jsEntry);
+  return renderApp(entryPage);
 };
 
 export default App;
