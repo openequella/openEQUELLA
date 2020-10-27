@@ -90,6 +90,13 @@ mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
+// Mock out a collaborator of SearchResult
+jest
+  .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
+  .mockResolvedValue({
+    viewerId: "fancy",
+  } as OEQ.MimeType.MimeTypeViewerDetail);
+
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: SearchSettingsModule.SortOrder.RANK,

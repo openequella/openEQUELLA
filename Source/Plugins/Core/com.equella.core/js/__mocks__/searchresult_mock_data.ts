@@ -27,7 +27,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
   createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
-  commentCount: 0,
+  commentCount: 1,
   attachments: [],
   thumbnail: "default",
   displayFields: [],
@@ -55,12 +55,12 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
   createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
-  commentCount: 0,
+  commentCount: 2,
   attachments: [
     {
       attachmentType: "file",
       id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
-      description: "config.json",
+      description: "image.png",
       preview: false,
       mimeType: "image/png",
       hasGeneratedThumb: true,

@@ -23,12 +23,10 @@ import {
   createMuiTheme,
 } from "@material-ui/core";
 import { languageStrings } from "../../util/langstrings";
-import {
-  FirstPage,
-  LastPage,
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-} from "@material-ui/icons";
+import FirstPage from "@material-ui/icons/FirstPage";
+import LastPage from "@material-ui/icons/LastPage";
+import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
+import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
 export interface SearchPaginationProps {
   count: number;

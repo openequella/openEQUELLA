@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import type { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import {
@@ -23,10 +24,10 @@ import {
 } from "../../__mocks__/SearchResult.mock";
 import { defaultSearchOptions } from "../../tsrc/modules/SearchModule";
 import {
+  mapSearchResultItems,
   SearchResultList,
   SearchResultListProps,
 } from "../../tsrc/search/components/SearchResultList";
-import { action } from "@storybook/addon-actions";
 
 export default {
   title: "Search/SearchResultList",
@@ -49,7 +50,6 @@ export const EmptyResultListComponent: Story<SearchResultListProps> = (
 ) => <SearchResultList {...args} />;
 
 EmptyResultListComponent.args = {
-  searchResultItems: emptySearch.results,
   showSpinner: false,
   paginationProps: {
     ...sharedPaginationArgs,
@@ -63,16 +63,25 @@ EmptyResultListComponent.args = {
 
 export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
   args
-) => <SearchResultList {...args} />;
+) => (
+  <SearchResultList {...args}>
+    {mapSearchResultItems(
+      singlePageSearch.results,
+      (error) => console.warn(error),
+      [],
+      async () => ({
+        viewerId: "fancy",
+      })
+    )}
+  </SearchResultList>
+);
 
 BasicSearchResultListComponent.args = {
   ...EmptyResultListComponent.args,
-  searchResultItems: singlePageSearch.results,
   paginationProps: {
     ...sharedPaginationArgs,
     count: singlePageSearch.available,
   },
-  highlights: [],
 };
 
 export const LoadingSearchResultListComponent: Story<SearchResultListProps> = (
