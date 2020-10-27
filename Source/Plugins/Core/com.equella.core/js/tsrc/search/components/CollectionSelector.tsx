@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { Checkbox, TextField } from "@material-ui/core";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import { Autocomplete } from "@material-ui/lab";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
 import { useEffect, useState } from "react";
 import {
   Collection,
   collectionListSummary,
 } from "../../modules/CollectionsModule";
-import { Autocomplete } from "@material-ui/lab";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import { languageStrings } from "../../util/langstrings";
 
 interface CollectionSelectorProps {
@@ -53,7 +54,7 @@ export const CollectionSelector = ({
 
   useEffect(() => {
     collectionListSummary([
-      "SEARCH_COLLECTION",
+      OEQ.Acl.ACL_SEARCH_COLLECTION,
     ]).then((collections: Collection[]) => setCollections(collections));
   }, []);
 

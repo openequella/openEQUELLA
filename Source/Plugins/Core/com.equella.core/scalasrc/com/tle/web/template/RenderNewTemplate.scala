@@ -95,6 +95,15 @@ object RenderNewTemplate {
       .enabled
   }
 
+  // Check if new Search page is enabled.
+  def isNewSearchPageEnabled: Boolean = {
+    RunWithDB
+      .executeIfInInstitution(UISettings.cachedUISettings)
+      .getOrElse(UISettings.defaultSettings)
+      .newUI
+      .newSearch
+  }
+
   // Check if New UI is being used, but there is no guarantee that New UI is enabled.
   // An example is when Old UI is turned on, users will see New UI if they open pages
   // that are only available in New UI such as the Facet settings page.
@@ -135,12 +144,16 @@ object RenderNewTemplate {
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
     val _renderData =
-      new ObjectExpression("baseResources",
-                           r.url(""),
-                           "newUI",
-                           java.lang.Boolean.valueOf(isNewUIEnabled),
-                           "autotestMode",
-                           java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode))
+      new ObjectExpression(
+        "baseResources",
+        r.url(""),
+        "newUI",
+        java.lang.Boolean.valueOf(isNewUIEnabled),
+        "autotestMode",
+        java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode),
+        "newSearch",
+        java.lang.Boolean.valueOf(isNewSearchPageEnabled)
+      )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))

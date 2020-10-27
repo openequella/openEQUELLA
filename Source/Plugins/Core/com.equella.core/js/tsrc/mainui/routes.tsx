@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { RouteComponentProps } from "react-router";
+import { LocationDescriptor } from "history";
+import { TemplateUpdate, TemplateUpdateProps } from "./Template";
+import { RenderData } from "./index";
 
-import type { RouteComponentProps } from "react-router";
-import type { LocationDescriptor } from "history";
-import type { TemplateUpdate, TemplateUpdateProps } from "./Template";
+declare const renderData: RenderData | undefined;
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -73,7 +75,11 @@ export const routes = {
     component: SettingsPage,
   },
   Search: {
-    path: "/page/search",
+    //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
+    path:
+      typeof renderData !== "undefined" && renderData?.newSearch
+        ? "(/page/search|/searching.do)"
+        : "/page/search",
     render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
   SearchSettings: {

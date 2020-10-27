@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "target/ts",
     "module": "CommonJS",
+    "esModuleInterop": true,
     "target": "es5",
     "lib": ["es2020", "dom"],
     "inlineSourceMap": true,

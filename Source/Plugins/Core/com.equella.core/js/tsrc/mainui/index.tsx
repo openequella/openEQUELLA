@@ -24,6 +24,7 @@ export interface RenderData {
   baseResources: string;
   newUI: boolean;
   autotestMode: boolean;
+  newSearch: boolean;
 }
 declare const renderData: RenderData | undefined;
 

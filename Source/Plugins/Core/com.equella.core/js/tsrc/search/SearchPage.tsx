@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
@@ -35,6 +35,7 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
+  convertParamsToSearchOptions,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -121,6 +122,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
+
+  const location = useLocation();
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -128,14 +132,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
-
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
-    getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSearchSettings(settings);
-      handleSortOrderChanged(
-        searchPageOptions.sortOrder ?? settings.defaultSearchSort
-      );
+
+    Promise.all([
+      getSearchSettingsFromServer(),
+      convertParamsToSearchOptions(location.search),
+    ]).then((results) => {
+      const [searchSettings, queryStringSearchOptions] = results;
+      setSearchSettings(searchSettings);
+
+      if (queryStringSearchOptions)
+        setSearchPageOptions({
+          ...queryStringSearchOptions,
+          dateRangeQuickModeEnabled: false,
+          sortOrder:
+            queryStringSearchOptions.sortOrder ??
+            searchSettings.defaultSearchSort,
+        });
+      else
+        setSearchPageOptions({
+          ...searchPageOptions,
+          sortOrder:
+            searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+        });
     });
   }, []);
 
