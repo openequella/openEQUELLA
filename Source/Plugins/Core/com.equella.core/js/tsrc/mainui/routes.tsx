@@ -18,16 +18,7 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { LocationDescriptor } from "history";
-import { TemplateUpdate } from "./Template";
-import ThemePage from "../theme/ThemePage";
-import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
-import SearchPageSettings from "../settings/Search/SearchPageSettings";
-import SettingsPage from "../settings/SettingsPage";
-import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
-import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
-import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
-import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
-import SearchPage from "../search/SearchPage";
+import { TemplateUpdate, TemplateUpdateProps } from "./Template";
 import { RenderData } from "./index";
 
 declare const renderData: RenderData | undefined;
@@ -89,7 +80,7 @@ export const routes = {
       typeof renderData !== "undefined" && renderData?.newSearch
         ? "(/page/search|/searching.do)"
         : "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
   SearchSettings: {
     path: "/page/searchsettings",
