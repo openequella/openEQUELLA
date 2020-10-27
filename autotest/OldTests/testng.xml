@@ -2,7 +2,7 @@
 
 <suite name="EQUELLA testing" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
   <listeners>
-    <listener class-name="retry.TestAnnotationTransformer"/>
+    <listener class-name="testng.TestAnnotationTransformer"/>
   </listeners>
   <suite-files>
 		<suite-file path="./testng-local-searching.xml"/>
