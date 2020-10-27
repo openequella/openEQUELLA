@@ -399,6 +399,9 @@ export const languageStrings = {
       one: "%d comment",
       more: "%d comments",
     },
+    starRatings: {
+      label: "Item star rating: %f",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",
