@@ -20,7 +20,7 @@ import * as React from "react";
 import { StarRating, StarRatingProps } from "../../tsrc/components/StarRating";
 
 export default {
-  title: "StarRating",
+  title: "component/StarRating",
   component: StarRating,
 } as Meta<StarRatingProps>;
 
