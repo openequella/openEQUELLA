@@ -1170,10 +1170,6 @@ div.area {
   margin-left: $doubleMargin;
 }
 
-#selection-content-bottom #selection-content-inner .mainCols {
-  margin: 0 $doubleMargin;
-}
-
 #mainDiv .selectiondashboard #col1 {
   width: 368px;
 }
@@ -1722,6 +1718,7 @@ Search page
 
   #col2 {
     width: 221px;
+    margin-left: 14px;
 
     .box hr {
       border-color: #c1beb0;
@@ -4481,8 +4478,6 @@ img.warningimg {
   display: flex;
   flex-direction: column;
   align-items: center;
-  // The width of this div is Full viewport width minus vertical scrollbar width.
-  // Ideally we should us JS to get scrollbar width.
   width: 100vw;
 }
 
@@ -4893,11 +4888,18 @@ div#sssh_finishedButton {
   width: auto;
 }
 
+// Override the margin of mainCols if it's in selection-content-bottom
+#selection-content-bottom #selection-content-inner .mainCols {
+  margin: 0 $doubleMargin;
+}
+
 #selection-content-bottom
   #selection-content-inner.search-layout
   .mainCols
   #col2 {
-  width: 20%; // Override the width if 'col2' is also wrapped by 'selection-content-bottom'
+  // Override styles of 'col2' if it's also wrapped by 'selection-content-bottom'
+  width: 20%;
+  margin-left: 0;
 }
 
 .selection-courses {
