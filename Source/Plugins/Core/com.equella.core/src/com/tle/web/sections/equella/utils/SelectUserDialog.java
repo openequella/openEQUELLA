@@ -20,8 +20,15 @@ import static com.tle.web.sections.js.generic.statement.FunctionCallStatement.js
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.UrlService;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -61,7 +68,13 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   private static final int WIDTH = 550;
 
   private CurrentUsersCallback currentUsersCallback;
+  private String permission = "";
+  private boolean checkOnItem = false;
+
   @Inject protected SelectUserSection section;
+  @Inject protected TLEAclManager securityManager;
+  @Inject protected ItemService itemService;
+  @Inject protected UrlService urlService;
   @ViewFactory private FreemarkerFactory viewFactory;
 
   @PlugKey("utils.selectuserdialog.default.title")
@@ -104,9 +117,12 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   @Override
   protected SectionRenderable getRenderableContents(RenderContext context) {
-    getModel(context).setInnerContents(renderSection(context, section));
-
-    return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+    if (canView(context)) {
+      getModel(context).setInnerContents(renderSection(context, section));
+      return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+    } else {
+      throw new AccessDeniedException("You do not have permission to view this page.");
+    }
   }
 
   @Override
@@ -197,5 +213,37 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   public void setPrompt(Label prompt) {
     section.setPrompt(prompt);
+  }
+
+  /**
+   * Allows checking permissions before rendering the dialog.
+   *
+   * @param permission The ACL string to check against.
+   * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
+   *     checked against the user.
+   *     <p>Note: if checkOnItem is true, the request for this dialog MUST be an item summary URL.
+   *     If not, it will trigger an IllegalArgumentException when converting the URL to an item
+   *     reference.
+   */
+  public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
+    this.permission = permission;
+    this.checkOnItem = checkOnItem;
+  }
+
+  private boolean canView(RenderContext context) {
+    // if no permission set, continue as normal
+    if (permission.equals("")) {
+      return true;
+    }
+    // if checking permission on an item get its uuid and version from the URL and check against it
+    if (checkOnItem) {
+      ItemId itemId =
+          new ItemId(
+              URLUtils.convertItemSummaryURLToItemString(context.getRequest().getRequestURI()));
+      Item item = itemService.getUnsecure(itemId);
+      return !(securityManager.filterNonGrantedPrivileges(item, permission).isEmpty());
+    }
+    // if a permission is set but we don't need to check it against an item
+    return !(securityManager.filterNonGrantedPrivileges(permission).isEmpty());
   }
 }
