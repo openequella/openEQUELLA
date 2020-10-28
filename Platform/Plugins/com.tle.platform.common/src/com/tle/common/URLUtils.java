@@ -242,4 +242,34 @@ public class URLUtils {
     }
     return bits;
   }
+
+  /**
+   * Converts a resource summary URL or URI to the format itemUUID/itemVersion. E.g:
+   * http://exampleequella.com/institution/items/74adcaf2-3f24-4a34-85fd-c788953ad649/1/ would
+   * return 74adcaf2-3f24-4a34-85fd-c788953ad649/1. Useful for using an item summary URL to
+   * instantiate an ItemId using the ItemService.
+   *
+   * @param path Input URL or URI. It can be the entire URL or a relative path. No parameters.
+   * @return a string with in the format itemUUID/itemVersion.
+   */
+  public static String convertItemSummaryURLToItemString(String path) {
+    // This pattern is the pattern of an item Summary URL.
+    // Regex Breakdown:
+    // Any characters (.*),
+    // up until items/ is found (items\\/),
+    // then a UUID ([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}),
+    // then a slash, a version number, then an optional slash (\/\d+\/?)
+    String itemSummaryUrlPattern =
+        ".*items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?";
+    String itemsSlash = "items/";
+    if (!path.matches(itemSummaryUrlPattern)) {
+      throw new IllegalArgumentException();
+    }
+    // trim what we don't need from the URL so that it's in the format uuid/version
+    path = path.substring(path.indexOf(itemsSlash) + itemsSlash.length());
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
+    return path;
+  }
 }
