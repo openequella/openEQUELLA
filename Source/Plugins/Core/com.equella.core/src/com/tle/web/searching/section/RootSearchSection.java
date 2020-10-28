@@ -96,7 +96,6 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
       if (selectionSession.getLayout() == Layout.COURSE) {
         return newSearchUIContent;
       } else {
-        getModel(context).setNewSearchUIInNormalLayout(true);
         getModel(context).setNewSearchUIContent(newSearchUIContent);
       }
     }
