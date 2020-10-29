@@ -137,13 +137,15 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 
 		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 
-		userSelect.setMultipleUsers(true);
-		userSelect.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("addNotifications"),
-			inplace, "selectedusers"));
-		userSelect.setAjax(true);
-		userSelect.setOkLabel(OK_LABEL);
-		userSelect.setUsersCallback(this);
-		tree.registerInnerSection(userSelect, id);
+    userSelect.setMultipleUsers(true);
+    userSelect.setOkCallback(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("addNotifications"), inplace, "selectedusers"));
+    userSelect.setAjax(true);
+    userSelect.setOkLabel(OK_LABEL);
+    userSelect.setUsersCallback(this);
+    userSelect.setCheckPermissionBeforeOpen(REQUIRED_PRIVILEGE, true);
+    tree.registerInnerSection(userSelect, id);
 
 		selectUserToNotify.setClickHandler(userSelect.getOpenFunction());
 		removeUserFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeNotification"),

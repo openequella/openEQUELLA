@@ -268,16 +268,19 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 		userLinkSection = userLinkService.register(tree, id);
 
-		selectUserDialog.setAjax(true);
-		// selectUserDialog.setOkLabel(OK_LABEL);
-		selectUserDialog.setMultipleUsers(false);
-		selectUserButton.setClickHandler(selectUserDialog.getOpenFunction());
-		clearUserButton.setClickHandler(
-			ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
-		UpdateDomFunction regenSecret = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("resetSecret"),
-			"clientSecretDiv");
-		JSHandler regen = new OverrideHandler(regenSecret).addValidator(DELETE_CONFIRM);
-		resetSecretButton.setClickHandler(regen);
+    selectUserDialog.setAjax(true);
+    // selectUserDialog.setOkLabel(OK_LABEL);
+    selectUserDialog.setMultipleUsers(false);
+    selectUserButton.setClickHandler(selectUserDialog.getOpenFunction());
+    selectUserDialog.setCheckPermissionBeforeOpen(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT, false);
+    clearUserButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
+    UpdateDomFunction regenSecret =
+        ajax.getAjaxUpdateDomFunction(
+            tree, null, events.getEventHandler("resetSecret"), "clientSecretDiv");
+    JSHandler regen = new OverrideHandler(regenSecret).addValidator(DELETE_CONFIRM);
+    resetSecretButton.setClickHandler(regen);
 
 		selectFlow.setListModel(new DynamicHtmlListModel<OAuthFlowDefinition>()
 		{
@@ -328,7 +331,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Srsly, this should be in the service
-	 * 
+	 *
 	 * @param info
 	 * @param oauth
 	 * @param errors
@@ -681,7 +684,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Called from ShowOAuthSection
-	 * 
+	 *
 	 * @param info
 	 * @param type
 	 */
@@ -696,7 +699,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Called from ShowOAuthSection
-	 * 
+	 *
 	 * @param info
 	 * @param oauthUuid
 	 * @param type

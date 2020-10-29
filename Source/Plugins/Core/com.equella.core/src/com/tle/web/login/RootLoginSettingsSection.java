@@ -153,9 +153,10 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 
 		userLinkSection = userLinkService.register(tree, id);
 
-		selectUserDialog.setAjax(true);
-		selectUserDialog.setOkLabel(OK_LABEL);
-		selectUserDialog.setMultipleUsers(false);
+    selectUserDialog.setAjax(true);
+    selectUserDialog.setOkLabel(OK_LABEL);
+    selectUserDialog.setMultipleUsers(false);
+    selectUserDialog.setCheckPermissionBeforeOpen("EDIT_SYSTEM_SETTINGS", false);
 
 		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 		selectUserDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,
