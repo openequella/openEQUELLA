@@ -75,8 +75,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   @Inject protected SelectUserSection section;
   @Inject protected TLEAclManager securityManager;
-  @Inject protected ItemService itemService;
-  @Inject protected UrlService urlService;
+
   @ViewFactory private FreemarkerFactory viewFactory;
 
   @PlugKey("utils.selectuserdialog.default.title")
