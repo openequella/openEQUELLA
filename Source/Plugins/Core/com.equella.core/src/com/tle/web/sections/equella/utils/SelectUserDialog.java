@@ -30,9 +30,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.UrlService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -95,7 +93,10 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 	@PlugKey("utils.selectuserdialog.selectthisuser")
 	private static String KEY_SINGLE_USER;
 
-	private Label title = LABEL_DEFAULT_TITLE;
+  @PlugKey("common.denied")
+  private static String NO_PERMISSIONS;
+
+  private Label title = LABEL_DEFAULT_TITLE;
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -137,7 +138,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 		getModel(context).setInnerContents(renderSection(context, section));
 		return viewFactory.createResult("utils/selectuserdialog.ftl", this);
     } else {
-      throw new AccessDeniedException("You do not have permission to view this page.");
+      throw new AccessDeniedException(NO_PERMISSIONS);
     }
 	}
 
@@ -255,8 +256,8 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
    *
    * @param permission The ACL string to check against.
    * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
-   *     checked against the user. If checkOnItem is true, the request for this dialog MUST be
-   *     an item summary URL. If not, it will trigger an IllegalArgumentException when checking the
+   *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
+   *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
    *     current viewable item.
    */
   public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
