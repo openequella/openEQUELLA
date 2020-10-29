@@ -44,7 +44,7 @@ export default function AdminDownloadDialog({
       <DialogContent>
         <DialogContentText>
           {text.introTextOne}
-          <a href={link} target="_blank">
+          <a href={link} target="_blank" rel="noreferrer">
             {text.introTextTwo}
           </a>
           {text.introTextThree}

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import axios, { AxiosPromise } from "axios";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import { languageStrings } from "../util/langstrings";
 import { BlobInfo } from "../components/RichTextEditor";
 

@@ -19,7 +19,7 @@ import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
 declare global {
@@ -65,7 +65,7 @@ interface FormUpdate {
   partial: boolean;
 }
 
-interface LegacyContent {
+interface LegacyContentResponse {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];
@@ -110,10 +110,12 @@ export interface LegacyContentProps {
   children?: never;
 }
 
-type SubmitResponse = ExternalRedirect | LegacyContent | ChangeRoute;
+type SubmitResponse = ExternalRedirect | LegacyContentResponse | ChangeRoute;
 
-function isPageContent(response: SubmitResponse): response is LegacyContent {
-  return (response as LegacyContent).html !== undefined;
+function isPageContent(
+  response: SubmitResponse
+): response is LegacyContentResponse {
+  return (response as LegacyContentResponse).html !== undefined;
 }
 
 function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
@@ -145,11 +147,14 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   function toRelativeUrl(url: string) {
     const relUrl =
-      url.indexOf(baseUrl) == 0 ? url.substring(baseUrl.length) : url;
-    return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
+      url.indexOf(baseUrl) === 0 ? url.substring(baseUrl.length) : url;
+    return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
   }
 
-  function updatePageContent(content: LegacyContent, scrollTop: boolean) {
+  function updatePageContent(
+    content: LegacyContentResponse,
+    scrollTop: boolean
+  ) {
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -237,6 +242,7 @@ export const LegacyContent = React.memo(function LegacyContent({
         cb: () => void
       ) {
         updateIncludes(includes.js, includes.css).then((_) => {
+          // eslint-disable-next-line no-eval
           window.eval(includes.script);
           cb();
         });
@@ -301,7 +307,7 @@ function updateStylesheets(
 
   while (
     current != null &&
-    current.tagName == "LINK" &&
+    current.tagName === "LINK" &&
     current instanceof HTMLLinkElement
   ) {
     existingSheets[current.href] = current;

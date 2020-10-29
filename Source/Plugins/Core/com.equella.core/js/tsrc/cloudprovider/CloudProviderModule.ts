@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import Axios, { AxiosPromise } from "axios";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import { languageStrings } from "../util/langstrings";
 

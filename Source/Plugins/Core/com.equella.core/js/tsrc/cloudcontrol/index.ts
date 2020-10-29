@@ -152,7 +152,7 @@ const observer = new MutationObserver(function () {
     res.push(liveElements.snapshotItem(i) as Element);
   }
   activeElements = activeElements.filter((e) => {
-    if (res.indexOf(e.element) == -1) {
+    if (res.indexOf(e.element) === -1) {
       e.removed.unmount(e.element);
       return false;
     }
@@ -269,11 +269,11 @@ export const CloudControl: CloudControlRegisterImpl = {
             att.push(change.attachment);
             break;
           case "deleted":
-            att = att.filter((at) => at.uuid != change.uuid);
+            att = att.filter((at) => at.uuid !== change.uuid);
             break;
           case "edited":
             const ind = att.findIndex(
-              (at) => at.uuid == change.attachment.uuid
+              (at) => at.uuid === change.attachment.uuid
             );
             att[ind] = change.attachment;
             break;

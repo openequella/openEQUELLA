@@ -46,7 +46,7 @@ describe("SearchModule", () => {
       expect(searchResult.results).toHaveLength(12);
     });
 
-    const validateSearchQuery = (expectedQuery: string) => {
+    const expectSearchQueryToBeValid = (expectedQuery: string) => {
       const calls = mockedSearch.mock.calls;
       const params = calls[0][1]; // Second parameter of the call is the 'params'
       expect(params.query).toEqual(expectedQuery);
@@ -58,7 +58,7 @@ describe("SearchModule", () => {
         ...SearchModule.defaultSearchOptions,
         query: "   ",
       });
-      validateSearchQuery("");
+      expectSearchQueryToBeValid("");
     });
 
     it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
@@ -68,7 +68,7 @@ describe("SearchModule", () => {
         ...SearchModule.defaultSearchOptions,
         query: queryTerm,
       });
-      validateSearchQuery(`${queryTerm}*`);
+      expectSearchQueryToBeValid(`${queryTerm}*`);
     });
 
     it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
@@ -79,7 +79,7 @@ describe("SearchModule", () => {
         query: queryTerm,
         rawMode: true,
       });
-      validateSearchQuery(`${queryTerm}`);
+      expectSearchQueryToBeValid(`${queryTerm}`);
     });
   });
 

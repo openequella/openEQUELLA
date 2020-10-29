@@ -17,7 +17,7 @@
  */
 import { DateRange } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";

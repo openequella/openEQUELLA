@@ -46,6 +46,7 @@ export default React.memo(function JQueryDiv({
         if (e) {
           divElem.current = e;
           $(e).html(html);
+          // eslint-disable-next-line no-eval
           if (script) window.eval(script);
           if (afterHtml) afterHtml();
         }

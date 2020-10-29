@@ -32,7 +32,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
-import { Config } from "../config";
+import { AppConfig } from "../AppConfig";
 import { useEffect, useState } from "react";
 
 const useStyles = makeStyles({
@@ -86,7 +86,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
     setNewUIEnabled(enabled);
     saveUISetting(enabled, newSearchEnabled)
       .then((_) => {
-        window.location.href = Config.baseUrl + "access/settings.do";
+        window.location.href = AppConfig.baseUrl + "access/settings.do";
       })
       .catch((error) => {
         handleError(error);

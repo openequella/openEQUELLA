@@ -69,7 +69,7 @@ export function prepLangStrings(
   const overrideVal = (prefix: string, val: LanguageStrings | string) => {
     if (typeof val == "string") {
       const overriden = bundle[prefix];
-      if (overriden != undefined) {
+      if (overriden !== undefined) {
         return overriden;
       }
       return val;

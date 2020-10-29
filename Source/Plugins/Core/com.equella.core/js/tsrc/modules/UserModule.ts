@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL } from "../AppConfig";
 
 /**
  * List users known in oEQ. Useful for filtering by users, or assigning permissions etc.

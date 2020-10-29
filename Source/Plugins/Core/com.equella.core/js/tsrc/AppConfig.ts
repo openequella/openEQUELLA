@@ -22,8 +22,8 @@ interface Config {
   baseUrl: string;
 }
 
-export const Config: Config = {
+export const AppConfig: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };
 
-export const API_BASE_URL = `${Config.baseUrl}api`;
+export const API_BASE_URL = `${AppConfig.baseUrl}api`;
