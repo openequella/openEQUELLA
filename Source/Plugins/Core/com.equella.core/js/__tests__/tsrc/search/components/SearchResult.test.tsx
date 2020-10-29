@@ -23,6 +23,7 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
+import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
@@ -105,6 +106,18 @@ describe("<SearchResult/>", () => {
     expect(
       queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
     ).toBeNull();
+  });
+
+  it("should show Star icons to represent Item ratings", async () => {
+    const { starRatings } = mockData.attachSearchObj;
+    const { queryByLabelText } = await renderSearchResult(
+      mockData.attachSearchObj
+    );
+    expect(
+      queryByLabelText(
+        sprintf(languageStrings.searchpage.starRatings.label, starRatings)
+      )
+    ).toBeInTheDocument();
   });
 
   it("displays the lightbox when an image attachment is clicked", async () => {

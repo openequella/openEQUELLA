@@ -40,3 +40,16 @@ export const getCurrentUserDetails = () =>
   OEQ.LegacyContent.getCurrentUserDetails(API_BASE_URL).then(
     (result: OEQ.LegacyContent.CurrentUserDetails) => result
   );
+
+/**
+ * Lookup users known in oEQ.
+ * @param ids An array of oEQ ids
+ */
+export const resolveUsers = (
+  ids: string[]
+): Promise<OEQ.UserQuery.UserDetails[]> =>
+  OEQ.UserQuery.lookup(API_BASE_URL, {
+    users: ids,
+    groups: [],
+    roles: [],
+  }).then((result: OEQ.UserQuery.SearchResult) => result.users);

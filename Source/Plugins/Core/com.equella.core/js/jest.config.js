@@ -20,4 +20,11 @@ module.exports = {
   testEnvironment: "jsdom",
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   setupFilesAfterEnv: ["./jest.setup.ts"],
+  globals: {
+    renderData: {
+      baseResources: "p/r/2020.2.0/com.equella.core/",
+      newUI: true,
+      autotestMode: false,
+    },
+  },
 };

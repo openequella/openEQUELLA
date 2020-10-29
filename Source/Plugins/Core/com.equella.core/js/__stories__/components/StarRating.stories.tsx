@@ -15,30 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { initStrings } from "../util/langstrings";
-import "../util/polyfill";
+import { StarRating, StarRatingProps } from "../../tsrc/components/StarRating";
 
-export interface RenderData {
-  baseResources: string;
-  newUI: boolean;
-  autotestMode: boolean;
-  newSearch: boolean;
-}
-declare const renderData: RenderData | undefined;
+export default {
+  title: "component/StarRating",
+  component: StarRating,
+} as Meta<StarRatingProps>;
 
-// Lazy import 'App' in order to initialise language strings (independent of imports)
-// before loading of the full app.
-const App = React.lazy(() => import("./App"));
+export const HalfStar: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+HalfStar.args = {
+  rating: 0.5,
+  numberOfStars: 1,
+};
 
-export default function () {
-  initStrings();
-  const legacySettingsMode = typeof renderData === "undefined";
-  ReactDOM.render(
-    <React.Suspense fallback={<>loading</>}>
-      <App legacySettingsMode={legacySettingsMode} />
-    </React.Suspense>,
-    document.getElementById(legacySettingsMode ? "settingsPage" : "mainDiv")
-  );
-}
+export const FullStar: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+FullStar.args = {
+  ...HalfStar.args,
+  rating: 5,
+};
+
+export const EmptyStar: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+EmptyStar.args = {
+  ...HalfStar.args,
+  rating: 0,
+};
+
+export const MixedStars: Story<StarRatingProps> = (args) => (
+  <StarRating {...args} />
+);
+MixedStars.args = {
+  rating: 2.5,
+  numberOfStars: 5,
+};

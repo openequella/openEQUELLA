@@ -40,9 +40,11 @@ import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
+import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
+import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { determineViewer } from "../../modules/ViewerModule";
@@ -128,6 +130,7 @@ export default function SearchResult({
     attachments = [],
     keywordFoundInAttachment,
     commentCount = 0,
+    starRatings,
   },
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
@@ -148,6 +151,7 @@ export default function SearchResult({
   const {
     searchResult: searchResultStrings,
     comments: commentStrings,
+    starRatings: ratingStrings,
   } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
@@ -234,6 +238,15 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
+          </>
+        )}
+
+        {starRatings >= 0 && (
+          <>
+            {metaDataDivider}
+            <div aria-label={sprintf(ratingStrings.label, starRatings)}>
+              <StarRating numberOfStars={5} rating={starRatings} />
+            </div>
           </>
         )}
       </div>

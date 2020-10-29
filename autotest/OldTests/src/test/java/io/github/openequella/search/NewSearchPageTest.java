@@ -7,6 +7,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
 import org.testng.annotations.Test;
+import testng.annotation.NewUIOnly;
 
 @TestInstitution("facet")
 public class NewSearchPageTest extends AbstractSessionTest {
@@ -18,6 +19,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "open the new Search page and wait for initial search completed")
+  @NewUIOnly
   public void initialSearch() {
     searchPage = new NewSearchPage(context).load();
     // The initial search should return 16 items.
@@ -25,6 +27,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(dependsOnMethods = "initialSearch", description = "Search with a query and refine controls")
+  @NewUIOnly
   public void searchByFilters() {
     searchPage.newSearch();
     // Search by Collections.
@@ -53,6 +56,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "open an item's summary page", dependsOnMethods = "searchByFilters")
+  @NewUIOnly
   public void openItemSummaryPage() {
     final String ITEM_TITLE = "Java (cloned)";
     SummaryPage summaryPage = searchPage.selectItem(ITEM_TITLE);
@@ -62,12 +66,9 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @Test(
       description = "Go back to the Search page from another page",
       dependsOnMethods = "openItemSummaryPage")
+  @NewUIOnly
   public void backToSearchPage() {
     context.getDriver().navigate().back();
-    // todo: remove this when we can skip this test suite in Old UI mode.
-    if (!searchPage.usingNewUI()) {
-      context.getDriver().navigate().refresh();
-    }
     searchPage.get();
     // Expect when going 'back' to the search page, the previous search
     // settings have been remembered.
@@ -76,6 +77,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "Search with a low privileged user", dependsOnMethods = "backToSearchPage")
+  @NewUIOnly
   public void searchWithLessACLS() {
     // This account can only access the Collection 'Hardware platforms' and items of this
     // Collection. But it has no access to attachments and comments.

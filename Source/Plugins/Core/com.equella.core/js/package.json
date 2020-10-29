@@ -46,7 +46,7 @@
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-beautiful-dnd": "13.0.0",
-    "react-color": "2.18.1",
+    "react-color": "2.19.3",
     "react-dom": "16.14.0",
     "react-html-parser": "2.0.2",
     "react-router": "5.2.0",
@@ -73,17 +73,17 @@
     "@storybook/addon-a11y": "6.0.27",
     "@storybook/addon-essentials": "6.0.27",
     "@storybook/react": "6.0.27",
-    "@types/enzyme": "3.10.7",
+    "@types/enzyme": "3.10.8",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/jest": "26.0.15",
     "@types/lodash": "4.14.162",
     "@types/luxon": "1.25.0",
     "@types/node": "12.12.47",
-    "@types/react": "16.9.53",
+    "@types/react": "16.9.55",
     "@types/react-autosuggest": "9.3.14",
     "@types/react-beautiful-dnd": "13.0.0",
     "@types/react-color": "2.17.0",
-    "@types/react-dom": "16.9.8",
+    "@types/react-dom": "16.9.9",
     "@types/react-html-parser": "2.0.1",
     "@types/react-redux": "5.0.21",
     "@types/react-router": "5.1.8",
@@ -114,6 +114,6 @@
     "rewire": "5.0.0",
     "storybook-react-router": "1.0.8",
     "ts-jest": "26.4.2",
-    "typescript": "4.0.3"
+    "typescript": "4.0.5"
   }
 }

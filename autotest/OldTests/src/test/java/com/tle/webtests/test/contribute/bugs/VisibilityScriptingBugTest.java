@@ -10,7 +10,7 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
-import retry.RetryTest;
+import testng.annotation.RetryTest;
 
 /**
  * This is a test to ensure that GH issue #1678 has not regressed.

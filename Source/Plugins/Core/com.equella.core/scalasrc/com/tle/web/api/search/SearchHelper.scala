@@ -199,6 +199,7 @@ object SearchHelper {
       modifiedDate = bean.getModifiedDate,
       collectionId = bean.getCollection.getUuid,
       commentCount = getItemCommentCount(key),
+      starRatings = bean.getRating,
       attachments = convertToAttachment(bean.getAttachments, key),
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,

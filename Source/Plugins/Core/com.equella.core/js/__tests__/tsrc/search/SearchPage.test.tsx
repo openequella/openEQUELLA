@@ -26,9 +26,10 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
@@ -77,6 +78,10 @@ const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
 );
+const mockConvertParamsToSearchOptions = jest.spyOn(
+  SearchModule,
+  "convertParamsToSearchOptions"
+);
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
@@ -98,7 +103,7 @@ const defaultSearchPageOptions: SearchPageOptions = {
   sortOrder: SearchSettingsModule.SortOrder.RANK,
   dateRangeQuickModeEnabled: true,
 };
-const defaultCollectionPrivileges = ["SEARCH_COLLECTION"];
+const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
 /**
@@ -117,12 +122,17 @@ const waitForSearch = async () =>
  *
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
-const renderSearchPage = async (): Promise<RenderResult> => {
+const renderSearchPage = async (
+  queryString?: string
+): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
+  const history = createMemoryHistory();
+  if (queryString) history.push(queryString);
+
   const page = render(
-    <BrowserRouter>
+    <Router history={history}>
       <SearchPage updateTemplate={jest.fn()} />{" "}
-    </BrowserRouter>
+    </Router>
   );
   // Wait for the first completion of initial search
   await waitForSearch();
@@ -670,5 +680,28 @@ describe("<SearchPage/>", () => {
       ...defaultSearchPageOptions,
       selectedCategories: selectedCategories,
     });
+  });
+});
+
+describe("conversion of legacy query parameters to SearchPageOptions", () => {
+  const searchPageOptions: SearchPageOptions = {
+    ...defaultSearchPageOptions,
+    dateRangeQuickModeEnabled: false,
+  };
+
+  beforeEach(() => {
+    mockConvertParamsToSearchOptions.mockResolvedValueOnce(searchPageOptions);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should call convertParamsToSearchOptions using query paramaters in url", async () => {
+    await renderSearchPage("?q=test");
+    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledTimes(1);
+    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledWith(
+      "?q=test"
+    );
   });
 });

@@ -15,12 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DateRange } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
+import { getISODateString } from "../util/Date";
+import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
 import { SortOrder } from "./SearchSettingsModule";
-import { Collection } from "./CollectionsModule";
-import { getISODateString } from "../util/Date";
+import { resolveUsers } from "./UserModule";
+import { Literal, match, Static, Union } from "runtypes";
 
 /**
  * Type of all search options on Search page
@@ -86,6 +89,21 @@ export interface DateRange {
    */
   end?: Date;
 }
+
+/**
+ * Legacy searching.do parameters currently supported by SearchPage component.
+ */
+const LegacySearchParams = Union(
+  Literal("dp"),
+  Literal("ds"),
+  Literal("dr"),
+  Literal("q"),
+  Literal("sort"),
+  Literal("owner"),
+  Literal("in")
+);
+
+type LegacyParams = Static<typeof LegacySearchParams>;
 
 /**
  * List of status which are considered 'live'.
@@ -169,7 +187,7 @@ export const generateCategoryWhereQuery = (
 /**
  * A function that takes search options and converts search options to search params,
  * and then does a search and returns a list of Items.
- * @param searchOptions  Search options selected on Search page.
+ * @param searchOptions Search options selected on Search page.
  */
 export const searchItems = ({
   query,
@@ -201,4 +219,101 @@ export const searchItems = ({
     whereClause: generateCategoryWhereQuery(selectedCategories),
   };
   return OEQ.Search.search(API_BASE_URL, searchParams);
+};
+
+/**
+ * A function that takes query string params from a shared searching.do URL and converts all applicable params to Search options
+ * @param queryString query string params from a shared `searching.do` URL
+ * @return SearchOptions object, or undefined if there were no query string parameters.
+ */
+export const convertParamsToSearchOptions = async (
+  queryString: string
+): Promise<SearchOptions | undefined> => {
+  if (!queryString) return undefined;
+
+  const params = new URLSearchParams(queryString);
+
+  const getQueryParam = (paramName: LegacyParams) => {
+    return params.get(paramName) ?? undefined;
+  };
+
+  const collectionId = getQueryParam("in")?.substring(1);
+  const ownerId = getQueryParam("owner");
+  const dateRange = getQueryParam("dr");
+  const datePrimary = getQueryParam("dp");
+  const dateSecondary = getQueryParam("ds");
+
+  const getUserDetails = async (
+    userId: string
+  ): Promise<OEQ.UserQuery.UserDetails | undefined> => {
+    const userDetails = await resolveUsers([userId]);
+    return userDetails.length > 0 ? userDetails[0] : defaultSearchOptions.owner;
+  };
+
+  const getCollectionDetails = async (
+    collectionUuid: string
+  ): Promise<Collection[] | undefined> => {
+    const collectionList = await collectionListSummary([
+      OEQ.Acl.ACL_SEARCH_COLLECTION,
+    ]);
+    const filteredCollectionList = collectionList.filter((c) => {
+      return c.uuid === collectionUuid;
+    });
+    return filteredCollectionList.length > 0
+      ? filteredCollectionList
+      : defaultSearchOptions.collections;
+  };
+
+  const RangeType = Union(
+    Literal("between"),
+    Literal("after"),
+    Literal("before"),
+    Literal("on")
+  );
+
+  type RangeType = Static<typeof RangeType>;
+
+  const getLastModifiedDateRange = (
+    rangeType: RangeType,
+    primaryDate?: Date,
+    secondaryDate?: Date
+  ): DateRange | undefined => {
+    if (!primaryDate && !secondaryDate) {
+      return undefined;
+    }
+    return match(
+      [
+        Literal("between"),
+        (): DateRange => ({ start: primaryDate, end: secondaryDate }),
+      ],
+      [Literal("after"), (): DateRange => ({ start: primaryDate })],
+      [Literal("before"), (): DateRange => ({ end: primaryDate })],
+      [
+        Literal("on"),
+        (): DateRange => ({
+          start: primaryDate,
+          end: primaryDate,
+        }),
+      ]
+    )(rangeType.toLowerCase() as RangeType);
+  };
+
+  const searchOptions: SearchOptions = {
+    ...defaultSearchOptions,
+    collections: collectionId
+      ? await getCollectionDetails(collectionId)
+      : defaultSearchOptions.collections,
+    query: getQueryParam("q") ?? defaultSearchOptions.query,
+    owner: ownerId ? await getUserDetails(ownerId) : defaultSearchOptions.owner,
+    lastModifiedDateRange:
+      getLastModifiedDateRange(
+        dateRange as RangeType,
+        datePrimary ? new Date(parseInt(datePrimary)) : undefined,
+        dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
+      ) ?? defaultSearchOptions.lastModifiedDateRange,
+    sortOrder:
+      (getQueryParam("sort")?.toUpperCase() as SortOrder) ??
+      defaultSearchOptions.sortOrder,
+  };
+  return searchOptions;
 };

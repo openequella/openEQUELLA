@@ -28,6 +28,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 1,
+  starRatings: 1,
   attachments: [],
   thumbnail: "default",
   displayFields: [],
@@ -56,6 +57,7 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 2,
+  starRatings: 1.5,
   attachments: [
     {
       attachmentType: "file",
@@ -98,6 +100,7 @@ const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
+  starRatings: -1,
   attachments: [
     {
       attachmentType: "file",
@@ -140,6 +143,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   modifiedDate: new Date("2020-05-26T12:45:06.857+10:00"),
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
+  starRatings: -1,
   attachments: [
     {
       attachmentType: "file",
