@@ -1718,7 +1718,7 @@ Search page
 
   #col2 {
     width: 221px;
-    margin-left: 14px;
+    margin-left: $doubleMargin;
 
     .box hr {
       border-color: #c1beb0;
@@ -4490,15 +4490,6 @@ img.warningimg {
   margin-left: 18px;
 }
 
-#selection-content #searchPage {
-  margin: 0 $doubleMargin;
-  width: 80%; // The new search UI takes 80 percent of its parent div width.
-}
-
-#selection-content-bottom #searchPage {
-  margin: 0; // Override the margin when searchPage is wrapped by selection-content-bottom
-}
-
 #selection-content #col1 #searchPage {
   width: 100%; // Override the width if new search UI is also wrapped by 'col1'
 }
@@ -4810,11 +4801,6 @@ div#sssh_finishedButton {
   }
 }
 
-#selection-content-inner .mainCols #col1 {
-  width: 80%;
-  margin-right: $doubleMargin;
-}
-
 /*****************************************************************************
  Selection session search page
 *****************************************************************************/
@@ -4893,13 +4879,10 @@ div#sssh_finishedButton {
   margin: 0 $doubleMargin;
 }
 
-#selection-content-bottom
-  #selection-content-inner.search-layout
-  .mainCols
-  #col2 {
+#selection-content-bottom #selection-content-inner .mainCols #col2 {
   // Override styles of 'col2' if it's also wrapped by 'selection-content-bottom'
   width: 20%;
-  margin-left: 0;
+  margin-left: $doubleMargin;
 }
 
 .selection-courses {
