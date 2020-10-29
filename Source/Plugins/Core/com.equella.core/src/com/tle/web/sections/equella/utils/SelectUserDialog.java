@@ -66,7 +66,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   private static final int WIDTH = 550;
 
   private CurrentUsersCallback currentUsersCallback;
-  private String permission = "";
+  private String permission = null;
   private boolean checkOnItem = false;
 
   @Inject protected SelectUserSection section;
@@ -231,7 +231,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   private boolean canView(RenderContext context) {
     // if no permission set, continue as normal
-    if (permission.equals("")) {
+    if (permission == null) {
       return true;
     }
     if (checkOnItem) {

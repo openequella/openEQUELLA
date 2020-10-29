@@ -140,6 +140,7 @@ public class RootLoginSettingsSection
     selectUserDialog.setAjax(true);
     selectUserDialog.setOkLabel(OK_LABEL);
     selectUserDialog.setMultipleUsers(false);
+    selectUserDialog.setCheckPermissionBeforeOpen("EDIT_SYSTEM_SETTINGS", false);
 
     JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
     selectUserDialog.setOkCallback(
