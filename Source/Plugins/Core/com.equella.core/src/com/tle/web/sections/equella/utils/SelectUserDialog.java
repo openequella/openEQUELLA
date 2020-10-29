@@ -28,9 +28,7 @@ import net.sf.json.JSONArray;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
-import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
@@ -51,6 +49,12 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.CloseWindowResult;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import com.tle.web.viewable.ViewableItem;
+import com.tle.web.viewable.servlet.ItemServlet;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import net.sf.json.JSONArray;
 
 /**
  * Note: the okCallback is event handler of signature: handler(SectionInfo info,
@@ -252,10 +256,9 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
    *
    * @param permission The ACL string to check against.
    * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
-   *     checked against the user.
-   *     <p>Note: if checkOnItem is true, the request for this dialog MUST be an item summary URL.
-   *     If not, it will trigger an IllegalArgumentException when converting the URL to an item
-   *     reference.
+   *     checked against the user. If checkOnItem is true, the request for this dialog MUST be
+   *     an item summary URL. If not, it will trigger an IllegalArgumentException when checking the
+   *     current viewable item.
    */
   public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
     this.permission = permission;
@@ -267,13 +270,13 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
     if (permission.equals("")) {
       return true;
     }
-    // if checking permission on an item get its uuid and version from the URL and check against it
     if (checkOnItem) {
-      ItemId itemId =
-          new ItemId(
-              URLUtils.convertItemSummaryURLToItemString(context.getRequest().getRequestURI()));
-      Item item = itemService.getUnsecure(itemId);
-      return !(securityManager.filterNonGrantedPrivileges(item, permission).isEmpty());
+      // Check the ACL against the current item
+      ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
+      if (item == null) {
+        throw new IllegalStateException("Item is null, so this item URL is invalid.");
+      }
+      return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
     }
     // if a permission is set but we don't need to check it against an item
     return !(securityManager.filterNonGrantedPrivileges(permission).isEmpty());

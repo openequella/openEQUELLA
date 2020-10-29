@@ -292,5 +292,4 @@ public class URLUtils
     }
     return bits;
   }
-
 }
