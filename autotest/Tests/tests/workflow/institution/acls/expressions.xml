@@ -84,4 +84,24 @@
     <dynamic>false</dynamic>
     <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
   </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>14998</id>
+    <dynamic>false</dynamic>
+    <expression>U:83bb1131-e54c-6f1e-e063-9d00597c8d97 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>15001</id>
+    <dynamic>false</dynamic>
+    <expression>U:e6f2f2b3-635e-3674-a044-ce97cb2dc563 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>15003</id>
+    <dynamic>false</dynamic>
+    <expression>U:d58b8087-7d64-2115-c187-20e5eb890743 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>15005</id>
+    <dynamic>false</dynamic>
+    <expression>U:0203b997-afa7-fb34-3793-57be9ee04524 </expression>
+  </com.tle.beans.security.AccessExpression>
 </list>
