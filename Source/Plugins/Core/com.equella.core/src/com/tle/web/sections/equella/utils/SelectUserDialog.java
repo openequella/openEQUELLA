@@ -241,7 +241,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
       // Check the ACL against the current item
       ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
       if (item == null) {
-        throw new IllegalStateException("Item is null, so this item URL is invalid.");
+        throw new IllegalStateException("Access control has been set to check against item, however 'item' is currently 'null'.");
       }
       return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
     }
