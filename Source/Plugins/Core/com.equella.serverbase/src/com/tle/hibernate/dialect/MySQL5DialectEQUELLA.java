@@ -23,7 +23,9 @@ import java.sql.Types;
 public class MySQL5DialectEQUELLA extends org.hibernate.dialect.MySQL5Dialect {
   @Override
   protected void registerColumnType(int code, String name) {
-    // TODO [SpringHib5] Had to remove the capacity parameter.  Worth a bit deeper review
+    // Note, due to using SpringHib5, had to remove the capacity parameter.
+    // Interesting this dialect is even in here, since MySQL is not one of
+    //  the supported oEQ DBs
     if (code != Types.CLOB) {
       super.registerColumnType(code, name);
     }

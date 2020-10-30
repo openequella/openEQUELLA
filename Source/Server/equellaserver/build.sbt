@@ -19,7 +19,7 @@ val jacksonVersion   = "2.11.3"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "9.0.39"
 val SwaggerVersion   = "1.6.2"
-val RestEasyVersion  = "3.13.1.Final"
+val RestEasyVersion  = "3.13.2.Final"
 val simpledbaVersion = "0.1.9"
 val circeVersion     = "0.12.1"
 val jsoupVersion     = "1.13.1"
@@ -220,10 +220,9 @@ libraryDependencies ++= Seq(
   "org.codehaus.xfire" % "xfire-aegis" % "1.2.6",
   "org.dspace"         % "cql-java"    % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
-  "org.omegat"                % "jmyspell-core" % "1.0.0-beta-2",
-  "org.freemarker"            % "freemarker"    % "2.3.23",
-  "com.github.equella.legacy" % "hurl"          % "1.1",
-  // TODO [SpringHib5] upgrade to 3.13.2 (sync'ing to Maven)
+  "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
+  "org.freemarker"                  % "freemarker"                     % "2.3.23",
+  "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
   "org.jboss.logging"               % "jboss-logging"                  % "3.4.1.Final",
@@ -266,20 +265,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
-<<<<<<< HEAD
-  "xml-resolver"           % "xml-resolver"              % "1.2",
-  "org.scala-sbt"          %% "io"                       % "1.4.0",
-  "org.mozilla"            % "rhino"                     % "1.7.13",
-  "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-  "io.bit3"                % "jsass"                     % "5.10.3",
-  "io.github.classgraph"   % "classgraph"                % "4.8.90",
-  "com.fasterxml"          % "classmate"                 % "1.5.1",
-  "org.glassfish"          % "javax.el"                  % "3.0.1-b11"
-=======
   "xml-resolver"                  % "xml-resolver"              % "1.2",
   "org.scala-sbt"                 %% "io"                       % "1.3.4",
-  "org.mozilla"                   % "rhino"                     % "1.7.12",
+  "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
   "io.bit3"                       % "jsass"                     % "5.10.3",
@@ -289,7 +277,6 @@ libraryDependencies ++= Seq(
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.0.Final"
->>>>>>> 2443011ed (CXF 3.4.0 and Tika 1.24.1 is now working locally)
 )
 
 libraryDependencies ++= {
@@ -403,12 +390,12 @@ assemblyMergeStrategy in assembly := {
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
 
-  // TODO [SpringHib5] needs a deeper review of blueprint.handlers
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
   //  .../org.apache.cxf/cxf-rt-frontend-jaxrs/bundles/cxf-rt-frontend-jaxrs-3.3.6.jar:META-INF/blueprint.handlers
   //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.0.jar:META-INF/blueprint.handlers
   // ...
+  // Different blueprint.handlers may specify different classes.  Using the first one allows testing to pass.
   case PathList("META-INF", "blueprint.handlers") => MergeStrategy.first
 
   // OK to do in Java 8 - interesting that the global case for module-info.class didn't pick up the bouncy castle files
@@ -419,7 +406,7 @@ assemblyMergeStrategy in assembly := {
   //  .../org.bouncycastle/bcprov-jdk15on/jars/bcprov-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
   case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.first
 
-  // TODO [SpringHib5] needs a deeper review of wsdl.plugin.xml.  Curious that it's xml vs soap.  Do we need both?
+  // Curious that it's xml vs soap.  testing passes using the first one.
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
   //  .../org.apache.cxf/cxf-rt-bindings-soap/bundles/cxf-rt-bindings-soap-3.4.0.jar:META-INF/wsdl.plugin.xml
@@ -427,15 +414,15 @@ assemblyMergeStrategy in assembly := {
   // ...
   case PathList("META-INF", "wsdl.plugin.xml") => MergeStrategy.first
 
-  // TODO [SpringHib5] needs a deeper review of public-suffix-list.  I want to keep the later one.
+  // The idea is to keep the later suffix list.
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
   //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.3.6.jar:mozilla/public-suffix-list.txt
   //  .../org.apache.httpcomponents/httpclient/jars/httpclient-4.5.12.jar:mozilla/public-suffix-list.txt
   // ...
-  case PathList("mozilla", "public-suffix-list.txt") => MergeStrategy.first
+  case PathList("mozilla", "public-suffix-list.txt") => MergeStrategy.last
 
-  // TODO [SpringHib5] needs a better way (is there one)? the java2wsbeans.xml have different contents, and both look important
+  // java2wsbeans.xml have different contents, and both look important.  Keeping the first one works with testing.
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
   //  .../org.apache.cxf/cxf-rt-databinding-aegis/bundles/cxf-rt-databinding-aegis-3.4.0.jar:META-INF/cxf/java2wsbeans.xml

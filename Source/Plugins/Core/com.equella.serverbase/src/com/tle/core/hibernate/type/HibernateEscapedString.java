@@ -83,8 +83,6 @@ public class HibernateEscapedString implements UserType {
   public Object nullSafeGet(
       ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
     String dbValue = StandardBasicTypes.STRING.nullSafeGet(rs, names[0], session);
     if (dbValue != null) {
       return unescape(dbValue);
@@ -97,8 +95,6 @@ public class HibernateEscapedString implements UserType {
   public void nullSafeSet(
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
     String v = value == null ? null : escape((String) value);
     StandardBasicTypes.STRING.nullSafeSet(st, v, index, session);
   }

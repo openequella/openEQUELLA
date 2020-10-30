@@ -304,8 +304,8 @@ public class CXFHandler extends CXFNonSpringServlet {
           allMethods.add(method);
         }
       }
-      // TODO [SpringHib5] Does this need to be sorted?  MethodComparator in CXF is no longer a
-      // visible class.
+      // As of SpringHib5, no longer sorting this collection.
+      // MethodComparator in CXF is no longer a visible class.
       // Collections.sort(allMethods, new MethodComparator());
       for (Method method : allMethods) {
         createOperation(serviceInfo, info, method);

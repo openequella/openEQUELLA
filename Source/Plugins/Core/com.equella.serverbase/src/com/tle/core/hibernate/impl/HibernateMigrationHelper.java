@@ -50,7 +50,8 @@ import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 
-// TODO [SpringHib5] - SessionFactoryImpl is now internal and should not be used directly.
+// TECH_DEBT - found in SpringHib5, SessionFactoryImpl is now internal and should not be used
+// directly.
 
 @SuppressWarnings("nls")
 public class HibernateMigrationHelper {
@@ -180,8 +181,8 @@ public class HibernateMigrationHelper {
         LOGGER.debug("Should the Aux DB Obj be included? " + filter.includeObject(object));
       }
       if (object.appliesToDialect(dialect) && filter.includeObject(object)) {
-        // TODO [SpringHib5] Need some due diligence if removing the extra parameters and switching
-        // packages is appropriate.
+        // Due to SpringHib5, removed the extra parameters and switched packages.
+        // DDL for Oracle, Postgres, and Sql Server were comparable.
         final List<String> lines = Lists.newArrayList(object.sqlCreateStrings(dialect));
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug(

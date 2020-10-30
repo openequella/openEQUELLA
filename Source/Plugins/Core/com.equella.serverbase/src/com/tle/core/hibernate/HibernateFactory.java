@@ -65,17 +65,14 @@ public class HibernateFactory {
         setContextLoader(classLoader);
         ExtendedDialect dialect = dataSourceHolder.getDialect();
         this.config = new ExtendedAnnotationConfiguration(dialect);
-        // TODO [SpringHib5] opted for the default impl.  Might be some massaging with the props vs
-        // map
         config.setProperty(Environment.CONNECTION_PROVIDER, DataSourceProvider.class.getName());
-        // TODO [SpringHib5] seems weird to set the properties here.
         properties.put(Environment.DATASOURCE, dataSourceHolder.getDataSource());
         config.addProperties(properties);
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
         config.setProperty(Environment.JPA_VALIDATION_MODE, "DDL");
-        // Due to https://hibernate.atlassian.net/browse/HHH-12665 , certain operations,
-        // like importing a institution would fail with a
+        // Due to https://hibernate.atlassian.net/browse/HHH-12665 with SpringHib5,
+        // certain operations, like importing a institution would fail with a
         // `javax.persistence.TransactionRequiredException: no transaction is in progress`
         config.setProperty(Environment.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true");
         config.setImplicitNamingStrategy(new OeqImplicitNamingStrategy());

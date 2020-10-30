@@ -68,8 +68,8 @@ public class ImmutableHibernateXStreamType implements UserType {
   public Object nullSafeGet(
       ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     Reader reader = rs.getCharacterStream(names[0]);
     if (reader == null) {
       return null;
@@ -95,8 +95,8 @@ public class ImmutableHibernateXStreamType implements UserType {
   public void nullSafeSet(
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     if (value != null) {
       String string = xstream.serialiseToXml(value);
       StringReader reader = new StringReader(string);

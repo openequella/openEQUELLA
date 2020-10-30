@@ -17,7 +17,6 @@ packageOptions in assembly += Package.ManifestAttributes(
 )
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
-// TODO [SpringHib5] remove comment - this strat is needed for module-info
 assemblyMergeStrategy in assembly := {
   // Added due to a [deduplicate: different file contents found in the following] error against:
   // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html

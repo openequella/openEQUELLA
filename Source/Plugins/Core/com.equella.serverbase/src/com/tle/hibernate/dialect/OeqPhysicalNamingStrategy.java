@@ -28,7 +28,7 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.internal.util.StringHelper;
 
-// TODO [SpringHib5] - StringHelper is now internal and should not be used directly.
+// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
 
 /**
  * Extends the PhysicalNamingStrategyStandardImpl to make sure that the resulting table name is all

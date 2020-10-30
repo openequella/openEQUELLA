@@ -85,7 +85,7 @@ public class ExtendedAnnotationConfiguration extends Configuration {
       }
       registerTypeOverride(basicType);
     }
-    logProps(super.getProperties(), "Hibernate properties after the forced removal of hib un/pw");
+    logProps(super.getProperties(), "Hibernate properties after building config object");
   }
 
   public Map<String, Table> getTableMap() {
@@ -128,8 +128,6 @@ public class ExtendedAnnotationConfiguration extends Configuration {
         IdentifierGenerator ig =
             pc.getIdentifier()
                 .createIdentifierGenerator(
-                    // TODO [SpringHib5] What is the replacement for this method?
-                    // (getIdentifierGeneratorFactory() is deprecated)
                     METADATA_CAPTURE.getMetadata().getIdentifierGeneratorFactory(),
                     dialect,
                     defaultCatalog,

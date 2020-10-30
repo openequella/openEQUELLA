@@ -44,7 +44,7 @@ import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.StandardBasicTypes;
 
-// TODO [SpringHib5] - StringHelper is now internal and should not be used directly.
+// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
 
 @SuppressWarnings("nls")
 public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect

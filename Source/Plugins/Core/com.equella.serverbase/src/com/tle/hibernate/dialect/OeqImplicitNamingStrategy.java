@@ -127,7 +127,7 @@ public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaComplian
   @Override
   public Identifier determineBasicColumnName(ImplicitBasicColumnNameSource source) {
     Identifier resp;
-    // TODO [SpringHib5] Consider if this should be handled ... differently.
+    // Needed to map a few column names due to legacy oEQ code
     if (source.getAttributePath().getFullPath().equals("impTransforms.collection&&element.filename")
         || source
             .getAttributePath()

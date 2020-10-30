@@ -34,7 +34,7 @@ import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
 
-// TODO [SpringHib5] - SerializationHelper is now internal and should not be used directly.
+// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
 
 public class HibernateCsvType implements UserType {
   private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);
@@ -78,8 +78,8 @@ public class HibernateCsvType implements UserType {
   public Object nullSafeGet(
       ResultSet rs, String[] names, SharedSessionContractImplementor implementor, Object owner)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     String name = names[0];
     String clob = rs.getString(name);
     if (clob == null) {
@@ -130,8 +130,8 @@ public class HibernateCsvType implements UserType {
   public void nullSafeSet(
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor implementor)
       throws SQLException {
-    // TODO [SpringHib5]  Should we be doing anything with the SharedSessionContractImplementor
-    // parameter?
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     String res = null;
     if (value instanceof String) {
       // Only pass in a String if you don't care about the type of value being included.

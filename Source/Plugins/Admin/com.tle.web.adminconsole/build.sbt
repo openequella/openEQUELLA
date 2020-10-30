@@ -7,7 +7,6 @@ resourceGenerators in Compile += Def.task {
   Seq(outJar)
 }.taskValue
 
-// TODO [SpringHib5] remove comment - this strat is needed for module-info
 assemblyMergeStrategy in assembly := {
   // Post SpringHib5 upgrade, the following error was thrown on build:
   // deduplicate: different file contents found in the following:
