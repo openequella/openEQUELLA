@@ -551,6 +551,7 @@ public final class PrivilegeTree {
     institution.registerPrivilege("HIERARCHY_PAGE");
     institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
     institution.registerPrivilege("VIEW_APIDOCS");
+    institution.registerPrivilege("LIST_USERS");
 
     // OAuth hax
     institution.registerPrivilege("ADMINISTER_OAUTH_TOKENS");
