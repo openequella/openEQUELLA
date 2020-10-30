@@ -256,7 +256,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   /**
    * Allows checking permissions before rendering the dialog.
    *
-   * @param permission The ACL string to check against. Defaults to LIST_ITEM.
+   * @param permission The ACL string to check against. Defaults to LIST_USERS.
    * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
    *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
    *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
