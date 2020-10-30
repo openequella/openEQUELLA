@@ -22,6 +22,8 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
@@ -66,7 +68,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   private static final int WIDTH = 550;
 
   private CurrentUsersCallback currentUsersCallback;
-  private String permission = null;
+  private String permission = SecurityConstants.LIST_USERS;
   private boolean checkOnItem = false;
 
   @Inject protected SelectUserSection section;
@@ -83,7 +85,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   @PlugKey("utils.selectuserdialog.selectthisuser")
   private static String KEY_SINGLE_USER;
 
-  @PlugKey("common.denied")
+  @PlugKey("editor.error.accessdenied")
   private static String NO_PERMISSIONS;
 
   private Label title = LABEL_DEFAULT_TITLE;
@@ -121,7 +123,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
       getModel(context).setInnerContents(renderSection(context, section));
       return viewFactory.createResult("utils/selectuserdialog.ftl", this);
     } else {
-      throw new AccessDeniedException(NO_PERMISSIONS);
+      throw new AccessDeniedException(CurrentLocale.get(NO_PERMISSIONS, permission));
     }
   }
 
@@ -218,7 +220,7 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   /**
    * Allows checking permissions before rendering the dialog.
    *
-   * @param permission The ACL string to check against.
+   * @param permission The ACL string to check against. Defaults to LIST_ITEM.
    * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
    *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
    *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
@@ -230,9 +232,8 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   }
 
   private boolean canView(RenderContext context) {
-    // if no permission set, continue as normal
     if (permission == null) {
-      return true;
+      throw new IllegalStateException("Dialog permission should not be null");
     }
     if (checkOnItem) {
       // Check the ACL against the current item
