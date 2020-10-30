@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
+import org.hibernate.dialect.unique.UniqueDelegate;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.internal.util.StringHelper;
 import org.hibernate.mapping.Column;
@@ -63,7 +64,11 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
   private static final String URL_SCHEME = "jdbc:sqlserver://";
   private String dropConstraintsSQL;
 
+  private final UniqueDelegate uniqueDelegate;
+
   public SQLServerDialect() {
+    uniqueDelegate = new InPlaceUniqueDelegate(this);
+
     registerColumnType(Types.NVARCHAR, "nvarchar(MAX)");
     registerColumnType(Types.NVARCHAR, 4000, "nvarchar($l)");
     registerColumnType(Types.LONGNVARCHAR, "nvarchar(MAX)");
@@ -264,5 +269,10 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
       }
     }
     return createIndexStatements;
+  }
+
+  @Override
+  public UniqueDelegate getUniqueDelegate() {
+    return uniqueDelegate;
   }
 }

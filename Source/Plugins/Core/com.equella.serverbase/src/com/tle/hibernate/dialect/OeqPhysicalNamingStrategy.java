@@ -70,7 +70,6 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
     columnOverrides.put("start", "`start`");
     columnOverrides.put("freetext", "`freetext`");
     columnOverrides.put("order", "`order`");
-    columnOverrides.put("comment", "`comment`");
     columnOverrides.put("index", "`index`");
     columnOverrides.put("group", "`group`");
 
@@ -78,6 +77,7 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
     columnOverrides.put("successful", "`successful`");
     columnOverrides.put("online", "`online`");
     columnOverrides.put("resource", "`resource`");
+    columnOverrides.put("task", "`task`");
 
     // HSQL Specific
     columnOverrides.put("position", "`position`");
