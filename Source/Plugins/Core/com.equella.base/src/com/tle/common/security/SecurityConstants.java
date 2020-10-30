@@ -65,6 +65,7 @@ public final class SecurityConstants
 	public static final String EDIT_VIRTUAL_BASE = "EDIT_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
 	public static final String DELETE_VIRTUAL_BASE = "DELETE_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
 	public static final String LIST_VIRTUAL_BASE = "LIST_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
+    public static final String EDIT_SYSTEM_SETTINGS = "EDIT_SYSTEM_SETTINGS";
 
 	public static final String LOGGED_IN_USER_ROLE_ID = "TLE_LOGGED_IN_USER_ROLE";
 	public static final String GUEST_USER_ROLE_ID = "TLE_GUEST_USER_ROLE";
