@@ -46,6 +46,7 @@ public final class SecurityConstants {
   public static final String DISCOVER_ITEM = "DISCOVER_ITEM";
   public static final String ARCHIVE_ITEM = "ARCHIVE_ITEM";
   public static final String VIEW_VIEWCOUNT = "VIEW_VIEWCOUNT";
+  public static final String LIST_USERS = "LIST_USERS";
 
   public static final String EDIT_TAXONOMY = "EDIT_TAXONOMY";
 
