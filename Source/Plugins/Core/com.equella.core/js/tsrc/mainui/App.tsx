@@ -83,7 +83,11 @@ const App = ({ entryPage }: AppProps) => {
       Literal("mainDiv"),
       () => {
         startHeartbeat();
-        return <IndexPage />;
+        return (
+          <ThemeProvider theme={oeqTheme}>
+            <IndexPage />
+          </ThemeProvider>
+        );
       },
     ],
     [
