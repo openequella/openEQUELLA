@@ -26,10 +26,10 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
 import {
-  getMIMETypesFromServer,
   MimeTypeFilter,
-  vaidateMimeTypeName,
+  validateMimeTypeName,
 } from "../../../modules/SearchFilterSettingsModule";
 import { commonString } from "../../../util/commonstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
@@ -81,7 +81,7 @@ const MimeTypeFilterEditingDialog = ({
   // Used to store the MIME types of a MIME type filter.
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>([]);
 
-  const isNameValid = vaidateMimeTypeName(filterName);
+  const isNameValid = validateMimeTypeName(filterName);
 
   useEffect(() => {
     getMIMETypesFromServer()

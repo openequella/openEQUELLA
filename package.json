@@ -23,30 +23,30 @@
     "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.4.1",
-    "@typescript-eslint/parser": "4.4.1",
+    "@typescript-eslint/eslint-plugin": "4.6.0",
+    "@typescript-eslint/parser": "4.6.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.2",
-    "eslint": "7.11.0",
-    "eslint-config-prettier": "6.12.0",
-    "eslint-config-react-app": "5.2.1",
+    "eslint": "7.12.1",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-config-react-app": "6.0.0",
     "eslint-plugin-flowtype": "5.2.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jest": "24.1.0",
-    "eslint-plugin-jsx-a11y": "6.3.1",
+    "eslint-plugin-jsx-a11y": "6.4.1",
     "eslint-plugin-notice": "0.9.10",
     "eslint-plugin-prettier": "3.1.4",
-    "eslint-plugin-react": "7.21.4",
-    "eslint-plugin-react-hooks": "4.1.2",
+    "eslint-plugin-react": "7.21.5",
+    "eslint-plugin-react-hooks": "4.2.0",
     "husky": "4.3.0",
     "licensee": "8.1.0",
-    "lint-staged": "10.4.0",
+    "lint-staged": "10.5.1",
     "npm-run-all": "4.1.5",
     "prettier": "2.1.2",
     "remark-cli": "9.0.0",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "10.0.2",
-    "typescript": "4.0.3"
+    "typescript": "4.0.5"
   },
   "husky": {
     "hooks": {
@@ -88,6 +88,12 @@
       "jest/consistent-test-it": "error",
       "jest/no-mocks-import": "off",
       "jest/require-top-level-describe": "error",
+      "jest/expect-expect": [
+        "warn",
+        {
+          "assertFunctionNames": ["expect*"]
+        }
+      ],
       "notice/notice": [
         "error",
         {
@@ -126,6 +132,7 @@
             "error",
             "interface"
           ],
+          "@typescript-eslint/no-explicit-any": "error",
           "@typescript-eslint/no-inferrable-types": "error",
           "@typescript-eslint/no-non-null-assertion": "error",
           "@typescript-eslint/no-unnecessary-type-assertion": "error",

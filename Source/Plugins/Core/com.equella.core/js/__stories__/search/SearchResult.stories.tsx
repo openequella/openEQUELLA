@@ -33,6 +33,7 @@ export const BasicSearchResult: Story<SearchResultProps> = (args) => (
 BasicSearchResult.args = {
   item: mockData.basicSearchObj,
   highlights: [],
+  getViewerDetails: async () => ({ viewerId: "fancy" }),
 };
 
 export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (

@@ -15,15 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// MUST end in /
-//export const INST_URL = 'http://localhost:8080/reports/';
+import { isLightboxSupportedMimeType } from "../../../tsrc/components/Lightbox";
 
-interface Config {
-  baseUrl: string;
-}
-
-export const Config: Config = {
-  baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
-};
-
-export const API_BASE_URL = `${Config.baseUrl}api`;
+describe("isLightboxSupportedMimeType", () => {
+  it.each<[string, boolean]>([
+    ["application/pdf", false],
+    ["audio/aac", false],
+    ["audio/ogg", true],
+    ["image/anything", true],
+    ["video/ogg", true],
+    ["video/quicktime", false],
+  ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
+    expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
+  );
+});

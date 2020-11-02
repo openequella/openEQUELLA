@@ -18,18 +18,34 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { LocationDescriptor } from "history";
-import { TemplateUpdate } from "./Template";
-import ThemePage from "../theme/ThemePage";
-import CloudProviderListPage from "../cloudprovider/CloudProviderListPage";
-import SearchPageSettings from "../settings/Search/SearchPageSettings";
-import SettingsPage from "../settings/SettingsPage";
-import SearchFilterPage from "../settings/Search/searchfilter/SearchFilterSettingsPage";
-import ContentIndexSettings from "../settings/Search/ContentIndexSettings";
-import LoginNoticeConfigPage from "../loginnotice/LoginNoticeConfigPage";
-import FacetedSearchSettingsPage from "../settings/Search/facetedsearch/FacetedSearchSettingsPage";
-import SearchPage from "../search/SearchPage";
+import { TemplateUpdate, TemplateUpdateProps } from "./Template";
+import { RenderData } from "./index";
 
-export interface OEQRouteComponentProps<T = any>
+declare const renderData: RenderData | undefined;
+
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
+const ThemePage = React.lazy(() => import("../theme/ThemePage"));
+const CloudProviderListPage = React.lazy(
+  () => import("../cloudprovider/CloudProviderListPage")
+);
+const SearchPageSettings = React.lazy(
+  () => import("../settings/Search/SearchPageSettings")
+);
+const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
+const SearchFilterPage = React.lazy(
+  () => import("../settings/Search/searchfilter/SearchFilterSettingsPage")
+);
+const LoginNoticeConfigPage = React.lazy(
+  () => import("../loginnotice/LoginNoticeConfigPage")
+);
+const FacetedSearchSettingsPage = React.lazy(
+  () => import("../settings/Search/facetedsearch/FacetedSearchSettingsPage")
+);
+const ContentIndexSettings = React.lazy(
+  () => import("../settings/Search/ContentIndexSettings")
+);
+
+export interface OEQRouteComponentProps<T = TemplateUpdateProps>
   extends RouteComponentProps<T> {
   updateTemplate(edit: TemplateUpdate): void;
   redirect(to: LocationDescriptor): void;
@@ -38,16 +54,18 @@ export interface OEQRouteComponentProps<T = any>
   isReloadNeeded: boolean;
 }
 
-export interface OEQRoute {
+type To = (uuid: string, version: number) => string;
+
+export interface OEQRoute<T> {
   component?:
-    | React.ComponentType<OEQRouteComponentProps<any>>
-    | React.ComponentType<any>;
-  render?: (props: OEQRouteComponentProps<any>) => React.ReactNode;
+    | React.ComponentType<OEQRouteComponentProps<T>>
+    | React.ComponentType<T>;
+  render?: (props: OEQRouteComponentProps<T>) => React.ReactNode;
   path?: string;
   exact?: boolean;
   sensitive?: boolean;
   strict?: boolean;
-  to?: any;
+  to?: string | To;
 }
 
 export const routes = {
@@ -57,26 +75,28 @@ export const routes = {
     component: SettingsPage,
   },
   Search: {
-    path: "/page/search",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPage {...p} />,
+    //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
+    path:
+      typeof renderData !== "undefined" && renderData?.newSearch
+        ? "(/page/search|/searching.do)"
+        : "/page/search",
+    render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
   SearchSettings: {
     path: "/page/searchsettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchPageSettings {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchPageSettings {...p} />,
   },
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
-    render: (p: OEQRouteComponentProps<any>) => <SearchFilterPage {...p} />,
+    render: (p: OEQRouteComponentProps) => <SearchFilterPage {...p} />,
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
-    render: (p: OEQRouteComponentProps<any>) => <ContentIndexSettings {...p} />,
+    render: (p: OEQRouteComponentProps) => <ContentIndexSettings {...p} />,
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
-    render: (p: OEQRouteComponentProps<any>) => (
-      <FacetedSearchSettingsPage {...p} />
-    ),
+    render: (p: OEQRouteComponentProps) => <FacetedSearchSettingsPage {...p} />,
   },
   ViewItem: {
     to: function (uuid: string, version: number) {

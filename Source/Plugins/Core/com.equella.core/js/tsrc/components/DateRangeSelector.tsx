@@ -147,9 +147,7 @@ export const DateRangeSelector = ({
 
   // Only when prop dateRange is cleared, clear stateDateRange as well.
   useEffect(() => {
-    if (!dateRange) {
-      setStateDateRange(dateRange);
-    }
+    setStateDateRange(dateRange);
   }, [dateRange]);
 
   /**

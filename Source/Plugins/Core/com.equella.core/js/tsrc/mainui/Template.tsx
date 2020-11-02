@@ -366,7 +366,9 @@ export const Template = React.memo(function Template({
       <MenuItem
         component={(p) =>
           serverSide ? (
-            <a {...p} href={link as string} />
+            <a {...p} href={link as string}>
+              {}
+            </a>
           ) : (
             <Link {...p} to={link} />
           )
@@ -387,7 +389,7 @@ export const Template = React.memo(function Template({
       <Tooltip title={title}>
         <Link to={uri}>
           <IconButton aria-label={title}>
-            {count == 0 ? (
+            {count === 0 ? (
               icon
             ) : (
               <Badge badgeContent={count} color="secondary">
@@ -413,7 +415,9 @@ export const Template = React.memo(function Template({
           return item.route ? (
             <Link {...props} to={item.route} />
           ) : (
-            <a {...props} href={item.href} />
+            <a {...props} href={item.href}>
+              {}
+            </a>
           );
         }}
         key={ind}

@@ -29,7 +29,8 @@ import {
   TextField,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import { AccountCircle, ErrorOutline } from "@material-ui/icons";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import ErrorOutline from "@material-ui/icons/ErrorOutline";
 import * as UserModule from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { sprintf } from "sprintf-js";

@@ -1,4 +1,4 @@
-package retry;
+package testng.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

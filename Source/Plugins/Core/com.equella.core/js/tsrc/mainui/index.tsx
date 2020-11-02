@@ -24,6 +24,7 @@ export interface RenderData {
   baseResources: string;
   newUI: boolean;
   autotestMode: boolean;
+  newSearch: boolean;
 }
 export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 

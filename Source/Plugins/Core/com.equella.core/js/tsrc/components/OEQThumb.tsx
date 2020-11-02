@@ -19,14 +19,12 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import {
-  Link as LinkIcon,
-  Movie as VideoIcon,
-  Panorama as ImageIcon,
-  InsertDriveFile as DefaultFileIcon,
-  Language as WebIcon,
-  TextFields as PlaceholderIcon,
-} from "@material-ui/icons";
+import LinkIcon from "@material-ui/icons/Link";
+import VideoIcon from "@material-ui/icons/Movie";
+import ImageIcon from "@material-ui/icons/Panorama";
+import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
+import WebIcon from "@material-ui/icons/Language";
+import PlaceholderIcon from "@material-ui/icons/TextFields";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

@@ -67,7 +67,9 @@ describe("<UserSearch/>", () => {
           noSuchUser
         )
       )
-    );
+    ).then((value: HTMLElement) => {
+      expect(value).toBeDefined();
+    });
   });
 
   it("displays users if there are any returned", async () => {

@@ -206,6 +206,10 @@ export interface SearchResultItem {
    */
   commentCount?: number;
   /**
+   * Item's star rating.
+   */
+  starRatings: number;
+  /**
    * Item's attachments.
    */
   attachments?: Attachment[];

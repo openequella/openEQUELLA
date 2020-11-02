@@ -220,8 +220,11 @@ class CloudProviderListPage extends React.Component<
               <>
                 {cloudProvider.description} -{" "}
                 <a
-                  href="javascript:void"
-                  onClick={() => this.refreshProvider(cloudProvider)}
+                  href="/#"
+                  onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+                    event.preventDefault();
+                    this.refreshProvider(cloudProvider);
+                  }}
                 >
                   {commonString.action.refresh}
                 </a>

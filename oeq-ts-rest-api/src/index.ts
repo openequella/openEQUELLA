@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 export * as Auth from './Auth';
+export * as Acl from './Acl';
 export * as Collection from './Collection';
 export * as Common from './Common';
 export * as LegacyContent from './LegacyContent';

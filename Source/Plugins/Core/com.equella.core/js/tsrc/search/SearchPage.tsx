@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
@@ -35,6 +35,7 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
+  convertParamsToSearchOptions,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -56,7 +57,10 @@ import {
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
-import { SearchResultList } from "./components/SearchResultList";
+import {
+  mapSearchResultItems,
+  SearchResultList,
+} from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
 
 /**
@@ -118,6 +122,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
+
+  const location = useLocation();
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -125,14 +132,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
-
     // Show spinner before calling API to retrieve Search settings.
     setShowSpinner(true);
-    getSearchSettingsFromServer().then((settings: SearchSettings) => {
-      setSearchSettings(settings);
-      handleSortOrderChanged(
-        searchPageOptions.sortOrder ?? settings.defaultSearchSort
-      );
+
+    Promise.all([
+      getSearchSettingsFromServer(),
+      convertParamsToSearchOptions(location.search),
+    ]).then((results) => {
+      const [searchSettings, queryStringSearchOptions] = results;
+      setSearchSettings(searchSettings);
+
+      if (queryStringSearchOptions)
+        setSearchPageOptions({
+          ...queryStringSearchOptions,
+          dateRangeQuickModeEnabled: false,
+          sortOrder:
+            queryStringSearchOptions.sortOrder ??
+            searchSettings.defaultSearchSort,
+        });
+      else
+        setSearchPageOptions({
+          ...searchPageOptions,
+          sortOrder:
+            searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+        });
     });
   }, []);
 
@@ -375,6 +398,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
+  const {
+    available: totalCount,
+    highlight: highlights,
+    results: searchResults,
+  } = pagedSearchResult;
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
@@ -390,10 +418,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Grid>
           <Grid item xs={12}>
             <SearchResultList
-              searchResultItems={pagedSearchResult.results}
               showSpinner={showSpinner}
               paginationProps={{
-                count: pagedSearchResult.available,
+                count: totalCount,
                 currentPage: searchPageOptions.currentPage,
                 rowsPerPage: searchPageOptions.rowsPerPage,
                 onPageChange: handlePageChanged,
@@ -404,8 +431,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onChange: handleSortOrderChanged,
               }}
               onClearSearchOptions={handleClearSearchOptions}
-              highlights={pagedSearchResult.highlight}
-            />
+            >
+              {searchResults.length > 0 &&
+                mapSearchResultItems(searchResults, handleError, highlights)}
+            </SearchResultList>
           </Grid>
         </Grid>
       </Grid>
