@@ -38,7 +38,7 @@ const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
 export const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
 interface NewPageProps {
-  page: ReactNode;
+  children: ReactNode;
   classPrefix: string;
   isOpenInSelectionSession: boolean;
 }
@@ -46,11 +46,11 @@ interface NewPageProps {
 /**
  * Build a single oEQ new UI page.
  * @param page A tsx page such as SearchPage.tsx
- * @param forceRefresh Whether to refresh the page when navigating to different route
+ * @param isOpenInSelectionSession Whether to refresh the page when navigating to different route
  * @param classPrefix The prefix added in MUI styles
  */
 function NewPage({
-  page,
+  children,
   isOpenInSelectionSession,
   classPrefix,
 }: NewPageProps) {
@@ -65,7 +65,7 @@ function NewPage({
           basename={basePath}
           forceRefresh={!isOpenInSelectionSession}
         >
-          {page}
+          {children}
         </BrowserRouter>
       </ThemeProvider>
     </StylesProvider>
@@ -77,7 +77,7 @@ interface AppProps {
 }
 
 const App = ({ entryPage }: AppProps) => {
-  const emptyFunc = () => {};
+  const nop = () => {};
   const renderApp = match(
     [
       Literal("mainDiv"),
@@ -93,27 +93,21 @@ const App = ({ entryPage }: AppProps) => {
     [
       Literal("searchPage"),
       () => (
-        <NewPage
-          page={<SearchPage updateTemplate={emptyFunc} />}
-          classPrefix="oeq-nsp"
-          isOpenInSelectionSession
-        />
+        <NewPage classPrefix="oeq-nsp" isOpenInSelectionSession>
+          <SearchPage updateTemplate={nop} />
+        </NewPage>
       ),
     ],
     [
       Literal("settingsPage"),
       () => (
-        <NewPage
-          page={
-            <SettingsPage
-              refreshUser={emptyFunc}
-              updateTemplate={emptyFunc}
-              isReloadNeeded={false}
-            />
-          }
-          classPrefix="oeq-nst"
-          isOpenInSelectionSession={false}
-        />
+        <NewPage classPrefix="oeq-nst" isOpenInSelectionSession={false}>
+          <SettingsPage
+            refreshUser={nop}
+            updateTemplate={nop}
+            isReloadNeeded={false}
+          />
+        </NewPage>
       ),
     ]
   );
