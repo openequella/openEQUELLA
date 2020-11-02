@@ -4724,9 +4724,9 @@ div#sssh_finishedButton {
 }
 
 .box_head {
+  @include curvedCorners;
   background-color: white;
   border: none;
-  border-radius: 4px;
   &:hover {
     background: none;
   }
@@ -4738,9 +4738,9 @@ div#sssh_finishedButton {
 }
 
 .box_content {
+  @include curvedCorners;
   background: none;
   border: none;
-  border-radius: 4px;
   background-color: white;
 }
 
