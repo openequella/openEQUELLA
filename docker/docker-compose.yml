@@ -51,6 +51,11 @@ services:
       - oeq-cluster
     environment:
       - POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
+      - OEQ_DATABASE_NAME=$OEQ_DATABASE_NAME
+      - OEQ_DATABASE_USERNAME=$OEQ_DATABASE_USERNAME
+      - OEQ_DATABASE_PASSWORD=$OEQ_DATABASE_PASSWORD
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
 
   traefik:
     image: traefik:1.7.26
