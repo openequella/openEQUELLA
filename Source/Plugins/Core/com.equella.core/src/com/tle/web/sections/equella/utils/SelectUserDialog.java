@@ -51,10 +51,6 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ItemServlet;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-import net.sf.json.JSONArray;
 
 /**
  * Note: the okCallback is event handler of signature: handler(SectionInfo info,
@@ -77,14 +73,15 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
 	private static final int WIDTH = 550;
 
-  private CurrentUsersCallback currentUsersCallback;
-  private String permission = SecurityConstants.LIST_USERS;
-  private boolean checkOnItem = false;
-
-  @Inject protected SelectUserSection section;
-  @Inject protected TLEAclManager securityManager;
-
-  @ViewFactory private FreemarkerFactory viewFactory;
+	private CurrentUsersCallback currentUsersCallback;
+	private String permission = SecurityConstants.LIST_USERS;
+	private boolean checkOnItem = false;
+	@Inject
+	protected SelectUserSection section;
+	@Inject
+	protected TLEAclManager securityManager;
+	@ViewFactory
+	private FreemarkerFactory viewFactory;
 
 	@PlugKey("utils.selectuserdialog.default.title")
 	private static Label LABEL_DEFAULT_TITLE;
@@ -94,11 +91,9 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
 	@PlugKey("utils.selectuserdialog.selectthisuser")
 	private static String KEY_SINGLE_USER;
-
-  @PlugKey("editor.error.accessdenied")
-  private static String NO_PERMISSIONS;
-
-  private Label title = LABEL_DEFAULT_TITLE;
+	@PlugKey("editor.error.accessdenied")
+	private static String NO_PERMISSIONS;
+	private Label title = LABEL_DEFAULT_TITLE;
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -135,13 +130,14 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 	}
 
 	@Override
-  protected SectionRenderable getRenderableContents(RenderContext context) {
-    if (canView(context)) {
-		getModel(context).setInnerContents(renderSection(context, section));
-		return viewFactory.createResult("utils/selectuserdialog.ftl", this);
-    } else {
-      throw new AccessDeniedException(CurrentLocale.get(NO_PERMISSIONS, permission));
-    }
+	protected SectionRenderable getRenderableContents(RenderContext context)
+	{
+		if (canView(context)) {
+			getModel(context).setInnerContents(renderSection(context, section));
+			return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+		} else {
+			throw new AccessDeniedException(CurrentLocale.get(NO_PERMISSIONS, permission));
+		}
 	}
 
 	@Override
@@ -253,33 +249,33 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 		section.setPrompt(prompt);
 	}
 
-  /**
-   * Allows checking permissions before rendering the dialog.
-   *
-   * @param permission The ACL string to check against. Defaults to LIST_USERS.
-   * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
-   *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
-   *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
-   *     current viewable item.
-   */
-  public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
-    this.permission = permission;
-    this.checkOnItem = checkOnItem;
-  }
+	/**
+	 * Allows checking permissions before rendering the dialog.
+	 *
+	 * @param permission The ACL string to check against. Defaults to LIST_USERS.
+	 * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
+	 *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
+	 *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
+	 *     current viewable item.
+	 */
+	public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
+		this.permission = permission;
+		this.checkOnItem = checkOnItem;
+	}
 
-  private boolean canView(RenderContext context) {
-    if (permission == null) {
-      throw new IllegalStateException("Dialog permission should not be null");
-    }
-    if (checkOnItem) {
-      // Check the ACL against the current item
-      ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
-      if (item == null) {
-        throw new IllegalStateException("Item is null, so this item URL is invalid.");
-      }
-      return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
-    }
-    // if a permission is set but we don't need to check it against an item
-    return !(securityManager.filterNonGrantedPrivileges(permission).isEmpty());
-  }
+	private boolean canView(RenderContext context) {
+		if (permission == null) {
+			throw new IllegalStateException("Dialog permission should not be null");
+		}
+		if (checkOnItem) {
+			// Check the ACL against the current item
+			ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
+			if (item == null) {
+				throw new IllegalStateException("Item is null, so this item URL is invalid.");
+			}
+			return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
+		}
+		// if a permission is set but we don't need to check it against an item
+		return !(securityManager.filterNonGrantedPrivileges(permission).isEmpty());
+	}
 }

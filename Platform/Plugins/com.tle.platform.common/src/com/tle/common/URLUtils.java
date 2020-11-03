@@ -273,23 +273,25 @@ public class URLUtils
 		return parameters.toString();
 	}
 
-  /**
-   * Extracts into 2 parts, the base URL and the query string. The returned query string won't be
-   * null (ie it is blank if empty), and does not contain the '?' character
-   *
-   * @param url
-   * @return
-   */
-  public static String[] decompose(String url) {
-    String[] bits = new String[2];
-    int questionIndex = url.indexOf("?");
-    if (questionIndex >= 0) {
-      bits[0] = Utils.safeSubstring(url, 0, questionIndex);
-      bits[1] = Utils.safeSubstring(url, questionIndex + 1);
-    } else {
-      bits[0] = url;
-      bits[1] = "";
-    }
-    return bits;
-  }
+	/**
+	 * Extracts into 2 parts, the base URL and the query string.  The returned query string won't be null (ie it is blank if empty), and does not contain the '?' character
+	 * @param url
+	 * @return
+	 */
+	public static String[] decompose(String url)
+	{
+		String[] bits = new String[2];
+		int questionIndex = url.indexOf("?");
+		if( questionIndex >= 0 )
+		{
+			bits[0] = Utils.safeSubstring(url, 0, questionIndex);
+			bits[1] = Utils.safeSubstring(url, questionIndex + 1);
+		}
+		else
+		{
+			bits[0] = url;
+			bits[1] = "";
+		}
+		return bits;
+	}
 }

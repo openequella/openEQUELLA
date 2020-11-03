@@ -525,14 +525,14 @@ public final class PrivilegeTree
 		instChildren.add(externalTools);
 		instChildren.add(ltiConsumers);
 
-        institution.registerPrivilege("EDIT_USER_MANAGEMENT");
-        institution.registerPrivilege("VIEW_SECURITY_TREE");
-        institution.registerPrivilege("EDIT_SECURITY_TREE");
-        institution.registerPrivilege("SEARCH_PAGE");
-        institution.registerPrivilege("DASHBOARD_PAGE");
-        institution.registerPrivilege("HIERARCHY_PAGE");
-        institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
-        institution.registerPrivilege("LIST_USERS");
+		institution.registerPrivilege("EDIT_USER_MANAGEMENT");
+		institution.registerPrivilege("VIEW_SECURITY_TREE");
+		institution.registerPrivilege("EDIT_SECURITY_TREE");
+		institution.registerPrivilege("SEARCH_PAGE");
+		institution.registerPrivilege("DASHBOARD_PAGE");
+		institution.registerPrivilege("HIERARCHY_PAGE");
+		institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
+		institution.registerPrivilege("LIST_USERS");
 
 		// OAuth hax
 		institution.registerPrivilege("ADMINISTER_OAUTH_TOKENS");
