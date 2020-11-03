@@ -337,12 +337,14 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
     // tomcat daemon etc. That could be a future optimisation if needed.
     final File contextDir = new File(tempDir, "context/");
     if (!contextDir.mkdir()) {
-      throw new RuntimeException("Failed to setup context directory: " + tomcatContextPath);
+      throw new RuntimeException(
+          "Failed to setup context directory: " + contextDir.getAbsolutePath());
     }
 
-    LOGGER.info("Using base directory: " + tomcatBasePath);
     tomcatBasePath = tempDir.getAbsolutePath();
-    LOGGER.info("Using context directory: " + tomcatContextPath);
     tomcatContextPath = contextDir.getAbsolutePath();
+
+    LOGGER.info("Using base directory: " + tomcatBasePath);
+    LOGGER.info("Using context directory: " + tomcatContextPath);
   }
 }
