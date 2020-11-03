@@ -70,6 +70,9 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 
   private static final Log LOGGER = LogFactory.getLog(TomcatServiceImpl.class);
 
+  private String tomcatContextPath;
+  private String tomcatBasePath;
+
   @Inject(optional = true)
   @Named("userService.useXForwardedFor")
   private boolean useXForwardedFor;
@@ -108,11 +111,11 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 
   @Inject(optional = true)
   @Named("sessions.neverPersist")
-  private boolean sessionsNeverPersist = false;
+  private final boolean sessionsNeverPersist = false;
 
   @Inject(optional = true)
   @Named("tomcat.useBio")
-  private boolean useBio = false;
+  private final boolean useBio = false;
 
   @Inject(optional = true)
   @Named("tomcat.internalProxies")
@@ -133,18 +136,16 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
           "You must specify either 'http.port, https.port' or 'ajp.port' in your mandatory-config.properties");
     }
     try {
-      final String[] paths = setupDirectories();
-      final String basePath = paths[0];
-      final String contextPath = paths[1];
+      setupDirectories();
 
       tomcat = new Tomcat();
-      tomcat.setBaseDir(basePath);
+      tomcat.setBaseDir(tomcatBasePath);
 
       Context context = new StandardContext();
       context.addLifecycleListener(new AprLifecycleListener());
       context.setName("/");
       context.setPath("");
-      context.setDocBase(contextPath);
+      context.setDocBase(tomcatContextPath);
       context.setUseHttpOnly(false);
       if (useXForwardedFor) {
         LOGGER.debug("Enabling the Tomcat RemoteIpValve.");
@@ -355,28 +356,25 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
     }
   }
 
-  /**
-   * Setup the directory for Tomcat and the oEQ webapp context.
-   *
-   * @return a tuple with the first element being the Tomcat base path, the second being the context
-   *     path
-   */
-  private String[] setupDirectories() throws IOException {
+  /** Setup the directory for Tomcat and the oEQ webapp context. */
+  private void setupDirectories() throws IOException {
+    if (tomcatContextPath != null && tomcatBasePath != null) {
+      return;
+    }
     // Setup a temporary directory to sandbox this instance of Tomcat and the context for
     // the oEQ web app.
     final File tempDir = Files.createTempDirectory("oeq-tomcat-basedir-").toFile();
     // Ideally here we'd be able to use File.deleteOnExit() or a Runtime.addShutdownHook()
     // to clean-up this file on termination. However we'd have to synchronise with the
     // tomcat daemon etc. That could be a future optimisation if needed.
-    final String basePath = tempDir.getAbsolutePath();
-    LOGGER.info("Using base directory: " + basePath);
     final File contextDir = new File(tempDir, "context/");
-    final String contextPath = contextDir.getAbsolutePath();
     if (!contextDir.mkdir()) {
-      throw new RuntimeException("Failed to setup context directory: " + contextPath);
+      throw new RuntimeException("Failed to setup context directory: " + tomcatContextPath);
     }
-    LOGGER.info("Using context directory: " + contextPath);
 
-    return new String[] {basePath, contextPath};
+    LOGGER.info("Using base directory: " + tomcatBasePath);
+    tomcatBasePath = tempDir.getAbsolutePath();
+    LOGGER.info("Using context directory: " + tomcatContextPath);
+    tomcatContextPath = contextDir.getAbsolutePath();
   }
 }
