@@ -139,7 +139,7 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 
 		userSelect.setMultipleUsers(true);
 		userSelect.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("addNotifications"),
-				inplace, "selectedusers"));
+			inplace, "selectedusers"));
 		userSelect.setAjax(true);
 		userSelect.setOkLabel(OK_LABEL);
 		userSelect.setUsersCallback(this);

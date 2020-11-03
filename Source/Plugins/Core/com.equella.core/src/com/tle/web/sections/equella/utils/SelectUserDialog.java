@@ -58,7 +58,7 @@ import com.tle.web.viewable.servlet.ItemServlet;
  * SelectUserDialog.SelectedUser objects in JSON format. Use
  * SelectUserDialog.userFromJsonString(String) or
  * SelectUserDialog.usersFromJsonString(String) to deserialise the string.
- *
+ * 
  * @author aholland
  */
 @SuppressWarnings("nls")

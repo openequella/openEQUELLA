@@ -274,9 +274,9 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 		selectUserButton.setClickHandler(selectUserDialog.getOpenFunction());
 		selectUserDialog.setCheckPermissionBeforeOpen(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT, false);
 		clearUserButton.setClickHandler(
-				ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
+			ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
 		UpdateDomFunction regenSecret = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("resetSecret"),
-				"clientSecretDiv");
+			"clientSecretDiv");
 		JSHandler regen = new OverrideHandler(regenSecret).addValidator(DELETE_CONFIRM);
 		resetSecretButton.setClickHandler(regen);
 
@@ -329,7 +329,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Srsly, this should be in the service
-	 *
+	 * 
 	 * @param info
 	 * @param oauth
 	 * @param errors
@@ -682,7 +682,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Called from ShowOAuthSection
-	 *
+	 * 
 	 * @param info
 	 * @param type
 	 */
@@ -697,7 +697,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 
 	/**
 	 * Called from ShowOAuthSection
-	 *
+	 * 
 	 * @param info
 	 * @param oauthUuid
 	 * @param type

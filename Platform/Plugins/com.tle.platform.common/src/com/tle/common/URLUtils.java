@@ -178,7 +178,7 @@ public class URLUtils
 
 	/**
 	 * More convenient to extract the values out.
-	 *
+	 * 
 	 * @param queryString
 	 * @param singleValues
 	 * @return
