@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.SecurityConstants;
 import com.tle.common.settings.standard.AutoLogin;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
@@ -156,6 +157,7 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 		selectUserDialog.setAjax(true);
 		selectUserDialog.setOkLabel(OK_LABEL);
 		selectUserDialog.setMultipleUsers(false);
+		selectUserDialog.setCheckPermissionBeforeOpen(SecurityConstants.EDIT_SYSTEM_SETTINGS, false);
 
 		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 		selectUserDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,

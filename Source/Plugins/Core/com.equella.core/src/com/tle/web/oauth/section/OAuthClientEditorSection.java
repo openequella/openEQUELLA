@@ -272,6 +272,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 		// selectUserDialog.setOkLabel(OK_LABEL);
 		selectUserDialog.setMultipleUsers(false);
 		selectUserButton.setClickHandler(selectUserDialog.getOpenFunction());
+		selectUserDialog.setCheckPermissionBeforeOpen(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT, false);
 		clearUserButton.setClickHandler(
 			ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
 		UpdateDomFunction regenSecret = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("resetSecret"),
