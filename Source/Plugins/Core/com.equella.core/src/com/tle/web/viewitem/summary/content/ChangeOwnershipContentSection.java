@@ -147,11 +147,14 @@ public class ChangeOwnershipContentSection
     ownerSelect.setPrompt(OWNER_DIALOG_PROMPT);
     ownerSelect.setOkCallback(events.getSubmitValuesFunction("changeOwner"));
     ownerSelect.setOkLabel(OWNER_DIALOG_OK);
+    ownerSelect.setCheckPermissionBeforeOpen(REQUIRED_PRIVILEGE, true);
 
     // Collaborators
     collabSelect.setTitle(COLLAB_DIALOG_TITLE);
     collabSelect.setPrompt(COLLAB_DIALOG_PROMPT);
     collabSelect.setMultipleUsers(true);
+    collabSelect.setCheckPermissionBeforeOpen(REQUIRED_PRIVILEGE, true);
+
     collabSelect.setOkCallback(
         ajax.getAjaxUpdateDomFunction(
             tree,
