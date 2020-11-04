@@ -276,6 +276,7 @@ public class OAuthClientEditorSection
     // selectUserDialog.setOkLabel(OK_LABEL);
     selectUserDialog.setMultipleUsers(false);
     selectUserButton.setClickHandler(selectUserDialog.getOpenFunction());
+    selectUserDialog.setCheckPermissionBeforeOpen(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT, false);
     clearUserButton.setClickHandler(
         ajax.getAjaxUpdateDomFunction(
             tree, null, events.getEventHandler("clearUser"), "userAjaxDiv"));
