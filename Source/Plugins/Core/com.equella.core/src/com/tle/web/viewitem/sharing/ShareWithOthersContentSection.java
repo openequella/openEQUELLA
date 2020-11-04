@@ -149,6 +149,7 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
     userSelect.setAjax(true);
     userSelect.setOkLabel(OK_LABEL);
     userSelect.setUsersCallback(this);
+    userSelect.setCheckPermissionBeforeOpen(REQUIRED_PRIVILEGE, true);
     tree.registerInnerSection(userSelect, id);
 
     selectUserToNotify.setClickHandler(userSelect.getOpenFunction());
