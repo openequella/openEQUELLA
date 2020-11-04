@@ -4,6 +4,9 @@ listeners:
   - testng.TestAnnotationTransformer
 tests:
   - name: OneAfterAnother
+    packages:
+      - io.github.openequella.rest
+      - io.github.openequella.search
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.CloudSearchingTest
@@ -133,10 +136,6 @@ tests:
       - com.tle.webtests.test.webservices.rest.TasksApiTest
       - com.tle.webtests.test.webservices.rest.TaxonomyApiTest
       - com.tle.webtests.test.webservices.rest.UserGroupManagementApiTest
-      - io.github.openequella.rest.AuthApiTest
-      - io.github.openequella.rest.Search2ApiTest
-      - io.github.openequella.rest.BaseEntityAPITest
-      - io.github.openequella.search.NewSearchPageTest
       - com.tle.webtests.test.webservices.soap.Soap51Test
       - com.tle.webtests.test.webservices.soap.SoapServicesTest
       - com.tle.webtests.test.webservices.OAIEndpointTest
