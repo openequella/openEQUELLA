@@ -25,6 +25,7 @@ export interface RenderData {
   newUI: boolean;
   autotestMode: boolean;
   newSearch: boolean;
+  selectionSessionOpen: boolean;
 }
 export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 
