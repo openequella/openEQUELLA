@@ -137,6 +137,7 @@ tests:
       - io.github.openequella.rest.Search2ApiTest
       - io.github.openequella.rest.BaseEntityAPITest
       - io.github.openequella.search.NewSearchPageTest
+      - io.github.openequella.rest.MimeTypeApiTest
       - com.tle.webtests.test.webservices.soap.Soap51Test
       - com.tle.webtests.test.webservices.soap.SoapServicesTest
       - com.tle.webtests.test.webservices.OAIEndpointTest
