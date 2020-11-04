@@ -17,6 +17,8 @@
 package com.tle.tomcat.service.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.catalina.Container;
@@ -71,6 +73,9 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 
 	private static final Log LOGGER = LogFactory.getLog(TomcatServiceImpl.class);
 
+        private String tomcatContextPath;
+        private String tomcatBasePath;
+
 	@Inject(optional = true)
 	@Named("userService.useXForwardedFor")
 	private boolean useXForwardedFor;
@@ -124,14 +129,16 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 		}
 		try
 		{
+                        setupDirectories();
+
 			tomcat = new Tomcat();
-			tomcat.setBaseDir(System.getProperty("java.io.tmpdir"));
+			tomcat.setBaseDir(tomcatBasePath);
 
 			Context context = new StandardContext();
 			context.addLifecycleListener(new AprLifecycleListener());
 			context.setName("/");
 			context.setPath("");
-			context.setDocBase(new File(".").getAbsolutePath());
+			context.setDocBase(tomcatContextPath);
 			context.setUseHttpOnly(false);
 			if (useXForwardedFor) {
 				RemoteIpValve protoValve = new RemoteIpValve();
@@ -352,5 +359,31 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 		{
 			throw new RuntimeException(e.getMessage());
 		}
-	}
+        }
+
+        /**
+         * Setup the directory for Tomcat and the oEQ webapp context.
+         */
+        private void setupDirectories() throws IOException {
+                if (tomcatContextPath != null && tomcatBasePath != null) {
+                        return;
+                }
+
+                // Setup a temporary directory to sandbox this instance of Tomcat and the context for
+                // the oEQ web app.
+                final File tempDir = Files.createTempDirectory("oeq-tomcat-basedir-").toFile();
+                // Ideally here we'd be able to use File.deleteOnExit() or a Runtime.addShutdownHook()
+                // to clean-up this file on termination. However we'd have to synchronise with the
+                // tomcat daemon etc. That could be a future optimisation if needed.
+                final File contextDir = new File(tempDir, "context/");
+                if (!contextDir.mkdir()) {
+                        throw new RuntimeException("Failed to setup context directory: " + contextDir.getAbsolutePath());
+                }
+
+                tomcatBasePath = tempDir.getAbsolutePath();
+                tomcatContextPath = contextDir.getAbsolutePath();
+
+                LOGGER.info("Using base directory: " + tomcatBasePath);
+                LOGGER.info("Using context directory: " + tomcatContextPath);
+        }
 }
