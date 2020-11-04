@@ -6,6 +6,7 @@ tests:
   - name: OneAfterAnother
     packages:
       - io.github.openequella.rest
+      - io.github.openequella.search
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.CloudSearchingTest
