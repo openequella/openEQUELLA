@@ -245,16 +245,26 @@ sources in (Compile, doc) := {
 }
 javacOptions in (Compile, doc) := Seq()
 
-lazy val cleanrun = taskKey[Unit]("clean, build and run a dev server")
-
 lazy val allEquella = ScopeFilter(inAggregates(equella))
 
-cleanrun := {
+lazy val devrebuild = taskKey[Unit]("clean and build all code - targeting a local dev run")
+
+devrebuild := {
   Def
     .sequential(
       clean.all(allEquella),
       jpfWriteDevJars.all(allPluginsScope),
       (fullClasspath in Compile).all(allEquella),
+    )
+    .value
+}
+
+lazy val cleanrun = taskKey[Unit]("clean, build and run a dev server")
+
+cleanrun := {
+  Def
+    .sequential(
+      devrebuild,
       (run in equellaserver).toTask("")
     )
     .value
