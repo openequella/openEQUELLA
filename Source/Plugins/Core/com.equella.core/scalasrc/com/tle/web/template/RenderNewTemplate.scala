@@ -100,12 +100,8 @@ object RenderNewTemplate {
     RunWithDB
       .executeIfInInstitution(UISettings.cachedUISettings)
       .getOrElse(UISettings.defaultSettings)
-      .isNewSearchActive
-  }
-
-  def isSelectionSessionOpen(context: RenderEventContext): Boolean = {
-    val selectionSession = LegacyGuice.selectionService.get.getCurrentSession(context)
-    Option(selectionSession).nonEmpty
+      .newUI
+      .newSearch
   }
 
   // Check if New UI is being used, but there is no guarantee that New UI is enabled.
@@ -155,11 +151,8 @@ object RenderNewTemplate {
         java.lang.Boolean.valueOf(isNewUIEnabled),
         "autotestMode",
         java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode),
-        // todo: Remove below two key/value pairs when we complete new search UI.
         "newSearch",
-        java.lang.Boolean.valueOf(isNewSearchPageEnabled),
-        "selectionSessionOpen",
-        java.lang.Boolean.valueOf(isSelectionSessionOpen(context))
+        java.lang.Boolean.valueOf(isNewSearchPageEnabled)
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
