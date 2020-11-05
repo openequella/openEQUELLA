@@ -23,6 +23,6 @@ public class SelectOrAddSearchModule extends StandardSearchModule {
 
   @Override
   protected String getTreeName() {
-    return "/access/selectoradd/search";
+    return "/selectoradd/search";
   }
 }

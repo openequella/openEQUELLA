@@ -2403,8 +2403,8 @@
     <parameter id="root" value="bean:/searching" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="selectoradd-searching">
-    <parameter id="path" value="/access/selectoradd/searching.do" />
-    <parameter id="root" value="bean:/access/selectoradd/search" />
+    <parameter id="path" value="/selectoradd/searching.do" />
+    <parameter id="root" value="bean:/selectoradd/search" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="skinny-searching">
     <parameter id="path" value="/access/skinny/searching.do" />

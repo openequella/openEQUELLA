@@ -50,7 +50,7 @@ public class SearchSelectable extends AbstractSelectionNavAction {
 
   @SuppressWarnings("nls")
   protected SectionInfo getSearchTree(SectionInfo info) {
-    return controller.createForward(info, "/access/selectoradd/searching.do");
+    return controller.createForward(info, "/selectoradd/searching.do");
   }
 
   public void setController(SectionsController controller) {
