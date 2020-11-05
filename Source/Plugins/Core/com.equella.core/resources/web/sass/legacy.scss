@@ -427,9 +427,10 @@ Buttons
 Inputs
 *****************************************************************************/
 
-input[type="text"],
-input[type="password"],
-input[type="number"],
+// Don't apply below styles to MUI inputs,
+input[type="text"]:not(.MuiInputBase-input),
+input[type="password"]:not(.MuiInputBase-input),
+input[type="number"]:not(.MuiInputBase-input),
 textarea,
 select[multiple="multiple"] {
   border: 1px solid #f5f5f5;
@@ -1087,8 +1088,14 @@ div.area {
 }
 
 #mainDiv #selection-content-inner {
-  padding: 0px 17px 0;
+  padding: 0;
   display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+#mainDiv #selection-content-bottom #selection-content-inner {
+  padding: 0; // Override padding if it's wrapped by #selection-content-bottom
 }
 
 #mainDiv #selection-content #breadcrumbs {
@@ -1120,7 +1127,10 @@ div.area {
 
 #selection-content-inner.search-layout .mainCols #col2 #selection-summary {
   position: sticky;
-  top: 70px;
+}
+
+#selection-content-inner.search-layout .mainCols #col2 #selection-summary .box {
+  width: auto;
 }
 
 #fancybox-wrap {
@@ -1154,6 +1164,10 @@ div.area {
   #col2 {
     min-width: 0;
   }
+}
+
+#selection-content-inner .mainCols {
+  margin-left: $doubleMargin;
 }
 
 #mainDiv .selectiondashboard #col1 {
@@ -1704,7 +1718,7 @@ Search page
 
   #col2 {
     width: 221px;
-    margin-left: 14px;
+    margin-left: $doubleMargin;
 
     .box hr {
       border-color: #c1beb0;
@@ -4461,20 +4475,28 @@ img.warningimg {
 }
 
 #selection-page {
-  margin: 0 auto;
-  width: 784px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
 }
 
 #selection-content {
   background: url(../images/content-middle.gif) repeat-y 0px 0px;
-  position: relative;
-  width: 784px;
-  float: left;
+  width: 100%;
 }
 
 #selection-content #breadcrumb-inner {
   margin-left: 18px;
+}
+
+#selection-content #col1 #searchPage {
+  width: 100%; // Override the width if new search UI is also wrapped by 'col1'
+}
+
+#selection-content #contribution_panel {
+  width: 100%;
+  margin: 0 $doubleMargin;
 }
 
 #selection-header-content h3 a {
@@ -4489,7 +4511,6 @@ img.warningimg {
 
 #selection-content-bottom {
   background: url(../images/content-bottom.gif) no-repeat 1px 100%;
-  float: left;
   /* This is to ensure the above background logo shows */
   padding-bottom: 90px;
 }
@@ -4499,7 +4520,6 @@ img.warningimg {
   min-height: 400px;
   padding: 32px 17px 0;
   float: left;
-  width: 750px;
 }
 
 /*****************************************************************************
@@ -4511,7 +4531,6 @@ img.warningimg {
 
 .selectiondashboard #col2 {
   width: 368px;
-  margin-left: $doubleMargin;
 }
 
 //Search query portlet
@@ -4698,15 +4717,14 @@ div#sssh_finishedButton {
 }
 
 .box {
-  border: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  @include buttonShadowBorder;
   background: none;
 }
 
 .box_head {
+  @include curvedCorners;
   background-color: white;
   border: none;
-
   &:hover {
     background: none;
   }
@@ -4718,6 +4736,7 @@ div#sssh_finishedButton {
 }
 
 .box_content {
+  @include curvedCorners;
   background: none;
   border: none;
   background-color: white;
@@ -4780,10 +4799,6 @@ div#sssh_finishedButton {
   }
 }
 
-#selection-content-inner .mainCols #col1 {
-  margin-right: $doubleMargin;
-}
-
 /*****************************************************************************
  Selection session search page
 *****************************************************************************/
@@ -4801,6 +4816,7 @@ div#sssh_finishedButton {
   padding-top: 50px;
   float: right;
   width: 100%;
+  margin-right: $doubleMargin;
   display: grid;
   justify-items: end;
 
@@ -4809,6 +4825,13 @@ div#sssh_finishedButton {
     background-color: transparent;
     color: $primaryColor;
   }
+}
+
+.selection-lmscontent {
+  @extend div.area;
+  padding: 5px;
+  width: 20%; // The LMS side panel takes 20 percent of its parent div width.
+  margin-right: $doubleMargin;
 }
 
 .icon-plus:before {
@@ -4847,6 +4870,23 @@ div#sssh_finishedButton {
 *****************************************************************************/
 #selection-content-inner.search-layout .mainCols #col2 {
   width: auto;
+}
+
+// Override the margin of mainCols if it's in selection-content-bottom
+#selection-content-bottom #selection-content-inner .mainCols {
+  margin: 0 $doubleMargin;
+}
+
+#selection-content-bottom #selection-content-inner .mainCols #col2 {
+  // Override styles of 'col2' if it's also wrapped by 'selection-content-bottom'
+  width: 20%;
+  margin-left: $doubleMargin;
+}
+
+.selection-courses {
+  width: 100%;
+  /*there shouldn't be any*/
+  overflow: hidden;
 }
 
 .selection-courses-inner .folder.rootfolder {

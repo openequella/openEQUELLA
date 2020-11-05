@@ -197,6 +197,7 @@
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
+    <parameter id="class" value="com.tle.web.searching.guice.SelectOrAddSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SkinnySearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.StandardSearchModule" />
@@ -2400,6 +2401,10 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching">
     <parameter id="path" value="/searching.do" />
     <parameter id="root" value="bean:/searching" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="selectoradd-searching">
+    <parameter id="path" value="/selectoradd/searching.do" />
+    <parameter id="root" value="bean:/selectoradd/search" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="skinny-searching">
     <parameter id="path" value="/access/skinny/searching.do" />

@@ -15,29 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { initStrings } from "../util/langstrings";
-import "../util/polyfill";
 
-export interface RenderData {
-  baseResources: string;
-  newUI: boolean;
-  autotestMode: boolean;
-  newSearch: boolean;
-}
-export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
+package com.tle.web.searching.guice;
 
-// Lazy import 'App' in order to initialise language strings (independent of imports)
-// before loading of the full app.
-const App = React.lazy(() => import("./App"));
+@SuppressWarnings("nls")
+public class SelectOrAddSearchModule extends StandardSearchModule {
 
-export default function (entry: EntryPage) {
-  initStrings();
-  ReactDOM.render(
-    <React.Suspense fallback={<>loading</>}>
-      <App entryPage={entry} />
-    </React.Suspense>,
-    document.getElementById(entry)
-  );
+  @Override
+  protected String getTreeName() {
+    return "/selectoradd/search";
+  }
 }

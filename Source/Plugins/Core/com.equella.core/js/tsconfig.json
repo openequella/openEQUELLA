@@ -19,7 +19,7 @@
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "~*": ["./entrybuild/*", "./tsrc/*"]
+      "~*": ["./entrypoint/*", "./tsrc/*"]
     }
   },
   "include": [

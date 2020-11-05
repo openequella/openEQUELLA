@@ -15,4 +15,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-window.CloudControl = require("../../tsrc/cloudcontrol").CloudControl;
+import main from "../tsrc/mainui";
+main("searchPage");
