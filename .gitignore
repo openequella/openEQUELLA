@@ -17,4 +17,4 @@ generated.keystore
 Source/Plugins/Kaltura
 server.xml
 node_modules/
-
+storybook-static/
