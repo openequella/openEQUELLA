@@ -78,6 +78,23 @@ jobs:
         run: |
           npm ci
 
+      - name: Generate Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+        npm run build-storybook
+
+      - name: Package Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          tar cvf storybook.tar storybook-static
+
+      - name: Save Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: Storybook
+          path: storybook.tar
+
       - name: Run checks
         run: |
           npm run check
