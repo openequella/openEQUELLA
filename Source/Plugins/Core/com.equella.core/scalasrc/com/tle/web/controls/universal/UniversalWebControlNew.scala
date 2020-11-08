@@ -278,7 +278,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       def linkDuplicateCheck(linkAttachment: LinkAttachment): Unit = {
         wizardService.checkLinkAttachmentDuplicate(state,
-                                                   linkAttachment.getDescription,
+                                                   linkAttachment.getUrl,
                                                    linkAttachment.getUuid)
       }
 
