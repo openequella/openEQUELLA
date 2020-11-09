@@ -40,6 +40,7 @@ import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
@@ -47,10 +48,12 @@ import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import { determineViewer } from "../../modules/ViewerModule";
+import {
+  determineAttachmentViewUrl,
+  determineViewer,
+} from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
-import { HashLink } from "react-router-hash-link";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -289,11 +292,19 @@ export default function SearchResult({
           attachmentType,
           description,
           id,
-          links: { view: url },
+          links: { view: defaultViewUrl },
           mimeType,
+          filePath,
         },
         viewerDetails,
       }: AttachmentAndViewerDetails) => {
+        const viewUrl = determineAttachmentViewUrl(
+          uuid,
+          version,
+          attachmentType,
+          defaultViewUrl,
+          filePath
+        );
         return (
           <ListItem key={id} button className={classes.nested}>
             <ListItemIcon>
@@ -304,7 +315,7 @@ export default function SearchResult({
               mimeType={mimeType}
               viewerDetails={determineViewer(
                 attachmentType,
-                url,
+                viewUrl,
                 mimeType,
                 viewerDetails?.viewerId
               )}
