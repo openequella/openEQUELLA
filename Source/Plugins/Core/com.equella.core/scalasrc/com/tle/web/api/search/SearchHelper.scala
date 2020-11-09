@@ -24,9 +24,8 @@ import java.util.Date
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey, ItemStatus}
+import com.tle.beans.item.{Comment, ItemIdKey}
 import com.tle.common.Check
-import com.tle.common.Utils.parseDate
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
@@ -41,6 +40,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -225,7 +225,8 @@ object SearchHelper {
               preview = att.isPreview,
               mimeType = getMimetypeForAttachment(att),
               hasGeneratedThumb = thumbExists(itemKey, att),
-              links = getLinksFromBean(att)
+              links = getLinksFromBean(att),
+              filePath = getFilePathForAttachment(att)
           ))
           .toList)
   }
@@ -240,7 +241,6 @@ object SearchHelper {
     * Determines if attachment contains a generated thumbnail in filestore
     */
   def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Option[Boolean] = {
-
     attachBean match {
       case fileBean: FileAttachmentBean =>
         val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
@@ -261,6 +261,18 @@ object SearchHelper {
       case _ => None
     }
   }
+
+  /**
+    * If the attachment is a file, then return the path for that attachment.
+    *
+    * @param attachment a potential file attachment
+    * @return the path of the provided file attachment
+    */
+  def getFilePathForAttachment(attachment: AttachmentBean): Option[String] =
+    attachment match {
+      case fileAttachment: FileAttachmentBean => Option(fileAttachment.getFilename)
+      case _                                  => None
+    }
 
   /**
     * Extract the value of 'links' from the 'extras' of AbstractExtendableBean.
