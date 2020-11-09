@@ -84,9 +84,9 @@ jobs:
           npm run build-storybook
 
       - name: Package Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
         run: |
-          tar cvf storybook.tar --transform='s/.\+\///' \
-          Source/Plugins/Core/com.equella.core/js/storybook-static
+          tar cvf storybook.tar storybook-static
 
       - name: Remove Storybook Folder After Packaging
         # We need this step so that storybook isn't included in the checks
@@ -95,6 +95,7 @@ jobs:
           rm -R storybook-static
 
       - name: Save Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
         uses: actions/upload-artifact@v2.2.0
         with:
           name: Storybook
