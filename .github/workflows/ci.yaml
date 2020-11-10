@@ -125,22 +125,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: SBT Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.sbt
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-sbt-
-
-      - name: Ivy Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.ivy2/cache
-          key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-
-
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
         id: nvm
