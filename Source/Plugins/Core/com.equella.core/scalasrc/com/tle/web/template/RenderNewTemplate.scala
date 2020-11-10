@@ -159,7 +159,7 @@ object RenderNewTemplate {
 
       val integrationSection: IntegrationSection =
         context.lookupSection(classOf[IntegrationSection])
-      val integId = integrationSection.getStateId(context)
+      val integId = Option(integrationSection).map(_.getStateId(context)).orNull
 
       val selectionSessionInfo = new ObjectExpression
       selectionSessionInfo.put("stateId", stateId)
