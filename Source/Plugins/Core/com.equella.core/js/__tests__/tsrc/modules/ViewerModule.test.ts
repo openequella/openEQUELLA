@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { determineViewer } from "../../../tsrc/modules/ViewerModule";
+import {
+  determineAttachmentViewUrl,
+  determineViewer,
+} from "../../../tsrc/modules/ViewerModule";
 
 describe("determineViewer()", () => {
   const fileAttachmentType = "file";
@@ -57,4 +60,26 @@ describe("determineViewer()", () => {
         )
       ).toEqual(["lightbox", fileViewUrl])
   );
+});
+
+describe("determineAttachmentViewUrl()", () => {
+  const viewUrl = "http://blah/blah";
+  const uuid = "uuid";
+  const version = 1;
+
+  it("returns the viewUrl for non 'file' attachmentType", () =>
+    expect(
+      determineAttachmentViewUrl(uuid, version, "link", viewUrl, undefined)
+    ).toEqual(viewUrl));
+
+  it("returns an oEQ 'file' URL for attachmentType 'file'", () =>
+    expect(
+      determineAttachmentViewUrl(
+        uuid,
+        version,
+        "file",
+        viewUrl,
+        "directory/file.txt"
+      )
+    ).toEqual("file/uuid/1/directory/file.txt"));
 });

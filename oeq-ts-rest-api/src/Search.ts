@@ -163,6 +163,10 @@ export interface Attachment {
      */
     thumbnail: string;
   };
+  /**
+   * If a file attachment, the path for the represented file
+   */
+  filePath?: string;
 }
 
 /**
