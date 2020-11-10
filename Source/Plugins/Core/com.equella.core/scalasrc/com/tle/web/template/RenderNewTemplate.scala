@@ -34,6 +34,9 @@ import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
+import com.tle.web.selection.section.RootSelectionSection
+import com.tle.web.integration.IntegrationSection
+import com.tle.web.selection.section.RootSelectionSection.Layout
 import com.tle.web.settings.UISettings
 import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
@@ -141,6 +144,31 @@ object RenderNewTemplate {
         }
       })
 
+  private def getSelectionSessionInfo(context: RenderEventContext): Option[ObjectExpression] = {
+    val currentSession = LegacyGuice.selectionService.get().getCurrentSession(context)
+    Option(currentSession).map(session => {
+      val layout = session.getLayout match {
+        case Layout.COURSE => "coursesearch"
+        case Layout.NORMAL => "search"
+        case Layout.SKINNY => "skinnysearch"
+      }
+
+      val rootSelectionSection: RootSelectionSection =
+        context.lookupSection(classOf[RootSelectionSection])
+      val stateId = rootSelectionSection.getSessionId(context)
+
+      val integrationSection: IntegrationSection =
+        context.lookupSection(classOf[IntegrationSection])
+      val integId = integrationSection.getStateId(context)
+
+      val selectionSessionInfo = new ObjectExpression
+      selectionSessionInfo.put("stateId", stateId)
+      selectionSessionInfo.put("integId", integId)
+      selectionSessionInfo.put("layout", layout)
+      selectionSessionInfo
+    })
+  }
+
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
     val _renderData =
@@ -152,7 +180,9 @@ object RenderNewTemplate {
         "autotestMode",
         java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode),
         "newSearch",
-        java.lang.Boolean.valueOf(isNewSearchPageEnabled)
+        java.lang.Boolean.valueOf(isNewSearchPageEnabled),
+        "selectionSessionInfo",
+        getSelectionSessionInfo(context).orNull
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])

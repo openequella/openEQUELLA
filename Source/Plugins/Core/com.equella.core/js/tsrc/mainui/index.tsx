@@ -20,11 +20,18 @@ import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
+interface SelectionSessionInfo {
+  stateId: string;
+  integId?: string;
+  layout: string;
+}
+
 export interface RenderData {
   baseResources: string;
   newUI: boolean;
   autotestMode: boolean;
   newSearch: boolean;
+  selectionSessionInfo: SelectionSessionInfo | null;
 }
 export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 
