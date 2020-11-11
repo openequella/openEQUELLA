@@ -40,20 +40,16 @@ export const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 interface NewPageProps {
   children: ReactNode;
   classPrefix: string;
-  isOpenInSelectionSession: boolean;
+  forceRefresh: boolean;
 }
 
 /**
  * Build a single oEQ new UI page.
  * @param page A tsx page such as SearchPage.tsx
- * @param isOpenInSelectionSession Whether to refresh the page when navigating to different route
+ * @param forceRefresh Whether to refresh the page when navigating to different route
  * @param classPrefix The prefix added in MUI styles
  */
-function NewPage({
-  children,
-  isOpenInSelectionSession,
-  classPrefix,
-}: NewPageProps) {
+function NewPage({ children, forceRefresh, classPrefix }: NewPageProps) {
   const generateClassName = createGenerateClassName({
     productionPrefix: classPrefix,
   });
@@ -61,10 +57,7 @@ function NewPage({
   return (
     <StylesProvider generateClassName={generateClassName}>
       <ThemeProvider theme={oeqTheme}>
-        <BrowserRouter
-          basename={basePath}
-          forceRefresh={!isOpenInSelectionSession}
-        >
+        <BrowserRouter basename={basePath} forceRefresh={forceRefresh}>
           {children}
         </BrowserRouter>
       </ThemeProvider>
@@ -93,7 +86,7 @@ const App = ({ entryPage }: AppProps) => {
     [
       Literal("searchPage"),
       () => (
-        <NewPage classPrefix="oeq-nsp" isOpenInSelectionSession>
+        <NewPage classPrefix="oeq-nsp" forceRefresh={false}>
           <SearchPage updateTemplate={nop} />
         </NewPage>
       ),
@@ -101,7 +94,9 @@ const App = ({ entryPage }: AppProps) => {
     [
       Literal("settingsPage"),
       () => (
-        <NewPage classPrefix="oeq-nst" isOpenInSelectionSession={false}>
+        // When SettingsPage is used in old UI, each route change should trigger a refresh
+        // for the whole page because there are no React component matching routes.
+        <NewPage classPrefix="oeq-nst" forceRefresh>
           <SettingsPage
             refreshUser={nop}
             updateTemplate={nop}
