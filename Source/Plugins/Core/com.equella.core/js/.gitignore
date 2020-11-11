@@ -11,3 +11,4 @@
 /public/
 yarn-error.log
 .vscode
+storybook-static/
