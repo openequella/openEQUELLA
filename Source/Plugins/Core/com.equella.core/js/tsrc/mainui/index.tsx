@@ -20,9 +20,22 @@ import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
+/**
+ * Structure of Selection Session information which is used to help build
+ * components(e.g. SearchResult) in the context of Selection Session.
+ */
 interface SelectionSessionInfo {
+  /**
+   * The ID of a Selection Session
+   */
   stateId: string;
+  /**
+   * The ID of an LMS Integration
+   */
   integId?: string;
+  /**
+   * The UI layout used in Selection Session
+   */
   layout: string;
 }
 
