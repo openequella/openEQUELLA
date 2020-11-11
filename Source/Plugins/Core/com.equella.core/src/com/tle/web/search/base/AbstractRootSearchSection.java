@@ -106,7 +106,7 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
                   templateResult.addResult(
                       TwoColumnLayout.RIGHT, SectionUtils.renderSectionResult(info, childId)));
 
-      templateResult.addNamedResult(OneColumnLayout.BODY, model.getNewSearchUIContent());
+      templateResult.addNamedResult(OneColumnLayout.BODY, newSearchUIContent);
     } else {
       SectionRenderable bodyHeader = getBodyHeader(info);
       if (bodyHeader != null) {
