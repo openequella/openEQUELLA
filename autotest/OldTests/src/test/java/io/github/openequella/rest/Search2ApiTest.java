@@ -20,7 +20,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class Search2ApiTest extends AbstractRestApiTest {
-  private static final String SEARCH_API_ENDPOINT = TEST_CONFIG.getInstitutionUrl() + "api/search2";
+  private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
 
   @Test(description = "Search without parameters")
   public void noParamSearchTest() throws IOException {

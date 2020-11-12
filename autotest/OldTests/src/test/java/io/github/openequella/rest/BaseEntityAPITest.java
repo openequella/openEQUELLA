@@ -14,8 +14,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class BaseEntityAPITest extends AbstractRestApiTest {
-  private static final String COLLECTION_API_ENDPOINT =
-      TEST_CONFIG.getInstitutionUrl() + "api/collection";
+  private final String COLLECTION_API_ENDPOINT =
+      getTestConfig().getInstitutionUrl() + "api/collection";
   private final String PERMISSION = "SEARCH_COLLECTION";
 
   @DataProvider(name = "initialResumptionTokens")
