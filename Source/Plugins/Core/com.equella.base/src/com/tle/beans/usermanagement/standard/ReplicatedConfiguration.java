@@ -27,8 +27,9 @@ import java.util.List;
 
 @SuppressWarnings("nls")
 public class ReplicatedConfiguration extends UserManagementSettings {
-  // [SpringHib5] Note - these queries with '?' in them do not need to be
-  // ordinal since they aren't piped through JPA / Hibernate logic.
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
   private static final long serialVersionUID = 1L;
 
   private static final String DIGEST = "SHA1";

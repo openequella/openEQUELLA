@@ -36,7 +36,6 @@ import org.hibernate.service.UnknownUnwrapTypeException;
 import org.hibernate.service.spi.Configurable;
 import org.hibernate.service.spi.Stoppable;
 
-@SuppressWarnings("nls")
 public class HibernateFactory {
   private static final Logger LOGGER = Logger.getLogger(HibernateFactory.class);
 
@@ -78,7 +77,9 @@ public class HibernateFactory {
         config.setImplicitNamingStrategy(new OeqImplicitNamingStrategy());
         config.setPhysicalNamingStrategy(new OeqPhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {
-          LOGGER.trace("Adding annotated class: " + class1.getCanonicalName());
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Adding annotated class: " + class1.getCanonicalName());
+          }
           config.addAnnotatedClass(class1);
         }
       } finally {

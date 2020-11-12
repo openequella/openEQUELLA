@@ -34,8 +34,6 @@ import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
 
-// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
-
 public class HibernateCsvType implements UserType {
   private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);
 

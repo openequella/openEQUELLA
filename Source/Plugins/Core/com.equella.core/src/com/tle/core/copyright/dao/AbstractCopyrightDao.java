@@ -35,7 +35,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@SuppressWarnings({"unchecked", "nls"})
+@SuppressWarnings({"unchecked"})
 public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion, S extends Section>
     extends AbstractHibernateDao implements CopyrightDao<H, P, S>, ItemDaoExtension {
   private Map<String, String> queries = Maps.newIdentityHashMap();
@@ -192,7 +192,7 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
     List<H> holdings =
         (List<H>)
             getHibernateTemplate()
-                .find(query("select p.holding from %p p where p.item = ?0"), item); // $NON-NLS-1$
+                .find(query("select p.holding from %p p where p.item = ?0"), item);
     return holdings.isEmpty() ? null : holdings.get(0);
   }
 

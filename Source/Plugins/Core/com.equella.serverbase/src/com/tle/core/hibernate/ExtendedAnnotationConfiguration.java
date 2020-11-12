@@ -152,7 +152,6 @@ public class ExtendedAnnotationConfiguration extends Configuration {
             ((IdentifierCollection) collection)
                 .getIdentifier()
                 .createIdentifierGenerator(
-                    // Note - in Hibernate 5, `getIdentifierGeneratorFactory()` is deprecated
                     METADATA_CAPTURE.getMetadata().getIdentifierGeneratorFactory(),
                     dialect,
                     defaultCatalog,

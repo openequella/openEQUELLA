@@ -442,25 +442,25 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     hql.append(" FROM Item i WHERE ");
 
     int i = 0;
-    int paramCounter = 0;
     hql.append('(');
     for (ItemKey key : keys) {
       if (i > 0) {
         hql.append(" OR ");
       }
-      keyArray[i++] = key.getUuid();
-      keyArray[i++] = key.getVersion();
-      hql.append("(i.uuid = ?")
-          .append(paramCounter++)
-          .append(" and i.version = ?")
-          .append(paramCounter++)
-          .append(") ");
+
+      keyArray[i] = key.getUuid();
+      hql.append("(i.uuid = ?").append(i++);
+
+      keyArray[i] = key.getVersion();
+      hql.append(" and i.version = ?").append(i++).append(") ");
     }
     hql.append(") ");
 
     keyArray[i] = CurrentInstitution.get();
-    hql.append(" and i.institution = ?").append(paramCounter++);
-    LOGGER.trace("selectForIds sql: " + hql);
+    hql.append(" and i.institution = ?").append(i);
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("HQL to select items based on a collection of IDs: " + hql);
+    }
     List<Object[]> results = (List<Object[]>) getHibernateTemplate().find(hql.toString(), keyArray);
 
     Map<ItemId, U> map = new HashMap<ItemId, U>();

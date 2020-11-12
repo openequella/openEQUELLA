@@ -52,10 +52,10 @@ public class HibernateFilter extends AbstractWebFilter {
     FilterResult result = new FilterResult();
     if (CurrentInstitution.get() != null) {
       final SessionFactory sessionFactory =
-          hibernateService.getTransactionAwareSessionFactory("main", false); // $NON-NLS-1$
+          hibernateService.getTransactionAwareSessionFactory("main", false);
 
       if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
-        LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter"); // $NON-NLS-1$
+        LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter");
         // TODO - previous code with SessionFactoryUtils:
         // https://docs.spring.io/spring/docs/2.5.x/javadoc-api/org/springframework/orm/hibernate3/SessionFactoryUtils.html#getSession(org.hibernate.SessionFactory,%20boolean)
         // Need  to ensure this is equivalent logic.
@@ -69,8 +69,7 @@ public class HibernateFilter extends AbstractWebFilter {
                 SessionHolder sessionHolder =
                     (SessionHolder)
                         TransactionSynchronizationManager.unbindResource(sessionFactory);
-                LOGGER.debug(
-                    "Closing single Hibernate Session in OpenSessionInViewFilter"); //$NON-NLS-1$
+                LOGGER.debug("Closing single Hibernate Session in OpenSessionInViewFilter");
                 SessionFactoryUtils.closeSession(sessionHolder.getSession());
               }
             });

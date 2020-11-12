@@ -22,6 +22,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -37,7 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 @NonNullByDefault
 public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernateDao
     implements GenericDao<T, ID> {
-  protected static final String INSTITUTION = "institution"; // $NON-NLS-1$
+  protected static final String INSTITUTION = "institution";
+
+  private static final Logger LOGGER = Logger.getLogger(GenericDaoImpl.class);
 
   private final Class<T> persistentClass;
 
@@ -139,6 +142,8 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     // Hibernate now throws an NullPointerException if we try evicting a null object
     if (obj != null) {
       getHibernateTemplate().evict(obj);
+    } else {
+      LOGGER.warn("Evicting a null object.");
     }
   }
 

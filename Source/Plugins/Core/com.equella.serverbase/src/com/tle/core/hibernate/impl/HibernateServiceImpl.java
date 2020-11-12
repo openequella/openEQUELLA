@@ -33,8 +33,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.springframework.orm.hibernate5.SpringSessionContext;
 
-// import org.springframework.orm.hibernate5.SpringTransactionFactory;
-
 @Bind(HibernateService.class)
 @Singleton
 public class HibernateServiceImpl implements HibernateService {
@@ -72,11 +70,6 @@ public class HibernateServiceImpl implements HibernateService {
     }
     HibernateFactory factory = hibernateService.createConfiguration(dataSource, clazzes);
     factory.setClassLoader(getClass().getClassLoader());
-    // TODO - likely need to reconfigure this.  SpringTransactionFactory doesn't exist in
-    // Spring 5 / Hib5.   -
-    // https://stackoverflow.com/questions/43057858/where-did-the-class-org-hibernate-transaction-jdbctransactionfactory-go-in-hiber
-    //    factory.setProperty(Environment.TRANSACTION_STRATEGY,
-    //     SpringTransactionFactory.class.getName());
     factory.setProperty(
         Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.class.getName());
     return factory;

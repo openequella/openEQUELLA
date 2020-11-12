@@ -28,11 +28,11 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.internal.util.StringHelper;
 
-// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
+// TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
 /**
- * Extends the PhysicalNamingStrategyStandardImpl to make sure that the resulting table name is all
- * lowercase. This helps with Enums on Postgresql.
+ * Handles the logic to map the database object names to a consistent format. This includes case and
+ * quotes, but may be extended in the future.
  */
 @SuppressWarnings("nls")
 public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
@@ -162,13 +162,15 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
           break;
         }
     }
-    LOGGER.trace(
-        "Transformed (possible noop) of ["
-            + name.getText()
-            + "] to ["
-            + resultantName
-            + "].  Quoted="
-            + Identifier.isQuoted(resultantName));
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace(
+          "Transformed (possible noop) of ["
+              + name.getText()
+              + "] to ["
+              + resultantName
+              + "].  Quoted="
+              + Identifier.isQuoted(resultantName));
+    }
     return Identifier.toIdentifier(resultantName);
   }
 }

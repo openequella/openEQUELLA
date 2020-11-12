@@ -28,7 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("nls")
+/**
+ * Due to the Hibernate 5 upgrade, oEQ needs a couple hibernate configs added, and to suppress some
+ * noisy deprecation warnings in the logs.
+ */
 public class AddPostHib5UpgradeConfig extends AbstractUpgrader {
 
   @Override

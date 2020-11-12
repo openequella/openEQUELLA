@@ -38,20 +38,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.Mapping;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.id.PersistentIdentifierGenerator;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
-
-// TECH_DEBT - found in SpringHib5, SessionFactoryImpl is now internal and should not be used
-// directly.
 
 @SuppressWarnings("nls")
 public class HibernateMigrationHelper {
@@ -61,7 +59,7 @@ public class HibernateMigrationHelper {
   private final String defaultSchema;
   private final Mapping mapping;
   private final ExtendedAnnotationConfiguration configuration;
-  private final SessionFactoryImpl factory;
+  private final SessionFactory factory;
 
   private static final Log LOGGER = LogFactory.getLog(HibernateMigrationHelper.class);
 
@@ -70,8 +68,8 @@ public class HibernateMigrationHelper {
   }
 
   public HibernateMigrationHelper(HibernateFactory factory, String defaultSchema) {
-    this.factory = (SessionFactoryImpl) factory.getSessionFactory();
-    dialect = this.factory.getDialect();
+    this.factory = factory.getSessionFactory();
+    dialect = ((SessionFactoryImplementor) this.factory).getJdbcServices().getDialect();
     extDialect = (ExtendedDialect) dialect;
     this.configuration = factory.getConfiguration();
     mapping = configuration.buildMapping();
@@ -541,7 +539,7 @@ public class HibernateMigrationHelper {
     return defaultSchema;
   }
 
-  public SessionFactoryImpl getFactory() {
+  public SessionFactory getFactory() {
     return factory;
   }
 
@@ -696,7 +694,7 @@ public class HibernateMigrationHelper {
       }
     }
     final String sql = index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
-    sqlStrings.add("Existing index is null.  Creating index SQL: " + sql);
+    LOGGER.debug("Existing index is null.  Creating index SQL: " + sql);
   }
 
   public Map<Set<String>, String> getExistingIndexes(final Table table, Session session) {

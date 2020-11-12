@@ -44,13 +44,14 @@ import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.StandardBasicTypes;
 
-// TECH_DEBT - found in SpringHib5, StringHelper is now internal and should not be used directly.
+// TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
 @SuppressWarnings("nls")
 public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
     implements ExtendedDialect {
-  // [SpringHib5] Note - these queries with '?' in them do not need to be
-  // ordinal since they aren't piped through JPA / Hibernate logic.
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.NVARCHAR), new String[] {"blankable"});
