@@ -69,6 +69,8 @@ export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
       singlePageSearch.results,
       (error) => console.warn(error),
       [],
+      undefined,
+      undefined,
       async () => ({
         viewerId: "fancy",
       })
