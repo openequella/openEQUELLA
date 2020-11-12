@@ -120,11 +120,11 @@ export interface SearchResultProps {
   /**
    * The index of an search result Item which does not take Pagination into account.
    */
-  indexNumber: number;
+  indexNumber?: number;
   /**
    * The total number of available Items matching current Search options.
    */
-  totalCount: number;
+  totalCount?: number;
 }
 
 export default function SearchResult({
@@ -386,13 +386,20 @@ export default function SearchResult({
     if (renderData?.selectionSessionInfo) {
       const { stateId, integId, layout } = renderData.selectionSessionInfo;
       let itemSummaryPageLink = AppConfig.baseUrl.concat(
-        `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}&search=%2Fsearching.do&index=${indexNumber}&available=${totalCount}`
+        `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}&search=%/searching.do`
       );
 
-      // integId can be null when Selection Session uses 'selectOrAdd'.
+      if (indexNumber !== undefined && totalCount !== undefined) {
+        itemSummaryPageLink = itemSummaryPageLink.concat(
+          `&index=${indexNumber}&available=${totalCount}`
+        );
+      }
+
+      // integId can be null in 'Resource Selector'.
       if (integId) {
         itemSummaryPageLink = itemSummaryPageLink.concat(`&_int.id=${integId}`);
       }
+
       return (
         //todo: Once we have a tsx component for ItemSummary page we should create a route for it
         // and use 'React Router Link' instead of 'MUI Link'.

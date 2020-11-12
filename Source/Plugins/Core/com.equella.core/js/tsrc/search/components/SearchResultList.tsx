@@ -171,8 +171,8 @@ export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  totalCount: number,
-  start: number,
+  totalCount?: number,
+  start?: number,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
@@ -184,7 +184,7 @@ export const mapSearchResultItems = (
       handleError={handleError}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
-      indexNumber={start + index}
+      indexNumber={start !== undefined ? start + index : undefined}
       totalCount={totalCount}
     />
   ));
