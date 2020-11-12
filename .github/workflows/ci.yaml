@@ -110,6 +110,51 @@ jobs:
           name: Artefacts
           path: artefacts.tar
 
+  build_storybook:
+    runs-on: ubuntu-latest
+    steps:
+      # Using v1 (rather than v2) through-out this workflow due to issue:
+      # https://github.com/actions/checkout/issues/237
+      - uses: actions/checkout@v1
+
+      - name: NPM Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm.storybook-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm.storybook-
+
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Install node dependencies (core)
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          npm ci
+
+      - name: Generate Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          npm run build-storybook
+
+      - name: Package Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          tar cvf storybook.tar storybook-static
+
+      - name: Save Static Storybook instance
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: Storybook
+          path: Source/Plugins/Core/com.equella.core/js/storybook.tar
+
   build_import_export_tool:
     runs-on: ubuntu-latest
     steps:
