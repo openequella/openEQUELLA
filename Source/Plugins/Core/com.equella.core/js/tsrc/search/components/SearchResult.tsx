@@ -42,7 +42,6 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
-import { AppConfig } from "../../AppConfig";
 import type { RenderData } from "../../mainui";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
@@ -50,6 +49,7 @@ import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { buildSelectionSessionItemSummaryLink } from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -117,22 +117,12 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
-  /**
-   * The index of an search result Item which does not take Pagination into account.
-   */
-  indexNumber?: number;
-  /**
-   * The total number of available Items matching current Search options.
-   */
-  totalCount?: number;
 }
 
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
   handleError,
   highlights,
-  indexNumber,
-  totalCount,
   item: {
     name,
     version,
@@ -383,33 +373,24 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
-    if (renderData?.selectionSessionInfo) {
-      const { stateId, integId, layout } = renderData.selectionSessionInfo;
-      let itemSummaryPageLink = AppConfig.baseUrl.concat(
-        `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}&search=%/searching.do`
-      );
+    const basicLink = (
+      <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
+    );
 
-      if (indexNumber !== undefined && totalCount !== undefined) {
-        itemSummaryPageLink = itemSummaryPageLink.concat(
-          `&index=${indexNumber}&available=${totalCount}`
-        );
-      }
-
-      // integId can be null in 'Resource Selector'.
-      if (integId) {
-        itemSummaryPageLink = itemSummaryPageLink.concat(`&_int.id=${integId}`);
-      }
-
-      return (
-        //todo: Once we have a tsx component for ItemSummary page we should create a route for it
-        // and use 'React Router Link' instead of 'MUI Link'.
-        <MUILink href={itemSummaryPageLink} underline="none">
-          {itemTitle}
-        </MUILink>
-      );
-    }
-
-    return <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>;
+    return renderData?.selectionSessionInfo ? (
+      <MUILink
+        href={buildSelectionSessionItemSummaryLink(
+          renderData.selectionSessionInfo,
+          uuid,
+          version
+        )}
+        underline="none"
+      >
+        {itemTitle}
+      </MUILink>
+    ) : (
+      basicLink
+    );
   };
 
   return (

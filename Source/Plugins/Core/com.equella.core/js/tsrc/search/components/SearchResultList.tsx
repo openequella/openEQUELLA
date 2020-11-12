@@ -163,16 +163,12 @@ export const SearchResultList = ({
  * @param items the search result items to map over
  * @param handleError function which will be called on error (e.g. comms errors)
  * @param highlights a list of highlight terms
- * @param totalCount the number of available Items
- * @param start the start of a paged search result
  * @param getViewerDetails optional function to override retrieval of viewer details
  */
 export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  totalCount?: number,
-  start?: number,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
@@ -184,7 +180,5 @@ export const mapSearchResultItems = (
       handleError={handleError}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
-      indexNumber={start !== undefined ? start + index : undefined}
-      totalCount={totalCount}
     />
   ));
