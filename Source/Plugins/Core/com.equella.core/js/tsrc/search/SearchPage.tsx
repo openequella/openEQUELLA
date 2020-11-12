@@ -17,6 +17,7 @@
  */
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { History } from "history";
 import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -35,7 +36,7 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
-  convertParamsToSearchOptions,
+  queryStringParamsToSearchOptions,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -62,6 +63,7 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
+import LocationState = History.LocationState;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -123,7 +125,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
-  const location = useLocation();
+  const location = useLocation<LocationState>();
 
   /**
    * Update the page title and retrieve Search settings.
@@ -137,11 +139,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      convertParamsToSearchOptions(location.search),
+      queryStringParamsToSearchOptions(location),
     ]).then((results) => {
       const [searchSettings, queryStringSearchOptions] = results;
       setSearchSettings(searchSettings);
-
       if (queryStringSearchOptions)
         setSearchPageOptions({
           ...queryStringSearchOptions,

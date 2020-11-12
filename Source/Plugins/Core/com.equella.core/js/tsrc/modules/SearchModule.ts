@@ -18,12 +18,14 @@
 import { DateRange } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
+import { Location } from "history";
+import { map, pick } from "lodash";
+import { Literal, match, Static, Union, Unknown } from "runtypes";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
 import { SortOrder } from "./SearchSettingsModule";
 import { resolveUsers } from "./UserModule";
-import { Literal, match, Static, Union } from "runtypes";
 
 /**
  * Type of all search options on Search page
@@ -185,6 +187,92 @@ export const generateCategoryWhereQuery = (
 };
 
 /**
+ * A function that takes a parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchOptions object
+ * @param location object, typically obtained from the SearchPage component.
+ * @return SearchOptions object, or undefined if there were no query string parameters.
+ */
+export const queryStringParamsToSearchOptions = async (
+  location: Location
+): Promise<SearchOptions | undefined> => {
+  if (!location.search) return undefined;
+  const params = new URLSearchParams(location.search);
+
+  if (location.pathname.endsWith("searching.do")) {
+    return await legacyQueryStringToSearchOptions(params);
+  }
+  return await newSearchQueryToSearchOptions(params.get("searchOptions") ?? "");
+};
+
+/**
+ * A function that takes search options and converts it to to a json representation.
+ * Collections and owner properties are both reduced down to their uuid and id properties respectively.
+ * Undefined properties are excluded.
+ * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
+ * @param searchOptions Search options selected on Search page.
+ * @return url encoded key/value pair of JSON searchOptions
+ */
+export const generateQueryStringFromSearchOptions = (
+  searchOptions: SearchOptions
+): string => {
+  const params = new URLSearchParams();
+  params.set(
+    "searchOptions",
+    JSON.stringify(
+      searchOptions,
+      (key: string, value: (object | Collection)[]) => {
+        return match(
+          [
+            Literal("collections"),
+            () => value.map((collection) => pick(collection, ["uuid"])),
+          ],
+          [Literal("owner"), () => pick(value, ["id"])],
+          [Unknown, () => value ?? undefined]
+        )(key);
+      }
+    )
+  );
+  return params.toString();
+};
+
+/**
+ * A function that takes a JSON representation of a SearchOptions object, and converts it into an actual SearchOptions object.
+ * @param searchOptionsJSON a JSON representation of a SearchOptions object.
+ * @return searchOptions Search options selected on Search page.
+ */
+export const newSearchQueryToSearchOptions = async (
+  searchOptionsJson: string
+): Promise<SearchOptions> => {
+  const parsedOptions: SearchOptions = JSON.parse(
+    searchOptionsJson,
+    (key, value) => {
+      if (key === "lastModifiedDateRange") {
+        let { start, end } = value;
+        start = start ? new Date(start) : undefined;
+        end = end ? new Date(end) : undefined;
+        return { start, end };
+      }
+      return value;
+    }
+  );
+  const collectionUuids: string[] | undefined = map(
+    parsedOptions?.collections,
+    "uuid"
+  );
+  const ownerId: string | undefined = parsedOptions?.owner?.id;
+  if (typeof parsedOptions.collections !== "undefined") {
+    parsedOptions.collections = collectionUuids
+      ? await getCollectionDetails(collectionUuids)
+      : defaultSearchOptions.collections;
+  }
+  if (typeof parsedOptions.owner !== "undefined") {
+    parsedOptions.owner = ownerId
+      ? await getUserDetails(ownerId)
+      : defaultSearchOptions.owner;
+  }
+  return { ...defaultSearchOptions, ...parsedOptions };
+};
+
+/**
  * A function that takes search options and converts search options to search params,
  * and then does a search and returns a list of Items.
  * @param searchOptions Search options selected on Search page.
@@ -221,18 +309,35 @@ export const searchItems = ({
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
 
+const getCollectionDetails = async (
+  collectionUuids: string[]
+): Promise<Collection[] | undefined> => {
+  const collectionList = await collectionListSummary([
+    OEQ.Acl.ACL_SEARCH_COLLECTION,
+  ]);
+  const filteredCollectionList = collectionList.filter((c) => {
+    return collectionUuids.includes(c.uuid);
+  });
+  return filteredCollectionList.length > 0
+    ? filteredCollectionList
+    : defaultSearchOptions.collections;
+};
+
+const getUserDetails = async (
+  userId: string
+): Promise<OEQ.UserQuery.UserDetails | undefined> => {
+  const userDetails = await resolveUsers([userId]);
+  return userDetails.length > 0 ? userDetails[0] : defaultSearchOptions.owner;
+};
+
 /**
  * A function that takes query string params from a shared searching.do URL and converts all applicable params to Search options
- * @param queryString query string params from a shared `searching.do` URL
- * @return SearchOptions object, or undefined if there were no query string parameters.
+ * @param location query string params from a shared `searching.do` URL
+ * @return SearchOptions object.
  */
-export const convertParamsToSearchOptions = async (
-  queryString: string
-): Promise<SearchOptions | undefined> => {
-  if (!queryString) return undefined;
-
-  const params = new URLSearchParams(queryString);
-
+export const legacyQueryStringToSearchOptions = async (
+  params: URLSearchParams
+): Promise<SearchOptions> => {
   const getQueryParam = (paramName: LegacyParams) => {
     return params.get(paramName) ?? undefined;
   };
@@ -242,27 +347,6 @@ export const convertParamsToSearchOptions = async (
   const dateRange = getQueryParam("dr");
   const datePrimary = getQueryParam("dp");
   const dateSecondary = getQueryParam("ds");
-
-  const getUserDetails = async (
-    userId: string
-  ): Promise<OEQ.UserQuery.UserDetails | undefined> => {
-    const userDetails = await resolveUsers([userId]);
-    return userDetails.length > 0 ? userDetails[0] : defaultSearchOptions.owner;
-  };
-
-  const getCollectionDetails = async (
-    collectionUuid: string
-  ): Promise<Collection[] | undefined> => {
-    const collectionList = await collectionListSummary([
-      OEQ.Acl.ACL_SEARCH_COLLECTION,
-    ]);
-    const filteredCollectionList = collectionList.filter((c) => {
-      return c.uuid === collectionUuid;
-    });
-    return filteredCollectionList.length > 0
-      ? filteredCollectionList
-      : defaultSearchOptions.collections;
-  };
 
   const RangeType = Union(
     Literal("between"),
@@ -301,7 +385,7 @@ export const convertParamsToSearchOptions = async (
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: collectionId
-      ? await getCollectionDetails(collectionId)
+      ? await getCollectionDetails([collectionId])
       : defaultSearchOptions.collections,
     query: getQueryParam("q") ?? defaultSearchOptions.query,
     owner: ownerId ? await getUserDetails(ownerId) : defaultSearchOptions.owner,
