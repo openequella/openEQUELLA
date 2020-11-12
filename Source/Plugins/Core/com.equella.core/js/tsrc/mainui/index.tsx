@@ -24,7 +24,7 @@ import "../util/polyfill";
  * Structure of Selection Session information which is used to help build
  * components(e.g. SearchResult) in the context of Selection Session.
  */
-interface SelectionSessionInfo {
+export interface SelectionSessionInfo {
   /**
    * The ID of a Selection Session
    */
