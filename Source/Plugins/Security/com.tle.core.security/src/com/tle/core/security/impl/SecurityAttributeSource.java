@@ -40,7 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -65,7 +64,6 @@ public class SecurityAttributeSource {
       ImmutableSet.of(
           BaseEntity.class, EntityPack.class, Item.class, ItemPack.class, ActivateRequest.class);
 
-  // TODO - this assumes Java 5+ is required for oEQ.
   final Map<CacheKey, SecurityAttribute> attributeCache = new ConcurrentHashMap<>(16);
 
   public SecurityAttribute getAttribute(Method method, Class<?> targetClass) {
@@ -94,11 +92,7 @@ public class SecurityAttributeSource {
 
     // If we are dealing with method with generic parameters, find the
     // original method.
-    // TODO - consider just dropping the version conditional.  No one should be
-    // running oEQ or the Admin Console lower than Java 8.
-    if (SystemUtils.isJavaVersionAtLeast(5)) {
-      specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-    }
+    specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 
     // First try is the method in the target class.
     SecurityAttribute txAtt = findSecurityAttribute(specificMethod, targetClass);
