@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig } from "../AppConfig";
-import { SelectionSessionInfo } from "../mainui";
-
+import { AppConfig, SelectionSessionInfo } from "../AppConfig";
 /**
  * Build a Selection Session specific ItemSummary Link.
  * @param stateId The ID of a Selection Session

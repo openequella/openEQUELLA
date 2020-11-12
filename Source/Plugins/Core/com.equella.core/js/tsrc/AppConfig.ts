@@ -22,6 +22,36 @@ interface Config {
   baseUrl: string;
 }
 
+/**
+ * Structure of Selection Session information which is used to help build
+ * components(e.g. SearchResult) in the context of Selection Session.
+ */
+export interface SelectionSessionInfo {
+  /**
+   * The ID of a Selection Session
+   */
+  stateId: string;
+  /**
+   * The ID of an LMS Integration
+   */
+  integId?: string;
+  /**
+   * The UI layout used in Selection Session
+   */
+  layout: "coursesearch" | "search" | "skinnysearch";
+}
+
+export interface RenderData {
+  baseResources: string;
+  newUI: boolean;
+  autotestMode: boolean;
+  newSearch: boolean;
+  selectionSessionInfo: SelectionSessionInfo | null;
+}
+
+declare const renderData: RenderData | undefined;
+export const getRenderData = () => renderData;
+
 export const AppConfig: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };

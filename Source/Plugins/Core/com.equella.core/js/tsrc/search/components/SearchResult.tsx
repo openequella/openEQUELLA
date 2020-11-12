@@ -42,7 +42,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
-import type { RenderData } from "../../mainui";
+import { getRenderData } from "../../AppConfig";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
@@ -55,8 +55,7 @@ import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { HashLink } from "react-router-hash-link";
 
-declare const renderData: RenderData | undefined;
-
+const renderData = getRenderData();
 const useStyles = makeStyles((theme: Theme) => {
   return {
     inline: {
@@ -376,7 +375,6 @@ export default function SearchResult({
     const basicLink = (
       <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
     );
-
     return renderData?.selectionSessionInfo ? (
       <MUILink
         href={buildSelectionSessionItemSummaryLink(
