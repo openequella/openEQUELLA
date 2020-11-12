@@ -80,7 +80,7 @@ const mockSearchSettings = jest.spyOn(
 );
 const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
-  "convertParamsToSearchOptions"
+  "queryStringParamsToSearchOptions"
 );
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
@@ -128,6 +128,7 @@ const renderSearchPage = async (
   window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
+  history.push({});
 
   const page = render(
     <Router history={history}>
@@ -683,7 +684,7 @@ describe("<SearchPage/>", () => {
   });
 });
 
-describe("conversion of legacy query parameters to SearchPageOptions", () => {
+describe("conversion of parameters to SearchPageOptions", () => {
   const searchPageOptions: SearchPageOptions = {
     ...defaultSearchPageOptions,
     dateRangeQuickModeEnabled: false,
@@ -697,11 +698,10 @@ describe("conversion of legacy query parameters to SearchPageOptions", () => {
     jest.clearAllMocks();
   });
 
-  it("should call convertParamsToSearchOptions using query paramaters in url", async () => {
+  it("should call queryStringParamsToSearchOptions using query paramaters in url", async () => {
     await renderSearchPage("?q=test");
-    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledTimes(1);
-    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledWith(
-      "?q=test"
+    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
+      1
     );
   });
 });
