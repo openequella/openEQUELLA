@@ -40,7 +40,7 @@ export const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 interface NewPageProps {
   children: ReactNode;
   classPrefix: string;
-  forceRefresh: boolean;
+  forceRefresh?: boolean;
 }
 
 /**
@@ -49,7 +49,11 @@ interface NewPageProps {
  * @param forceRefresh Whether to refresh the page when navigating to different route
  * @param classPrefix The prefix added in MUI styles
  */
-function NewPage({ children, forceRefresh, classPrefix }: NewPageProps) {
+function NewPage({
+  children,
+  forceRefresh = false,
+  classPrefix,
+}: NewPageProps) {
   const generateClassName = createGenerateClassName({
     productionPrefix: classPrefix,
   });
@@ -86,7 +90,7 @@ const App = ({ entryPage }: AppProps) => {
     [
       Literal("searchPage"),
       () => (
-        <NewPage classPrefix="oeq-nsp" forceRefresh={false}>
+        <NewPage classPrefix="oeq-nsp">
           <SearchPage updateTemplate={nop} />
         </NewPage>
       ),
