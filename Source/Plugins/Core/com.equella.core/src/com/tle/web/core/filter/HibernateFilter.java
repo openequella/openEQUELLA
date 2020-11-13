@@ -75,6 +75,19 @@ public class HibernateFilter extends AbstractWebFilter {
     return result;
   }
 
+  /**
+   * Prior to hibernate 5, oEQ never touched the FlushMode. Due to changes in Spring and Hibernate,
+   * `openSession` was added and followed the flow of the Spring impl of `openSession`.
+   *
+   * <p>FlushMode is set to MANUAL to reduce surprise flushes to the database, and it'll switch to
+   * AUTO in a non-read-only transaction, and then flip back.
+   *
+   * <p>The internal transaction handling logic with respect to flush mode appears to remain
+   * unchanged
+   *
+   * @param sessionFactory
+   * @return
+   */
   private Session openSession(SessionFactory sessionFactory) {
     Session session = sessionFactory.openSession();
     session.setHibernateFlushMode(FlushMode.MANUAL);
