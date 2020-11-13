@@ -42,9 +42,6 @@ public abstract class AbstractHibernateDao {
       lastFactory = newFactory;
       template =
           new HibernateTemplate(newFactory) {
-            // Removed the method param, since it no longer exists in hib5:  boolean
-            // enforceNewSession
-            // TODO need to understand the impact of the removal
             @Override
             protected Object doExecute(HibernateCallback action, boolean enforceNativeSession)
                 throws DataAccessException {
@@ -58,9 +55,6 @@ public abstract class AbstractHibernateDao {
               }
             }
           };
-      // TODO - no longer exists in hib5.  Need to review
-      // template.setAllowCreate(false);
-
       template.setExposeNativeSession(true);
     }
     return template;
@@ -71,6 +65,6 @@ public abstract class AbstractHibernateDao {
   }
 
   protected String getFactoryName() {
-    return "main"; //$NON-NLS-1$
+    return "main";
   }
 }

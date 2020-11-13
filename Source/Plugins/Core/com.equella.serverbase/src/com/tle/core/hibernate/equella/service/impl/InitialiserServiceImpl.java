@@ -115,11 +115,6 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
                   + "]: "
                   + iae.getMessage());
         } else {
-          LOGGER.error(
-              "Error being thrown - type ["
-                  + o.getClass().getCanonicalName()
-                  + "]: "
-                  + iae.getMessage());
           throw iae;
         }
       }
