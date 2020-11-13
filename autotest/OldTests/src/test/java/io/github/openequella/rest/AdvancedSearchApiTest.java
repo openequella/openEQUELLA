@@ -27,45 +27,24 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
 
   @Test
   public void testRetrieveAdvancedSearches() throws Exception {
-    final List<BaseEntityLabel> searches = getAdvancedSearches();
+    final List<AdvancedSearchSummary> searches = getAdvancedSearches();
     assertEquals(
         "The number of returned advanced searches should match the institution total.",
         3,
         searches.size());
   }
 
-  private List<BaseEntityLabel> getAdvancedSearches() throws IOException {
+  private List<AdvancedSearchSummary> getAdvancedSearches() throws IOException {
     final HttpMethod method = new GetMethod(ADVANCEDSEARCH_API_ENDPOINT);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     return mapper.readValue(
-        method.getResponseBodyAsString(), new TypeReference<List<BaseEntityLabel>>() {});
+        method.getResponseBodyAsString(), new TypeReference<List<AdvancedSearchSummary>>() {});
   }
 
-  private static class BaseEntityLabel {
-    private String owner;
-    private String privType;
+  // Mirror of com.tle.web.api.settings.AdvancedSearchSummary
+  private static class AdvancedSearchSummary {
     private String uuid;
-    private String value;
-    private boolean systemType;
-    private long bundleId;
-    private long id;
-    private long idValue;
-
-    public String getOwner() {
-      return owner;
-    }
-
-    public void setOwner(String owner) {
-      this.owner = owner;
-    }
-
-    public String getPrivType() {
-      return privType;
-    }
-
-    public void setPrivType(String privType) {
-      this.privType = privType;
-    }
+    private String name;
 
     public String getUuid() {
       return uuid;
@@ -75,44 +54,12 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
       this.uuid = uuid;
     }
 
-    public String getValue() {
-      return value;
+    public String getName() {
+      return name;
     }
 
-    public void setValue(String value) {
-      this.value = value;
-    }
-
-    public boolean isSystemType() {
-      return systemType;
-    }
-
-    public void setSystemType(boolean systemType) {
-      this.systemType = systemType;
-    }
-
-    public long getBundleId() {
-      return bundleId;
-    }
-
-    public void setBundleId(long bundleId) {
-      this.bundleId = bundleId;
-    }
-
-    public long getId() {
-      return id;
-    }
-
-    public void setId(long id) {
-      this.id = id;
-    }
-
-    public long getIdValue() {
-      return idValue;
-    }
-
-    public void setIdValue(long idValue) {
-      this.idValue = idValue;
+    public void setName(String name) {
+      this.name = name;
     }
   }
 }
