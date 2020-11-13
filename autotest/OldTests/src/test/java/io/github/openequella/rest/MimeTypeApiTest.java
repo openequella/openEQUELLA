@@ -14,8 +14,7 @@ import org.testng.annotations.Test;
 
 public class MimeTypeApiTest extends AbstractRestApiTest {
 
-  private static final String MIMETYPE_API_ENDPOINT =
-      TEST_CONFIG.getInstitutionUrl() + "api/mimetype";
+  private final String MIMETYPE_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/mimetype";
 
   @Test
   public void testRetrieveMimeTypes() throws Exception {
