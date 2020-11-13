@@ -55,7 +55,6 @@ import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { HashLink } from "react-router-hash-link";
 
-const renderData = getRenderData();
 const useStyles = makeStyles((theme: Theme) => {
   return {
     inline: {
@@ -141,7 +140,7 @@ export default function SearchResult({
     attachment: OEQ.Search.Attachment;
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
-
+  const renderData = getRenderData();
   const classes = useStyles();
 
   const [attachExpanded, setAttachExpanded] = useState(

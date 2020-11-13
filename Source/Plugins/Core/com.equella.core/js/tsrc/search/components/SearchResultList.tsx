@@ -173,7 +173,7 @@ export const mapSearchResultItems = (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
 ): React.ReactNode[] =>
-  items.map((item, index) => (
+  items.map((item) => (
     <SearchResult
       key={item.uuid}
       item={item}
