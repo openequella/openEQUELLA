@@ -18,17 +18,16 @@
 import { AppConfig, SelectionSessionInfo } from "../AppConfig";
 /**
  * Build a Selection Session specific ItemSummary Link.
- * @param stateId The ID of a Selection Session
- * @param integId The ID of a LSM Integration
- * @param layout The UI layout used in Selection Session
+ * @param selectionSessionInfo An object containing information of a Selection Session such as the layout and ID
  * @param uuid The UUID of an Item
  * @param version The version of an Item
  */
 export const buildSelectionSessionItemSummaryLink = (
-  { stateId, integId, layout }: SelectionSessionInfo,
+  selectionSessionInfo: SelectionSessionInfo,
   uuid: string,
   version: number
 ): string => {
+  const { stateId, integId, layout } = selectionSessionInfo;
   const itemSummaryPageLink = AppConfig.baseUrl.concat(
     `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
   );
