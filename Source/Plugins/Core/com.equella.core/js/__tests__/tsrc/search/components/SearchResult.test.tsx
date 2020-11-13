@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-
 import "@testing-library/jest-dom/extend-expect";
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
@@ -28,7 +27,9 @@ import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import * as AppConfig from "../../../../tsrc/AppConfig";
 
+const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
   .mockResolvedValue({
@@ -133,5 +134,38 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(languageStrings.common.action.openInNewWindow)
     ).toBeInTheDocument();
+  });
+
+  it("should use different link to open ItemSummary page, depending on renderData", async () => {
+    const item = mockData.basicSearchObj;
+    const checkItemTitleLink = (page: RenderResult, url: string) => {
+      expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
+        "href",
+        url
+      );
+    };
+    const basicURL = `items/${item.uuid}/${item.version}/`;
+
+    let page = await renderSearchResult(item);
+    checkItemTitleLink(page, `/${basicURL}`);
+
+    // Change the value of renderData and re-render the component.
+    mockGetRenderData.mockReturnValueOnce({
+      baseResources: "p/r/2020.2.0/com.equella.core/",
+      newUI: true,
+      autotestMode: false,
+      newSearch: true,
+      selectionSessionInfo: {
+        stateId: "1",
+        integId: "2",
+        layout: "coursesearch",
+      },
+    });
+    page.unmount();
+    page = await renderSearchResult(item);
+    checkItemTitleLink(
+      page,
+      `${basicURL}?_sl.stateId=1&a=coursesearch&_int.id=2`
+    );
   });
 });
