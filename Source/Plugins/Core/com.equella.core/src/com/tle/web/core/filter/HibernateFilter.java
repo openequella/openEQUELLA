@@ -56,9 +56,6 @@ public class HibernateFilter extends AbstractWebFilter {
 
       if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
         LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter");
-        // TODO - previous code with SessionFactoryUtils:
-        // https://docs.spring.io/spring/docs/2.5.x/javadoc-api/org/springframework/orm/hibernate3/SessionFactoryUtils.html#getSession(org.hibernate.SessionFactory,%20boolean)
-        // Need  to ensure this is equivalent logic.
         Session session = openSession(sessionFactory);
         TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
         result.setCallback(
