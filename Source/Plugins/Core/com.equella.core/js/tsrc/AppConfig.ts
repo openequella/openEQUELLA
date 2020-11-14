@@ -50,7 +50,7 @@ export interface RenderData {
 }
 
 declare const renderData: RenderData | undefined;
-export const getRenderData = () => {
+export const getRenderData = (): RenderData | undefined => {
   if (typeof renderData !== "undefined") {
     return renderData;
   }
