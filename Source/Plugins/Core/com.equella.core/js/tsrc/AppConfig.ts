@@ -50,12 +50,8 @@ export interface RenderData {
 }
 
 declare const renderData: RenderData | undefined;
-export const getRenderData = (): RenderData | undefined => {
-  if (typeof renderData !== "undefined") {
-    return renderData;
-  }
-  return undefined;
-};
+export const getRenderData = (): RenderData | undefined =>
+  typeof renderData !== "undefined" ? renderData : undefined;
 
 export const AppConfig: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
