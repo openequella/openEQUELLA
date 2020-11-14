@@ -19,14 +19,14 @@ import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import type { SelectionSessionInfo } from "../../../tsrc/AppConfig";
 import { buildSelectionSessionItemSummaryLink } from "../../../tsrc/modules/SelectionSessionModule";
 
-describe("SelectionSessionModule", () => {
+describe("buildSelectionSessionItemSummaryLink", () => {
   const selectionSessionInfo: SelectionSessionInfo = {
     stateId: "1",
     layout: "coursesearch",
   };
   const { uuid, version } = getSearchResult.results[0];
 
-  it("should build a URL for accessing ItemSummary page in Selection Session", () => {
+  it("builds basic URLs for accessing ItemSummary pages in Selection Session mode", () => {
     const link = buildSelectionSessionItemSummaryLink(
       selectionSessionInfo,
       uuid,
@@ -37,7 +37,7 @@ describe("SelectionSessionModule", () => {
     );
   });
 
-  it("should also include Integration ID in the URL", () => {
+  it("will include the Integration ID in the URL if provided in SelectionSessionInfo", () => {
     const link = buildSelectionSessionItemSummaryLink(
       { ...selectionSessionInfo, integId: "2" },
       uuid,
