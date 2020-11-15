@@ -18,10 +18,10 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { LocationDescriptor } from "history";
+import { getRenderData } from "../AppConfig";
 import { TemplateUpdate, TemplateUpdateProps } from "./Template";
-import { RenderData } from "./index";
 
-declare const renderData: RenderData | undefined;
+const renderData = getRenderData();
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));

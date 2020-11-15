@@ -29,6 +29,7 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
+import MUILink from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
@@ -41,12 +42,14 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
+import { getRenderData } from "../../AppConfig";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { buildSelectionSessionItemSummaryLink } from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -137,7 +140,7 @@ export default function SearchResult({
     attachment: OEQ.Search.Attachment;
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
-
+  const renderData = getRenderData();
   const classes = useStyles();
 
   const [attachExpanded, setAttachExpanded] = useState(
@@ -366,11 +369,26 @@ export default function SearchResult({
   const highlightField = (fieldValue: string) =>
     ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
 
-  const itemLink = (
-    <Link to={routes.ViewItem.to(uuid, version)}>
-      {name ? highlightField(name) : uuid}
-    </Link>
-  );
+  const itemLink = () => {
+    const itemTitle = name ? highlightField(name) : uuid;
+    const basicLink = (
+      <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
+    );
+    return renderData?.selectionSessionInfo ? (
+      <MUILink
+        href={buildSelectionSessionItemSummaryLink(
+          renderData.selectionSessionInfo,
+          uuid,
+          version
+        )}
+        underline="none"
+      >
+        {itemTitle}
+      </MUILink>
+    ) : (
+      basicLink
+    );
+  };
 
   return (
     <ListItem alignItems="flex-start" divider>
@@ -379,7 +397,7 @@ export default function SearchResult({
         showPlaceholder={displayOptions?.disableThumbnail ?? false}
       />
       <ListItemText
-        primary={itemLink}
+        primary={itemLink()}
         secondary={
           <>
             <Typography className={classes.itemDescription}>

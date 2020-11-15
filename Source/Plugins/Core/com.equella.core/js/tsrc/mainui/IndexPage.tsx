@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { RenderData } from "./index";
+import { getRenderData } from "../AppConfig";
 import HtmlParser from "react-html-parser";
 import * as OEQ from "@openequella/rest-api-client";
 import {
@@ -28,7 +28,6 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
-
 import { getCurrentUserDetails } from "../modules/UserModule";
 import { ErrorResponse } from "../api/errors";
 import {
@@ -44,7 +43,7 @@ import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { LegacyForm } from "../legacycontent/LegacyForm";
 import { basePath } from "./App";
 
-declare const renderData: RenderData | undefined;
+const renderData = getRenderData();
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";

@@ -20,32 +20,6 @@ import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
-/**
- * Structure of Selection Session information which is used to help build
- * components(e.g. SearchResult) in the context of Selection Session.
- */
-interface SelectionSessionInfo {
-  /**
-   * The ID of a Selection Session
-   */
-  stateId: string;
-  /**
-   * The ID of an LMS Integration
-   */
-  integId?: string;
-  /**
-   * The UI layout used in Selection Session
-   */
-  layout: string;
-}
-
-export interface RenderData {
-  baseResources: string;
-  newUI: boolean;
-  autotestMode: boolean;
-  newSearch: boolean;
-  selectionSessionInfo: SelectionSessionInfo | null;
-}
 export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
