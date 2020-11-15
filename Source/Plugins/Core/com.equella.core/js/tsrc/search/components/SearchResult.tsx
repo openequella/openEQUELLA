@@ -25,6 +25,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
   Theme,
   Typography,
@@ -54,6 +55,7 @@ import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { HashLink } from "react-router-hash-link";
+import { ResourceSelector } from "./ResourceSelector";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -86,6 +88,9 @@ const useStyles = makeStyles((theme: Theme) => {
       backgroundColor: theme.palette.background.paper,
       color: theme.palette.secondary.main,
       borderRadius: "50%",
+    },
+    attachmentListItem: {
+      width: "100%",
     },
     highlight: {
       color: theme.palette.secondary.main,
@@ -141,6 +146,8 @@ export default function SearchResult({
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
   const renderData = getRenderData();
+  const selectionSessionData = renderData?.selectionSessionInfo;
+  const nop = () => {}; // todo: remove this in next PR.
   const classes = useStyles();
 
   const [attachExpanded, setAttachExpanded] = useState(
@@ -155,6 +162,7 @@ export default function SearchResult({
     searchResult: searchResultStrings,
     comments: commentStrings,
     starRatings: ratingStrings,
+    selectResource: selectResourceStrings,
   } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
@@ -314,9 +322,37 @@ export default function SearchResult({
             >
               <ListItemText color="primary" primary={description} />
             </ItemAttachmentLink>
+            {selectionSessionData && (
+              <ListItemSecondaryAction>
+                <ResourceSelector
+                  labelText={selectResourceStrings.attachment}
+                  isStopPropagation
+                  onClick={nop} // todo: replace nop with an handler for selecting one attachment
+                />
+              </ListItemSecondaryAction>
+            )}
           </ListItem>
         );
       }
+    );
+
+    const accordionText = (
+      <Typography>{searchResultStrings.attachments}</Typography>
+    );
+
+    const accordionSummaryContent = selectionSessionData ? (
+      <Grid container alignItems="center">
+        <Grid item>{accordionText}</Grid>
+        <Grid>
+          <ResourceSelector
+            labelText={selectResourceStrings.allAttachments}
+            isStopPropagation
+            onClick={nop} // todo: replace nop with an handler for selecting attachments
+          />
+        </Grid>
+      </Grid>
+    ) : (
+      accordionText
     );
 
     const attachFileBadge = (includeIndicator: boolean) => (
@@ -351,13 +387,15 @@ export default function SearchResult({
           <AccordionSummary expandIcon={<ExpandMore />}>
             <Grid container spacing={2} alignItems="center">
               <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
-              <Grid item>
-                <Typography>{searchResultStrings.attachments}</Typography>
-              </Grid>
+              <Grid item>{accordionSummaryContent}</Grid>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
-            <List component="div" disablePadding>
+            <List
+              component="div"
+              disablePadding
+              className={classes.attachmentListItem}
+            >
               {attachmentsList}
             </List>
           </AccordionDetails>
@@ -374,10 +412,10 @@ export default function SearchResult({
     const basicLink = (
       <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
     );
-    return renderData?.selectionSessionInfo ? (
+    return selectionSessionData ? (
       <MUILink
         href={buildSelectionSessionItemSummaryLink(
-          renderData.selectionSessionInfo,
+          selectionSessionData,
           uuid,
           version
         )}
@@ -390,6 +428,21 @@ export default function SearchResult({
     );
   };
 
+  const itemPrimaryContent = selectionSessionData ? (
+    <Grid container alignItems="center">
+      <Grid item>{itemLink()}</Grid>
+      <Grid item>
+        <ResourceSelector
+          labelText={selectResourceStrings.summaryPage}
+          isStopPropagation
+          onClick={nop} // todo: replace nop with an handler for selecting summary page
+        />
+      </Grid>
+    </Grid>
+  ) : (
+    itemLink()
+  );
+
   return (
     <ListItem alignItems="flex-start" divider>
       <OEQThumb
@@ -397,7 +450,7 @@ export default function SearchResult({
         showPlaceholder={displayOptions?.disableThumbnail ?? false}
       />
       <ListItemText
-        primary={itemLink()}
+        primary={itemPrimaryContent}
         secondary={
           <>
             <Typography className={classes.itemDescription}>
