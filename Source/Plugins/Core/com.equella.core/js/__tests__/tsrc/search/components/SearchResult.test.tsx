@@ -30,6 +30,20 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 import * as AppConfig from "../../../../tsrc/AppConfig";
 
 const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
+// Mock the value of 'getRenderData'.
+const updateMockRenderData = () =>
+  mockGetRenderData.mockReturnValue({
+    baseResources: "p/r/2020.2.0/com.equella.core/",
+    newUI: true,
+    autotestMode: false,
+    newSearch: true,
+    selectionSessionInfo: {
+      stateId: "1",
+      integId: "2",
+      layout: "coursesearch",
+    },
+  });
+
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
   .mockResolvedValue({
@@ -149,18 +163,7 @@ describe("<SearchResult/>", () => {
     let page = await renderSearchResult(item);
     checkItemTitleLink(page, `/${basicURL}`);
 
-    // Change the value of renderData and re-render the component.
-    mockGetRenderData.mockReturnValueOnce({
-      baseResources: "p/r/2020.2.0/com.equella.core/",
-      newUI: true,
-      autotestMode: false,
-      newSearch: true,
-      selectionSessionInfo: {
-        stateId: "1",
-        integId: "2",
-        layout: "coursesearch",
-      },
-    });
+    updateMockRenderData();
     page.unmount();
     page = await renderSearchResult(item);
     checkItemTitleLink(
@@ -168,4 +171,20 @@ describe("<SearchResult/>", () => {
       `${basicURL}?_sl.stateId=1&a=coursesearch&_int.id=2`
     );
   });
+
+  it.each<[string]>([
+    [languageStrings.searchpage.selectResource.summaryPage],
+    [languageStrings.searchpage.selectResource.allAttachments],
+    [languageStrings.searchpage.selectResource.attachment],
+  ])(
+    // todo: pass event handler in and check if it has been called.
+    "should display buttons for %s in Selection Session",
+    async (buttonLabel: string) => {
+      updateMockRenderData();
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(buttonLabel)).toBeInTheDocument();
+    }
+  );
 });
