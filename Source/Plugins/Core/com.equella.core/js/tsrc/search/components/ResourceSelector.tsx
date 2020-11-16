@@ -20,7 +20,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
 import * as React from "react";
 
-interface ResourceSelectorProps {
+export interface ResourceSelectorProps {
   /**
    * Text for the label of ResourceSelector
    */
