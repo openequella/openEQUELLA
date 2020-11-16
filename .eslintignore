@@ -2,3 +2,6 @@
 **/target
 **/output
 **/.psc-package
+# below is legacy JS code that will only be modified under exceptional circumstances.
+**/Source/Plugins/Core/com.equella.core/resources/web/scripts
+**/Source/Plugins/Core/com.equella.core/resources/web/js
