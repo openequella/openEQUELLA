@@ -15,18 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as Acl from './Acl';
-export * as AdvancedSearch from './AdvancedSearch';
-export * as Auth from './Auth';
-export * as Collection from './Collection';
-export * as Common from './Common';
-export * as Errors from './Errors';
-export * as LegacyContent from './LegacyContent';
-export * as MimeType from './MimeType';
-export * as Schema from './Schema';
-export * as Search from './Search';
-export * as SearchFacets from './SearchFacets';
-export * as Security from './Security';
-export * as Settings from './Settings';
-export * as UserQuery from './UserQuery';
-export * as Utils from './Utils';
+import * as OEQ from '../src';
+import { listAdvancedSearches } from '../src/AdvancedSearch';
+import * as TC from './TestConfig';
+
+const API_PATH = TC.API_PATH_VANILLA;
+
+beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
+
+afterAll(() => OEQ.Auth.logout(API_PATH, true));
+
+describe('listAdvancedSearches', () => {
+  it('lists the available advanced searches in an institution', async () =>
+    expect((await listAdvancedSearches(API_PATH)).length).toBeGreaterThan(0));
+});
