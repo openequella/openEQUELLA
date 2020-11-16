@@ -92,6 +92,21 @@ public class HibernateMigrationHelper {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Tables registered:" + configuration.getTableMap().keySet());
     }
+
+    sqlStrings.addAll(getCreationSqlForTables(filter));
+
+    sqlStrings.addAll(getCreationSqlForTableIndexAndFks(filter));
+
+    sqlStrings.addAll(getCreationSqlForIdGenerators(filter));
+
+    sqlStrings.addAll(getCreationSqlForAuxDbos(filter));
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForTables(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
+
     for (Table table : configuration.getTableMap().values()) {
       if (table.isPhysicalTable() && filter.includeTable(table)) {
         final String sql = table.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
@@ -99,6 +114,12 @@ public class HibernateMigrationHelper {
         sqlStrings.add(sql);
       }
     }
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForTableIndexAndFks(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
 
     for (Table table : configuration.getTableMap().values()) {
       if (table.isPhysicalTable()) {
@@ -156,6 +177,13 @@ public class HibernateMigrationHelper {
         LOGGER.debug("Table is not physical, not generating SQL for it: " + table.getName());
       }
     }
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForIdGenerators(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
+
     Collection<PersistentIdentifierGenerator> generators =
         configuration.getGenerators(dialect, defaultCatalog, defaultSchema);
     for (PersistentIdentifierGenerator pig : generators) {
@@ -171,6 +199,12 @@ public class HibernateMigrationHelper {
         LOGGER.debug("Filter does not include generator [" + pig.toString() + "]");
       }
     }
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForAuxDbos(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
 
     for (AuxiliaryDatabaseObject object : configuration.getAuxiliaryDatabaseObjects()) {
       if (LOGGER.isDebugEnabled()) {
