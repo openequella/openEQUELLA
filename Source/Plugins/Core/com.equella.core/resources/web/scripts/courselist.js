@@ -1,5 +1,5 @@
 var CourseList = {
-		
+
 	scrollToSelected: function()
 	{
 		var $selectedFolder = $('.targetfolder:has(input[type=radio]:checked)');
@@ -11,7 +11,7 @@ var CourseList = {
 			var folderHeight = $selectedFolder.height();
 			var folderBottom = folderTopRel + folderHeight + 20;
 			var treeHeight = $tree.height();
-			
+
 			//only scroll if not fully visible
 			if (folderTopRel < 0 || folderBottom > treeHeight)
 			{
@@ -20,7 +20,7 @@ var CourseList = {
 			}
 		}
 	},
-	
+
 	transfer: function($source)
 	{
 		var $selectedFolder = $('.targetfolder:has(input[type=radio]:checked)');
@@ -29,7 +29,7 @@ var CourseList = {
 			$source.effect("transfer", { to: $selectedFolder, className: "courselisttransfer"}, 800, null);
 		}
 	},
-	
+
 	resize: function()
 	{
 		var $rhs = $('.selection-courses');
@@ -51,19 +51,19 @@ var CourseList = {
 	{
 		var ajaxDropCallback = ajaxCb;
 		var clickFolderCallback = ajaxClickCb;
-		
+
 		var listClass = 'itemlist';
 		var resultClass = 'itemresult';
 		var itemResultClass = 'itemresult-title';
 		var itemSummaryClass = 'item-title';
 		//var attachmentClass = '[data-attachmentuuid]';
-		
+
 		var listSelector = '.' + listClass;
 		var resultSelector = '.' + resultClass;
 		var itemResultSelector = '.selectable.' + itemResultClass;
 		var itemSummarySelector = "h2." + itemSummaryClass;
 		var attachmentSelector = '.selectable .attachmentrow.with-select';
-		
+
 		var dropCallback = function(event, ui)
 		{
 			var $res = $(ui.draggable);
@@ -77,18 +77,18 @@ var CourseList = {
 			var attachmentUuid = $data.attr('data-attachmentuuid');
 			var type = (attachmentUuid ? 'a' : 'p');
 			var extensionType = $data.attr('data-extensiontype');
-						
+
 			var $target = $(this);
 			var folder = $target.attr('data-folderid');
-			
+
 			if (ajaxDropCallback)
 			{
 				ajaxDropCallback(
 					JSON.stringify({
-						"uuid": uuid, 
-						"version": version, 
-						"type": type, 
-						"attachmentUuid": attachmentUuid, 
+						"uuid": uuid,
+						"version": version,
+						"type": type,
+						"attachmentUuid": attachmentUuid,
 						"folderId": folder,
 						"extensionType": extensionType}),
 					folder);
@@ -114,7 +114,7 @@ var CourseList = {
 				revert: 'invalid',
 				scroll: false
 			};
-		
+
 		if (doItems)
 		{
 			var itemListWatcher = function()
@@ -123,30 +123,30 @@ var CourseList = {
 			};
 			$(itemListWatcher);
 			$(document).bind('equella_searchresults.courselist', itemListWatcher);
-			
+
 			$(function()
 			{
 				$(itemSummarySelector).draggable(draggableOpts);
 			});
 		}
-		
+
 		if (doAttachments)
 		{
 			var attachmentWatcher = function()
-			{		
+			{
 					$(attachmentSelector).draggable(draggableOpts);
 			};
 			$(attachmentWatcher);
 			$(document).bind('equella_showattachments.courselist', attachmentWatcher);
 		}
-		
+
 		var droppableOpts = {
 				accept: itemResultSelector + ', ' + attachmentSelector + ', ' + itemSummarySelector,
 				activeClass: 'droptarget',
 				hoverClass: 'hover',
 				tolerance: 'pointer',
 				drop: dropCallback
-			}; 
+			};
 		var courseListWatcher = function()
 		{
 			$('.targetfolder').droppable(droppableOpts).on('click.courselist', function()
@@ -160,18 +160,18 @@ var CourseList = {
 						{
 							clickFolderCallback(function(){});
 						}
-					}		
+					}
 			);
 		};
 		$(courseListWatcher);
 		$(document).bind('equella_courselistupdate.courselist', courseListWatcher);
-				
+
 		//sizing code... yuck
 		$(document).ready(function(){setTimeout(CourseList.resize,50)});
 		$(window).resize(CourseList.resize);
 		$(document).bind('equella_searchresults.courselist', CourseList.resize);
 	},
-	
+
 	updateTargetFolder: function(ajax, folderId, eventArgs, ajaxIds)
 	{
 		var fid = folderId;
@@ -184,29 +184,33 @@ var CourseList = {
 			}
 			fid = $checked.attr('id').substring('folder_'.length);
 		}
-		
+
 		//TODO: shouldn't need to tell the server the selected folder
 		var reloadData = {
 				ajaxIds : ajaxIds,
 				folderId : fid,
 				event : eventArgs
 			};
-		
+
 		ajax(function(result)
 		{
 			updateIncludes(result, function()
 			{
-				var $tree = $(".foldertree");
-				if (!$tree.length)
-				{
-					return;
-				}
-				var folderId = result.folderId;
-				var newTree = result.updates['courselistajax'];
-				var $newTree = $(newTree.html);
-				$tree.find('[data-folderid="' + folderId + '"]').replaceWith($newTree.find('[data-folderid="' + folderId + '"]'));
-				$(document).trigger('equella_courselistupdate');
+        CourseList.updateCourseList(result);
 			});
 		}, JSON.stringify(reloadData));
-	}
+	},
+
+  updateCourseList: function(result) {
+    var $tree = $(".foldertree");
+    if (!$tree.length)
+    {
+      return;
+    }
+    var folderId = result.folderId;
+    var newTree = result.updates['courselistajax'];
+    var $newTree = $(newTree.html);
+    $tree.find('[data-folderid="' + folderId + '"]').replaceWith($newTree.find('[data-folderid="' + folderId + '"]'));
+    $(document).trigger('equella_courselistupdate');
+  }
 }

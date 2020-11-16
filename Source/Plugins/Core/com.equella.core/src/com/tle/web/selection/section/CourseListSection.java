@@ -36,7 +36,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.ajax.JSONResponseCallback;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
@@ -102,7 +101,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
         AllAttachmentsSelectorEventListener,
         ItemSelectorEventListener,
         PackageSelectorEventListener {
-  private static IncludeFile JS =
+  private static final IncludeFile JS =
       new IncludeFile(
           ResourcesService.getResourceHelper(CourseListSection.class).url("scripts/courselist.js"),
           JQueryDraggable.PRERENDER,
@@ -110,7 +109,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
           JQueryUIEffects.TRANSFER);
   private static final JSCallAndReference COURSE_LIST_CLASS =
       new ExternallyDefinedFunction("CourseList", JS);
-  private static ExternallyDefinedFunction SETUP_FUNCTION =
+  private static final ExternallyDefinedFunction SETUP_FUNCTION =
       new ExternallyDefinedFunction(COURSE_LIST_CLASS, "setupDraggables", 4);
 
   private static final String COURSE_LIST_AJAX = "courselistajax";
@@ -149,6 +148,11 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
       AjaxRenderContext context, CourseListFolderAjaxUpdateData controlData) {
     CourseListFolderUpdateCallback callback =
         new CourseListFolderUpdateCallback(context, controlData);
+    // As new search UI does not include folder ID in the request,
+    // we need to manually set the folder ID.
+    if (controlData.getFolderId() == null) {
+      controlData.setFolderId(getTargetFolderID(context));
+    }
     context.addAjaxDivs(COURSE_LIST_AJAX);
     return callback;
   }
@@ -192,7 +196,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
                 reloadFolderFunction,
                 drop ? new ScriptVariable("p2") : null,
                 eventArray,
-                new ArrayExpression((Object[]) ajaxIds))
+                new ArrayExpression(ajaxIds))
             .getExpression(info);
       }
     };
@@ -250,20 +254,9 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
     // updates (so results could be highlighted when already selected?)
     onDropAjaxUpdateFunction =
         getReloadFunction(true, events.getEventHandler("onDrop"), COURSE_LIST_AJAX);
-    // ajax.getAjaxUpdateDomFunction(tree, null,
-    // events.getEventHandler("onDrop"),
-    // ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-    // "courselistajax");
 
-    // TODO: use the getReloadFunction as well
     selectAllAttachmentsFunction =
-        ajax.getAjaxUpdateDomFunction(
-            tree,
-            null,
-            events.getEventHandler("selectAllAttachments"),
-            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-            COURSE_LIST_AJAX);
-
+        getReloadFunction(false, events.getEventHandler("selectAllAttachments"), COURSE_LIST_AJAX);
     selectAttachmentFunction =
         getReloadFunction(false, events.getEventHandler("selectAttachment"), COURSE_LIST_AJAX);
     selectItemFunction =
@@ -432,7 +425,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   public void selectAttachment(
       SectionInfo info, String attachmentUuid, ItemId itemId, String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     addAttachment(
         info,
         itemId,
@@ -443,9 +436,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
 
   @EventHandlerMethod
   public void selectAllAttachments(
-      SectionInfo info, List<String> uuids, ItemId itemId, @Nullable String extensionType) {
+      SectionInfo info, String uuids, ItemId itemId, @Nullable String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    for (String uuid : uuids) {
+    // uuids is a comma-separated string.
+    for (String uuid : uuids.split(",")) {
       selectAttachment(info, uuid, itemId, et);
     }
   }
@@ -453,7 +447,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   @EventHandlerMethod
   public void selectItem(SectionInfo info, ItemId itemId, String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     final TargetFolder folder = selectionService.findTargetFolder(info, folderId);
     selectionService.addSelectedResource(
         info,
@@ -465,7 +459,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   public void selectPackage(
       SectionInfo info, ItemId itemId, String extensionType, String attachmentControlId) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     final TargetFolder folder = selectionService.findTargetFolder(info, folderId);
     final IItem<?> item = itemResolver.getItem(itemId, et);
     final ImsAttachment attachment = new UnmodifiableAttachments(item).getIms();
@@ -483,6 +477,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   }
 
   @Nullable
+  private String getTargetFolderID(SectionInfo info) {
+    return selectionService.getCurrentSession(info).getTargetFolder();
+  }
+
   private String sanitiseExtensionType(@Nullable String extensionType) {
     return (extensionType == null || "null".equals(extensionType) ? null : extensionType);
   }
