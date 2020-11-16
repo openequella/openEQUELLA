@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * A summary representation of an Advanced search.
- */
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
 
+/**
+ * A summary representation of an Advanced search.
+ */
 interface AdvancedSearchSummary {
   /**
    * The unique system identifier for this entity.
