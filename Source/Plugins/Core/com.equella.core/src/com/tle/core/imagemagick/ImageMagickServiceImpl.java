@@ -223,7 +223,9 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
                 identifyExe.getAbsolutePath(),
                 "-format",
                 "%wx%h",
-                new String(image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), "UTF-8")
+                new String(
+                    image.getAbsolutePath().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.UTF_8)
               });
     } else {
       result =
@@ -231,7 +233,9 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
               identifyExe.getAbsolutePath(),
               "-format",
               "%wx%h",
-              new String(image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), "UTF-8"));
+              new String(
+                  image.getAbsolutePath().getBytes(StandardCharsets.UTF_8),
+                  StandardCharsets.UTF_8));
     }
     result.ensureOk();
 
