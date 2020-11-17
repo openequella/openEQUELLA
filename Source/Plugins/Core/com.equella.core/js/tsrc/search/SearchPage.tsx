@@ -17,11 +17,12 @@
  */
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import { History } from "history";
+
 import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
+import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
@@ -36,10 +37,10 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
-  queryStringParamsToSearchOptions,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
+  queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
 } from "../modules/SearchModule";
@@ -63,7 +64,8 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
-import LocationState = History.LocationState;
+
+// import LocationState = History.LocationState;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -125,7 +127,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
-  const location = useLocation<LocationState>();
+  const location = useLocation();
 
   /**
    * Update the page title and retrieve Search settings.
@@ -205,7 +207,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .finally(() => setShowSpinner(false));
   };
 
-  const handleSortOrderChanged = (order: SortOrder) =>
+  const handleSortOrderChanged = (order: Static<typeof SortOrder>) =>
     setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
