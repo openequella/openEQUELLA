@@ -87,12 +87,14 @@ public class SecurityAttributeSource {
   private SecurityAttribute computeSecurityAttribute(Method method, Class<?> targetClass) {
     // The method may be on an interface, but we need attributes from the
     // target class.
+    //
     // If the target class is null, the method will be unchanged.
-    Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
-
-    // If we are dealing with method with generic parameters, find the
+    //
+    // If we are dealing with a method with generic parameters, this should find the
     // original method.
-    specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+    Method specificMethod =
+        BridgeMethodResolver.findBridgedMethod(
+            ClassUtils.getMostSpecificMethod(method, targetClass));
 
     // First try is the method in the target class.
     SecurityAttribute txAtt = findSecurityAttribute(specificMethod, targetClass);

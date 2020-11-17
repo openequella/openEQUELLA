@@ -729,6 +729,7 @@ public class HibernateMigrationHelper {
     }
     final String sql = index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
     LOGGER.debug("Existing index is null.  Creating index SQL: " + sql);
+    sqlStrings.add(sql);
   }
 
   public Map<Set<String>, String> getExistingIndexes(final Table table, Session session) {

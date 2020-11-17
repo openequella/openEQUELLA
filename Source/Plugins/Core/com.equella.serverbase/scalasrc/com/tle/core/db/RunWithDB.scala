@@ -48,8 +48,7 @@ object RunWithDB {
     if (sessionHolder == null) {
       sys.error("There is no hibernate session - make sure it's inside @Transactional")
     }
-    // TODO this is not the ideal solution.  Need to consider options, such as Work API.
-    // https://stackoverflow.com/questions/3526556/session-connection-deprecated-on-hibernate
+    // TODO TECH_DEBT moderize the get connection logic - https://github.com/openequella/openEQUELLA/issues/2525
     val con = sessionHolder.getSession().asInstanceOf[SessionImpl].connection()
     val uc  = UserContext.fromThreadLocals()
     jdbc.run(uc).runA(con).unsafeRunSync()
