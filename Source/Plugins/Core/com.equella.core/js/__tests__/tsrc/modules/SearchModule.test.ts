@@ -24,15 +24,14 @@ import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
-  queryStringParamsToSearchOptions,
   DateRange,
   defaultSearchOptions,
   generateQueryStringFromSearchOptions,
   legacyQueryStringToSearchOptions,
   newSearchQueryToSearchOptions,
+  queryStringParamsToSearchOptions,
   SearchOptions,
 } from "../../../tsrc/modules/SearchModule";
-import { SortOrder } from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 
 jest.mock("@openequella/rest-api-client");
@@ -127,19 +126,35 @@ describe("SearchModule", () => {
       "collectionListSummary"
     );
 
+    beforeEach(() => {
+      mockedResolvedUser.mockResolvedValue([users[0]]);
+      mockedCollectionListSummary.mockResolvedValueOnce(getCollectionMap);
+    });
+
     afterEach(() => {
       jest.clearAllMocks();
     });
 
     it("should convert query string to searchOptions", async () => {
-      mockedResolvedUser.mockResolvedValue(users);
-      mockedCollectionListSummary.mockResolvedValueOnce(getCollectionMap);
       const longSearch =
         '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}}';
       const convertedParamsPromise = await newSearchQueryToSearchOptions(
         longSearch
       );
       expect(convertedParamsPromise).toEqual(allSearchOptions);
+    });
+
+    it("should be able to convert SearchOptions to a query string, and back to SearchOptions again", async () => {
+      const queryStringFromSearchOptions = await generateQueryStringFromSearchOptions(
+        allSearchOptions
+      );
+      expect(
+        await newSearchQueryToSearchOptions(
+          new URLSearchParams(queryStringFromSearchOptions).get(
+            "searchOptions"
+          ) ?? ""
+        )
+      ).toEqual(allSearchOptions);
     });
   });
 
@@ -175,7 +190,7 @@ describe("SearchModule", () => {
     });
 
     it("should convert legacy search parameters to searchOptions", async () => {
-      mockedResolvedUser.mockResolvedValue(users);
+      mockedResolvedUser.mockResolvedValue([users[0]]);
       mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
 
       //Query string was obtained from legacy UI searching.do->Share URL
@@ -188,7 +203,7 @@ describe("SearchModule", () => {
 
       const expectedSearchOptions: SearchOptions = {
         ...defaultSearchOptions,
-        sortOrder: SortOrder.DATECREATED,
+        sortOrder: "DATECREATED",
         searchAttachments: true,
         collections: [
           {

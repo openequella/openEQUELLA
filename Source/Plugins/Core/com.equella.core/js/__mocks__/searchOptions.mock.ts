@@ -15,15 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SearchOptions } from "../tsrc/modules/SearchModule";
-import { SortOrder } from "../tsrc/modules/SearchSettingsModule";
 import { getCollectionMap } from "../__mocks__/getCollectionsResp";
+import { SearchOptions } from "../tsrc/modules/SearchModule";
 import { users } from "./UserSearch.mock";
 
 export const allSearchOptions: SearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
-  sortOrder: SortOrder.NAME,
+  sortOrder: "NAME",
   rawMode: true,
   status: ["LIVE", "REVIEW"],
   searchAttachments: true,
