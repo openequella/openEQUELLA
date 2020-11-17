@@ -96,149 +96,149 @@ import javax.inject.Provider;
 
 public class LegacyGuice extends AbstractModule {
 
-  @Inject public static TLEAclManager aclManager;
+  @Inject public static AccessibilityModeService accessibilityModeService;
 
-  @Inject public static ShortcutUrlsSettingsPrivilegeTreeProvider shortcutPrivProvider;
+  @Inject public static ActivationService activationService;
 
-  @Inject public static LanguageSettingsPrivilegeTreeProvider langPrivProvider;
+  @Inject public static AttachmentResourceService attachmentResourceService;
+
+  @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
+
+  @Inject public static AuditLogService auditLogService;
+
+  @Inject public static BasicFreemarkerFactory basicFreemarkerFactory;
+
+  @Inject public static BundleCache bundleCache;
+
+  @Inject public static CALService calService;
+
+  @Inject public static CALWebServiceImpl calWebService;
+
+  @Inject public static ConfigurationService configService;
+
+  @Inject public static ContentRestrictionsPrivilegeTreeProvider contentRestricPrivProvider;
+
+  @Inject public static CourseDefaultsSettingsPrivilegeTreeProvider courseDefPrivProvider;
+
+  @Inject public static DateFormatSettingsPrivilegeTreeProvider datePrivProvider;
+
+  @Inject public static DiagnosticsSettingsPrivilegeTreeProvider diagnosticPrivProvider;
+
+  @Inject public static DynaCollectionService dynaCollectionService;
+
+  @Inject public static EncryptionService encryptionService;
+
+  @Inject public static EventService eventService;
+
+  @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
+
+  @Inject public static FileSystemService fileSystemService;
+
+  @Inject public static FreeTextService freeTextService;
 
   @Inject public static GoogleAnalyticsPrivilegeTreeProvider analyticsPrivProvider;
 
   @Inject public static GoogleApiSettingsPrivilegeTreeProvider googlePrivProvider;
 
-  @Inject public static SearchPrivilegeTreeProvider searchPrivProvider;
+  @Inject public static HarvesterSkipDrmSettingsPrivilegeTreeProvider harvesterPrivProvider;
 
-  @Inject public static LoginSettingsPrivilegeTreeProvider loginPrivProvider;
+  @Inject public static HtmlEditorSettingsPrivilegeTreeProvider htmlEditorPrivProvider;
+
+  @Inject public static InstitutionService institutionService;
+
+  @Inject public static ItemCommentService itemCommentService;
+
+  @Inject public static ItemDefinitionService itemDefinitionService;
+
+  @Inject public static ItemEditorService itemEditorService;
+
+  @Inject public static ItemHelper itemHelper;
+
+  @Inject public static ItemLinkService itemLinkService;
+
+  @Inject public static ItemSerializerService itemSerializerService;
+
+  @Inject public static ItemXsltService itemXsltService;
+
+  @Inject public static LanguageService languageService;
+
+  @Inject public static LanguageSettingsPrivilegeTreeProvider langPrivProvider;
+
+  @Inject public static LoggedInUsersPrivilegeTreeProvider liuPrivProvider;
 
   @Inject
   public static LoginNoticeEditorPrivilegeTreeProvider loginNoticeEditorPrivilegeTreeProvider;
 
-  @Inject
-  public static QuickContributeAndVersionSettingsPrivilegeTreeProvider quickContribPrivProvider;
-
-  @Inject public static ManualDataFixesPrivilegeTreeProvider manualFixPrivProvider;
-
-  @Inject public static OaiIdentifierSettingsPrivilegeTreeProvider oaiPrivProvider;
-
-  @Inject public static HarvesterSkipDrmSettingsPrivilegeTreeProvider harvesterPrivProvider;
-
-  @Inject public static ScheduledTasksPrivilegeTreeProvider scheduledPrivProvider;
-
-  @Inject public static MimeSearchPrivilegeTreeProvider mimePrivProvider;
-
-  @Inject public static DateFormatSettingsPrivilegeTreeProvider datePrivProvider;
-
-  @Inject public static ThemePrivilegeTreeProvider themePrivProvider;
-
-  @Inject public static HtmlEditorSettingsPrivilegeTreeProvider htmlEditorPrivProvider;
-
-  @Inject public static DiagnosticsSettingsPrivilegeTreeProvider diagnosticPrivProvider;
+  @Inject public static LoginSettingsPrivilegeTreeProvider loginPrivProvider;
 
   @Inject public static MailSettingsPrivilegeTreeProvider mailPrivProvider;
 
-  @Inject public static RemoteCachingPrivilegeTreeProvider remoteCachePrivProvider;
-
-  @Inject public static LoggedInUsersPrivilegeTreeProvider liuPrivProvider;
-
-  @Inject public static CourseDefaultsSettingsPrivilegeTreeProvider courseDefPrivProvider;
-
-  @Inject public static ContentRestrictionsPrivilegeTreeProvider contentRestricPrivProvider;
-
-  @Inject public static PortletWebService portletWebService;
-
-  @Inject public static InstitutionService institutionService;
-
-  @Inject public static EventService eventService;
-
-  @Inject public static UserSessionService userSessionService;
-
-  @Inject public static UserPreferenceService userPreferenceService;
-
-  @Inject public static UserService userService;
-
-  @Inject public static AuditLogService auditLogService;
-
-  @Inject public static LanguageService languageService;
-
-  @Inject public static ConfigurationService configService;
-
-  @Inject public static TreeRegistry treeRegistry;
-
-  @Inject public static SectionsController sectionsController;
-
-  @Inject public static TLEUserDao tleUserDao;
-
-  @Inject public static UrlService urlService;
+  @Inject public static ManualDataFixesPrivilegeTreeProvider manualFixPrivProvider;
 
   @Inject public static MenuService menuService;
 
-  @Inject public static ViewableItemFactory viewableItemFactory;
+  @Inject public static MimeSearchPrivilegeTreeProvider mimePrivProvider;
+
+  @Inject public static MimeTypeService mimeTypeService;
 
   @Inject public static ModerationService moderationService;
 
-  @Inject public static FreeTextService freeTextService;
+  @Inject public static OAuthService oAuthService;
 
-  @Inject public static PowerSearchService powerSearchService;
-
-  @Inject public static DynaCollectionService dynaCollectionService;
-
-  @Inject public static ItemSerializerService itemSerializerService;
-
-  @Inject public static ItemDefinitionService itemDefinitionService;
-
-  @Inject public static ItemLinkService itemLinkService;
-
-  @Inject public static TemplateFilter templateFilter;
+  @Inject public static OaiIdentifierSettingsPrivilegeTreeProvider oaiPrivProvider;
 
   @Inject public static ObjectMapperService objectMapperService;
 
-  @Inject public static AttachmentResourceService attachmentResourceService;
+  @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
 
-  @Inject public static ItemXsltService itemXsltService;
+  @Inject public static PortletWebService portletWebService;
 
-  @Inject public static ScriptingService scriptingService;
-
-  @Inject public static BasicFreemarkerFactory basicFreemarkerFactory;
-
-  @Inject public static ItemCommentService itemCommentService;
-
-  @Inject public static CALService calService;
-
-  @Inject public static ActivationService activationService;
-
-  @Inject public static CALWebServiceImpl calWebService;
-
-  @Inject public static ViewItemService viewItemService;
-
-  @Inject public static ItemHelper itemHelper;
-
-  @Inject public static FileSystemService fileSystemService;
+  @Inject public static PowerSearchService powerSearchService;
 
   @Inject public static Provider<IntegrationService> integrationService;
 
   @Inject public static Provider<SelectionService> selectionService;
 
+  @Inject
+  public static QuickContributeAndVersionSettingsPrivilegeTreeProvider quickContribPrivProvider;
+
+  @Inject public static RemoteCachingPrivilegeTreeProvider remoteCachePrivProvider;
+
   @Inject public static ReplicatedCacheService replicatedCacheService;
 
-  @Inject public static OAuthService oAuthService;
+  @Inject public static ScheduledTasksPrivilegeTreeProvider scheduledPrivProvider;
 
-  @Inject public static EncryptionService encryptionService;
+  @Inject public static ScriptingService scriptingService;
 
-  @Inject public static MimeTypeService mimeTypeService;
+  @Inject public static SearchPrivilegeTreeProvider searchPrivProvider;
 
-  @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
+  @Inject public static SectionsController sectionsController;
 
-  @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
+  @Inject public static ShortcutUrlsSettingsPrivilegeTreeProvider shortcutPrivProvider;
 
-  @Inject public static ItemEditorService itemEditorService;
+  @Inject public static TLEAclManager aclManager;
+
+  @Inject public static TLEUserDao tleUserDao;
+
+  @Inject public static TemplateFilter templateFilter;
+
+  @Inject public static ThemePrivilegeTreeProvider themePrivProvider;
+
+  @Inject public static TreeRegistry treeRegistry;
+
+  @Inject public static UrlService urlService;
+
+  @Inject public static UserPreferenceService userPreferenceService;
+
+  @Inject public static UserService userService;
+
+  @Inject public static UserSessionService userSessionService;
+
+  @Inject public static ViewItemService viewItemService;
 
   @Inject public static ViewItemUrlFactory viewItemUrlFactory;
 
-  @Inject public static AccessibilityModeService accessibilityModeService;
-
-  @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
-
-  @Inject public static BundleCache bundleCache;
+  @Inject public static ViewableItemFactory viewableItemFactory;
 
   @Override
   protected void configure() {
