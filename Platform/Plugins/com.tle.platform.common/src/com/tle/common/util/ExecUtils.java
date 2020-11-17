@@ -115,31 +115,33 @@ public final class ExecUtils {
     }
   }
 
-  public static ExecResult execWithTimeLimit(long maxDurationInSeconds, String[] options){
-    if(maxDurationInSeconds < 1L){
+  public static ExecResult execWithTimeLimit(long maxDurationInSeconds, String[] options) {
+    if (maxDurationInSeconds < 1L) {
       LOGGER.info("maxDurationInSeconds not set. Using a regular non-timed process.");
-      return exec(options,null,null);
+      return exec(options, null, null);
     }
-    return execWithTimeLimit(options,null,null, maxDurationInSeconds);
+    return execWithTimeLimit(options, null, null, maxDurationInSeconds);
   }
 
-  public static ExecResult execWithTimeLimit(String[] cmdarray, Map<String, String> additionalEnv, File dir, long durationInSeconds) {
+  public static ExecResult execWithTimeLimit(
+      String[] cmdarray, Map<String, String> additionalEnv, File dir, long durationInSeconds) {
     try {
       final Triple<Process, StreamReader, StreamReader> cp =
-        createProcess(cmdarray, additionalEnv, dir);
+          createProcess(cmdarray, additionalEnv, dir);
       LOGGER.info("Started timed process");
       final Process proc = cp.getFirst();
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
       proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
-      if(!stdErr.isFinished() || !stdOut.isFinished()){
+      if (!stdErr.isFinished() || !stdOut.isFinished()) {
         throw new InterruptedException();
       }
       LOGGER.info("Timed process finished"); // $NON-NLS-1$
       return new ExecResult(proc.exitValue(), stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
-      if(e instanceof InterruptedException){
-        throw new RuntimeException("Timer of " + durationInSeconds + " seconds on this operation was exceeded.");
+      if (e instanceof InterruptedException) {
+        throw new RuntimeException(
+            "Timer of " + durationInSeconds + " seconds on this operation was exceeded.");
       }
       throw new RuntimeException(e);
     }

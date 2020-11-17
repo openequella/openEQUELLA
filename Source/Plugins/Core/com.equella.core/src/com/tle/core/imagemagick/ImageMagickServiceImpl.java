@@ -37,6 +37,7 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +60,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
+
+  @Inject
+  @Named("imageMagick.seconds.before.cancel.pdf.thumbnailing")
+  private int pdfThumbnailTimeLimit;
 
   private String imageMagickPath;
   private File convertExe;
@@ -204,12 +209,30 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   @Override
   public Dimension getImageDimensions(File image) throws IOException {
-    ExecResult result =
-        ExecUtils.exec(
-            identifyExe.getAbsolutePath(),
-            "-format",
-            "%wx%h",
-            new String(image.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
+    ExecResult result;
+    if (image.getAbsolutePath().toLowerCase().contains(".pdf")) {
+      // use a timed process for pdfs so that thumbnailing
+      // for large or badly generated PDFs doesn't attempt indefinitely.
+      // Set in plugins/com.tle.core.imagemagick/config.properties
+      // imageMagick.seconds.before.cancel.pdf.thumbnailing as an integer.
+      // if not set, the default is 20 seconds. If set to 0, uses a regular non-timed process.
+      result =
+          ExecUtils.execWithTimeLimit(
+              pdfThumbnailTimeLimit,
+              new String[] {
+                identifyExe.getAbsolutePath(),
+                "-format",
+                "%wx%h",
+                new String(image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), "UTF-8")
+              });
+    } else {
+      result =
+          ExecUtils.exec(
+              identifyExe.getAbsolutePath(),
+              "-format",
+              "%wx%h",
+              new String(image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), "UTF-8"));
+    }
     result.ensureOk();
 
     Matcher m = Pattern.compile(".*?(\\d+)x(\\d+).*?", Pattern.DOTALL).matcher(result.getStdout());

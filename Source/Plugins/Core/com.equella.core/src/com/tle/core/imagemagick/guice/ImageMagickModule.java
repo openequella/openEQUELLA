@@ -32,6 +32,6 @@ public class ImageMagickModule extends PropertiesModule {
   @Override
   protected void configure() {
     bindProp("imageMagick.path");
-    bindInt("imageMagick.seconds.before.cancel.pdf.thumbnailing",20);
+    bindInt("imageMagick.seconds.before.cancel.pdf.thumbnailing", 20);
   }
 }
