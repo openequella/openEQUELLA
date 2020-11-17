@@ -136,7 +136,7 @@ public final class ExecUtils {
       if (!stdErr.isFinished() || !stdOut.isFinished()) {
         throw new InterruptedException();
       }
-      LOGGER.info("Timed process finished"); // $NON-NLS-1$
+      LOGGER.info("Timed process finished");
       return new ExecResult(proc.exitValue(), stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
       if (e instanceof InterruptedException) {
