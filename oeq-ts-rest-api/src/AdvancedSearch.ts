@@ -15,27 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
-import { UuidString } from './Common';
-
-/**
- * A summary representation of an Advanced search.
- */
-interface AdvancedSearchSummary {
-  /**
-   * The unique system identifier for this entity.
-   */
-  uuid: UuidString;
-  /**
-   * A human readable name for this advanced search in the default locale.
-   */
-  name: string;
-}
-
-const isAdvancedSearchSummary = (
-  instance: unknown
-): instance is AdvancedSearchSummary[] => is<AdvancedSearchSummary[]>(instance);
+import { BaseEntitySummary, isBaseEntitySummaryArray } from './Common';
 
 const ADV_SEARCH_SETTINGS_ROOT_PATH = '/settings/advancedsearch/';
 
@@ -44,5 +25,5 @@ const ADV_SEARCH_SETTINGS_ROOT_PATH = '/settings/advancedsearch/';
  */
 export const listAdvancedSearches = (
   apiBasePath: string
-): Promise<AdvancedSearchSummary[]> =>
-  GET(apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH, isAdvancedSearchSummary);
+): Promise<BaseEntitySummary[]> =>
+  GET(apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH, isBaseEntitySummaryArray);
