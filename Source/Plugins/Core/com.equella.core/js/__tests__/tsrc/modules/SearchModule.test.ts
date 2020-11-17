@@ -288,7 +288,7 @@ describe("SearchModule", () => {
     });
 
     it("excludes any undefined properties", () => {
-      //defaultSearchOptions contains an an undefined sortOrder property
+      //defaultSearchOptions contains an undefined sortOrder property
       expect(
         generateQueryStringFromSearchOptions(defaultSearchOptions)
       ).not.toContain("sortOrder");
