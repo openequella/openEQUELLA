@@ -18,29 +18,13 @@
 
 package com.tle.web.api.settings
 
-import com.tle.beans.entity.BaseEntityLabel
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.ApiHelper
+import com.tle.web.api.entity.BaseEntitySummary
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, Produces}
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
-
-/**
-  * A summary of key details of an Advanced Search Summary
-  * @param uuid the UUID for the specific Advanced Search
-  * @param name the default locale human readable name for this search
-  */
-case class AdvancedSearchSummary(uuid: String, name: String)
-
-object AdvancedSearchSummary {
-  private val powerSearchService = LegacyGuice.powerSearchService
-
-  def apply(bel: BaseEntityLabel): AdvancedSearchSummary =
-    AdvancedSearchSummary(uuid = bel.getUuid,
-                          name = ApiHelper.getEntityName(powerSearchService.getByUuid(bel.getUuid)))
-}
 
 /**
   * API for managing Advanced Searches (internally - and historically - known as Power Searches).
@@ -56,7 +40,7 @@ class AdvancedSearchResource {
     value = "List available Advanced Searches",
     notes =
       "This endpoint is used to retrieve available Advanced Searches and is secured by SEARCH_POWER_SEARCH",
-    response = classOf[AdvancedSearchSummary],
+    response = classOf[BaseEntitySummary],
     responseContainer = "List"
   )
   def getAll: Response =
@@ -64,8 +48,8 @@ class AdvancedSearchResource {
       .ok()
       .entity(
         powerSearchService
-          .listSearchable()
+          .enumerateSearchable()
           .asScala
-          .map(bel => AdvancedSearchSummary(bel)))
+          .map(be => BaseEntitySummary(be)))
       .build()
 }

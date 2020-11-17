@@ -31,6 +31,7 @@ import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.powersearch.PowerSearchDao;
+import com.tle.core.powersearch.PowerSearchPrivileges;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.powersearch.event.PowerSearchDeletionEvent;
 import com.tle.core.remoting.RemotePowerSearchService;
@@ -73,7 +74,7 @@ public class PowerSearchServiceImpl
   }
 
   @Override
-  @SecureOnReturn(priv = "SEARCH_POWER_SEARCH")
+  @SecureOnReturn(priv = PowerSearchPrivileges.SEARCH_POWER_SEARCH)
   public List<BaseEntityLabel> listSearchable() {
     return listAll();
   }
@@ -118,6 +119,12 @@ public class PowerSearchServiceImpl
   protected void processClone(EntityPack<PowerSearch> pack) {
     PowerSearch psearch = pack.getEntity();
     psearch.setItemdefs(new ArrayList<ItemDefinition>(psearch.getItemdefs()));
+  }
+
+  @Override
+  @SecureOnReturn(priv = PowerSearchPrivileges.SEARCH_POWER_SEARCH)
+  public List<PowerSearch> enumerateSearchable() {
+    return enumerate();
   }
 
   @Override
