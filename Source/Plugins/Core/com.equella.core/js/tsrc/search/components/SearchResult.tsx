@@ -327,7 +327,7 @@ export default function SearchResult({
                 <ResourceSelector
                   labelText={selectResourceStrings.attachment}
                   isStopPropagation
-                  onClick={nop} // todo: replace nop with an handler for selecting one attachment
+                  onClick={nop} // todo: replace nop with a handler for selecting one attachment
                 />
               </ListItemSecondaryAction>
             )}
@@ -347,7 +347,7 @@ export default function SearchResult({
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
-            onClick={nop} // todo: replace nop with an handler for selecting attachments
+            onClick={nop} // todo: replace nop with a handler for selecting attachments
           />
         </Grid>
       </Grid>
@@ -435,7 +435,7 @@ export default function SearchResult({
         <ResourceSelector
           labelText={selectResourceStrings.summaryPage}
           isStopPropagation
-          onClick={nop} // todo: replace nop with an handler for selecting summary page
+          onClick={nop} // todo: replace nop with a handler for selecting summary page
         />
       </Grid>
     </Grid>
