@@ -87,7 +87,7 @@ libraryDependencies ++= Seq(
     // Conflicts with CXF Core
     ExclusionRule(organization = "com.sun.xml.bind")
   ),
-  "com.miglayout"             % "miglayout-swing"          % "4.2",
+  "com.miglayout"             % "miglayout-swing"          % "5.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
   "com.rometools"             % "rome"                     % "1.15.0",
   "io.swagger"                % "swagger-core"             % SwaggerVersion,
