@@ -210,7 +210,8 @@ var CourseList = {
     var folderId = result.folderId;
     var newTree = result.updates['courselistajax'];
     var $newTree = $(newTree.html);
-    $tree.find('[data-folderid="' + folderId + '"]').replaceWith($newTree.find('[data-folderid="' + folderId + '"]'));
+    // Update the whole folder tree rather than a single node.
+    $tree.html($newTree.find(".foldertree"))
     $(document).trigger('equella_courselistupdate');
   }
 }

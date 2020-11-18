@@ -63,7 +63,6 @@ import com.tle.web.sections.js.generic.expression.ScriptVariable;
 import com.tle.web.sections.js.generic.function.AbstractCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.js.generic.function.ReloadFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
@@ -112,7 +111,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   private static final ExternallyDefinedFunction SETUP_FUNCTION =
       new ExternallyDefinedFunction(COURSE_LIST_CLASS, "setupDraggables", 4);
 
-  private static final String COURSE_LIST_AJAX = "courselistajax";
+  public static final String COURSE_LIST_AJAX = "courselistajax";
   @Inject private SelectionService selectionService;
   @Inject private ItemResolver itemResolver;
 
@@ -146,13 +145,14 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   @AjaxMethod
   public JSONResponseCallback reloadFolder(
       AjaxRenderContext context, CourseListFolderAjaxUpdateData controlData) {
-    CourseListFolderUpdateCallback callback =
-        new CourseListFolderUpdateCallback(context, controlData);
     // As new search UI does not include folder ID in the request,
     // we need to manually set the folder ID.
     if (controlData.getFolderId() == null) {
       controlData.setFolderId(getTargetFolderID(context));
     }
+
+    CourseListFolderUpdateCallback callback =
+        new CourseListFolderUpdateCallback(context, controlData);
     context.addAjaxDivs(COURSE_LIST_AJAX);
     return callback;
   }
@@ -267,7 +267,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
     saveButton.addClickStatements(events.getNamedHandler("save"));
     cancelButton.addClickStatements(events.getNamedHandler("cancel"));
 
-    versionDialog.setOkCallback(new ReloadFunction(false));
+    // Call 'CourseListFolderUpdateCallback.getReloadFunction' again when the OK button is clicked,
+    // in order to update the course list by a ajax request.
+    versionDialog.setOkCallback(
+        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder")));
   }
 
   public SectionInfo createSearchForward(SectionInfo info) {
