@@ -221,7 +221,7 @@ export default function SearchResult({
   };
 
   const handleSelectResource = (selectResourceInfo: SelectResourceProps) => {
-    selectResource(selectResourceInfo).catch((e) => handleError(e));
+    selectResource(selectResourceInfo).catch((error) => handleError(error));
   };
 
   const generateItemMetadata = () => {

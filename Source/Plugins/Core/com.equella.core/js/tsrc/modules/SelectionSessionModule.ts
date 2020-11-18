@@ -130,9 +130,7 @@ const submitSelection = <T>(
   path: string,
   data: SelectionSessionPostData,
   callback: (result: T) => void
-) => {
-  Axios.post(path, data).then(({ data }) => callback(data));
-};
+): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
 /**
  * Build a Selection Session specific ItemSummary Link.
@@ -190,7 +188,7 @@ const selectResourceForCourseList = (
   selectionSessionInfo: SelectionSessionInfo,
   itemKey: string,
   attachmentUUIDs: string[] = []
-) => {
+): Promise<void> => {
   // The first element is the event handler name and the rest are parameters passed to the handler.
   // The order of parameters must be exactly same as the order defined in server.
   const serverSideEvent: (string | null)[] =
@@ -214,7 +212,7 @@ const selectResourceForCourseList = (
     ...getBasicPostData(selectionSessionInfo),
   };
 
-  submitSelection(
+  return submitSelection(
     `${submitBaseUrl}/access/course/searching.do`,
     postData,
     CourseList.updateCourseList
@@ -231,7 +229,7 @@ const selectResourceForNonCourseList = (
   itemKey: string,
   isAllAttachments: boolean,
   attachmentUUIDs: string[]
-) => {
+): Promise<void> => {
   const postData: SelectionSessionPostData =
     attachmentUUIDs.length > 0
       ? {
@@ -257,7 +255,7 @@ const selectResourceForNonCourseList = (
       ? `${submitBaseUrl}/items/${itemKey}/`
       : `${submitBaseUrl}/selectoradd/searching.do`;
 
-  submitSelection<LegacyContentResponse>(
+  return submitSelection<LegacyContentResponse>(
     submitFullUrl,
     postData,
     updateSelectionSummary
@@ -271,20 +269,17 @@ const selectResourceForNonCourseList = (
  * @param isAllAttachments True if the event is selecting all attachments
  * @param attachments A list of UUIDs of selected attachments
  */
-export const selectResource = async ({
+export const selectResource = ({
   selectionSessionData,
   itemKey,
   isAllAttachments = false,
   attachments = [],
-}: SelectResourceProps) => {
-  if (selectionSessionData.layout === "coursesearch") {
-    selectResourceForCourseList(selectionSessionData, itemKey, attachments);
-  } else {
-    selectResourceForNonCourseList(
-      selectionSessionData,
-      itemKey,
-      isAllAttachments,
-      attachments
-    );
-  }
-};
+}: SelectResourceProps): Promise<void> =>
+  selectionSessionData.layout === "coursesearch"
+    ? selectResourceForCourseList(selectionSessionData, itemKey, attachments)
+    : selectResourceForNonCourseList(
+        selectionSessionData,
+        itemKey,
+        isAllAttachments,
+        attachments
+      );
