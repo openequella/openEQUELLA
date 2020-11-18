@@ -50,7 +50,11 @@ import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import { buildSelectionSessionItemSummaryLink } from "../../modules/SelectionSessionModule";
+import {
+  buildSelectionSessionItemSummaryLink,
+  selectResource,
+  SelectResourceProps,
+} from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -147,7 +151,7 @@ export default function SearchResult({
   }
   const renderData = getRenderData();
   const selectionSessionData = renderData?.selectionSessionInfo;
-  const nop = () => {}; // todo: remove this in next PR.
+  const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
 
   const [attachExpanded, setAttachExpanded] = useState(
@@ -214,6 +218,10 @@ export default function SearchResult({
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
     setAttachExpanded(!attachExpanded);
+  };
+
+  const handleSelectResource = (selectResourceInfo: SelectResourceProps) => {
+    selectResource(selectResourceInfo).catch((e) => handleError(e));
   };
 
   const generateItemMetadata = () => {
@@ -327,7 +335,13 @@ export default function SearchResult({
                 <ResourceSelector
                   labelText={selectResourceStrings.attachment}
                   isStopPropagation
-                  onClick={nop} // todo: replace nop with an handler for selecting one attachment
+                  onClick={() => {
+                    handleSelectResource({
+                      selectionSessionData,
+                      itemKey,
+                      attachments: [id],
+                    });
+                  }}
                 />
               </ListItemSecondaryAction>
             )}
@@ -347,7 +361,17 @@ export default function SearchResult({
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
-            onClick={nop} // todo: replace nop with an handler for selecting attachments
+            onClick={() => {
+              const attachments = attachmentsWithViewerDetails.map(
+                ({ attachment }) => attachment.id
+              );
+              handleSelectResource({
+                selectionSessionData,
+                itemKey,
+                isAllAttachments: true,
+                attachments,
+              });
+            }}
           />
         </Grid>
       </Grid>
@@ -435,7 +459,12 @@ export default function SearchResult({
         <ResourceSelector
           labelText={selectResourceStrings.summaryPage}
           isStopPropagation
-          onClick={nop} // todo: replace nop with an handler for selecting summary page
+          onClick={() => {
+            handleSelectResource({
+              selectionSessionData,
+              itemKey,
+            });
+          }}
         />
       </Grid>
     </Grid>
