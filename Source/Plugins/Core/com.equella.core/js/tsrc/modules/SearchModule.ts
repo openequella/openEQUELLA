@@ -288,13 +288,13 @@ const rehydrateCollections = async (
   options: DehydratedSearchOptions
 ): Promise<Collection[] | undefined> =>
   options.collections
-    ? await getCollectionDetails(options.collections.map((c) => c.uuid))
+    ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
     : undefined;
 
 const rehydrateOwner = async (
   options: DehydratedSearchOptions
 ): Promise<OEQ.UserQuery.UserDetails | undefined> =>
-  options.owner ? await getUserDetails(options.owner.id) : undefined;
+  options.owner ? await findUser(options.owner.id) : undefined;
 
 /**
  * A function that takes a JSON representation of a SearchOptions object, and converts it into an actual SearchOptions object.
@@ -366,7 +366,7 @@ export const searchItems = ({
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
 
-const getCollectionDetails = async (
+const findCollectionsByUuid = async (
   collectionUuids: string[]
 ): Promise<Collection[] | undefined> => {
   const collectionList = await collectionListSummary([
@@ -378,7 +378,7 @@ const getCollectionDetails = async (
   return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
 };
 
-const getUserDetails = async (
+const findUser = async (
   userId: string
 ): Promise<OEQ.UserQuery.UserDetails | undefined> => {
   const userDetails = await resolveUsers([userId]);
@@ -439,11 +439,13 @@ export const legacyQueryStringToSearchOptions = async (
     )(rangeType.toLowerCase() as RangeType);
   };
 
-  const getCollections = async (collectionId: string | undefined) => {
-    if (!collectionId) return defaultSearchOptions.collections;
+  const parseCollectionUuid = async (
+    collectionUuid: string | undefined
+  ): Promise<Collection[] | undefined> => {
+    if (!collectionUuid) return defaultSearchOptions.collections;
     const collectionDetails:
       | Collection[]
-      | undefined = await getCollectionDetails([collectionId]);
+      | undefined = await findCollectionsByUuid([collectionUuid]);
 
     return typeof collectionDetails !== "undefined" &&
       collectionDetails.length > 0
@@ -454,9 +456,9 @@ export const legacyQueryStringToSearchOptions = async (
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
-    collections: await getCollections(collectionId),
+    collections: await parseCollectionUuid(collectionId),
     query: getQueryParam("q") ?? defaultSearchOptions.query,
-    owner: ownerId ? await getUserDetails(ownerId) : defaultSearchOptions.owner,
+    owner: ownerId ? await findUser(ownerId) : defaultSearchOptions.owner,
     lastModifiedDateRange:
       getLastModifiedDateRange(
         dateRange as RangeType,
