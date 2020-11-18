@@ -34,40 +34,41 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
     super(Schema.class);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<String> getExportSchemaTypes() {
-    return getHibernateTemplate()
-        .find(
-            "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t WHERE s.institution = ? ORDER BY t.type",
-            CurrentInstitution.get());
+    return (List<String>)
+        getHibernateTemplate()
+            .find(
+                "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t WHERE s.institution = ?0 ORDER BY t.type",
+                CurrentInstitution.get());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<String> getImportSchemaTypes(long id) {
-    return getHibernateTemplate()
-        .find(
-            "select distinct t.type from Schema s inner join s.impTransforms as t where s.id = ? order by t.type",
-            id);
+    return (List<String>)
+        getHibernateTemplate()
+            .find(
+                "select distinct t.type from Schema s inner join s.impTransforms as t where s.id = ?0 order by t.type",
+                id);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<Schema> getSchemasForExportSchemaType(String type) {
-    return getHibernateTemplate()
-        .find(
-            "SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ? AND LOWER(t.type) = ?",
-            new Object[] {CurrentInstitution.get(), type.toLowerCase()});
+    return (List<Schema>)
+        getHibernateTemplate()
+            .find(
+                "SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ?0 AND LOWER(t.type) = ?1",
+                new Object[] {CurrentInstitution.get(), type.toLowerCase()});
   }
 
   @Override
-  @SuppressWarnings({"unchecked", "nls"})
+  @SuppressWarnings("nls")
   public List<String> getAllCitations() {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "select distinct c.name from Schema s join s.citations c where s.institution = :inst",
-            "inst",
-            CurrentInstitution.get());
+    return (List<String>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "select distinct c.name from Schema s join s.citations c where s.institution = :inst",
+                "inst",
+                CurrentInstitution.get());
   }
 }

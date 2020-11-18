@@ -43,7 +43,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Nicholas Read */
@@ -106,10 +106,10 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
    * @see com.tle.core.dao.HierarchyDao#enumerateAll()
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopic> enumerateAll() {
-    return getHibernateTemplate()
-        .find("from HierarchyTopic where institution = ?", CurrentInstitution.get());
+    return (List<HierarchyTopic>)
+        getHibernateTemplate()
+            .find("from HierarchyTopic where institution = ?0", CurrentInstitution.get());
   }
 
   /*
@@ -163,24 +163,24 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
    * .beans.entity.PowerSearch)
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopic> getTopicsReferencingPowerSearch(PowerSearch powerSearch) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from HierarchyTopic t where advancedSearch = :powerSearch",
-            "powerSearch",
-            powerSearch);
+    return (List<HierarchyTopic>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from HierarchyTopic t where advancedSearch = :powerSearch",
+                "powerSearch",
+                powerSearch);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public HierarchyTopic findByUuid(String uuid, Institution institution) {
     Preconditions.checkNotNull(uuid);
     List<HierarchyTopic> topics =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopic t WHERE uuid = ? AND institution = ?",
-                new Object[] {uuid, institution});
+        (List<HierarchyTopic>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopic t WHERE uuid = ?0 AND institution = ?1",
+                    new Object[] {uuid, institution});
     if (topics.size() == 0) {
       return null;
     }
@@ -188,13 +188,13 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void removeReferencesToItem(Item item, long id) {
     List<HierarchyTopic> topics =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopic t WHERE ? in elements(keyResources) AND t.id = ?",
-                new Object[] {item, id});
+        (List<HierarchyTopic>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopic t WHERE ?0 in elements(keyResources) AND t.id = ?1",
+                    new Object[] {item, id});
     for (HierarchyTopic topic : topics) {
       List<Item> keyResources = topic.getKeyResources();
       Iterator<Item> iter = keyResources.iterator();
@@ -209,11 +209,11 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void removeReferencesToItem(Item item) {
     List<HierarchyTopic> topics =
-        getHibernateTemplate()
-            .find("from HierarchyTopic t WHERE ? in elements(keyResources)", item);
+        (List<HierarchyTopic>)
+            getHibernateTemplate()
+                .find("from HierarchyTopic t WHERE ?0 in elements(keyResources)", item);
     for (HierarchyTopic topic : topics) {
       List<Item> keyResources = topic.getKeyResources();
       Iterator<Item> iter = keyResources.iterator();
@@ -231,8 +231,8 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   public void removeDynamicKeyResource(String itemUuid, int itemVersion, Institution institution) {
     getHibernateTemplate()
         .bulkUpdate(
-            "delete from HierarchyTopicDynamicKeyResources WHERE uuid = ? AND version =? "
-                + "AND institution = ?",
+            "delete from HierarchyTopicDynamicKeyResources WHERE uuid = ?0 AND version =?1 "
+                + "AND institution = ?2",
             new Object[] {itemUuid, itemVersion, institution});
   }
 
@@ -241,7 +241,7 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
     getHibernateTemplate()
         .bulkUpdate(
             "delete from HierarchyTopicDynamicKeyResources WHERE "
-                + "dynamicHierarchyId = ? AND uuid = ? AND version =?",
+                + "dynamicHierarchyId = ?0 AND uuid = ?1 AND version =?2",
             new Object[] {topicId, itemUuid, itemVersion});
   }
 
@@ -259,14 +259,14 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
       String dynamicHierarchyId, Institution institution) {
     List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopicDynamicKeyResources t WHERE dynamicHierarchyId = ? AND institution = ?",
-                new Object[] {dynamicHierarchyId, institution});
+        (List<HierarchyTopicDynamicKeyResources>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopicDynamicKeyResources t WHERE dynamicHierarchyId = ?0 AND institution = ?1",
+                    new Object[] {dynamicHierarchyId, institution});
     if (dynamicKeyResources.size() == 0) {
       return null;
     }
@@ -274,15 +274,15 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
       String dynamicHierarchyId, String itemUuid, int itemVersion, Institution institution) {
     List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopicDynamicKeyResources t WHERE dynamicHierarchyId = ? AND uuid = ? "
-                    + "AND version =? AND institution = ?",
-                new Object[] {dynamicHierarchyId, itemUuid, itemVersion, institution});
+        (List<HierarchyTopicDynamicKeyResources>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopicDynamicKeyResources t WHERE dynamicHierarchyId = ?0 AND uuid = ?1 "
+                        + "AND version =?2 AND institution = ?3",
+                    new Object[] {dynamicHierarchyId, itemUuid, itemVersion, institution});
     if (dynamicKeyResources.size() == 0) {
       return null;
     }
@@ -290,15 +290,15 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
       String itemUuid, int itemVersion, Institution institution) {
 
     List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopicDynamicKeyResources t WHERE uuid = ? AND version =? AND  institution = ?",
-                new Object[] {itemUuid, itemVersion, institution});
+        (List<HierarchyTopicDynamicKeyResources>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopicDynamicKeyResources t WHERE uuid = ?0 AND version =?1 AND  institution = ?2",
+                    new Object[] {itemUuid, itemVersion, institution});
     if (dynamicKeyResources.size() == 0) {
       return null;
     }
@@ -306,23 +306,23 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopicDynamicKeyResources> getAllDynamicKeyResources(
       Institution institution) {
     List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-        getHibernateTemplate()
-            .find(
-                "from HierarchyTopicDynamicKeyResources t WHERE institution =?",
-                new Object[] {institution});
+        (List<HierarchyTopicDynamicKeyResources>)
+            getHibernateTemplate()
+                .find(
+                    "from HierarchyTopicDynamicKeyResources t WHERE institution =?0",
+                    new Object[] {institution});
     return dynamicKeyResources;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<HierarchyTopic> findKeyResource(Item item) {
     List<HierarchyTopic> topics =
-        getHibernateTemplate()
-            .find("from HierarchyTopic t WHERE ? in elements(keyResources)", item);
+        (List<HierarchyTopic>)
+            getHibernateTemplate()
+                .find("from HierarchyTopic t WHERE ?0 in elements(keyResources)", item);
     return topics;
   }
 }

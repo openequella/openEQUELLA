@@ -30,6 +30,9 @@ import io.doolse.simpledba.jdbc._
 import scala.collection.JavaConverters._
 
 object AclChecks {
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
   private val OBJECT_PRIORITY_DB_FORMAT =
     f"${SecurityConstants.PRIORITY_OBJECT_INSTANCE + SecurityConstants.PRIORITY_MAX}%04d"

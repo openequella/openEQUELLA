@@ -32,9 +32,10 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.inject.Singleton;
 import org.apache.log4j.Logger;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.SQLServerDialect;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Table;
 
@@ -63,7 +64,8 @@ public class ConvertVarcharDatabaseMigration extends AbstractHibernateSchemaMigr
   @Override
   protected void executeDataMigration(
       final HibernateMigrationHelper helper, final MigrationResult result, Session session) {
-    final Dialect dialect = helper.getFactory().getDialect();
+    final Dialect dialect =
+        ((SessionFactoryImplementor) helper.getFactory()).getJdbcServices().getDialect();
 
     if (dialect instanceof SQLServerDialect) {
       session.doWork(

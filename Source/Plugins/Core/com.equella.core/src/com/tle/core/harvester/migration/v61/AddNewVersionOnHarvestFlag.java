@@ -32,8 +32,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 /** @author larry */
 @Bind
@@ -52,7 +52,7 @@ public class AddNewVersionOnHarvestFlag extends AbstractHibernateSchemaMigration
   protected void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     session
-        .createQuery("UPDATE HarvesterProfile SET newVersionOnHarvest = ?")
+        .createQuery("UPDATE HarvesterProfile SET newVersionOnHarvest = ?0")
         .setBoolean(0, true)
         .executeUpdate();
   }

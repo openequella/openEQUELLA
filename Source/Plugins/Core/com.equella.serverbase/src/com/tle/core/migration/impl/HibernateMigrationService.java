@@ -50,10 +50,10 @@ import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 @Bind
 @Singleton
@@ -150,9 +150,9 @@ public class HibernateMigrationService {
     return migrations;
   }
 
-  @SuppressWarnings("unchecked")
   public MigrationsToRun findMigrationsToRun(boolean system) {
-    List<MigrationLog> logEntries = getHibernateTemplate().find("from MigrationLog");
+    List<MigrationLog> logEntries =
+        (List<MigrationLog>) getHibernateTemplate().find("from MigrationLog");
     Map<String, MigrationLog> statuses = new HashMap<String, MigrationLog>();
     for (MigrationLog logEntry : logEntries) {
       statuses.put(logEntry.getMigrationId(), logEntry);
@@ -336,7 +336,7 @@ public class HibernateMigrationService {
     Session session = openSession();
     try {
       String uuid = UUID.randomUUID().toString();
-      session.createQuery("update SchemaId set uuid = ?").setParameter(0, uuid).executeUpdate();
+      session.createQuery("update SchemaId set uuid = ?0").setParameter(0, uuid).executeUpdate();
       return uuid;
     } catch (Exception e) {
       return null;

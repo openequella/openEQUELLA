@@ -21,6 +21,7 @@ package com.tle.core.hibernate.impl;
 import com.google.inject.Provider;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
+import org.springframework.transaction.interceptor.TransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
@@ -56,5 +57,10 @@ public class TLETransactionInterceptor extends TransactionInterceptor {
       transactionManager.setSystem(system);
     }
     return transactionManager;
+  }
+
+  @Override
+  protected PlatformTransactionManager determineTransactionManager(TransactionAttribute txAttr) {
+    return getTransactionManager();
   }
 }

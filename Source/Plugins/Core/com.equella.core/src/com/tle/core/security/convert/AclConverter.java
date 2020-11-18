@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,6 +149,10 @@ public class AclConverter extends AbstractConverter<AclConverter.AclPostReadMigr
       newExpr.setId(expr.getId());
       newEntry.setExpression(newExpr);
       newAcls.add(newEntry);
+      // We initialize the expr lazy loaded fields before unlinking, otherwise, we hit a blocking
+      // LazyInitializationException: could not initialize proxy
+      // [com.tle.beans.security.AccessExpression#498] - no Session
+      Hibernate.initialize(expr.getExpressionParts());
       aclDao.unlinkFromSession(expr);
       aclDao.unlinkFromSession(entry);
       message.incrementCurrent();

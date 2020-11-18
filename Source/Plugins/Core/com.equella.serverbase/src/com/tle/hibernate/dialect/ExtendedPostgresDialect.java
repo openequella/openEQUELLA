@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.hibernate.dialect.PostgreSQLDialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.dialect.unique.UniqueDelegate;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
@@ -48,9 +49,11 @@ public class ExtendedPostgresDialect extends PostgreSQLDialect implements Extend
           new ImmutableHibernateXStreamType(Types.CLOB), new String[] {"xstream_immutable"});
   private static final CustomType TYPE_CSV =
       new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
+  private final UniqueDelegate uniqueDelegate;
 
   public ExtendedPostgresDialect() {
     super();
+    uniqueDelegate = new InPlaceUniqueDelegate(this);
     registerColumnType(Types.BLOB, "bytea");
   }
 
@@ -211,5 +214,10 @@ public class ExtendedPostgresDialect extends PostgreSQLDialect implements Extend
       }
     }
     return createIndexStatements;
+  }
+
+  @Override
+  public UniqueDelegate getUniqueDelegate() {
+    return uniqueDelegate;
   }
 }

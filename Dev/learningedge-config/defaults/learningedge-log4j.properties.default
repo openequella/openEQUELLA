@@ -10,3 +10,15 @@ log4j.appender.CONSOLE.Target=System.out
 log4j.appender.CONSOLE.Threshold=DEBUG
 log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
 log4j.appender.CONSOLE.layout.ConversionPattern=%d{ABSOLUTE} %-5p [%c{1}] %m%n
+
+# Note: https://github.com/openequella/openEQUELLA/issues/2509
+# Criteria deprecation warning suppression
+log4j.appender.CONSOLE.filter.1=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.CONSOLE.filter.1.StringToMatch=HHH90000022
+log4j.appender.CONSOLE.filter.1.AcceptOnMatch=false
+
+# Note: https://github.com/openequella/openEQUELLA/issues/2509
+# Generator warning suppression
+log4j.appender.CONSOLE.filter.2=org.apache.log4j.varia.StringMatchFilter
+log4j.appender.CONSOLE.filter.2.StringToMatch=HHH90000014
+log4j.appender.CONSOLE.filter.2.AcceptOnMatch=false

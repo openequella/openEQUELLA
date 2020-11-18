@@ -44,7 +44,7 @@ import org.hibernate.Session;
 import org.hibernate.transform.BasicTransformerAdapter;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,11 +74,11 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
       };
 
   private static final String ROOT_TERMS_QUERY =
-      "FROM Term t WHERE t.taxonomy = ? AND t.parent IS NULL ORDER BY t.left ASC";
+      "FROM Term t WHERE t.taxonomy = ?0 AND t.parent IS NULL ORDER BY t.left ASC";
   private static final String ROOT_TERM_RESULTS_QUERY = TERM_RESULT_PROJECTION + ROOT_TERMS_QUERY;
 
   private static final String CHILD_TERMS_QUERY =
-      "FROM Term t WHERE t.parent = ? ORDER BY t.left ASC";
+      "FROM Term t WHERE t.parent = ?0 ORDER BY t.left ASC";
   private static final String CHILD_TERM_RESULTS_QUERY = TERM_RESULT_PROJECTION + CHILD_TERMS_QUERY;
 
   private static final PluginResourceHelper resources =
@@ -91,17 +91,19 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
   @Override
   public String getDataForTerm(Term term, String key) {
     List<String> results =
-        getHibernateTemplate()
-            .find(
-                "SELECT ta.value FROM TermAttributes ta WHERE ta.term = ? AND ta.key = ?",
-                new Object[] {term, key});
+        (List<String>)
+            getHibernateTemplate()
+                .find(
+                    "SELECT ta.value FROM TermAttributes ta WHERE ta.term = ?0 AND ta.key = ?1",
+                    new Object[] {term, key});
     return Check.isEmpty(results) ? null : results.get(0);
   }
 
   @Override
   public List<Term> getAllTermsInOrder(Taxonomy taxonomy) {
-    return getHibernateTemplate()
-        .find("FROM Term t WHERE t.taxonomy = ? ORDER BY t.left", new Object[] {taxonomy});
+    return (List<Term>)
+        getHibernateTemplate()
+            .find("FROM Term t WHERE t.taxonomy = ?0 ORDER BY t.left", new Object[] {taxonomy});
   }
 
   @Override
@@ -255,13 +257,13 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
 
   @Override
   public List<Term> getRootTerms(Taxonomy taxonomy) {
-    return getHibernateTemplate().find(ROOT_TERMS_QUERY, taxonomy);
+    return (List<Term>) getHibernateTemplate().find(ROOT_TERMS_QUERY, taxonomy);
   }
 
   @Override
   public List<TermResult> getRootTermResults(final Taxonomy taxonomy) {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             session -> {
               Query q = session.createQuery(ROOT_TERM_RESULTS_QUERY);
               q.setParameter(0, taxonomy);
@@ -273,7 +275,7 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
   @Override
   public List<String> getRootTermValues(final Taxonomy taxonomy) {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             session -> {
               Query q = session.createQuery("SELECT value " + ROOT_TERMS_QUERY);
               q.setParameter(0, taxonomy);
@@ -283,13 +285,13 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
 
   @Override
   public List<Term> getChildTerms(Term parentTerm) {
-    return getHibernateTemplate().find(CHILD_TERMS_QUERY, parentTerm);
+    return (List<Term>) getHibernateTemplate().find(CHILD_TERMS_QUERY, parentTerm);
   }
 
   @Override
   public List<TermResult> getChildTermResults(final Term parentTerm) {
     return getHibernateTemplate()
-        .executeFind(
+        .execute(
             session -> {
               Query q = session.createQuery(CHILD_TERM_RESULTS_QUERY);
               q.setParameter(0, parentTerm);
@@ -300,7 +302,8 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
 
   @Override
   public List<String> getChildTermValues(Term parentTerm) {
-    return getHibernateTemplate().find("SELECT value " + CHILD_TERMS_QUERY, parentTerm);
+    return (List<String>)
+        getHibernateTemplate().find("SELECT value " + CHILD_TERMS_QUERY, parentTerm);
   }
 
   @Override

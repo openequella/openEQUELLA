@@ -24,13 +24,12 @@ import com.tle.common.userscripts.entity.UserScript;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.userscripts.dao.UserScriptsDao;
-import java.sql.SQLException;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 @Bind(UserScriptsDao.class)
 @Singleton
@@ -49,8 +48,7 @@ public class UserScriptsDaoImpl extends AbstractEntityDaoImpl<UserScript>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     String query =
                         "From UserScript WHERE scriptType LIKE :type AND disabled = :disabled AND institution = :inst";
                     final Query q =
@@ -71,8 +69,7 @@ public class UserScriptsDaoImpl extends AbstractEntityDaoImpl<UserScript>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     String query =
                         "From UserScript WHERE moduleName = :moduleName AND institution = :inst AND scriptType LIKE :type AND id != :id";
                     final Query q =

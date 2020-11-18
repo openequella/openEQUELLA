@@ -43,13 +43,13 @@ public class PowerSearchDaoImpl extends AbstractEntityDaoImpl<PowerSearch>
    * @see com.tle.core.dao.PowerSearchDao#enumerateItemdefIds(long)
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<Long> enumerateItemdefIds(long powerSearchId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "select i.id from PowerSearch p inner join p.itemdefs i where p.id = :id",
-            "id",
-            powerSearchId);
+    return (List<Long>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "select i.id from PowerSearch p inner join p.itemdefs i where p.id = :id",
+                "id",
+                powerSearchId);
   }
 
   /*
@@ -95,13 +95,13 @@ public class PowerSearchDaoImpl extends AbstractEntityDaoImpl<PowerSearch>
    * (com.tle.beans.entity.itemdef.ItemDefinition)
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<PowerSearch> getPowerSearchesReferencingItemDefinition(
       ItemDefinition itemDefinition) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from PowerSearch p where :itemDefinition in elements(p.itemdefs)",
-            "itemDefinition",
-            itemDefinition);
+    return (List<PowerSearch>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from PowerSearch p where :itemDefinition in elements(p.itemdefs)",
+                "itemDefinition",
+                itemDefinition);
   }
 }

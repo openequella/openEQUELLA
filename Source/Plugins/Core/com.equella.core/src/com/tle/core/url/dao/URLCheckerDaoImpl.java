@@ -32,7 +32,6 @@ import com.tle.core.services.impl.SimpleMessage;
 import com.tle.core.services.impl.Task;
 import com.tle.core.url.URLCheckerPolicy;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +44,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 @Singleton
@@ -77,8 +76,7 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long>
                 .execute(
                     new HibernateCallback() {
                       @Override
-                      public Object doInHibernate(Session session)
-                          throws HibernateException, SQLException {
+                      public Object doInHibernate(Session session) throws HibernateException {
                         if (forImport) {
                           ReferencedURL rurl =
                               loadOrCreate(session, url, httpUrl, forImport, persist);
@@ -151,8 +149,7 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Criteria c = session.createCriteria(ReferencedURL.class);
 
                     policy.addRequiresCheckingCriteria(c);
@@ -233,8 +230,7 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     if (getFromDb(session, url) != null) {
                       return false;
                     } else {

@@ -65,22 +65,23 @@ public class OAuthTokenDaoImpl extends GenericInstitionalDaoImpl<OAuthToken, Lon
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   @Transactional
   public List<OAuthToken> enumerateAll() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                final Query query =
-                    session.createQuery("from OAuthToken where client.institution = :institution");
-                query.setParameter("institution", CurrentInstitution.get());
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+    return (List<OAuthToken>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    final Query query =
+                        session.createQuery(
+                            "from OAuthToken where client.institution = :institution");
+                    query.setParameter("institution", CurrentInstitution.get());
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   @Override

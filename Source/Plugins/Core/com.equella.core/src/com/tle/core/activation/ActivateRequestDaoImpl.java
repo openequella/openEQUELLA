@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,22 +59,24 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
   @Transactional
   public List<ActivateRequest> getAllRequestsForDateRange(
       String type, Item item, Date start, Date end) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest r"
-                + " where r.type = :type and r.item = :item and not (r.from > :until or r.until < :from)",
-            new String[] {"type", "item", "from", "until"},
-            new Object[] {type, item, start, end});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest r"
+                    + " where r.type = :type and r.item = :item and not (r.from > :until or r.until < :from)",
+                new String[] {"type", "item", "from", "until"},
+                new Object[] {type, item, start, end});
   }
 
   @Override
   @Transactional
   public List<ActivateRequest> getAllRequests(String type, Item item) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item = :item",
-            new String[] {"type", "item"},
-            new Object[] {type, item});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item = :item",
+                new String[] {"type", "item"},
+                new Object[] {type, item});
   }
 
   @Override
@@ -89,33 +91,36 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     if (items.isEmpty()) {
       return Collections.emptyList();
     }
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item in (:items)",
-            new String[] {"type", "items"},
-            new Object[] {type, items});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item in (:items)",
+                new String[] {"type", "items"},
+                new Object[] {type, items});
   }
 
   @Override
   @Transactional
   public List<ActivateRequest> getAllActiveRequests(String type, Item item) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item = :item and status = :status",
-            new String[] {"type", "item", "status"},
-            new Object[] {type, item, ActivateRequest.TYPE_ACTIVE});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item = :item and status = :status",
+                new String[] {"type", "item", "status"},
+                new Object[] {type, item, ActivateRequest.TYPE_ACTIVE});
   }
 
   @Override
   @Transactional
   public List<ActivateRequest> getAllActiveAndPendingRequests(String type, String attachmentUuid) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest req where req.type = :type and req.attachment = :attachmentUuid and req.status != :status and req.item.institution = :institution",
-            new String[] {"type", "attachmentUuid", "status", "institution"},
-            new Object[] {
-              type, attachmentUuid, ActivateRequest.TYPE_INACTIVE, CurrentInstitution.get()
-            });
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest req where req.type = :type and req.attachment = :attachmentUuid and req.status != :status and req.item.institution = :institution",
+                new String[] {"type", "attachmentUuid", "status", "institution"},
+                new Object[] {
+                  type, attachmentUuid, ActivateRequest.TYPE_INACTIVE, CurrentInstitution.get()
+                });
   }
 
   @Override
@@ -125,11 +130,12 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
       return Collections.emptyList();
     }
 
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item in (:items) and status = :status",
-            new String[] {"type", "items", "status"},
-            new Object[] {type, items, ActivateRequest.TYPE_ACTIVE});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item in (:items) and status = :status",
+                new String[] {"type", "items", "status"},
+                new Object[] {type, items, ActivateRequest.TYPE_ACTIVE});
   }
 
   @Override
@@ -140,31 +146,36 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
       return Collections.emptyList();
     }
 
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item in (:items) and status in (:statuses)",
-            new String[] {"type", "items", "statuses"},
-            new Object[] {
-              type, items, new Integer[] {ActivateRequest.TYPE_ACTIVE, ActivateRequest.TYPE_PENDING}
-            });
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item in (:items) and status in (:statuses)",
+                new String[] {"type", "items", "statuses"},
+                new Object[] {
+                  type,
+                  items,
+                  new Integer[] {ActivateRequest.TYPE_ACTIVE, ActivateRequest.TYPE_PENDING}
+                });
   }
 
   @Override
   @Transactional
   public List<ActivateRequest> getAllRequestsForCourse(CourseInfo course) {
-    return getHibernateTemplate()
-        .findByNamedParam("from ActivateRequest where course = :course", "course", course);
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam("from ActivateRequest where course = :course", "course", course);
   }
 
   @Override
   @Transactional
   public List<ActivateRequest> getAllRequestsByStatus(int status) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest ar where ar.status = :status and "
-                + " ar.item.institution = :institution",
-            new String[] {"status", "institution"},
-            new Object[] {status, CurrentInstitution.get()});
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest ar where ar.status = :status and "
+                    + " ar.item.institution = :institution",
+                new String[] {"status", "institution"},
+                new Object[] {status, CurrentInstitution.get()});
   }
 
   public long countActive(ActivateRequest request) {
@@ -218,13 +229,14 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
   @Override
   @Transactional
   public Collection<ItemId> getAllActivatedItemsForInstitution() {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "select new com.tle.beans.item.ItemId(a.item.uuid, a.item.version) "
-                + " from ActivateRequest a"
-                + " where a.item.institution = :institution group by a.item.uuid, a.item.version",
-            new String[] {"institution"},
-            new Object[] {CurrentInstitution.get()});
+    return (Collection<ItemId>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "select new com.tle.beans.item.ItemId(a.item.uuid, a.item.version) "
+                    + " from ActivateRequest a"
+                    + " where a.item.institution = :institution group by a.item.uuid, a.item.version",
+                new String[] {"institution"},
+                new Object[] {CurrentInstitution.get()});
   }
 
   @Override
@@ -234,19 +246,21 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
   }
 
   private Collection<ActivateRequest> getAllRequests(long itemId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where item.id = :itemId",
-            new String[] {"itemId"},
-            new Object[] {itemId});
+    return (Collection<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where item.id = :itemId",
+                new String[] {"itemId"},
+                new Object[] {itemId});
   }
 
   private Collection<ActivateRequest> getAllRequests(String type, long itemId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ActivateRequest where type = :type and item.id = :itemId",
-            new String[] {"itemId", "type"},
-            new Object[] {itemId, type});
+    return (Collection<ActivateRequest>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ActivateRequest where type = :type and item.id = :itemId",
+                new String[] {"itemId", "type"},
+                new Object[] {itemId, type});
   }
 
   private void deleteAll(Collection<ActivateRequest> requests) {
@@ -258,44 +272,47 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<ActivateRequest> listAll() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Query query =
-                    session.createQuery(
-                        "from "
-                            + getPersistentClass().getName()
-                            + " where item.institution = :institution");
-                query.setEntity("institution", CurrentInstitution.get());
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+    return (List<ActivateRequest>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query query =
+                        session.createQuery(
+                            "from "
+                                + getPersistentClass().getName()
+                                + " where item.institution = :institution");
+                    query.setEntity("institution", CurrentInstitution.get());
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   @Override
   @Transactional
   public ActivateRequest getByUuid(String requestUuid) {
     List<ActivateRequest> requests =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from ActivateRequest where uuid = :uuid and item.institution = :institution",
-                new String[] {"uuid", "institution"},
-                new Object[] {requestUuid, CurrentInstitution.get()});
+        (List<ActivateRequest>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from ActivateRequest where uuid = :uuid and item.institution = :institution",
+                    new String[] {"uuid", "institution"},
+                    new Object[] {requestUuid, CurrentInstitution.get()});
     return requests.isEmpty() ? null : requests.get(0);
   }
 
   @Override
   public List<ItemIdKey> getItemKeysForUserActivations(String userId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "SELECT new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM ActivateRequest a "
-                + "JOIN a.item i WHERE a.user = :user and i.institution = :institution",
-            new String[] {"user", "institution"},
-            new Object[] {userId, CurrentInstitution.get()});
+    return (List<ItemIdKey>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "SELECT new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM ActivateRequest a "
+                    + "JOIN a.item i WHERE a.user = :user and i.institution = :institution",
+                new String[] {"user", "institution"},
+                new Object[] {userId, CurrentInstitution.get()});
   }
 
   @Override

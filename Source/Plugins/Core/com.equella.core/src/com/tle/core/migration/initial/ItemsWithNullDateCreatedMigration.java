@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -79,7 +79,7 @@ public class ItemsWithNullDateCreatedMigration extends AbstractHibernateSchemaMi
     final Date now = new Date();
     session
         .createQuery(
-            "UPDATE Item SET date_created = ?, date_modified = ?"
+            "UPDATE Item SET date_created = ?0, date_modified = ?1"
                 + " WHERE date_created IS NULL AND date_modified IS NULL")
         .setParameter(0, now)
         .setParameter(1, now)

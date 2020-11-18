@@ -32,10 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Bind
@@ -51,11 +52,11 @@ public class HibernateFilter extends AbstractWebFilter {
     FilterResult result = new FilterResult();
     if (CurrentInstitution.get() != null) {
       final SessionFactory sessionFactory =
-          hibernateService.getTransactionAwareSessionFactory("main", false); // $NON-NLS-1$
+          hibernateService.getTransactionAwareSessionFactory("main", false);
 
       if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
-        LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter"); // $NON-NLS-1$
-        Session session = SessionFactoryUtils.getSession(sessionFactory, true);
+        LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter");
+        Session session = openSession(sessionFactory);
         TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
         result.setCallback(
             new WebFilterCallback() {
@@ -65,13 +66,31 @@ public class HibernateFilter extends AbstractWebFilter {
                 SessionHolder sessionHolder =
                     (SessionHolder)
                         TransactionSynchronizationManager.unbindResource(sessionFactory);
-                LOGGER.debug(
-                    "Closing single Hibernate Session in OpenSessionInViewFilter"); //$NON-NLS-1$
+                LOGGER.debug("Closing single Hibernate Session in OpenSessionInViewFilter");
                 SessionFactoryUtils.closeSession(sessionHolder.getSession());
               }
             });
       }
     }
     return result;
+  }
+
+  /**
+   * Prior to hibernate 5, oEQ never touched the FlushMode. Due to changes in Spring and Hibernate,
+   * `openSession` was added and followed the flow of the Spring impl of `openSession`.
+   *
+   * <p>FlushMode is set to MANUAL to reduce surprise flushes to the database, and it'll switch to
+   * AUTO in a non-read-only transaction, and then flip back.
+   *
+   * <p>The internal transaction handling logic with respect to flush mode appears to remain
+   * unchanged
+   *
+   * @param sessionFactory
+   * @return
+   */
+  private Session openSession(SessionFactory sessionFactory) {
+    Session session = sessionFactory.openSession();
+    session.setHibernateFlushMode(FlushMode.MANUAL);
+    return session;
   }
 }

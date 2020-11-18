@@ -52,8 +52,8 @@ import javax.persistence.OneToOne;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -104,7 +104,7 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration {
     for (WorkflowNodeStatus status : statuses) {
       String nodeId = status.nodeId;
       Query statusQuery =
-          session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?");
+          session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?0");
       statusQuery.setParameter(0, status);
       ModerationStatus modStatus = (ModerationStatus) statusQuery.uniqueResult();
       if (modStatus != null) {

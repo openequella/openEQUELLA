@@ -56,7 +56,6 @@ import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.item.dao.ItemLockingDao;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,11 +68,12 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +83,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"nls", "unchecked"})
 public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements ItemDao {
+  private static final Logger LOGGER = Logger.getLogger(ItemDaoImpl.class);
+
   @Inject private ItemLockingDao itemLockingDao;
 
   private PluginTracker<ItemDaoExtension> itemDaoTracker;
@@ -108,7 +110,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     long itemDefInstId = item.getItemDefinition().getInstitution().getUniqueId();
     if (itemInstId != itemDefInstId) {
       throw new RuntimeException(
-          "Illegal attempt to save an item in an instituion ("
+          "Illegal attempt to save an item in an institution ("
               + itemInstId
               + ") that differs from the institution of the collection ("
               + itemDefInstId
@@ -172,25 +174,26 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     }
     final String hql = sb.toString();
 
-    return getHibernateTemplate()
-        .executeFind(
-            new CollectionPartitioner<Long, Item>(keys) {
-              @Override
-              public List<Item> doQuery(Session session, Collection<Long> keys) {
-                Query query = session.createQuery(hql);
-                query.setReadOnly(readOnly);
-                query.setParameterList("key", keys);
-                if (institution != null) {
-                  query.setParameter("institution", institution);
-                }
+    return (List<Item>)
+        getHibernateTemplate()
+            .execute(
+                new CollectionPartitioner<Long, Item>(keys) {
+                  @Override
+                  public List<Item> doQuery(Session session, Collection<Long> keys) {
+                    Query query = session.createQuery(hql);
+                    query.setReadOnly(readOnly);
+                    query.setParameterList("key", keys);
+                    if (institution != null) {
+                      query.setParameter("institution", institution);
+                    }
 
-                List<Item> l = query.list();
-                if (select != null && !l.isEmpty()) {
-                  select.initialise(l.get(0));
-                }
-                return l;
-              }
-            });
+                    List<Item> l = query.list();
+                    if (select != null && !l.isEmpty()) {
+                      select.initialise(l.get(0));
+                    }
+                    return l;
+                  }
+                });
   }
 
   @Override
@@ -221,9 +224,10 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     }
 
     List<ItemId> items =
-        getHibernateTemplate()
-            .findByNamedParam(
-                query.toString(), names.toArray(new String[names.size()]), values.toArray());
+        (List<ItemId>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    query.toString(), names.toArray(new String[names.size()]), values.toArray());
 
     return items;
   }
@@ -235,12 +239,13 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       map.put(key.getUuid(), key.getVersion());
     }
     List<ItemIdKey> list =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select new com.tle.beans.item.ItemIdKey(id, uuid, max(version)) from Item "
-                    + "where uuid in (:ids) group by id, uuid, version, status having status = :status order by version",
-                new String[] {"ids", "status"},
-                new Object[] {map.keySet(), ItemStatus.LIVE.name()});
+        (List<ItemIdKey>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select new com.tle.beans.item.ItemIdKey(id, uuid, max(version)) from Item "
+                        + "where uuid in (:ids) group by id, uuid, version, status having status = :status order by version",
+                    new String[] {"ids", "status"},
+                    new Object[] {map.keySet(), ItemStatus.LIVE.name()});
     List<Long> ids = new ArrayList<Long>();
     for (ItemIdKey key : list) {
       if (map.get(key.getUuid()) < key.getVersion()) {
@@ -278,31 +283,32 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     if (institutions.isEmpty()) {
       return Collections.emptyList();
     }
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) {
-                Query query =
-                    session.createQuery(
-                        "select new com.dytech.edge.common.valuebean.ItemIndexDate("
-                            + "i.id, i.uuid, i.version, i.dateForIndex, i.institution.uniqueId) from Item i"
-                            + " where i.institution in (:insts) and i.dateForIndex >= :afterDate and i.id >= :itemId and i.id <= :maxItemId order by i.id asc");
-                query.setParameterList("insts", institutions);
-                query.setParameter("afterDate", afterDate);
-                query.setParameter("itemId", itemId);
-                query.setParameter("maxItemId", maxItemId);
-                query.setMaxResults(maxResults);
-                return query.list();
-              }
-            });
+    return (List<ItemIndexDate>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) {
+                    Query query =
+                        session.createQuery(
+                            "select new com.dytech.edge.common.valuebean.ItemIndexDate("
+                                + "i.id, i.uuid, i.version, i.dateForIndex, i.institution.uniqueId) from Item i"
+                                + " where i.institution in (:insts) and i.dateForIndex >= :afterDate and i.id >= :itemId and i.id <= :maxItemId order by i.id asc");
+                    query.setParameterList("insts", institutions);
+                    query.setParameter("afterDate", afterDate);
+                    query.setParameter("itemId", itemId);
+                    query.setParameter("maxItemId", maxItemId);
+                    query.setMaxResults(maxResults);
+                    return query.list();
+                  }
+                });
   }
 
   @Override
   public List<ItemId> enumerateItemKeys(String whereClause, String[] names, Object[] values) {
     String hql =
         "select new com.tle.beans.item.ItemId(i.uuid, i.version) from Item i " + whereClause;
-    return getHibernateTemplate().findByNamedParam(hql, names, values);
+    return (List<ItemId>) getHibernateTemplate().findByNamedParam(hql, names, values);
   }
 
   @Override
@@ -313,24 +319,25 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       final Map<String, Object> params,
       final long startId,
       final int batchSize) {
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Query q =
-                    session.createQuery(
-                        "SELECT DISTINCT NEW com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM Item i "
-                            + joinClause
-                            + " WHERE ("
-                            + whereClause
-                            + ") AND i.id >= :startId ORDER BY i.id ASC");
-                setParams(q, params);
-                q.setParameter("startId", startId);
-                q.setMaxResults(batchSize);
-                return q.list();
-              }
-            });
+    return (List<ItemIdKey>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query q =
+                        session.createQuery(
+                            "SELECT DISTINCT NEW com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM Item i "
+                                + joinClause
+                                + " WHERE ("
+                                + whereClause
+                                + ") AND i.id >= :startId ORDER BY i.id ASC");
+                    setParams(q, params);
+                    q.setParameter("startId", startId);
+                    q.setMaxResults(batchSize);
+                    return q.list();
+                  }
+                });
   }
 
   @Override
@@ -342,8 +349,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
                 .execute(
                     new HibernateCallback() {
                       @Override
-                      public Object doInHibernate(Session session)
-                          throws HibernateException, SQLException {
+                      public Object doInHibernate(Session session) throws HibernateException {
                         Query q =
                             session.createQuery(
                                 "SELECT COUNT(DISTINCT i.id)  FROM Item i "
@@ -373,9 +379,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   public List<ItemIdKey> getItemIdKeys(List<Long> ids) {
     String hql =
         "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id in :ids and i.institution = :institution";
-    return getHibernateTemplate()
-        .findByNamedParam(
-            hql, new String[] {"ids", "institution"}, new Object[] {ids, CurrentInstitution.get()});
+    return (List<ItemIdKey>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                hql,
+                new String[] {"ids", "institution"},
+                new Object[] {ids, CurrentInstitution.get()});
   }
 
   @Override
@@ -383,11 +392,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     String hql =
         "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id = :id and i.institution = :institution";
     List<ItemIdKey> keys =
-        getHibernateTemplate()
-            .findByNamedParam(
-                hql,
-                new String[] {"id", "institution"},
-                new Object[] {id, CurrentInstitution.get()});
+        (List<ItemIdKey>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    hql,
+                    new String[] {"id", "institution"},
+                    new Object[] {id, CurrentInstitution.get()});
     if (keys == null || keys.isEmpty()) {
       return null;
     }
@@ -400,13 +410,15 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       String whereClause, String[] names, Object[] values) {
     String hql =
         "select new com.tle.common.Triple(uuid, version, name) from Item item " + whereClause;
-    return getHibernateTemplate().findByNamedParam(hql, names, values);
+    return (List<Triple<String, Integer, String>>)
+        getHibernateTemplate().findByNamedParam(hql, names, values);
   }
 
   @Override
   public List<Item> getAllVersionsOfItem(String uuid) {
-    String query = "from Item where institution = ? and uuid = ? order by version desc";
-    return getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get(), uuid});
+    String query = "from Item where institution = ?0 and uuid = ?1 order by version desc";
+    return (List<Item>)
+        getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get(), uuid});
   }
 
   @Override
@@ -435,16 +447,21 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       if (i > 0) {
         hql.append(" OR ");
       }
-      keyArray[i++] = key.getUuid();
-      keyArray[i++] = key.getVersion();
-      hql.append("(i.uuid = ? and i.version = ?)");
+
+      keyArray[i] = key.getUuid();
+      hql.append("(i.uuid = ?").append(i++);
+
+      keyArray[i] = key.getVersion();
+      hql.append(" and i.version = ?").append(i++).append(") ");
     }
     hql.append(") ");
 
     keyArray[i] = CurrentInstitution.get();
-    hql.append(" and i.institution = ?");
-
-    List<Object[]> results = getHibernateTemplate().find(hql.toString(), keyArray);
+    hql.append(" and i.institution = ?").append(i);
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("HQL to select items based on a collection of IDs: " + hql);
+    }
+    List<Object[]> results = (List<Object[]>) getHibernateTemplate().find(hql.toString(), keyArray);
 
     Map<ItemId, U> map = new HashMap<ItemId, U>();
     for (Object[] result : results) {
@@ -481,8 +498,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   public List<ItemIdKey> listAll(Institution institution) {
     String hql =
         "select new com.tle.beans.item.ItemIdKey(id, uuid, version)"
-            + " from Item where institution = ?";
-    return getHibernateTemplate().find(hql, institution);
+            + " from Item where institution = ?0";
+    return (List<ItemIdKey>) getHibernateTemplate().find(hql, institution);
   }
 
   @Override
@@ -499,10 +516,11 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Integer> getAllVersionNumbers(String uuid) {
-    return getHibernateTemplate()
-        .find(
-            "select version from Item where uuid = ? and institution = ? order by version asc",
-            new Object[] {uuid, CurrentInstitution.get()});
+    return (List<Integer>)
+        getHibernateTemplate()
+            .find(
+                "select version from Item where uuid = ?0 and institution = ?1 order by version asc",
+                new Object[] {uuid, CurrentInstitution.get()});
   }
 
   @Override
@@ -518,10 +536,11 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Transactional(propagation = Propagation.MANDATORY)
   public int getLatestLiveVersion(String uuid) {
     List<Integer> list =
-        getHibernateTemplate()
-            .find(
-                "select version from Item where uuid = ? and status = ? and institution = ? order by version desc",
-                new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
+        (List<Integer>)
+            getHibernateTemplate()
+                .find(
+                    "select version from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
+                    new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return 1;
     }
@@ -532,10 +551,11 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Transactional(propagation = Propagation.MANDATORY)
   public ItemIdKey getLatestLiveVersionId(String uuid) {
     List<ItemIdKey> list =
-        getHibernateTemplate()
-            .find(
-                "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid = ? and status = ? and institution = ? order by version desc",
-                new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
+        (List<ItemIdKey>)
+            getHibernateTemplate()
+                .find(
+                    "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
+                    new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return null;
     }
@@ -628,19 +648,21 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public Set<String> getReferencedUsers() {
     List<String> list =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select owner from Item where institution = :institution",
-                "institution",
-                CurrentInstitution.get());
+        (List<String>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select owner from Item where institution = :institution",
+                    "institution",
+                    CurrentInstitution.get());
     Set<String> users = new HashSet<String>(list);
 
     List<String> collabs =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select elements(collaborators) from Item where institution = :institution",
-                "institution",
-                CurrentInstitution.get());
+        (List<String>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select elements(collaborators) from Item where institution = :institution",
+                    "institution",
+                    CurrentInstitution.get());
     users.addAll(collabs);
 
     return users;
@@ -683,11 +705,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Transactional
   public long getCollectionIdForUuid(String uuid) {
     List<Long> collectionIds =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select i.itemDefinition.id from Item i where uuid = :uuid and institution = :institution",
-                new String[] {"uuid", "institution"},
-                new Object[] {uuid, CurrentInstitution.get()});
+        (List<Long>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select i.itemDefinition.id from Item i where uuid = :uuid and institution = :institution",
+                    new String[] {"uuid", "institution"},
+                    new Object[] {uuid, CurrentInstitution.get()});
     if (!collectionIds.isEmpty()) {
       return collectionIds.get(0);
     }
@@ -697,11 +720,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public Map<String, Object> getItemInfo(String uuid, int version) {
     List<Map<String, Object>> itemInfo =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "SELECT NEW map(i.name.id as name_id, i.description.id as desc_id, i.itemDefinition.name.id as collection_id, i.dateModified as date_mod) FROM Item i WHERE uuid = :uuid AND institution = :institution AND version = :version",
-                new String[] {"uuid", "institution", "version"},
-                new Object[] {uuid, CurrentInstitution.get(), version});
+        (List<Map<String, Object>>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "SELECT NEW map(i.name.id as name_id, i.description.id as desc_id, i.itemDefinition.name.id as collection_id, i.dateModified as date_mod) FROM Item i WHERE uuid = :uuid AND institution = :institution AND version = :version",
+                    new String[] {"uuid", "institution", "version"},
+                    new Object[] {uuid, CurrentInstitution.get(), version});
     if (!itemInfo.isEmpty()) {
       return itemInfo.get(0);
     }
@@ -711,14 +735,15 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public Attachment getAttachmentByUuid(ItemKey itemId, String uuid) {
     List<Attachment> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select a from Item i left join i.attachments a where i.uuid = :uuid"
-                    + " and i.version = :version and a.uuid = :auuid and i.institution = :institution",
-                new String[] {"uuid", "version", "auuid", "institution"},
-                new Object[] {
-                  itemId.getUuid(), itemId.getVersion(), uuid, CurrentInstitution.get()
-                });
+        (List<Attachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select a from Item i left join i.attachments a where i.uuid = :uuid"
+                        + " and i.version = :version and a.uuid = :auuid and i.institution = :institution",
+                    new String[] {"uuid", "version", "auuid", "institution"},
+                    new Object[] {
+                      itemId.getUuid(), itemId.getVersion(), uuid, CurrentInstitution.get()
+                    });
     if (attachments.isEmpty()) {
       return null;
     }
@@ -733,22 +758,23 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     }
 
     return new HashSet<String>(
-        getHibernateTemplate()
-            .executeFind(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) {
-                    final Query query =
-                        session.createQuery(
-                            "SELECT DISTINCT(i.uuid) FROM Item i"
-                                + " WHERE i.uuid IN (:uuids) AND i.itemDefinition.uuid IN (:itemDefIds)"
-                                + " AND i.institution = :institution");
-                    query.setParameterList("uuids", itemUuids);
-                    query.setParameterList("itemDefIds", collectionIds);
-                    query.setParameter("institution", CurrentInstitution.get());
-                    return query.list();
-                  }
-                }));
+        (List<String>)
+            getHibernateTemplate()
+                .execute(
+                    new HibernateCallback() {
+                      @Override
+                      public Object doInHibernate(Session session) {
+                        final Query query =
+                            session.createQuery(
+                                "SELECT DISTINCT(i.uuid) FROM Item i"
+                                    + " WHERE i.uuid IN (:uuids) AND i.itemDefinition.uuid IN (:itemDefIds)"
+                                    + " AND i.institution = :institution");
+                        query.setParameterList("uuids", itemUuids);
+                        query.setParameterList("itemDefIds", collectionIds);
+                        query.setParameter("institution", CurrentInstitution.get());
+                        return query.list();
+                      }
+                    }));
   }
 
   @Override
@@ -787,11 +813,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     }
     Map<Long, Integer> commentMap = new LinkedHashMap<Long, Integer>();
     List<Object[]> counts =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select i.id, count(c) from Item i join i.comments c where i in (:items) group by i",
-                "items",
-                items);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select i.id, count(c) from Item i join i.comments c where i in (:items) group by i",
+                    "items",
+                    items);
     for (Object[] comRow : counts) {
       commentMap.put((Long) comRow[0], ((Number) comRow[1]).intValue());
     }
@@ -813,11 +840,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableListMultimap.of();
     }
     List<Attachment> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select a from Item i join i.attachments a where i in (:items) order by index(a) ASC",
-                "items",
-                items);
+        (List<Attachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select a from Item i join i.attachments a where i in (:items) order by index(a) ASC",
+                    "items",
+                    items);
     ListMultimap<Item, Attachment> multiMap = ArrayListMultimap.create();
     for (Attachment attachment : attachments) {
       multiMap.put(attachment.getItem(), attachment);
@@ -832,11 +860,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableListMultimap.of();
     }
     List<Object[]> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select a, i.id from Item i join i.attachments a where i.id in (:items) order by index(a) ASC",
-                "items",
-                ids);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select a, i.id from Item i join i.attachments a where i.id in (:items) order by index(a) ASC",
+                    "items",
+                    ids);
     ListMultimap<Long, Attachment> multiMap = ArrayListMultimap.create();
     for (Object[] attachmentRow : attachments) {
       multiMap.put((Long) attachmentRow[1], (Attachment) attachmentRow[0]);
@@ -851,11 +880,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableListMultimap.of();
     }
     List<Object[]> history =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select h, i.id from Item i join i.history h where i.id in (:items) order by index(h)",
-                "items",
-                ids);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select h, i.id from Item i join i.history h where i.id in (:items) order by index(h)",
+                    "items",
+                    ids);
     ListMultimap<Long, HistoryEvent> multiMap = ArrayListMultimap.create();
     for (Object[] historyRow : history) {
       multiMap.put((Long) historyRow[1], (HistoryEvent) historyRow[0]);
@@ -870,11 +900,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableListMultimap.of();
     }
     List<Object[]> node =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select n, i.id from ItemNavigationNode n join n.item i where i.id in (:items) order by n.index ASC",
-                "items",
-                ids);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select n, i.id from ItemNavigationNode n join n.item i where i.id in (:items) order by n.index ASC",
+                    "items",
+                    ids);
     ListMultimap<Long, ItemNavigationNode> multiMap = ArrayListMultimap.create();
     for (Object[] nodeRow : node) {
       multiMap.put((Long) nodeRow[1], (ItemNavigationNode) nodeRow[0]);
@@ -889,11 +920,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableMultimap.of();
     }
     List<Object[]> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select c, i.id from Item i join i.collaborators c where i.id in (:items)",
-                "items",
-                itemIds);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select c, i.id from Item i join i.collaborators c where i.id in (:items)",
+                    "items",
+                    itemIds);
     ListMultimap<Long, String> multiMap = ArrayListMultimap.create();
     for (Object[] attachmentRow : attachments) {
       multiMap.put((Long) attachmentRow[1], (String) attachmentRow[0]);
@@ -907,11 +939,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return ImmutableListMultimap.of();
     }
     final List<Object[]> drmAcceptances =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select d, item.id from DrmAcceptance d where item.id in (:items) order by d.date DESC",
-                "items",
-                itemIds);
+        (List<Object[]>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select d, item.id from DrmAcceptance d where item.id in (:items) order by d.date DESC",
+                    "items",
+                    itemIds);
     final ListMultimap<Long, DrmAcceptance> multiMap = ArrayListMultimap.create();
     for (Object[] asseptRow : drmAcceptances) {
       multiMap.put((Long) asseptRow[1], (DrmAcceptance) asseptRow[0]);
@@ -922,15 +955,16 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public Attachment getAttachmentByFilepath(ItemKey itemId, String filepath) {
     List<Attachment> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select a from Item i left join i.attachments a where i.uuid = :uuid"
-                    + " and i.version = :version and a.url = :filepath and "
-                    + "a.class = FileAttachment and i.institution = :institution",
-                new String[] {"uuid", "version", "filepath", "institution"},
-                new Object[] {
-                  itemId.getUuid(), itemId.getVersion(), filepath, CurrentInstitution.get()
-                });
+        (List<Attachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select a from Item i left join i.attachments a where i.uuid = :uuid"
+                        + " and i.version = :version and a.url = :filepath and "
+                        + "a.class = FileAttachment and i.institution = :institution",
+                    new String[] {"uuid", "version", "filepath", "institution"},
+                    new Object[] {
+                      itemId.getUuid(), itemId.getVersion(), filepath, CurrentInstitution.get()
+                    });
     if (attachments.isEmpty()) {
       return null;
     }
@@ -950,11 +984,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public List<String> getNavReferencedAttachmentUuids(List<Item> items) {
     if (!Check.isEmpty(items)) {
-      return getHibernateTemplate()
-          .findByNamedParam(
-              "SELECT a.uuid FROM Attachment a JOIN a.item i JOIN i.treeNodes tn JOIN tn.tabs t WHERE i IN (:items) AND t.attachment = a",
-              "items",
-              items);
+      return (List<String>)
+          getHibernateTemplate()
+              .findByNamedParam(
+                  "SELECT a.uuid FROM Attachment a JOIN a.item i JOIN i.treeNodes tn JOIN tn.tabs t WHERE i IN (:items) AND t.attachment = a",
+                  "items",
+                  items);
     }
     return new ArrayList<String>();
   }

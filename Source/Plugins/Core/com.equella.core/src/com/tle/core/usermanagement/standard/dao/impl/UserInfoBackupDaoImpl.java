@@ -27,7 +27,7 @@ import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
 import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,9 +60,11 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
 
   @Override
   public List<UserInfoBackup> getAllInfo() {
-    return getHibernateTemplate()
-        .find(
-            "from UserInfoBackup where institution_id = ?", CurrentInstitution.get().getUniqueId());
+    return (List<UserInfoBackup>)
+        getHibernateTemplate()
+            .find(
+                "from UserInfoBackup where institution_id = ?0",
+                CurrentInstitution.get().getUniqueId());
   }
 
   @Transactional(propagation = Propagation.MANDATORY)

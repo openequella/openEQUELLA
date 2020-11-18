@@ -36,16 +36,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
-import org.hibernate.engine.Mapping;
+import org.hibernate.dialect.unique.UniqueDelegate;
+import org.hibernate.engine.spi.Mapping;
+import org.hibernate.internal.util.StringHelper;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.util.StringHelper;
+
+// TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
 @SuppressWarnings("nls")
 public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
     implements ExtendedDialect {
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
+
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.NVARCHAR), new String[] {"blankable"});
   private static final CustomType TYPE_XSTREAM =
@@ -58,7 +65,11 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
   private static final String URL_SCHEME = "jdbc:sqlserver://";
   private String dropConstraintsSQL;
 
+  private final UniqueDelegate uniqueDelegate;
+
   public SQLServerDialect() {
+    uniqueDelegate = new InPlaceUniqueDelegate(this);
+
     registerColumnType(Types.NVARCHAR, "nvarchar(MAX)");
     registerColumnType(Types.NVARCHAR, 4000, "nvarchar($l)");
     registerColumnType(Types.LONGNVARCHAR, "nvarchar(MAX)");
@@ -259,5 +270,10 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
       }
     }
     return createIndexStatements;
+  }
+
+  @Override
+  public UniqueDelegate getUniqueDelegate() {
+    return uniqueDelegate;
   }
 }

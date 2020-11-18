@@ -56,19 +56,18 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
             freetext, dates, offset, perPage, orderby, reverse, userId, institution));
   }
 
-  @SuppressWarnings({"nls", "unchecked"})
   @Override
   public FavouriteSearch getById(long id) {
     List<FavouriteSearch> search =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from FavouriteSearch where id = :id and owner = :owner and institution = :inst",
-                new String[] {"id", "owner", "inst"},
-                new Object[] {id, CurrentUser.getUserID(), CurrentInstitution.get()});
+        (List<FavouriteSearch>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from FavouriteSearch where id = :id and owner = :owner and institution = :inst",
+                    new String[] {"id", "owner", "inst"},
+                    new Object[] {id, CurrentUser.getUserID(), CurrentInstitution.get()});
     return uniqueResult(search);
   }
 
-  @SuppressWarnings("nls")
   protected static class FavouriteSearchListCallback implements ListCallback {
     private final String freetext;
     private final int offset;
@@ -143,11 +142,11 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     @Override
     public String getOrderBy() {
       if (orderby != null) {
-        String orderByString = orderby; // $NON-NLS-1$
+        String orderByString = orderby;
         if (!reverse) {
-          orderByString += " DESC"; // $NON-NLS-1$
+          orderByString += " DESC";
         } else {
-          orderByString += " ASC"; // $NON-NLS-1$
+          orderByString += " ASC";
         }
         return orderByString;
       }
@@ -157,14 +156,14 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     @Override
     public void processQuery(Query query) {
       if (freetext != null) {
-        query.setParameter("freetext", freetext); // $NON-NLS-1$
+        query.setParameter("freetext", freetext);
       }
       if (dates != null) {
         if (dates[0] != null) {
-          query.setParameter("start", dates[0]); // $NON-NLS-1$
+          query.setParameter("start", dates[0]);
         }
         if (dates[1] != null) {
-          query.setParameter("end", dates[1]); // $NON-NLS-1$
+          query.setParameter("end", dates[1]);
         }
       }
       query.setParameter("owner", userId);
@@ -184,7 +183,6 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     }
   }
 
-  @SuppressWarnings("nls")
   @Override
   public long count(String freetext, Date[] dates, String userId, Institution institution) {
     Criterion dateRestriction = null;

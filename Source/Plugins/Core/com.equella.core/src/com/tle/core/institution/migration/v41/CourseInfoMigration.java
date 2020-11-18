@@ -33,8 +33,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
