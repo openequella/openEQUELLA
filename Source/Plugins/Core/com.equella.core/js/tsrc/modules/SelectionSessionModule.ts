@@ -15,7 +15,125 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig, SelectionSessionInfo } from "../AppConfig";
+import Axios from "axios";
+import { API_BASE_URL, AppConfig, SelectionSessionInfo } from "../AppConfig";
+import { LegacyContentResponse } from "../legacycontent/LegacyContent";
+
+/**
+ * Provide a type to match 'CourseListFolderAjaxUpdateData' defined on server side.
+ */
+interface CourseListFolderAjaxUpdateData {
+  /**
+   * A list of IDs which represent DIVs that will need DOM manipulation once the ajax request is successful.
+   * An example is 'courselistajax' which refers to the course list panel in Selection Session.
+   */
+  ajaxIds: string[];
+  /**
+   * The selected folder of a course list
+   */
+  folderId?: string;
+  /**
+   * An array where the first element is name of an event handler defined on server and the rest elements are
+   * parameters passed to the handler. The handler name must this format: treeID.name.
+   * An example is method 'selectItem' which takes two parameters: itemId and extensionType. So event should be
+   * ["_slcl.selectItem", itemId, extensionType]
+   */
+  event: (string | null)[];
+}
+
+/**
+ * The body structure of POST requests sent to 'searching.do' to select resources.
+ */
+interface SelectionSessionPostData {
+  /**
+   * Which ajax events this request targets to
+   */
+  event__: string[];
+  /**
+   * The first parameter passed to the event handler
+   */
+  eventp__0: string[];
+  /**
+   * The second parameter which is ONLY used when Selection Session layout is 'search'.
+   */
+  eventp__1?: (string | null)[];
+  /**
+   * The third parameter which is ONLY used when Selection Session layout is 'search'.
+   */
+  eventp__2?: (string | null)[];
+  /**
+   * The ID of a Selection Session
+   */
+  "_sl.stateId": string[];
+  /**
+   * The ID of a LSM Integration
+   */
+  "_int.id"?: string[];
+  /**
+   * The Selection Session layout
+   */
+  a: string[];
+}
+
+/**
+ * Data structure for selecting resources from new search UI.
+ */
+export interface SelectResourceProps {
+  /**
+   * Current Selection Session data
+   */
+  selectionSessionData: SelectionSessionInfo;
+  /**
+   * A string including an Item's UUID and version (e.g. 91a90483-7888-403c-9578-e00c592939ce/1/)
+   */
+  itemKey: string;
+  /**
+   * Whether to select all attachments
+   */
+  isAllAttachments?: boolean;
+  /**
+   * Selected attachments
+   */
+  attachments?: string[];
+}
+/**
+ * Defined in 'courselist.js', this variable provides functionality of manipulating the DOM of course list.
+ */
+declare const CourseList: {
+  updateCourseList: (data: unknown) => void;
+};
+
+const submitBaseUrl = `${API_BASE_URL}/content/submit`;
+
+const getBasicPostData = ({
+  stateId,
+  integId,
+  layout,
+}: SelectionSessionInfo) => {
+  const basicPostData = {
+    "_sl.stateId": [`${stateId}`],
+    a: [layout],
+  };
+  return integId
+    ? { ...basicPostData, "_int.id": [`${integId}`] }
+    : basicPostData;
+};
+
+/**
+ * Send a POST request to submit selected resources.
+ *
+ * @param path URL of an endpoint for submitting selected resources
+ * @param data Payload of the request
+ * @param callback Function called when the request is successful
+ */
+const submitSelection = <T>(
+  path: string,
+  data: SelectionSessionPostData,
+  callback: (result: T) => void
+) => {
+  Axios.post(path, data).then(({ data }) => callback(data));
+};
+
 /**
  * Build a Selection Session specific ItemSummary Link.
  * @param selectionSessionInfo An object containing information of a Selection Session such as the layout and ID
@@ -37,4 +155,136 @@ export const buildSelectionSessionItemSummaryLink = (
     return itemSummaryPageLink.concat(`&_int.id=${integId}`);
   }
   return itemSummaryPageLink;
+};
+
+/**
+ * Update the content of DIV "selection-summary". This function is primarily for
+ * 'selectOrAdd' mode. In this mode, what is returned from 'searching.do' is an
+ * object of 'LegacyContentResponse'.
+ *
+ * So we need to convert the string that represents the HTML of the whole page
+ * to a Document, and then extract the content of node "selection-summary",
+ * and lastly use jQuery to update the DOM.
+ *
+ * @param legacyContent An object of LegacyContentResponse returned from server
+ */
+const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
+  const bodyContent = new DOMParser().parseFromString(
+    legacyContent.html.body,
+    "text/html"
+  );
+  const selectionSummary = bodyContent.getElementById("selection-summary");
+  if (!selectionSummary) {
+    throw new Error("Failed to update Selection Summary.");
+  }
+  $("#selection-summary").html(selectionSummary.innerHTML);
+};
+
+/**
+ * Select resources in 'structured'. The approach is to call the server ajax method 'reloadFolder'
+ * which is defined in 'CourseListSection'. The parameter passed to this method includes a DIV ID,
+ * the currect selected folder ID and a resource select event handler. In our case, the ID is 'courselistajax' and
+ * the folder ID is skipped, and the event is either 'selectItem' or 'selectAllAttachments'.
+ */
+const selectResourceForCourseList = (
+  selectionSessionInfo: SelectionSessionInfo,
+  itemKey: string,
+  attachmentUUIDs: string[] = []
+) => {
+  // The first element is the event handler name and the rest are parameters passed to the handler.
+  // The order of parameters must be exactly same as the order defined in server.
+  const serverSideEvent: (string | null)[] =
+    attachmentUUIDs.length > 0
+      ? [
+          "_slcl.selectAllAttachments",
+          `${attachmentUUIDs.join(",")}`,
+          `${itemKey}`,
+          null,
+        ]
+      : ["_slcl.selectItem", `${itemKey}`, null];
+
+  const courseListUpdateData: CourseListFolderAjaxUpdateData = {
+    ajaxIds: ["courselistajax"],
+    event: serverSideEvent,
+  };
+
+  const postData: SelectionSessionPostData = {
+    event__: ["_slcl.reloadFolder"], // This refers to the method 'reloadFolder' defined in 'CourseListSection'.
+    eventp__0: [`${JSON.stringify(courseListUpdateData)}`],
+    ...getBasicPostData(selectionSessionInfo),
+  };
+
+  submitSelection(
+    `${submitBaseUrl}/access/course/searching.do`,
+    postData,
+    CourseList.updateCourseList
+  );
+};
+
+/**
+ * Select resources in 'selectOrAdd'. The approach is similar to that of 'selectResourceForCourseList'.
+ * The difference is we call the resource select event handler directly. Details of those handlers can
+ * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
+ */
+const selectResourceForNonCourseList = (
+  selectionSessionInfo: SelectionSessionInfo,
+  itemKey: string,
+  isAllAttachments: boolean,
+  attachmentUUIDs: string[]
+) => {
+  const postData: SelectionSessionPostData =
+    attachmentUUIDs.length > 0
+      ? {
+          event__: [
+            `sc_attachments.${
+              isAllAttachments ? "selectAllAttachments" : "selectAttachment"
+            }`,
+          ],
+          eventp__0: [attachmentUUIDs.join(",")],
+          eventp__1: [`${itemKey}`],
+          eventp__2: [null],
+          ...getBasicPostData(selectionSessionInfo),
+        }
+      : {
+          event__: ["sile.select"],
+          eventp__0: [`${itemKey}`],
+          eventp__1: [null],
+          ...getBasicPostData(selectionSessionInfo),
+        };
+
+  const submitFullUrl =
+    attachmentUUIDs.length > 0
+      ? `${submitBaseUrl}/items/${itemKey}/`
+      : `${submitBaseUrl}/selectoradd/searching.do`;
+
+  submitSelection<LegacyContentResponse>(
+    submitFullUrl,
+    postData,
+    updateSelectionSummary
+  );
+};
+
+/**
+ * Submit a request to select an ItemSummary page, an attachment or all attachments of an Item.
+ * @param selectionSessionInfo The mandatory information of current Selection Session
+ * @param itemKey The unique key including the selected Item's UUID and version
+ * @param isAllAttachments True if the event is selecting all attachments
+ * @param attachments A list of UUIDs of selected attachments
+ */
+export const selectResource = async ({
+  selectionSessionData,
+  itemKey,
+  isAllAttachments = false,
+  attachments = [],
+}: SelectResourceProps) => {
+  if (selectionSessionData.layout === "coursesearch") {
+    selectResourceForCourseList(selectionSessionData, itemKey, attachments);
+  } else {
+    selectResourceForNonCourseList(
+      selectionSessionData,
+      itemKey,
+      isAllAttachments,
+      attachments
+    );
+  }
 };
