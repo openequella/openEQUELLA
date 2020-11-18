@@ -13,30 +13,30 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
-@TestInstitution("fiveo")
-public class AdvancedSearchApiTest extends AbstractRestApiTest {
-  private final String ADVANCEDSEARCH_API_ENDPOINT =
-      getTestConfig().getInstitutionUrl() + "api/settings/advancedsearch";
+@TestInstitution("vanilla")
+public class RemoteSearchApiTest extends AbstractRestApiTest {
+  private final String REMOTESEARCH_API_ENDPOINT =
+      getTestConfig().getInstitutionUrl() + "api/settings/remotesearch";
 
   @Override
   protected TestConfig getTestConfig() {
     if (testConfig == null) {
-      testConfig = new TestConfig(AdvancedSearchApiTest.class);
+      testConfig = new TestConfig(RemoteSearchApiTest.class);
     }
     return testConfig;
   }
 
   @Test
-  public void testRetrieveAdvancedSearches() throws Exception {
-    final List<BaseEntitySummary> searches = getAdvancedSearches();
+  public void testRetrieveRemoteSearches() throws Exception {
+    final List<BaseEntitySummary> searches = getRemoteSearches();
     assertEquals(
-        "The number of returned advanced searches should match the institution total.",
-        3,
+        "The number of returned remote searches should match the institution total.",
+        2,
         searches.size());
   }
 
-  private List<BaseEntitySummary> getAdvancedSearches() throws IOException {
-    final HttpMethod method = new GetMethod(ADVANCEDSEARCH_API_ENDPOINT);
+  private List<BaseEntitySummary> getRemoteSearches() throws IOException {
+    final HttpMethod method = new GetMethod(REMOTESEARCH_API_ENDPOINT);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     return mapper.readValue(
         method.getResponseBodyAsString(), new TypeReference<List<BaseEntitySummary>>() {});

@@ -26,20 +26,17 @@ import javax.ws.rs.{GET, Path, Produces}
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
-/**
-  * API for managing Advanced Searches (internally - and historically - known as Power Searches).
-  */
-@Path("settings/advancedsearch/")
+@Path("settings/remotesearch/")
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
-class AdvancedSearchResource {
-  private val powerSearchService = LegacyGuice.powerSearchService
+class RemoteSearchResource {
+  private val federatedSearchService = LegacyGuice.federatedSearchService
 
   @GET
   @ApiOperation(
-    value = "List available Advanced Searches",
+    value = "List available Remote (Federated) Searches",
     notes =
-      "This endpoint is used to retrieve available Advanced Searches and is secured by SEARCH_POWER_SEARCH",
+      "This endpoint is used to retrieve available Remote Searches and is secured by SEARCH_FEDERATED_SEARCH",
     response = classOf[BaseEntitySummary],
     responseContainer = "List"
   )
@@ -47,9 +44,7 @@ class AdvancedSearchResource {
     Response
       .ok()
       .entity(
-        powerSearchService
-          .enumerateSearchable()
-          .asScala
-          .map(be => BaseEntitySummary(be)))
+        federatedSearchService.enumerateSearchable().asScala.map(be => BaseEntitySummary(be))
+      )
       .build()
 }

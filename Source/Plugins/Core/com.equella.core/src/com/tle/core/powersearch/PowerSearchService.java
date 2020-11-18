@@ -40,4 +40,11 @@ public interface PowerSearchService
   List<BaseEntityLabel> listAllForSchema(long schemaId);
 
   List<BaseEntityLabel> listAllForSchema(Schema schema);
+
+  /**
+   * List all available Power Searches (Advanced Searches) assuming 'SEARCH_POWER_SEARCH' ACL.
+   *
+   * @return available power searches
+   */
+  List<PowerSearch> enumerateSearchable();
 }

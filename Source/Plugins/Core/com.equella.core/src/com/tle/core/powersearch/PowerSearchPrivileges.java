@@ -15,15 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GET } from './AxiosInstance';
-import { BaseEntitySummary, isBaseEntitySummaryArray } from './Common';
 
-const ADV_SEARCH_SETTINGS_ROOT_PATH = '/settings/advancedsearch/';
+package com.tle.core.powersearch;
 
-/**
- * List all Advanced Searches which the currently authenticated user has access to.
- */
-export const listAdvancedSearches = (
-  apiBasePath: string
-): Promise<BaseEntitySummary[]> =>
-  GET(apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH, isBaseEntitySummaryArray);
+public final class PowerSearchPrivileges {
+
+  public static final String SEARCH_POWER_SEARCH = "SEARCH_POWER_SEARCH";
+
+  private PowerSearchPrivileges() {
+    throw new Error();
+  }
+}
