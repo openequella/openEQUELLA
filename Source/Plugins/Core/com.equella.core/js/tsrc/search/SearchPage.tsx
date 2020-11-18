@@ -65,8 +65,6 @@ import {
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
 
-// import LocationState = History.LocationState;
-
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
