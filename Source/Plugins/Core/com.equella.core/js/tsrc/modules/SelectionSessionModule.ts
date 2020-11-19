@@ -233,11 +233,7 @@ const selectResourceForNonCourseList = (
   const postData: SelectionSessionPostData =
     attachmentUUIDs.length > 0
       ? {
-          event__: [
-            `sc_attachments.${
-              isAllAttachments ? "selectAllAttachments" : "selectAttachment"
-            }`,
-          ],
+          event__: [`ilad.selectAttachmentsFromNewSearch`],
           eventp__0: [attachmentUUIDs.join(",")],
           eventp__1: [`${itemKey}`],
           eventp__2: [null],
@@ -250,13 +246,8 @@ const selectResourceForNonCourseList = (
           ...getBasicPostData(selectionSessionInfo),
         };
 
-  const submitFullUrl =
-    attachmentUUIDs.length > 0
-      ? `${submitBaseUrl}/items/${itemKey}/`
-      : `${submitBaseUrl}/selectoradd/searching.do`;
-
   return submitSelection<LegacyContentResponse>(
-    submitFullUrl,
+    `${submitBaseUrl}/selectoradd/searching.do`,
     postData,
     updateSelectionSummary
   );
