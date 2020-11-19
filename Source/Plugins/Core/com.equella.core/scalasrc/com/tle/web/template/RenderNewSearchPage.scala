@@ -18,7 +18,7 @@
 
 package com.tle.web.template
 
-import com.tle.web.sections.SectionResult
+import com.tle.web.sections.ajax.AjaxEffects
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.render.SimpleSectionResult
 
@@ -26,6 +26,7 @@ object RenderNewSearchPage {
   def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
     val (p, body) = RenderNewTemplate.parseEntryHtml("SearchPage.html")
     context.getBody.addPreRenderable(p)
+    context.getBody.addPreRenderable(AjaxEffects.EFFECTS_LIB)
     new SimpleSectionResult(body.body().children())
   }
 }
