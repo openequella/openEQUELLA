@@ -23,12 +23,14 @@ import {
   CardHeader,
   CircularProgress,
   Grid,
+  IconButton,
   List,
   ListItem,
   Tooltip,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Share } from "@material-ui/icons";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
@@ -70,6 +72,10 @@ export interface SearchResultListProps {
    * Fired when the New search button is clicked.
    */
   onClearSearchOptions: () => void;
+  /**
+   * Fired when the copy search button is clicked.
+   */
+  onCopySearchLink: () => void;
 }
 
 /**
@@ -84,6 +90,7 @@ export const SearchResultList = ({
   orderSelectProps,
   paginationProps,
   onClearSearchOptions,
+  onCopySearchLink,
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
@@ -108,7 +115,7 @@ export const SearchResultList = ({
       <CardHeader
         title={searchPageStrings.subtitle + ` (${paginationProps.count})`}
         action={
-          <Grid container spacing={1}>
+          <Grid container spacing={1} alignItems="center">
             <Grid item>
               <SearchOrderSelect
                 value={orderSelectProps.value}
@@ -120,6 +127,13 @@ export const SearchResultList = ({
                 <Button variant="outlined" onClick={onClearSearchOptions}>
                   {searchPageStrings.newSearch}
                 </Button>
+              </Tooltip>
+            </Grid>
+            <Grid item>
+              <Tooltip title={searchPageStrings.shareSearchHelperText}>
+                <IconButton onClick={onCopySearchLink}>
+                  <Share />
+                </IconButton>
               </Tooltip>
             </Grid>
           </Grid>

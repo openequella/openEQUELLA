@@ -82,6 +82,11 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
   "queryStringParamsToSearchOptions"
 );
+Object.assign(navigator, {
+  clipboard: {
+    writeText: () => {},
+  },
+});
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
@@ -679,6 +684,18 @@ describe("<SearchPage/>", () => {
       ...defaultSearchPageOptions,
       selectedCategories: selectedCategories,
     });
+  });
+
+  it("should copy a search link to clipboard, and show a snackbar", async () => {
+    const mockClipboard = jest.spyOn(navigator.clipboard, "writeText");
+    const copySearchButton = screen.getByTitle("Copy search link to clipboard");
+    mockClipboard.mockResolvedValueOnce();
+    await act(async () => {
+      copySearchButton.click();
+    });
+    expect(
+      screen.getByText("Search link saved to clipboard")
+    ).toBeInTheDocument();
   });
 });
 
