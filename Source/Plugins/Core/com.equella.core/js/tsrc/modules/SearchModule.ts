@@ -274,7 +274,7 @@ export const generateQueryStringFromSearchOptions = (
       return match(
         [
           Literal("collections"),
-          () => value.map((collection) => pick(collection, ["uuid"])),
+          () => value?.map((collection) => pick(collection, ["uuid"])),
         ],
         [Literal("owner"), () => pick(value, ["id"])],
         [Unknown, () => value ?? undefined]
