@@ -117,7 +117,7 @@ public final class ExecUtils {
 
   public static ExecResult execWithTimeLimit(long maxDurationInSeconds, String[] options) {
     if (maxDurationInSeconds < 1L) {
-      LOGGER.info("maxDurationInSeconds not set. Using a regular non-timed process.");
+      LOGGER.debug("maxDurationInSeconds not set. Using a regular non-timed process.");
       return exec(options, null, null);
     }
     return execWithTimeLimit(options, null, null, maxDurationInSeconds);
@@ -128,7 +128,7 @@ public final class ExecUtils {
     try {
       final Triple<Process, StreamReader, StreamReader> cp =
           createProcess(cmdarray, additionalEnv, dir);
-      LOGGER.info("Started timed process");
+      LOGGER.debug("Started timed process");
       final Process proc = cp.getFirst();
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
@@ -136,7 +136,7 @@ public final class ExecUtils {
       if (!stdErr.isFinished() || !stdOut.isFinished()) {
         throw new InterruptedException();
       }
-      LOGGER.info("Timed process finished");
+      LOGGER.debug("Timed process finished");
       return new ExecResult(proc.exitValue(), stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
       if (e instanceof InterruptedException) {
