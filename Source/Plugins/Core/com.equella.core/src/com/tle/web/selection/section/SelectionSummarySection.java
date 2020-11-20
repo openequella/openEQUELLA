@@ -124,13 +124,13 @@ public class SelectionSummarySection
 
     viewSelectedLink.setClickHandler(checkoutFunc);
 
-    JSHandler unselectHanlder =
+    JSHandler unselectHandler =
+        // In new search UI, put "unselectAll" in an ajax update function in order not to refresh
+        // the page
         UISettingsJava.getUISettings().isNewSearchActive()
-            ? new OverrideHandler(
-                ajax.getAjaxUpdateDomFunction(
-                    tree, this, events.getEventHandler("unselectAll"), "selection-summary"))
+            ? new OverrideHandler(getUpdateSelection(tree, events.getEventHandler("unselectAll")))
             : events.getNamedHandler("unselectAll");
-    unselectAllLink.setClickHandler(unselectHanlder);
+    unselectAllLink.setClickHandler(unselectHandler);
     finishedButton.setClickHandler(checkoutFunc);
 
     if (!finishedInBox) {
