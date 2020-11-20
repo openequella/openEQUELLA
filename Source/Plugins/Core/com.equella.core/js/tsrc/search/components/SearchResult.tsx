@@ -368,7 +368,6 @@ export default function SearchResult({
               handleSelectResource({
                 selectionSessionData,
                 itemKey,
-                isAllAttachments: true,
                 attachments,
               });
             }}

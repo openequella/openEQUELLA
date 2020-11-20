@@ -88,10 +88,6 @@ export interface SelectResourceProps {
    */
   itemKey: string;
   /**
-   * Whether to select all attachments
-   */
-  isAllAttachments?: boolean;
-  /**
    * Selected attachments
    */
   attachments?: string[];
@@ -227,7 +223,6 @@ const selectResourceForCourseList = (
 const selectResourceForNonCourseList = (
   selectionSessionInfo: SelectionSessionInfo,
   itemKey: string,
-  isAllAttachments: boolean,
   attachmentUUIDs: string[]
 ): Promise<void> => {
   const postData: SelectionSessionPostData =
@@ -257,13 +252,11 @@ const selectResourceForNonCourseList = (
  * Submit a request to select an ItemSummary page, an attachment or all attachments of an Item.
  * @param selectionSessionInfo The mandatory information of current Selection Session
  * @param itemKey The unique key including the selected Item's UUID and version
- * @param isAllAttachments True if the event is selecting all attachments
  * @param attachments A list of UUIDs of selected attachments
  */
 export const selectResource = ({
   selectionSessionData,
   itemKey,
-  isAllAttachments = false,
   attachments = [],
 }: SelectResourceProps): Promise<void> =>
   selectionSessionData.layout === "coursesearch"
@@ -271,6 +264,5 @@ export const selectResource = ({
     : selectResourceForNonCourseList(
         selectionSessionData,
         itemKey,
-        isAllAttachments,
         attachments
       );
