@@ -77,6 +77,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
     List<String> opts = new ArrayList<String>();
+    validateAgainstTimer(srcFile);
     boolean gif = srcFile.getAbsolutePath().endsWith(".gif");
     if (gif) {
       opts.add(convertExe.getAbsolutePath());
@@ -190,6 +191,25 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
   }
 
+  private void validateAgainstTimer(File image) {
+    // use a timed process so that thumbnailing
+    // for problem files doesn't attempt indefinitely.
+    // Set in plugins/com.tle.core.imagemagick/config.properties
+    // thumbnail.timeout as an integer in seconds.
+    // if not set, the default is 20 seconds. If set to 0, uses a regular non-timed process.
+    ExecResult result =
+        ExecUtils.execWithTimeLimit(
+            thumbnailingTimeout,
+            new String[] {
+              identifyExe.getAbsolutePath(),
+              "-format",
+              "%wx%h",
+              new String(
+                  image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8)
+            });
+    result.ensureOk();
+  }
+
   @PostConstruct
   public void afterPropertiesSet() throws Exception {
     final File imageMagicDir = new File(imageMagickPath);
@@ -209,34 +229,12 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   @Override
   public Dimension getImageDimensions(File image) throws IOException {
-    ExecResult result;
-    if (image.getAbsolutePath().toLowerCase().contains(".pdf")) {
-      // use a timed process for pdfs so that thumbnailing
-      // for large or badly generated PDFs doesn't attempt indefinitely.
-      // Set in plugins/com.tle.core.imagemagick/config.properties
-      // imageMagick.seconds.before.cancel.pdf.thumbnailing as an integer.
-      // if not set, the default is 20 seconds. If set to 0, uses a regular non-timed process.
-      result =
-          ExecUtils.execWithTimeLimit(
-              pdfThumbnailTimeLimit,
-              new String[] {
-                identifyExe.getAbsolutePath(),
-                "-format",
-                "%wx%h",
-                new String(
-                    image.getAbsolutePath().getBytes(StandardCharsets.UTF_8),
-                    StandardCharsets.UTF_8)
-              });
-    } else {
-      result =
-          ExecUtils.exec(
-              identifyExe.getAbsolutePath(),
-              "-format",
-              "%wx%h",
-              new String(
-                  image.getAbsolutePath().getBytes(StandardCharsets.UTF_8),
-                  StandardCharsets.UTF_8));
-    }
+    ExecResult result =
+        ExecUtils.exec(
+            identifyExe.getAbsolutePath(),
+            "-format",
+            "%wx%h",
+            new String(image.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
     result.ensureOk();
 
     Matcher m = Pattern.compile(".*?(\\d+)x(\\d+).*?", Pattern.DOTALL).matcher(result.getStdout());
