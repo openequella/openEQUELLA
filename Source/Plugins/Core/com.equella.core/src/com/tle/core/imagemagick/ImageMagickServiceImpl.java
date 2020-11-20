@@ -62,8 +62,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Inject private ZookeeperService zkService;
 
   @Inject
-  @Named("imageMagick.seconds.before.cancel.pdf.thumbnailing")
-  private int pdfThumbnailTimeLimit;
+  @Named("thumbnailing.timeout")
+  private int thumbnailingTimeout;
 
   private String imageMagickPath;
   private File convertExe;

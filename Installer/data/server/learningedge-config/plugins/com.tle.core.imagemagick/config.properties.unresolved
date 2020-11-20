@@ -5,3 +5,9 @@
 # path.
 
 imageMagick.path = ${imagemagick/path#t\/}
+
+# Number of seconds for the thumbnailer to attempt to generate a thumbnail for a given file attachment.
+# Once exceeded, thumbnailing for that attachment will cancel and the default thumbnail will be applied.
+# Most attachments will thumbnail near instantly - this is mainly a guard against broken or malformed files.
+# If set to 0, thumbnailing will run with no time limit. If not set, default value is 20 seconds.
+thumbnailing.timeout = 20
