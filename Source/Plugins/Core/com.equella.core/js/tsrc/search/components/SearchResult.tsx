@@ -391,11 +391,7 @@ export default function SearchResult({
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
-            <List
-              component="div"
-              disablePadding
-              className={classes.attachmentListItem}
-            >
+            <List disablePadding className={classes.attachmentListItem}>
               {attachmentsList}
             </List>
           </AccordionDetails>
