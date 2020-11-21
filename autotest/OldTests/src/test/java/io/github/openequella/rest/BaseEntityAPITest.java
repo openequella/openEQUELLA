@@ -3,8 +3,10 @@ package io.github.openequella.rest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -17,6 +19,7 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
   private final String COLLECTION_API_ENDPOINT =
       getTestConfig().getInstitutionUrl() + "api/collection";
   private final String PERMISSION = "SEARCH_COLLECTION";
+  protected final Logger logger = Logger.getLogger(getClass().getName());
 
   @DataProvider(name = "initialResumptionTokens")
   public static Object[][] tokens() {
@@ -46,6 +49,7 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
       count += getResultLength(result);
       token = getTokenFromResponse(result);
     }
+
     // Of 13 Collections in the REST institution, one is not available for
     // the AutoTest account due to permission control.
     assertEquals(count, 12);
@@ -70,6 +74,8 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     // The purpose of checking 'security' is to confirm whether full details is returned
     // because 'security' is only available when an entity's full detail is accessible.
     assertEquals(results.size(), 2);
+    logger.info(results.toString());
+    assertTrue(super.hasAuthenticatedSession());
     assertNotNull(results.get(0).get("security"));
     assertNull(results.get(1).get("security"));
   }
