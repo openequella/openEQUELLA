@@ -15,26 +15,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig, SelectionSessionInfo } from "../AppConfig";
+import { AppConfig, getRenderData, SelectionSessionInfo } from "../AppConfig";
+
 /**
- * Build a Selection Session specific ItemSummary Link.
- * @param selectionSessionInfo An object containing information of a Selection Session such as the layout and ID
+ * An internal Type guard used to check whether an object is of type SelectionSessionInfo.
+ * @param data The data to be checked
+ */
+const isSelectionSessionInfo = (
+  data: unknown
+): data is { [K in keyof SelectionSessionInfo]: unknown } =>
+  typeof data === "object" && data !== null && "stateId" in data;
+
+/**
+ * Returns true if the Selection Session info provided by renderData is neither null nor undefined.
+ */
+export const isSelectionSessionOpen = (): boolean =>
+  isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
+
+/**
+ * Build a Selection Session specific ItemSummary Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
  * @param uuid The UUID of an Item
  * @param version The version of an Item
  */
 export const buildSelectionSessionItemSummaryLink = (
-  selectionSessionInfo: SelectionSessionInfo,
   uuid: string,
   version: number
 ): string => {
-  const { stateId, integId, layout } = selectionSessionInfo;
-  const itemSummaryPageLink = AppConfig.baseUrl.concat(
-    `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
-  );
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
+    const { stateId, integId, layout } = selectionSessionInfo;
+    const itemSummaryPageLink = AppConfig.baseUrl.concat(
+      `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
+    );
 
-  // integId can be null in 'Resource Selector'.
-  if (integId) {
-    return itemSummaryPageLink.concat(`&_int.id=${integId}`);
+    // integId can be null in 'Resource Selector'.
+    if (integId) {
+      return itemSummaryPageLink.concat(`&_int.id=${integId}`);
+    }
+    return itemSummaryPageLink;
+  } else {
+    throw new TypeError("The type of Selection Session Info is incorrect.");
   }
-  return itemSummaryPageLink;
 };
