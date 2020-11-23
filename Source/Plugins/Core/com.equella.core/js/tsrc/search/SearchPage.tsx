@@ -27,7 +27,7 @@ import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo from "../components/MessageInfo";
-import { RenderData } from "../mainui";
+import type { RenderData } from "../mainui";
 import {
   templateDefaults,
   templateError,
@@ -299,7 +299,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <MessageInfo
       open={showSnackBar}
       onClose={() => setShowSnackBar(false)}
-      title={languageStrings.searchpage.shareSearchConfirmationText}
+      title={searchStrings.shareSearchConfirmationText}
       variant="success"
     />
   );
@@ -311,9 +311,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       location.pathname
     }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
 
-    navigator.clipboard.writeText(searchUrl).then(() => {
-      setShowSnackBar(true);
-    });
+    navigator.clipboard
+      .writeText(searchUrl)
+      .then(() => {
+        setShowSnackBar(true);
+      })
+      .catch(() => handleError);
   };
 
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
