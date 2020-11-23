@@ -17,27 +17,24 @@
  */
 import { AppConfig, getRenderData, SelectionSessionInfo } from "../AppConfig";
 
-const selectionSessionInfo:
-  | SelectionSessionInfo
-  | undefined
-  | null = getRenderData()?.selectionSessionInfo;
-
 /**
- * Type guard to check whether an object is of type SelectionSessionInfo.
+ * An internal Type guard used to check whether an object is of type SelectionSessionInfo.
  * @param data The data to be checked
  */
-const isSelectionSession = (
+const isSelectionSessionInfo = (
   data: unknown
 ): data is { [K in keyof SelectionSessionInfo]: unknown } =>
   typeof data === "object" && data !== null && "stateId" in data;
 
 /**
- * True if the Selection Session info provided by renderData is neither null nor undefined.
+ * Returns true if the Selection Session info provided by renderData is neither null nor undefined.
  */
-export const inSelectionSession = isSelectionSession(selectionSessionInfo);
+export const isSelectionSessionOpen = (): boolean =>
+  isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
 /**
- * Build a Selection Session specific ItemSummary Link.
+ * Build a Selection Session specific ItemSummary Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
  * @param uuid The UUID of an Item
  * @param version The version of an Item
  */
@@ -45,7 +42,8 @@ export const buildSelectionSessionItemSummaryLink = (
   uuid: string,
   version: number
 ): string => {
-  if (isSelectionSession(selectionSessionInfo)) {
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
     const { stateId, integId, layout } = selectionSessionInfo;
     const itemSummaryPageLink = AppConfig.baseUrl.concat(
       `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`

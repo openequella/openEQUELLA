@@ -51,7 +51,7 @@ import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
-  inSelectionSession,
+  isSelectionSessionOpen,
 } from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
@@ -149,6 +149,7 @@ export default function SearchResult({
   }
   const nop = () => {}; // todo: remove this in next PR.
   const classes = useStyles();
+  const inSelectionSession: boolean = isSelectionSessionOpen();
 
   const [attachExpanded, setAttachExpanded] = useState(
     displayOptions?.standardOpen ?? false
