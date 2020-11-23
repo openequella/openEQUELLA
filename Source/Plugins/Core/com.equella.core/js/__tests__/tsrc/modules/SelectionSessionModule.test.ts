@@ -17,32 +17,41 @@
  */
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import type { SelectionSessionInfo } from "../../../tsrc/AppConfig";
+import * as AppConfig from "../../../tsrc/AppConfig";
 import { buildSelectionSessionItemSummaryLink } from "../../../tsrc/modules/SelectionSessionModule";
 
+const basicSelectionSessionInfo: SelectionSessionInfo = {
+  stateId: "1",
+  layout: "coursesearch",
+};
+const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
+const updateMockGetRenderData = (
+  selectionSessionInfo: SelectionSessionInfo
+) => {
+  mockGetRenderData.mockReturnValue({
+    baseResources: "p/r/2020.2.0/com.equella.core/",
+    newUI: true,
+    autotestMode: false,
+    newSearch: true,
+    selectionSessionInfo: selectionSessionInfo,
+  });
+};
+
 describe("buildSelectionSessionItemSummaryLink", () => {
-  const selectionSessionInfo: SelectionSessionInfo = {
-    stateId: "1",
-    layout: "coursesearch",
-  };
   const { uuid, version } = getSearchResult.results[0];
 
   it("builds basic URLs for accessing ItemSummary pages in Selection Session mode", () => {
-    const link = buildSelectionSessionItemSummaryLink(
-      selectionSessionInfo,
-      uuid,
-      version
-    );
+    updateMockGetRenderData(basicSelectionSessionInfo);
+    const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
       "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch"
     );
   });
 
   it("will include the Integration ID in the URL if provided in SelectionSessionInfo", () => {
-    const link = buildSelectionSessionItemSummaryLink(
-      { ...selectionSessionInfo, integId: "2" },
-      uuid,
-      version
-    );
+    updateMockGetRenderData({ ...basicSelectionSessionInfo, integId: "2" });
+
+    const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
       "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch&_int.id=2"
     );
