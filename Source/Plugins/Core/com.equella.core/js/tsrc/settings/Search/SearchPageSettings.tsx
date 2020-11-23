@@ -48,12 +48,14 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     disabled: false,
   });
 
-  const [initialSearchSettings, setInitialSearchSettings] = React.useState<
-    SearchSettings
-  >(defaultSearchSettings);
-  const [initialCloudSettings, setInitialCloudSettings] = React.useState<
-    CloudSettings
-  >({
+  const [
+    initialSearchSettings,
+    setInitialSearchSettings,
+  ] = React.useState<SearchSettings>(defaultSearchSettings);
+  const [
+    initialCloudSettings,
+    setInitialCloudSettings,
+  ] = React.useState<CloudSettings>({
     disabled: false,
   });
 

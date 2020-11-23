@@ -52,9 +52,10 @@ const beforeunload = function (e: BeforeUnloadEvent) {
 };
 
 export default function IndexPage() {
-  const [currentUser, setCurrentUser] = React.useState<
-    OEQ.LegacyContent.CurrentUserDetails
-  >();
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
 
@@ -70,9 +71,10 @@ export default function IndexPage() {
   }>();
 
   const [preventNavMessage, setPreventNavMessage] = React.useState<string>();
-  const [legacyContentProps, setLegacyContentProps] = React.useState<
-    LegacyContentProps
-  >({
+  const [
+    legacyContentProps,
+    setLegacyContentProps,
+  ] = React.useState<LegacyContentProps>({
     enabled: false,
     pathname: "",
     search: "",
