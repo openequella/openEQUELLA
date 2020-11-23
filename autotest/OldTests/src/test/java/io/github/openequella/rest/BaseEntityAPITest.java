@@ -76,7 +76,6 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     assertEquals(results.size(), 2);
     logger.info(results.toString());
     assertTrue(super.hasAuthenticatedSession());
-    logger.info(super.whoAmI());
     assertNotNull(results.get(0).get("security"));
     assertNull(results.get(1).get("security"));
   }

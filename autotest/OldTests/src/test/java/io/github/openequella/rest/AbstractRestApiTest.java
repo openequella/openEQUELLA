@@ -76,15 +76,4 @@ public class AbstractRestApiTest {
     String userDetails = method.getResponseBodyAsString();
     return !userDetails.contains("\"id\":\"guest\"");
   }
-
-  protected String whoAmI() throws IOException {
-    final String userDetailsEndpoint =
-        getTestConfig().getInstitutionUrl() + "api/content/currentuser";
-    final HttpMethod method = new GetMethod(userDetailsEndpoint);
-    if (makeClientRequest(method) != HttpStatus.SC_OK) {
-      throw new RuntimeException(
-          "Failed to check authentication status, HTTP response code:" + method.getStatusCode());
-    }
-    return method.getResponseBodyAsString();
-  }
 }
