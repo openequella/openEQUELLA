@@ -1,8 +1,6 @@
 package io.github.openequella.rest;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -70,8 +68,7 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     // The purpose of checking 'security' is to confirm whether full details is returned
     // because 'security' is only available when an entity's full detail is accessible.
     assertEquals(results.size(), 2);
-    assertNotNull(results.get(0).get("security"));
-    assertNull(results.get(1).get("security"));
+    assertEquals(results.findValues("security").size(), 1);
   }
 
   private int getResultLength(JsonNode result) {
