@@ -43,7 +43,6 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
-import { getRenderData } from "../../AppConfig";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import OEQThumb from "../../components/OEQThumb";
@@ -54,6 +53,7 @@ import {
   buildSelectionSessionItemSummaryLink,
   selectResource,
   SelectResourceProps,
+  isSelectionSessionOpen,
 } from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
@@ -149,10 +149,9 @@ export default function SearchResult({
     attachment: OEQ.Search.Attachment;
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
-  const renderData = getRenderData();
-  const selectionSessionData = renderData?.selectionSessionInfo;
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
+  const inSelectionSession: boolean = isSelectionSessionOpen();
 
   const [attachExpanded, setAttachExpanded] = useState(
     displayOptions?.standardOpen ?? false
@@ -330,14 +329,13 @@ export default function SearchResult({
             >
               <ListItemText color="primary" primary={description} />
             </ItemAttachmentLink>
-            {selectionSessionData && (
+            {inSelectionSession && (
               <ListItemSecondaryAction>
                 <ResourceSelector
                   labelText={selectResourceStrings.attachment}
                   isStopPropagation
                   onClick={() => {
                     handleSelectResource({
-                      selectionSessionData,
                       itemKey,
                       attachments: [id],
                     });
@@ -354,7 +352,7 @@ export default function SearchResult({
       <Typography>{searchResultStrings.attachments}</Typography>
     );
 
-    const accordionSummaryContent = selectionSessionData ? (
+    const accordionSummaryContent = inSelectionSession ? (
       <Grid container alignItems="center">
         <Grid item>{accordionText}</Grid>
         <Grid>
@@ -366,7 +364,6 @@ export default function SearchResult({
                 ({ attachment }) => attachment.id
               );
               handleSelectResource({
-                selectionSessionData,
                 itemKey,
                 attachments,
               });
@@ -414,11 +411,7 @@ export default function SearchResult({
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
-            <List
-              component="div"
-              disablePadding
-              className={classes.attachmentListItem}
-            >
+            <List disablePadding className={classes.attachmentListItem}>
               {attachmentsList}
             </List>
           </AccordionDetails>
@@ -435,13 +428,9 @@ export default function SearchResult({
     const basicLink = (
       <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
     );
-    return selectionSessionData ? (
+    return inSelectionSession ? (
       <MUILink
-        href={buildSelectionSessionItemSummaryLink(
-          selectionSessionData,
-          uuid,
-          version
-        )}
+        href={buildSelectionSessionItemSummaryLink(uuid, version)}
         underline="none"
       >
         {itemTitle}
@@ -451,7 +440,7 @@ export default function SearchResult({
     );
   };
 
-  const itemPrimaryContent = selectionSessionData ? (
+  const itemPrimaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{itemLink()}</Grid>
       <Grid item>
@@ -460,7 +449,6 @@ export default function SearchResult({
           isStopPropagation
           onClick={() => {
             handleSelectResource({
-              selectionSessionData,
               itemKey,
             });
           }}

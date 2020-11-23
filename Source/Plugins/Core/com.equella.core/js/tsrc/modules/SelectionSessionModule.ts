@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import { API_BASE_URL, AppConfig, SelectionSessionInfo } from "../AppConfig";
+import {
+  API_BASE_URL,
+  AppConfig,
+  getRenderData,
+  SelectionSessionInfo,
+} from "../AppConfig";
 import { LegacyContentResponse } from "../legacycontent/LegacyContent";
 
 /**
@@ -80,10 +85,6 @@ interface SelectionSessionPostData {
  */
 export interface SelectResourceProps {
   /**
-   * Current Selection Session data
-   */
-  selectionSessionData: SelectionSessionInfo;
-  /**
    * A string including an Item's UUID and version (e.g. 91a90483-7888-403c-9578-e00c592939ce/1/)
    */
   itemKey: string;
@@ -98,6 +99,21 @@ export interface SelectResourceProps {
 declare const CourseList: {
   updateCourseList: (data: unknown) => void;
 };
+
+/**
+ * An internal Type guard used to check whether an object is of type SelectionSessionInfo.
+ * @param data The data to be checked
+ */
+const isSelectionSessionInfo = (
+  data: unknown
+): data is { [K in keyof SelectionSessionInfo]: unknown } =>
+  typeof data === "object" && data !== null && "stateId" in data;
+
+/**
+ * Returns true if the Selection Session info provided by renderData is neither null nor undefined.
+ */
+export const isSelectionSessionOpen = (): boolean =>
+  isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
 const submitBaseUrl = `${API_BASE_URL}/content/submit`;
 
@@ -129,26 +145,30 @@ const submitSelection = <T>(
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
 /**
- * Build a Selection Session specific ItemSummary Link.
- * @param selectionSessionInfo An object containing information of a Selection Session such as the layout and ID
+ * Build a Selection Session specific ItemSummary Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
  * @param uuid The UUID of an Item
  * @param version The version of an Item
  */
 export const buildSelectionSessionItemSummaryLink = (
-  selectionSessionInfo: SelectionSessionInfo,
   uuid: string,
   version: number
 ): string => {
-  const { stateId, integId, layout } = selectionSessionInfo;
-  const itemSummaryPageLink = AppConfig.baseUrl.concat(
-    `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
-  );
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
+    const { stateId, integId, layout } = selectionSessionInfo;
+    const itemSummaryPageLink = AppConfig.baseUrl.concat(
+      `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
+    );
 
-  // integId can be null in 'Resource Selector'.
-  if (integId) {
-    return itemSummaryPageLink.concat(`&_int.id=${integId}`);
+    // integId can be null in 'Resource Selector'.
+    if (integId) {
+      return itemSummaryPageLink.concat(`&_int.id=${integId}`);
+    }
+    return itemSummaryPageLink;
+  } else {
+    throw new TypeError("The type of Selection Session Info is incorrect.");
   }
-  return itemSummaryPageLink;
 };
 
 /**
@@ -255,14 +275,19 @@ const selectResourceForNonCourseList = (
  * @param attachments A list of UUIDs of selected attachments
  */
 export const selectResource = ({
-  selectionSessionData,
   itemKey,
   attachments = [],
-}: SelectResourceProps): Promise<void> =>
-  selectionSessionData.layout === "coursesearch"
-    ? selectResourceForCourseList(selectionSessionData, itemKey, attachments)
-    : selectResourceForNonCourseList(
-        selectionSessionData,
-        itemKey,
-        attachments
-      );
+}: SelectResourceProps): Promise<void> => {
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
+    return selectionSessionInfo.layout === "coursesearch"
+      ? selectResourceForCourseList(selectionSessionInfo, itemKey, attachments)
+      : selectResourceForNonCourseList(
+          selectionSessionInfo,
+          itemKey,
+          attachments
+        );
+  } else {
+    throw new TypeError("The type of Selection Session Info is incorrect.");
+  }
+};

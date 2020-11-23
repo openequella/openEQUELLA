@@ -35,6 +35,10 @@ export interface ResourceSelectorProps {
   isStopPropagation?: boolean;
 }
 
+/**
+ * This component is basically a double arrow icon wrapped by a Tooltip.
+ * A typical user case is selecting resources from the new search UI.
+ */
 export const ResourceSelector = ({
   labelText,
   onClick,
