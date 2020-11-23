@@ -81,19 +81,6 @@ interface SelectionSessionPostData {
 }
 
 /**
- * Data structure for selecting resources from new search UI.
- */
-export interface SelectResourceProps {
-  /**
-   * A string including an Item's UUID and version (e.g. 91a90483-7888-403c-9578-e00c592939ce/1/)
-   */
-  itemKey: string;
-  /**
-   * Selected attachments
-   */
-  attachments?: string[];
-}
-/**
  * Defined in 'courselist.js', this variable provides functionality of manipulating the DOM of course list.
  */
 declare const CourseList: {
@@ -115,13 +102,22 @@ const isSelectionSessionInfo = (
 export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
+/**
+ * Centralise the validation of 'selectionSessionInfo' with type checking.
+ * Return it if the checking is passed, or throw a type error.
+ */
+const getSelectionSessionInfo = (): SelectionSessionInfo => {
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
+    return selectionSessionInfo;
+  }
+  throw new TypeError("The type of Selection Session Info is incorrect.");
+};
+
 const submitBaseUrl = `${API_BASE_URL}/content/submit`;
 
-const getBasicPostData = ({
-  stateId,
-  integId,
-  layout,
-}: SelectionSessionInfo) => {
+const getBasicPostData = () => {
+  const { stateId, integId, layout } = getSelectionSessionInfo();
   const basicPostData = {
     "_sl.stateId": [`${stateId}`],
     a: [layout],
@@ -154,21 +150,16 @@ export const buildSelectionSessionItemSummaryLink = (
   uuid: string,
   version: number
 ): string => {
-  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
-  if (isSelectionSessionInfo(selectionSessionInfo)) {
-    const { stateId, integId, layout } = selectionSessionInfo;
-    const itemSummaryPageLink = AppConfig.baseUrl.concat(
-      `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
-    );
+  const { stateId, integId, layout } = getSelectionSessionInfo();
+  const itemSummaryPageLink = AppConfig.baseUrl.concat(
+    `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
+  );
 
-    // integId can be null in 'Resource Selector'.
-    if (integId) {
-      return itemSummaryPageLink.concat(`&_int.id=${integId}`);
-    }
-    return itemSummaryPageLink;
-  } else {
-    throw new TypeError("The type of Selection Session Info is incorrect.");
+  // integId can be null in 'Resource Selector'.
+  if (integId) {
+    return itemSummaryPageLink.concat(`&_int.id=${integId}`);
   }
+  return itemSummaryPageLink;
 };
 
 /**
@@ -176,9 +167,8 @@ export const buildSelectionSessionItemSummaryLink = (
  * 'selectOrAdd' mode. In this mode, what is returned from 'searching.do' is an
  * object of 'LegacyContentResponse'.
  *
- * So we need to convert the string that represents the HTML of the whole page
- * to a Document, and then extract the content of node "selection-summary",
- * and lastly use jQuery to update the DOM.
+ * So we need to convert the HTML string to a Document, and then extract the content
+ * of node "selection-summary", and lastly use jQuery to update the DOM.
  *
  * @param legacyContent An object of LegacyContentResponse returned from server
  */
@@ -197,11 +187,10 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 /**
  * Select resources in 'structured'. The approach is to call the server ajax method 'reloadFolder'
  * which is defined in 'CourseListSection'. The parameter passed to this method includes a DIV ID,
- * the currect selected folder ID and a resource select event handler. In our case, the ID is 'courselistajax' and
- * the folder ID is skipped, and the event is either 'selectItem' or 'selectAllAttachments'.
+ * the current selected folder ID and server side event handler. In our case, the ID is 'courselistajax' and
+ * the folder ID is skipped, and the event handler is either 'selectItem' or 'selectAllAttachments'.
  */
 const selectResourceForCourseList = (
-  selectionSessionInfo: SelectionSessionInfo,
   itemKey: string,
   attachmentUUIDs: string[] = []
 ): Promise<void> => {
@@ -225,7 +214,7 @@ const selectResourceForCourseList = (
   const postData: SelectionSessionPostData = {
     event__: ["_slcl.reloadFolder"], // This refers to the method 'reloadFolder' defined in 'CourseListSection'.
     eventp__0: [`${JSON.stringify(courseListUpdateData)}`],
-    ...getBasicPostData(selectionSessionInfo),
+    ...getBasicPostData(),
   };
 
   return submitSelection(
@@ -236,12 +225,11 @@ const selectResourceForCourseList = (
 };
 
 /**
- * Select resources in 'selectOrAdd'. The approach is similar to that of 'selectResourceForCourseList'.
- * The difference is we call the resource select event handler directly. Details of those handlers can
+ * Select resources in 'selectOrAdd'. The approach is similar to 'selectResourceForCourseList'.
+ * The difference is we call the resource select event handlers directly. Details of those handlers can
  * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
  */
 const selectResourceForNonCourseList = (
-  selectionSessionInfo: SelectionSessionInfo,
   itemKey: string,
   attachmentUUIDs: string[]
 ): Promise<void> => {
@@ -252,13 +240,13 @@ const selectResourceForNonCourseList = (
           eventp__0: [attachmentUUIDs.join(",")],
           eventp__1: [`${itemKey}`],
           eventp__2: [null],
-          ...getBasicPostData(selectionSessionInfo),
+          ...getBasicPostData(),
         }
       : {
           event__: ["sile.select"],
           eventp__0: [`${itemKey}`],
           eventp__1: [null],
-          ...getBasicPostData(selectionSessionInfo),
+          ...getBasicPostData(),
         };
 
   return submitSelection<LegacyContentResponse>(
@@ -270,24 +258,15 @@ const selectResourceForNonCourseList = (
 
 /**
  * Submit a request to select an ItemSummary page, an attachment or all attachments of an Item.
- * @param selectionSessionInfo The mandatory information of current Selection Session
  * @param itemKey The unique key including the selected Item's UUID and version
  * @param attachments A list of UUIDs of selected attachments
  */
-export const selectResource = ({
-  itemKey,
-  attachments = [],
-}: SelectResourceProps): Promise<void> => {
-  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
-  if (isSelectionSessionInfo(selectionSessionInfo)) {
-    return selectionSessionInfo.layout === "coursesearch"
-      ? selectResourceForCourseList(selectionSessionInfo, itemKey, attachments)
-      : selectResourceForNonCourseList(
-          selectionSessionInfo,
-          itemKey,
-          attachments
-        );
-  } else {
-    throw new TypeError("The type of Selection Session Info is incorrect.");
-  }
+export const selectResource = (
+  itemKey: string,
+  attachments: string[]
+): Promise<void> => {
+  const { layout } = getSelectionSessionInfo();
+  return layout === "coursesearch"
+    ? selectResourceForCourseList(itemKey, attachments)
+    : selectResourceForNonCourseList(itemKey, attachments);
 };

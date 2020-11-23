@@ -52,7 +52,6 @@ import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
   selectResource,
-  SelectResourceProps,
   isSelectionSessionOpen,
 } from "../../modules/SelectionSessionModule";
 import { determineViewer } from "../../modules/ViewerModule";
@@ -219,8 +218,11 @@ export default function SearchResult({
     setAttachExpanded(!attachExpanded);
   };
 
-  const handleSelectResource = (selectResourceInfo: SelectResourceProps) => {
-    selectResource(selectResourceInfo).catch((error) => handleError(error));
+  const handleSelectResource = (
+    itemKey: string,
+    attachments: string[] = []
+  ) => {
+    selectResource(itemKey, attachments).catch((error) => handleError(error));
   };
 
   const generateItemMetadata = () => {
@@ -335,10 +337,7 @@ export default function SearchResult({
                   labelText={selectResourceStrings.attachment}
                   isStopPropagation
                   onClick={() => {
-                    handleSelectResource({
-                      itemKey,
-                      attachments: [id],
-                    });
+                    handleSelectResource(itemKey, [id]);
                   }}
                 />
               </ListItemSecondaryAction>
@@ -363,10 +362,7 @@ export default function SearchResult({
               const attachments = attachmentsWithViewerDetails.map(
                 ({ attachment }) => attachment.id
               );
-              handleSelectResource({
-                itemKey,
-                attachments,
-              });
+              handleSelectResource(itemKey, attachments);
             }}
           />
         </Grid>
@@ -448,9 +444,7 @@ export default function SearchResult({
           labelText={selectResourceStrings.summaryPage}
           isStopPropagation
           onClick={() => {
-            handleSelectResource({
-              itemKey,
-            });
+            handleSelectResource(itemKey);
           }}
         />
       </Grid>
