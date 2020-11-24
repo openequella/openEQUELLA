@@ -65,17 +65,19 @@ describe("buildSelectionSessionItemSummaryLink", () => {
       "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch&_int.id=2"
     );
   });
+});
 
+describe("isSelectionSessionOpen", () => {
   it.each([
-    [true, "when selectionSessionInfo has correct type", basicRenderData],
+    [true, "selectionSessionInfo has correct type", basicRenderData],
     [
       false,
-      "when selectionSessionInfo is null",
+      "selectionSessionInfo is null",
       { ...basicRenderData, selectionSessionInfo: null },
     ],
-    [false, "when renderData is undefined", undefined],
+    [false, "renderData is undefined", undefined],
   ])(
-    "return %s %s",
+    "return %s when %s",
     (
       inSelectionSession: boolean,
       when: string,
