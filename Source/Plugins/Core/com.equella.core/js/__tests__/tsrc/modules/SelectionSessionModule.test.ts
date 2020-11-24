@@ -16,32 +16,38 @@
  * limitations under the License.
  */
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import type { SelectionSessionInfo } from "../../../tsrc/AppConfig";
+import type { RenderData, SelectionSessionInfo } from "../../../tsrc/AppConfig";
 import * as AppConfig from "../../../tsrc/AppConfig";
-import { buildSelectionSessionItemSummaryLink } from "../../../tsrc/modules/SelectionSessionModule";
+import {
+  buildSelectionSessionItemSummaryLink,
+  isSelectionSessionOpen,
+} from "../../../tsrc/modules/SelectionSessionModule";
 
 const basicSelectionSessionInfo: SelectionSessionInfo = {
   stateId: "1",
   layout: "coursesearch",
 };
+const withIntegId: SelectionSessionInfo = {
+  ...basicSelectionSessionInfo,
+  integId: "2",
+};
+const basicRenderData: RenderData = {
+  baseResources: "p/r/2020.2.0/com.equella.core/",
+  newUI: true,
+  autotestMode: false,
+  newSearch: true,
+  selectionSessionInfo: basicSelectionSessionInfo,
+};
 const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
-const updateMockGetRenderData = (
-  selectionSessionInfo: SelectionSessionInfo
-) => {
-  mockGetRenderData.mockReturnValue({
-    baseResources: "p/r/2020.2.0/com.equella.core/",
-    newUI: true,
-    autotestMode: false,
-    newSearch: true,
-    selectionSessionInfo: selectionSessionInfo,
-  });
+const updateMockGetRenderData = (renderData?: RenderData) => {
+  mockGetRenderData.mockReturnValue(renderData);
 };
 
 describe("buildSelectionSessionItemSummaryLink", () => {
   const { uuid, version } = getSearchResult.results[0];
 
   it("builds basic URLs for accessing ItemSummary pages in Selection Session mode", () => {
-    updateMockGetRenderData(basicSelectionSessionInfo);
+    updateMockGetRenderData(basicRenderData);
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
       "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch"
@@ -49,11 +55,34 @@ describe("buildSelectionSessionItemSummaryLink", () => {
   });
 
   it("will include the Integration ID in the URL if provided in SelectionSessionInfo", () => {
-    updateMockGetRenderData({ ...basicSelectionSessionInfo, integId: "2" });
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: withIntegId,
+    });
 
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
       "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch&_int.id=2"
     );
   });
+
+  it.each([
+    [true, "when selectionSessionInfo has correct type", basicRenderData],
+    [
+      false,
+      "when selectionSessionInfo is null",
+      { ...basicRenderData, selectionSessionInfo: null },
+    ],
+    [false, "when renderData is undefined", undefined],
+  ])(
+    "return %s %s",
+    (
+      inSelectionSession: boolean,
+      when: string,
+      renderData: RenderData | undefined
+    ) => {
+      updateMockGetRenderData(renderData);
+      expect(isSelectionSessionOpen()).toBe(inSelectionSession);
+    }
+  );
 });
