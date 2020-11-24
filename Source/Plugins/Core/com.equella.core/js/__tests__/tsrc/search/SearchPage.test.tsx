@@ -82,11 +82,13 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
   "queryStringParamsToSearchOptions"
 );
+//i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
   clipboard: {
-    writeText: () => {},
+    writeText: jest.fn(),
   },
 });
+window.navigator.clipboard.writeText = jest.fn();
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
@@ -688,13 +690,15 @@ describe("<SearchPage/>", () => {
 
   it("should copy a search link to clipboard, and show a snackbar", async () => {
     const mockClipboard = jest.spyOn(navigator.clipboard, "writeText");
-    const copySearchButton = screen.getByTitle("Copy search link to clipboard");
+    const copySearchButton = screen.getByTitle(
+      languageStrings.searchpage.shareSearchHelperText
+    );
     mockClipboard.mockResolvedValueOnce();
     await act(async () => {
       copySearchButton.click();
     });
     expect(
-      screen.getByText("Search link saved to clipboard")
+      screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
     ).toBeInTheDocument();
   });
 });

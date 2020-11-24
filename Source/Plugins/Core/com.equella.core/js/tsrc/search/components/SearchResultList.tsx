@@ -30,7 +30,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Share } from "@material-ui/icons";
+import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
