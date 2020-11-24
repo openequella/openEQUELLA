@@ -65,12 +65,11 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -191,7 +190,7 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
     for (Long itemId : itemIds) {
       Query query =
           session.createQuery(
-              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ? order by a.attindex");
+              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ?0 order by a.attindex");
       query.setParameter(0, itemId);
       int index = 0;
       List<Object[]> attList = query.list();
@@ -312,7 +311,7 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
   @AccessType("field")
   @Entity(name = "ActivityWizard")
   public static class FakeActivityWizard extends FakeBaseEntity {
-    @CollectionOfElements(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "actwiz_id")
     List<WebLink> links = new ArrayList<WebLink>();

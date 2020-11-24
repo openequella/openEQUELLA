@@ -17,13 +17,24 @@ import org.testng.annotations.BeforeClass;
 @TestInstitution("rest")
 public class AbstractRestApiTest {
 
-  protected static final TestConfig TEST_CONFIG = new TestConfig(AbstractRestApiTest.class);
   protected static final String USERNAME = "AutoTest";
   protected static final String PASSWORD = "automated";
-  private static final String AUTH_API_ENDPOINT = TEST_CONFIG.getInstitutionUrl() + "api/auth";
+
+  protected TestConfig testConfig = null;
 
   protected final HttpClient httpClient = new HttpClient();
   protected final ObjectMapper mapper = new ObjectMapper();
+
+  public String getAuthApiEndpoint() {
+    return getTestConfig().getInstitutionUrl() + "api/auth";
+  }
+
+  protected TestConfig getTestConfig() {
+    if (testConfig == null) {
+      testConfig = new TestConfig(AbstractRestApiTest.class);
+    }
+    return testConfig;
+  }
 
   @BeforeClass
   public void login() throws IOException {
@@ -40,7 +51,7 @@ public class AbstractRestApiTest {
   }
 
   protected HttpMethod buildLoginMethod(String username, String password) {
-    final String loginEndpoint = AUTH_API_ENDPOINT + "/login";
+    final String loginEndpoint = getAuthApiEndpoint() + "/login";
     final NameValuePair[] queryVals = {
       new NameValuePair("username", username), new NameValuePair("password", password)
     };
@@ -50,13 +61,13 @@ public class AbstractRestApiTest {
   }
 
   protected HttpMethod buildLogoutMethod() {
-    final String logoutEndpoint = AUTH_API_ENDPOINT + "/logout";
-    final HttpMethod method = new PutMethod(logoutEndpoint);
-    return method;
+    final String logoutEndpoint = getAuthApiEndpoint() + "/logout";
+    return new PutMethod(logoutEndpoint);
   }
 
   protected boolean hasAuthenticatedSession() throws IOException {
-    final String userDetailsEndpoint = TEST_CONFIG.getInstitutionUrl() + "api/content/currentuser";
+    final String userDetailsEndpoint =
+        getTestConfig().getInstitutionUrl() + "api/content/currentuser";
     final HttpMethod method = new GetMethod(userDetailsEndpoint);
     if (makeClientRequest(method) != HttpStatus.SC_OK) {
       throw new RuntimeException(

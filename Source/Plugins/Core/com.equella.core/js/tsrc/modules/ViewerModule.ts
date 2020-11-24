@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { AppConfig } from "../AppConfig";
 import { isLightboxSupportedMimeType } from "../components/Lightbox";
 
 export type Viewer = "lightbox" | "link";
@@ -65,3 +66,24 @@ export const determineViewer = (
 
   return simpleLinkView;
 };
+
+/**
+ * Based on attachment type, builds either a direct link to a file attachment URL or uses the
+ * provided `viewUrl`.
+ *
+ * @param itemUuid The attachment item's UUID
+ * @param itemVersion The attachment item's version
+ * @param attachmentType The type of the attachment - as provided by the server
+ * @param viewUrl The default 'view' link provided by the server for the attachment
+ * @param fileAttachmentPath If attachment type of 'file' then the `filePath` provided by the server
+ */
+export const determineAttachmentViewUrl = (
+  itemUuid: string,
+  itemVersion: number,
+  attachmentType: string,
+  viewUrl: string,
+  fileAttachmentPath?: string
+): string =>
+  attachmentType === "file"
+    ? `${AppConfig.baseUrl}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`
+    : viewUrl;

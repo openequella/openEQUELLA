@@ -51,6 +51,7 @@ import javax.inject.Singleton;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +59,8 @@ import org.springframework.beans.BeanUtils;
 @Bind(InitialiserService.class)
 @Singleton
 public class InitialiserServiceImpl extends AbstractHibernateDao implements InitialiserService {
+  private static final Logger LOGGER = Logger.getLogger(InitialiserServiceImpl.class);
+
   private final Map<Class<?>, CacheObject> cache = new HashMap<Class<?>, CacheObject>();
 
   @Override
@@ -99,7 +102,22 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
    */
   private void evictFromSession(Set<Object> os) {
     for (Object o : os) {
-      getHibernateTemplate().evict(o);
+      try {
+        getHibernateTemplate().evict(o);
+      } catch (IllegalArgumentException iae) {
+        if (iae.getMessage().startsWith("Non-entity object instance passed to evict")) {
+          // This is being thrown in DefaultEvictEventListener.java:94
+          // Does not appear to be a problem in this case, so trapping
+          // and ignoring this specific case
+          LOGGER.debug(
+              "Ignoring error with type ["
+                  + o.getClass().getCanonicalName()
+                  + "]: "
+                  + iae.getMessage());
+        } else {
+          throw iae;
+        }
+      }
     }
   }
 

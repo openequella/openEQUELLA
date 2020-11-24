@@ -30,7 +30,6 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
-import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import {
@@ -41,6 +40,7 @@ import {
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -80,7 +80,7 @@ const mockSearchSettings = jest.spyOn(
 );
 const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
-  "convertParamsToSearchOptions"
+  "queryStringParamsToSearchOptions"
 );
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
@@ -100,7 +100,7 @@ jest
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
-  sortOrder: SearchSettingsModule.SortOrder.RANK,
+  sortOrder: "RANK",
   dateRangeQuickModeEnabled: true,
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
@@ -128,6 +128,7 @@ const renderSearchPage = async (
   window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
+  history.push({});
 
   const page = render(
     <Router history={history}>
@@ -472,9 +473,7 @@ describe("<SearchPage/>", () => {
   it("should clear search options and perform a new search", async () => {
     const { container } = page;
     const query = "clear query";
-    const sortingDropdown = screen.getByDisplayValue(
-      SearchSettingsModule.SortOrder.RANK
-    );
+    const sortingDropdown = screen.getByDisplayValue("RANK");
     const newSearchButton = screen.getByText(
       languageStrings.searchpage.newSearch
     );
@@ -492,7 +491,7 @@ describe("<SearchPage/>", () => {
     // Perform a new search and check.
     fireEvent.click(newSearchButton);
     await waitFor(() => {
-      expect(sortingDropdown).toHaveValue(SearchSettingsModule.SortOrder.RANK);
+      expect(sortingDropdown).toHaveValue("RANK");
       expect(getQueryBar(container)).toHaveValue("");
     });
     // Four searches have been performed: initial search, one for query change and
@@ -614,7 +613,7 @@ describe("<SearchPage/>", () => {
     // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchPageOptions,
-      sortOrder: SearchSettingsModule.SortOrder.DATEMODIFIED,
+      sortOrder: "DATEMODIFIED",
     });
   });
 
@@ -683,7 +682,7 @@ describe("<SearchPage/>", () => {
   });
 });
 
-describe("conversion of legacy query parameters to SearchPageOptions", () => {
+describe("conversion of parameters to SearchPageOptions", () => {
   const searchPageOptions: SearchPageOptions = {
     ...defaultSearchPageOptions,
     dateRangeQuickModeEnabled: false,
@@ -697,11 +696,10 @@ describe("conversion of legacy query parameters to SearchPageOptions", () => {
     jest.clearAllMocks();
   });
 
-  it("should call convertParamsToSearchOptions using query paramaters in url", async () => {
+  it("should call queryStringParamsToSearchOptions using query paramaters in url", async () => {
     await renderSearchPage("?q=test");
-    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledTimes(1);
-    expect(SearchModule.convertParamsToSearchOptions).toHaveBeenCalledWith(
-      "?q=test"
+    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
+      1
     );
   });
 });

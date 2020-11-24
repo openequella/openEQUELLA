@@ -39,71 +39,66 @@ public class RelationDaoImpl extends GenericInstitionalDaoImpl<Relation, Long>
     super(Relation.class);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllByFromItem(Item from) {
-    String query = "from Relation where firstItem = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, from);
+    String query = "from Relation where firstItem = ?0"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, from);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllByToItem(Item to) {
-    String query = "from Relation where secondItem = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, to);
+    String query = "from Relation where secondItem = ?0"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, to);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllByType(String type) {
-    String query = "from Relation where relationType = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, type);
+    String query = "from Relation where relationType = ?0"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, type);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllByFromItemAndType(Item from, String type) {
-    String query = "from Relation where firstItem = ? and relationType = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, new Object[] {from, type});
+    String query = "from Relation where firstItem = ?0 and relationType = ?1"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {from, type});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllByToItemAndType(Item to, String type) {
-    String query = "from Relation where secondItem = ? and relationType = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, new Object[] {to, type});
+    String query = "from Relation where secondItem = ?0 and relationType = ?1"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {to, type});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Long> getAllIdsForInstitution() {
-    String query = "select r.id from Relation r where r.firstItem.institution = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get()});
+    String query = "select r.id from Relation r where r.firstItem.institution = ?0"; // $NON-NLS-1$
+    return (Collection<Long>)
+        getHibernateTemplate().find(query, new Object[] {CurrentInstitution.get()});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Relation> getAllMentioningItem(Item item) {
-    String query = "from Relation where firstItem = ? or secondItem = ?"; // $NON-NLS-1$
-    return getHibernateTemplate().find(query, new Object[] {item, item});
+    String query = "from Relation where firstItem = ?0 or secondItem = ?1"; // $NON-NLS-1$
+    return (Collection<Relation>) getHibernateTemplate().find(query, new Object[] {item, item});
   }
 
   @Override
   public void delete(Item item) {
-    String query = "delete from Relation where firstItem = ? or secondItem = ?"; // $NON-NLS-1$
+    String query = "delete from Relation where firstItem = ?0 or secondItem = ?1"; // $NON-NLS-1$
     getHibernateTemplate().bulkUpdate(query, new Object[] {item, item});
   }
 
-  @SuppressWarnings({"unchecked", "nls"})
+  @SuppressWarnings("nls")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Relation> getAllMentioningItem(ItemKey itemId) {
     String query =
         "from Relation where (firstItem.uuid = :uuid and firstItem.version = :version) or (secondItem.uuid = :uuid and secondItem.version = :version)";
-    return getHibernateTemplate()
-        .findByNamedParam(
-            query,
-            new String[] {"uuid", "version"},
-            new Object[] {itemId.getUuid(), itemId.getVersion()});
+    return (List<Relation>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                query,
+                new String[] {"uuid", "version"},
+                new Object[] {itemId.getUuid(), itemId.getVersion()});
   }
 }

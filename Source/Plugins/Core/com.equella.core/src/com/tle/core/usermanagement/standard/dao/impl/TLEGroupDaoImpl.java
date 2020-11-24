@@ -26,7 +26,6 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.dao.impl.AbstractTreeDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.usermanagement.standard.dao.TLEGroupDao;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +33,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,15 +53,15 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
    * )
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEGroup> getGroupsContainingUser(String userID) {
     Preconditions.checkNotNull(userID);
 
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from TLEGroup g join g.users u where u = :userID and g.institution = :institution",
-            new String[] {"userID", "institution"},
-            new Object[] {userID, CurrentInstitution.get()});
+    return (List<TLEGroup>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from TLEGroup g join g.users u where u = :userID and g.institution = :institution",
+                new String[] {"userID", "institution"},
+                new Object[] {userID, CurrentInstitution.get()});
   }
 
   /*
@@ -70,14 +69,13 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
    * @see com.tle.core.dao.user.TLEGroupDao#listAllGroups()
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEGroup> listAllGroups() {
-    return getHibernateTemplate()
-        .find("from TLEGroup where institution = ?", CurrentInstitution.get());
+    return (List<TLEGroup>)
+        getHibernateTemplate()
+            .find("from TLEGroup where institution = ?0", CurrentInstitution.get());
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<String> getUsersInGroup(String parentGroupID, boolean recurse) {
     final TLEGroup parentGroup = findByUuid(parentGroupID);
     StringBuilder query = new StringBuilder("SELECT ELEMENTS(g.users) FROM TLEGroup g ");
@@ -90,15 +88,16 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
     }
     query.append(')');
 
-    return getHibernateTemplate()
-        .findByNamedParam(
-            query.toString(),
-            new String[] {
-              "parentGroup", "institution",
-            },
-            new Object[] {
-              parentGroup, CurrentInstitution.get(),
-            });
+    return (List<String>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                query.toString(),
+                new String[] {
+                  "parentGroup", "institution",
+                },
+                new Object[] {
+                  parentGroup, CurrentInstitution.get(),
+                });
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
@@ -109,8 +108,7 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createSQLQuery(
                             "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id = :institutionId");
@@ -147,8 +145,7 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createSQLQuery(
                             "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id = :institutionId");
@@ -187,16 +184,16 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<TLEGroup> getInformationForGroups(Collection<String> groups) {
     if (Check.isEmpty(groups)) {
       return new ArrayList<TLEGroup>();
     }
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from TLEGroup g where g.uuid in (:ids) and g.institution = :institution",
-            new String[] {"ids", "institution"},
-            new Object[] {groups, CurrentInstitution.get()});
+    return (List<TLEGroup>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from TLEGroup g where g.uuid in (:ids) and g.institution = :institution",
+                new String[] {"ids", "institution"},
+                new Object[] {groups, CurrentInstitution.get()});
   }
 
   @Override
@@ -208,15 +205,16 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
       q.append(
           "WHERE g.institution = :institution AND g.name LIKE :namequery AND :parent IN ELEMENTS(g.allParents)");
 
-      return getHibernateTemplate()
-          .findByNamedParam(
-              q.toString(),
-              new String[] {
-                "institution", "namequery", "parent",
-              },
-              new Object[] {
-                CurrentInstitution.get(), query, parentGroup,
-              });
+      return (List<TLEGroup>)
+          getHibernateTemplate()
+              .findByNamedParam(
+                  q.toString(),
+                  new String[] {
+                    "institution", "namequery", "parent",
+                  },
+                  new Object[] {
+                    CurrentInstitution.get(), query, parentGroup,
+                  });
     }
     return Lists.newArrayList();
   }

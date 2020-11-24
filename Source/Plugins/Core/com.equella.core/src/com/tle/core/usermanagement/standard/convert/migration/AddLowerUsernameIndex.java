@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 /** @author larry Refers to Redmine #6955 */
 @Bind

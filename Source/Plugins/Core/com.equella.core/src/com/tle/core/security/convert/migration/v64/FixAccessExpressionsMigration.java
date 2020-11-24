@@ -46,9 +46,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 /**
  * For the XML migration equivalent, see AclConverter

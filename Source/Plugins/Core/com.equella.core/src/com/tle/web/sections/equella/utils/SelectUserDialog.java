@@ -22,8 +22,13 @@ import static com.tle.web.sections.js.generic.statement.FunctionCallStatement.js
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.Item;
 import com.tle.common.Check;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
+import com.tle.core.security.TLEAclManager;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -39,6 +44,8 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.CloseWindowResult;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import com.tle.web.viewable.ViewableItem;
+import com.tle.web.viewable.servlet.ItemServlet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -63,7 +70,12 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
   private static final int WIDTH = 550;
 
   private CurrentUsersCallback currentUsersCallback;
+  private String permission = SecurityConstants.LIST_USERS;
+  private boolean checkOnItem = false;
+
   @Inject protected SelectUserSection section;
+  @Inject protected TLEAclManager securityManager;
+
   @ViewFactory private FreemarkerFactory viewFactory;
 
   @PlugKey("utils.selectuserdialog.default.title")
@@ -74,6 +86,9 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   @PlugKey("utils.selectuserdialog.selectthisuser")
   private static String KEY_SINGLE_USER;
+
+  @PlugKey("editor.error.accessdenied")
+  private static String NO_PERMISSIONS;
 
   private Label title = LABEL_DEFAULT_TITLE;
 
@@ -106,9 +121,12 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   @Override
   protected SectionRenderable getRenderableContents(RenderContext context) {
-    getModel(context).setInnerContents(renderSection(context, section));
-
-    return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+    if (canView(context)) {
+      getModel(context).setInnerContents(renderSection(context, section));
+      return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+    } else {
+      throw new AccessDeniedException(CurrentLocale.get(NO_PERMISSIONS, permission));
+    }
   }
 
   @Override
@@ -199,5 +217,36 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
 
   public void setPrompt(Label prompt) {
     section.setPrompt(prompt);
+  }
+
+  /**
+   * Allows checking permissions before rendering the dialog.
+   *
+   * @param permission The ACL string to check against. Defaults to LIST_USERS.
+   * @param checkOnItem If true, the ACL will be checked against an item, if false it will be
+   *     checked against the user. If checkOnItem is true, the request for this dialog MUST be an
+   *     item summary URL. If not, it will trigger an IllegalArgumentException when checking the
+   *     current viewable item.
+   */
+  public void setCheckPermissionBeforeOpen(String permission, boolean checkOnItem) {
+    this.permission = permission;
+    this.checkOnItem = checkOnItem;
+  }
+
+  private boolean canView(RenderContext context) {
+    if (permission == null) {
+      throw new IllegalStateException("Dialog permission should not be null");
+    }
+    if (checkOnItem) {
+      // Check the ACL against the current item
+      ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
+      if (item == null) {
+        throw new IllegalStateException(
+            "Access control has been set to check against item, however 'item' is currently 'null'.");
+      }
+      return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
+    }
+    // if a permission is set but we don't need to check it against an item
+    return !(securityManager.filterNonGrantedPrivileges(permission).isEmpty());
   }
 }

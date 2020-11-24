@@ -27,7 +27,6 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.notification.beans.Notification;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +37,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,32 +66,32 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
     return getExistingNotification(itemId.toString(), reason, user);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional
   public Notification getExistingNotification(String keyAsString, String reason, String user) {
     List<Notification> notifications =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from Notification where itemid = :itemid and reason = :reason and userTo = :user and institution = :inst",
-                new String[] {ITEMID, REASON, USER, INST},
-                new Object[] {keyAsString, reason, user, CurrentInstitution.get()});
+        (List<Notification>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from Notification where itemid = :itemid and reason = :reason and userTo = :user and institution = :inst",
+                    new String[] {ITEMID, REASON, USER, INST},
+                    new Object[] {keyAsString, reason, user, CurrentInstitution.get()});
     if (notifications.isEmpty()) {
       return null;
     }
     return notifications.get(0);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Notification> getNotificationsForItem(ItemId itemId, Institution institution) {
     List<Notification> notifications =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from Notification where itemidOnly = :itemid and institution = :inst",
-                new String[] {ITEMID, INST},
-                new Object[] {itemId.toString(), institution});
+        (List<Notification>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from Notification where itemidOnly = :itemid and institution = :inst",
+                    new String[] {ITEMID, INST},
+                    new Object[] {itemId.toString(), institution});
     return notifications;
   }
 
@@ -100,7 +99,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   @Transactional(propagation = Propagation.MANDATORY)
   public void deleteAllForInstitution(Institution institution) {
     getHibernateTemplate()
-        .bulkUpdate("delete from Notification where institution = ?", institution);
+        .bulkUpdate("delete from Notification where institution = ?0", institution);
   }
 
   @Override
@@ -108,7 +107,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   public void deleteAllForItem(ItemId itemId) {
     getHibernateTemplate()
         .bulkUpdate(
-            "delete from Notification where institution = ? and itemidOnly = ?",
+            "delete from Notification where institution = ?0 and itemidOnly = ?1",
             new Object[] {CurrentInstitution.get(), itemId.toString()});
   }
 
@@ -219,8 +218,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "UPDATE Notification SET userTo = :toUserId"
@@ -243,8 +241,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "select n.userTo, i.uniqueId from Notification n join n.institution as i "
@@ -307,8 +304,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
                             "select count(reason), reason from Notification "
@@ -332,8 +328,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
   public int updateLastAttempt(String user, boolean batched, Date date, String attemptId) {
     return getHibernateTemplate()
         .bulkUpdate(
-            "update Notification set lastAttempt = ?, attemptId = ? "
-                + "where institution = ? and userTo = ? and processed = false and batched = ?",
+            "update Notification set lastAttempt = ?0, attemptId = ?1 "
+                + "where institution = ?2 and userTo = ?3 and processed = false and batched = ?4",
             new Object[] {date, attemptId, CurrentInstitution.get(), user, batched});
   }
 

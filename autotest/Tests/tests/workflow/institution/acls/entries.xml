@@ -3808,4 +3808,56 @@
     <aclOrder>0</aclOrder>
     <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>14999</id>
+    <expression>
+      <id>14998</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>LIST_USERS</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>15000</id>
+    <expression>
+      <id>15001</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>LIST_USERS</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>15002</id>
+    <expression>
+      <id>15003</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>LIST_USERS</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>15004</id>
+    <expression>
+      <id>15005</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>LIST_USERS</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
 </list>

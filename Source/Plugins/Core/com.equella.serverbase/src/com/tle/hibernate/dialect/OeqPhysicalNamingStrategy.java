@@ -18,25 +18,43 @@
 
 package com.tle.hibernate.dialect;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import org.hibernate.AssertionFailure;
+import org.apache.log4j.Logger;
+import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.util.StringHelper;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+import org.hibernate.internal.util.StringHelper;
+
+// TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
 /**
- * Extends the ImprovedNamingScheme to make sure that the resulting table name is all lowercase.
- * This helps with Enums on Postgresql.
- *
- * @author Nicholas Read
+ * Handles the logic to map the database object names to a consistent format. This includes case and
+ * quotes, but may be extended in the future.
  */
 @SuppressWarnings("nls")
-public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
+public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
+    implements PhysicalNamingStrategy, Serializable {
+  private static final Logger LOGGER = Logger.getLogger(OeqPhysicalNamingStrategy.class);
+
   private static final long serialVersionUID = 1L;
+
   private final Map<String, String> overrides = new HashMap<String, String>();
   private final Map<String, String> columnOverrides = new HashMap<String, String>();
 
-  public LowercaseImprovedNamingScheme() {
+  private enum Transform {
+    COLUMN,
+    TABLE,
+    OTHER
+  }
+
+  public OeqPhysicalNamingStrategy() {
+    // Reserved database keywords need to be quoted.
+    // It's recommended to only quote what the application
+    // needs, as opposed to ALL database object names.
+
     // MySQL5 can't handle schemas and `schemas` doesn't work
     // SQLServer can't handle schema
     registerOverride("schema", "tleschemas");
@@ -52,50 +70,18 @@ public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
     columnOverrides.put("start", "`start`");
     columnOverrides.put("freetext", "`freetext`");
     columnOverrides.put("order", "`order`");
-    columnOverrides.put("comment", "`comment`");
     columnOverrides.put("index", "`index`");
+    columnOverrides.put("group", "`group`");
 
     // Oracle specific
     columnOverrides.put("successful", "`successful`");
+    columnOverrides.put("online", "`online`");
+    columnOverrides.put("resource", "`resource`");
+    columnOverrides.put("task", "`task`");
 
     // HSQL Specific
     columnOverrides.put("position", "`position`");
-
     columnOverrides.put("timestamp", "`timestamp`");
-  }
-
-  @Override
-  /** Copied from EJB3NamingStrategy */
-  public String foreignKeyColumnName(
-      String propertyName,
-      String propertyEntityName,
-      String propertyTableName,
-      String referencedColumnName) {
-    String header = propertyName != null ? StringHelper.unqualify(propertyName) : propertyTableName;
-    if (header == null) {
-      throw new AssertionFailure("NammingStrategy not properly filled");
-    }
-    return columnName(header + "_" + referencedColumnName);
-  }
-
-  @Override
-  public String propertyToColumnName(String propertyName) {
-    return super.propertyToColumnName(getColumnName(propertyName));
-  }
-
-  @Override
-  public String classToTableName(String className) {
-    return postProcess(super.classToTableName(className));
-  }
-
-  @Override
-  public String tableName(String tableName) {
-    return postProcess(super.tableName(tableName));
-  }
-
-  @Override
-  public String logicalColumnName(String columnName, String propertyName) {
-    return super.logicalColumnName(getColumnName(columnName), propertyName);
   }
 
   private String getColumnName(String columnName) {
@@ -125,5 +111,66 @@ public class LowercaseImprovedNamingScheme extends ImprovedNamingStrategy {
 
   private void registerOverride(String from, String to) {
     overrides.put(from.toLowerCase(), to.toLowerCase());
+  }
+
+  @Override
+  public Identifier toPhysicalCatalogName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalSchemaName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.TABLE);
+  }
+
+  @Override
+  public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.OTHER);
+  }
+
+  @Override
+  public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+    return apply(name, Transform.COLUMN);
+  }
+
+  private Identifier apply(Identifier name, Transform transform) {
+    if (name == null) {
+      return null;
+    }
+
+    String resultantName = null;
+    switch (transform) {
+      case COLUMN:
+        {
+          resultantName = super.propertyToColumnName(getColumnName(name.getText()));
+          break;
+        }
+      case TABLE:
+        {
+          resultantName = postProcess(super.classToTableName(name.getText()));
+          break;
+        }
+      case OTHER:
+      default:
+        {
+          resultantName = name.getText();
+          break;
+        }
+    }
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace(
+          "Transformed (possible noop) of ["
+              + name.getText()
+              + "] to ["
+              + resultantName
+              + "].  Quoted="
+              + Identifier.isQuoted(resultantName));
+    }
+    return Identifier.toIdentifier(resultantName);
   }
 }

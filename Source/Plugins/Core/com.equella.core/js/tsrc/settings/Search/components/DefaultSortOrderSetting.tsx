@@ -21,6 +21,7 @@ import {
   OutlinedInput,
   Select,
 } from "@material-ui/core";
+import { Static } from "runtypes";
 import { SortOrder } from "../../../modules/SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
@@ -28,8 +29,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
-  value: SortOrder;
-  setValue: (order: SortOrder) => void;
+  value: Static<typeof SortOrder>;
+  setValue: (order: Static<typeof SortOrder>) => void;
 }
 const useStyles = makeStyles({
   select: {
@@ -49,25 +50,23 @@ export default function DefaultSortOrderSetting({
       <Select
         SelectDisplayProps={{ id: "_sortOrder" }}
         disabled={disabled}
-        onChange={(event) => setValue(event.target.value as SortOrder)}
+        onChange={(event) => setValue(SortOrder.check(event.target.value))}
         variant="outlined"
         value={value}
         className={classes.select}
         input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
       >
-        <MenuItem value={SortOrder.RANK}>
-          {searchPageSettingsStrings.relevance}
-        </MenuItem>
-        <MenuItem value={SortOrder.DATEMODIFIED}>
+        <MenuItem value="RANK">{searchPageSettingsStrings.relevance}</MenuItem>
+        <MenuItem value={SortOrder.check("DATEMODIFIED")}>
           {searchPageSettingsStrings.lastModified}
         </MenuItem>
-        <MenuItem value={SortOrder.DATECREATED}>
+        <MenuItem value={SortOrder.check("DATECREATED")}>
           {searchPageSettingsStrings.dateCreated}
         </MenuItem>
-        <MenuItem value={SortOrder.NAME}>
+        <MenuItem value={SortOrder.check("NAME")}>
           {searchPageSettingsStrings.title}
         </MenuItem>
-        <MenuItem value={SortOrder.RATING}>
+        <MenuItem value={SortOrder.check("RATING")}>
           {searchPageSettingsStrings.userRating}
         </MenuItem>
       </Select>

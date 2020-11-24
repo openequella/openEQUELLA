@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import Axios from "axios";
+import { Literal, Static, Union } from "runtypes";
 import { fromAxiosError } from "../api/errors";
 import { templateError, TemplateUpdate } from "../mainui/Template";
 
@@ -26,7 +27,7 @@ export interface SearchSettings {
   searchingDisableOwnerFilter: boolean;
   searchingDisableDateModifiedFilter: boolean;
   fileCountDisabled: boolean;
-  defaultSearchSort: SortOrder;
+  defaultSearchSort: Static<typeof SortOrder>;
   authenticateFeedsByDefault: boolean;
 
   urlLevel: ContentIndex;
@@ -39,13 +40,13 @@ export interface CloudSettings {
   disabled: boolean;
 }
 
-export enum SortOrder {
-  RANK = "RANK",
-  DATEMODIFIED = "DATEMODIFIED",
-  DATECREATED = "DATECREATED",
-  NAME = "NAME",
-  RATING = "RATING",
-}
+export const SortOrder = Union(
+  Literal("RANK"),
+  Literal("DATEMODIFIED"),
+  Literal("DATECREATED"),
+  Literal("NAME"),
+  Literal("RATING")
+);
 
 export enum ContentIndex {
   OPTION_NONE = 0,
@@ -108,7 +109,7 @@ export const defaultSearchSettings: SearchSettings = {
   searchingDisableOwnerFilter: false,
   searchingDisableDateModifiedFilter: false,
   fileCountDisabled: false,
-  defaultSearchSort: SortOrder.RANK,
+  defaultSearchSort: "RANK",
   authenticateFeedsByDefault: false,
 
   urlLevel: 0,

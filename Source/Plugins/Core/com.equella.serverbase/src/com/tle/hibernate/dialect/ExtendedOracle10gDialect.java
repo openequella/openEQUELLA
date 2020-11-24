@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.dialect.unique.UniqueDelegate;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
@@ -48,7 +49,11 @@ public class ExtendedOracle10gDialect extends Oracle10gDialect implements Extend
 
   private static final String URL_SCHEME = "jdbc:oracle:thin:"; // $NON-NLS-1$
 
+  private final UniqueDelegate uniqueDelegate;
+
   public ExtendedOracle10gDialect() {
+    uniqueDelegate = new InPlaceUniqueDelegate(this);
+
     registerHibernateType(Types.CLOB, StandardBasicTypes.STRING.getName());
   }
 
@@ -188,5 +193,10 @@ public class ExtendedOracle10gDialect extends Oracle10gDialect implements Extend
       }
     }
     return createIndexStatements;
+  }
+
+  @Override
+  public UniqueDelegate getUniqueDelegate() {
+    return uniqueDelegate;
   }
 }

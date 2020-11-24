@@ -31,6 +31,7 @@ import com.tle.upgrade.upgraders.AddFreetextAnalyzerConfig;
 import com.tle.upgrade.upgraders.AddLDAPPoolingOptions;
 import com.tle.upgrade.upgraders.AddLibAvConfig;
 import com.tle.upgrade.upgraders.AddNonHttpOnly;
+import com.tle.upgrade.upgraders.AddPostHib5UpgradeConfig;
 import com.tle.upgrade.upgraders.ConvertBoneCPtoHikariCP;
 import com.tle.upgrade.upgraders.ConvertC3P0ToBoneCP;
 import com.tle.upgrade.upgraders.CreateUpgraderLog4j;
@@ -115,7 +116,8 @@ public class UpgradeMain {
         new ConvertBoneCPtoHikariCP(),
         new AddLDAPPoolingOptions(),
         new AddLibAvConfig(),
-        new AddFreetextAnalyzerConfig()
+        new AddFreetextAnalyzerConfig(),
+        new AddPostHib5UpgradeConfig()
       };
 
   public static void main(String[] args) throws Throwable {

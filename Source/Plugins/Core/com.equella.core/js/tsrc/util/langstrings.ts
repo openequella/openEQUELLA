@@ -267,7 +267,7 @@ export const languageStrings = {
       title: "Logo Settings",
       siteLogo: "Site Logo",
       siteLogoDescription:
-        "The main logo for the site, primarily displayed in the top left of pages. (Use a PNG file of 230x36 pixels for best results.)",
+        "The main logo for the site, primarily displayed in the top left of pages. (Use a PNG file with a maximum width of 230 pixels for best results.)",
     },
     errors: {
       invalidimagetitle: "Image Processing Error",

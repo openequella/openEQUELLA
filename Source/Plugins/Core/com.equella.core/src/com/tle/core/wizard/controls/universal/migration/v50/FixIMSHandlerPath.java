@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.inject.Singleton;
 import org.hibernate.ScrollableResults;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.w3c.dom.Node;
 
 /** @author Aaron */

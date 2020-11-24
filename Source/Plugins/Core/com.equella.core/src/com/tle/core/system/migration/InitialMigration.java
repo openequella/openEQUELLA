@@ -34,7 +34,7 @@ import com.tle.core.migration.beans.SystemConfig;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import java.util.List;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 @Singleton

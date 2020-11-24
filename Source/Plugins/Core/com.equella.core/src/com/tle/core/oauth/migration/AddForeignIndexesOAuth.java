@@ -34,7 +34,7 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @SuppressWarnings("nls")
 @Bind

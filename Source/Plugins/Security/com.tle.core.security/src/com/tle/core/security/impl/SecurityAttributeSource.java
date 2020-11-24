@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -43,8 +44,6 @@ import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.core.BridgeMethodResolver;
-import org.springframework.core.CollectionFactory;
-import org.springframework.core.JdkVersion;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -65,8 +64,7 @@ public class SecurityAttributeSource {
       ImmutableSet.of(
           BaseEntity.class, EntityPack.class, Item.class, ItemPack.class, ActivateRequest.class);
 
-  final Map<CacheKey, SecurityAttribute> attributeCache =
-      CollectionFactory.createConcurrentMapIfPossible(16);
+  final Map<CacheKey, SecurityAttribute> attributeCache = new ConcurrentHashMap<>(16);
 
   public SecurityAttribute getAttribute(Method method, Class<?> targetClass) {
     CacheKey cacheKey = new CacheKey(method, targetClass);
@@ -89,13 +87,14 @@ public class SecurityAttributeSource {
   private SecurityAttribute computeSecurityAttribute(Method method, Class<?> targetClass) {
     // The method may be on an interface, but we need attributes from the
     // target class.
+    //
     // If the target class is null, the method will be unchanged.
-    Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
-    // If we are dealing with method with generic parameters, find the
+    //
+    // If we are dealing with a method with generic parameters, this should find the
     // original method.
-    if (JdkVersion.isAtLeastJava15()) {
-      specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-    }
+    Method specificMethod =
+        BridgeMethodResolver.findBridgedMethod(
+            ClassUtils.getMostSpecificMethod(method, targetClass));
 
     // First try is the method in the target class.
     SecurityAttribute txAtt = findSecurityAttribute(specificMethod, targetClass);

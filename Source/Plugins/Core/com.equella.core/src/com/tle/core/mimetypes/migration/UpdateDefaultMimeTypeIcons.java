@@ -31,7 +31,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import org.hibernate.ScrollableResults;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 @Singleton

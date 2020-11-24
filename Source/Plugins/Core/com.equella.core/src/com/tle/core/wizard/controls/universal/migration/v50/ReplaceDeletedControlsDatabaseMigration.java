@@ -42,9 +42,9 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 import org.w3c.dom.Node;
 
 /** @author Aaron */

@@ -22,6 +22,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -29,7 +30,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 @NonNullByDefault
 public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernateDao
     implements GenericDao<T, ID> {
-  protected static final String INSTITUTION = "institution"; // $NON-NLS-1$
+  protected static final String INSTITUTION = "institution";
+
+  private static final Logger LOGGER = Logger.getLogger(GenericDaoImpl.class);
 
   private final Class<T> persistentClass;
 
@@ -136,7 +139,12 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public void unlinkFromSession(Object obj) {
-    getHibernateTemplate().evict(obj);
+    // Hibernate now throws an NullPointerException if we try evicting a null object
+    if (obj != null) {
+      getHibernateTemplate().evict(obj);
+    } else {
+      LOGGER.warn("Evicting a null object.");
+    }
   }
 
   /*
@@ -239,31 +247,31 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * .Order, int, int, org.hibernate.criterion.Criterion[])
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> findAllByCriteria(
       @Nullable final Order order,
       final int firstResult,
       final int maxResults,
       final Criterion... criterion) {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = createCriteria(session, criterion);
+    return (List<T>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Criteria criteria = createCriteria(session, criterion);
 
-                if (order != null) {
-                  criteria.addOrder(order);
-                }
-                if (firstResult > 0) {
-                  criteria.setFirstResult(firstResult);
-                }
-                if (maxResults >= 0) {
-                  criteria.setMaxResults(maxResults);
-                }
-                return criteria.list();
-              }
-            });
+                    if (order != null) {
+                      criteria.addOrder(order);
+                    }
+                    if (firstResult > 0) {
+                      criteria.setFirstResult(firstResult);
+                    }
+                    if (maxResults >= 0) {
+                      criteria.setMaxResults(maxResults);
+                    }
+                    return criteria.list();
+                  }
+                });
   }
 
   /**
