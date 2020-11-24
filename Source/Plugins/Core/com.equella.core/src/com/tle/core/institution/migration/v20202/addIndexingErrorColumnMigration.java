@@ -21,23 +21,21 @@ import org.hibernate.classic.Session;
 public class addIndexingErrorColumnMigration extends AbstractHibernateSchemaMigration {
 
   @Override
-  protected void executeDataMigration(HibernateMigrationHelper helper,
-    MigrationResult result, Session session) throws Exception {
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     Query q = session.createQuery("UPDATE Attachment SET errored_when_indexing = :value");
     q.setParameter("value", false);
     q.executeUpdate();
   }
 
   @Override
-  protected int countDataMigrations(HibernateMigrationHelper helper,
-    Session session) {
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
     return 1;
   }
 
   @Override
-  protected List<String> getDropModifySql(
-    HibernateMigrationHelper helper) {
-    return helper.getAddNotNullSQL("attachment","errored_when_indexing");
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getAddNotNullSQL("attachment", "errored_when_indexing");
   }
 
   @Override
@@ -62,7 +60,6 @@ public class addIndexingErrorColumnMigration extends AbstractHibernateSchemaMigr
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @Column
-    boolean errored_when_indexing;
+    @Column boolean errored_when_indexing;
   }
 }

@@ -78,9 +78,11 @@ public class TextExtracter {
   @Inject private ItemFileService itemFileService;
   @Inject private MimeTypeService mimeService;
   @Inject private IMSService imsService;
+
   @Inject(optional = true)
   @Named("textExtracter.indexAttachments")
   private boolean indexAttachments = true;
+
   @Inject AttachmentDao attachmentDao;
 
   @Inject(optional = true)
@@ -107,18 +109,19 @@ public class TextExtracter {
         final StringBuilder sbuf = new StringBuilder();
         if (indexAttachments) {
           switch (attach.getAttachmentType()) {
-            case FILE: {
-              if (!attach.isErroredIndexing()) {
-                final String filename = attach.getUrl();
+            case FILE:
+              {
+                if (!attach.isErroredIndexing()) {
+                  final String filename = attach.getUrl();
 
-                // Allow for searching by the filename
-                sbuf.append(filename);
-                sbuf.append(' ');
+                  // Allow for searching by the filename
+                  sbuf.append(filename);
+                  sbuf.append(' ');
 
-                indexSingleFile(item, sbuf, filename);
+                  indexSingleFile(item, sbuf, filename);
+                }
+                break;
               }
-              break;
-            }
             case HTML:
               {
                 final HtmlAttachment htmlAttach = (HtmlAttachment) attach;
@@ -251,16 +254,17 @@ public class TextExtracter {
                 + attach.getAttachmentSignature()
                 + " could not be found: "
                 + ex.getMessage()); // $NON-NLS-1$
-      } catch (TimeoutException timeoutException){
+      } catch (TimeoutException timeoutException) {
         LOGGER.error(
-          "Error indexing attachment " + attach.getAttachmentSignature() +
-            "due to timeout. Setting attachment to be skipped for future indexing.",timeoutException);
+            "Error indexing attachment "
+                + attach.getAttachmentSignature()
+                + "due to timeout. Setting attachment to be skipped for future indexing.",
+            timeoutException);
 
         Attachment newAttachment = (Attachment) attach.clone();
         newAttachment.setErroredIndexing(true);
         attachmentDao.update(newAttachment);
-      }
-      catch (Exception t) {
+      } catch (Exception t) {
         LOGGER.error("Error indexing attachment " + attach.getAttachmentSignature() + ": ", t);
       } catch (Throwable tt) {
         LOGGER.error("Error indexing attachment (throwable): ", tt);

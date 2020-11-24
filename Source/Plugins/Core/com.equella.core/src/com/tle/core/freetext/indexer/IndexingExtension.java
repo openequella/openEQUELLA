@@ -21,11 +21,12 @@ package com.tle.core.freetext.indexer;
 import com.tle.beans.item.ItemSelect;
 import com.tle.freetext.IndexedItem;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public interface IndexingExtension {
   void indexFast(IndexedItem indexedItem);
 
-  void indexSlow(IndexedItem indexedItem);
+  void indexSlow(IndexedItem indexedItem) throws TimeoutException;
 
   void prepareForLoad(ItemSelect select);
 

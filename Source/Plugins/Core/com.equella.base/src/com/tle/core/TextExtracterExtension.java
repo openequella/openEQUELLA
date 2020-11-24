@@ -21,6 +21,8 @@ package com.tle.core;
 import com.tle.beans.mime.MimeEntry;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** @author aholland */
 public interface TextExtracterExtension {
@@ -30,7 +32,7 @@ public interface TextExtracterExtension {
       StringBuilder outputText,
       int maxSize,
       long parseDurationCap)
-      throws IOException;
+      throws IOException, InterruptedException, ExecutionException, TimeoutException;
 
   void setEnabledForMimeEntry(MimeEntry mimeType, boolean enabled);
 
