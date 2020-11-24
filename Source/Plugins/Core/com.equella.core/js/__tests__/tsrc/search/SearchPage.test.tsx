@@ -32,6 +32,7 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
+import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import {
   getEmptySearchResult,
   getSearchResult,
@@ -41,6 +42,7 @@ import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
+import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -83,6 +85,7 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   "queryStringParamsToSearchOptions"
 );
 window.scrollTo = jest.fn();
+
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
 );
@@ -97,6 +100,11 @@ jest
   .mockResolvedValue({
     viewerId: "fancy",
   } as OEQ.MimeType.MimeTypeViewerDetail);
+
+// Mock out collaborator which populates the Remote Search selector
+jest
+  .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
+  .mockResolvedValue(getRemoteSearchesFromServerResult);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,

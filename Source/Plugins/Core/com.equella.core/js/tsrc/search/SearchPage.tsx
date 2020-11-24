@@ -58,6 +58,7 @@ import {
   RefinePanelControl,
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
+import { RemoteSearchSelector } from "./components/RemoteSearchSelector";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
@@ -346,6 +347,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.collections}
         />
       ),
+      disabled: false,
+    },
+    {
+      idSuffix: "RemoteSearchSelector",
+      title: searchStrings.remoteSearchSelector.title,
+      component: <RemoteSearchSelector />,
       disabled: false,
     },
     {

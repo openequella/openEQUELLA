@@ -82,6 +82,11 @@ export const routes = {
         : "/page/search",
     render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
+  RemoteSearch: {
+    to: function (uuid: string) {
+      return `/access/z3950.do?.repository=${uuid}`;
+    },
+  },
   SearchSettings: {
     path: "/page/searchsettings",
     render: (p: OEQRouteComponentProps) => <SearchPageSettings {...p} />,
