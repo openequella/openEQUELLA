@@ -103,8 +103,8 @@ export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
 /**
- * Centralise the validation of 'selectionSessionInfo' with type checking.
- * Return it if the checking is passed, or throw a type error.
+ * Validate the selectionSessionInfo included in renderData.
+ * And return selectionSessionInfo if the checking is passed, or throw a type error.
  */
 const getSelectionSessionInfo = (): SelectionSessionInfo => {
   const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
@@ -186,16 +186,13 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 
 /**
  * Select resources in 'structured'. The approach is to call the server ajax method 'reloadFolder'
- * which is defined in 'CourseListSection'. The parameter passed to this method includes a DIV ID,
- * the current selected folder ID and server side event handler. In our case, the ID is 'courselistajax' and
- * the folder ID is skipped, and the event handler is either 'selectItem' or 'selectAllAttachments'.
+ * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
+ * converted from an object of 'CourseListFolderAjaxUpdateData'.
  */
 const selectResourceForCourseList = (
   itemKey: string,
   attachmentUUIDs: string[] = []
 ): Promise<void> => {
-  // The first element is the event handler name and the rest are parameters passed to the handler.
-  // The order of parameters must be exactly same as the order defined in server.
   const serverSideEvent: (string | null)[] =
     attachmentUUIDs.length > 0
       ? [
@@ -226,7 +223,7 @@ const selectResourceForCourseList = (
 
 /**
  * Select resources in 'selectOrAdd'. The approach is similar to 'selectResourceForCourseList'.
- * The difference is we call the resource select event handlers directly. Details of those handlers can
+ * The difference is we call the server event handlers directly. Details of those handlers can
  * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
  */
 const selectResourceForNonCourseList = (
