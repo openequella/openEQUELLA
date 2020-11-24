@@ -53,7 +53,7 @@ export const RemoteSearchSelector = ({
 
   useEffect(() => {
     remoteSearchesSupplier().then((searches) => setRemoteSearches(searches));
-  }, [setRemoteSearches, remoteSearchesSupplier]);
+  }, [remoteSearchesSupplier]);
 
   const buildRemoteSearchMenuItems = () =>
     remoteSearches.map((summary) => (
