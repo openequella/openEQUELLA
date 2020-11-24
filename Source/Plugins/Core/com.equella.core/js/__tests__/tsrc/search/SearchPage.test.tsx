@@ -88,7 +88,6 @@ Object.assign(navigator, {
     writeText: jest.fn(),
   },
 });
-window.navigator.clipboard.writeText = jest.fn();
 window.scrollTo = jest.fn();
 const searchSettingPromise = mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
