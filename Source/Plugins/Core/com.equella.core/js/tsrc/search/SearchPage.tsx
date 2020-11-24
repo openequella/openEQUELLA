@@ -49,6 +49,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import { isSelectionSessionOpen } from "../modules/SelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { CategorySelector } from "./components/CategorySelector";
@@ -126,6 +127,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
   const location = useLocation();
+  const inSelectionSession: boolean = isSelectionSessionOpen();
 
   /**
    * Update the page title and retrieve Search settings.
@@ -139,7 +141,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      queryStringParamsToSearchOptions(location),
+      // Do not convert query string params to search options in Selection Session.
+      inSelectionSession
+        ? Promise.resolve(undefined)
+        : queryStringParamsToSearchOptions(location),
     ]).then((results) => {
       const [searchSettings, queryStringSearchOptions] = results;
       setSearchSettings(searchSettings);
