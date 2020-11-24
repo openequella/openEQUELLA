@@ -86,6 +86,9 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 
   private boolean restricted;
 
+  @Column(name="errored_when_indexing")
+  private boolean erroredIndexing;
+
   // Explicit catch of CloneNotSupportedException from super.clone()
   @Override
   public Object clone() // NOSONAR
@@ -280,5 +283,13 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 
   public String getAttachmentSignature() {
     return item.getIdString() + "/" + this.uuid + " [" + this.description + "]";
+  }
+
+  public boolean isErroredIndexing() {
+    return erroredIndexing;
+  }
+
+  public void setErroredIndexing(boolean skipIndexing) {
+    this.erroredIndexing = skipIndexing;
   }
 }

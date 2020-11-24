@@ -67,4 +67,9 @@ public interface IAttachment {
   boolean isRestricted();
 
   IItem<?> getItem();
+
+  boolean isErroredIndexing();
+
+   void setErroredIndexing(boolean erroredIndexing);
+
 }
