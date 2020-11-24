@@ -88,6 +88,11 @@ declare const CourseList: {
 };
 
 /**
+ * The intention of having this function is to help Jest test mock CourseList.
+ */
+export const getGlobalCourseList = () => CourseList;
+
+/**
  * An internal Type guard used to check whether an object is of type SelectionSessionInfo.
  * @param data The data to be checked
  */
@@ -189,7 +194,7 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
  * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
  * converted from an object of 'CourseListFolderAjaxUpdateData'.
  */
-const selectResourceForCourseList = (
+export const selectResourceForCourseList = (
   itemKey: string,
   attachmentUUIDs: string[] = []
 ): Promise<void> => {
@@ -217,7 +222,7 @@ const selectResourceForCourseList = (
   return submitSelection(
     `${submitBaseUrl}/access/course/searching.do`,
     postData,
-    CourseList.updateCourseList
+    getGlobalCourseList().updateCourseList
   );
 };
 
@@ -226,7 +231,7 @@ const selectResourceForCourseList = (
  * The difference is we call the server event handlers directly. Details of those handlers can
  * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
  */
-const selectResourceForNonCourseList = (
+export const selectResourceForNonCourseList = (
   itemKey: string,
   attachmentUUIDs: string[]
 ): Promise<void> => {

@@ -17,32 +17,40 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { render, RenderResult } from "@testing-library/react";
+import { render, RenderResult, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
+import type {
+  RenderData,
+  SelectionSessionInfo,
+} from "../../../../tsrc/AppConfig";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import * as SelectionSessionModule from "../../../../tsrc/modules/SelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import * as AppConfig from "../../../../tsrc/AppConfig";
 
+const basicSelectionSessionInfo: SelectionSessionInfo = {
+  stateId: "1",
+  layout: "coursesearch",
+  integId: "2",
+};
+
+const basicRenderData: RenderData = {
+  baseResources: "p/r/2020.2.0/com.equella.core/",
+  newUI: true,
+  autotestMode: false,
+  newSearch: true,
+  selectionSessionInfo: basicSelectionSessionInfo,
+};
 const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
 // Mock the value of 'getRenderData'.
-const updateMockRenderData = () =>
-  mockGetRenderData.mockReturnValue({
-    baseResources: "p/r/2020.2.0/com.equella.core/",
-    newUI: true,
-    autotestMode: false,
-    newSearch: true,
-    selectionSessionInfo: {
-      stateId: "1",
-      integId: "2",
-      layout: "coursesearch",
-    },
-  });
+const updateMockRenderData = (renderData: RenderData = basicRenderData) =>
+  mockGetRenderData.mockReturnValue(renderData);
 
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
@@ -172,19 +180,78 @@ describe("<SearchResult/>", () => {
     );
   });
 
-  it.each<[string]>([
-    [languageStrings.searchpage.selectResource.summaryPage],
-    [languageStrings.searchpage.selectResource.allAttachments],
-    [languageStrings.searchpage.selectResource.attachment],
-  ])(
-    // todo: pass event handler in and check if it has been called.
-    "should display buttons for %s in Selection Session",
-    async (buttonLabel: string) => {
-      updateMockRenderData();
-      const { queryByLabelText } = await renderSearchResult(
-        mockData.attachSearchObj
-      );
-      expect(queryByLabelText(buttonLabel)).toBeInTheDocument();
-    }
-  );
+  describe("In Selection Session", () => {
+    const mockGlobalCourseList = jest.spyOn(
+      SelectionSessionModule,
+      "getGlobalCourseList"
+    );
+    mockGlobalCourseList.mockReturnValue({ updateCourseList: jest.fn() });
+
+    const mockSelectResourceForCourseList = jest.spyOn(
+      SelectionSessionModule,
+      "selectResourceForCourseList"
+    );
+    mockSelectResourceForCourseList.mockResolvedValue();
+
+    const mockSelectResourceForNonCourseList = jest.spyOn(
+      SelectionSessionModule,
+      "selectResourceForNonCourseList"
+    );
+    mockSelectResourceForNonCourseList.mockResolvedValue();
+
+    const selectOrAddInfo: SelectionSessionInfo = {
+      ...basicSelectionSessionInfo,
+      layout: "search",
+    };
+
+    const {
+      summaryPage,
+      allAttachments,
+      attachment,
+    } = languageStrings.searchpage.selectResource;
+    const STRUCTURED = "structured";
+    const SELECT_OR_ADD = "selectOrAdd";
+    const selectForCourseFunc =
+      SelectionSessionModule.selectResourceForCourseList;
+    const selectForNonCourseFunc =
+      SelectionSessionModule.selectResourceForNonCourseList;
+
+    it.each([
+      [summaryPage, STRUCTURED, selectForCourseFunc, basicSelectionSessionInfo],
+      [
+        allAttachments,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicSelectionSessionInfo,
+      ],
+      [attachment, STRUCTURED, selectForCourseFunc, basicSelectionSessionInfo],
+      [summaryPage, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
+      [allAttachments, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
+      [attachment, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
+    ])(
+      "supports %s in %s mode",
+      async (
+        resourceType: string,
+        selectionSessionMode: string,
+        selectResourceFunc: (
+          itemKey: string,
+          attachmentUUIDs: string[]
+        ) => Promise<void>,
+        selectionSessionInfo: SelectionSessionInfo
+      ) => {
+        updateMockRenderData({
+          ...basicRenderData,
+          selectionSessionInfo: selectionSessionInfo,
+        });
+
+        const { queryByLabelText, getByLabelText } = await renderSearchResult(
+          mockData.attachSearchObj
+        );
+        expect(queryByLabelText(resourceType)).toBeInTheDocument();
+
+        fireEvent.click(getByLabelText(resourceType));
+        expect(selectResourceFunc).toHaveBeenCalled();
+      }
+    );
+  });
 });
