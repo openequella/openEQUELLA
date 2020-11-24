@@ -103,7 +103,7 @@ public abstract class AbstractAttachmentEditor implements AttachmentEditor {
 
   @Override
   public void editErroredIndexing(boolean erroredIndexing) {
-    if(hasBeenEdited(attachment.isErroredIndexing(),erroredIndexing)){
+    if (hasBeenEdited(attachment.isErroredIndexing(), erroredIndexing)) {
       attachment.setErroredIndexing(erroredIndexing);
     }
   }

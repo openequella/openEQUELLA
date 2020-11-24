@@ -70,6 +70,5 @@ public interface IAttachment {
 
   boolean isErroredIndexing();
 
-   void setErroredIndexing(boolean erroredIndexing);
-
+  void setErroredIndexing(boolean erroredIndexing);
 }

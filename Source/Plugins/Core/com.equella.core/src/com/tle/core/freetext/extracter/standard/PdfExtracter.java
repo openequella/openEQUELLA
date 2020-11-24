@@ -57,16 +57,18 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
   @Override
   public void extractText(
       String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-    throws IOException, InterruptedException, ExecutionException, TimeoutException {
+      throws IOException, InterruptedException, ExecutionException, TimeoutException {
     WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
     ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
     class RunnableParse implements Runnable {
       private final AtomicBoolean running = new AtomicBoolean(false);
       private final AtomicBoolean stopped = new AtomicBoolean(false);
-      public void interrupt(){
+
+      public void interrupt() {
         running.set(false);
         Thread.currentThread().interrupt();
       }
+
       @Override
       public void run() {
         running.set(true);
