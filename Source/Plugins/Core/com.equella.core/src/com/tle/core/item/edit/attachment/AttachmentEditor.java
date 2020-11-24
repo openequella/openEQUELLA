@@ -30,4 +30,6 @@ public interface AttachmentEditor {
   void editRestricted(boolean restricted);
 
   void editThumbnail(String thumbnail);
+
+  void editErroredIndexing(boolean erroredIndexing);
 }

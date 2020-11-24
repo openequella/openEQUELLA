@@ -30,6 +30,7 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
   private String description;
   private String viewer;
   private boolean preview;
+  private boolean erroredIndexing;
 
   public String getUuid() {
     return uuid;
@@ -64,5 +65,13 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
 
   public void setPreview(boolean preview) {
     this.preview = preview;
+  }
+
+  public boolean isErroredIndexing() {
+    return erroredIndexing;
+  }
+
+  public void setErroredIndexing(boolean erroredIndexing) {
+    this.erroredIndexing = erroredIndexing;
   }
 }
