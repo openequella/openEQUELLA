@@ -1130,6 +1130,23 @@ div.area {
 #fancybox-outer {
   height: auto;
 }
+#fancybox-close {
+  @include replaceImageTag("material_design_close.png", 27px, 27px);
+  top: -$doubleMargin;
+  right: -($doubleMargin + $modalFooterHeight);
+}
+
+#fancybox-left {
+  display: flex;
+  align-content: flex-end;
+  @include replaceImageTag("material_design_chevron_left.png", 18px, 18px);
+}
+
+#fancybox-right {
+  display: flex;
+  align-content: flex-end;
+  @include replaceImageTag("material_design_chevron_right.png", 18px, 18px);
+}
 
 #fancybox-inner button {
   background-color: transparent;
