@@ -24,6 +24,13 @@ import com.tle.core.freetext.extracter.handler.CappedBodyContentHandler;
 import com.tle.core.guice.Bind;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Singleton;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
@@ -50,25 +57,46 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
   @Override
   public void extractText(
       String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-      throws IOException {
+    throws IOException, InterruptedException, ExecutionException, TimeoutException {
     WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
     ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
-    try {
-      Metadata meta = new Metadata();
-      Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
-      parser.parse(input, handler, meta, new ParseContext());
-
-      appendText(handler, outputText, maxSize);
-
-    } catch (Exception t) {
-      if (wrapped.isWriteLimitReached(t)) {
-        // keep going
-        LOGGER.debug("PDF size limit reached.  Indexing truncated text");
-        appendText(handler, outputText, maxSize);
-        return;
+    class RunnableParse implements Runnable {
+      private final AtomicBoolean running = new AtomicBoolean(false);
+      private final AtomicBoolean stopped = new AtomicBoolean(false);
+      public void interrupt(){
+        running.set(false);
+        Thread.currentThread().interrupt();
       }
-      throw Throwables.propagate(t);
-    }
+      @Override
+      public void run() {
+        running.set(true);
+        stopped.set(false);
+        while (running.get() && !stopped.get()) {
+          try {
+            Metadata meta = new Metadata();
+            Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
+            parser.parse(input, handler, meta, new ParseContext());
+
+            appendText(handler, outputText, maxSize);
+          } catch (Exception t) {
+            if (wrapped.isWriteLimitReached(t)) {
+              // keep going
+              LOGGER.info("PDF size limit reached.  Indexing truncated text");
+              appendText(handler, outputText, maxSize);
+              return;
+            }
+            throw Throwables.propagate(t);
+          }
+        }
+        stopped.set(true);
+      }
+    };
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    RunnableParse runnableParse = new RunnableParse();
+    Future<?> future = executor.submit(runnableParse);
+    future.get(parseDuration, TimeUnit.MILLISECONDS);
+    runnableParse.interrupt();
+    executor.shutdownNow();
   }
 
   private void appendText(ContentHandler handler, StringBuilder outputText, int maxSize) {
