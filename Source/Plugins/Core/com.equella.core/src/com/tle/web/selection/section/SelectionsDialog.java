@@ -83,10 +83,24 @@ public class SelectionsDialog extends AbstractOkayableDialog<ItemVersionSelectio
     return events.getNamedHandler("saveVersions");
   }
 
+  @Override
+  protected JSHandler createCancelHandler(SectionTree tree) {
+    return events.getNamedHandler("closeAndSave");
+  }
+
   @EventHandlerMethod
   public void saveVersions(SectionInfo info) {
     versionSelectionSection.saveVersionChoices(info);
     closeDialog(info, getOkCallback());
+  }
+
+  // Closing the Selection dialog does not really revert what has been done
+  // such as removing a selected resource. So we still need to save and fire
+  // the cancel callback which is reloading the folder.
+  @EventHandlerMethod
+  public void closeAndSave(SectionInfo info) {
+    versionSelectionSection.saveVersionChoices(info);
+    closeDialog(info, getcancelCallback());
   }
 
   @Override

@@ -142,6 +142,8 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   private JSCallable selectPackageFunction;
   private JSCallable onDropAjaxUpdateFunction;
 
+  private JSCallable reloadFolderFunction;
+
   @AjaxMethod
   public JSONResponseCallback reloadFolder(
       AjaxRenderContext context, CourseListFolderAjaxUpdateData controlData) {
@@ -167,8 +169,6 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
    */
   public JSCallable getReloadFunction(
       final boolean drop, @Nullable final ParameterizedEvent event, final String... ajaxIds) {
-    final JSCallable reloadFolderFunction =
-        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder"));
     return new AbstractCallable() {
       @Override
       public void preRender(PreRenderContext info) {
@@ -269,8 +269,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
 
     // Call 'CourseListFolderUpdateCallback.getReloadFunction' again when the OK button is clicked,
     // in order to update the course list by a ajax request.
-    versionDialog.setOkCallback(
-        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder")));
+    reloadFolderFunction =
+        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder"));
+    versionDialog.setOkCallback(reloadFolderFunction);
+    versionDialog.setCancelCallback(reloadFolderFunction);
   }
 
   public SectionInfo createSearchForward(SectionInfo info) {
