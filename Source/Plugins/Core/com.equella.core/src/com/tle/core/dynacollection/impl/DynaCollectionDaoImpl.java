@@ -70,21 +70,23 @@ public class DynaCollectionDaoImpl extends AbstractEntityDaoImpl<DynaCollection>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Collection<DynaCollection> getDynaCollectionsReferencingItemDefinition(
       ItemDefinition itemDefinition) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "FROM DynaCollection d JOIN d.itemDefs i WHERE i.entity = :entity",
-            "entity",
-            itemDefinition);
+    return (Collection<DynaCollection>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "FROM DynaCollection d JOIN d.itemDefs i WHERE i.entity = :entity",
+                "entity",
+                itemDefinition);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Collection<DynaCollection> getDynaCollectionsReferencingSchema(Schema schema) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "FROM DynaCollection d JOIN d.schemas s WHERE s.entity = :entity", "entity", schema);
+    return (Collection<DynaCollection>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "FROM DynaCollection d JOIN d.schemas s WHERE s.entity = :entity",
+                "entity",
+                schema);
   }
 }

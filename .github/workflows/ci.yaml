@@ -105,10 +105,55 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: Artefacts
           path: artefacts.tar
+
+  build_storybook:
+    runs-on: ubuntu-latest
+    steps:
+      # Using v1 (rather than v2) through-out this workflow due to issue:
+      # https://github.com/actions/checkout/issues/237
+      - uses: actions/checkout@v1
+
+      - name: NPM Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm.storybook-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm.storybook-
+
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Install node dependencies (core)
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          npm ci
+
+      - name: Generate Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          npm run build-storybook
+
+      - name: Package Static Storybook instance
+        working-directory: Source/Plugins/Core/com.equella.core/js
+        run: |
+          tar cvf storybook.tar storybook-static
+
+      - name: Save Static Storybook instance
+        uses: actions/upload-artifact@v2.2.1
+        with:
+          name: Storybook
+          path: Source/Plugins/Core/com.equella.core/js/storybook.tar
 
   build_import_export_tool:
     runs-on: ubuntu-latest
@@ -126,7 +171,7 @@ jobs:
           ./gradlew build
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: ImportExportTools
           path: import-export-tool/build/libs/
@@ -209,7 +254,7 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: ScalacheckReports
           path: autotest/Tests/target/test-reports
@@ -221,21 +266,21 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: TestNGReports-new-${{ matrix.newui }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: oEQLogs-new-${{ matrix.newui }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: Screenshots-new-${{ matrix.newui }}
           path: autotest/Tests/target/test-reports/screenshots
@@ -253,7 +298,7 @@ jobs:
           tar cvf coverage_report.tar autotest/target/coverage-report/
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
@@ -342,7 +387,7 @@ jobs:
 
       - name: Save oEQ logs for REST Module
         if: failure()
-        uses: actions/upload-artifact@v2.2.0
+        uses: actions/upload-artifact@v2.2.1
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs

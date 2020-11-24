@@ -19,12 +19,17 @@
 package com.tle.web.api
 
 import cats.data.{NonEmptyChain, OptionT, Validated}
+import com.tle.beans.entity.BaseEntity
 import com.tle.core.db.{DB, RunWithDB}
+import com.tle.core.i18n.TextBundle
+import com.tle.legacy.LegacyGuice
 import fs2.Stream
-import javax.ws.rs.core.{Response, UriBuilder}
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
+import javax.ws.rs.core.{Response, UriBuilder}
 
 object ApiHelper {
+  private val bundleCache = LegacyGuice.bundleCache
+
   def runAndBuild(db: DB[ResponseBuilder]): Response =
     RunWithDB.execute(db.map(_.build()))
 
@@ -49,4 +54,7 @@ object ApiHelper {
     validationOr(validated.map(Response.ok))
 
   def apiUriBuilder(): UriBuilder = UriBuilder.fromPath("api/")
+
+  def getEntityName(be: BaseEntity): String =
+    TextBundle.getLocalString(be.getName, bundleCache, null, be.getUuid)
 }

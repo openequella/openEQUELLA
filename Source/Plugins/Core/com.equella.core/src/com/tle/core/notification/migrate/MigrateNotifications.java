@@ -40,9 +40,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 @Bind
 @SuppressWarnings("nls")

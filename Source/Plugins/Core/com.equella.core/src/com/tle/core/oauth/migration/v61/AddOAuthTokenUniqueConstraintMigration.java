@@ -33,7 +33,7 @@ import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 /** @author larry */
 @Bind

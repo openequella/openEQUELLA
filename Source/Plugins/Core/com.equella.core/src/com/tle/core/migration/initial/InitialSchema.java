@@ -73,7 +73,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 

@@ -36,13 +36,15 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.classic.Session;
+import org.apache.curator.shaded.com.google.common.collect.Lists;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.spi.Mapping;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.id.PersistentIdentifierGenerator;
-import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.jdbc.Work;
-import org.hibernate.mapping.AuxiliaryDatabaseObject;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Index;
@@ -57,7 +59,7 @@ public class HibernateMigrationHelper {
   private final String defaultSchema;
   private final Mapping mapping;
   private final ExtendedAnnotationConfiguration configuration;
-  private final SessionFactoryImpl factory;
+  private final SessionFactory factory;
 
   private static final Log LOGGER = LogFactory.getLog(HibernateMigrationHelper.class);
 
@@ -66,8 +68,8 @@ public class HibernateMigrationHelper {
   }
 
   public HibernateMigrationHelper(HibernateFactory factory, String defaultSchema) {
-    this.factory = (SessionFactoryImpl) factory.getSessionFactory();
-    dialect = this.factory.getDialect();
+    this.factory = factory.getSessionFactory();
+    dialect = ((SessionFactoryImplementor) this.factory).getJdbcServices().getDialect();
     extDialect = (ExtendedDialect) dialect;
     this.configuration = factory.getConfiguration();
     mapping = configuration.buildMapping();
@@ -90,11 +92,34 @@ public class HibernateMigrationHelper {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Tables registered:" + configuration.getTableMap().keySet());
     }
+
+    sqlStrings.addAll(getCreationSqlForTables(filter));
+
+    sqlStrings.addAll(getCreationSqlForTableIndexAndFks(filter));
+
+    sqlStrings.addAll(getCreationSqlForIdGenerators(filter));
+
+    sqlStrings.addAll(getCreationSqlForAuxDbos(filter));
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForTables(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
+
     for (Table table : configuration.getTableMap().values()) {
       if (table.isPhysicalTable() && filter.includeTable(table)) {
-        sqlStrings.add(table.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+        final String sql = table.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+        LOGGER.debug("Table create SQL: " + sql);
+        sqlStrings.add(sql);
       }
     }
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForTableIndexAndFks(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
 
     for (Table table : configuration.getTableMap().values()) {
       if (table.isPhysicalTable()) {
@@ -102,10 +127,26 @@ public class HibernateMigrationHelper {
         Iterator<Index> subIter = table.getIndexIterator();
         while (subIter.hasNext()) {
           Index index = subIter.next();
-          if (filter.includeIndex(table, index)
-              && (!extDialect.supportsAutoIndexForUniqueColumn()
-                  || !hasUniqueIndex(index, table))) {
-            sqlStrings.add(index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+          final boolean addIndex =
+              filter.includeIndex(table, index)
+                  && (!extDialect.supportsAutoIndexForUniqueColumn()
+                      || !hasUniqueIndex(index, table));
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Index to review: " + index.toString());
+            LOGGER.debug("Filter.includeIndex? " + filter.includeIndex(table, index));
+            LOGGER.debug(
+                "Dialect ["
+                    + extDialect.getClass().getName()
+                    + "] - supportsAutoIndexForUniqueColumn? "
+                    + extDialect.supportsAutoIndexForUniqueColumn());
+            LOGGER.debug("HasUniqueIndex? " + hasUniqueIndex(index, table));
+            LOGGER.debug("Should index be added? " + addIndex);
+          }
+          if (addIndex) {
+            final String sql =
+                index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+            LOGGER.debug("Index create SQL: " + sql);
+            sqlStrings.add(sql);
           }
         }
 
@@ -113,27 +154,79 @@ public class HibernateMigrationHelper {
           Iterator<ForeignKey> forIter = table.getForeignKeyIterator();
           while (forIter.hasNext()) {
             ForeignKey fk = forIter.next();
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Reviewing FK for creation SQL: " + fk.getName());
+              LOGGER.debug("Is FK a physical constraint? " + fk.isPhysicalConstraint());
+              LOGGER.debug(
+                  "Should the FK be included for table ["
+                      + table.getName()
+                      + "]? "
+                      + filter.includeForeignKey(table, fk));
+            }
             if (fk.isPhysicalConstraint() && filter.includeForeignKey(table, fk)) {
-              sqlStrings.add(fk.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+              final String sql =
+                  fk.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+              LOGGER.debug("FK create SQL: " + sql);
+              sqlStrings.add(sql);
             }
           }
+        } else {
+          LOGGER.debug("Dialect does not support ALTER TABLE.");
         }
+      } else {
+        LOGGER.debug("Table is not physical, not generating SQL for it: " + table.getName());
       }
     }
+
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForIdGenerators(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
+
     Collection<PersistentIdentifierGenerator> generators =
         configuration.getGenerators(dialect, defaultCatalog, defaultSchema);
     for (PersistentIdentifierGenerator pig : generators) {
       if (filter.includeGenerator(pig)) {
         String[] lines = pig.sqlCreateStrings(dialect);
+        LOGGER.debug(
+            "Filter includes generator ["
+                + pig.toString()
+                + "].  Adding SQL lines: "
+                + Arrays.toString(lines));
         Collections.addAll(sqlStrings, lines);
+      } else {
+        LOGGER.debug("Filter does not include generator [" + pig.toString() + "]");
       }
     }
 
+    return sqlStrings;
+  }
+
+  private List<String> getCreationSqlForAuxDbos(HibernateCreationFilter filter) {
+    List<String> sqlStrings = new ArrayList<String>();
+
     for (AuxiliaryDatabaseObject object : configuration.getAuxiliaryDatabaseObjects()) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Reviewing Aux DB Obj for creation SQL: " + object.getExportIdentifier());
+        LOGGER.debug("Does Aux DB Obj apply to dialect? " + object.appliesToDialect(dialect));
+        LOGGER.debug("Should the Aux DB Obj be included? " + filter.includeObject(object));
+      }
       if (object.appliesToDialect(dialect) && filter.includeObject(object)) {
-        sqlStrings.add(object.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+        // Due to SpringHib5, removed the extra parameters and switched packages.
+        // DDL for Oracle, Postgres, and Sql Server were comparable.
+        final List<String> lines = Lists.newArrayList(object.sqlCreateStrings(dialect));
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(
+              "Filter includes Aux DB object ["
+                  + object.getExportIdentifier()
+                  + "].  Adding SQL lines: "
+                  + Arrays.toString(lines.toArray()));
+        }
+        sqlStrings.addAll(lines);
       }
     }
+
     return sqlStrings;
   }
 
@@ -160,10 +253,34 @@ public class HibernateMigrationHelper {
               && column.isUnique()
               && dialect.supportsUnique()
               && (!column.isNullable() || dialect.supportsNotNullUnique());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(
+            "Considering if a unique constraint should be used.  "
+                + "DialectSupportsModifyWithConst=["
+                + extDialect.supportsModifyWithConstraints()
+                + "], "
+                + "IsColumnUnique=["
+                + column.isUnique()
+                + "], "
+                + "DialectSupportsUnique=["
+                + dialect.supportsUnique()
+                + "], "
+                + "ColumnNullable=["
+                + column.isNullable()
+                + "], "
+                + "DialectSupportsNotNullUnique=["
+                + dialect.supportsNotNullUnique()
+                + "] "
+                + "- useUniqueConstraint=["
+                + useUniqueConstraint
+                + "]");
+      }
       if (useUniqueConstraint) {
+        LOGGER.debug("Using unique constraint on " + tableName + " - " + columnName);
         alter.append(" unique");
       }
       if (column.hasCheckConstraint() && dialect.supportsColumnCheck()) {
+        LOGGER.debug("Using check constraint for uniqueness on " + tableName + " - " + columnName);
         alter.append(" check(").append(column.getCheckConstraint()).append(")");
       }
 
@@ -198,25 +315,34 @@ public class HibernateMigrationHelper {
     List<String> sqlStrings = new ArrayList<String>();
 
     Table table = findTable(tableName);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Setting up indexes and constraints on columns for table:" + tableName);
+    }
     if (!extDialect.supportsModifyWithConstraints()) {
       for (Column col : colSet) {
         Column realCol = table.getColumn(col);
         if (realCol.isUnique()) {
+          LOGGER.debug("Creating unique key for column: " + realCol.getName());
           table.createUniqueKey(Collections.singletonList(realCol));
         }
       }
+    } else {
+      LOGGER.debug("Dialect does not support modification with constraints");
     }
     Iterator<UniqueKey> keyIter = table.getUniqueKeyIterator();
     if (dialect.supportsUniqueConstraintInCreateAlterTable()) {
       while (keyIter.hasNext()) {
         UniqueKey uk = keyIter.next();
+        LOGGER.debug("Considering unique key for table [" + tableName + "]: " + uk.getName());
         if (!Collections.disjoint(uk.getColumns(), colSet)) {
           StringBuilder buf = new StringBuilder("alter table ");
           buf.append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema));
           buf.append(" add constraint ");
-          buf.append(extDialect.getRandomIdentifier());
-          buf.append(' ');
-          String constraint = uk.sqlConstraintString(dialect);
+          String constraint =
+              uk.sqlConstraintString(
+                  dialect, extDialect.getRandomIdentifier(), defaultCatalog, defaultSchema);
+          LOGGER.debug(
+              "Adding unique alter constraint to table [" + tableName + "]: " + constraint);
           if (constraint != null) {
             buf.append(constraint);
             sqlStrings.add(buf.toString());
@@ -227,11 +353,16 @@ public class HibernateMigrationHelper {
       while (keyIter.hasNext()) {
         UniqueKey ukey = keyIter.next();
         if (!Collections.disjoint(ukey.getColumns(), colSet)) {
-          sqlStrings.add(ukey.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+          final String sql = ukey.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+          LOGGER.debug("Adding unique constraint to table [" + tableName + "]: " + sql);
+          sqlStrings.add(sql);
         }
       }
     }
 
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Index create SQL: " + Arrays.toString(sqlStrings.toArray()));
+    }
     addIndexSQL(sqlStrings, table, colSet);
 
     // Caller may opt to skip foreign key constraints
@@ -240,9 +371,13 @@ public class HibernateMigrationHelper {
       while (fkeyIter.hasNext()) {
         ForeignKey fkey = fkeyIter.next();
         if (!Collections.disjoint(fkey.getColumns(), colSet)) {
-          sqlStrings.add(fkey.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+          final String sql = fkey.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+          LOGGER.debug("FK create SQL: " + sql);
+          sqlStrings.add(sql);
         }
       }
+    } else {
+      LOGGER.debug("Skipping FKs for table: " + tableName);
     }
 
     return sqlStrings;
@@ -276,7 +411,15 @@ public class HibernateMigrationHelper {
       }
       if (found
           && (!extDialect.supportsAutoIndexForUniqueColumn() || !hasUniqueIndex(index, table))) {
-        sqlStrings.add(index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+        final String sql = index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+        LOGGER.debug("Index create SQL: " + sql);
+        sqlStrings.add(sql);
+      } else {
+        LOGGER.debug(
+            "NOT adding index create SQL on table ["
+                + table.getName()
+                + "] for: "
+                + index.getName());
       }
     }
   }
@@ -320,8 +463,8 @@ public class HibernateMigrationHelper {
    * @param tableName
    * @param columnName
    * @param changeNotNull
-   * @param nullable Pass in null to use the annotation on the column. This is not always possible
-   *     (see Redmine #3329).
+   * @param changeType nullable Pass in null to use the annotation on the column. This is not always
+   *     possible (see Redmine #3329).
    * @param changeType
    * @return
    */
@@ -430,7 +573,7 @@ public class HibernateMigrationHelper {
     return defaultSchema;
   }
 
-  public SessionFactoryImpl getFactory() {
+  public SessionFactory getFactory() {
     return factory;
   }
 
@@ -576,12 +719,17 @@ public class HibernateMigrationHelper {
     String existingIndex = revIndexMap.get(indexCols);
     if (existingIndex != null) {
       if (existingIndex.equalsIgnoreCase(index.getName())) {
+        LOGGER.debug("Index [" + index.getName() + "] exists.  returning.");
         return;
       } else {
-        sqlStrings.add(extDialect.getDropIndexSql(table.getName(), '`' + existingIndex + '`'));
+        final String sql = extDialect.getDropIndexSql(table.getName(), '`' + existingIndex + '`');
+        LOGGER.debug("Index does not exist.  Dropping index [" + index.getName() + "]");
+        sqlStrings.add(sql);
       }
     }
-    sqlStrings.add(index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+    final String sql = index.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+    LOGGER.debug("Existing index is null.  Creating index SQL: " + sql);
+    sqlStrings.add(sql);
   }
 
   public Map<Set<String>, String> getExistingIndexes(final Table table, Session session) {

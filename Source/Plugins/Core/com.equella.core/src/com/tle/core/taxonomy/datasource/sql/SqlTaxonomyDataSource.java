@@ -232,7 +232,7 @@ public class SqlTaxonomyDataSource implements TaxonomyDataSource {
         });
   }
 
-  private Object executeSingleResultQuery(String query, Map<?, ?> params) {
+  private Object executeSingleResultQuery(String query, Map<String, ?> params) {
     return jdbcTemplate.query(
         query,
         params,

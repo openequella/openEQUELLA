@@ -29,9 +29,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
-import org.hibernate.util.SerializationHelper;
 
 public class HibernateCsvType implements UserType {
   private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);
@@ -72,7 +73,11 @@ public class HibernateCsvType implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
+  public Object nullSafeGet(
+      ResultSet rs, String[] names, SharedSessionContractImplementor implementor, Object owner)
+      throws SQLException {
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     String name = names[0];
     String clob = rs.getString(name);
     if (clob == null) {
@@ -120,7 +125,11 @@ public class HibernateCsvType implements UserType {
   }
 
   @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
+  public void nullSafeSet(
+      PreparedStatement st, Object value, int index, SharedSessionContractImplementor implementor)
+      throws SQLException {
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     String res = null;
     if (value instanceof String) {
       // Only pass in a String if you don't care about the type of value being included.

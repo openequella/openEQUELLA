@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 public abstract class CollectionPartitioner<T, RESULT> implements HibernateCallback {
   // Oracle has a list size limit of 1000

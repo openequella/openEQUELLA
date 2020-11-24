@@ -35,6 +35,9 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 trait DBSchema extends StdColumns {
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
   implicit def config: JDBCConfig.Aux[C]
 

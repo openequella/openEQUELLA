@@ -9,6 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
 val catsVersion   = "1.6.1"
+val cxfVersion    = "3.3.7"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -28,20 +29,19 @@ libraryDependencies ++= Seq(
   "org.codehaus.jackson"      % "jackson-mapper-asl"       % "1.9.13",
   "xalan"                     % "xalan"                    % "2.7.2",
   "org.dspace.oclc"           % "oclc-srw"                 % "1.0.20080328",
-  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % "3.4.0",
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % "3.4.0",
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % "3.4.0",
+  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"               % "4.5.13",
-//  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
-  "axis"       % "axis" % "1.4",
-  "com.jcraft" % "jsch" % "0.1.55",
+  "axis"                      % "axis"                     % "1.4",
+  "com.jcraft"                % "jsch"                     % "0.1.55",
 //  "jpf" % "jpf-tools" % "1.0.5",
   "org.jacoco"       % "org.jacoco.report"         % "0.8.6",
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.4.0",
   "org.slf4j"        % "slf4j-simple"              % "1.7.30",
-  "org.scalacheck"   %% "scalacheck"               % "1.14.3" % "test,serial",
+  "org.scalacheck"   %% "scalacheck"               % "1.15.1" % "test,serial",
   "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,

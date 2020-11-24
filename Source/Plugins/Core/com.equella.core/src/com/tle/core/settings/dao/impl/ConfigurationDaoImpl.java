@@ -56,17 +56,18 @@ public class ConfigurationDaoImpl extends GenericDaoImpl<ConfigurationProperty, 
     final StringBuilder buffer = new StringBuilder();
     buffer.append("from ConfigurationProperty where (");
     int length = select.size();
+    int paramCounter = 0;
     Object[] values = select.toArray(new Object[length + 1]);
     for (int i = 0; i < length; i++) {
       if (i > 0) {
         buffer.append(" or ");
       }
       values[i] = values[i].toString() + '%';
-      buffer.append("key.property like ?");
+      buffer.append("key.property like ?").append(paramCounter++);
     }
     buffer.append(")");
 
-    buffer.append(" and key.institutionId = ?");
+    buffer.append(" and key.institutionId = ?").append(paramCounter++);
     values[length] = CurrentInstitution.get().getDatabaseId();
 
     Collection<?> col = getHibernateTemplate().find(buffer.toString(), values);

@@ -40,8 +40,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton

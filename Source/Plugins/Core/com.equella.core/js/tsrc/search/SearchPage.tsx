@@ -17,10 +17,12 @@
  */
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+
 import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
+import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import {
@@ -35,10 +37,10 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
-  convertParamsToSearchOptions,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
+  queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
 } from "../modules/SearchModule";
@@ -137,11 +139,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      convertParamsToSearchOptions(location.search),
+      queryStringParamsToSearchOptions(location),
     ]).then((results) => {
       const [searchSettings, queryStringSearchOptions] = results;
       setSearchSettings(searchSettings);
-
       if (queryStringSearchOptions)
         setSearchPageOptions({
           ...queryStringSearchOptions,
@@ -204,7 +205,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .finally(() => setShowSpinner(false));
   };
 
-  const handleSortOrderChanged = (order: SortOrder) =>
+  const handleSortOrderChanged = (order: Static<typeof SortOrder>) =>
     setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>

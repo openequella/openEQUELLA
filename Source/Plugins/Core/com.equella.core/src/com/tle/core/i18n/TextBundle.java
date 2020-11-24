@@ -28,6 +28,7 @@ public final class TextBundle {
     throw new Error();
   }
 
+  // Should this actually be getLocaleString - is 'Local' a typo for 'Locale'?
   public static String getLocalString(
       Object origObj, BundleCache bundleCache, Collection<?> values, String defaultString) {
     String output;
