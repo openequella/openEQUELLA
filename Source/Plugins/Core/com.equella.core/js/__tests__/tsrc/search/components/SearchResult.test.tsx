@@ -28,8 +28,12 @@ import type {
   RenderData,
   SelectionSessionInfo,
 } from "../../../../tsrc/AppConfig";
+import {
+  selectResourceForCourseList,
+  selectResourceForNonCourseList,
+} from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
-import * as SelectionSessionModule from "../../../../tsrc/modules/SelectionSessionModule";
+import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import * as AppConfig from "../../../../tsrc/AppConfig";
@@ -182,19 +186,19 @@ describe("<SearchResult/>", () => {
 
   describe("In Selection Session", () => {
     const mockGlobalCourseList = jest.spyOn(
-      SelectionSessionModule,
+      LegacySelectionSessionModule,
       "getGlobalCourseList"
     );
     mockGlobalCourseList.mockReturnValue({ updateCourseList: jest.fn() });
 
     const mockSelectResourceForCourseList = jest.spyOn(
-      SelectionSessionModule,
+      LegacySelectionSessionModule,
       "selectResourceForCourseList"
     );
     mockSelectResourceForCourseList.mockResolvedValue();
 
     const mockSelectResourceForNonCourseList = jest.spyOn(
-      SelectionSessionModule,
+      LegacySelectionSessionModule,
       "selectResourceForNonCourseList"
     );
     mockSelectResourceForNonCourseList.mockResolvedValue();
@@ -211,10 +215,8 @@ describe("<SearchResult/>", () => {
     } = languageStrings.searchpage.selectResource;
     const STRUCTURED = "structured";
     const SELECT_OR_ADD = "selectOrAdd";
-    const selectForCourseFunc =
-      SelectionSessionModule.selectResourceForCourseList;
-    const selectForNonCourseFunc =
-      SelectionSessionModule.selectResourceForNonCourseList;
+    const selectForCourseFunc = selectResourceForCourseList;
+    const selectForNonCourseFunc = selectResourceForNonCourseList;
 
     it.each([
       [summaryPage, STRUCTURED, selectForCourseFunc, basicSelectionSessionInfo],

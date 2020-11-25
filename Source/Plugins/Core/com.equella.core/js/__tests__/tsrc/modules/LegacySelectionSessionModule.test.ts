@@ -21,7 +21,7 @@ import * as AppConfig from "../../../tsrc/AppConfig";
 import {
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
-} from "../../../tsrc/modules/SelectionSessionModule";
+} from "../../../tsrc/modules/LegacySelectionSessionModule";
 
 const basicSelectionSessionInfo: SelectionSessionInfo = {
   stateId: "1",

@@ -49,7 +49,7 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { isSelectionSessionOpen } from "../modules/SelectionSessionModule";
+import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { CategorySelector } from "./components/CategorySelector";

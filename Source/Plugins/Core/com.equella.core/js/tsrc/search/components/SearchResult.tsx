@@ -54,7 +54,7 @@ import {
   buildSelectionSessionItemSummaryLink,
   selectResource,
   isSelectionSessionOpen,
-} from "../../modules/SelectionSessionModule";
+} from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { ResourceSelector } from "./ResourceSelector";

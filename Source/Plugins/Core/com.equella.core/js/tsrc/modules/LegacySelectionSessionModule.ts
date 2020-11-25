@@ -25,6 +25,12 @@ import {
 import { LegacyContentResponse } from "../legacycontent/LegacyContent";
 
 /**
+ *  This Module is all about interacting with the Legacy AJAX endpoints
+ *  for selections sessions, and will be used until the supporting REST
+ *  endpoints are developed.
+ */
+
+/**
  * Provide a type to match 'CourseListFolderAjaxUpdateData' defined on server side.
  */
 interface CourseListFolderAjaxUpdateData {
