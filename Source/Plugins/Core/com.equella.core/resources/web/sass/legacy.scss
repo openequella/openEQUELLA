@@ -59,6 +59,7 @@ $iframeDialogHeight: 650px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
 $col2Width: 250px;
+$termSelectorHeight: 68px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -2047,7 +2048,7 @@ div.skinnysearch {
 }
 
 .autocompleteControl .autocomplete-container {
-  float: left;
+  float: none;
   // 120px for width of the select button and padding with default text 'select'.
   width: calc(100% - 120px);
 }
@@ -5433,4 +5434,15 @@ button:focus {
 #ed_fin,
 #ed_fan {
   width: 200px;
+}
+
+#wizard-controls
+  .autocompleteControl
+  .autocomplete-container
+  .prompt[disabled="disabled"] {
+  display: none;
+}
+
+#wizard-controls .autocompleteControl table.zebra {
+  margin-top: $termSelectorHeight;
 }
