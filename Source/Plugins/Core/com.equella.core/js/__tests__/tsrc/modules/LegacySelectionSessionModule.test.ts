@@ -68,19 +68,19 @@ describe("buildSelectionSessionItemSummaryLink", () => {
 });
 
 describe("isSelectionSessionOpen", () => {
-  it.each([
-    [true, "selectionSessionInfo has correct type", basicRenderData],
+  it.each<[string, boolean, RenderData | undefined]>([
+    ["RenderData includes SelectionSessionInfo", true, basicRenderData],
     [
-      false,
       "selectionSessionInfo is null",
+      false,
       { ...basicRenderData, selectionSessionInfo: null },
     ],
-    [false, "renderData is undefined", undefined],
+    ["renderData is undefined", false, undefined],
   ])(
-    "return %s when %s",
+    "when %s return %s",
     (
-      inSelectionSession: boolean,
       when: string,
+      inSelectionSession: boolean,
       renderData: RenderData | undefined
     ) => {
       updateMockGetRenderData(renderData);
