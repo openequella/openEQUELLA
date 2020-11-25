@@ -18,6 +18,7 @@
 import * as React from "react";
 
 import { shallow } from "enzyme";
+import { getMimeTypesFromServer } from "../../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
 import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
 
@@ -33,6 +34,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
         addOrUpdate={addOrUpdate}
         mimeTypeFilter={filter}
         handleError={handleError}
+        mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
       />
     );
 

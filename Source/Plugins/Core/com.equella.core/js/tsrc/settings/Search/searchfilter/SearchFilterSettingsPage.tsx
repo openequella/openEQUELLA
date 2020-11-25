@@ -37,6 +37,7 @@ import {
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
 import { languageStrings } from "../../../util/langstrings";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
@@ -372,6 +373,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         addOrUpdate={addOrUpdateMimeTypeFilter}
         mimeTypeFilter={selectedMimeTypeFilter}
         handleError={handleError}
+        mimeTypeSupplier={getMIMETypesFromServer}
       />
 
       <MessageDialog
