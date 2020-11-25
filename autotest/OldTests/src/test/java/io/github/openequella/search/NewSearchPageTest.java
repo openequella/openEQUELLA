@@ -6,10 +6,6 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.util.List;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import testng.annotation.NewUIOnly;
 
@@ -91,35 +87,5 @@ public class NewSearchPageTest extends AbstractSessionTest {
     searchPage.waitForSearchCompleted(7);
     searchPage.selectCollection("Hardware");
     searchPage.waitForSearchCompleted(7);
-  }
-
-  @Test(
-      dependsOnMethods = "searchWithLessACLS",
-      description = "Copy a Search link to clipboard, and use it")
-  @NewUIOnly
-  public void shareSearchUrl() throws IOException, UnsupportedFlavorException {
-    searchPage = new NewSearchPage(context).load();
-    searchPage.newSearch();
-    searchPage.waitForSearchCompleted(7);
-    // change a few controls on the page
-    searchPage.expandRefineControlPanel();
-    searchPage.selectSearchAttachments(false);
-    searchPage.selectCollection("Hardware");
-    searchPage.changeQuery("Zilog Z80");
-    searchPage.waitForSearchCompleted(1);
-    // copy search url to clipboard
-    String sharedSearchUrl = searchPage.shareSearchLink();
-    searchPage.newSearch();
-    // navigate to shared search url
-    context.getDriver().navigate().to(sharedSearchUrl);
-    searchPage.waitForSearchCompleted(1);
-    // the same values we set earlier should be selected in this search
-    List<WebElement> selectedCollections = searchPage.getSelectedCollections();
-    WebElement selectedSearchAttachment = searchPage.getSelectedSearchAttachmentValue();
-    searchPage.expandRefineControlPanel();
-    assertEquals(selectedCollections.size(), 1);
-    assertEquals(selectedCollections.get(0).getText(), "Hardware Platforms");
-    assertEquals(selectedSearchAttachment.getText(), "NO");
-    assertEquals(searchPage.getSearchBar().getAttribute("value"), "Zilog Z80");
   }
 }

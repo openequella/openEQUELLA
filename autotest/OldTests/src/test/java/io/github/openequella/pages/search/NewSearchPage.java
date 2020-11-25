@@ -3,11 +3,6 @@ package io.github.openequella.pages.search;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -20,9 +15,6 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
 
   @FindBy(xpath = "//button[span=('New search')]")
   private WebElement newSearchButton;
-
-  @FindBy(xpath = "//button[@title=('Copy search link to clipboard')]")
-  private WebElement shareSearchButton;
 
   @FindBy(id = "collapsibleRefinePanelButton")
   private WebElement collapsibleRefinePanelButton;
@@ -92,7 +84,6 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectCollection(String... collectionNames) {
     WebElement collectionSelector = getRefineControl("CollectionSelector");
     WebElement collectionSelectTextField = collectionSelector.findElement(By.xpath(".//input"));
-
     for (String name : collectionNames) {
       collectionSelectTextField.sendKeys(name);
       collectionSelectTextField.sendKeys(Keys.DOWN);
@@ -191,42 +182,6 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     confirmButton.click();
     // Wait until the dialog is closed.
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
-  }
-
-  /**
-   * Copies search link, containing searchOptions query string to clipboard.
-   *
-   * @return the shared search link, stored in clipboard
-   */
-  public String shareSearchLink() throws IOException, UnsupportedFlavorException {
-    shareSearchButton.click();
-    return Toolkit.getDefaultToolkit()
-        .getSystemClipboard()
-        .getData(DataFlavor.stringFlavor)
-        .toString();
-  }
-
-  /**
-   * Gets filter chips from CollectionSelector control, to determine which Collections have been
-   * selected
-   *
-   * @return selected collection chips
-   */
-  public List<WebElement> getSelectedCollections() {
-    WebElement collectionSelector = getRefineControl("CollectionSelector");
-    return collectionSelector.findElements(By.xpath(".//span[@class='MuiChip-label']"));
-  }
-
-  /**
-   * Gets the selected label from the SearchAttachmentsSelector control
-   *
-   * @return selected SearchAttachmentsSelector label
-   */
-  public WebElement getSelectedSearchAttachmentValue() {
-    WebElement searchAttachment = getRefineControl("SearchAttachmentsSelector");
-    return searchAttachment.findElement(
-        By.xpath(
-            ".//button[contains(@class, 'MuiButton-contained')]/span[@class='MuiButton-label']"));
   }
 
   /**
