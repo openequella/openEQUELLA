@@ -26,6 +26,7 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
 import {
   MimeTypeFilter,
   validateMimeTypeName,
@@ -60,7 +61,7 @@ export interface MimeTypeFilterEditingDialogProps {
   /**
    * An async function that returns a list of MimeTypeEntry.
    */
-  mimeTypeSupplier: () => Promise<OEQ.MimeType.MimeTypeEntry[]>;
+  mimeTypeSupplier?: () => Promise<OEQ.MimeType.MimeTypeEntry[]>;
 }
 
 /**
@@ -72,7 +73,7 @@ const MimeTypeFilterEditingDialog = ({
   mimeTypeFilter,
   addOrUpdate,
   handleError,
-  mimeTypeSupplier,
+  mimeTypeSupplier = getMIMETypesFromServer,
 }: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
