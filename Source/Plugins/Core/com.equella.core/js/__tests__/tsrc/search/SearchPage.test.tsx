@@ -696,6 +696,12 @@ describe("<SearchPage/>", () => {
     await act(async () => {
       copySearchButton.click();
     });
+    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
+      1
+    );
+    expect(mockClipboard).toHaveBeenCalledWith(
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+    );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
     ).toBeInTheDocument();
