@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import type { Meta, Story } from "@storybook/react";
+import { getMimeTypesFromServer } from "../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog, {
   MimeTypeFilterEditingDialogProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
@@ -38,17 +39,18 @@ const mimeTypeFilter: MimeTypeFilter = {
   mimeTypes: ["image/png", "image/jpeg"],
 };
 
+export const withFilterNotProvided: Story<MimeTypeFilterEditingDialogProps> = (
+  args
+) => <MimeTypeFilterEditingDialog {...args} />;
+withFilterNotProvided.args = {
+  open: true,
+  mimeTypeSupplier: () => Promise.resolve(getMimeTypesFromServer),
+};
+
 export const withFilterProvided: Story<MimeTypeFilterEditingDialogProps> = (
   args
 ) => <MimeTypeFilterEditingDialog {...args} />;
 withFilterProvided.args = {
-  open: true,
+  ...withFilterNotProvided.args,
   mimeTypeFilter,
-};
-
-export const withFilterNotProvided: Story<MimeTypeFilterEditingDialogProps> = (
-  args
-) => <MimeTypeFilterEditingDialog {...args} />;
-withFilterProvided.args = {
-  open: true,
 };

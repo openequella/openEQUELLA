@@ -58,6 +58,10 @@ export interface MimeTypeFilterEditingDialogProps {
    * Error handling.
    */
   handleError: (error: Error) => void;
+  /**
+   * An async function that returns a list of MimeTypeEntry.
+   */
+  mimeTypeSupplier?: () => Promise<OEQ.MimeType.MimeTypeEntry[]>;
 }
 
 /**
@@ -69,6 +73,7 @@ const MimeTypeFilterEditingDialog = ({
   mimeTypeFilter,
   addOrUpdate,
   handleError,
+  mimeTypeSupplier = getMIMETypesFromServer,
 }: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
@@ -84,10 +89,10 @@ const MimeTypeFilterEditingDialog = ({
   const isNameValid = validateMimeTypeName(filterName);
 
   useEffect(() => {
-    getMIMETypesFromServer()
+    mimeTypeSupplier()
       .then((mimeTypes) => setMimeTypeEntries(mimeTypes))
       .catch((error) => handleError(error));
-  }, []);
+  }, [mimeTypeSupplier]);
 
   /**
    * Clean up previously edited filter, depending on 'onClose'.
