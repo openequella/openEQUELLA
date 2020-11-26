@@ -196,7 +196,7 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 };
 
 /**
- * Select resources in 'structured'. The approach is to call the server ajax method 'reloadFolder'
+ * Select resources in 'structured'. The approach is to call the server AJAX method 'reloadFolder'
  * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
  * converted from an object of 'CourseListFolderAjaxUpdateData'.
  */
@@ -225,7 +225,7 @@ export const selectResourceForCourseList = (
     ...getBasicPostData(),
   };
 
-  return submitSelection(
+  return submitSelection<unknown>(
     `${submitBaseUrl}/access/course/searching.do`,
     postData,
     getGlobalCourseList().updateCourseList
