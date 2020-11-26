@@ -44,6 +44,14 @@ export const basicRenderData: RenderData = {
   selectionSessionInfo: basicSelectionSessionInfo,
 };
 
+export const renderDataForSelectOrAdd: RenderData = {
+  ...basicRenderData,
+  selectionSessionInfo: {
+    ...basicSelectionSessionInfo,
+    layout: "search",
+  },
+};
+
 const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
 export const updateMockGetRenderData = (renderData?: RenderData) => {
   mockGetRenderData.mockReturnValue(renderData);

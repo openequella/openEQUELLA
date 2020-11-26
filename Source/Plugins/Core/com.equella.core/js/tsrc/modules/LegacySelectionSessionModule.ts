@@ -55,7 +55,7 @@ interface CourseListFolderAjaxUpdateData {
 /**
  * The body structure of POST requests sent to 'searching.do' to select resources.
  */
-interface SelectionSessionPostData {
+export interface SelectionSessionPostData {
   /**
    * Which ajax events this request targets to
    */
@@ -196,14 +196,12 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 };
 
 /**
- * Select resources in 'structured'. The approach is to call the server AJAX method 'reloadFolder'
- * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
- * converted from an object of 'CourseListFolderAjaxUpdateData'.
+ * Build an object of SelectionSessionPostData for 'structured'.
  */
-export const selectResourceForCourseList = (
+export const buildPostDataForStructured = (
   itemKey: string,
-  attachmentUUIDs: string[] = []
-): Promise<void> => {
+  attachmentUUIDs: string[]
+): SelectionSessionPostData => {
   const serverSideEvent: (string | null)[] =
     attachmentUUIDs.length > 0
       ? [
@@ -219,11 +217,48 @@ export const selectResourceForCourseList = (
     event: serverSideEvent,
   };
 
-  const postData: SelectionSessionPostData = {
+  return {
     event__: ["_slcl.reloadFolder"], // This refers to the method 'reloadFolder' defined in 'CourseListSection'.
     eventp__0: [`${JSON.stringify(courseListUpdateData)}`],
     ...getBasicPostData(),
   };
+};
+
+/**
+ * Build an object of SelectionSessionPostData for 'selectOrAdd'.
+ */
+export const buildPostDataForSelectOrAdd = (
+  itemKey: string,
+  attachmentUUIDs: string[]
+): SelectionSessionPostData =>
+  attachmentUUIDs.length > 0
+    ? {
+        event__: [`ilad.selectAttachmentsFromNewSearch`],
+        eventp__0: [attachmentUUIDs.join(",")],
+        eventp__1: [`${itemKey}`],
+        eventp__2: [null],
+        ...getBasicPostData(),
+      }
+    : {
+        event__: ["sile.select"],
+        eventp__0: [`${itemKey}`],
+        eventp__1: [null],
+        ...getBasicPostData(),
+      };
+
+/**
+ * Select resources in 'structured'. The approach is to call the server AJAX method 'reloadFolder'
+ * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
+ * converted from an object of 'CourseListFolderAjaxUpdateData'.
+ */
+export const selectResourceForCourseList = (
+  itemKey: string,
+  attachmentUUIDs: string[] = []
+): Promise<void> => {
+  const postData: SelectionSessionPostData = buildPostDataForStructured(
+    itemKey,
+    attachmentUUIDs
+  );
 
   return submitSelection<unknown>(
     `${submitBaseUrl}/access/course/searching.do`,
@@ -241,21 +276,10 @@ export const selectResourceForNonCourseList = (
   itemKey: string,
   attachmentUUIDs: string[]
 ): Promise<void> => {
-  const postData: SelectionSessionPostData =
-    attachmentUUIDs.length > 0
-      ? {
-          event__: [`ilad.selectAttachmentsFromNewSearch`],
-          eventp__0: [attachmentUUIDs.join(",")],
-          eventp__1: [`${itemKey}`],
-          eventp__2: [null],
-          ...getBasicPostData(),
-        }
-      : {
-          event__: ["sile.select"],
-          eventp__0: [`${itemKey}`],
-          eventp__1: [null],
-          ...getBasicPostData(),
-        };
+  const postData: SelectionSessionPostData = buildPostDataForSelectOrAdd(
+    itemKey,
+    attachmentUUIDs
+  );
 
   return submitSelection<LegacyContentResponse>(
     `${submitBaseUrl}/selectoradd/searching.do`,

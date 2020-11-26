@@ -24,7 +24,7 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
-import type { SelectionSessionInfo } from "../../../../tsrc/AppConfig";
+import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
   selectResourceForCourseList,
   selectResourceForNonCourseList,
@@ -35,7 +35,7 @@ import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   basicRenderData,
-  basicSelectionSessionInfo,
+  renderDataForSelectOrAdd,
   updateMockGetRenderData,
   withIntegId,
 } from "../../RenderDataHelper";
@@ -210,11 +210,6 @@ describe("<SearchResult/>", () => {
     );
     mockSelectResourceForNonCourseList.mockResolvedValue();
 
-    const selectOrAddInfo: SelectionSessionInfo = {
-      ...basicSelectionSessionInfo,
-      layout: "search",
-    };
-
     const STRUCTURED = "structured";
     const SELECT_OR_ADD = "selectOrAdd";
     const selectForCourseFunc = selectResourceForCourseList;
@@ -236,37 +231,37 @@ describe("<SearchResult/>", () => {
         selectSummaryPageString,
         STRUCTURED,
         selectForCourseFunc,
-        basicSelectionSessionInfo,
+        basicRenderData,
       ],
       [
         selectAllAttachmentsString,
         STRUCTURED,
         selectForCourseFunc,
-        basicSelectionSessionInfo,
+        basicRenderData,
       ],
       [
         selectAttachmentString,
         STRUCTURED,
         selectForCourseFunc,
-        basicSelectionSessionInfo,
+        basicRenderData,
       ],
       [
         selectSummaryPageString,
         SELECT_OR_ADD,
         selectForNonCourseFunc,
-        selectOrAddInfo,
+        renderDataForSelectOrAdd,
       ],
       [
         selectAllAttachmentsString,
         SELECT_OR_ADD,
         selectForNonCourseFunc,
-        selectOrAddInfo,
+        renderDataForSelectOrAdd,
       ],
       [
         selectAttachmentString,
         SELECT_OR_ADD,
         selectForNonCourseFunc,
-        selectOrAddInfo,
+        renderDataForSelectOrAdd,
       ],
     ])(
       "supports %s in %s mode",
@@ -277,12 +272,9 @@ describe("<SearchResult/>", () => {
           itemKey: string,
           attachmentUUIDs: string[]
         ) => Promise<void>,
-        selectionSessionInfo: SelectionSessionInfo
+        renderData: RenderData
       ) => {
-        updateMockGetRenderData({
-          ...basicRenderData,
-          selectionSessionInfo: selectionSessionInfo,
-        });
+        updateMockGetRenderData(renderData);
 
         const { queryByLabelText, getByLabelText } = await renderSearchResult(
           mockData.attachSearchObj

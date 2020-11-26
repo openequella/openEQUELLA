@@ -18,14 +18,31 @@
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import type { RenderData } from "../../../tsrc/AppConfig";
 import {
+  buildPostDataForSelectOrAdd,
+  buildPostDataForStructured,
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
+  SelectionSessionPostData,
 } from "../../../tsrc/modules/LegacySelectionSessionModule";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   basicRenderData,
+  renderDataForSelectOrAdd,
   updateMockGetRenderData,
   withIntegId,
 } from "../RenderDataHelper";
+
+const {
+  summaryPage: selectSummaryPageString,
+  allAttachments: selectAllAttachmentsString,
+  attachment: selectAttachmentString,
+} = languageStrings.searchpage.selectResource;
+const itemKey = "72558c1d-8788-4515-86c8-b24a28cc451e/1";
+const attachmentUUID = "4c636d7e-21fe-4202-b7de-2e8a728b8ffc";
+const attachmentUUIDs = [
+  "4c636d7e-21fe-4202-b7de-2e8a728b8ffc",
+  "29e0fe1b-dbd6-4c98-9e7a-d957d9c731f5",
+];
 
 describe("buildSelectionSessionItemSummaryLink", () => {
   const { uuid, version } = getSearchResult.results[0];
@@ -71,4 +88,105 @@ describe("isSelectionSessionOpen", () => {
       expect(isSelectionSessionOpen()).toBe(inSelectionSession);
     }
   );
+});
+
+describe("buildPostDataForStructured", () => {
+  const basicPostData = {
+    "_sl.stateId": ["1"],
+    a: ["coursesearch"],
+    event__: ["_slcl.reloadFolder"],
+  };
+  const ajaxIds = `"ajaxIds":["courselistajax"]`;
+
+  const itemSummaryData: SelectionSessionPostData = {
+    ...basicPostData,
+    eventp__0: [`{${ajaxIds},"event":["_slcl.selectItem","${itemKey}",null]}`],
+  };
+
+  const oneAttachmentData: SelectionSessionPostData = {
+    ...basicPostData,
+    eventp__0: [
+      `{${ajaxIds},"event":["_slcl.selectAllAttachments","${attachmentUUID}","${itemKey}",null]}`,
+    ],
+  };
+
+  const allAttachmentsData: SelectionSessionPostData = {
+    ...basicPostData,
+    eventp__0: [
+      `{${ajaxIds},"event":["_slcl.selectAllAttachments","${attachmentUUIDs.join(
+        ","
+      )}","${itemKey}",null]}`,
+    ],
+  };
+
+  it.each<[string, string[], SelectionSessionPostData]>([
+    [selectSummaryPageString, [], itemSummaryData],
+    [selectAttachmentString, [attachmentUUID], oneAttachmentData],
+    [selectAllAttachmentsString, attachmentUUIDs, allAttachmentsData],
+  ])(
+    "builds POST data for %s in 'structured'",
+    (
+      resourceType: string,
+      attachmentUUIDs: string[],
+      expectedPostData: SelectionSessionPostData
+    ) => {
+      updateMockGetRenderData(basicRenderData);
+      const data: SelectionSessionPostData = buildPostDataForStructured(
+        itemKey,
+        attachmentUUIDs
+      );
+      expect(data).toMatchObject(expectedPostData);
+    }
+  );
+
+  describe("buildPostDataForSelectOrAdd", () => {
+    const basicPostData = {
+      "_sl.stateId": ["1"],
+      a: ["search"],
+    };
+
+    const itemSummaryData: SelectionSessionPostData = {
+      ...basicPostData,
+      event__: ["sile.select"],
+      eventp__0: [`${itemKey}`],
+      eventp__1: [null],
+    };
+
+    const basicAttachmentData = {
+      ...basicPostData,
+      event__: [`ilad.selectAttachmentsFromNewSearch`],
+      eventp__1: [`${itemKey}`],
+      eventp__2: [null],
+    };
+
+    const oneAttachmentData: SelectionSessionPostData = {
+      ...basicAttachmentData,
+      eventp__0: [attachmentUUID],
+    };
+
+    const allAttachmentsData: SelectionSessionPostData = {
+      ...basicAttachmentData,
+      eventp__0: [attachmentUUIDs.join(",")],
+    };
+
+    it.each<[string, string[], SelectionSessionPostData]>([
+      [selectSummaryPageString, [], itemSummaryData],
+      [selectAttachmentString, [attachmentUUID], oneAttachmentData],
+      [selectAllAttachmentsString, attachmentUUIDs, allAttachmentsData],
+    ])(
+      "builds POST data for %s in 'selectOrAdd'",
+      (
+        resourceType: string,
+        attachmentUUIDs: string[],
+        expectedPostData: SelectionSessionPostData
+      ) => {
+        updateMockGetRenderData(renderDataForSelectOrAdd);
+        const data: SelectionSessionPostData = buildPostDataForSelectOrAdd(
+          itemKey,
+          attachmentUUIDs
+        );
+        expect(data).toMatchObject(expectedPostData);
+      }
+    );
+  });
 });
