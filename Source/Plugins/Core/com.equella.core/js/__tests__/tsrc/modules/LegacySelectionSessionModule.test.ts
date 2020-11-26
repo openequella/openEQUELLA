@@ -16,32 +16,16 @@
  * limitations under the License.
  */
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import type { RenderData, SelectionSessionInfo } from "../../../tsrc/AppConfig";
-import * as AppConfig from "../../../tsrc/AppConfig";
+import type { RenderData } from "../../../tsrc/AppConfig";
 import {
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
 } from "../../../tsrc/modules/LegacySelectionSessionModule";
-
-const basicSelectionSessionInfo: SelectionSessionInfo = {
-  stateId: "1",
-  layout: "coursesearch",
-};
-const withIntegId: SelectionSessionInfo = {
-  ...basicSelectionSessionInfo,
-  integId: "2",
-};
-const basicRenderData: RenderData = {
-  baseResources: "p/r/2020.2.0/com.equella.core/",
-  newUI: true,
-  autotestMode: false,
-  newSearch: true,
-  selectionSessionInfo: basicSelectionSessionInfo,
-};
-const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
-const updateMockGetRenderData = (renderData?: RenderData) => {
-  mockGetRenderData.mockReturnValue(renderData);
-};
+import {
+  basicRenderData,
+  updateMockGetRenderData,
+  withIntegId,
+} from "../RenderDataHelper";
 
 describe("buildSelectionSessionItemSummaryLink", () => {
   const { uuid, version } = getSearchResult.results[0];

@@ -24,10 +24,7 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
-import type {
-  RenderData,
-  SelectionSessionInfo,
-} from "../../../../tsrc/AppConfig";
+import type { SelectionSessionInfo } from "../../../../tsrc/AppConfig";
 import {
   selectResourceForCourseList,
   selectResourceForNonCourseList,
@@ -36,25 +33,12 @@ import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import * as AppConfig from "../../../../tsrc/AppConfig";
-
-const basicSelectionSessionInfo: SelectionSessionInfo = {
-  stateId: "1",
-  layout: "coursesearch",
-  integId: "2",
-};
-
-const basicRenderData: RenderData = {
-  baseResources: "p/r/2020.2.0/com.equella.core/",
-  newUI: true,
-  autotestMode: false,
-  newSearch: true,
-  selectionSessionInfo: basicSelectionSessionInfo,
-};
-const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
-// Mock the value of 'getRenderData'.
-const updateMockRenderData = (renderData: RenderData = basicRenderData) =>
-  mockGetRenderData.mockReturnValue(renderData);
+import {
+  basicRenderData,
+  basicSelectionSessionInfo,
+  updateMockGetRenderData,
+  withIntegId,
+} from "../../RenderDataHelper";
 
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
@@ -195,7 +179,10 @@ describe("<SearchResult/>", () => {
     let page = await renderSearchResult(item);
     checkItemTitleLink(page, `/${basicURL}`);
 
-    updateMockRenderData();
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: withIntegId,
+    });
     page.unmount();
     page = await renderSearchResult(item);
     checkItemTitleLink(
@@ -292,7 +279,7 @@ describe("<SearchResult/>", () => {
         ) => Promise<void>,
         selectionSessionInfo: SelectionSessionInfo
       ) => {
-        updateMockRenderData({
+        updateMockGetRenderData({
           ...basicRenderData,
           selectionSessionInfo: selectionSessionInfo,
         });
