@@ -73,6 +73,34 @@ export interface BaseEntityReference {
   // which means there's potential for additional fields added dynamically at runtime.
 }
 
+/**
+ * Summary information for a BaseEntity, which should be enough for display purposes and pulling
+ * any further information as required (due to the UUID).
+ *
+ * Although shape wise very similar to `BaseEntityReference`, on the server side this has a
+ * concrete implementation.
+ */
+export interface BaseEntitySummary {
+  /**
+   * The unique ID of the underlying BaseEntity
+   */
+  uuid: UuidString;
+  /**
+   * The default locale human readable name for a BaseEntity
+   */
+  name: string;
+}
+
+/**
+ * Helper validator function for checking for an array of `BaseEntitySummary`s implemented via
+ * typescript-is.
+ *
+ * @param instance A potential array of `BaseEntitySummary`s
+ */
+export const isBaseEntitySummaryArray = (
+  instance: unknown
+): instance is BaseEntitySummary[] => is<BaseEntitySummary[]>(instance);
+
 export const ItemStatuses = Union(
   Literal('ARCHIVED'),
   Literal('DELETED'),

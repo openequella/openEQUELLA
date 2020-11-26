@@ -27,7 +27,6 @@ import com.tle.core.dao.helpers.ScrollableResultsIterator;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.qti.dao.QtiAssessmentResultDao;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import javax.inject.Singleton;
@@ -41,7 +40,7 @@ import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,10 +55,10 @@ public class QtiAssessmentResultDaoImpl extends GenericDaoImpl<QtiAssessmentResu
     super(QtiAssessmentResult.class);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<QtiAssessmentResult> findByAssessmentTest(QtiAssessmentTest test) {
-    return getHibernateTemplate().find("from QtiAssessmentResult where test = ?", test);
+    return (List<QtiAssessmentResult>)
+        getHibernateTemplate().find("from QtiAssessmentResult where test = ?0", test);
   }
 
   private Criterion[] getBaseCriteria(
@@ -145,8 +144,7 @@ public class QtiAssessmentResultDaoImpl extends GenericDaoImpl<QtiAssessmentResu
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     final Query query = getAllQuery(session);
                     return query.list();
                   }
@@ -161,8 +159,7 @@ public class QtiAssessmentResultDaoImpl extends GenericDaoImpl<QtiAssessmentResu
                 .execute(
                     new HibernateCallback() {
                       @Override
-                      public Object doInHibernate(Session session)
-                          throws HibernateException, SQLException {
+                      public Object doInHibernate(Session session) throws HibernateException {
                         final Query query = getAllQuery(session);
                         query.setReadOnly(true);
                         return query.scroll(ScrollMode.FORWARD_ONLY);
@@ -182,31 +179,31 @@ public class QtiAssessmentResultDaoImpl extends GenericDaoImpl<QtiAssessmentResu
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<QtiAssessmentResult> findAllByCriteria(
       @Nullable final Order order,
       final int firstResult,
       final int maxResults,
       final Criterion... criterion) {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = createCriteria(session, criterion);
+    return (List<QtiAssessmentResult>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Criteria criteria = createCriteria(session, criterion);
 
-                if (order != null) {
-                  criteria.addOrder(order);
-                }
-                if (firstResult > 0) {
-                  criteria.setFirstResult(firstResult);
-                }
-                if (maxResults >= 0) {
-                  criteria.setMaxResults(maxResults);
-                }
-                criteria.createAlias("itemResults", "ir", CriteriaSpecification.LEFT_JOIN);
-                return criteria.list();
-              }
-            });
+                    if (order != null) {
+                      criteria.addOrder(order);
+                    }
+                    if (firstResult > 0) {
+                      criteria.setFirstResult(firstResult);
+                    }
+                    if (maxResults >= 0) {
+                      criteria.setMaxResults(maxResults);
+                    }
+                    criteria.createAlias("itemResults", "ir", CriteriaSpecification.LEFT_JOIN);
+                    return criteria.list();
+                  }
+                });
   }
 }

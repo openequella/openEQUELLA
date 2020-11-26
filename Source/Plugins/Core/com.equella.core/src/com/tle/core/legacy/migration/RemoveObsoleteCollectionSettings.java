@@ -34,9 +34,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Type;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton

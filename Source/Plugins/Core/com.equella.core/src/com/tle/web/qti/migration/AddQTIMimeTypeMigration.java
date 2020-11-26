@@ -42,11 +42,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.MapKeyType;
 import org.hibernate.annotations.Type;
-import org.hibernate.classic.Session;
 
 @SuppressWarnings("nls")
 @Bind

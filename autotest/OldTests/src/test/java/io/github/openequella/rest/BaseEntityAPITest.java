@@ -5,6 +5,8 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -14,8 +16,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class BaseEntityAPITest extends AbstractRestApiTest {
-  private static final String COLLECTION_API_ENDPOINT =
-      TEST_CONFIG.getInstitutionUrl() + "api/collection";
+  private final String COLLECTION_API_ENDPOINT =
+      getTestConfig().getInstitutionUrl() + "api/collection";
   private final String PERMISSION = "SEARCH_COLLECTION";
 
   @DataProvider(name = "initialResumptionTokens")
@@ -69,9 +71,20 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     // is accessible whereas that of the second is not accessible.
     // The purpose of checking 'security' is to confirm whether full details is returned
     // because 'security' is only available when an entity's full detail is accessible.
-    assertEquals(results.size(), 2);
-    assertNotNull(results.get(0).get("security"));
-    assertNull(results.get(1).get("security"));
+    final String BASIC_ITEM = "Basic Items";
+    final String BASIC_ITEM_MODERATION = "Basic Items moderation";
+    List<String> checkedNode = new ArrayList<>();
+    for (final JsonNode node : results) {
+      if (node.get("name").asText().equals(BASIC_ITEM)) {
+        assertNull(node.get("security"));
+        checkedNode.add(BASIC_ITEM);
+      } else {
+        assertNotNull(node.get("security"));
+        checkedNode.add(BASIC_ITEM_MODERATION);
+      }
+    }
+    // Ensure above two assertions have been executed.
+    assertEquals(checkedNode.size(), 2);
   }
 
   private int getResultLength(JsonNode result) {

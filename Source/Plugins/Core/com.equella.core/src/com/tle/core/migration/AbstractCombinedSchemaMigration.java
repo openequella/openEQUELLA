@@ -24,7 +24,7 @@ import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 public abstract class AbstractCombinedSchemaMigration extends AbstractHibernateSchemaMigration {
   protected abstract List<AbstractHibernateSchemaMigration> getMigrations();

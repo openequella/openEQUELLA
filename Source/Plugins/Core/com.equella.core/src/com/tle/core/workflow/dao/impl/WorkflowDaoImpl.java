@@ -40,7 +40,7 @@ import java.util.Set;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,13 +56,13 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
 
   @Override
   public WorkflowItem getTaskForItem(Item item, String taskId) {
-    @SuppressWarnings("unchecked")
     List<WorkflowItem> task =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select wn from WorkflowNode wn, Item i where wn.uuid = :uuid and i = :item and i.itemDefinition.workflow = wn.workflow",
-                new String[] {"uuid", "item"},
-                new Object[] {taskId, item});
+        (List<WorkflowItem>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select wn from WorkflowNode wn, Item i where wn.uuid = :uuid and i = :item and i.itemDefinition.workflow = wn.workflow",
+                    new String[] {"uuid", "item"},
+                    new Object[] {taskId, item});
     if (task.isEmpty()) {
       return null;
     }
@@ -108,60 +108,60 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
             });
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Collection<WorkflowItem> findTasksForUser(String userId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from WorkflowItem i join i.users as u where u = :userID and i.workflow.institution = :inst",
-            new String[] {"userID", "inst"},
-            new Object[] {userId, CurrentInstitution.get()});
+    return (Collection<WorkflowItem>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from WorkflowItem i join i.users as u where u = :userID and i.workflow.institution = :inst",
+                new String[] {"userID", "inst"},
+                new Object[] {userId, CurrentInstitution.get()});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Collection<WorkflowItem> findTasksForGroup(String groupId) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from WorkflowItem i join i.groups as g where g = :groupID and i.workflow.institution = :inst",
-            new String[] {"groupID", "inst"},
-            new Object[] {groupId, CurrentInstitution.get()});
+    return (Collection<WorkflowItem>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from WorkflowItem i join i.groups as g where g = :groupID and i.workflow.institution = :inst",
+                new String[] {"groupID", "inst"},
+                new Object[] {groupId, CurrentInstitution.get()});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Collection<WorkflowMessage> findMessagesForUser(String userID) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from WorkflowMessage where user = :userID and node.node.workflow.institution = :inst",
-            new String[] {"userID", "inst"},
-            new Object[] {userID, CurrentInstitution.get()});
+    return (Collection<WorkflowMessage>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from WorkflowMessage where user = :userID and node.node.workflow.institution = :inst",
+                new String[] {"userID", "inst"},
+                new Object[] {userID, CurrentInstitution.get()});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Collection<WorkflowItemStatus> findWorkflowItemStatusesForUser(String userID) {
     Collection<WorkflowItemStatus> col =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from WorkflowItemStatus wis where wis.node.workflow.institution = :inst and wis.assignedTo = :userID",
-                new String[] {"inst", "userID"},
-                new Object[] {CurrentInstitution.get(), userID});
+        (Collection<WorkflowItemStatus>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from WorkflowItemStatus wis where wis.node.workflow.institution = :inst and wis.assignedTo = :userID",
+                    new String[] {"inst", "userID"},
+                    new Object[] {CurrentInstitution.get(), userID});
     Collection<WorkflowItemStatus> col2 =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from WorkflowItemStatus wis join wis.acceptedUsers u where wis.node.workflow.institution = :inst and (:userID in u)",
-                new String[] {"inst", "userID"},
-                new Object[] {CurrentInstitution.get(), userID});
+        (Collection<WorkflowItemStatus>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from WorkflowItemStatus wis join wis.acceptedUsers u where wis.node.workflow.institution = :inst and (:userID in u)",
+                    new String[] {"inst", "userID"},
+                    new Object[] {CurrentInstitution.get(), userID});
     col.addAll(col2);
     return col;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.REQUIRED)
   public List<WorkflowItemStatus> findWorkflowItemStatusesForItem(Item item) {
@@ -169,19 +169,20 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
         "select wis from com.tle.common.workflow.WorkflowItemStatus wis, com.tle.beans.item.Item item "
             + " where item.moderation.id = wis.modStatus.id and item.id = :itemId ";
     List<WorkflowItemStatus> col =
-        getHibernateTemplate().findByNamedParam(qString, "itemId", item.getId());
+        (List<WorkflowItemStatus>)
+            getHibernateTemplate().findByNamedParam(qString, "itemId", item.getId());
     return col;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Collection<ModerationStatus> findModerationStatusesForUser(String userID) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from ModerationStatus ms join ms.statuses s where s.node.workflow.institution = :inst and ms.rejectedBy = :userID",
-            new String[] {"inst", "userID"},
-            new Object[] {CurrentInstitution.get(), userID});
+    return (Collection<ModerationStatus>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from ModerationStatus ms join ms.statuses s where s.node.workflow.institution = :inst and ms.rejectedBy = :userID",
+                new String[] {"inst", "userID"},
+                new Object[] {CurrentInstitution.get(), userID});
   }
 
   private String getMessageHQL() {
@@ -203,46 +204,46 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
         .intValue();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<WorkflowMessage> getMessages(ItemKey itemKey) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "select m " + getMessageHQL(),
-            new String[] {"uuid", "version", "inst"},
-            new Object[] {itemKey.getUuid(), itemKey.getVersion(), CurrentInstitution.get()});
+    return (List<WorkflowMessage>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "select m " + getMessageHQL(),
+                new String[] {"uuid", "version", "inst"},
+                new Object[] {itemKey.getUuid(), itemKey.getVersion(), CurrentInstitution.get()});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public WorkflowItemStatus getIncompleteStatus(ItemTaskId itemTaskId) {
     List<WorkflowNodeStatus> node =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "SELECT ws FROM Item i JOIN i.moderation AS ms JOIN ms.statuses AS ws "
-                    + "WHERE ws.status = 'i' AND ws.node.uuid = :task AND i.uuid = :uuid AND i.version = :version AND i.institution = :inst",
-                new String[] {"task", "uuid", "version", "inst"},
-                new Object[] {
-                  itemTaskId.getTaskId(),
-                  itemTaskId.getUuid(),
-                  itemTaskId.getVersion(),
-                  CurrentInstitution.get()
-                });
+        (List<WorkflowNodeStatus>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "SELECT ws FROM Item i JOIN i.moderation AS ms JOIN ms.statuses AS ws "
+                        + "WHERE ws.status = 'i' AND ws.node.uuid = :task AND i.uuid = :uuid AND i.version = :version AND i.institution = :inst",
+                    new String[] {"task", "uuid", "version", "inst"},
+                    new Object[] {
+                      itemTaskId.getTaskId(),
+                      itemTaskId.getUuid(),
+                      itemTaskId.getVersion(),
+                      CurrentInstitution.get()
+                    });
     return node.size() > 0 ? ((WorkflowItemStatus) node.get(0)) : null;
   }
 
-  @SuppressWarnings({"unchecked"})
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<WorkflowItem> getIncompleteTasks(Item item) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "SELECT ws.node FROM Item i JOIN i.moderation AS ms JOIN ms.statuses AS ws "
-                + "WHERE ws.status = 'i' AND ws.class = 'task' AND i.uuid = :uuid AND i.version = :version AND i.institution = :inst",
-            new String[] {"uuid", "version", "inst"},
-            new Object[] {item.getUuid(), item.getVersion(), CurrentInstitution.get()});
+    return (List<WorkflowItem>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "SELECT ws.node FROM Item i JOIN i.moderation AS ms JOIN ms.statuses AS ws "
+                    + "WHERE ws.status = 'i' AND ws.class = 'task' AND i.uuid = :uuid AND i.version = :version AND i.institution = :inst",
+                new String[] {"uuid", "version", "inst"},
+                new Object[] {item.getUuid(), item.getVersion(), CurrentInstitution.get()});
   }
 
   @Override

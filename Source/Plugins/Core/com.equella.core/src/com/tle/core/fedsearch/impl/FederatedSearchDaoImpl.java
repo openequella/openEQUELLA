@@ -39,13 +39,14 @@ public class FederatedSearchDaoImpl extends AbstractEntityDaoImpl<FederatedSearc
   }
 
   @Override
-  @SuppressWarnings({"unchecked", "nls"})
+  @SuppressWarnings("nls")
   public List<Long> findEngineNamesByType(String type) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "select id from FederatedSearch where institution = :i and type = :type",
-            new String[] {"i", "type"},
-            new Object[] {CurrentInstitution.get(), type});
+    return (List<Long>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "select id from FederatedSearch where institution = :i and type = :type",
+                new String[] {"i", "type"},
+                new Object[] {CurrentInstitution.get(), type});
   }
 
   @Override

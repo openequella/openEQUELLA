@@ -24,8 +24,8 @@ import javax.inject.Inject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 @NonNullByDefault
 public abstract class AbstractHibernateDao {
@@ -43,20 +43,18 @@ public abstract class AbstractHibernateDao {
       template =
           new HibernateTemplate(newFactory) {
             @Override
-            protected Object doExecute(
-                HibernateCallback action, boolean enforceNewSession, boolean enforceNativeSession)
+            protected Object doExecute(HibernateCallback action, boolean enforceNativeSession)
                 throws DataAccessException {
               Thread currentThread = Thread.currentThread();
               ClassLoader origLoader = currentThread.getContextClassLoader();
               try {
                 currentThread.setContextClassLoader(Session.class.getClassLoader());
-                return super.doExecute(action, enforceNewSession, enforceNativeSession);
+                return super.doExecute(action, enforceNativeSession);
               } finally {
                 currentThread.setContextClassLoader(origLoader);
               }
             }
           };
-      template.setAllowCreate(false);
       template.setExposeNativeSession(true);
     }
     return template;
@@ -67,6 +65,6 @@ public abstract class AbstractHibernateDao {
   }
 
   protected String getFactoryName() {
-    return "main"; //$NON-NLS-1$
+    return "main";
   }
 }

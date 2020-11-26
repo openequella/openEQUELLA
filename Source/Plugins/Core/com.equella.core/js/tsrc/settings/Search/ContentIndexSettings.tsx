@@ -40,9 +40,10 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
     defaultSearchSettings
   );
-  const [initialSearchSettings, setInitialSearchSettings] = React.useState<
-    SearchSettings
-  >(defaultSearchSettings);
+  const [
+    initialSearchSettings,
+    setInitialSearchSettings,
+  ] = React.useState<SearchSettings>(defaultSearchSettings);
   const [showError, setShowError] = React.useState<boolean>(false);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
 

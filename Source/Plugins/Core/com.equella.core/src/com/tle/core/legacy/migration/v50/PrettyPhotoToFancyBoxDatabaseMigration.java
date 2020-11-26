@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import net.sf.json.JSONArray;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
-import org.hibernate.classic.Session;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
@@ -126,9 +126,9 @@ public class PrettyPhotoToFancyBoxDatabaseMigration extends AbstractHibernateDat
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @CollectionOfElements
+    @ElementCollection
     @Column(nullable = false)
-    @MapKey(columns = {@Column(length = 100, nullable = false)})
+    @MapKeyColumn(length = 100, nullable = false)
     Map<String, String> attributes = new HashMap<String, String>();
   }
 

@@ -114,7 +114,6 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> getRootNodes(String orderBy) {
     StringBuilder query = new StringBuilder("from ");
     query.append(getPersistentClass().getName());
@@ -124,12 +123,12 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
       query.append(orderBy);
     }
 
-    return getHibernateTemplate()
-        .findByNamedParam(query.toString(), "institution", CurrentInstitution.get());
+    return (List<T>)
+        getHibernateTemplate()
+            .findByNamedParam(query.toString(), "institution", CurrentInstitution.get());
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> getChildrenForNode(T node, String orderBy) {
     StringBuilder query = new StringBuilder("from ");
     query.append(getPersistentClass().getName());
@@ -140,11 +139,10 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
       query.append(orderBy);
     }
 
-    return getHibernateTemplate().findByNamedParam(query.toString(), "node", node);
+    return (List<T>) getHibernateTemplate().findByNamedParam(query.toString(), "node", node);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Long> getChildrenIdsForNodeId(long nodeId, String orderBy) {
     StringBuilder query = new StringBuilder("select id from ");
     query.append(getPersistentClass().getName());
@@ -155,17 +153,17 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
       query.append(orderBy);
     }
 
-    return getHibernateTemplate().findByNamedParam(query.toString(), "nodeId", nodeId);
+    return (List<Long>) getHibernateTemplate().findByNamedParam(query.toString(), "nodeId", nodeId);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> getAllSubnodeForNode(T node) {
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "from " + getPersistentClass().getName() + " where :node in elements(allParents)",
-            "node",
-            node);
+    return (List<T>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "from " + getPersistentClass().getName() + " where :node in elements(allParents)",
+                "node",
+                node);
   }
 
   @Override
@@ -197,12 +195,12 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> listAll() {
-    return getHibernateTemplate()
-        .find(
-            "from " + getPersistentClass().getName() + " where institution = ?",
-            CurrentInstitution.get());
+    return (List<T>)
+        getHibernateTemplate()
+            .find(
+                "from " + getPersistentClass().getName() + " where institution = ?0",
+                CurrentInstitution.get());
   }
 
   @Override
@@ -213,71 +211,71 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Long> listIdsInOrder() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Query query =
-                    session.createQuery(
-                        "SELECT id FROM " //$NON-NLS-1$
-                            + getPersistentClass().getName()
-                            + " WHERE institution = :institution ORDER BY allParents.size ASC"); //$NON-NLS-1$
-                query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
-                query.setCacheable(true);
-                query.setReadOnly(true);
+    return (List<Long>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query query =
+                        session.createQuery(
+                            "SELECT id FROM " //$NON-NLS-1$
+                                + getPersistentClass().getName()
+                                + " WHERE institution = :institution ORDER BY allParents.size ASC"); //$NON-NLS-1$
+                    query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
 
-                return query.list();
-              }
-            });
+                    return query.list();
+                  }
+                });
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Long> enumerateIdsInOrder() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                // NOTE: Don't order by name here - use NumberStringComparator
-                // on the returned list.
-                Query query =
-                    session.createQuery(
-                        "select id, parent.id from "
-                            + getPersistentClass().getName() // $NON-NLS-1$
-                            + " where institution = :institution"); //$NON-NLS-1$
-                query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                Map<Long, List<Long>> allNodesMap = new HashMap<Long, List<Long>>();
-                List<Object[]> list = query.list();
-                for (Object[] obj : list) {
-                  Long id = (Long) obj[0];
-                  Long parentId = (Long) obj[1];
-                  List<Long> children = allNodesMap.get(parentId);
-                  if (children == null) {
-                    children = new ArrayList<Long>();
-                    allNodesMap.put(parentId, children);
+    return (List<Long>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    // NOTE: Don't order by name here - use NumberStringComparator
+                    // on the returned list.
+                    Query query =
+                        session.createQuery(
+                            "select id, parent.id from "
+                                + getPersistentClass().getName() // $NON-NLS-1$
+                                + " where institution = :institution"); //$NON-NLS-1$
+                    query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    Map<Long, List<Long>> allNodesMap = new HashMap<Long, List<Long>>();
+                    List<Object[]> list = query.list();
+                    for (Object[] obj : list) {
+                      Long id = (Long) obj[0];
+                      Long parentId = (Long) obj[1];
+                      List<Long> children = allNodesMap.get(parentId);
+                      if (children == null) {
+                        children = new ArrayList<Long>();
+                        allNodesMap.put(parentId, children);
+                      }
+                      children.add(id);
+                    }
+                    return addIdsToList(new ArrayList<Long>(), allNodesMap.get(null), allNodesMap);
                   }
-                  children.add(id);
-                }
-                return addIdsToList(new ArrayList<Long>(), allNodesMap.get(null), allNodesMap);
-              }
 
-              private Object addIdsToList(
-                  List<Long> outIds, List<Long> children, Map<Long, List<Long>> allNodesMap) {
-                if (children == null) {
-                  return outIds;
-                }
-                for (Long id : children) {
-                  addIdsToList(outIds, allNodesMap.get(id), allNodesMap);
-                  outIds.add(id);
-                }
-                return outIds;
-              }
-            });
+                  private List<Long> addIdsToList(
+                      List<Long> outIds, List<Long> children, Map<Long, List<Long>> allNodesMap) {
+                    if (children == null) {
+                      return outIds;
+                    }
+                    for (Long id : children) {
+                      addIdsToList(outIds, allNodesMap.get(id), allNodesMap);
+                      outIds.add(id);
+                    }
+                    return outIds;
+                  }
+                });
   }
 }

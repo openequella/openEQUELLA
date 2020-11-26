@@ -44,7 +44,7 @@ import javax.inject.Singleton;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,7 +103,6 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
             });
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public List<TaskTrend> getTaskTrendsForWorkflows(
@@ -113,21 +112,22 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
     }
 
     List<Object[]> results =
-        getHibernateTemplate()
-            .executeFind(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(final Session session) {
-                    final Query query =
-                        session.createQuery(
-                            "SELECT wi.id, wi.name.id, count(*) FROM TaskHistory th JOIN th.task wi "
-                                + "WHERE wi.workflow.institution = :inst and wi.id = th.task.id AND wi.workflow.uuid in (:uuids) AND th.exitDate IS NULL "
-                                + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
-                    query.setParameter("inst", CurrentInstitution.get());
-                    query.setParameterList("uuids", uuids);
-                    return query.setMaxResults(5).list();
-                  }
-                });
+        (List<Object[]>)
+            getHibernateTemplate()
+                .execute(
+                    new HibernateCallback() {
+                      @Override
+                      public Object doInHibernate(final Session session) {
+                        final Query query =
+                            session.createQuery(
+                                "SELECT wi.id, wi.name.id, count(*) FROM TaskHistory th JOIN th.task wi "
+                                    + "WHERE wi.workflow.institution = :inst and wi.id = th.task.id AND wi.workflow.uuid in (:uuids) AND th.exitDate IS NULL "
+                                    + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
+                        query.setParameter("inst", CurrentInstitution.get());
+                        query.setParameterList("uuids", uuids);
+                        return query.setMaxResults(5).list();
+                      }
+                    });
     List<TaskTrend> trendList = Lists.newArrayList();
     final Map<Long, TaskTrend> trendMap = Maps.newHashMap();
     for (Object[] objects : results) {
@@ -144,21 +144,22 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
     }
 
     List<Object[]> trendResults =
-        getHibernateTemplate()
-            .executeFind(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) {
-                    Query query =
-                        session.createQuery(
-                            "SELECT wi.id, count(*) FROM TaskHistory th JOIN th.task wi WHERE wi.id IN (:ids) AND "
-                                + "th.entryDate < :date AND (th.exitDate > :date OR th.exitDate IS NULL)"
-                                + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
-                    query.setParameterList("ids", trendMap.keySet());
-                    query.setParameter("date", date);
-                    return query.list();
-                  }
-                });
+        (List<Object[]>)
+            getHibernateTemplate()
+                .execute(
+                    new HibernateCallback() {
+                      @Override
+                      public Object doInHibernate(Session session) {
+                        Query query =
+                            session.createQuery(
+                                "SELECT wi.id, count(*) FROM TaskHistory th JOIN th.task wi WHERE wi.id IN (:ids) AND "
+                                    + "th.entryDate < :date AND (th.exitDate > :date OR th.exitDate IS NULL)"
+                                    + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
+                        query.setParameterList("ids", trendMap.keySet());
+                        query.setParameter("date", date);
+                        return query.list();
+                      }
+                    });
     for (Object[] objects : trendResults) {
       long workflowItemId = ((Number) objects[0]).longValue();
       TaskTrend trend = trendMap.get(workflowItemId);

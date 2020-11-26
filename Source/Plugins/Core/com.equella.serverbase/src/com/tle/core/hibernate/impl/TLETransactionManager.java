@@ -21,7 +21,7 @@ package com.tle.core.hibernate.impl;
 import com.tle.core.hibernate.HibernateService;
 import javax.inject.Inject;
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 
 public class TLETransactionManager extends HibernateTransactionManager {
   private static final long serialVersionUID = 1L;

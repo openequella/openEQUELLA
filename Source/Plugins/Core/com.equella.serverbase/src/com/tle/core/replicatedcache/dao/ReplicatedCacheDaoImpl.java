@@ -22,7 +22,6 @@ import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -30,7 +29,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 @Bind(ReplicatedCacheDao.class)
@@ -50,8 +49,7 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query q =
                         session.createQuery(
                             "FROM CachedValue WHERE key = :key"
@@ -87,7 +85,7 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
         .execute(
             new HibernateCallback() {
               @Override
-              public Object doInHibernate(Session session) throws HibernateException, SQLException {
+              public Object doInHibernate(Session session) throws HibernateException {
                 // Delete all the things
                 Query q = session.createQuery("DELETE FROM CachedValue WHERE ttl < :ttl");
                 q.setParameter("ttl", new Date());
@@ -105,7 +103,7 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
         .execute(
             new HibernateCallback() {
               @Override
-              public Object doInHibernate(Session session) throws HibernateException, SQLException {
+              public Object doInHibernate(Session session) throws HibernateException {
                 Query q =
                     session.createQuery(
                         "DELETE FROM CachedValue WHERE cacheId = :cacheId"
@@ -127,7 +125,7 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
         .execute(
             new HibernateCallback() {
               @Override
-              public Object doInHibernate(Session session) throws HibernateException, SQLException {
+              public Object doInHibernate(Session session) throws HibernateException {
                 Query q =
                     session.createQuery("DELETE FROM CachedValue WHERE institution = :institution");
                 q.setParameter("institution", inst);
@@ -138,27 +136,27 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Collection<CachedValue> getBatch(
       final String cacheId, final String keyPrefixFilter, final long startId, final int batchSize) {
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Query q =
-                    session.createQuery(
-                        "FROM CachedValue WHERE cacheId = :cacheId"
-                            + " AND institution = :institution AND id > :startId"
-                            + " AND (:keyPrefixFilter = '' OR key LIKE :keyPrefixFilter) ORDER BY id ASC");
-                q.setParameter("cacheId", cacheId);
-                q.setParameter("keyPrefixFilter", keyPrefixFilter + '%');
-                q.setParameter("startId", startId);
-                q.setParameter("institution", CurrentInstitution.get());
-                q.setMaxResults(batchSize);
+    return (Collection<CachedValue>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query q =
+                        session.createQuery(
+                            "FROM CachedValue WHERE cacheId = :cacheId"
+                                + " AND institution = :institution AND id > :startId"
+                                + " AND (:keyPrefixFilter = '' OR key LIKE :keyPrefixFilter) ORDER BY id ASC");
+                    q.setParameter("cacheId", cacheId);
+                    q.setParameter("keyPrefixFilter", keyPrefixFilter + '%');
+                    q.setParameter("startId", startId);
+                    q.setParameter("institution", CurrentInstitution.get());
+                    q.setMaxResults(batchSize);
 
-                return q.list();
-              }
-            });
+                    return q.list();
+                  }
+                });
   }
 }

@@ -45,10 +45,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -113,13 +113,14 @@ public class AddNotificationSchemaOrig extends AbstractHibernateSchemaMigration 
           if (eventType.equals("rejected") || eventType.equals("comment")) {
             Query q =
                 session.createQuery(
-                    "from WorkflowNodeStatus ns join ns.wnode as n where n.workflowId = ? and n.uuid = ? and ns.status = 'i'");
+                    "from WorkflowNodeStatus ns join ns.wnode as n where n.workflowId = ?0 and n.uuid = ?1 and ns.status = 'i'");
             q.setLong(0, item.itemDefinition.workflowId);
             q.setString(1, event.step);
             List<Object[]> nodeStatuses = q.list();
             FakeWorkflowItemStatus itemStatus;
             if (nodeStatuses.isEmpty()) {
-              Query q2 = session.createQuery("from WorkflowNode where workflowId = ? and uuid = ?");
+              Query q2 =
+                  session.createQuery("from WorkflowNode where workflowId = ?0 and uuid = ?1");
               q2.setLong(0, item.itemDefinition.workflowId);
               q2.setString(1, event.step);
               FakeWorkflowItem node = (FakeWorkflowItem) q2.uniqueResult();

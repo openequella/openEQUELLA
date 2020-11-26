@@ -34,51 +34,51 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   @Transactional
   public List<T> enumerateAll() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                // NOTE: Don't order by name here - use NumberStringComparator
-                // on the returned list.
-                Query query =
-                    session.createQuery(
-                        "from "
-                            + getPersistentClass().getName() // $NON-NLS-1$
-                            + " where institution = :institution"); //$NON-NLS-1$
-                query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+    return (List<T>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    // NOTE: Don't order by name here - use NumberStringComparator
+                    // on the returned list.
+                    Query query =
+                        session.createQuery(
+                            "from "
+                                + getPersistentClass().getName() // $NON-NLS-1$
+                                + " where institution = :institution"); //$NON-NLS-1$
+                    query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   @Transactional
   public List<ID> enumerateAllIds() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                // NOTE: Don't order by name here - use NumberStringComparator
-                // on the returned list.
-                Query query =
-                    session.createQuery(
-                        "select id from "
-                            + getPersistentClass().getName() // $NON-NLS-1$
-                            + " where institution = :institution"); //$NON-NLS-1$
-                query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+    return (List<ID>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    // NOTE: Don't order by name here - use NumberStringComparator
+                    // on the returned list.
+                    Query query =
+                        session.createQuery(
+                            "select id from "
+                                + getPersistentClass().getName() // $NON-NLS-1$
+                                + " where institution = :institution"); //$NON-NLS-1$
+                    query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   protected Query createEnumerateQuery(Session session, boolean countOnly, ListCallback callback) {
@@ -124,16 +124,17 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
     return query;
   }
 
-  @SuppressWarnings({"unchecked", "nls"})
+  @SuppressWarnings("nls")
   protected List<T> enumerateAll(final ListCallback callback) {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                return createEnumerateQuery(session, false, callback).list();
-              }
-            });
+    return (List<T>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    return createEnumerateQuery(session, false, callback).list();
+                  }
+                });
   }
 
   public interface ListCallback {

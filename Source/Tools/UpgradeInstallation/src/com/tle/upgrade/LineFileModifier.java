@@ -76,7 +76,7 @@ public abstract class LineFileModifier {
           outFile.write(addLine);
           outFile.write(eol);
           if (result != null) {
-            result.addLogMessage("Added line '" + line + "'");
+            result.addLogMessage("Added line '" + addLine + "'");
           }
         }
       }

@@ -33,8 +33,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 /** @author Aaron */
 @Bind
@@ -50,7 +50,7 @@ public class AddManualNavigationFlag extends AbstractHibernateSchemaMigration {
   protected void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     session
-        .createSQLQuery("UPDATE item SET manual_navigation = ? WHERE manual_navigation IS NULL")
+        .createSQLQuery("UPDATE item SET manual_navigation = ?0 WHERE manual_navigation IS NULL")
         .setBoolean(0, false)
         .executeUpdate();
   }

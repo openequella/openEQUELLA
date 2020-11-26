@@ -24,7 +24,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import org.hibernate.dialect.Oracle9iDialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.dialect.unique.UniqueDelegate;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.StandardBasicTypes;
@@ -123,5 +124,10 @@ public class ExtendedOracle9iDialect extends Oracle9iDialect implements Extended
   public List<String> getCreateFunctionalIndex(
       String tableName, String function, String[]... indexes) {
     return tenG.getCreateFunctionalIndex(tableName, function, indexes);
+  }
+
+  @Override
+  public UniqueDelegate getUniqueDelegate() {
+    return tenG.getUniqueDelegate();
   }
 }

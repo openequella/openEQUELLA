@@ -26,7 +26,7 @@ import com.tle.core.item.dao.DrmAcceptanceDao;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 /** @author Nicholas Read */
 @Singleton

@@ -18,8 +18,8 @@
 
 package com.tle.core.hibernate.impl;
 
+import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.id.PersistentIdentifierGenerator;
-import org.hibernate.mapping.AuxiliaryDatabaseObject;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;

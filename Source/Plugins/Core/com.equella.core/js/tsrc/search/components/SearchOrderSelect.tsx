@@ -17,6 +17,7 @@
  */
 import { InputLabel, MenuItem, Select } from "@material-ui/core";
 import * as React from "react";
+import { Static } from "runtypes";
 import { SortOrder } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
@@ -27,12 +28,12 @@ export interface SearchOrderSelectProps {
   /**
    * The selected order. Being undefined means no option is selected.
    */
-  value?: SortOrder;
+  value?: Static<typeof SortOrder>;
   /**
    * Fired when a different sort order is selected.
    * @param sortOrder The new order.
    */
-  onChange: (sortOrder: SortOrder) => void;
+  onChange: (sortOrder: Static<typeof SortOrder>) => void;
 }
 
 export const SearchOrderSelect = ({
@@ -50,12 +51,12 @@ export const SearchOrderSelect = ({
   /**
    * Provide a data source for search sorting control.
    */
-  const sortingOptionStrings = new Map<SortOrder, string>([
-    [SortOrder.RANK, relevance],
-    [SortOrder.DATEMODIFIED, lastModified],
-    [SortOrder.DATECREATED, dateCreated],
-    [SortOrder.NAME, title],
-    [SortOrder.RATING, userRating],
+  const sortingOptionStrings = new Map<Static<typeof SortOrder>, string>([
+    ["RANK", relevance],
+    ["DATEMODIFIED", lastModified],
+    ["DATECREATED", dateCreated],
+    ["NAME", title],
+    ["RATING", userRating],
   ]);
 
   const baseId = "sort-order-select";
@@ -71,7 +72,7 @@ export const SearchOrderSelect = ({
         labelId={labelId}
         // If sortOrder is undefined, pass an empty string to select nothing.
         value={value ?? ""}
-        onChange={(event) => onChange(event.target.value as SortOrder)}
+        onChange={(event) => onChange(SortOrder.check(event.target.value))}
       >
         {Array.from(sortingOptionStrings).map(([value, text]) => (
           <MenuItem key={value} value={value}>

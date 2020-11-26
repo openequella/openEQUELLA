@@ -33,8 +33,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -61,8 +61,8 @@ public class AddLastActionDate extends AbstractHibernateSchemaMigration {
       Query upQuery =
           session.createQuery(
               "update ModerationStatus m set lastAction = "
-                  + "(select max(h.date) from Item i join i.history h where i.id = ? and h.type in ('approved','rejected', 'comment') group by i.id) "
-                  + "where m.id = ?");
+                  + "(select max(h.date) from Item i join i.history h where i.id = ?0 and h.type in ('approved','rejected', 'comment') group by i.id) "
+                  + "where m.id = ?1");
       upQuery.setParameter(0, results.get(0));
       upQuery.setParameter(1, results.get(1));
       upQuery.executeUpdate();

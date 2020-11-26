@@ -51,7 +51,10 @@ import org.hibernate.annotations.NamedNativeQuery;
 @AccessType("property")
 @SqlResultSetMapping(
     name = "resultMap",
-    columns = {@ColumnResult(name = "bundle_id"), @ColumnResult(name = "text")})
+    columns = {
+      @ColumnResult(name = "bundle_id", type = Long.class),
+      @ColumnResult(name = "text", type = String.class)
+    })
 @NamedNativeQueries({
   @NamedNativeQuery(
       name = "getClosest",

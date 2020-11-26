@@ -26,8 +26,8 @@ import com.tle.core.migration.MigrationResult;
 import javax.inject.Singleton;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 /**
  * @author larry The former oneClickSubmit (aka Quick contribute, one.click.collection) and the

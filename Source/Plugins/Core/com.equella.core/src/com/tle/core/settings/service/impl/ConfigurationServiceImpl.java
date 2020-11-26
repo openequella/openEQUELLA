@@ -58,7 +58,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.TypedValue;
+import org.hibernate.engine.spi.TypedValue;
 import org.springframework.transaction.annotation.Transactional;
 
 @Singleton

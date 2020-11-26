@@ -24,7 +24,6 @@ import com.tle.core.dao.helpers.ScrollableResultsIterator;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.qti.dao.QtiItemResultDao;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import javax.inject.Singleton;
@@ -33,7 +32,7 @@ import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,8 +61,7 @@ public class QtiItemResultDaoImpl extends GenericDaoImpl<QtiItemResult, Long>
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     final Query query = getAllQuery(session);
                     return query.list();
                   }
@@ -78,8 +76,7 @@ public class QtiItemResultDaoImpl extends GenericDaoImpl<QtiItemResult, Long>
                 .execute(
                     new HibernateCallback() {
                       @Override
-                      public Object doInHibernate(Session session)
-                          throws HibernateException, SQLException {
+                      public Object doInHibernate(Session session) throws HibernateException {
                         final Query query = getAllQuery(session);
                         query.setReadOnly(true);
                         return query.scroll(ScrollMode.FORWARD_ONLY);
