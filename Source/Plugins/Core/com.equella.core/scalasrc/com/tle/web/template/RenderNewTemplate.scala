@@ -21,6 +21,7 @@ package com.tle.web.template
 import java.util.concurrent.ConcurrentHashMap
 
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.legacy.LegacyGuice
@@ -161,10 +162,37 @@ object RenderNewTemplate {
         context.lookupSection(classOf[IntegrationSection])
       val integId = Option(integrationSection).map(_.getStateId(context)).orNull
 
+      def isSelectSummaryButtonDisabled: Boolean = {
+        // 'Select summary page' button can be disabled by both oEQ setting and LMS (at least Moodle)
+        // oEQ plugin setting - Restrict selections.
+        // Three booleans: selectItem, selectAttachments and selectPackage, defined in 'SelectionSession.java',
+        // provide the access to the LMS setting.
+
+        def getOeqSetting: Boolean =
+          LegacyGuice.configService
+            .getProperties(new QuickContributeAndVersionSettings())
+            .isButtonDisable
+
+        Option(integrationSection) match {
+          case Some(_) =>
+            session.isSelectItem match {
+              // When Restrict selections is either "Attachments only" or "Package only", the button is always disabled.
+              case false => true
+              // When Restrict selections is "Items only", the button is always NOT disabled.
+              case true if !session.isSelectAttachments && !session.isSelectPackage => false
+              // When Restrict selections is "No restrictions", whether disabled or not depends on the oEQ setting.
+              case _ => getOeqSetting
+            }
+          case None =>
+            getOeqSetting // Not in an Integration, whether disabled or not depends on the oEQ setting.
+        }
+      }
+
       val selectionSessionInfo = new ObjectExpression
       selectionSessionInfo.put("stateId", stateId)
       selectionSessionInfo.put("integId", integId)
       selectionSessionInfo.put("layout", layout)
+      selectionSessionInfo.put("isSelectSummaryButtonDisabled", isSelectSummaryButtonDisabled)
       selectionSessionInfo
     })
   }
