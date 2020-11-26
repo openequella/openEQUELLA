@@ -65,7 +65,7 @@ interface FormUpdate {
   partial: boolean;
 }
 
-interface LegacyContentResponse {
+export interface LegacyContentResponse {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];

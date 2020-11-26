@@ -30,6 +30,8 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.js.generic.statement.ScriptStatement;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
@@ -81,7 +83,10 @@ public class SelectionCheckoutSection
     super.registered(id, tree);
     versionSelectionSection.setAjaxDivId("checkout-div");
     tree.registerInnerSection(versionSelectionSection, id);
-    continueButton.setClickHandler(events.getNamedHandler("continueSelections"));
+    // Use JS History API to navigate back so that new search UI can retrieve previous search
+    // options.
+    // This approach also ensure the Old UI still works.
+    continueButton.setClickHandler(new OverrideHandler(new ScriptStatement("history.back();")));
     cancelButton.setClickHandler(
         events.getNamedHandler("cancelled").addValidator(new Confirm(CONFIRM_CANCEL)));
     finishButton.setClickHandler(events.getNamedHandler("finished"));

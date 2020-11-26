@@ -17,38 +17,40 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { render, RenderResult } from "@testing-library/react";
+import { render, RenderResult, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
+import type { RenderData } from "../../../../tsrc/AppConfig";
+import {
+  selectResourceForCourseList,
+  selectResourceForNonCourseList,
+} from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import * as AppConfig from "../../../../tsrc/AppConfig";
-
-const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
-// Mock the value of 'getRenderData'.
-const updateMockRenderData = () =>
-  mockGetRenderData.mockReturnValue({
-    baseResources: "p/r/2020.2.0/com.equella.core/",
-    newUI: true,
-    autotestMode: false,
-    newSearch: true,
-    selectionSessionInfo: {
-      stateId: "1",
-      integId: "2",
-      layout: "coursesearch",
-    },
-  });
+import {
+  basicRenderData,
+  renderDataForSelectOrAdd,
+  updateMockGetRenderData,
+  withIntegId,
+} from "../../RenderDataHelper";
 
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
   .mockResolvedValue({
     viewerId: "fancy",
   } as OEQ.MimeType.MimeTypeViewerDetail);
+
+const {
+  summaryPage: selectSummaryPageString,
+  allAttachments: selectAllAttachmentsString,
+  attachment: selectAttachmentString,
+} = languageStrings.searchpage.selectResource;
 
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
@@ -150,6 +152,20 @@ describe("<SearchResult/>", () => {
     ).toBeInTheDocument();
   });
 
+  it.each<[string]>([
+    [selectSummaryPageString],
+    [selectAllAttachmentsString],
+    [selectAttachmentString],
+  ])(
+    "should hide %s button in non-Selection session",
+    async (selectorLabel: string) => {
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(selectorLabel)).not.toBeInTheDocument();
+    }
+  );
+
   it("should use different link to open ItemSummary page, depending on renderData", async () => {
     const item = mockData.basicSearchObj;
     const checkItemTitleLink = (page: RenderResult, url: string) => {
@@ -163,7 +179,10 @@ describe("<SearchResult/>", () => {
     let page = await renderSearchResult(item);
     checkItemTitleLink(page, `/${basicURL}`);
 
-    updateMockRenderData();
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: withIntegId,
+    });
     page.unmount();
     page = await renderSearchResult(item);
     checkItemTitleLink(
@@ -172,19 +191,95 @@ describe("<SearchResult/>", () => {
     );
   });
 
-  it.each<[string]>([
-    [languageStrings.searchpage.selectResource.summaryPage],
-    [languageStrings.searchpage.selectResource.allAttachments],
-    [languageStrings.searchpage.selectResource.attachment],
-  ])(
-    // todo: pass event handler in and check if it has been called.
-    "should display buttons for %s in Selection Session",
-    async (buttonLabel: string) => {
-      updateMockRenderData();
-      const { queryByLabelText } = await renderSearchResult(
-        mockData.attachSearchObj
-      );
-      expect(queryByLabelText(buttonLabel)).toBeInTheDocument();
-    }
-  );
+  describe("In Selection Session", () => {
+    const mockGlobalCourseList = jest.spyOn(
+      LegacySelectionSessionModule,
+      "getGlobalCourseList"
+    );
+    mockGlobalCourseList.mockReturnValue({ updateCourseList: jest.fn() });
+
+    const mockSelectResourceForCourseList = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForCourseList"
+    );
+    mockSelectResourceForCourseList.mockResolvedValue();
+
+    const mockSelectResourceForNonCourseList = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForNonCourseList"
+    );
+    mockSelectResourceForNonCourseList.mockResolvedValue();
+
+    const STRUCTURED = "structured";
+    const SELECT_OR_ADD = "selectOrAdd";
+    const selectForCourseFunc = selectResourceForCourseList;
+    const selectForNonCourseFunc = selectResourceForNonCourseList;
+
+    const makeSelection = (findSelector: () => HTMLElement | null) => {
+      const selectorControl = findSelector();
+      // First, make sure the selector control is active
+      expect(selectorControl).toBeInTheDocument();
+      // And then make a selection by clicking it.
+      // Above expect can make sure selectorControl is not null.
+      fireEvent.click(selectorControl!);
+    };
+
+    it.each([
+      [
+        selectSummaryPageString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectAllAttachmentsString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectAttachmentString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectSummaryPageString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+      [
+        selectAllAttachmentsString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+      [
+        selectAttachmentString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+    ])(
+      "supports %s in %s mode",
+      async (
+        resourceType: string,
+        selectionSessionMode: string,
+        selectResourceFunc: (
+          itemKey: string,
+          attachmentUUIDs: string[]
+        ) => Promise<void>,
+        renderData: RenderData
+      ) => {
+        updateMockGetRenderData(renderData);
+
+        const { queryByLabelText } = await renderSearchResult(
+          mockData.attachSearchObj
+        );
+        makeSelection(() => queryByLabelText(resourceType));
+        expect(selectResourceFunc).toHaveBeenCalled();
+      }
+    );
+  });
 });

@@ -52,8 +52,9 @@ import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
+  selectResource,
   isSelectionSessionOpen,
-} from "../../modules/SelectionSessionModule";
+} from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { ResourceSelector } from "./ResourceSelector";
@@ -150,7 +151,7 @@ export default function SearchResult({
     attachment: OEQ.Search.Attachment;
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
-  const nop = () => {}; // todo: remove this in next PR.
+  const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
 
@@ -218,6 +219,13 @@ export default function SearchResult({
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
     setAttachExpanded(!attachExpanded);
+  };
+
+  const handleSelectResource = (
+    itemKey: string,
+    attachments: string[] = []
+  ) => {
+    selectResource(itemKey, attachments).catch((error) => handleError(error));
   };
 
   const generateItemMetadata = () => {
@@ -339,7 +347,9 @@ export default function SearchResult({
                 <ResourceSelector
                   labelText={selectResourceStrings.attachment}
                   isStopPropagation
-                  onClick={nop} // todo: replace nop with a handler for selecting one attachment
+                  onClick={() => {
+                    handleSelectResource(itemKey, [id]);
+                  }}
                 />
               </ListItemSecondaryAction>
             )}
@@ -359,7 +369,12 @@ export default function SearchResult({
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
-            onClick={nop} // todo: replace nop with a handler for selecting attachments
+            onClick={() => {
+              const attachments = attachmentsWithViewerDetails.map(
+                ({ attachment }) => attachment.id
+              );
+              handleSelectResource(itemKey, attachments);
+            }}
           />
         </Grid>
       </Grid>
@@ -439,7 +454,9 @@ export default function SearchResult({
         <ResourceSelector
           labelText={selectResourceStrings.summaryPage}
           isStopPropagation
-          onClick={nop} // todo: replace nop with a handler for selecting summary page
+          onClick={() => {
+            handleSelectResource(itemKey);
+          }}
         />
       </Grid>
     </Grid>
