@@ -215,15 +215,13 @@ describe("<SearchResult/>", () => {
     const selectForCourseFunc = selectResourceForCourseList;
     const selectForNonCourseFunc = selectResourceForNonCourseList;
 
-    const makeSelection = (
-      selectorLabel: string,
-      queryByLabelText: (text: string) => HTMLElement | null,
-      getByLabelText: (text: string) => HTMLElement
-    ) => {
+    const makeSelection = (findSelector: () => HTMLElement | null) => {
+      const selectorControl = findSelector();
       // First, make sure the selector control is active
-      expect(queryByLabelText(selectorLabel)).toBeInTheDocument();
-      // And then make a selection by clicking it
-      fireEvent.click(getByLabelText(selectorLabel));
+      expect(selectorControl).toBeInTheDocument();
+      // And then make a selection by clicking it.
+      // Above expect can make sure selectorControl is not null.
+      fireEvent.click(selectorControl!);
     };
 
     it.each([
@@ -276,10 +274,10 @@ describe("<SearchResult/>", () => {
       ) => {
         updateMockGetRenderData(renderData);
 
-        const { queryByLabelText, getByLabelText } = await renderSearchResult(
+        const { queryByLabelText } = await renderSearchResult(
           mockData.attachSearchObj
         );
-        makeSelection(resourceType, queryByLabelText, getByLabelText);
+        makeSelection(() => queryByLabelText(resourceType));
         expect(selectResourceFunc).toHaveBeenCalled();
       }
     );
