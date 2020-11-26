@@ -157,7 +157,7 @@ var Attachments = (function()
 				CourseList.transfer($ul);
 			}
 
-			// To support using the standard reload function for selecting all attachment,
+      // To support using the standard reload function for selecting all attachment,
       // we need to convert the array of UUID to a string; otherwise the JSON parser
       // will complain: Expected a string but was BEGIN_ARRAY.
       // More details can be found in 'Conversion.java' and 'CourseListFolderAjaxUpdateData.java'.
