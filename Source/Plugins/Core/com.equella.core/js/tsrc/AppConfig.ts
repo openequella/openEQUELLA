@@ -39,6 +39,10 @@ export interface SelectionSessionInfo {
    * The UI layout used in Selection Session
    */
   layout: "coursesearch" | "search" | "skinnysearch";
+  /**
+   * True if the Select Summary button is disabled
+   */
+  isSelectSummaryButtonDisabled: boolean;
 }
 
 export interface RenderData {
