@@ -62,6 +62,12 @@ const defaultViewerPromise = jest
     viewerId: "fancy",
   } as OEQ.MimeType.MimeTypeViewerDetail);
 
+const {
+  summaryPage: selectSummaryPageString,
+  allAttachments: selectAllAttachmentsString,
+  attachment: selectAttachmentString,
+} = languageStrings.searchpage.selectResource;
+
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem
@@ -162,6 +168,20 @@ describe("<SearchResult/>", () => {
     ).toBeInTheDocument();
   });
 
+  it.each<[string]>([
+    [selectSummaryPageString],
+    [selectAllAttachmentsString],
+    [selectAttachmentString],
+  ])(
+    "should hide %s button in non-Selection session",
+    async (selectorLabel: string) => {
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(selectorLabel)).not.toBeInTheDocument();
+    }
+  );
+
   it("should use different link to open ItemSummary page, depending on renderData", async () => {
     const item = mockData.basicSearchObj;
     const checkItemTitleLink = (page: RenderResult, url: string) => {
@@ -208,28 +228,59 @@ describe("<SearchResult/>", () => {
       layout: "search",
     };
 
-    const {
-      summaryPage,
-      allAttachments,
-      attachment,
-    } = languageStrings.searchpage.selectResource;
     const STRUCTURED = "structured";
     const SELECT_OR_ADD = "selectOrAdd";
     const selectForCourseFunc = selectResourceForCourseList;
     const selectForNonCourseFunc = selectResourceForNonCourseList;
 
+    const makeSelection = (
+      selectorLabel: string,
+      queryByLabelText: (text: string) => HTMLElement | null,
+      getByLabelText: (text: string) => HTMLElement
+    ) => {
+      // First, make sure the selector control is active
+      expect(queryByLabelText(selectorLabel)).toBeInTheDocument();
+      // And then make a selection by clicking it
+      fireEvent.click(getByLabelText(selectorLabel));
+    };
+
     it.each([
-      [summaryPage, STRUCTURED, selectForCourseFunc, basicSelectionSessionInfo],
       [
-        allAttachments,
+        selectSummaryPageString,
         STRUCTURED,
         selectForCourseFunc,
         basicSelectionSessionInfo,
       ],
-      [attachment, STRUCTURED, selectForCourseFunc, basicSelectionSessionInfo],
-      [summaryPage, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
-      [allAttachments, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
-      [attachment, SELECT_OR_ADD, selectForNonCourseFunc, selectOrAddInfo],
+      [
+        selectAllAttachmentsString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicSelectionSessionInfo,
+      ],
+      [
+        selectAttachmentString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicSelectionSessionInfo,
+      ],
+      [
+        selectSummaryPageString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        selectOrAddInfo,
+      ],
+      [
+        selectAllAttachmentsString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        selectOrAddInfo,
+      ],
+      [
+        selectAttachmentString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        selectOrAddInfo,
+      ],
     ])(
       "supports %s in %s mode",
       async (
@@ -249,9 +300,7 @@ describe("<SearchResult/>", () => {
         const { queryByLabelText, getByLabelText } = await renderSearchResult(
           mockData.attachSearchObj
         );
-        expect(queryByLabelText(resourceType)).toBeInTheDocument();
-
-        fireEvent.click(getByLabelText(resourceType));
+        makeSelection(resourceType, queryByLabelText, getByLabelText);
         expect(selectResourceFunc).toHaveBeenCalled();
       }
     );
