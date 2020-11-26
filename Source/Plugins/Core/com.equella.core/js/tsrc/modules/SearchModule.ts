@@ -270,16 +270,19 @@ export const generateQueryStringFromSearchOptions = (
   const params = new URLSearchParams();
   params.set(
     "searchOptions",
-    JSON.stringify(searchOptions, (key: string, value: object[]) => {
-      return match(
-        [
-          Literal("collections"),
-          () => value.map((collection) => pick(collection, ["uuid"])),
-        ],
-        [Literal("owner"), () => pick(value, ["id"])],
-        [Unknown, () => value ?? undefined]
-      )(key);
-    })
+    JSON.stringify(
+      searchOptions,
+      (key: string, value: object[] | undefined) => {
+        return match(
+          [
+            Literal("collections"),
+            () => value?.map((collection) => pick(collection, ["uuid"])),
+          ],
+          [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
+          [Unknown, () => value ?? undefined]
+        )(key);
+      }
+    )
   );
   return params.toString();
 };

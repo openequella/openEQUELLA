@@ -24,7 +24,10 @@ import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
+import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
+import MessageInfo from "../components/MessageInfo";
+import type { RenderData } from "../mainui";
 import {
   templateDefaults,
   templateError,
@@ -40,6 +43,7 @@ import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
+  generateQueryStringFromSearchOptions,
   queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
@@ -65,6 +69,8 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
+
+declare const renderData: RenderData | undefined;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -123,6 +129,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
+  const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
@@ -289,6 +296,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFilterExpansion(false);
   };
 
+  const copySearchInfoSnackbar = (
+    <MessageInfo
+      open={showSnackBar}
+      onClose={() => setShowSnackBar(false)}
+      title={searchStrings.shareSearchConfirmationText}
+      variant="success"
+    />
+  );
+
+  const handleCopySearch = () => {
+    //base institution urls have a trailing / that we need to get rid of
+    const instUrl = AppConfig.baseUrl.slice(0, -1);
+    const searchUrl = `${instUrl}${
+      location.pathname
+    }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+
+    navigator.clipboard
+      .writeText(searchUrl)
+      .then(() => {
+        setShowSnackBar(true);
+      })
+      .catch(() => handleError);
+  };
+
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
     setSearchPageOptions({
       ...searchPageOptions,
@@ -412,73 +443,79 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     results: searchResults,
   } = pagedSearchResult;
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={9}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <SearchBar
-              query={searchPageOptions.query ?? ""}
-              rawMode={searchPageOptions.rawMode}
-              onQueryChange={handleQueryChanged}
-              onRawModeChange={handleRawModeChanged}
-              doSearch={search}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <SearchResultList
-              showSpinner={showSpinner}
-              paginationProps={{
-                count: totalCount,
-                currentPage: searchPageOptions.currentPage,
-                rowsPerPage: searchPageOptions.rowsPerPage,
-                onPageChange: handlePageChanged,
-                onRowsPerPageChange: handleRowsPerPageChanged,
-              }}
-              orderSelectProps={{
-                value: searchPageOptions.sortOrder,
-                onChange: handleSortOrderChanged,
-              }}
-              onClearSearchOptions={handleClearSearchOptions}
-            >
-              {searchResults.length > 0 &&
-                mapSearchResultItems(searchResults, handleError, highlights)}
-            </SearchResultList>
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={9}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <SearchBar
+                query={searchPageOptions.query ?? ""}
+                rawMode={searchPageOptions.rawMode}
+                onQueryChange={handleQueryChanged}
+                onRawModeChange={handleRawModeChanged}
+                doSearch={search}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchResultList
+                showSpinner={showSpinner}
+                paginationProps={{
+                  count: totalCount,
+                  currentPage: searchPageOptions.currentPage,
+                  rowsPerPage: searchPageOptions.rowsPerPage,
+                  onPageChange: handlePageChanged,
+                  onRowsPerPageChange: handleRowsPerPageChanged,
+                }}
+                orderSelectProps={{
+                  value: searchPageOptions.sortOrder,
+                  onChange: handleSortOrderChanged,
+                }}
+                onClearSearchOptions={handleClearSearchOptions}
+                onCopySearchLink={handleCopySearch}
+              >
+                {searchResults.length > 0 &&
+                  mapSearchResultItems(searchResults, handleError, highlights)}
+              </SearchResultList>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
 
-      <Grid item xs={3}>
-        <Grid container direction="column" spacing={2}>
-          <Grid item>
-            <RefineSearchPanel
-              controls={refinePanelControls}
-              onChangeExpansion={handleCollapsibleFilterClick}
-              panelExpanded={filterExpansion}
-              showFilterIcon={areCollapsibleFiltersSet()}
-            />
+        <Grid item xs={3}>
+          <Grid container direction="column" spacing={2}>
+            <Grid item>
+              <RefineSearchPanel
+                controls={refinePanelControls}
+                onChangeExpansion={handleCollapsibleFilterClick}
+                panelExpanded={filterExpansion}
+                showFilterIcon={areCollapsibleFiltersSet()}
+              />
+            </Grid>
+            {classifications.length > 0 &&
+              classifications.some((c) => c.categories.length > 0) && (
+                <Grid item>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h5">
+                        {languageStrings.searchpage.categorySelector.title}
+                      </Typography>
+                      <CategorySelector
+                        classifications={classifications}
+                        onSelectedCategoriesChange={
+                          handleSelectedCategoriesChange
+                        }
+                        selectedCategories={
+                          searchPageOptions.selectedCategories
+                        }
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              )}
           </Grid>
-          {classifications.length > 0 &&
-            classifications.some((c) => c.categories.length > 0) && (
-              <Grid item>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h5">
-                      {languageStrings.searchpage.categorySelector.title}
-                    </Typography>
-                    <CategorySelector
-                      classifications={classifications}
-                      onSelectedCategoriesChange={
-                        handleSelectedCategoriesChange
-                      }
-                      selectedCategories={searchPageOptions.selectedCategories}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-            )}
         </Grid>
       </Grid>
-    </Grid>
+      {copySearchInfoSnackbar}
+    </>
   );
 };
 
