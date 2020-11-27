@@ -29,12 +29,17 @@ import { RenderData, SelectionSessionInfo } from "../../tsrc/AppConfig";
 export const basicSelectionSessionInfo: SelectionSessionInfo = {
   stateId: "1",
   layout: "coursesearch",
-  isSelectSummaryButtonDisabled: true,
+  isSelectSummaryButtonDisabled: false,
 };
 
 export const withIntegId: SelectionSessionInfo = {
   ...basicSelectionSessionInfo,
   integId: "2",
+};
+
+export const selectSummaryButtonDisabled: SelectionSessionInfo = {
+  ...basicSelectionSessionInfo,
+  isSelectSummaryButtonDisabled: true,
 };
 
 export const basicRenderData: RenderData = {

@@ -36,6 +36,7 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
+  selectSummaryButtonDisabled,
   updateMockGetRenderData,
   withIntegId,
 } from "../../RenderDataHelper";
@@ -281,5 +282,16 @@ describe("<SearchResult/>", () => {
         expect(selectResourceFunc).toHaveBeenCalled();
       }
     );
+
+    it("should hide the Select Summary button if it's disabled", async () => {
+      updateMockGetRenderData({
+        ...basicRenderData,
+        selectionSessionInfo: selectSummaryButtonDisabled,
+      });
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(selectSummaryPageString)).toBeNull();
+    });
   });
 });
