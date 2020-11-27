@@ -100,8 +100,20 @@ $roundButtonRadius: 50px;
     background-color: $activeBackgroundColor;
   }
 }
-@mixin roundButton {
+@mixin roundButton($hasText: bool) {
   @include boxShadow;
+  &:hover {
+    @include typography-button;
+    //need a smaller line-height because this is a round button
+    line-height: 1.45em;
+    text-transform: uppercase;
+    width: unset;
+    @if $hasText {
+      // The padding is only needed if the button has text that will be shown on hover
+      padding-right: $singleMargin;
+      padding-left: $singleMargin;
+    }
+  }
   min-width: unset;
   border-radius: $roundButtonRadius;
   -moz-border-radius: $roundButtonRadius;
@@ -2666,7 +2678,7 @@ html.wait {
 }
 
 #selection-page .itemresult-rating div.float-right .btn {
-  @include roundButton;
+  @include roundButton(true);
   margin-left: 0 !important;
   margin-right: 4px;
   vertical-align: middle;
@@ -2696,9 +2708,9 @@ html.wait {
 
 #sc_attachments_selectAllAttachmentButton:hover,
 #sc_attachments_selectPackageButton:hover {
+  @include typography-caption(true);
+  text-transform: uppercase;
   width: 215px;
-  line-height: 1.3rem;
-  font-size: 12px;
   padding-right: $singleMargin;
 }
 
@@ -3981,7 +3993,7 @@ td.sectionAction {
 }
 
 .selection .selectable .attachments-browse.structured li .button-div .btn {
-  @include roundButton;
+  @include roundButton(false);
   margin: 4px 0;
 }
 
@@ -4626,7 +4638,7 @@ input[disabled="disabled"] {
 }
 
 #selection-page button.package-select {
-  @include roundButton;
+  @include roundButton(true);
   margin: 0;
 }
 
@@ -5493,17 +5505,8 @@ button:focus {
 }
 
 .item-title-and-desc .selectitem button {
-  @include roundButton;
+  @include roundButton(true);
   float: right;
-  margin: 4px 0;
-  &:not(:hover) {
-    min-width: unset;
-  }
-  &:hover {
-    font-size: 12px;
-    padding-left: $singleMargin;
-    padding-right: $singleMargin;
-  }
 }
 
 .itemsummary-layout .selection-lmscontent {
