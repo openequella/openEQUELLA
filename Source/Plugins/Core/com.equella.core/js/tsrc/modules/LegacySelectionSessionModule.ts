@@ -114,6 +114,18 @@ export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
 /**
+ * Indicates if the Select Summary button is disabled or not.
+ * Returns true if the Selection Session info is not available.
+ */
+export const isSelectSummaryButtonDisabled = (): boolean => {
+  const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
+  if (isSelectionSessionInfo(selectionSessionInfo)) {
+    return selectionSessionInfo.isSelectSummaryButtonDisabled;
+  }
+  return true;
+};
+
+/**
  * Validate the selectionSessionInfo included in renderData.
  * And return selectionSessionInfo if the checking is passed, or throw a type error.
  */

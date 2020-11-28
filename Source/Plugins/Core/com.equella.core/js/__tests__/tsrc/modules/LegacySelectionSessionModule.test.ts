@@ -22,12 +22,14 @@ import {
   buildPostDataForStructured,
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
+  isSelectSummaryButtonDisabled,
   SelectionSessionPostData,
 } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
+  selectSummaryButtonDisabled,
   updateMockGetRenderData,
   withIntegId,
 } from "../RenderDataHelper";
@@ -187,6 +189,36 @@ describe("buildPostDataForSelectOrAdd", () => {
         attachmentUUIDs
       );
       expect(data).toMatchObject(expectedPostData);
+    }
+  );
+});
+
+describe("isSelectSummaryButtonDisabled", () => {
+  it.each<[string, boolean, RenderData | undefined]>([
+    ["'isSelectSummaryButtonDisabled' is false", false, basicRenderData],
+    [
+      "'isSelectSummaryButtonDisabled' is true",
+      true,
+      {
+        ...basicRenderData,
+        selectionSessionInfo: selectSummaryButtonDisabled,
+      },
+    ],
+    [
+      "selectionSessionInfo is null",
+      true,
+      { ...basicRenderData, selectionSessionInfo: null },
+    ],
+    ["renderData is undefined", true, undefined],
+  ])(
+    "when %s return %s",
+    (
+      when: string,
+      isButtonDisabled: boolean,
+      renderData: RenderData | undefined
+    ) => {
+      updateMockGetRenderData(renderData);
+      expect(isSelectSummaryButtonDisabled()).toBe(isButtonDisabled);
     }
   );
 });

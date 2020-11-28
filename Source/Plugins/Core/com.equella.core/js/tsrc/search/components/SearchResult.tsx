@@ -54,6 +54,7 @@ import {
   buildSelectionSessionItemSummaryLink,
   selectResource,
   isSelectionSessionOpen,
+  isSelectSummaryButtonDisabled,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -447,22 +448,23 @@ export default function SearchResult({
     );
   };
 
-  const itemPrimaryContent = inSelectionSession ? (
-    <Grid container alignItems="center">
-      <Grid item>{itemLink()}</Grid>
-      <Grid item>
-        <ResourceSelector
-          labelText={selectResourceStrings.summaryPage}
-          isStopPropagation
-          onClick={() => {
-            handleSelectResource(itemKey);
-          }}
-        />
+  const itemPrimaryContent =
+    inSelectionSession && !isSelectSummaryButtonDisabled() ? (
+      <Grid container alignItems="center">
+        <Grid item>{itemLink()}</Grid>
+        <Grid item>
+          <ResourceSelector
+            labelText={selectResourceStrings.summaryPage}
+            isStopPropagation
+            onClick={() => {
+              handleSelectResource(itemKey);
+            }}
+          />
+        </Grid>
       </Grid>
-    </Grid>
-  ) : (
-    itemLink()
-  );
+    ) : (
+      itemLink()
+    );
 
   return (
     <ListItem alignItems="flex-start" divider>
