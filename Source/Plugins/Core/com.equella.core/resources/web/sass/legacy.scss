@@ -2711,7 +2711,6 @@ html.wait {
 #sc_attachments_selectAllAttachmentButton:hover,
 #sc_attachments_selectPackageButton:hover {
   @include roundButton(true);
-  text-transform: uppercase;
   width: 215px;
   padding-right: $singleMargin;
 }
