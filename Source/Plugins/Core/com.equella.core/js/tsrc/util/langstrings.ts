@@ -380,7 +380,7 @@ export const languageStrings = {
       title: "Refine search",
     },
     remoteSearchSelector: {
-      title: "Go to Remote Search",
+      title: "Access Remote repositories",
     },
     searchAttachmentsSelector: {
       title: "Search attachments",
