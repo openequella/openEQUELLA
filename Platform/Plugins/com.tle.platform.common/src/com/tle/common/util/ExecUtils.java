@@ -23,17 +23,14 @@ import com.google.common.io.Closeables;
 import com.tle.common.Triple;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -54,71 +51,6 @@ public final class ExecUtils {
   private static final String[] EXE_TYPES = {
     "", ".exe", ".bat"
   }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-  /**
-   * Creates a process which will then kill a given process and it's child processes on Linux.
-   * arg[0] should be the PID of the main process you want to terminate.
-   */
-  public static class LinuxKill {
-    public static void main(String[] args) {
-      try {
-        if (Integer.parseInt(args[0]) > 0) {
-          // get child process PIDs as string
-          Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + args[0]);
-          getChildPid.waitFor();
-          StringBuilder childPid = new StringBuilder();
-          if (getChildPid.exitValue() == 0) {
-            InputStream procIn = getChildPid.getInputStream();
-            int c = 0;
-            while ((c = procIn.read()) != -1) {
-              childPid.append((char) c);
-            }
-          }
-
-          // Kill child process(es)
-          Process childKillProc = Runtime.getRuntime().exec("kill -9 " + childPid);
-          childKillProc.waitFor();
-          if (childKillProc.exitValue() == 0) {
-            LOGGER.debug("Child processes terminated: " + childPid);
-          }
-
-          // kill process itself
-          Process proc = Runtime.getRuntime().exec("kill -9 " + args[0]);
-          int exitVal = proc.waitFor();
-          LOGGER.debug("Exit value: " + exitVal); // often 1 under Ubuntu 12.10
-
-          proc.destroy();
-          childKillProc.destroy();
-          getChildPid.destroy();
-        }
-      } catch (Exception e) {
-        LOGGER.warn("Process Kill failed. Process may be left hanging");
-      }
-    }
-  }
-
-  /**
-   * Gets the PID of a given process.
-   *
-   * @param p The Process of which to get the PID.
-   * @return An Optional long. If not on Linux, or if the PID declared field is not available, the
-   *     value will be empty.
-   */
-  public static synchronized Optional<Long> getPidOfProcess(Process p) {
-    Optional<Long> pid = Optional.empty();
-
-    try {
-      if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
-        Field f = p.getClass().getDeclaredField("pid");
-        f.setAccessible(true);
-        pid = Optional.of(f.getLong(p));
-        f.setAccessible(false);
-      }
-    } catch (Exception e) {
-      return pid;
-    }
-    return pid;
-  }
 
   public static File findExe(File file) {
     return findExe(file.getParentFile(), file.getName());
@@ -198,12 +130,10 @@ public final class ExecUtils {
           createProcess(cmdarray, additionalEnv, dir);
       LOGGER.debug("Started timed process");
       final Process proc = cp.getFirst();
-      String pid = Long.toString(getPidOfProcess(proc).orElse(0L));
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
       proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
       if (!stdErr.isFinished() || !stdOut.isFinished()) {
-        LinuxKill.main(new String[] {pid});
         throw new InterruptedException();
       }
       LOGGER.debug("Timed process finished");
