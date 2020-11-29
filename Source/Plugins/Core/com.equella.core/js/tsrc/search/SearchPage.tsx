@@ -28,12 +28,14 @@ import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo from "../components/MessageInfo";
 import type { RenderData } from "../mainui";
+import { routes } from "../mainui/routes";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
 import type { Collection } from "../modules/CollectionsModule";
+import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
 import {
   Classification,
   listClassifications,
@@ -55,6 +57,7 @@ import {
 } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
+import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -62,7 +65,6 @@ import {
   RefinePanelControl,
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
-import { RemoteSearchSelector } from "./components/RemoteSearchSelector";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
@@ -383,7 +385,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     {
       idSuffix: "RemoteSearchSelector",
       title: searchStrings.remoteSearchSelector.title,
-      component: <RemoteSearchSelector />,
+      component: (
+        <AuxiliarySearchSelector
+          auxiliarySearchesSupplier={getRemoteSearchesFromServer}
+          urlGenerator={routes.RemoteSearch.to}
+        />
+      ),
       disabled: false,
     },
     {

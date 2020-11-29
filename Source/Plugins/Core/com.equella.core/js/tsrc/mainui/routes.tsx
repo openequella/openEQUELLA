@@ -54,7 +54,8 @@ export interface OEQRouteComponentProps<T = TemplateUpdateProps>
   isReloadNeeded: boolean;
 }
 
-type To = (uuid: string, version: number) => string;
+type To = (uuid: string) => string;
+type ToVersion = (uuid: string, version: number) => string;
 
 export interface OEQRoute<T> {
   component?:
@@ -65,7 +66,7 @@ export interface OEQRoute<T> {
   exact?: boolean;
   sensitive?: boolean;
   strict?: boolean;
-  to?: string | To;
+  to?: string | To | ToVersion;
 }
 
 export const routes = {
@@ -83,9 +84,7 @@ export const routes = {
     render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
   },
   RemoteSearch: {
-    to: function (uuid: string) {
-      return `/access/z3950.do?.repository=${uuid}`;
-    },
+    to: (uuid: string) => `/access/z3950.do?.repository=${uuid}`,
   },
   SearchSettings: {
     path: "/page/searchsettings",
@@ -104,9 +103,7 @@ export const routes = {
     render: (p: OEQRouteComponentProps) => <FacetedSearchSettingsPage {...p} />,
   },
   ViewItem: {
-    to: function (uuid: string, version: number) {
-      return `/items/${uuid}/${version}/`;
-    },
+    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
   ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   LoginNoticeConfig: {
