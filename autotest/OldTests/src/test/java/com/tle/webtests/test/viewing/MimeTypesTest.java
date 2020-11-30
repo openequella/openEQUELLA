@@ -95,6 +95,8 @@ public class MimeTypesTest extends AbstractCleanupTest {
     MimeEditorPage mimeEdit = mimePage.editMime(1);
     URL upIcon = Attachments.get("favicon.ico");
     mimePage = mimeEdit.uploadIcon(upIcon).save();
+    // do the upload twice, so that if sendKeys fails we have another chance
+    mimePage.editMime(1).uploadIcon(upIcon).save();
     mimePage.search("icontest");
     mimePage.editMime(1).restoreIcon().save();
 
