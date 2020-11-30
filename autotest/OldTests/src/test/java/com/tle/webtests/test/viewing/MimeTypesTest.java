@@ -17,6 +17,7 @@ import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
 import java.util.Arrays;
 import org.testng.annotations.Test;
+import testng.annotation.RetryTest;
 
 @TestInstitution("vanilla")
 public class MimeTypesTest extends AbstractCleanupTest {
@@ -87,7 +88,8 @@ public class MimeTypesTest extends AbstractCleanupTest {
     assertTrue(attachments.attachmentDetails(ATTACHMENT_NAME).contains("application/octet-stream"));
   }
 
-  @Test(enabled = false)
+  @RetryTest
+  @Test
   public void changeIconTest() {
     MimeSearchPage mimePage = new MimeSearchPage(context).load();
     addMime("IconMime", "app/icontest", "icon");
