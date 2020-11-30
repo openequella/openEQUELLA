@@ -112,6 +112,7 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   public MimeEditorPage uploadIcon(URL icon) {
     ExpectedCondition<Boolean> iconUpdated = ExpectedConditions2.updateOfElement(getIcon());
     waitForHiddenElement(fileUpload);
+    scrollToElement(fileUpload);
     fileUpload.sendKeys(getPathFromUrl(icon));
     waiter.until(iconUpdated);
     return get();
