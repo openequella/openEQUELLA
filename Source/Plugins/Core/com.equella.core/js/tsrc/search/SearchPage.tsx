@@ -27,13 +27,13 @@ import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo from "../components/MessageInfo";
-import type { RenderData } from "../mainui";
 import { routes } from "../mainui/routes";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
+import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
 import {
@@ -71,8 +71,6 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
-
-declare const renderData: RenderData | undefined;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -381,6 +379,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       disabled: false,
+      alwaysVisible: true,
+    },
+    {
+      idSuffix: "AdvancedSearchSelector",
+      title: searchStrings.advancedSearchSelector.title,
+      component: (
+        <AuxiliarySearchSelector
+          auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
+          urlGenerator={routes.AdvancedSearch.to}
+        />
+      ),
+      disabled: false,
+      alwaysVisible: true,
     },
     {
       idSuffix: "RemoteSearchSelector",

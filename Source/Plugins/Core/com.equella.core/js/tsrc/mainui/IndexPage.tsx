@@ -15,34 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { RenderData } from "./index";
-import HtmlParser from "react-html-parser";
 import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import HtmlParser from "react-html-parser";
 import {
+  BrowserRouter,
   Prompt,
   Redirect,
   Route,
   RouteComponentProps,
   Switch,
-  BrowserRouter,
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
-
-import { getCurrentUserDetails } from "../modules/UserModule";
 import { ErrorResponse } from "../api/errors";
 import {
   LegacyContent,
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
-import { Template, TemplateProps, TemplateUpdate } from "./Template";
+import { LegacyForm } from "../legacycontent/LegacyForm";
+
+import { getCurrentUserDetails } from "../modules/UserModule";
+import { basePath } from "./App";
+import ErrorPage from "./ErrorPage";
+import { RenderData } from "./index";
+import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
-import ErrorPage from "./ErrorPage";
-import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
-import { LegacyForm } from "../legacycontent/LegacyForm";
-import { basePath } from "./App";
+import { Template, TemplateProps, TemplateUpdate } from "./Template";
+
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
 
 declare const renderData: RenderData | undefined;
 
@@ -159,7 +161,35 @@ export default function IndexPage() {
     setFullPageError(err);
   }, []);
 
-  function routeSwitch(content?: PageContent) {
+  const routeSwitch = (content?: PageContent) => {
+    const oldSearchPagePath = "/searching.do";
+    const newSearchPagePath = "/page/search";
+
+    const newOrOldSearch = (location: Location): boolean => {
+      const currentParams = new URLSearchParams(location.search);
+      const currentPath = location.pathname;
+
+      const advancedSearchParamsPresent: boolean =
+        currentParams.get("in")?.startsWith("P") ?? false;
+      const advancedSearchRequested: boolean =
+        currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
+      const newSearchEnabled: boolean =
+        typeof renderData !== "undefined" && renderData?.newSearch;
+
+      return (
+        currentPath.match(newSearchPagePath) !== null ||
+        (newSearchEnabled && !advancedSearchRequested)
+      );
+    };
+
+    const renderLegacyPage = (p: RouteComponentProps) => (
+      <LegacyPage
+        {...mkRouteProps(p)}
+        errorCallback={errorCallback}
+        legacyContent={{ content, setLegacyContentProps }}
+      />
+    );
+
     return (
       <Switch>
         {fullPageError && (
@@ -172,17 +202,19 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          render={(p) => (
-            <LegacyPage
-              {...mkRouteProps(p)}
-              errorCallback={errorCallback}
-              legacyContent={{ content, setLegacyContentProps }}
-            />
-          )}
+          path={[newSearchPagePath, oldSearchPagePath]}
+          render={(p) =>
+            newOrOldSearch(window.location) ? (
+              <SearchPage {...mkRouteProps(p)} />
+            ) : (
+              renderLegacyPage(p)
+            )
+          }
         />
+        <Route render={renderLegacyPage} />
       </Switch>
     );
-  }
+  };
 
   return (
     <BrowserRouter

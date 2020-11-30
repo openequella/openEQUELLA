@@ -15,15 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LocationDescriptor } from "history";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
-import { LocationDescriptor } from "history";
 import { TemplateUpdate, TemplateUpdateProps } from "./Template";
-import { RenderData } from "./index";
 
-declare const renderData: RenderData | undefined;
-
-const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage")
@@ -75,13 +71,8 @@ export const routes = {
     to: "/page/settings",
     component: SettingsPage,
   },
-  Search: {
-    //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
-    path:
-      typeof renderData !== "undefined" && renderData?.newSearch
-        ? "(/page/search|/searching.do)"
-        : "/page/search",
-    render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
+  AdvancedSearch: {
+    to: (uuid: string) => `/searching.do?in=P${uuid}&editquery=true`,
   },
   RemoteSearch: {
     to: (uuid: string) => `/access/z3950.do?.repository=${uuid}`,
