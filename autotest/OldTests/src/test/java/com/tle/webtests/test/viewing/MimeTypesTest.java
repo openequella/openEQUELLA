@@ -87,7 +87,7 @@ public class MimeTypesTest extends AbstractCleanupTest {
     assertTrue(attachments.attachmentDetails(ATTACHMENT_NAME).contains("application/octet-stream"));
   }
 
-  @Test
+  @Test(enabled = false)
   public void changeIconTest() {
     MimeSearchPage mimePage = new MimeSearchPage(context).load();
     addMime("IconMime", "app/icontest", "icon");
