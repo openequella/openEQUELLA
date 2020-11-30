@@ -11,6 +11,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   @FindBy(id = "det_description")
@@ -111,6 +112,7 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
 
   public MimeEditorPage restoreIcon() {
     ExpectedCondition<Boolean> iconUpdated = ExpectedConditions2.updateOfElement(getIcon());
+    waiter.until(ExpectedConditions.elementToBeClickable(restoreIcon));
     restoreIcon.click();
     waiter.until(iconUpdated);
     return get();
