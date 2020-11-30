@@ -50,14 +50,17 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
 
   public MimeEditorPage setDetails(String desc, String mimeType, String[] ext) {
     if (!Check.isEmpty(desc)) {
+      waiter.until(ExpectedConditions2.presenceOfElement(descField));
       descField.clear();
       descField.sendKeys(desc);
     }
 
     if (!Check.isEmpty(mimeType)) {
+      waiter.until(ExpectedConditions.elementToBeClickable(mimeTypeField));
       mimeTypeField.click();
       mimeTypeField.clear();
       mimeTypeField.sendKeys(mimeType);
+      waiter.until(ExpectedConditions.elementToBeClickable(descField));
       descField.click();
       WaitingPageObject<MimeEditorPage> ajaxUpdate =
           ajaxUpdateExpect(waitForElement(viewersDiv), waitForElement(viewersTable));
@@ -68,8 +71,10 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
 
     if (!Check.isEmpty(ext)) {
       for (int i = 0; i < ext.length; i++) {
+        waiter.until(ExpectedConditions.elementToBeClickable(extField));
         extField.clear();
         extField.sendKeys(ext[i]);
+        waiter.until(ExpectedConditions.elementToBeClickable(addExtButton));
         addExtButton.click();
       }
     }
@@ -77,11 +82,13 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   }
 
   public MimeSearchPage save() {
+    waiter.until(ExpectedConditions.elementToBeClickable(saveButton));
     saveButton.click();
     return new MimeSearchPage(context).get();
   }
 
   public MimeEditorPage saveWithError() {
+    waiter.until(ExpectedConditions.elementToBeClickable(saveButton));
     saveButton.click();
     return visibilityWaiter(driver, By.className("ctrlinvalidmessage")).get();
   }
