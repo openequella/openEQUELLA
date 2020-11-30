@@ -303,7 +303,6 @@ describe("<SearchResult/>", () => {
       const collapsedAttachment = await renderSearchResult(
         mockData.keywordFoundInAttachmentObj
       );
-      console.log(collapsedAttachment.debug());
       expect(expandedAttachment.queryByText("image.png")).toBeVisible();
       expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
     });
