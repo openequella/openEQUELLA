@@ -61,16 +61,17 @@ public final class ExecUtils {
    * @param pid The Process for which to terminate including it's direct children.
    */
   public static void killLinuxProcessTree(int pid) {
-    if (pid > 0) {
-      // get child process PIDs as strings
-      String[] children = getChildUnixProcessPids(pid);
-      // Kill child process(es)
-      for (String child : children) {
-        sendSigKill(Integer.parseInt(child));
-      }
-      // kill process itself
-      sendSigKill(pid);
+    if (pid < 1) {
+      throw new IllegalArgumentException("Process ID should be greater than 0");
     }
+    // get child process PIDs as strings
+    String[] children = getChildUnixProcessPids(pid);
+    // Kill child process(es)
+    for (String child : children) {
+      sendSigKill(Integer.parseInt(child));
+    }
+    // kill process itself
+    sendSigKill(pid);
   }
 
   /**
