@@ -22,8 +22,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { routes } from "../../mainui/routes";
-import { getRemoteSearchesFromServer } from "../../modules/RemoteSearchModule";
 
 const useStyles = makeStyles((theme: Theme) => ({
   linkIcon: {
@@ -31,20 +29,27 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface RemoteSearchSelectorProps {
+export interface AuxiliarySearchSelectorProps {
   /**
-   * Function to provide a list of remote searches - exposed to support injection for testing/storybooking.
+   * Function to provide a list of auxiliary searches
    */
-  remoteSearchesSupplier?: () => Promise<OEQ.Common.BaseEntitySummary[]>;
+  auxiliarySearchesSupplier: () => Promise<OEQ.Common.BaseEntitySummary[]>;
+
+  /**
+   * Function to produce the URL for a specific search using the UUID returned in the
+   * `OEQ.Common.BaseEntitySummary` from the `auxiliarySearchesSupplier` function.
+   */
+  urlGenerator: (uuid: string) => string;
 }
 /**
  * A search 'selector' control to provide a list of remote searches. Clicking on a remote
  * searches (currently) navigates you to the legacy UI remote search page for that remote
  * search.
  */
-export const RemoteSearchSelector = ({
-  remoteSearchesSupplier = getRemoteSearchesFromServer,
-}: RemoteSearchSelectorProps) => {
+export const AuxiliarySearchSelector = ({
+  auxiliarySearchesSupplier,
+  urlGenerator,
+}: AuxiliarySearchSelectorProps) => {
   const classes = useStyles();
 
   const [remoteSearches, setRemoteSearches] = useState<
@@ -52,12 +57,12 @@ export const RemoteSearchSelector = ({
   >([]);
 
   useEffect(() => {
-    remoteSearchesSupplier().then((searches) => setRemoteSearches(searches));
-  }, [remoteSearchesSupplier]);
+    auxiliarySearchesSupplier().then((searches) => setRemoteSearches(searches));
+  }, [auxiliarySearchesSupplier]);
 
-  const buildRemoteSearchMenuItems = () =>
+  const buildSearchMenuItems = () =>
     remoteSearches.map((summary) => (
-      <Link to={routes.RemoteSearch.to(summary.uuid)}>
+      <Link to={urlGenerator(summary.uuid)}>
         <MenuItem value={summary.uuid}>
           <LinkIcon className={classes.linkIcon} />
           {summary.name}
@@ -67,7 +72,7 @@ export const RemoteSearchSelector = ({
 
   return (
     <FormControl variant="outlined" fullWidth>
-      <Select>{buildRemoteSearchMenuItems()}</Select>
+      <Select>{buildSearchMenuItems()}</Select>
     </FormControl>
   );
 };

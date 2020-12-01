@@ -30,6 +30,7 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
+import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
@@ -39,6 +40,7 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
@@ -111,6 +113,11 @@ jest
 jest
   .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
   .mockResolvedValue(getRemoteSearchesFromServerResult);
+
+// Mock out collaborator which populates the Advanced Search selector
+jest
+  .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
+  .mockResolvedValue(getAdvancedSearchesFromServerResult);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,

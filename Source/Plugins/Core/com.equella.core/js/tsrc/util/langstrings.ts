@@ -379,6 +379,9 @@ export const languageStrings = {
     refineSearchPanel: {
       title: "Refine search",
     },
+    advancedSearchSelector: {
+      title: "Access Advanced searches",
+    },
     remoteSearchSelector: {
       title: "Access Remote repositories",
     },

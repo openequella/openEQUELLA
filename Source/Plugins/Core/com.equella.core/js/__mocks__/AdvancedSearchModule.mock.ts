@@ -17,8 +17,8 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 
-export const getRemoteSearchesFromServerResult: OEQ.Common.BaseEntitySummary[] = [
-  { name: "Remote Search 1", uuid: "26361407-fb54-45f0-8e4e-2ea0a4a41862" },
-  { name: "Remote Search 2", uuid: "a590e7bf-6fa9-4737-9a93-16b0e9ea82c9" },
-  { name: "Remote Search 3", uuid: "2c949159-6b61-41b7-964b-0cea6c67730f" },
+export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[] = [
+  { name: "Advanced Search 1", uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3" },
+  { name: "Advanced Search 2", uuid: "3e7e68dd-3aa0-4e05-a70c-d6a559c53aa3" },
+  { name: "Advanced Search 3", uuid: "a07212ff-3af9-4d78-89d5-48c2d263a810" },
 ];

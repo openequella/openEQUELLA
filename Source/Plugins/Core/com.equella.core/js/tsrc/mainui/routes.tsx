@@ -15,15 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LocationDescriptor } from "history";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
-import { LocationDescriptor } from "history";
 import { TemplateUpdate, TemplateUpdateProps } from "./Template";
-import { RenderData } from "./index";
 
-declare const renderData: RenderData | undefined;
-
-const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage")
@@ -54,7 +50,8 @@ export interface OEQRouteComponentProps<T = TemplateUpdateProps>
   isReloadNeeded: boolean;
 }
 
-type To = (uuid: string, version: number) => string;
+type To = (uuid: string) => string;
+type ToVersion = (uuid: string, version: number) => string;
 
 export interface OEQRoute<T> {
   component?:
@@ -65,7 +62,7 @@ export interface OEQRoute<T> {
   exact?: boolean;
   sensitive?: boolean;
   strict?: boolean;
-  to?: string | To;
+  to?: string | To | ToVersion;
 }
 
 export const routes = {
@@ -74,20 +71,15 @@ export const routes = {
     to: "/page/settings",
     component: SettingsPage,
   },
-  Search: {
-    //we need to make sure accessing searching.do only renders SearchPage when the New Search page config option is enabled.
-    path:
-      typeof renderData !== "undefined" && renderData?.newSearch
-        ? "(/page/search|/searching.do)"
-        : "/page/search",
-    render: (p: OEQRouteComponentProps) => <SearchPage {...p} />,
+  AdvancedSearch: {
+    to: (uuid: string) => `/searching.do?in=P${uuid}&editquery=true`,
   },
   RemoteSearch: {
-    to: function (uuid: string) {
-      // uc parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to true clears out the Session State for Remote Repository pages.
-      // This replicates the behaviour for links inside the 'Within' dropdown in the legacy ui. See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
-      return `/access/z3950.do?.repository=${uuid}&uc=true`;
-    },
+    // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
+    // true clears out the Session State for Remote Repository pages. This replicates the behaviour
+    // for links inside the 'Within' dropdown in the legacy UI.
+    // See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
+    to: (uuid: string) => `/access/z3950.do?.repository=${uuid}&uc=true`,
   },
   SearchSettings: {
     path: "/page/searchsettings",
@@ -106,9 +98,7 @@ export const routes = {
     render: (p: OEQRouteComponentProps) => <FacetedSearchSettingsPage {...p} />,
   },
   ViewItem: {
-    to: function (uuid: string, version: number) {
-      return `/items/${uuid}/${version}/`;
-    },
+    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
   ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   LoginNoticeConfig: {

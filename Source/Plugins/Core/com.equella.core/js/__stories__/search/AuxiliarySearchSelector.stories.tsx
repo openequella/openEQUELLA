@@ -18,18 +18,21 @@
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
-import type { RemoteSearchSelectorProps } from "../../tsrc/search/components/RemoteSearchSelector";
-import { RemoteSearchSelector } from "../../tsrc/search/components/RemoteSearchSelector";
+import {
+  AuxiliarySearchSelector,
+  AuxiliarySearchSelectorProps,
+} from "../../tsrc/search/components/AuxiliarySearchSelector";
 
 export default {
-  title: "Search/RemoteSearchSelector",
-  component: RemoteSearchSelector,
-} as Meta<RemoteSearchSelectorProps>;
+  title: "Search/AuxiliarySearchSelector",
+  component: AuxiliarySearchSelector,
+} as Meta<AuxiliarySearchSelectorProps>;
 
-export const standard: Story<RemoteSearchSelectorProps> = (
-  args: RemoteSearchSelectorProps
-) => <RemoteSearchSelector {...args} />;
+export const standard: Story<AuxiliarySearchSelectorProps> = (
+  args: AuxiliarySearchSelectorProps
+) => <AuxiliarySearchSelector {...args} />;
 standard.args = {
-  remoteSearchesSupplier: () =>
+  auxiliarySearchesSupplier: () =>
     Promise.resolve(getRemoteSearchesFromServerResult),
+  urlGenerator: (uuid: string) => uuid,
 };
