@@ -61,19 +61,15 @@ public final class ExecUtils {
    * @param pid The Process for which to terminate including it's direct children.
    */
   public static void killLinuxProcessTree(int pid) {
-    try {
-      if (pid > 0) {
-        // get child process PIDs as strings
-        String[] children = getChildUnixProcessPids(pid);
-        // Kill child process(es)
-        for (String child : children) {
-          sendSigKill(Integer.parseInt(child));
-        }
-        // kill process itself
-        sendSigKill(pid);
+    if (pid > 0) {
+      // get child process PIDs as strings
+      String[] children = getChildUnixProcessPids(pid);
+      // Kill child process(es)
+      for (String child : children) {
+        sendSigKill(Integer.parseInt(child));
       }
-    } catch (Exception e) {
-      LOGGER.warn("Process Kill failed. Process may be left hanging", e);
+      // kill process itself
+      sendSigKill(pid);
     }
   }
 
@@ -93,7 +89,7 @@ public final class ExecUtils {
       }
       getChildPid.destroy();
       return childPid.toString().replaceAll("\n", "").split(" ");
-    } catch (Exception e) {
+    } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
     }
     return new String[] {};
@@ -112,7 +108,7 @@ public final class ExecUtils {
       int returnValue = sigKill.exitValue();
       sigKill.destroy();
       return returnValue;
-    } catch (Exception e) {
+    } catch (IOException | InterruptedException e) {
       LOGGER.error("killing process " + pid + " failed.", e);
     }
     // shouldn't get here
@@ -135,8 +131,10 @@ public final class ExecUtils {
         pid = Optional.of(f.getInt(p));
         f.setAccessible(false);
       }
-    } catch (Exception e) {
-      return pid;
+    } catch (NoSuchFieldException e) {
+      LOGGER.error("The field pid does not exist on the process. Cannot return pid", e);
+    } catch (IllegalAccessException | IllegalArgumentException e) {
+      LOGGER.error("pid field is inaccessible, or cannot be converted to an integer.", e);
     }
     return pid;
   }
