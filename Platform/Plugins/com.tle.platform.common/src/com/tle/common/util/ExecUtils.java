@@ -92,7 +92,7 @@ public final class ExecUtils {
         LOGGER.debug("getChildPid function did not run properly.\n" + errorOutput);
       }
       getChildPid.destroy();
-      return childPid.toString().replaceAll("\n", "").split(" ");
+      return childPid.toString().replaceAll("\n", " ").split(" ");
     } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
     }
