@@ -293,5 +293,18 @@ describe("<SearchResult/>", () => {
       );
       expect(queryByLabelText(selectSummaryPageString)).toBeNull();
     });
+
+    it("should respect the integrationOpen displayOption", async () => {
+      updateMockGetRenderData(basicRenderData);
+
+      const expandedAttachment = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      const collapsedAttachment = await renderSearchResult(
+        mockData.keywordFoundInAttachmentObj
+      );
+      expect(expandedAttachment.queryByText("image.png")).toBeVisible();
+      expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
+    });
   });
 });

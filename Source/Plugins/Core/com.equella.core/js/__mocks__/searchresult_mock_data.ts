@@ -122,7 +122,7 @@ const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
     attachmentType: "STRUCTURED",
     disableThumbnail: false,
     standardOpen: true,
-    integrationOpen: true,
+    integrationOpen: false,
   },
   keywordFoundInAttachment: true,
   links: {

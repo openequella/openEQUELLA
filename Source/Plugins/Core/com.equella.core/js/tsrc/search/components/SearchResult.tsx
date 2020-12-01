@@ -157,7 +157,9 @@ export default function SearchResult({
   const inSelectionSession: boolean = isSelectionSessionOpen();
 
   const [attachExpanded, setAttachExpanded] = useState(
-    displayOptions?.standardOpen ?? false
+    (inSelectionSession
+      ? displayOptions?.integrationOpen
+      : displayOptions?.standardOpen) ?? false
   );
   const [
     attachmentsWithViewerDetails,
