@@ -64,13 +64,10 @@ public final class ExecUtils {
     if (pid < 1) {
       throw new IllegalArgumentException("Process ID should be greater than 0");
     }
-    // get child process PIDs as strings
-    String[] children = getChildUnixProcessPids(pid);
-    // Kill child process(es)
-    for (String child : children) {
-      sendSigKill(Integer.parseInt(child));
-    }
-    // kill process itself
+    // get child process PIDs and kill them
+    getChildUnixProcessPids(pid).ifPresent(ExecUtils::sendSigKill);
+
+    // kill process itself, after all the child processes have been terminated
     sendSigKill(pid);
   }
 
@@ -78,9 +75,10 @@ public final class ExecUtils {
    * Runs pgrep -P for a given Process ID, to get a list of child processes as Process IDs.
    *
    * @param pid The parent process ID to check for child processes.
-   * @return String[] An array of process IDs for the children of pid. Can be empty.
+   * @return Optional<String[]> An array of process IDs for the children of pid.
    */
-  public static String[] getChildUnixProcessPids(int pid) {
+  public static Optional<int[]> getChildUnixProcessPids(int pid) {
+    Optional<int[]> pids = Optional.empty();
     try {
       Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + pid);
       getChildPid.waitFor();
@@ -93,22 +91,34 @@ public final class ExecUtils {
         LOGGER.debug("getChildPid function did not run properly.\n" + errorOutput);
       }
       getChildPid.destroy();
-      return childPid.toString().replaceAll("\n", " ").split(" ");
+      // convert string to array of ints
+      pids =
+          Optional.of(
+              Arrays.stream(childPid.toString().replaceAll("\n", " ").split(" "))
+                  .mapToInt(Integer::parseInt)
+                  .toArray());
     } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
+    } catch (NumberFormatException e) {
+      LOGGER.error("Output of getChildPids command not parsable as integers", e);
     }
-    return new String[] {};
+    return pids;
   }
 
   /**
-   * Creates a process which then sends a SIGKILL signal to a given process.
+   * Creates a process which then sends a SIGKILL signal to an array of given processes.
    *
-   * @param pid the Process ID of the process to kill.
+   * @param pids the Process IDs of the processes to kill.
    * @return the exitValue of the SIGKILL process (not the process being killed)
    */
-  public static int sendSigKill(int pid) {
+  public static int sendSigKill(int[] pids) {
     try {
-      Process sigKill = Runtime.getRuntime().exec("kill -9 " + pid);
+      StringBuilder command = new StringBuilder("kill -9 ");
+      for (int pid : pids) {
+        command.append(pid).append(" ");
+      }
+      LOGGER.debug("Running command: " + command);
+      Process sigKill = Runtime.getRuntime().exec(String.valueOf(command));
       sigKill.waitFor();
       int returnValue = sigKill.exitValue();
       if (sigKill.exitValue() == 0) {
@@ -123,11 +133,23 @@ public final class ExecUtils {
       sigKill.destroy();
       return returnValue;
     } catch (IOException | InterruptedException e) {
-      LOGGER.error("killing process " + pid + " failed.", e);
+      LOGGER.error("killing processes " + Arrays.toString(pids) + " failed.", e);
     }
     // shouldn't get here
     return -1;
   }
+
+  /**
+   * Overload of above for a single Process ID. Simply calls the int[] version of this method and
+   * returns the exitValue.
+   *
+   * @param pid The Process ID of the process to kill.
+   * @return the exitValue of the SIGKILL process (not the process being killed)
+   */
+  public static int sendSigKill(int pid) {
+    return sendSigKill(new int[] {pid});
+  }
+
   /**
    * Gets the process ID (PID) of a given *nix process.
    *
