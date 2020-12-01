@@ -102,7 +102,7 @@ declare const CourseList: {
  * @param forItem True if prepare draggables for Items
  */
 export const prepareDraggable = (id: string, forItem = true) => {
-  CourseList.prepareDraggableAndBind(`#${id}`, forItem);
+  getGlobalCourseList().prepareDraggableAndBind(`#${id}`, forItem);
 };
 
 /**

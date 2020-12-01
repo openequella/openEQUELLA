@@ -224,7 +224,7 @@ export default function SearchResult({
   useEffect(() => {
     if (inSelectionSession) {
       attachmentsWithViewerDetails.forEach(({ attachment }) => {
-        prepareDraggable(attachment.id);
+        prepareDraggable(attachment.id, false);
       });
     }
   }, [attachmentsWithViewerDetails]);

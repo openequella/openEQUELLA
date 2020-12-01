@@ -26,6 +26,7 @@ import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
+  getGlobalCourseList,
   selectResourceForCourseList,
   selectResourceForNonCourseList,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
@@ -197,7 +198,10 @@ describe("<SearchResult/>", () => {
       LegacySelectionSessionModule,
       "getGlobalCourseList"
     );
-    mockGlobalCourseList.mockReturnValue({ updateCourseList: jest.fn() });
+    mockGlobalCourseList.mockReturnValue({
+      updateCourseList: jest.fn(),
+      prepareDraggableAndBind: jest.fn(),
+    });
 
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,
@@ -305,6 +309,16 @@ describe("<SearchResult/>", () => {
       );
       expect(expandedAttachment.queryByText("image.png")).toBeVisible();
       expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
+    });
+
+    it("should make each attachment draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.attachSearchObj);
+      mockData.attachSearchObj.attachments!.forEach((attachment) => {
+        expect(
+          getGlobalCourseList().prepareDraggableAndBind
+        ).toHaveBeenCalledWith(`#${attachment.id}`, false);
+      });
     });
   });
 });
