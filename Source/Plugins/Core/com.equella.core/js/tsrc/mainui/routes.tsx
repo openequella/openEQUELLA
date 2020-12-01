@@ -84,7 +84,9 @@ export const routes = {
   },
   RemoteSearch: {
     to: function (uuid: string) {
-      return `/access/z3950.do?.repository=${uuid}`;
+      // uc parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to true clears out the Session State for Remote Repository pages.
+      // This replicates the behaviour for links inside the 'Within' dropdown in the legacy ui. See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
+      return `/access/z3950.do?.repository=${uuid}&uc=true`;
     },
   },
   SearchSettings: {

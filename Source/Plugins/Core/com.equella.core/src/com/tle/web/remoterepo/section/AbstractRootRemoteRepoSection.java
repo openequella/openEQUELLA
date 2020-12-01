@@ -85,6 +85,9 @@ public abstract class AbstractRootRemoteRepoSection
     crumbs.add(breadcrumbService.getContributeCrumb(info));
     if (resultViewer != null && resultViewer.isShowing(info)) {
       resultViewer.addCrumbs(info, crumbs);
+      // clear the result, so the breadcrumb actually takes you back to the search results, instead
+      // of keeping you on the selected result
+      resultViewer.clearResult(info);
     }
   }
 
