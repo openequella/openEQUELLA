@@ -79,10 +79,11 @@ public final class ExecUtils {
    */
   public static Optional<int[]> getChildUnixProcessPids(int pid) {
     Optional<int[]> pids = Optional.empty();
+    StringBuilder childPid = new StringBuilder();
     try {
       Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + pid);
       getChildPid.waitFor();
-      StringBuilder childPid = new StringBuilder();
+
       if (getChildPid.exitValue() == 0) {
         CharStreams.copy(new InputStreamReader(getChildPid.getInputStream()), childPid);
       } else {
