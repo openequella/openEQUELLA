@@ -75,7 +75,7 @@ public final class ExecUtils {
    * Runs pgrep -P for a given Process ID, to get a list of child processes as Process IDs.
    *
    * @param pid The parent process ID to check for child processes.
-   * @return Optional<String[]> An array of process IDs for the children of pid.
+   * @return Process IDs for the children of {@code pid}.
    */
   public static Optional<int[]> getChildUnixProcessPids(int pid) {
     Optional<int[]> pids = Optional.empty();
@@ -100,7 +100,9 @@ public final class ExecUtils {
     } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
     } catch (NumberFormatException e) {
-      LOGGER.error("Output of getChildPids command not parsable as integers", e);
+      LOGGER.error("Unsupported output from 'pgrep -P'. Unable to terminate child processes.");
+      LOGGER.error("'pgrep' output: " + childPid.toString());
+      LOGGER.error("Parsing exception.", e);
     }
     return pids;
   }
@@ -128,7 +130,7 @@ public final class ExecUtils {
       } else {
         StringBuilder errorOutput = new StringBuilder();
         CharStreams.copy(new InputStreamReader(sigKill.getErrorStream()), errorOutput);
-        LOGGER.debug("kill function did not run properly.\n" + errorOutput);
+        LOGGER.warn("Attempt to terminate processes failed (" + command + "):\n" + errorOutput);
       }
       sigKill.destroy();
       return returnValue;
