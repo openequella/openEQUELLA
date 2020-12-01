@@ -86,6 +86,10 @@ public final class ExecUtils {
       StringBuilder childPid = new StringBuilder();
       if (getChildPid.exitValue() == 0) {
         CharStreams.copy(new InputStreamReader(getChildPid.getInputStream()), childPid);
+      } else {
+        StringBuilder errorOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(getChildPid.getErrorStream()), errorOutput);
+        LOGGER.debug("getChildPid function did not run properly.\n" + errorOutput);
       }
       getChildPid.destroy();
       return childPid.toString().replaceAll("\n", "").split(" ");
@@ -106,6 +110,15 @@ public final class ExecUtils {
       Process sigKill = Runtime.getRuntime().exec("kill -9 " + pid);
       sigKill.waitFor();
       int returnValue = sigKill.exitValue();
+      if (sigKill.exitValue() == 0) {
+        StringBuilder successOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(sigKill.getInputStream()), successOutput);
+        LOGGER.debug("Output of kill function: " + successOutput);
+      } else {
+        StringBuilder errorOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(sigKill.getErrorStream()), errorOutput);
+        LOGGER.debug("kill function did not run properly.\n" + errorOutput);
+      }
       sigKill.destroy();
       return returnValue;
     } catch (IOException | InterruptedException e) {
