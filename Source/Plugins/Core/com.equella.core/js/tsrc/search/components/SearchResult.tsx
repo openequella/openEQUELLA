@@ -22,6 +22,7 @@ import {
   Badge,
   Divider,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -479,6 +480,11 @@ export default function SearchResult({
         data-itemuuid={uuid}
         data-itemversion={version}
       >
+        <Grid item>
+          <IconButton>
+            <DragIndicatorIcon />
+          </IconButton>
+        </Grid>
         <Grid item>{itemLink()}</Grid>
         <Grid item>
           <ResourceSelector
