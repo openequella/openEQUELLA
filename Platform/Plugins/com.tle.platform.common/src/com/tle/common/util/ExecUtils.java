@@ -203,7 +203,12 @@ public final class ExecUtils {
       final StreamReader stdErr = cp.getThird();
       proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
       if (!stdErr.isFinished() || !stdOut.isFinished()) {
-        LinuxKill.main(new String[] {pid});
+        String platform = determinePlatform();
+        if(platform.equals(PLATFORM_LINUX) || platform.equals(PLATFORM_LINUX64)) {
+          killLinuxProcessTree(pid);
+        }else{
+          LOGGER.debug("Platform not yet supported for process tree kill. Processes may be left hanging");
+        }
         throw new InterruptedException();
       }
       LOGGER.debug("Timed process finished");
