@@ -115,7 +115,7 @@ public final class ExecUtils {
     return -1;
   }
   /**
-   * Gets the PID of a given process.
+   * Gets the process ID (PID) of a given *nix process.
    *
    * @param p The Process of which to get the PID.
    * @return An Optional int. If not on Linux, or if the PID declared field is not available, the
