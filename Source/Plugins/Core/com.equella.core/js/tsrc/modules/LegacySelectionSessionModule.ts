@@ -91,6 +91,18 @@ export interface SelectionSessionPostData {
  */
 declare const CourseList: {
   updateCourseList: (data: unknown) => void;
+  prepareDraggableAndBind: (selector: string, forItem: boolean) => void;
+};
+
+/**
+ * Prepare draggables for Items and attachments. ONLY works for HTML elements that
+ * have an ID.
+ *
+ * @param id A string representing a DOM element's ID.
+ * @param forItem True if prepare draggables for Items
+ */
+export const prepareDraggable = (id: string, forItem = true) => {
+  CourseList.prepareDraggableAndBind(`#${id}`, forItem);
 };
 
 /**
