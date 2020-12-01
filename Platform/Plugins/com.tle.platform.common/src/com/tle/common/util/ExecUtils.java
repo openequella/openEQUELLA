@@ -101,17 +101,17 @@ public final class ExecUtils {
    * Gets the PID of a given process.
    *
    * @param p The Process of which to get the PID.
-   * @return An Optional long. If not on Linux, or if the PID declared field is not available, the
+   * @return An Optional int. If not on Linux, or if the PID declared field is not available, the
    *     value will be empty.
    */
-  public static synchronized Optional<Long> getPidOfProcess(Process p) {
-    Optional<Long> pid = Optional.empty();
+  public static synchronized Optional<Integer> getPidOfProcess(Process p) {
+    Optional<Integer> pid = Optional.empty();
 
     try {
       if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
         Field f = p.getClass().getDeclaredField("pid");
         f.setAccessible(true);
-        pid = Optional.of(f.getLong(p));
+        pid = Optional.of(f.getInt(p));
         f.setAccessible(false);
       }
     } catch (Exception e) {
@@ -198,7 +198,7 @@ public final class ExecUtils {
           createProcess(cmdarray, additionalEnv, dir);
       LOGGER.debug("Started timed process");
       final Process proc = cp.getFirst();
-      String pid = Long.toString(getPidOfProcess(proc).orElse(0L));
+      int pid = getPidOfProcess(proc).orElse(0);
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
       proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
