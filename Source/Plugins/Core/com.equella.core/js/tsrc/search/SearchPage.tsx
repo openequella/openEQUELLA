@@ -49,7 +49,10 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
-import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
+import {
+  isSelectionSessionOpen,
+  prepareDraggable,
+} from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { CategorySelector } from "./components/CategorySelector";
@@ -181,6 +184,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       state: { searchPageOptions, filterExpansion },
     });
   }, [filterExpansion, pagedSearchResult]);
+
+  // In Selection Session, once a new search result is returned, make each
+  // new search result Item draggable.
+  useEffect(() => {
+    if (inSelectionSession) {
+      pagedSearchResult.results.forEach(({ uuid }) => {
+        prepareDraggable(uuid);
+      });
+    }
+  }, [pagedSearchResult]);
 
   // When Search options get changed, also update the Classification list.
   useEffect(() => {

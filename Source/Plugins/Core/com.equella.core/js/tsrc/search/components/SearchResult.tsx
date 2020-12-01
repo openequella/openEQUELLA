@@ -36,6 +36,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -55,6 +56,7 @@ import {
   selectResource,
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
+  prepareDraggable,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -218,6 +220,15 @@ export default function SearchResult({
     };
   }, [attachments, getViewerDetails]);
 
+  // In Selection Session, make each attachment draggable.
+  useEffect(() => {
+    if (inSelectionSession) {
+      attachmentsWithViewerDetails.forEach(({ attachment }) => {
+        prepareDraggable(attachment.id);
+      });
+    }
+  }, [attachmentsWithViewerDetails]);
+
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
@@ -329,9 +340,17 @@ export default function SearchResult({
           filePath
         );
         return (
-          <ListItem key={id} button className={classes.nested}>
+          <ListItem
+            key={id}
+            id={id}
+            button
+            className={`${classes.nested} NewSearchPage-Attachment`} // Give a class so each attachment can be dropped to the course list.
+            data-itemuuid={uuid} // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
+            data-itemversion={version}
+            data-attachmentuuid={id}
+          >
             <ListItemIcon>
-              <InsertDriveFile />
+              {inSelectionSession ? <DragIndicatorIcon /> : <InsertDriveFile />}
             </ListItemIcon>
             <ItemAttachmentLink
               description={description}
@@ -452,7 +471,14 @@ export default function SearchResult({
 
   const itemPrimaryContent =
     inSelectionSession && !isSelectSummaryButtonDisabled() ? (
-      <Grid container alignItems="center">
+      <Grid
+        id={uuid}
+        container
+        alignItems="center"
+        className="NewSearchPage-Item" // Give a class so each item can be dropped to the course list.
+        data-itemuuid={uuid}
+        data-itemversion={version}
+      >
         <Grid item>{itemLink()}</Grid>
         <Grid item>
           <ResourceSelector
