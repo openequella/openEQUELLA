@@ -133,10 +133,8 @@ public final class ExecUtils {
       sigKill.destroy();
       return returnValue;
     } catch (IOException | InterruptedException e) {
-      LOGGER.error("killing processes " + Arrays.toString(pids) + " failed.", e);
+      throw new RuntimeException("killing processes " + Arrays.toString(pids) + " failed.", e);
     }
-    // shouldn't get here
-    return -1;
   }
 
   /**
