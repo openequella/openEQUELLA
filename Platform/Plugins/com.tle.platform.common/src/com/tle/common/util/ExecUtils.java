@@ -263,7 +263,9 @@ public final class ExecUtils {
           killLinuxProcessTree(pid);
         } else {
           LOGGER.debug(
-              "Platform not yet supported for process tree kill. Processes may be left hanging");
+              "Platform ("
+                  + platform
+                  + ") does not support process tree kill. Processes may be left hanging");
         }
         throw new InterruptedException();
       }
