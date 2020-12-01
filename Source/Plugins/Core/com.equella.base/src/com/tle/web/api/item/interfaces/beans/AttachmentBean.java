@@ -67,10 +67,18 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
     this.preview = preview;
   }
 
+  /**
+   * @see com.tle.beans.item.attachments.IAttachment#isErroredIndexing
+   * @return The value of erroredIndexing
+   */
   public boolean isErroredIndexing() {
     return erroredIndexing;
   }
 
+  /**
+   * @see com.tle.beans.item.attachments.IAttachment#setErroredIndexing
+   * @param erroredIndexing The value to set erroredIndexing to
+   */
   public void setErroredIndexing(boolean erroredIndexing) {
     this.erroredIndexing = erroredIndexing;
   }
