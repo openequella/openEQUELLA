@@ -17,7 +17,6 @@ import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
 import java.util.Arrays;
 import org.testng.annotations.Test;
-import testng.annotation.RetryTest;
 
 @TestInstitution("vanilla")
 public class MimeTypesTest extends AbstractCleanupTest {
@@ -88,8 +87,11 @@ public class MimeTypesTest extends AbstractCleanupTest {
     assertTrue(attachments.attachmentDetails(ATTACHMENT_NAME).contains("application/octet-stream"));
   }
 
-  @RetryTest
-  @Test
+  /* temporarily disabled due to flakiness,
+  caused by sendKeys in uploadIcon intermittently failing on CI.
+  To be fixed and re-enabled.
+  */
+  @Test(enabled = false)
   public void changeIconTest() {
     MimeSearchPage mimePage = new MimeSearchPage(context).load();
     addMime("IconMime", "app/icontest", "icon");
