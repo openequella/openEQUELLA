@@ -62,6 +62,7 @@ $doubleMargin: 16px;
 $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
+$termSelectorHeight: 68px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -1165,6 +1166,21 @@ div.area {
 #fancybox-outer {
   height: auto;
 }
+#fancybox-close {
+  @include replaceImageTag("material_design_close.png", 27px, 27px);
+  top: -$doubleMargin;
+  right: -($doubleMargin + $modalFooterHeight);
+}
+
+#fancybox-left {
+  align-content: flex-end;
+  @include replaceImageTag("material_design_chevron_left.png", 18px, 18px);
+}
+
+#fancybox-right {
+  align-content: flex-end;
+  @include replaceImageTag("material_design_chevron_right.png", 18px, 18px);
+}
 
 #fancybox-inner button {
   background-color: transparent;
@@ -2086,7 +2102,7 @@ div.skinnysearch {
 }
 
 .autocompleteControl .autocomplete-container {
-  float: left;
+  float: none;
   // 120px for width of the select button and padding with default text 'select'.
   width: calc(100% - 120px);
 }
@@ -5516,4 +5532,15 @@ button:focus {
 
 #selection-page .itemsummary-layout .comment-form textarea {
   width: 97%;
+}
+
+#wizard-controls
+  .autocompleteControl
+  .autocomplete-container
+  .prompt[disabled="disabled"] {
+  display: none;
+}
+
+#wizard-controls .autocompleteControl table.zebra {
+  margin-top: $termSelectorHeight;
 }

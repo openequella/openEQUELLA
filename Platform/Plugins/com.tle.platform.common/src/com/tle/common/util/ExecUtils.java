@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +111,38 @@ public final class ExecUtils {
       LOGGER.debug("Exec finished"); // $NON-NLS-1$
       return new ExecResult(exitStatus, stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static ExecResult execWithTimeLimit(long maxDurationInSeconds, String[] options) {
+    if (maxDurationInSeconds < 1L) {
+      LOGGER.debug("maxDurationInSeconds not set. Using a regular non-timed process.");
+      return exec(options, null, null);
+    }
+    return execWithTimeLimit(options, null, null, maxDurationInSeconds);
+  }
+
+  public static ExecResult execWithTimeLimit(
+      String[] cmdarray, Map<String, String> additionalEnv, File dir, long durationInSeconds) {
+    try {
+      final Triple<Process, StreamReader, StreamReader> cp =
+          createProcess(cmdarray, additionalEnv, dir);
+      LOGGER.debug("Started timed process");
+      final Process proc = cp.getFirst();
+      final StreamReader stdOut = cp.getSecond();
+      final StreamReader stdErr = cp.getThird();
+      proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
+      if (!stdErr.isFinished() || !stdOut.isFinished()) {
+        throw new InterruptedException();
+      }
+      LOGGER.debug("Timed process finished");
+      return new ExecResult(proc.exitValue(), stdOut.getResult(), stdErr.getResult());
+    } catch (Exception e) {
+      if (e instanceof InterruptedException) {
+        throw new RuntimeException(
+            "Timer of " + durationInSeconds + " seconds on this operation was exceeded.");
+      }
       throw new RuntimeException(e);
     }
   }

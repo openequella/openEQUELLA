@@ -15,23 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { memoize } from "lodash";
+import { API_BASE_URL } from "../AppConfig";
 
-package com.tle.core.imagemagick.guice;
-
-import com.tle.core.config.guice.PropertiesModule;
-
-public class ImageMagickModule extends PropertiesModule {
-
-  @SuppressWarnings("nls")
-  @Override
-  protected String getFilename() {
-    return "/plugins/com.tle.core.imagemagick/config.properties";
-  }
-
-  @SuppressWarnings("nls")
-  @Override
-  protected void configure() {
-    bindProp("imageMagick.path");
-    bindInt("thumbnailing.timeout", 20);
-  }
-}
+/**
+ * Retrieve the list of advanced searches from the server, utilising cached (memoized) results
+ * if available.
+ */
+export const getAdvancedSearchesFromServer: () => Promise<
+  OEQ.Common.BaseEntitySummary[]
+> = memoize(
+  async (): Promise<OEQ.Common.BaseEntitySummary[]> =>
+    await OEQ.AdvancedSearch.listAdvancedSearches(API_BASE_URL)
+);

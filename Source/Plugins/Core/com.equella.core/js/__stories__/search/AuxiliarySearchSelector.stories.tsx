@@ -15,23 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta, Story } from "@storybook/react";
+import * as React from "react";
+import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
+import {
+  AuxiliarySearchSelector,
+  AuxiliarySearchSelectorProps,
+} from "../../tsrc/search/components/AuxiliarySearchSelector";
 
-package com.tle.core.imagemagick.guice;
+export default {
+  title: "Search/AuxiliarySearchSelector",
+  component: AuxiliarySearchSelector,
+} as Meta<AuxiliarySearchSelectorProps>;
 
-import com.tle.core.config.guice.PropertiesModule;
-
-public class ImageMagickModule extends PropertiesModule {
-
-  @SuppressWarnings("nls")
-  @Override
-  protected String getFilename() {
-    return "/plugins/com.tle.core.imagemagick/config.properties";
-  }
-
-  @SuppressWarnings("nls")
-  @Override
-  protected void configure() {
-    bindProp("imageMagick.path");
-    bindInt("thumbnailing.timeout", 20);
-  }
-}
+export const standard: Story<AuxiliarySearchSelectorProps> = (
+  args: AuxiliarySearchSelectorProps
+) => <AuxiliarySearchSelector {...args} />;
+standard.args = {
+  auxiliarySearchesSupplier: () =>
+    Promise.resolve(getRemoteSearchesFromServerResult),
+  urlGenerator: (uuid: string) => uuid,
+};

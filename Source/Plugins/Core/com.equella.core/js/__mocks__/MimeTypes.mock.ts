@@ -15,23 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 
-package com.tle.core.imagemagick.guice;
-
-import com.tle.core.config.guice.PropertiesModule;
-
-public class ImageMagickModule extends PropertiesModule {
-
-  @SuppressWarnings("nls")
-  @Override
-  protected String getFilename() {
-    return "/plugins/com.tle.core.imagemagick/config.properties";
-  }
-
-  @SuppressWarnings("nls")
-  @Override
-  protected void configure() {
-    bindProp("imageMagick.path");
-    bindInt("thumbnailing.timeout", 20);
-  }
-}
+export const getMimeTypesFromServer: OEQ.MimeType.MimeTypeEntry[] = [
+  { mimeType: "image/gif", desc: "Image - GIF" },
+  { mimeType: "image/bmp", desc: "Image - BMP" },
+  { mimeType: "image/jpeg", desc: "Image - JPEG" },
+];

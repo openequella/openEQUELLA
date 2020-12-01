@@ -15,23 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 
-package com.tle.core.imagemagick.guice;
-
-import com.tle.core.config.guice.PropertiesModule;
-
-public class ImageMagickModule extends PropertiesModule {
-
-  @SuppressWarnings("nls")
-  @Override
-  protected String getFilename() {
-    return "/plugins/com.tle.core.imagemagick/config.properties";
-  }
-
-  @SuppressWarnings("nls")
-  @Override
-  protected void configure() {
-    bindProp("imageMagick.path");
-    bindInt("thumbnailing.timeout", 20);
-  }
-}
+export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[] = [
+  { name: "Advanced Search 1", uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3" },
+  { name: "Advanced Search 2", uuid: "3e7e68dd-3aa0-4e05-a70c-d6a559c53aa3" },
+  { name: "Advanced Search 3", uuid: "a07212ff-3af9-4d78-89d5-48c2d263a810" },
+];

@@ -331,6 +331,8 @@ export const languageStrings = {
     rawSearchTooltip: "Supports use of Apache Lucene search syntax",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
+    shareSearchHelperText: "Copy search link to clipboard",
+    shareSearchConfirmationText: "Search link saved to clipboard",
     collectionSelector: {
       title: "Collections",
     },
@@ -376,6 +378,12 @@ export const languageStrings = {
     },
     refineSearchPanel: {
       title: "Refine search",
+    },
+    advancedSearchSelector: {
+      title: "Access Advanced searches",
+    },
+    remoteSearchSelector: {
+      title: "Access Remote repositories",
     },
     searchAttachmentsSelector: {
       title: "Search attachments",
