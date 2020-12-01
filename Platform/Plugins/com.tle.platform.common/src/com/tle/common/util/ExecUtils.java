@@ -56,47 +56,67 @@ public final class ExecUtils {
   }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
   /**
-   * Creates a process which will then kill a given process and it's child processes on Linux.
-   * arg[0] should be the PID of the main process you want to terminate.
+   * For a given Process ID, kill any child processes and then kill the process.
+   * Works on Unix only, as it leverages pgrep and kill commands.
+   * @param pid The Process for which to terminate including it's direct children.
    */
-  public static class LinuxKill {
-    public static void main(String[] args) {
+    public static void killLinuxProcessTree(int pid) {
       try {
-        if (Integer.parseInt(args[0]) > 0) {
-          // get child process PIDs as string
-          Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + args[0]);
-          getChildPid.waitFor();
-          StringBuilder childPid = new StringBuilder();
-          if (getChildPid.exitValue() == 0) {
-            InputStream procIn = getChildPid.getInputStream();
-            int c = 0;
-            while ((c = procIn.read()) != -1) {
-              childPid.append((char) c);
-            }
-          }
-
+        if (pid > 0) {
+          // get child process PIDs as strings
+          String[] children = getChildUnixProcessPids(pid);
           // Kill child process(es)
-          Process childKillProc = Runtime.getRuntime().exec("kill -9 " + childPid);
-          childKillProc.waitFor();
-          if (childKillProc.exitValue() == 0) {
-            LOGGER.debug("Child processes terminated: " + childPid);
-          }
-
+            for (String child : children) {
+              sendSigKill(Integer.parseInt(child));
+            }
           // kill process itself
-          Process proc = Runtime.getRuntime().exec("kill -9 " + args[0]);
-          int exitVal = proc.waitFor();
-          LOGGER.debug("Exit value: " + exitVal); // often 1 under Ubuntu 12.10
-
-          proc.destroy();
-          childKillProc.destroy();
-          getChildPid.destroy();
+          sendSigKill(pid);
         }
       } catch (Exception e) {
-        LOGGER.warn("Process Kill failed. Process may be left hanging");
+        LOGGER.warn("Process Kill failed. Process may be left hanging",e);
       }
     }
-  }
 
+  /**
+   * Runs pgrep -P for a given Process ID,
+   * to get a list of child processes as Process IDs.
+   * @param pid The parent process ID to check for child processes.
+   * @return String[] An array of process IDs for the children of pid. Can be empty.
+   */
+    public static String[] getChildUnixProcessPids(int pid){
+      try {
+        Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + pid);
+        getChildPid.waitFor();
+        StringBuilder childPid = new StringBuilder();
+        if (getChildPid.exitValue() == 0) {
+          CharStreams.copy(new InputStreamReader(getChildPid.getInputStream()), childPid);
+        }
+        getChildPid.destroy();
+        return childPid.toString().replaceAll("\n", "").split(" ");
+      }catch(Exception e){
+        LOGGER.error("Error getting child processes for: " + pid, e);
+      }
+      return new String[]{};
+    }
+
+  /**
+   * Creates a process which then sends a SIGKILL signal to a given process.
+   * @param pid the Process ID of the process to kill.
+   * @return the exitValue of the SIGKILL process (not the process being killed)
+   */
+    public static int sendSigKill(int pid){
+      try {
+        Process sigKill = Runtime.getRuntime().exec("kill -9 " + pid);
+        sigKill.waitFor();
+        int returnValue = sigKill.exitValue();
+        sigKill.destroy();
+        return returnValue;
+      }catch(Exception e){
+        LOGGER.error("killing process " + pid + " failed.",e);
+      }
+      //shouldn't get here
+      return -1;
+    }
   /**
    * Gets the PID of a given process.
    *
