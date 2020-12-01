@@ -1138,13 +1138,11 @@ div.area {
 }
 
 #fancybox-left {
-  display: flex;
   align-content: flex-end;
   @include replaceImageTag("material_design_chevron_left.png", 18px, 18px);
 }
 
 #fancybox-right {
-  display: flex;
   align-content: flex-end;
   @include replaceImageTag("material_design_chevron_right.png", 18px, 18px);
 }
