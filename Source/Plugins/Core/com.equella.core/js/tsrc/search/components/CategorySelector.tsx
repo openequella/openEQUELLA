@@ -158,7 +158,7 @@ export const CategorySelector = ({
     term: category,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
-    <Grid container spacing={1}>
+    <Grid container spacing={1} wrap="nowrap" alignItems="center">
       <Grid item>
         <Typography>{category}</Typography>
       </Grid>
