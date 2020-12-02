@@ -79,7 +79,13 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
         };
     ExecutorService executor = Executors.newSingleThreadExecutor();
     Future<?> future = executor.submit(runnableParse);
-    future.get(parseDuration, TimeUnit.MILLISECONDS);
+    try {
+      future.get(parseDuration, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException | TimeoutException | ExecutionException e) {
+      LOGGER.error("PDF extraction timed out", e);
+      // rethrow so indexerThread can catch
+      throw e;
+    }
     executor.shutdownNow();
   }
 
