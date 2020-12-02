@@ -28,7 +28,7 @@ val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
 val springVersion    = "5.2.9.RELEASE"
 val tikaVersion      = "1.24.1"
-val cxfVersion       = "3.4.0"
+val cxfVersion       = "3.4.1"
 val guiceVersion     = "3.0"
 
 libraryDependencies ++= Seq(
@@ -384,8 +384,8 @@ assemblyMergeStrategy in assembly := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.0.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.0.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.1.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.1.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
