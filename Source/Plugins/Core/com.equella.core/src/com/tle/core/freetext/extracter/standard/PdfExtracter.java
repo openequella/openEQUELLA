@@ -60,24 +60,21 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
     WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
     ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
     Runnable runnableParse =
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              Metadata meta = new Metadata();
-              Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
-              parser.parse(input, handler, meta, new ParseContext());
+        () -> {
+          try {
+            Metadata meta = new Metadata();
+            Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
+            parser.parse(input, handler, meta, new ParseContext());
 
+            appendText(handler, outputText, maxSize);
+          } catch (Exception t) {
+            if (wrapped.isWriteLimitReached(t)) {
+              // keep going
+              LOGGER.info("PDF size limit reached.  Indexing truncated text");
               appendText(handler, outputText, maxSize);
-            } catch (Exception t) {
-              if (wrapped.isWriteLimitReached(t)) {
-                // keep going
-                LOGGER.info("PDF size limit reached.  Indexing truncated text");
-                appendText(handler, outputText, maxSize);
-                return;
-              }
-              throw Throwables.propagate(t);
+              return;
             }
+            throw Throwables.propagate(t);
           }
         };
     ExecutorService executor = Executors.newSingleThreadExecutor();
