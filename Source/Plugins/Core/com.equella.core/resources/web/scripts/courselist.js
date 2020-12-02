@@ -97,23 +97,20 @@ var CourseList = {
           folder);
       }
     }
-		if(doItems) {
+    if (doItems) {
       CourseList.prepareDraggableAndBind(listSelector + ' ' + itemResultSelector, true);
       // According to the existing code, there is no need to bind any handler to drag events happening in the ItemSummary page.
       CourseList.prepareDraggable(itemSummarySelector);
     }
 
-		if(doAttachments) {
+    if (doAttachments) {
       CourseList.prepareDraggableAndBind(attachmentSelector, false)
     }
 
-    CourseList.prepareDroppable(
-      itemResultSelector +
-      ', ' + attachmentSelector +
-      ', ' + itemSummarySelector +
-      ', ' + newSearchPageItemSelector +
-      ', ' + newSearchPageAttachmentSelector, // Also accept draggables made in new Search UI.
-      dropCallback, clickFolderCallback)
+    var droppableSelectors =
+      [itemResultSelector, attachmentSelector, itemSummarySelector,
+        newSearchPageItemSelector, newSearchPageAttachmentSelector].join();
+    CourseList.prepareDroppable(droppableSelectors, dropCallback, clickFolderCallback);
 
 		//sizing code... yuck
 		$(document).ready(function(){setTimeout(CourseList.resize,50)});
