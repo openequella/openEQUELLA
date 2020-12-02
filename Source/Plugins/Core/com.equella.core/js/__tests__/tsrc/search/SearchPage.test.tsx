@@ -715,7 +715,11 @@ describe("In Selection Session", () => {
     mockSearch.mockResolvedValue(getSearchResult);
     await renderSearchPage();
 
-    getSearchResult.results.forEach(({ uuid }) => {
+    const searchResults = getSearchResult.results;
+    // Make sure the search result definitely has Items.
+    expect(searchResults.length).toBeGreaterThan(0);
+
+    searchResults.forEach(({ uuid }) => {
       expect(
         getGlobalCourseList().prepareDraggableAndBind
       ).toHaveBeenCalledWith(`#${uuid}`, true);

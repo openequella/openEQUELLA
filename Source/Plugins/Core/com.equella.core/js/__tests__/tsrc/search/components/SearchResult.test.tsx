@@ -308,7 +308,12 @@ describe("<SearchResult/>", () => {
     it("should make each attachment draggable", async () => {
       updateMockGetRenderData(basicRenderData);
       await renderSearchResult(mockData.attachSearchObj);
-      mockData.attachSearchObj.attachments!.forEach((attachment) => {
+
+      const attachments = mockData.attachSearchObj.attachments!;
+      // Make sure there are attachments in the SearchResult.
+      expect(attachments.length).toBeGreaterThan(0);
+
+      attachments.forEach((attachment) => {
         expect(
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
