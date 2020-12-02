@@ -40,7 +40,8 @@ var CourseList = {
 		$rhs.find('.foldertree').height(rhsHeight - $rhs.find('.courselisttop').height() - 55);
 		CourseList.scrollToSelected();
 	},
-
+  newSearchPageItemClass: 'SearchPage-Item',
+  newSearchPageAttachmentClass: 'SearchPage-Attachment',
 	/**
 	 * @param ajaxCb AJAX event when content is dropped onto a folder
 	 * @param ajaxClickCb AJAX event when a folder is clicked
@@ -63,8 +64,8 @@ var CourseList = {
 		var itemResultSelector = '.selectable.' + itemResultClass;
 		var itemSummarySelector = "h2." + itemSummaryClass;
 		var attachmentSelector = '.selectable .attachmentrow.with-select';
-		var newSearchPageItemSelector = '.NewSearchPage-Item';
-		var newSearchPageAttachmentSelector = '.NewSearchPage-Attachment';
+		var newSearchPageItemSelector = '.' + CourseList.newSearchPageItemClass;
+		var newSearchPageAttachmentSelector = '.' + CourseList.newSearchPageAttachmentClass;
 
     var dropCallback = function(event, ui)
     {

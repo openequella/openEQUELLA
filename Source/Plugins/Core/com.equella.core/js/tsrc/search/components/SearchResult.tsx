@@ -58,6 +58,8 @@ import {
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
   prepareDraggable,
+  getSearchPageItemClass,
+  getSearchPageAttachmentClass,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -345,7 +347,7 @@ export default function SearchResult({
             key={id}
             id={id}
             button
-            className={`${classes.nested} NewSearchPage-Attachment`} // Give a class so each attachment can be dropped to the course list.
+            className={`${classes.nested} ${getSearchPageAttachmentClass()}`} // Give a class so each attachment can be dropped to the course list.
             data-itemuuid={uuid} // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
             data-itemversion={version}
             data-attachmentuuid={id}
@@ -476,7 +478,7 @@ export default function SearchResult({
         id={uuid}
         container
         alignItems="center"
-        className="NewSearchPage-Item" // Give a class so each item can be dropped to the course list.
+        className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
         data-itemuuid={uuid}
         data-itemversion={version}
       >

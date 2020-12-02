@@ -201,6 +201,8 @@ describe("<SearchResult/>", () => {
     mockGlobalCourseList.mockReturnValue({
       updateCourseList: jest.fn(),
       prepareDraggableAndBind: jest.fn(),
+      newSearchPageItemClass: "SearchPage-Item",
+      newSearchPageAttachmentClass: "SearchPage-Attachment",
     });
 
     const mockSelectResourceForCourseList = jest.spyOn(
