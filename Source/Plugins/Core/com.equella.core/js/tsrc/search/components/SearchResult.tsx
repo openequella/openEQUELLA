@@ -31,7 +31,6 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
-import MUILink from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
@@ -43,11 +42,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
+import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
@@ -457,18 +456,15 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
-    const basicLink = (
-      <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
-    );
-    return inSelectionSession ? (
-      <MUILink
-        href={buildSelectionSessionItemSummaryLink(uuid, version)}
-        underline="none"
+    return (
+      <OeqLink
+        routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
+        muiLinkUrlProvider={() =>
+          buildSelectionSessionItemSummaryLink(uuid, version)
+        }
       >
         {itemTitle}
-      </MUILink>
-    ) : (
-      basicLink
+      </OeqLink>
     );
   };
 
