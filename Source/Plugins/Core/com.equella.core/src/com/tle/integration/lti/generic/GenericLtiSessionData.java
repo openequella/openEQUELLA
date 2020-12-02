@@ -24,16 +24,37 @@ import javax.servlet.http.HttpServletRequest;
 public class GenericLtiSessionData extends LtiSessionData {
   private static final long serialVersionUID = 1L;
 
+  private String connectorUuid;
+
+  private String contentId;
+
   public GenericLtiSessionData() {
     super();
   }
 
   public GenericLtiSessionData(HttpServletRequest request) {
     super(request);
+    connectorUuid = request.getParameter("connector_uuid");
   }
 
   @Override
   public String getIntegrationType() {
     return "lti";
+  }
+
+  public String getConnectorUuid() {
+    return connectorUuid;
+  }
+
+  public void setConnectorUuid(String connectorUuid) {
+    this.connectorUuid = connectorUuid;
+  }
+
+  public String getContentId() {
+    return contentId;
+  }
+
+  public void setContentId(String contentId) {
+    this.contentId = contentId;
   }
 }

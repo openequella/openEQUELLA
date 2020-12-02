@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -39,6 +40,7 @@ import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.searching.SearchResults;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
@@ -52,6 +54,8 @@ import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
+import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
@@ -61,10 +65,15 @@ import com.tle.exceptions.AuthenticationException;
 import com.tle.web.integration.Integration;
 import com.tle.web.selection.SelectedResource;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -97,9 +106,18 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
   @Inject private ConnectorService connectorService;
-  @Inject private UserSessionService userSessionService;
+  @Inject private ReplicatedCacheService cacheService;
   @Inject private InstitutionService institutionService;
   @Inject private AuditLogService auditService;
+  @Inject private UserSessionService userSessionService;
+
+  private static final String CACHE_ID_COURSE = "BbRestCoursesByUser";
+  private static final String CACHE_ID_TOKEN = "BbRestTokensByUser";
+  private static final String CACHE_ID_USERID = "BbRestIdsByUser";
+
+  private ReplicatedCache<ImmutableList<Course>> courseCache;
+  private ReplicatedCache<String> tokenCache;
+  private ReplicatedCache<String> uidCache;
 
   private static final ObjectMapper jsonMapper = new ObjectMapper();
   private static final ObjectMapper prettyJsonMapper = new ObjectMapper();
@@ -111,6 +129,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     prettyJsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     prettyJsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     prettyJsonMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+  }
+
+  @PostConstruct
+  public void setupCache() {
+    courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 60, TimeUnit.MINUTES);
+    tokenCache = cacheService.getCache(CACHE_ID_TOKEN, 100, 60, TimeUnit.MINUTES);
+    uidCache = cacheService.getCache(CACHE_ID_USERID, 100, 60, TimeUnit.MINUTES);
   }
 
   public BlackboardRESTConnectorServiceImpl() {
@@ -140,11 +165,10 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     try {
       getToken(connector);
       getUserId(connector);
-      LOGGER.debug(
-          "User session does not require auth for connector [" + connector.getUuid() + "]");
+      LOGGER.debug("User has the needed cached details, no authorization needed");
       return false;
     } catch (AuthenticationException ex) {
-      LOGGER.debug("User session requires auth for connector [" + connector.getUuid() + "]");
+      LOGGER.debug("User does not have active cached details and will need to authorize");
       return true;
     }
   }
@@ -230,7 +254,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
               + "/courses?fields=course";
 
       final List<Course> allCourses = new ArrayList<>();
-
       // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
       CoursesByUser courses =
           sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
@@ -249,7 +272,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         paging = courses.getPaging();
       }
 
-      setCachedCourses(connector, allCourses);
+      setCachedCourses(connector, ImmutableList.copyOf(allCourses));
     }
     return getWrappedCachedCourses(connector, archived);
   }
@@ -299,7 +322,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   public List<ConnectorFolder> getFoldersForCourse(
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
-    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents";
+    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
 
     return retrieveFolders(connector, url, courseId, management);
   }
@@ -309,36 +332,93 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, String folderId, boolean management) {
     // Username not needed to since we authenticate via 3LO.
 
-    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children/";
+    final String url =
+        API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children?recursive=true";
 
     return retrieveFolders(connector, url, courseId, management);
   }
 
   private List<ConnectorFolder> retrieveFolders(
       Connector connector, String url, String courseId, boolean management) {
-    final List<ConnectorFolder> list = new ArrayList<>();
     final Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
     final ConnectorCourse course = new ConnectorCourse(courseId);
     final List<Content> results = contents.getResults();
-    for (Content content : results) {
-      final Content.ContentHandler handler = content.getContentHandler();
-      if (handler != null && Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId())) {
-        // Unavailable folders are inaccessible to students,
-        // but should be available for instructors to push content to.
-        final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
-        if (content.getAvailability() != null) {
-          cc.setAvailable(Availability.YES.equals(content.getAvailability().getAvailable()));
-        } else {
-          cc.setAvailable(false);
-        }
-        cc.setName(content.getTitle());
-        cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
-        list.add(cc);
+
+    return parseFolders(results, course);
+    // setCachedCourses(connector, ImmutableList.copyOf(list));
+  }
+
+  /**
+   * Takes a list of folders from Bb API and organizes them into a hierarchy, returning a list of
+   * the top level folders
+   */
+  private List<ConnectorFolder> parseFolders(List<Content> rawFolders, ConnectorCourse course) {
+    // Convert to a map for better access and sort by parent ID
+    Map<String, List<Content>> folderMap = new HashMap<>();
+    for (Content c : rawFolders) {
+      // Assumption is null parent ID == base / root folder
+      final String pid = c.getParentId() == null ? "" : c.getParentId();
+      if (!folderMap.containsKey(pid)) {
+        folderMap.put(pid, new ArrayList<>());
       }
+      folderMap.get(pid).add(c);
     }
 
-    return list;
+    List<ConnectorFolder> baseFolders = new ArrayList<>();
+    // Starting with the 'empty' parent ID (ie top level folders),
+    //  build out the connector folders.  There 'should' always be at
+    //  least 1 folder without a parent ID, but to be sure...
+    final List<Content> rawBaseFolders = folderMap.get("");
+    if (rawBaseFolders.size() != 0) {
+      for (Content rootFolder : rawBaseFolders) {
+        final ConnectorFolder baseFolder = parseFolder(rootFolder, course, folderMap);
+        if (baseFolder != null) {
+          baseFolders.add(baseFolder);
+        }
+      }
+    }
+    return baseFolders;
+  }
+
+  private ConnectorFolder parseFolder(
+      Content currentRawFolder, ConnectorCourse course, Map<String, List<Content>> folderMap) {
+    final Content.ContentHandler handler = currentRawFolder.getContentHandler();
+    if (handler != null && Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId())) {
+      // Unavailable folders are inaccessible to students,
+      // but should be available for instructors to push content to.
+      final ConnectorFolder cc = new ConnectorFolder(currentRawFolder.getId(), course);
+      if (currentRawFolder.getAvailability() != null) {
+        cc.setAvailable(Availability.YES.equals(currentRawFolder.getAvailability().getAvailable()));
+      } else {
+        cc.setAvailable(false);
+      }
+      cc.setName(currentRawFolder.getTitle());
+      cc.setLeaf(currentRawFolder.getHasChildren() != null && !currentRawFolder.getHasChildren());
+
+      if (!cc.isLeaf()) {
+        List<ConnectorFolder> children = new ArrayList<>();
+        final List<Content> rawChildren = folderMap.get(cc.getId());
+        if ((rawChildren != null) && (rawChildren.size() != 0)) {
+          for (Content child : rawChildren) {
+            final ConnectorFolder cf = parseFolder(child, course, folderMap);
+            if (cf != null) {
+              children.add(cf);
+            }
+          }
+          cc.setFolders(children);
+        } else {
+          LOGGER.debug(
+              "Parent folder stated it was not a leaf, but there are no known children folders.  Parent folder: "
+                  + cc.getName()
+                  + " - "
+                  + cc.getId());
+        }
+      }
+      return cc;
+    }
+    // Not a content folder.  Caller is responsible for checking null.
+    return null;
   }
 
   @Override
@@ -383,15 +463,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     // TODO If folders end up being cached, pull the folder name from the cache.
     Content folder = getContentBean(connector, courseId, folderId);
     cf.setName(folder.getTitle());
-    final Course cachedCourse = getCachedCourse(connector, courseId);
-    if (cachedCourse == null) {
-      // This should never happen since the course will always be cached prior to adding content to
-      // it
-      final Course course = getCourseBean(connector, courseId);
-      cf.getCourse().setName(course.getName());
-    } else {
-      cf.getCourse().setName(cachedCourse.getName());
-    }
 
     return cf;
   }
@@ -667,21 +738,21 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   public String getToken(Connector connector) {
-    return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
+    return getCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
   }
 
   public String getUserId(Connector connector) {
-    return getCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
+    return getCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
   }
 
   private void removeCachedValuesForConnector(Connector connector) {
-    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN);
-    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID);
-    removeCachedCoursesForConnector(connector);
+    removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
+    removeCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
+    removeCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
   }
 
   public void removeCachedCoursesForConnector(Connector connector) {
-    removeCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_COURSES);
+    removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
   }
 
   private String getUserIdType() {
@@ -691,43 +762,28 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   public void setToken(Connector connector, String token) {
-    setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_TOKEN, token);
+    setCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector), token);
   }
 
   public void setUserId(Connector connector, String userId) {
-    setCachedSessionValue(connector, BlackboardRESTConnectorConstants.SESSION_KEY_USER_ID, userId);
+    setCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector), userId);
   }
 
-  private void setCachedCourses(Connector connector, List<Course> courses) {
-    final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
-    LOGGER.debug(
-        "Setting user session "
-            + key
-            + " for Bb REST connector ["
-            + connector.getUuid()
-            + "] - number of cached courses ["
-            + courses.size()
-            + "]");
+  private void setCachedCourses(Connector connector, ImmutableList<Course> courses) {
+    final String key = buildCacheKey(CACHE_ID_COURSE, connector);
+    LOGGER.debug("Setting cache " + key + " - number of cached courses [" + courses.size() + "]");
 
-    userSessionService.setAttribute(connector.getUuid() + key, courses);
+    setCachedValue(courseCache, key, courses);
   }
 
   private List<Course> getCachedCourses(Connector connector) {
-    final String key = BlackboardRESTConnectorConstants.SESSION_COURSES;
-    final List<Course> cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
+    final String key = buildCacheKey(CACHE_ID_COURSE, connector);
+    final ImmutableList<Course> cachedValue = getCachedValue(courseCache, key);
     if (cachedValue == null) {
-      LOGGER.debug(
-          "No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
+      LOGGER.debug("No value cached " + key);
       throw new AuthenticationException("User was not able to obtain cached " + key + ".");
     }
-    LOGGER.debug(
-        "Found a user session "
-            + key
-            + " for Bb REST connector ["
-            + connector.getUuid()
-            + "] - number of courses returned ["
-            + cachedValue.size()
-            + "]");
+    LOGGER.debug("Found the cached value " + key);
     return cachedValue;
   }
 
@@ -741,30 +797,30 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return null;
   }
 
-  private String getCachedSessionValue(Connector connector, String key) {
-    final String cachedValue = userSessionService.getAttribute(connector.getUuid() + key);
+  private String buildCacheKey(String cacheId, Connector connector) {
+    return cacheId + "-C:" + connector.getUuid() + "-U:" + CurrentUser.getUserID();
+  }
+
+  private <T extends Serializable> T getCachedValue(ReplicatedCache<T> cache, String key) {
+    final T cachedValue = cache.get(key).orNull();
+
     if (cachedValue == null) {
-      LOGGER.debug(
-          "No user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
-      throw new AuthenticationException("User was not able to obtain cached " + key + ".");
+      LOGGER.debug("No cache available for " + key);
+      throw new AuthenticationException("User was not able to obtain cached [" + key + "]");
     }
-    logSensitiveDetails(
-        "Found a user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",
-        " - value [" + cachedValue + "]");
+    logSensitiveDetails("Found a cached value for " + key, " - value [" + cachedValue + "]");
     return cachedValue;
   }
 
-  private void setCachedSessionValue(Connector connector, String key, String value) {
-    logSensitiveDetails(
-        "Setting user session " + key + " for Bb REST connector [" + connector.getUuid() + "]",
-        " to [" + value + "]");
-    userSessionService.setAttribute(connector.getUuid() + key, value);
+  private <T extends Serializable> void setCachedValue(
+      ReplicatedCache<T> cache, String key, T value) {
+    logSensitiveDetails("Setting cache " + key, " to [" + value + "]");
+    cache.put(key, value);
   }
 
-  private void removeCachedSessionValue(Connector connector, String key) {
-    LOGGER.debug(
-        "Removing user session " + key + " for Bb REST connector [" + connector.getUuid() + "]");
-    userSessionService.removeAttribute(connector.getUuid() + key);
+  private <T extends Serializable> void removeCachedValue(ReplicatedCache<T> cache, String key) {
+    LOGGER.debug("Invalidating cache " + key);
+    cache.invalidate(key);
   }
 
   private void logSensitiveDetails(String msg, String sensitiveMsg) {

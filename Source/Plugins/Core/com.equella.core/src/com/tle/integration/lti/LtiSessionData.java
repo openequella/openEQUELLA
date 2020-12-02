@@ -42,7 +42,6 @@ public abstract class LtiSessionData implements IntegrationSessionData {
   private String courseId;
   private String courseInfoCode;
   private String contextTitle;
-  private String connectorUuid;
   private final String data;
 
   protected LtiSessionData() {
@@ -142,14 +141,6 @@ public abstract class LtiSessionData implements IntegrationSessionData {
 
   public void setContextTitle(String contextTitle) {
     this.contextTitle = contextTitle;
-  }
-
-  public String getConnectorUuid() {
-    return connectorUuid;
-  }
-
-  public void setConnectorUuid(String connectorUuid) {
-    this.connectorUuid = connectorUuid;
   }
 
   public String getData() {

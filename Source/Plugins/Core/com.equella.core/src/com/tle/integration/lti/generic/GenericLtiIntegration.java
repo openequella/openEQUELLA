@@ -38,10 +38,13 @@ import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.web.integration.AbstractIntegrationService;
 import com.tle.web.integration.IntegrationActionInfo;
 import com.tle.web.integration.SingleSignonForm;
@@ -79,11 +82,13 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
 
   private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
 
+  private static final String FROM_REDIRECT = "from_redirect";
+
   static {
     PluginResourceHandler.init(GenericLtiIntegration.class);
   }
 
-  @PlugKey("integration.receipt.addedtolti")
+  @PlugKey("integration.receipt.addedtogenericlti")
   private static String KEY_RECEIPT_ADDED;
 
   @PlugKey("canvas.error.requireoneconnector")
@@ -101,9 +106,17 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
   @Inject private ConnectorService connectorService;
   @Inject private ConnectorRepositoryService connectorRepoService;
   @Inject private ReplicatedCacheService cacheService;
+  @Inject private InstitutionService institutionService;
+  @Inject private UserSessionService userSessionService;
 
-  private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
+  //  private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  //  @PostConstruct
+  //  public void setupCache() {
+  //    courseStructureCache =
+  //      cacheService.getCache("BlackboardRestCourseStructure", 100, 2, TimeUnit.MINUTES);
+  //  }
 
   @Override
   protected String getIntegrationType() {
@@ -121,18 +134,79 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
 
   @Override
   public void setupSingleSignOn(SectionInfo info, SingleSignonForm form) {
-    final GenericLtiSessionData data = new GenericLtiSessionData(info.getRequest());
-    String courseId = null;
+    GenericLtiSessionData data = null;
+    SingleSignonForm formToUse = null;
+    // 'SSO' can be from an LTI launch or from a redirect after authenticating
+    // the the external system connector (usually via REST).  If it's from a redirect,
+    // we need to pull the saved LTI launch details from the user session.
+    final String fromRedirect = info.getRequest().getParameter(FROM_REDIRECT);
+    if (!Strings.isNullOrEmpty(fromRedirect) && Boolean.valueOf(fromRedirect)) {
+      // Coming from a redirect
+      data = userSessionService.getAttribute("rehydrate_data");
+      // SelectionSession origSession = userSessionService.getAttribute("rehydrate_session");
+      formToUse = userSessionService.getAttribute("rehydrate_form");
+
+    } else {
+      // Direct LTI Launch
+      data = new GenericLtiSessionData(info.getRequest());
+      formToUse = form;
+      parseCourseValuesFromLtiLaunch(info, form, data);
+      parseCurrentContentId(info, form, data);
+    }
+
+    IntegrationActionInfo actionInfo = findActionInfo(data, formToUse);
+
+    LOGGER.debug("setupSingleSignOnFromLtiLaunch: about to forward - data=" + data);
+    integrationService.standardForward(
+        info, convertToForward(actionInfo, formToUse), data, actionInfo, formToUse);
+  }
+
+  private void parseCurrentContentId(
+      SectionInfo info, SingleSignonForm form, GenericLtiSessionData data) {
     final UserState userState = CurrentUser.getUserState();
+
+    if (userState instanceof LtiUserState) {
+      String contentId = "";
+      final LtiUserState ltiUserState = (LtiUserState) userState;
+      final LtiData ltiData = ltiUserState.getData();
+      if (ltiData != null) {
+        // custom parameters override standards
+        contentId = ltiData.getCustom("custom_content_id");
+
+        // Otherwise, try the next possible location
+        if (Strings.isNullOrEmpty(contentId)) {
+          contentId = ltiData.getCustom("resource_link_id");
+        }
+
+        data.setContentId(contentId);
+      }
+    }
+  }
+
+  private void parseCourseValuesFromLtiLaunch(
+      SectionInfo info, SingleSignonForm form, GenericLtiSessionData data) {
+    String courseId = null;
     String courseCode = form.getCourseCode();
+
+    final UserState userState = CurrentUser.getUserState();
+
     if (userState instanceof LtiUserState) {
       final LtiUserState ltiUserState = (LtiUserState) userState;
       final LtiData ltiData = ltiUserState.getData();
       if (ltiData != null) {
-        courseId = form.getCourseId();
+        // custom parameters override standards
+        courseId = ltiData.getCustom("custom_course_id");
+
+        // Otherwise, try the standard location
+        if (Strings.isNullOrEmpty(courseId)) {
+          courseId = form.getCourseId();
+        }
+
+        // Fallback
         if (Strings.isNullOrEmpty(courseId)) {
           courseId = ltiData.getContextId();
         }
+
         data.setCourseId(courseId);
         data.setContextTitle(ltiData.getContextTitle());
         if (Strings.isNullOrEmpty(courseCode)) {
@@ -142,6 +216,9 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     }
 
     data.setCourseInfoCode(integrationService.getCourseInfoCode(courseId, courseCode));
+  }
+
+  private IntegrationActionInfo findActionInfo(GenericLtiSessionData data, SingleSignonForm form) {
 
     String formDataAction = form.getAction();
     if (formDataAction == null) {
@@ -150,16 +227,16 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
 
     IntegrationActionInfo actionInfo =
         integrationService.getActionInfo(formDataAction, form.getOptions());
+
     if (actionInfo.getName().equals("unknown")) {
-      actionInfo = integrationService.getActionInfoForUrl('/' + data.getAction());
-    }
-    if (actionInfo == null) {
-      actionInfo = new IntegrationActionInfo();
+      return integrationService.getActionInfoForUrl('/' + data.getAction());
     }
 
-    LOGGER.debug("GenericLtiIntegration.setupSingleSignOn: about to forward - data=" + data);
-    integrationService.standardForward(
-        info, convertToForward(actionInfo, form), data, actionInfo, form);
+    if (actionInfo == null) {
+      return new IntegrationActionInfo();
+    }
+
+    return actionInfo;
   }
 
   private String convertToForward(IntegrationActionInfo action, SingleSignonForm model) {
@@ -175,6 +252,27 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     return forward.substring(1);
   }
 
+  private String convertToRedirect(
+      SectionInfo info,
+      GenericLtiSessionData data,
+      SelectionSession session,
+      SingleSignonForm form) {
+    userSessionService.setAttribute("rehydrate_data", data);
+    userSessionService.setAttribute("rehydrate_session", session);
+    userSessionService.setAttribute("rehydrate_form", form);
+    return info.getRequest().getRequestURI()
+        + "?"
+        + info.getRequest().getQueryString()
+        + "&"
+        + FROM_REDIRECT
+        + "=true";
+  }
+
+  @Override
+  public void forward(SectionInfo info, GenericLtiSessionData data, SectionInfo forward) {
+    info.forwardAsBookmark(forward);
+  }
+
   @Nullable
   @Override
   public SelectionSession setupSelectionSession(
@@ -182,6 +280,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       GenericLtiSessionData data,
       SelectionSession session,
       SingleSignonForm form) {
+
     final boolean structured = "structured".equals(data.getAction());
 
     session.setSelectMultiple(true); // all integration points support multiple
@@ -193,7 +292,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     // Setup the structure param before super.setupSelectionSession so the
     // extension can setup the TargetStructure
     if (structured) {
-      form.setStructure(initStructure(data, session, form));
+      form.setStructure(initStructure(info, data, session, form));
     }
 
     return super.setupSelectionSession(info, data, session, form);
@@ -201,38 +300,65 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
 
   @Nullable
   private String initStructure(
-      GenericLtiSessionData data, SelectionSession session, SingleSignonForm form) {
+      SectionInfo info,
+      GenericLtiSessionData data,
+      SelectionSession session,
+      SingleSignonForm form) {
     final String courseId = data.getCourseId();
     String structure = form.getStructure();
     if (structure == null) {
+      // LMS didn't send the course folder structure with the LTI request.
+
       // if course ID is empty then there is nothing we can do...
       if (Strings.isNullOrEmpty(courseId)) {
         throw new RuntimeException(LABEL_ERROR_NO_COURSE.getText());
       }
-      structure = courseStructureCache.get(courseId).orNull();
-    }
-    // if no structure, get from LMS
-    if (structure == null) {
+
+      // Check if the user needs to authenticate
+      if (connectorRepoService.isRequiresAuthentication(findConnector(data))) {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(
+              "Need to authenticate to the "
+                  + findConnector(data).getLmsType()
+                  + " connector repository.");
+        }
+
+        if (findConnector(data)
+            .getLmsType()
+            .equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+          // save details to user session
+          info.forwardToUrl(
+              connectorRepoService.getAuthorisationUrl(
+                  findConnector(data), convertToRedirect(info, data, session, form), null));
+        } else {
+          LOGGER.fatal("Unknown LMS Type to authorize: " + findConnector(data).getLmsType());
+        }
+      }
+
+      // Need to leverage the external system connector (usually REST-based) to populate the list.
+
+      //      // If the cache is null,
+      //      if(courseStructureCache != null) {
+      //        structure = courseStructureCache.get(courseId).orNull();
+      //      }
+      //    }
+      //
+      //    // if no structure, get from LMS
+      //    if (structure == null) {
       final ObjectNode root = objectMapper.createObjectNode();
       root.put("id", courseId);
       root.put("name", data.getContextTitle());
       root.put("targetable", false);
-      final ArrayNode foldersNode = objectMapper.createArrayNode();
-      root.put("folders", foldersNode);
+      final ArrayNode foldersNode = root.putArray("folders");
 
       final Connector connector = findConnector(data);
+
       final List<ConnectorFolder> folders =
           connectorRepoService.getFoldersForCourse(
               connector, CurrentUser.getUsername(), courseId, false);
-      boolean first = true;
+
       for (ConnectorFolder folder : folders) {
-        final ObjectNode folderNode = objectMapper.createObjectNode();
-        folderNode.put("id", folder.getId());
-        folderNode.put("name", folder.getName());
-        folderNode.put("targetable", true);
-        folderNode.put("defaultFolder", first);
-        foldersNode.add(folderNode);
-        first = false;
+        foldersNode.add(convert(folder, data));
       }
 
       final PrettyPrinter pp = new MinimalPrettyPrinter();
@@ -243,9 +369,27 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       }
     }
     if (structure != null) {
-      courseStructureCache.put(courseId, structure);
+      //      courseStructureCache.put(courseId, structure);
     }
     return structure;
+  }
+
+  private ObjectNode convert(ConnectorFolder folder, GenericLtiSessionData data) {
+    final ObjectNode folderNode = objectMapper.createObjectNode();
+    folderNode.put("id", folder.getId());
+    folderNode.put("name", folder.getName());
+    folderNode.put("targetable", true);
+    if (folder.getId().equals(data.getContentId())) {
+      folderNode.put("defaultFolder", true);
+      folderNode.put("selected", true);
+    }
+    if (folder.getFolders() != null) {
+      final ArrayNode childrenJsonFolders = folderNode.putArray("folders");
+      for (ConnectorFolder childrenFolder : folder.getFolders()) {
+        childrenJsonFolders.add(convert(childrenFolder, data));
+      }
+    }
+    return folderNode;
   }
 
   private Connector findConnector(GenericLtiSessionData data) {
@@ -343,11 +487,8 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
         for (SelectedResource resource : selectedResources) {
           final IItem<?> item = getItemForResource(resource);
           final String moduleId = resource.getKey().getFolderId();
-          //					TODO impl
-          //					bbService.addItemToCourse(connector, CurrentUser.getUsername(), courseId, moduleId,
-          // item,
-          //						resource);
-
+          connectorRepoService.addItemToCourse(
+              connector, CurrentUser.getUsername(), courseId, moduleId, item, resource);
         }
         final int count = selectedResources.size();
         // clear session
