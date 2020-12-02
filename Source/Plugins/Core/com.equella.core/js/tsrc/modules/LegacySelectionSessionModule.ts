@@ -91,12 +91,42 @@ export interface SelectionSessionPostData {
  */
 declare const CourseList: {
   updateCourseList: (data: unknown) => void;
+  prepareDraggableAndBind: (selector: string, forItem: boolean) => void;
+  newSearchPageItemClass: string;
+  newSearchPageAttachmentClass: string;
+};
+
+/**
+ * Prepare draggables for Items and attachments. ONLY works for HTML elements that
+ * have an ID.
+ *
+ * @param id A string representing a DOM element's ID.
+ * @param forItem True if prepare draggables for Items
+ */
+export const prepareDraggable = (id: string, forItem = true) => {
+  getGlobalCourseList().prepareDraggableAndBind(`#${id}`, forItem);
 };
 
 /**
  * The intention of having this function is to help Jest test mock CourseList.
  */
 export const getGlobalCourseList = () => CourseList;
+
+/**
+ * When Selection Session is open, provide access to the CSS class 'newSearchPageItemClass'
+ * defined in 'couselist.js'.
+ */
+export const getSearchPageItemClass = (): string =>
+  isSelectionSessionOpen() ? getGlobalCourseList().newSearchPageItemClass : "";
+
+/**
+ * When Selection Session is open, provide access to the CSS class 'newSearchPageAttachmentClass'
+ * defined in 'couselist.js'.
+ */
+export const getSearchPageAttachmentClass = (): string =>
+  isSelectionSessionOpen()
+    ? getGlobalCourseList().newSearchPageAttachmentClass
+    : "";
 
 /**
  * An internal Type guard used to check whether an object is of type SelectionSessionInfo.

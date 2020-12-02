@@ -26,6 +26,7 @@ import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
+  getGlobalCourseList,
   selectResourceForCourseList,
   selectResourceForNonCourseList,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
@@ -33,6 +34,7 @@ import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { updateMockGlobalCourseList } from "../../CourseListHelper";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
@@ -193,11 +195,7 @@ describe("<SearchResult/>", () => {
   });
 
   describe("In Selection Session", () => {
-    const mockGlobalCourseList = jest.spyOn(
-      LegacySelectionSessionModule,
-      "getGlobalCourseList"
-    );
-    mockGlobalCourseList.mockReturnValue({ updateCourseList: jest.fn() });
+    updateMockGlobalCourseList();
 
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,
@@ -305,6 +303,21 @@ describe("<SearchResult/>", () => {
       );
       expect(expandedAttachment.queryByText("image.png")).toBeVisible();
       expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
+    });
+
+    it("should make each attachment draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.attachSearchObj);
+
+      const attachments = mockData.attachSearchObj.attachments!;
+      // Make sure there are attachments in the SearchResult.
+      expect(attachments.length).toBeGreaterThan(0);
+
+      attachments.forEach((attachment) => {
+        expect(
+          getGlobalCourseList().prepareDraggableAndBind
+        ).toHaveBeenCalledWith(`#${attachment.id}`, false);
+      });
     });
   });
 });
