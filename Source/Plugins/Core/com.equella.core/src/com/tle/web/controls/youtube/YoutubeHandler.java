@@ -86,9 +86,9 @@ import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.joda.time.format.ISODateTimeFormat;
 
 @SuppressWarnings("nls")
 @Bind
@@ -287,7 +287,10 @@ public class YoutubeHandler
               YoutubeResultOption result = new YoutubeResultOption(videoId);
               result.setAuthor(new KeyLabel(ADD_AUTHOR_LABEL, vidInfo.getChannelTitle()));
               result.setDate(
-                  dateRendererFactory.createDateRenderer(new Date(vidInfo.getPublishedAt())));
+                  dateRendererFactory.createDateRenderer(
+                      ISODateTimeFormat.dateTimeNoMillis()
+                          .parseDateTime(vidInfo.getPublishedAt())
+                          .toDate()));
 
               String description = vidInfo.getDescription();
               result.setDescription(
