@@ -41,7 +41,6 @@ import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
-import * as LegacySelectionSessionModule from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
@@ -55,6 +54,7 @@ import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
+import { updateMockGlobalCourseList } from "../CourseListHelper";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -708,14 +708,7 @@ describe("conversion of parameters to SearchPageOptions", () => {
 });
 
 describe("In Selection Session", () => {
-  const mockGlobalCourseList = jest.spyOn(
-    LegacySelectionSessionModule,
-    "getGlobalCourseList"
-  );
-  mockGlobalCourseList.mockReturnValue({
-    updateCourseList: jest.fn(),
-    prepareDraggableAndBind: jest.fn(),
-  });
+  updateMockGlobalCourseList();
 
   it("should make each Search result Item draggable", async () => {
     updateMockGetRenderData(basicRenderData);

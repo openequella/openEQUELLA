@@ -34,6 +34,7 @@ import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { updateMockGlobalCourseList } from "../../CourseListHelper";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
@@ -194,16 +195,7 @@ describe("<SearchResult/>", () => {
   });
 
   describe("In Selection Session", () => {
-    const mockGlobalCourseList = jest.spyOn(
-      LegacySelectionSessionModule,
-      "getGlobalCourseList"
-    );
-    mockGlobalCourseList.mockReturnValue({
-      updateCourseList: jest.fn(),
-      prepareDraggableAndBind: jest.fn(),
-      newSearchPageItemClass: "SearchPage-Item",
-      newSearchPageAttachmentClass: "SearchPage-Attachment",
-    });
+    updateMockGlobalCourseList();
 
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,
