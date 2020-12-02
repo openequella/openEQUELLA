@@ -216,6 +216,42 @@ export const buildSelectionSessionItemSummaryLink = (
 };
 
 /**
+ * Build a Selection Session specific Remote search Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
+ * @param uuid The UUID of a Remote search
+ */
+export const buildSelectionSessionRemoteSearchLink = (uuid: string): string => {
+  const { stateId, integId } = getSelectionSessionInfo();
+  const remoteSearchLink = AppConfig.baseUrl.concat(
+    `access/z3950.do?.repository=${uuid}&uc=true&_sl.stateId=${stateId}`
+  );
+
+  if (integId) {
+    return remoteSearchLink.concat(`&_int.id=${integId}`);
+  }
+  return remoteSearchLink;
+};
+
+/**
+ * Build a Selection Session specific Advanced search Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
+ * @param uuid The UUID of an Advanced search
+ */
+export const buildSelectionSessionAdvancedSearchLink = (
+  uuid: string
+): string => {
+  const { stateId, integId } = getSelectionSessionInfo();
+  const remoteSearchLink = AppConfig.baseUrl.concat(
+    `searching.do?in=P${uuid}&editquery=true&_sl.stateId=${stateId}`
+  );
+
+  if (integId) {
+    return remoteSearchLink.concat(`&_int.id=${integId}`);
+  }
+  return remoteSearchLink;
+};
+
+/**
  * Update the content of DIV "selection-summary". This function is primarily for
  * 'selectOrAdd' mode. In this mode, what is returned from 'searching.do' is an
  * object of 'LegacyContentResponse'.

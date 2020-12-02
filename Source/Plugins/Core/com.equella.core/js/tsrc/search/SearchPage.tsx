@@ -58,6 +58,8 @@ import {
 import {
   isSelectionSessionOpen,
   prepareDraggable,
+  buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionRemoteSearchLink,
 } from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
@@ -405,7 +407,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <AuxiliarySearchSelector
           auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
-          urlGenerator={routes.AdvancedSearch.to}
+          urlGeneratorForRouteLink={routes.AdvancedSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
         />
       ),
       disabled: false,
@@ -417,7 +420,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <AuxiliarySearchSelector
           auxiliarySearchesSupplier={getRemoteSearchesFromServer}
-          urlGenerator={routes.RemoteSearch.to}
+          urlGeneratorForRouteLink={routes.RemoteSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
         />
       ),
       disabled: false,
