@@ -190,11 +190,7 @@ export const CategorySelector = ({
   ): ReactElement => {
     const { term } = category;
     return (
-      <ListItem
-        dense
-        key={`${classificationID}:${term}`}
-        style={{ paddingLeft: 0 }}
-      >
+      <ListItem key={`${classificationID}:${term}`} style={{ paddingLeft: 0 }}>
         <FormControlLabel
           classes={{
             label: classes.classificationLabel,
