@@ -34,5 +34,6 @@ export const standard: Story<AuxiliarySearchSelectorProps> = (
 standard.args = {
   auxiliarySearchesSupplier: () =>
     Promise.resolve(getRemoteSearchesFromServerResult),
-  urlGenerator: (uuid: string) => uuid,
+  urlGeneratorForRouteLink: (uuid: string) => uuid,
+  urlGeneratorForMuiLink: (uuid: string) => uuid,
 };
