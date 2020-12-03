@@ -24,7 +24,6 @@ import {
   ListItem,
   Theme,
   Typography,
-  useTheme,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
