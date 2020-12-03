@@ -33,6 +33,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ViewableItemType;
 import com.tle.common.Check;
+import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import com.tle.common.connectors.ConnectorContent;
 import com.tle.common.connectors.ConnectorCourse;
@@ -112,10 +113,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   @Inject private UserSessionService userSessionService;
 
   private static final String CACHE_ID_COURSE = "BbRestCoursesByUser";
+  private static final String CACHE_ID_COURSE_FOLDERS = "BbRestFoldersByUserAndCourse";
   private static final String CACHE_ID_TOKEN = "BbRestTokensByUser";
   private static final String CACHE_ID_USERID = "BbRestIdsByUser";
 
   private ReplicatedCache<ImmutableList<Course>> courseCache;
+  private ReplicatedCache<ImmutableList<ConnectorFolder>> courseFoldersCache;
   private ReplicatedCache<String> tokenCache;
   private ReplicatedCache<String> uidCache;
 
@@ -133,7 +136,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @PostConstruct
   public void setupCache() {
-    courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 60, TimeUnit.MINUTES);
+    courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 2, TimeUnit.MINUTES);
+    courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 100, 2, TimeUnit.MINUTES);
     tokenCache = cacheService.getCache(CACHE_ID_TOKEN, 100, 60, TimeUnit.MINUTES);
     uidCache = cacheService.getCache(CACHE_ID_USERID, 100, 60, TimeUnit.MINUTES);
   }
@@ -322,9 +326,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   public List<ConnectorFolder> getFoldersForCourse(
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
-    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
 
-    return retrieveFolders(connector, url, courseId, management);
+    return retrieveFolders(connector, courseId, management);
   }
 
   @Override
@@ -332,21 +335,56 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, String folderId, boolean management) {
     // Username not needed to since we authenticate via 3LO.
 
-    final String url =
-        API_ROOT_V1 + "courses/" + courseId + "/contents/" + folderId + "/children?recursive=true";
+    List<ConnectorFolder> folders = retrieveFolders(connector, courseId, management);
+    for (ConnectorFolder folder : folders) {
+      ConnectorFolder foundFolder = findFolder(folder, folderId);
+      if (foundFolder != null) {
+        return foundFolder.getFolders();
+      }
+    }
 
-    return retrieveFolders(connector, url, courseId, management);
+    // Cache of folders exist, but folderId was not found
+    return null;
+  }
+
+  /**
+   * Recursively searches for a folder with the given ID
+   *
+   * @param folder
+   * @param folderId
+   * @return null if not found, the children of the folder if found
+   */
+  private ConnectorFolder findFolder(ConnectorFolder folder, String folderId) {
+    if (folder.getId().equals(folderId)) {
+      return folder;
+    }
+
+    // Not this folder, so check it's sub folders
+    for (ConnectorFolder subFolder : folder.getFolders()) {
+      ConnectorFolder possibleSubFolder = findFolder(subFolder, folderId);
+      if (possibleSubFolder != null) {
+        return possibleSubFolder;
+      }
+    }
+
+    // The folder and its subfolders do not contain the folderId
+    return null;
   }
 
   private List<ConnectorFolder> retrieveFolders(
-      Connector connector, String url, String courseId, boolean management) {
-    final Contents contents =
-        sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
-    final ConnectorCourse course = new ConnectorCourse(courseId);
-    final List<Content> results = contents.getResults();
+      Connector connector, String courseId, boolean management) {
 
-    return parseFolders(results, course);
-    // setCachedCourses(connector, ImmutableList.copyOf(list));
+    ImmutableList<ConnectorFolder> folders = getCachedCourseFolders(connector, courseId);
+    if (folders == null) {
+      final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
+      final Contents contents =
+          sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
+      final ConnectorCourse course = new ConnectorCourse(courseId);
+      final List<Content> results = contents.getResults();
+      folders = ImmutableList.copyOf(parseFolders(results, course));
+      setCachedCourseFolders(connector, courseId, folders);
+    }
+    return folders;
   }
 
   /**
@@ -365,18 +403,40 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       folderMap.get(pid).add(c);
     }
 
+    String baseId = "";
+    if (folderMap.get(baseId) == null) {
+      // This is likely an Ultra view course - all content seems to have parentIDs.
+      // There is one parent ID that will not have a corresponding content ID - that
+      // parentID should be treated as the 'root'.
+
+      // Pull out all the content IDs
+      List<String> ids = new ArrayList<>();
+      for (Content c : rawFolders) {
+        ids.add(c.getId());
+      }
+
+      // See which parent ID is not in the content IDs
+      for (String key : folderMap.keySet()) {
+        if (!ids.contains(key)) {
+          baseId = key;
+        }
+      }
+    }
+
     List<ConnectorFolder> baseFolders = new ArrayList<>();
     // Starting with the 'empty' parent ID (ie top level folders),
     //  build out the connector folders.  There 'should' always be at
     //  least 1 folder without a parent ID, but to be sure...
-    final List<Content> rawBaseFolders = folderMap.get("");
-    if (rawBaseFolders.size() != 0) {
+    final List<Content> rawBaseFolders = folderMap.get(baseId);
+    if ((rawBaseFolders != null) && (rawBaseFolders.size() != 0)) {
       for (Content rootFolder : rawBaseFolders) {
         final ConnectorFolder baseFolder = parseFolder(rootFolder, course, folderMap);
         if (baseFolder != null) {
           baseFolders.add(baseFolder);
         }
       }
+    } else {
+      LOGGER.warn("Unable to find the base folders for the course " + course.getId());
     }
     return baseFolders;
   }
@@ -384,7 +444,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private ConnectorFolder parseFolder(
       Content currentRawFolder, ConnectorCourse course, Map<String, List<Content>> folderMap) {
     final Content.ContentHandler handler = currentRawFolder.getContentHandler();
-    if (handler != null && Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId())) {
+    if (handler != null
+        && (Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId())
+            || Content.ContentHandler.RESOURCE_LESSON.equals(handler.getId()))) {
       // Unavailable folders are inaccessible to students,
       // but should be available for instructors to push content to.
       final ConnectorFolder cc = new ConnectorFolder(currentRawFolder.getId(), course);
@@ -460,10 +522,20 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     sendBlackboardData(connector, url, null, content, Request.Method.POST);
     LOGGER.debug("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
     ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-    // TODO If folders end up being cached, pull the folder name from the cache.
-    Content folder = getContentBean(connector, courseId, folderId);
-    cf.setName(folder.getTitle());
 
+    final ConnectorFolder cachedFolder = getCachedCourseFolder(connector, courseId, folderId);
+    if (cachedFolder != null) {
+      cf.setName(cachedFolder.getName());
+    }
+
+    try {
+      final Course cachedCourse = getCachedCourse(connector, courseId);
+      if (cachedCourse != null) {
+        cf.getCourse().setName(cachedCourse.getName());
+      }
+    } catch (AuthenticationException ae) {
+      // Not a big deal, likely coming from an LTI Launch
+    }
     return cf;
   }
 
@@ -746,13 +818,17 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private void removeCachedValuesForConnector(Connector connector) {
-    removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
+    removeCachedCoursesForConnector(connector);
     removeCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
     removeCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
   }
 
   public void removeCachedCoursesForConnector(Connector connector) {
     removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
+    for (Pair<String, ImmutableList<ConnectorFolder>> pair :
+        courseFoldersCache.iterate(buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector))) {
+      removeCachedValue(courseFoldersCache, pair.getFirst());
+    }
   }
 
   private String getUserIdType() {
@@ -785,6 +861,47 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     }
     LOGGER.debug("Found the cached value " + key);
     return cachedValue;
+  }
+
+  private void setCachedCourseFolders(
+      Connector connector, String courseId, ImmutableList<ConnectorFolder> folders) {
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
+    LOGGER.debug(
+        "Setting cache "
+            + key
+            + "."
+            + courseId
+            + " - number of cached folders ["
+            + folders.size()
+            + "]");
+    setCachedValue(courseFoldersCache, key, folders);
+  }
+
+  private ImmutableList<ConnectorFolder> getCachedCourseFolders(
+      Connector connector, String courseId) {
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
+    try {
+      return getCachedValue(courseFoldersCache, key);
+    } catch (AuthenticationException ae) {
+      return null;
+    }
+  }
+
+  private ConnectorFolder getCachedCourseFolder(
+      Connector connector, String courseId, String folderId) {
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
+    try {
+      final List<ConnectorFolder> folders = getCachedValue(courseFoldersCache, key);
+      for (ConnectorFolder folder : folders) {
+        final ConnectorFolder foundFolder = findFolder(folder, folderId);
+        if (foundFolder != null) {
+          return foundFolder;
+        }
+      }
+    } catch (AuthenticationException ae) {
+      return null;
+    }
+    return null;
   }
 
   private Course getCachedCourse(Connector connector, String courseId) {

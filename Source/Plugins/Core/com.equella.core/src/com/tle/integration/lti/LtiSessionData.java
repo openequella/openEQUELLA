@@ -43,6 +43,7 @@ public abstract class LtiSessionData implements IntegrationSessionData {
   private String courseInfoCode;
   private String contextTitle;
   private final String data;
+  private String connectorUuid;
 
   protected LtiSessionData() {
     selectionDirective = null;
@@ -74,6 +75,7 @@ public abstract class LtiSessionData implements IntegrationSessionData {
     ltiMessageType = request.getParameter("lti_message_type");
     contentItemReturnUrl = request.getParameter("content_item_return_url");
     data = request.getParameter("data");
+    connectorUuid = request.getParameter("connector_uuid");
   }
 
   @Override
@@ -149,6 +151,14 @@ public abstract class LtiSessionData implements IntegrationSessionData {
 
   public String getLtiMessageType() {
     return ltiMessageType;
+  }
+
+  public String getConnectorUuid() {
+    return connectorUuid;
+  }
+
+  public void setConnectorUuid(String connectorUuid) {
+    this.connectorUuid = connectorUuid;
   }
 
   @Override

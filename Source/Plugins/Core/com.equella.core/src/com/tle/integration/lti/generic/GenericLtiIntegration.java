@@ -143,9 +143,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     if (!Strings.isNullOrEmpty(fromRedirect) && Boolean.valueOf(fromRedirect)) {
       // Coming from a redirect
       data = userSessionService.getAttribute("rehydrate_data");
-      // SelectionSession origSession = userSessionService.getAttribute("rehydrate_session");
       formToUse = userSessionService.getAttribute("rehydrate_form");
-
     } else {
       // Direct LTI Launch
       data = new GenericLtiSessionData(info.getRequest());
@@ -258,7 +256,6 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       SelectionSession session,
       SingleSignonForm form) {
     userSessionService.setAttribute("rehydrate_data", data);
-    userSessionService.setAttribute("rehydrate_session", session);
     userSessionService.setAttribute("rehydrate_form", form);
     return info.getRequest().getRequestURI()
         + "?"
@@ -326,7 +323,6 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
         if (findConnector(data)
             .getLmsType()
             .equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
-          // save details to user session
           info.forwardToUrl(
               connectorRepoService.getAuthorisationUrl(
                   findConnector(data), convertToRedirect(info, data, session, form), null));
@@ -336,15 +332,6 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       }
 
       // Need to leverage the external system connector (usually REST-based) to populate the list.
-
-      //      // If the cache is null,
-      //      if(courseStructureCache != null) {
-      //        structure = courseStructureCache.get(courseId).orNull();
-      //      }
-      //    }
-      //
-      //    // if no structure, get from LMS
-      //    if (structure == null) {
       final ObjectNode root = objectMapper.createObjectNode();
       root.put("id", courseId);
       root.put("name", data.getContextTitle());
@@ -368,9 +355,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
         throw Throwables.propagate(e);
       }
     }
-    if (structure != null) {
-      //      courseStructureCache.put(courseId, structure);
-    }
+
     return structure;
   }
 

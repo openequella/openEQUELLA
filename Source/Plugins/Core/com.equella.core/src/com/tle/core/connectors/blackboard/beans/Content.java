@@ -108,6 +108,7 @@ public class Content {
   public static class ContentHandler {
     public static final String RESOURCE_FOLDER = "resource/x-bb-folder";
     public static final String RESOURCE_LTI_LINK = "resource/x-bb-blti-link";
+    public static final String RESOURCE_LESSON = "resource/x-bb-lesson";
     private String id; // resource/x-bb-folder
     private String url;
 
