@@ -22,7 +22,9 @@ import {
   Grid,
   List,
   ListItem,
+  Theme,
   Typography,
+  useTheme,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
@@ -32,14 +34,18 @@ import {
   Classification,
   SelectedCategories,
 } from "../../modules/SearchFacetsModule";
-import { oeqTheme } from "../../theme";
 import { languageStrings } from "../../util/langstrings";
 
-const useStyles = makeStyles({
-  classificationList: {
-    maxHeight: 500,
-    overflow: "auto",
-  },
+const useStyles = makeStyles((theme: Theme) => {
+  return {
+    classificationList: {
+      maxHeight: 500,
+      overflow: "auto",
+    },
+    classificationListItem: {
+      paddingTop: theme.spacing(1),
+    },
+  };
 });
 
 export interface CategorySelectorProps {
@@ -183,7 +189,7 @@ export const CategorySelector = ({
       <ListItem
         key={`${classificationID}:${term}`}
         disableGutters
-        style={{ paddingTop: oeqTheme.spacing(1) }}
+        className={classes.classificationListItem}
       >
         <FormControlLabel
           style={{ alignItems: "flex-start" }}
