@@ -25,9 +25,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ReactElement, useState } from "react";
-import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { ReactElement, useState } from "react";
 import {
   Classification,
   SelectedCategories,
@@ -38,6 +38,14 @@ const useStyles = makeStyles({
   classificationList: {
     maxHeight: 500,
     overflow: "auto",
+  },
+  classificationControl: {
+    width: "inherit",
+    alignItems: "flex-start",
+    marginRight: 0,
+  },
+  classificationLabel: {
+    width: "100%",
   },
 });
 
@@ -158,12 +166,15 @@ export const CategorySelector = ({
     term: category,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
-    <Grid container spacing={1} wrap="nowrap" alignItems="center">
-      <Grid item>
+    <Grid container spacing={1} wrap="nowrap" alignItems="flex-start">
+      <Grid item xs={11}>
         <Typography>{category}</Typography>
       </Grid>
       <Grid item>
-        <Typography color="textSecondary">{`(${count})`}</Typography>
+        <Typography
+          align="right"
+          color="textSecondary"
+        >{`(${count})`}</Typography>
       </Grid>
     </Grid>
   );
@@ -179,10 +190,19 @@ export const CategorySelector = ({
   ): ReactElement => {
     const { term } = category;
     return (
-      <ListItem key={`${classificationID}:${term}`} style={{ padding: 0 }}>
+      <ListItem
+        dense
+        key={`${classificationID}:${term}`}
+        style={{ paddingLeft: 0 }}
+      >
         <FormControlLabel
+          classes={{
+            label: classes.classificationLabel,
+          }}
+          className={classes.classificationControl}
           control={
             <Checkbox
+              style={{ paddingTop: 0 }}
               checked={
                 selectedCategories
                   ?.find((c) => c.id === classificationID)
@@ -269,9 +289,16 @@ export const CategorySelector = ({
       const orderedCategories = getOrderedCategories(classification);
       return (
         <ListItem divider key={id}>
-          <Grid container direction="column">
+          <Grid
+            container
+            wrap="nowrap"
+            direction="column"
+            alignItems="flex-start"
+          >
             <Grid item>
-              <Typography variant="subtitle1">{name}</Typography>
+              <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+                {name}
+              </Typography>
             </Grid>
             <Grid item>
               <List
