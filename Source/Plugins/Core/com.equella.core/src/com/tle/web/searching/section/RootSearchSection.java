@@ -70,6 +70,11 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return SEARCH_SESSIONKEY;
   }
 
+  // For child sections that need to skip new Search UI, override this function and return false.
+  public boolean useNewSearch() {
+    return true;
+  }
+
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
@@ -87,7 +92,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // If this method is triggered from Selection Section, then check if Selection Section
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
-    if (isNewSearchUIInSelectionSession(selectionSession)) {
+    if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
       getModel(context).setNewSearchUIContent(RenderNewSearchPage.renderNewSearchPage(context));
     }
     return super.renderHtml(context);
