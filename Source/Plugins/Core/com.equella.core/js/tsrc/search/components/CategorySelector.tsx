@@ -32,20 +32,13 @@ import {
   Classification,
   SelectedCategories,
 } from "../../modules/SearchFacetsModule";
+import { oeqTheme } from "../../theme";
 import { languageStrings } from "../../util/langstrings";
 
 const useStyles = makeStyles({
   classificationList: {
     maxHeight: 500,
     overflow: "auto",
-  },
-  classificationControl: {
-    width: "inherit",
-    alignItems: "flex-start",
-    marginRight: 0,
-  },
-  classificationLabel: {
-    width: "100%",
   },
 });
 
@@ -167,14 +160,11 @@ export const CategorySelector = ({
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
     <Grid container spacing={1} wrap="nowrap" alignItems="flex-start">
-      <Grid item xs={11}>
+      <Grid item>
         <Typography>{category}</Typography>
       </Grid>
       <Grid item>
-        <Typography
-          align="right"
-          color="textSecondary"
-        >{`(${count})`}</Typography>
+        <Typography color="textSecondary">{`(${count})`}</Typography>
       </Grid>
     </Grid>
   );
@@ -192,16 +182,14 @@ export const CategorySelector = ({
     return (
       <ListItem
         key={`${classificationID}:${term}`}
-        style={{ paddingLeft: 0, paddingRight: 0 }}
+        disableGutters
+        style={{ paddingTop: oeqTheme.spacing(1) }}
       >
         <FormControlLabel
-          classes={{
-            label: classes.classificationLabel,
-          }}
-          className={classes.classificationControl}
+          style={{ alignItems: "flex-start" }}
           control={
             <Checkbox
-              style={{ paddingTop: 0 }}
+              style={{ paddingTop: 0, paddingBottom: 0 }}
               checked={
                 selectedCategories
                   ?.find((c) => c.id === classificationID)
@@ -254,6 +242,7 @@ export const CategorySelector = ({
 
     return [...selectedApplicable, ...selectedNotApplicable, ...notSelected];
   };
+
   /**
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
@@ -288,22 +277,14 @@ export const CategorySelector = ({
       const orderedCategories = getOrderedCategories(classification);
       return (
         <ListItem divider key={id}>
-          <Grid
-            container
-            wrap="nowrap"
-            direction="column"
-            alignItems="flex-start"
-          >
+          <Grid container direction="column">
             <Grid item>
               <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
                 {name}
               </Typography>
             </Grid>
             <Grid item>
-              <List
-                dense
-                className={expanded ? classes.classificationList : ""}
-              >
+              <List className={expanded ? classes.classificationList : ""}>
                 {listCategories(
                   { ...classification, categories: orderedCategories },
                   expanded
