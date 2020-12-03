@@ -109,14 +109,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
   @Inject private InstitutionService institutionService;
   @Inject private UserSessionService userSessionService;
 
-  //  private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
   private final ObjectMapper objectMapper = new ObjectMapper();
-
-  //  @PostConstruct
-  //  public void setupCache() {
-  //    courseStructureCache =
-  //      cacheService.getCache("BlackboardRestCourseStructure", 100, 2, TimeUnit.MINUTES);
-  //  }
 
   @Override
   protected String getIntegrationType() {
