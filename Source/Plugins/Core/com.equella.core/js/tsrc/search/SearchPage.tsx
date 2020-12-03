@@ -60,6 +60,7 @@ import {
   prepareDraggable,
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
+  isSelectionSessionInStructured,
 } from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
@@ -140,7 +141,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
   const location = useLocation();
-  const inSelectionSession: boolean = isSelectionSessionOpen();
 
   /**
    * Update the page title and retrieve Search settings.
@@ -155,7 +155,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     Promise.all([
       getSearchSettingsFromServer(),
       // Do not convert query string params to search options in Selection Session.
-      inSelectionSession
+      isSelectionSessionOpen()
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ]).then((results) => {
@@ -198,7 +198,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable.
   useEffect(() => {
-    if (inSelectionSession) {
+    if (isSelectionSessionInStructured()) {
       pagedSearchResult.results.forEach(({ uuid }) => {
         prepareDraggable(uuid);
       });

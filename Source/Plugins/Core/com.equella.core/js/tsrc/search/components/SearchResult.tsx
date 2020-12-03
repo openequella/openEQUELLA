@@ -59,6 +59,7 @@ import {
   prepareDraggable,
   getSearchPageItemClass,
   getSearchPageAttachmentClass,
+  isSelectionSessionInStructured,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -159,6 +160,7 @@ export default function SearchResult({
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
+  const inStructured = isSelectionSessionInStructured();
 
   const [attachExpanded, setAttachExpanded] = useState(
     (inSelectionSession
@@ -224,7 +226,7 @@ export default function SearchResult({
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
-    if (inSelectionSession) {
+    if (inStructured) {
       attachmentsWithViewerDetails.forEach(({ attachment }) => {
         prepareDraggable(attachment.id, false);
       });
@@ -352,7 +354,7 @@ export default function SearchResult({
             data-attachmentuuid={id}
           >
             <ListItemIcon>
-              {inSelectionSession ? <DragIndicatorIcon /> : <InsertDriveFile />}
+              {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
             </ListItemIcon>
             <ItemAttachmentLink
               description={description}
@@ -478,11 +480,13 @@ export default function SearchResult({
         data-itemuuid={uuid}
         data-itemversion={version}
       >
-        <Grid item>
-          <IconButton>
-            <DragIndicatorIcon />
-          </IconButton>
-        </Grid>
+        {inStructured && (
+          <Grid item>
+            <IconButton>
+              <DragIndicatorIcon />
+            </IconButton>
+          </Grid>
+        )}
         <Grid item>{itemLink()}</Grid>
         <Grid item>
           <ResourceSelector

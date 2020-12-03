@@ -117,14 +117,16 @@ export const getGlobalCourseList = () => CourseList;
  * defined in 'couselist.js'.
  */
 export const getSearchPageItemClass = (): string =>
-  isSelectionSessionOpen() ? getGlobalCourseList().newSearchPageItemClass : "";
+  isSelectionSessionInStructured()
+    ? getGlobalCourseList().newSearchPageItemClass
+    : "";
 
 /**
  * When Selection Session is open, provide access to the CSS class 'newSearchPageAttachmentClass'
  * defined in 'couselist.js'.
  */
 export const getSearchPageAttachmentClass = (): string =>
-  isSelectionSessionOpen()
+  isSelectionSessionInStructured()
     ? getGlobalCourseList().newSearchPageAttachmentClass
     : "";
 
@@ -143,6 +145,15 @@ const isSelectionSessionInfo = (
 export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
+/**
+ * Return true if Selection Session is in 'Structured'.
+ */
+export const isSelectionSessionInStructured = (): boolean => {
+  if (isSelectionSessionOpen()) {
+    return getSelectionSessionInfo().layout === "coursesearch";
+  }
+  return false;
+};
 /**
  * Indicates if the Select Summary button is disabled or not.
  * Returns true if the Selection Session info is not available.
