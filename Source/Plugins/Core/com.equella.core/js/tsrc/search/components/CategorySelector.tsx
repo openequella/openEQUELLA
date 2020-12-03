@@ -190,7 +190,10 @@ export const CategorySelector = ({
   ): ReactElement => {
     const { term } = category;
     return (
-      <ListItem key={`${classificationID}:${term}`} style={{ paddingLeft: 0 }}>
+      <ListItem
+        key={`${classificationID}:${term}`}
+        style={{ paddingLeft: 0, paddingRight: 0 }}
+      >
         <FormControlLabel
           classes={{
             label: classes.classificationLabel,
