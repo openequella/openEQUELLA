@@ -252,14 +252,14 @@ export const buildSelectionSessionAdvancedSearchLink = (
   uuid: string
 ): string => {
   const { stateId, integId } = getSelectionSessionInfo();
-  const remoteSearchLink = AppConfig.baseUrl.concat(
+  const advancedSearchLink = AppConfig.baseUrl.concat(
     `advanced/searching.do?in=P${uuid}&editquery=true&_sl.stateId=${stateId}`
   );
 
   if (integId) {
-    return remoteSearchLink.concat(`&_int.id=${integId}`);
+    return advancedSearchLink.concat(`&_int.id=${integId}`);
   }
-  return remoteSearchLink;
+  return advancedSearchLink;
 };
 
 /**
