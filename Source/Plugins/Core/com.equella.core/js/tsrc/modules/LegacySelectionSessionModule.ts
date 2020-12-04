@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import { getBaseUrl, getRenderData, SelectionSessionInfo } from "../AppConfig";
+import {
+  API_BASE_URL,
+  getBaseUrl,
+  getRenderData,
+  SelectionSessionInfo,
+} from "../AppConfig";
 import { LegacyContentResponse } from "../legacycontent/LegacyContent";
 import { routes } from "../mainui/routes";
 
@@ -174,7 +179,7 @@ const getSelectionSessionInfo = (): SelectionSessionInfo => {
   throw new TypeError("The type of Selection Session Info is incorrect.");
 };
 
-const submitBaseUrl = `${getBaseUrl()}/content/submit`;
+const submitBaseUrl = `${API_BASE_URL}/content/submit`;
 
 const getBasicPostData = () => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
