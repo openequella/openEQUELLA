@@ -15,25 +15,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
-import * as React from "react";
-import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
-import {
-  AuxiliarySearchSelector,
-  AuxiliarySearchSelectorProps,
-} from "../../tsrc/search/components/AuxiliarySearchSelector";
-
-export default {
-  title: "Search/AuxiliarySearchSelector",
-  component: AuxiliarySearchSelector,
-} as Meta<AuxiliarySearchSelectorProps>;
-
-export const standard: Story<AuxiliarySearchSelectorProps> = (
-  args: AuxiliarySearchSelectorProps
-) => <AuxiliarySearchSelector {...args} />;
-standard.args = {
-  auxiliarySearchesSupplier: () =>
-    Promise.resolve(getRemoteSearchesFromServerResult),
-  urlGeneratorForRouteLink: (uuid: string) => uuid,
-  urlGeneratorForMuiLink: (uuid: string) => uuid,
-};
+import main from "../tsrc/mainui";
+main("settingsPage");

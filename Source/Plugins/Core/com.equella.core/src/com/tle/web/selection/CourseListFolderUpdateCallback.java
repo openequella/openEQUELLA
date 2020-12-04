@@ -35,6 +35,9 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.function.PrependedParameterFunction;
+import com.tle.web.selection.section.CourseListSection;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 @SuppressWarnings("nls")
@@ -59,7 +62,10 @@ public class CourseListFolderUpdateCallback implements JSONResponseCallback {
     this.context = context;
     this.data = reloadData;
     String[] event = data.getEvent();
-    context.addAjaxDivs(data.getAjaxIds());
+    Collection<String> ajaxIds = data.getAjaxIds();
+    // If ajaxIds is null then use the default ajax ID COURSE_LIST_AJAX.
+    context.addAjaxDivs(
+        ajaxIds != null ? ajaxIds : Collections.singleton(CourseListSection.COURSE_LIST_AJAX));
     if (!Check.isEmpty(event)) {
       MutableSectionInfo minfo = context.getAttributeForClass(MutableSectionInfo.class);
       ParametersEvent paramEvent =

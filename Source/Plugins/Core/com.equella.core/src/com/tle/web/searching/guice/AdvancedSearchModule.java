@@ -15,4 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-window.CloudControl = require("../../tsrc/cloudcontrol").CloudControl;
+
+package com.tle.web.searching.guice;
+
+import com.tle.web.searching.section.RootAdvancedSearchSection;
+
+public class AdvancedSearchModule extends StandardSearchModule {
+  @Override
+  public NodeProvider getRootNode() {
+    return node(RootAdvancedSearchSection.class);
+  }
+
+  @Override
+  protected String getTreeName() {
+    return "/advanced/search";
+  }
+}

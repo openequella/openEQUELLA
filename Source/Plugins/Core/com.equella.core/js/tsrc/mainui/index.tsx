@@ -20,25 +20,18 @@ import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
-export interface RenderData {
-  baseResources: string;
-  newUI: boolean;
-  autotestMode: boolean;
-  newSearch: boolean;
-}
-declare const renderData: RenderData | undefined;
+export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
 // before loading of the full app.
 const App = React.lazy(() => import("./App"));
 
-export default function () {
+export default function (entry: EntryPage) {
   initStrings();
-  const legacySettingsMode = typeof renderData === "undefined";
   ReactDOM.render(
     <React.Suspense fallback={<>loading</>}>
-      <App legacySettingsMode={legacySettingsMode} />
+      <App entryPage={entry} />
     </React.Suspense>,
-    document.getElementById(legacySettingsMode ? "settingsPage" : "mainDiv")
+    document.getElementById(entry)
   );
 }

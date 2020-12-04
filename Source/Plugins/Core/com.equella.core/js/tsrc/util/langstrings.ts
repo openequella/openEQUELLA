@@ -410,6 +410,11 @@ export const languageStrings = {
     starRatings: {
       label: "Item star rating: %f",
     },
+    selectResource: {
+      summaryPage: "Select summary page",
+      attachment: "Select attachment",
+      allAttachments: "Select all attachments",
+    },
   },
   "com.equella.core.searching.search": {
     title: "Search",
