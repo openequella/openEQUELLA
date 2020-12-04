@@ -26,6 +26,7 @@ import {
   SelectionSessionPostData,
 } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { defaultBaseUrl, updateMockGetBaseUrl } from "../BaseUrlHelper";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
@@ -48,12 +49,15 @@ const attachmentUUIDs = [
 
 describe("buildSelectionSessionItemSummaryLink", () => {
   const { uuid, version } = getSearchResult.results[0];
+  beforeAll(() => {
+    updateMockGetBaseUrl();
+  });
 
   it("builds basic URLs for accessing ItemSummary pages in Selection Session mode", () => {
     updateMockGetRenderData(basicRenderData);
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
-      "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch"
+      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch`
     );
   });
 
@@ -65,7 +69,7 @@ describe("buildSelectionSessionItemSummaryLink", () => {
 
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
-      "items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch&_int.id=2"
+      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&_int.id=2&a=coursesearch`
     );
   });
 });

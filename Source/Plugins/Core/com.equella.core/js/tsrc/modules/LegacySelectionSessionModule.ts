@@ -18,11 +18,12 @@
 import Axios from "axios";
 import {
   API_BASE_URL,
-  AppConfig,
+  getBaseUrl,
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
 import { LegacyContentResponse } from "../legacycontent/LegacyContent";
+import { routes } from "../mainui/routes";
 
 /**
  *  This Module is all about interacting with the Legacy AJAX endpoints
@@ -117,14 +118,16 @@ export const getGlobalCourseList = () => CourseList;
  * defined in 'couselist.js'.
  */
 export const getSearchPageItemClass = (): string =>
-  isSelectionSessionOpen() ? getGlobalCourseList().newSearchPageItemClass : "";
+  isSelectionSessionInStructured()
+    ? getGlobalCourseList().newSearchPageItemClass
+    : "";
 
 /**
  * When Selection Session is open, provide access to the CSS class 'newSearchPageAttachmentClass'
  * defined in 'couselist.js'.
  */
 export const getSearchPageAttachmentClass = (): string =>
-  isSelectionSessionOpen()
+  isSelectionSessionInStructured()
     ? getGlobalCourseList().newSearchPageAttachmentClass
     : "";
 
@@ -143,6 +146,15 @@ const isSelectionSessionInfo = (
 export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
+/**
+ * Return true if Selection Session is in 'Structured'.
+ */
+export const isSelectionSessionInStructured = (): boolean => {
+  if (isSelectionSessionOpen()) {
+    return getSelectionSessionInfo().layout === "coursesearch";
+  }
+  return false;
+};
 /**
  * Indicates if the Select Summary button is disabled or not.
  * Returns true if the Selection Session info is not available.
@@ -193,6 +205,23 @@ const submitSelection = <T>(
   callback: (result: T) => void
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
+const buildSelectionSessionLink = (
+  routerPath: string,
+  includeLayout = false
+) => {
+  const { stateId, integId, layout } = getSelectionSessionInfo();
+  const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
+  url.searchParams.append("_sl.stateId", stateId);
+
+  if (integId) {
+    url.searchParams.append("_int.id", integId);
+  }
+  if (includeLayout) {
+    url.searchParams.append("a", layout);
+  }
+  return url.toString();
+};
+
 /**
  * Build a Selection Session specific ItemSummary Link. Recommended to first call `isSelectionSessionOpen()`
  * before use.
@@ -202,18 +231,23 @@ const submitSelection = <T>(
 export const buildSelectionSessionItemSummaryLink = (
   uuid: string,
   version: number
-): string => {
-  const { stateId, integId, layout } = getSelectionSessionInfo();
-  const itemSummaryPageLink = AppConfig.baseUrl.concat(
-    `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
-  );
+): string => buildSelectionSessionLink(routes.ViewItem.to(uuid, version), true);
 
-  // integId can be null in 'Resource Selector'.
-  if (integId) {
-    return itemSummaryPageLink.concat(`&_int.id=${integId}`);
-  }
-  return itemSummaryPageLink;
-};
+/**
+ * Build a Selection Session specific Remote search Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
+ * @param uuid The UUID of a Remote search
+ */
+export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
+  buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
+
+/**
+ * Build a Selection Session specific Advanced search Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
+ * @param uuid The UUID of an Advanced search
+ */
+export const buildSelectionSessionAdvancedSearchLink = (uuid: string): string =>
+  buildSelectionSessionLink(routes.AdvancedSearch.to(uuid));
 
 /**
  * Update the content of DIV "selection-summary". This function is primarily for

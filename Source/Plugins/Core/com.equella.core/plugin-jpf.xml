@@ -201,6 +201,7 @@
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SkinnySearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.StandardSearchModule" />
+    <parameter id="class" value="com.tle.web.searching.guice.AdvancedSearchModule" />
     <parameter id="class" value="com.tle.web.sections.equella.guice.SectionsEquellaModule" />
     <parameter id="class" value="com.tle.web.sections.equella.guice.SimpleEquellaModule" />
     <parameter id="class" value="com.tle.web.selection.guice.SelectionModule" />
@@ -2405,6 +2406,10 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="selectoradd-searching">
     <parameter id="path" value="/selectoradd/searching.do" />
     <parameter id="root" value="bean:/selectoradd/search" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="advanced-searching">
+    <parameter id="path" value="/advanced/searching.do" />
+    <parameter id="root" value="bean:/advanced/search" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="skinny-searching">
     <parameter id="path" value="/access/skinny/searching.do" />

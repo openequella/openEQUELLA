@@ -31,7 +31,6 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
-import MUILink from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
@@ -43,11 +42,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
+import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
@@ -60,6 +59,7 @@ import {
   prepareDraggable,
   getSearchPageItemClass,
   getSearchPageAttachmentClass,
+  isSelectionSessionInStructured,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -160,6 +160,7 @@ export default function SearchResult({
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
+  const inStructured = isSelectionSessionInStructured();
 
   const [attachExpanded, setAttachExpanded] = useState(
     (inSelectionSession
@@ -225,7 +226,7 @@ export default function SearchResult({
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
-    if (inSelectionSession) {
+    if (inStructured) {
       attachmentsWithViewerDetails.forEach(({ attachment }) => {
         prepareDraggable(attachment.id, false);
       });
@@ -353,7 +354,7 @@ export default function SearchResult({
             data-attachmentuuid={id}
           >
             <ListItemIcon>
-              {inSelectionSession ? <DragIndicatorIcon /> : <InsertDriveFile />}
+              {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
             </ListItemIcon>
             <ItemAttachmentLink
               description={description}
@@ -457,50 +458,54 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
-    const basicLink = (
-      <Link to={routes.ViewItem.to(uuid, version)}>{itemTitle}</Link>
-    );
-    return inSelectionSession ? (
-      <MUILink
-        href={buildSelectionSessionItemSummaryLink(uuid, version)}
-        underline="none"
+    return (
+      <OeqLink
+        routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
+        muiLinkUrlProvider={() =>
+          buildSelectionSessionItemSummaryLink(uuid, version)
+        }
       >
         {itemTitle}
-      </MUILink>
-    ) : (
-      basicLink
+      </OeqLink>
     );
   };
 
-  const itemPrimaryContent =
-    inSelectionSession && !isSelectSummaryButtonDisabled() ? (
-      <Grid
-        id={uuid}
-        container
-        alignItems="center"
-        className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
-        data-itemuuid={uuid}
-        data-itemversion={version}
-      >
+  // In Selection Session, if the Select Summary button is enabled, add 'ResourceSelector'
+  // to the content. On top of that, if Selection Session is in 'structured', add one
+  // 'Drag indicator' icon.
+  const selectSessionItemContent = (
+    <Grid
+      id={uuid}
+      container
+      alignItems="center"
+      className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
+      data-itemuuid={uuid}
+      data-itemversion={version}
+    >
+      {inStructured && (
         <Grid item>
           <IconButton>
             <DragIndicatorIcon />
           </IconButton>
         </Grid>
-        <Grid item>{itemLink()}</Grid>
-        <Grid item>
-          <ResourceSelector
-            labelText={selectResourceStrings.summaryPage}
-            isStopPropagation
-            onClick={() => {
-              handleSelectResource(itemKey);
-            }}
-          />
-        </Grid>
+      )}
+      <Grid item>{itemLink()}</Grid>
+      <Grid item>
+        <ResourceSelector
+          labelText={selectResourceStrings.summaryPage}
+          isStopPropagation
+          onClick={() => {
+            handleSelectResource(itemKey);
+          }}
+        />
       </Grid>
-    ) : (
-      itemLink()
-    );
+    </Grid>
+  );
+
+  const itemPrimaryContent =
+    inSelectionSession && !isSelectSummaryButtonDisabled()
+      ? selectSessionItemContent
+      : itemLink();
 
   return (
     <ListItem alignItems="flex-start" divider>

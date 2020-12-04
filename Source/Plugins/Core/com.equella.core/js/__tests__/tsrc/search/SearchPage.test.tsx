@@ -57,6 +57,7 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
 import { selectOption } from "../MuiTestHelpers";
@@ -749,7 +750,10 @@ describe("conversion of parameters to SearchPageOptions", () => {
 });
 
 describe("In Selection Session", () => {
-  updateMockGlobalCourseList();
+  beforeAll(() => {
+    updateMockGlobalCourseList();
+    updateMockGetBaseUrl();
+  });
 
   it("should make each Search result Item draggable", async () => {
     updateMockGetRenderData(basicRenderData);

@@ -15,25 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
-import * as React from "react";
-import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
-import {
-  AuxiliarySearchSelector,
-  AuxiliarySearchSelectorProps,
-} from "../../tsrc/search/components/AuxiliarySearchSelector";
+import * as AppConfig from "../../tsrc/AppConfig";
 
-export default {
-  title: "Search/AuxiliarySearchSelector",
-  component: AuxiliarySearchSelector,
-} as Meta<AuxiliarySearchSelectorProps>;
+export const defaultBaseUrl = "http://localhost:8080/vanilla/";
 
-export const standard: Story<AuxiliarySearchSelectorProps> = (
-  args: AuxiliarySearchSelectorProps
-) => <AuxiliarySearchSelector {...args} />;
-standard.args = {
-  auxiliarySearchesSupplier: () =>
-    Promise.resolve(getRemoteSearchesFromServerResult),
-  urlGeneratorForRouteLink: (uuid: string) => uuid,
-  urlGeneratorForMuiLink: (uuid: string) => uuid,
+const mockGetBaseUrl = jest.spyOn(AppConfig, "getBaseUrl");
+export const updateMockGetBaseUrl = (url: string = defaultBaseUrl) => {
+  mockGetBaseUrl.mockReturnValue(url);
 };
