@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme: Theme) => {
     categoryListCheckbox: {
       overflow: "visible",
     },
+    categoryListItemCount: {
+      paddingLeft: theme.spacing(1),
+    },
   };
 });
 
@@ -169,8 +172,11 @@ export const CategorySelector = ({
   }: OEQ.SearchFacets.Facet): ReactElement => (
     <>
       <Typography display="inline">{category}</Typography>
-      <Typography color="textSecondary" display="inline">
-        {" "}
+      <Typography
+        color="textSecondary"
+        display="inline"
+        className={classes.categoryListItemCount}
+      >
         {`(${count})`}
       </Typography>
     </>
