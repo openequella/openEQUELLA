@@ -70,8 +70,10 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return SEARCH_SESSIONKEY;
   }
 
-  // For child sections that need to skip new Search UI, override this function and return false.
-  public boolean useNewSearch() {
+  /**
+   * For child sections that need to skip new Search UI, override this function and return false.
+   */
+  protected boolean useNewSearch() {
     return true;
   }
 

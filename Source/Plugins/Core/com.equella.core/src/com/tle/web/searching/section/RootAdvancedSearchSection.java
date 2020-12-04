@@ -73,6 +73,8 @@ public class RootAdvancedSearchSection extends RootSearchSection {
 
   @Override
   public boolean useNewSearch() {
+    // Because we haven't built any new UI for Advanced search, return false
+    // to keep using old UI.
     return false;
   }
 }
