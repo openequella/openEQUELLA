@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) => {
     classificationListItem: {
       paddingTop: theme.spacing(1),
     },
+    categoryListCheckbox: {
+      overflow: "visible",
+    },
   };
 });
 
@@ -164,14 +167,13 @@ export const CategorySelector = ({
     term: category,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
-    <Grid container spacing={1} wrap="nowrap" alignItems="flex-start">
-      <Grid item>
-        <Typography>{category}</Typography>
-      </Grid>
-      <Grid item>
-        <Typography color="textSecondary">{`(${count})`}</Typography>
-      </Grid>
-    </Grid>
+    <>
+      <Typography display="inline">{category}</Typography>
+      <Typography color="textSecondary" display="inline">
+        {" "}
+        {`(${count})`}
+      </Typography>
+    </>
   );
 
   /**
@@ -201,6 +203,9 @@ export const CategorySelector = ({
                   ?.categories?.includes(term) ?? false
               }
               onChange={() => handleSelectCategories(classificationID, term)}
+              TouchRippleProps={{
+                classes: { root: classes.categoryListCheckbox },
+              }}
             />
           }
           label={categoryLabel(category)}
