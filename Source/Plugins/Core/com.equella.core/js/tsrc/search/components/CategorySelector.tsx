@@ -22,23 +22,35 @@ import {
   Grid,
   List,
   ListItem,
+  Theme,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ReactElement, useState } from "react";
-import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { ReactElement, useState } from "react";
 import {
   Classification,
   SelectedCategories,
 } from "../../modules/SearchFacetsModule";
 import { languageStrings } from "../../util/langstrings";
 
-const useStyles = makeStyles({
-  classificationList: {
-    maxHeight: 500,
-    overflow: "auto",
-  },
+const useStyles = makeStyles((theme: Theme) => {
+  return {
+    classificationList: {
+      maxHeight: 500,
+      overflow: "auto",
+    },
+    classificationListItem: {
+      paddingTop: theme.spacing(1),
+    },
+    categoryListCheckbox: {
+      overflow: "visible",
+    },
+    categoryListItemCount: {
+      paddingLeft: theme.spacing(1),
+    },
+  };
 });
 
 export interface CategorySelectorProps {
@@ -158,14 +170,16 @@ export const CategorySelector = ({
     term: category,
     count,
   }: OEQ.SearchFacets.Facet): ReactElement => (
-    <Grid container spacing={1}>
-      <Grid item>
-        <Typography>{category}</Typography>
-      </Grid>
-      <Grid item>
-        <Typography color="textSecondary">{`(${count})`}</Typography>
-      </Grid>
-    </Grid>
+    <>
+      <Typography display="inline">{category}</Typography>
+      <Typography
+        color="textSecondary"
+        display="inline"
+        className={classes.categoryListItemCount}
+      >
+        {`(${count})`}
+      </Typography>
+    </>
   );
 
   /**
@@ -179,16 +193,25 @@ export const CategorySelector = ({
   ): ReactElement => {
     const { term } = category;
     return (
-      <ListItem key={`${classificationID}:${term}`} style={{ padding: 0 }}>
+      <ListItem
+        key={`${classificationID}:${term}`}
+        disableGutters
+        className={classes.classificationListItem}
+      >
         <FormControlLabel
+          style={{ alignItems: "flex-start" }}
           control={
             <Checkbox
+              style={{ paddingTop: 0, paddingBottom: 0 }}
               checked={
                 selectedCategories
                   ?.find((c) => c.id === classificationID)
                   ?.categories?.includes(term) ?? false
               }
               onChange={() => handleSelectCategories(classificationID, term)}
+              TouchRippleProps={{
+                classes: { root: classes.categoryListCheckbox },
+              }}
             />
           }
           label={categoryLabel(category)}
@@ -235,6 +258,7 @@ export const CategorySelector = ({
 
     return [...selectedApplicable, ...selectedNotApplicable, ...notSelected];
   };
+
   /**
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
@@ -271,13 +295,12 @@ export const CategorySelector = ({
         <ListItem divider key={id}>
           <Grid container direction="column">
             <Grid item>
-              <Typography variant="subtitle1">{name}</Typography>
+              <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+                {name}
+              </Typography>
             </Grid>
             <Grid item>
-              <List
-                dense
-                className={expanded ? classes.classificationList : ""}
-              >
+              <List className={expanded ? classes.classificationList : ""}>
                 {listCategories(
                   { ...classification, categories: orderedCategories },
                   expanded
