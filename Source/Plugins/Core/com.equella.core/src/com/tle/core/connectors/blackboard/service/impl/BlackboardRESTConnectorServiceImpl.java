@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -52,6 +53,7 @@ import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
+import com.tle.core.connectors.utils.ConnectorEntityUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
@@ -70,10 +72,10 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -136,10 +138,10 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @PostConstruct
   public void setupCache() {
-    courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 2, TimeUnit.MINUTES);
-    courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 100, 2, TimeUnit.MINUTES);
-    tokenCache = cacheService.getCache(CACHE_ID_TOKEN, 100, 60, TimeUnit.MINUTES);
-    uidCache = cacheService.getCache(CACHE_ID_USERID, 100, 60, TimeUnit.MINUTES);
+    courseCache = cacheService.getCache(CACHE_ID_COURSE, 1000, 10, TimeUnit.MINUTES);
+    courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 1000, 10, TimeUnit.MINUTES);
+    tokenCache = cacheService.getCache(CACHE_ID_TOKEN, 1000, 60, TimeUnit.MINUTES);
+    uidCache = cacheService.getCache(CACHE_ID_USERID, 1000, 60, TimeUnit.MINUTES);
   }
 
   public BlackboardRESTConnectorServiceImpl() {
@@ -166,15 +168,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @Override
   public boolean isRequiresAuthentication(Connector connector) {
-    try {
-      getToken(connector);
-      getUserId(connector);
+    if (getToken(connector).isPresent() && getUserId(connector).isPresent()) {
       LOGGER.debug("User has the needed cached details, no authorization needed");
       return false;
-    } catch (AuthenticationException ex) {
-      LOGGER.debug("User does not have active cached details and will need to authorize");
-      return true;
     }
+
+    LOGGER.debug("User does not have active cached details and will need to authorize");
+    return true;
   }
 
   @Override
@@ -254,7 +254,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
           API_ROOT_V1
               + "users/"
               + getUserIdType()
-              + getUserId(connector)
+              + getUserId(connector).get()
               + "/courses?fields=course";
 
       final List<Course> allCourses = new ArrayList<>();
@@ -282,44 +282,32 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private boolean isCoursesCached(Connector connector) {
-    try {
-      return getCachedCourses(connector) != null;
-    } catch (AuthenticationException ae) {
-      return false;
-    }
+    return getCachedCourses(connector).isPresent();
   }
 
   private List<ConnectorCourse> getWrappedCachedCourses(
       Connector connector, boolean includeArchived) {
     final List<ConnectorCourse> list = new ArrayList<>();
-    final List<Course> allCourses = getCachedCourses(connector);
-    for (Course course : allCourses) {
-      // Display all courses if the archived flag is set, otherwise, just the 'available' ones
-      if (includeArchived || Availability.YES.equals(course.getAvailability().getAvailable())) {
-        final ConnectorCourse cc = new ConnectorCourse(course.getId());
-        cc.setCourseCode(course.getCourseId());
-        cc.setName(course.getName());
-        cc.setAvailable(true);
-        list.add(cc);
-      }
+    final Optional<ImmutableList<Course>> allCourses = getCachedCourses(connector);
+    if (!allCourses.isPresent()) {
+      return Collections.emptyList();
     }
-    return list;
-  }
 
-  private Course getCourseBean(Connector connector, String courseID) {
-    String url = API_ROOT_V3 + "courses/" + courseID;
-
-    final Course course =
-        sendBlackboardData(connector, url, Course.class, null, Request.Method.GET);
-    return course;
-  }
-
-  private Content getContentBean(Connector connector, String courseID, String folderID) {
-    String url = API_ROOT_V1 + "courses/" + courseID + "/contents/" + folderID;
-
-    final Content folder =
-        sendBlackboardData(connector, url, Content.class, null, Request.Method.GET);
-    return folder;
+    return allCourses.get().stream()
+        // Display all courses if the archived flag is set, otherwise, just the 'available' ones
+        .filter(
+            course ->
+                includeArchived || Availability.YES.equals(course.getAvailability().getAvailable()))
+        // Convert Course to ConnectorCourse
+        .map(
+            course -> {
+              final ConnectorCourse cc = new ConnectorCourse(course.getId());
+              cc.setCourseCode(course.getCourseId());
+              cc.setName(course.getName());
+              cc.setAvailable(true);
+              return cc;
+            })
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -337,150 +325,36 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
     List<ConnectorFolder> folders = retrieveFolders(connector, courseId, management);
     for (ConnectorFolder folder : folders) {
-      ConnectorFolder foundFolder = findFolder(folder, folderId);
-      if (foundFolder != null) {
-        return foundFolder.getFolders();
+      Optional<ConnectorFolder> foundFolder = ConnectorEntityUtils.findFolder(folder, folderId);
+      if (foundFolder.isPresent()) {
+        return foundFolder.get().getFolders();
       }
     }
 
     // Cache of folders exist, but folderId was not found
-    return null;
-  }
-
-  /**
-   * Recursively searches for a folder with the given ID
-   *
-   * @param folder
-   * @param folderId
-   * @return null if not found, the children of the folder if found
-   */
-  private ConnectorFolder findFolder(ConnectorFolder folder, String folderId) {
-    if (folder.getId().equals(folderId)) {
-      return folder;
-    }
-
-    // Not this folder, so check it's sub folders
-    for (ConnectorFolder subFolder : folder.getFolders()) {
-      ConnectorFolder possibleSubFolder = findFolder(subFolder, folderId);
-      if (possibleSubFolder != null) {
-        return possibleSubFolder;
-      }
-    }
-
-    // The folder and its subfolders do not contain the folderId
+    // Ideally return Optional, but this requires a broader refactor.
     return null;
   }
 
   private List<ConnectorFolder> retrieveFolders(
       Connector connector, String courseId, boolean management) {
 
-    ImmutableList<ConnectorFolder> folders = getCachedCourseFolders(connector, courseId);
-    if (folders == null) {
-      final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
-      final Contents contents =
-          sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
-      final ConnectorCourse course = new ConnectorCourse(courseId);
-      final List<Content> results = contents.getResults();
-      folders = ImmutableList.copyOf(parseFolders(results, course));
-      setCachedCourseFolders(connector, courseId, folders);
+    final Optional<ImmutableList<ConnectorFolder>> cachedFolders =
+        getCachedCourseFolders(connector, courseId);
+
+    if (cachedFolders.isPresent()) {
+      return cachedFolders.get();
     }
+
+    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
+    final Contents contents =
+        sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
+    final ConnectorCourse course = new ConnectorCourse(courseId);
+    final List<Content> results = contents.getResults();
+    ImmutableList<ConnectorFolder> folders =
+        ImmutableList.copyOf(ConnectorEntityUtils.parseFolders(results, course));
+    setCachedCourseFolders(connector, courseId, folders);
     return folders;
-  }
-
-  /**
-   * Takes a list of folders from Bb API and organizes them into a hierarchy, returning a list of
-   * the top level folders
-   */
-  private List<ConnectorFolder> parseFolders(List<Content> rawFolders, ConnectorCourse course) {
-    // Convert to a map for better access and sort by parent ID
-    Map<String, List<Content>> folderMap = new HashMap<>();
-    for (Content c : rawFolders) {
-      // Assumption is null parent ID == base / root folder
-      final String pid = c.getParentId() == null ? "" : c.getParentId();
-      if (!folderMap.containsKey(pid)) {
-        folderMap.put(pid, new ArrayList<>());
-      }
-      folderMap.get(pid).add(c);
-    }
-
-    String baseId = "";
-    if (folderMap.get(baseId) == null) {
-      // This is likely an Ultra view course - all content seems to have parentIDs.
-      // There is one parent ID that will not have a corresponding content ID - that
-      // parentID should be treated as the 'root'.
-
-      // Pull out all the content IDs
-      List<String> ids = new ArrayList<>();
-      for (Content c : rawFolders) {
-        ids.add(c.getId());
-      }
-
-      // See which parent ID is not in the content IDs
-      for (String key : folderMap.keySet()) {
-        if (!ids.contains(key)) {
-          baseId = key;
-        }
-      }
-    }
-
-    List<ConnectorFolder> baseFolders = new ArrayList<>();
-    // Starting with the 'empty' parent ID (ie top level folders),
-    //  build out the connector folders.  There 'should' always be at
-    //  least 1 folder without a parent ID, but to be sure...
-    final List<Content> rawBaseFolders = folderMap.get(baseId);
-    if ((rawBaseFolders != null) && (rawBaseFolders.size() != 0)) {
-      for (Content rootFolder : rawBaseFolders) {
-        final ConnectorFolder baseFolder = parseFolder(rootFolder, course, folderMap);
-        if (baseFolder != null) {
-          baseFolders.add(baseFolder);
-        }
-      }
-    } else {
-      LOGGER.warn("Unable to find the base folders for the course " + course.getId());
-    }
-    return baseFolders;
-  }
-
-  private ConnectorFolder parseFolder(
-      Content currentRawFolder, ConnectorCourse course, Map<String, List<Content>> folderMap) {
-    final Content.ContentHandler handler = currentRawFolder.getContentHandler();
-    if (handler != null
-        && (Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId())
-            || Content.ContentHandler.RESOURCE_LESSON.equals(handler.getId()))) {
-      // Unavailable folders are inaccessible to students,
-      // but should be available for instructors to push content to.
-      final ConnectorFolder cc = new ConnectorFolder(currentRawFolder.getId(), course);
-      if (currentRawFolder.getAvailability() != null) {
-        cc.setAvailable(Availability.YES.equals(currentRawFolder.getAvailability().getAvailable()));
-      } else {
-        cc.setAvailable(false);
-      }
-      cc.setName(currentRawFolder.getTitle());
-      cc.setLeaf(currentRawFolder.getHasChildren() != null && !currentRawFolder.getHasChildren());
-
-      if (!cc.isLeaf()) {
-        List<ConnectorFolder> children = new ArrayList<>();
-        final List<Content> rawChildren = folderMap.get(cc.getId());
-        if ((rawChildren != null) && (rawChildren.size() != 0)) {
-          for (Content child : rawChildren) {
-            final ConnectorFolder cf = parseFolder(child, course, folderMap);
-            if (cf != null) {
-              children.add(cf);
-            }
-          }
-          cc.setFolders(children);
-        } else {
-          LOGGER.debug(
-              "Parent folder stated it was not a leaf, but there are no known children folders.  Parent folder: "
-                  + cc.getName()
-                  + " - "
-                  + cc.getId());
-        }
-      }
-      return cc;
-    }
-    // Not a content folder.  Caller is responsible for checking null.
-    return null;
   }
 
   @Override
@@ -523,19 +397,18 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     LOGGER.debug("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
     ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
 
-    final ConnectorFolder cachedFolder = getCachedCourseFolder(connector, courseId, folderId);
-    if (cachedFolder != null) {
-      cf.setName(cachedFolder.getName());
+    final Optional<ConnectorFolder> cachedFolder =
+        getCachedCourseFolder(connector, courseId, folderId);
+    if (cachedFolder.isPresent()) {
+      cf.setName(cachedFolder.get().getName());
     }
 
-    try {
-      final Course cachedCourse = getCachedCourse(connector, courseId);
-      if (cachedCourse != null) {
-        cf.getCourse().setName(cachedCourse.getName());
-      }
-    } catch (AuthenticationException ae) {
-      // Not a big deal, likely coming from an LTI Launch
+    final Optional<Course> cachedCourse = getCachedCourse(connector, courseId);
+    // Not a big deal if not present, likely coming from an LTI Launch
+    if (cachedCourse.isPresent()) {
+      cf.getCourse().setName(cachedCourse.get().getName());
     }
+
     return cf;
   }
 
@@ -683,8 +556,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         LOGGER.debug("Sending " + prettyJson(body));
       }
 
-      // attach cached token. (Cache knows how to get a new one)
-      final String authHeaderValue = "Bearer " + getToken(connector);
+      // attach cached token.
+      final Optional<String> token = getToken(connector);
+      if (!token.isPresent()) {
+        throw new AuthenticationException("User token is not present");
+      }
+
+      final String authHeaderValue = "Bearer " + getToken(connector).get();
       LOGGER.trace(
           "Setting Authorization header to ["
               + authHeaderValue
@@ -809,11 +687,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return encryptedData;
   }
 
-  public String getToken(Connector connector) {
+  public Optional<String> getToken(Connector connector) {
     return getCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
   }
 
-  public String getUserId(Connector connector) {
+  public Optional<String> getUserId(Connector connector) {
     return getCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
   }
 
@@ -852,15 +730,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     setCachedValue(courseCache, key, courses);
   }
 
-  private List<Course> getCachedCourses(Connector connector) {
+  private Optional<ImmutableList<Course>> getCachedCourses(Connector connector) {
     final String key = buildCacheKey(CACHE_ID_COURSE, connector);
-    final ImmutableList<Course> cachedValue = getCachedValue(courseCache, key);
-    if (cachedValue == null) {
-      LOGGER.debug("No value cached " + key);
-      throw new AuthenticationException("User was not able to obtain cached " + key + ".");
-    }
-    LOGGER.debug("Found the cached value " + key);
-    return cachedValue;
+    return getCachedValue(courseCache, key);
   }
 
   private void setCachedCourseFolders(
@@ -877,55 +749,68 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     setCachedValue(courseFoldersCache, key, folders);
   }
 
-  private ImmutableList<ConnectorFolder> getCachedCourseFolders(
+  private Optional<ImmutableList<ConnectorFolder>> getCachedCourseFolders(
       Connector connector, String courseId) {
     final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
-    try {
-      return getCachedValue(courseFoldersCache, key);
-    } catch (AuthenticationException ae) {
-      return null;
-    }
+    return getCachedValue(courseFoldersCache, key);
   }
 
-  private ConnectorFolder getCachedCourseFolder(
+  private Optional<ConnectorFolder> getCachedCourseFolder(
       Connector connector, String courseId, String folderId) {
     final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
-    try {
-      final List<ConnectorFolder> folders = getCachedValue(courseFoldersCache, key);
-      for (ConnectorFolder folder : folders) {
-        final ConnectorFolder foundFolder = findFolder(folder, folderId);
-        if (foundFolder != null) {
-          return foundFolder;
-        }
-      }
-    } catch (AuthenticationException ae) {
-      return null;
+
+    final Optional<ImmutableList<ConnectorFolder>> folders =
+        getCachedValue(courseFoldersCache, key);
+
+    if (!folders.isPresent()) {
+      return Optional.absent();
     }
-    return null;
+
+    return convert(
+        folders.get().stream()
+            .filter(folder -> ConnectorEntityUtils.findFolder(folder, folderId).isPresent())
+            .findFirst());
   }
 
-  private Course getCachedCourse(Connector connector, String courseId) {
-    final List<Course> cache = getCachedCourses(connector);
-    for (Course c : cache) {
-      if (c.getId().equals(courseId)) {
-        return c;
-      }
+  private Optional<Course> getCachedCourse(Connector connector, String courseId) {
+    final Optional<ImmutableList<Course>> cached = getCachedCourses(connector);
+
+    if (!cached.isPresent()) {
+      return Optional.absent();
     }
-    return null;
+
+    return convert(cached.get().stream().filter(c -> c.getId().equals(courseId)).findFirst());
+  }
+
+  /**
+   * This unfortunate situation is due to a mixed usage of Google Optional and java.util.Optional.
+   *
+   * @param obj
+   * @param <T>
+   * @return
+   */
+  private <T> Optional<T> convert(java.util.Optional<T> obj) {
+    if (obj.isPresent()) {
+      return Optional.of(obj.get());
+    } else {
+      return Optional.absent();
+    }
   }
 
   private String buildCacheKey(String cacheId, Connector connector) {
     return cacheId + "-C:" + connector.getUuid() + "-U:" + CurrentUser.getUserID();
   }
 
-  private <T extends Serializable> T getCachedValue(ReplicatedCache<T> cache, String key) {
-    final T cachedValue = cache.get(key).orNull();
-
-    if (cachedValue == null) {
-      LOGGER.debug("No cache available for " + key);
-      throw new AuthenticationException("User was not able to obtain cached [" + key + "]");
+  private <T extends Serializable> Optional<T> getCachedValue(
+      ReplicatedCache<T> cache, String key) {
+    final Optional<T> cachedValue = cache.get(key);
+    if (LOGGER.isDebugEnabled()) {
+      if (!cachedValue.isPresent()) {
+        LOGGER.debug("No cache available for " + key);
+      } else {
+        logSensitiveDetails("Found a cached value for " + key, " - value [" + cachedValue + "]");
+      }
     }
-    logSensitiveDetails("Found a cached value for " + key, " - value [" + cachedValue + "]");
     return cachedValue;
   }
 

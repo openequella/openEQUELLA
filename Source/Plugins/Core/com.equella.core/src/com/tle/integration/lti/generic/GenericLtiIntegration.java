@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
@@ -45,6 +46,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.exceptions.BadConfigurationException;
 import com.tle.web.integration.AbstractIntegrationService;
 import com.tle.web.integration.IntegrationActionInfo;
 import com.tle.web.integration.SingleSignonForm;
@@ -305,22 +307,23 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       }
 
       // Check if the user needs to authenticate
-      if (connectorRepoService.isRequiresAuthentication(findConnector(data))) {
+      if (connectorRepoService.isRequiresAuthentication(findConnector(data).get())) {
+        Optional<Connector> connector = findConnector(data);
+        final String connLmsType = connector.isPresent() ? connector.get().getLmsType() : "UNKNOWN";
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug(
-              "Need to authenticate to the "
-                  + findConnector(data).getLmsType()
-                  + " connector repository.");
+          LOGGER.debug("Need to authenticate to the " + connLmsType + " connector repository.");
         }
 
-        if (findConnector(data)
-            .getLmsType()
-            .equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+        if (connector.isPresent()
+            && connector
+                .get()
+                .getLmsType()
+                .equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
           info.forwardToUrl(
               connectorRepoService.getAuthorisationUrl(
-                  findConnector(data), convertToRedirect(info, data, session, form), null));
+                  findConnector(data).get(), convertToRedirect(info, data, session, form), null));
         } else {
-          LOGGER.fatal("Unknown LMS Type to authorize: " + findConnector(data).getLmsType());
+          LOGGER.fatal("Unknown LMS Type to authorize: " + connLmsType);
         }
       }
 
@@ -331,14 +334,20 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       root.put("targetable", false);
       final ArrayNode foldersNode = root.putArray("folders");
 
-      final Connector connector = findConnector(data);
+      final Optional<Connector> connector = findConnector(data);
 
-      final List<ConnectorFolder> folders =
-          connectorRepoService.getFoldersForCourse(
-              connector, CurrentUser.getUsername(), courseId, false);
+      if (connector.isPresent()) {
+        final List<ConnectorFolder> folders =
+            connectorRepoService.getFoldersForCourse(
+                connector.get(), CurrentUser.getUsername(), courseId, false);
 
-      for (ConnectorFolder folder : folders) {
-        foldersNode.add(convert(folder, data));
+        folders.stream()
+            .forEach(
+                folder -> {
+                  foldersNode.add(convert(folder, data));
+                });
+      } else {
+        LOGGER.fatal("Unable to build folder structure - connector was not found");
       }
 
       final PrettyPrinter pp = new MinimalPrettyPrinter();
@@ -363,14 +372,17 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     }
     if (folder.getFolders() != null) {
       final ArrayNode childrenJsonFolders = folderNode.putArray("folders");
-      for (ConnectorFolder childrenFolder : folder.getFolders()) {
-        childrenJsonFolders.add(convert(childrenFolder, data));
-      }
+
+      folder.getFolders().stream()
+          .forEach(
+              childrenFolder -> {
+                childrenJsonFolders.add(convert(childrenFolder, data));
+              });
     }
     return folderNode;
   }
 
-  private Connector findConnector(GenericLtiSessionData data) {
+  private Optional<Connector> findConnector(GenericLtiSessionData data) {
     Connector connector = null;
     final String connectorUuid = data.getConnectorUuid();
     if (connectorUuid != null) {
@@ -393,7 +405,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
         throw new RuntimeException(LABEL_ERROR_NO_API_DOMAIN.getText());
       }
     }
-    return connector;
+    return Optional.fromNullable(connector);
   }
 
   @Override
@@ -456,7 +468,11 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
         return true;
 
       } else {
-        final Connector connector = findConnector(data);
+        final Optional<Connector> connector = findConnector(data);
+
+        if (!connector.isPresent()) {
+          throw new BadConfigurationException("No connector found");
+        }
 
         final String courseId = session.getStructure().getId();
 
@@ -466,7 +482,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
           final IItem<?> item = getItemForResource(resource);
           final String moduleId = resource.getKey().getFolderId();
           connectorRepoService.addItemToCourse(
-              connector, CurrentUser.getUsername(), courseId, moduleId, item, resource);
+              connector.get(), CurrentUser.getUsername(), courseId, moduleId, item, resource);
         }
         final int count = selectedResources.size();
         // clear session
