@@ -60,5 +60,5 @@ export const getRenderData = (): RenderData | undefined =>
 export const AppConfig: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };
-
+export const getBaseUrl = () => AppConfig.baseUrl;
 export const API_BASE_URL = `${AppConfig.baseUrl}api`;

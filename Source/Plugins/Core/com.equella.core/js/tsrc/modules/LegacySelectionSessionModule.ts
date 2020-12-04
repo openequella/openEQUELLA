@@ -16,13 +16,9 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import {
-  API_BASE_URL,
-  AppConfig,
-  getRenderData,
-  SelectionSessionInfo,
-} from "../AppConfig";
+import { getBaseUrl, getRenderData, SelectionSessionInfo } from "../AppConfig";
 import { LegacyContentResponse } from "../legacycontent/LegacyContent";
+import { routes } from "../mainui/routes";
 
 /**
  *  This Module is all about interacting with the Legacy AJAX endpoints
@@ -178,7 +174,7 @@ const getSelectionSessionInfo = (): SelectionSessionInfo => {
   throw new TypeError("The type of Selection Session Info is incorrect.");
 };
 
-const submitBaseUrl = `${API_BASE_URL}/content/submit`;
+const submitBaseUrl = `${getBaseUrl()}/content/submit`;
 
 const getBasicPostData = () => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
@@ -204,6 +200,23 @@ const submitSelection = <T>(
   callback: (result: T) => void
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
+const buildSelectionSessionLink = (
+  routerPath: string,
+  includeLayout = false
+) => {
+  const { stateId, integId, layout } = getSelectionSessionInfo();
+  const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
+  url.searchParams.append("_sl.stateId", stateId);
+
+  if (integId) {
+    url.searchParams.append("_int.id", integId);
+  }
+  if (includeLayout) {
+    url.searchParams.append("a", layout);
+  }
+  return url.toString();
+};
+
 /**
  * Build a Selection Session specific ItemSummary Link. Recommended to first call `isSelectionSessionOpen()`
  * before use.
@@ -213,54 +226,23 @@ const submitSelection = <T>(
 export const buildSelectionSessionItemSummaryLink = (
   uuid: string,
   version: number
-): string => {
-  const { stateId, integId, layout } = getSelectionSessionInfo();
-  const itemSummaryPageLink = AppConfig.baseUrl.concat(
-    `items/${uuid}/${version}/?_sl.stateId=${stateId}&a=${layout}`
-  );
-
-  // integId can be null in 'Resource Selector'.
-  if (integId) {
-    return itemSummaryPageLink.concat(`&_int.id=${integId}`);
-  }
-  return itemSummaryPageLink;
-};
+): string => buildSelectionSessionLink(routes.ViewItem.to(uuid, version), true);
 
 /**
  * Build a Selection Session specific Remote search Link. Recommended to first call `isSelectionSessionOpen()`
  * before use.
  * @param uuid The UUID of a Remote search
  */
-export const buildSelectionSessionRemoteSearchLink = (uuid: string): string => {
-  const { stateId, integId } = getSelectionSessionInfo();
-  const remoteSearchLink = AppConfig.baseUrl.concat(
-    `access/z3950.do?.repository=${uuid}&uc=true&_sl.stateId=${stateId}`
-  );
-
-  if (integId) {
-    return remoteSearchLink.concat(`&_int.id=${integId}`);
-  }
-  return remoteSearchLink;
-};
+export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
+  buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
 
 /**
  * Build a Selection Session specific Advanced search Link. Recommended to first call `isSelectionSessionOpen()`
  * before use.
  * @param uuid The UUID of an Advanced search
  */
-export const buildSelectionSessionAdvancedSearchLink = (
-  uuid: string
-): string => {
-  const { stateId, integId } = getSelectionSessionInfo();
-  const advancedSearchLink = AppConfig.baseUrl.concat(
-    `advanced/searching.do?in=P${uuid}&editquery=true&_sl.stateId=${stateId}`
-  );
-
-  if (integId) {
-    return advancedSearchLink.concat(`&_int.id=${integId}`);
-  }
-  return advancedSearchLink;
-};
+export const buildSelectionSessionAdvancedSearchLink = (uuid: string): string =>
+  buildSelectionSessionLink(routes.AdvancedSearch.to(uuid));
 
 /**
  * Update the content of DIV "selection-summary". This function is primarily for

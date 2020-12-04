@@ -34,6 +34,7 @@ import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { defaultBaseUrl, updateMockGetBaseUrl } from "../../BaseUrlHelper";
 import { updateMockGlobalCourseList } from "../../CourseListHelper";
 import {
   basicRenderData,
@@ -170,6 +171,8 @@ describe("<SearchResult/>", () => {
   );
 
   it("should use different link to open ItemSummary page, depending on renderData", async () => {
+    updateMockGetBaseUrl();
+    updateMockGlobalCourseList();
     const item = mockData.basicSearchObj;
     const checkItemTitleLink = (page: RenderResult, url: string) => {
       expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
@@ -190,12 +193,15 @@ describe("<SearchResult/>", () => {
     page = await renderSearchResult(item);
     checkItemTitleLink(
       page,
-      `${basicURL}?_sl.stateId=1&a=coursesearch&_int.id=2`
+      `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
     );
   });
 
   describe("In Selection Session", () => {
-    updateMockGlobalCourseList();
+    beforeAll(() => {
+      updateMockGlobalCourseList();
+      updateMockGetBaseUrl();
+    });
 
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,

@@ -470,37 +470,42 @@ export default function SearchResult({
     );
   };
 
-  const itemPrimaryContent =
-    inSelectionSession && !isSelectSummaryButtonDisabled() ? (
-      <Grid
-        id={uuid}
-        container
-        alignItems="center"
-        className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
-        data-itemuuid={uuid}
-        data-itemversion={version}
-      >
-        {inStructured && (
-          <Grid item>
-            <IconButton>
-              <DragIndicatorIcon />
-            </IconButton>
-          </Grid>
-        )}
-        <Grid item>{itemLink()}</Grid>
+  // In Selection Session, if the Select Summary button is enabled, add 'ResourceSelector'
+  // to the content. On top of that, if Selection Session is in 'structured', add one
+  // 'Drag indicator' icon.
+  const selectSessionItemContent = (
+    <Grid
+      id={uuid}
+      container
+      alignItems="center"
+      className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
+      data-itemuuid={uuid}
+      data-itemversion={version}
+    >
+      {inStructured && (
         <Grid item>
-          <ResourceSelector
-            labelText={selectResourceStrings.summaryPage}
-            isStopPropagation
-            onClick={() => {
-              handleSelectResource(itemKey);
-            }}
-          />
+          <IconButton>
+            <DragIndicatorIcon />
+          </IconButton>
         </Grid>
+      )}
+      <Grid item>{itemLink()}</Grid>
+      <Grid item>
+        <ResourceSelector
+          labelText={selectResourceStrings.summaryPage}
+          isStopPropagation
+          onClick={() => {
+            handleSelectResource(itemKey);
+          }}
+        />
       </Grid>
-    ) : (
-      itemLink()
-    );
+    </Grid>
+  );
+
+  const itemPrimaryContent =
+    inSelectionSession && !isSelectSummaryButtonDisabled()
+      ? selectSessionItemContent
+      : itemLink();
 
   return (
     <ListItem alignItems="flex-start" divider>
