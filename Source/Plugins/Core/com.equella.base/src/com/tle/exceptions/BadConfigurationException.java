@@ -16,27 +16,33 @@
  * limitations under the License.
  */
 
-package com.tle.core.connectors.blackboard;
+package com.tle.exceptions;
 
-@SuppressWarnings("nls")
-public final class BlackboardRESTConnectorConstants {
+import com.dytech.edge.exceptions.QuietlyLoggable;
+import com.tle.common.beans.exception.NestedRuntimeException;
 
-  public static final String AUTHENTICATIONCODE_SERVICE_URI_PATH =
-      "/learn/api/public/v1/oauth2/authorizationcode";
+public class BadConfigurationException extends NestedRuntimeException implements QuietlyLoggable {
 
-  public static final String SESSION_CODE = "BbRest.Code";
+  public BadConfigurationException(String msg) {
+    super(msg);
+  }
 
-  public static final String CONNECTOR_TYPE = "blackboardrest";
+  public BadConfigurationException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
 
-  public static final String FIELD_API_KEY = "apiKey";
-  public static final String FIELD_API_SECRET = "apiSecret";
+  @Override
+  public boolean isShowStackTrace() {
+    return false;
+  }
 
-  public static final String STATE_KEY_FORWARD_URL = "forwardUrl";
-  public static final String STATE_KEY_POSTFIX_KEY = "postfixKey";
+  @Override
+  public boolean isSilent() {
+    return false;
+  }
 
-  public static final String AUTH_URL = "blackboardrestauth";
-
-  private BlackboardRESTConnectorConstants() {
-    throw new Error();
+  @Override
+  public boolean isWarnOnly() {
+    return true;
   }
 }
