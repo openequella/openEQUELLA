@@ -72,7 +72,7 @@ export const routes = {
     component: SettingsPage,
   },
   AdvancedSearch: {
-    to: (uuid: string) => `/searching.do?in=P${uuid}&editquery=true`,
+    to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
   },
   RemoteSearch: {
     // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to

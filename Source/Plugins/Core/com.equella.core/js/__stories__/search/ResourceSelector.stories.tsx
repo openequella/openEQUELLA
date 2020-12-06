@@ -15,4 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-require("../target/uploadlist.js");
+import type { Meta, Story } from "@storybook/react";
+import * as React from "react";
+import {
+  ResourceSelector,
+  ResourceSelectorProps,
+} from "../../tsrc/search/components/ResourceSelector";
+import { languageStrings } from "../../tsrc/util/langstrings";
+
+export default {
+  title: "Search/ResourceSelector",
+  component: ResourceSelector,
+  argTypes: {
+    onClick: { action: "on select resources" },
+  },
+} as Meta<ResourceSelectorProps>;
+
+export const StandardSelector: Story<ResourceSelectorProps> = (args) => (
+  <ResourceSelector {...args} />
+);
+
+StandardSelector.args = {
+  labelText: languageStrings.searchpage.selectResource.summaryPage,
+  isStopPropagation: true,
+};

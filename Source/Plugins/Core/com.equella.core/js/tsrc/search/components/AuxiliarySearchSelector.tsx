@@ -21,7 +21,7 @@ import LinkIcon from "@material-ui/icons/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { OeqLink } from "../../components/OeqLink";
 
 const useStyles = makeStyles((theme: Theme) => ({
   linkIcon: {
@@ -36,38 +36,52 @@ export interface AuxiliarySearchSelectorProps {
   auxiliarySearchesSupplier: () => Promise<OEQ.Common.BaseEntitySummary[]>;
 
   /**
-   * Function to produce the URL for a specific search using the UUID returned in the
+   * Function to produce the URL for React Route Link using the UUID returned in the
    * `OEQ.Common.BaseEntitySummary` from the `auxiliarySearchesSupplier` function.
    */
-  urlGenerator: (uuid: string) => string;
+  urlGeneratorForRouteLink: (uuid: string) => string;
+  /**
+   * Function to produce the URL for MUI Link using the UUID returned in the
+   * `OEQ.Common.BaseEntitySummary` from the `auxiliarySearchesSupplier` function.
+   * Typically, the MUI Link is used in Selection Session.
+   */
+  urlGeneratorForMuiLink: (uuid: string) => string;
 }
 /**
- * A search 'selector' control to provide a list of remote searches. Clicking on a remote
- * searches (currently) navigates you to the legacy UI remote search page for that remote
- * search.
+ * A search 'selector' control to provide a list of auxiliary searches (e.g. Remote search and advanced search).
+ * Clicking on an auxiliary search (currently) navigates you to the legacy UI page.
  */
 export const AuxiliarySearchSelector = ({
   auxiliarySearchesSupplier,
-  urlGenerator,
+  urlGeneratorForRouteLink,
+  urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
   const classes = useStyles();
-
-  const [remoteSearches, setRemoteSearches] = useState<
+  const [auxiliarySearches, setAuxiliarySearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
 
   useEffect(() => {
-    auxiliarySearchesSupplier().then((searches) => setRemoteSearches(searches));
+    auxiliarySearchesSupplier().then((searches) =>
+      setAuxiliarySearches(searches)
+    );
   }, [auxiliarySearchesSupplier]);
 
+  const getLinkContent = (summary: OEQ.Common.BaseEntitySummary) => (
+    <MenuItem value={summary.uuid}>
+      <LinkIcon className={classes.linkIcon} />
+      {summary.name}
+    </MenuItem>
+  );
+
   const buildSearchMenuItems = () =>
-    remoteSearches.map((summary) => (
-      <Link to={urlGenerator(summary.uuid)}>
-        <MenuItem value={summary.uuid}>
-          <LinkIcon className={classes.linkIcon} />
-          {summary.name}
-        </MenuItem>
-      </Link>
+    auxiliarySearches.map((summary) => (
+      <OeqLink
+        routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
+        muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
+      >
+        {getLinkContent(summary)}
+      </OeqLink>
     ));
 
   return (

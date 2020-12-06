@@ -15,25 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
-import * as React from "react";
-import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
-import {
-  AuxiliarySearchSelector,
-  AuxiliarySearchSelectorProps,
-} from "../../tsrc/search/components/AuxiliarySearchSelector";
+import * as LegacySelectionSessionModule from "../../tsrc/modules/LegacySelectionSessionModule";
 
-export default {
-  title: "Search/AuxiliarySearchSelector",
-  component: AuxiliarySearchSelector,
-} as Meta<AuxiliarySearchSelectorProps>;
+const mockGlobalCourseList = jest.spyOn(
+  LegacySelectionSessionModule,
+  "getGlobalCourseList"
+);
 
-export const standard: Story<AuxiliarySearchSelectorProps> = (
-  args: AuxiliarySearchSelectorProps
-) => <AuxiliarySearchSelector {...args} />;
-standard.args = {
-  auxiliarySearchesSupplier: () =>
-    Promise.resolve(getRemoteSearchesFromServerResult),
-  urlGeneratorForRouteLink: (uuid: string) => uuid,
-  urlGeneratorForMuiLink: (uuid: string) => uuid,
+const basicCourseList = {
+  updateCourseList: jest.fn(),
+  prepareDraggableAndBind: jest.fn(),
+  newSearchPageItemClass: "SearchPage-Item",
+  newSearchPageAttachmentClass: "SearchPage-Attachment",
 };
+
+export const updateMockGlobalCourseList = (courseList = basicCourseList) =>
+  mockGlobalCourseList.mockReturnValue(courseList);

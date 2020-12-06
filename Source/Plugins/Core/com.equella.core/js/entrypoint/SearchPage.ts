@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 import main from "../tsrc/mainui";
-main();
+main("searchPage");

@@ -382,9 +382,7 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
     model.setItemId(new ItemId(itemUuid, itemVersion));
   }
 
-  @EventHandlerMethod
-  public void selectAttachment(
-      SectionInfo info, String attachmentUuid, ItemId itemId, String extensionType) {
+  private void prepareAttachmentSelection(SectionInfo info, ItemId itemId) {
     final AjaxRenderContext context = info.getAttributeForClass(AjaxRenderContext.class);
     if (context != null) {
       final String itemUuidAndVersion = itemId.getUuid() + itemId.getVersion();
@@ -396,7 +394,42 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
     final AttachmentDisplayModel<I> model = getModel(info);
     model.setShow(true);
     model.setItemId(itemId);
+  }
 
+  private void addAttachment(
+      SectionInfo info, String attachmentUuid, ItemId itemId, String extensionType) {
+    final IAttachment attachment =
+        new UnmodifiableAttachments(getCachedItem(info, itemId))
+            .getAttachmentByUuid(attachmentUuid);
+    if (attachment != null) {
+      final ViewableItem<I> viewableItem = getViewableItem(getItem(itemId));
+      final SelectAttachmentHandler selectAttachmentHandler =
+          selectionService.getSelectAttachmentHandler(info, viewableItem, attachmentUuid);
+      if (selectAttachmentHandler != null) {
+        selectAttachmentHandler.handleAttachmentSelection(
+            info, itemId, attachment, extensionType, true);
+      }
+    }
+  }
+
+  @EventHandlerMethod
+  public void selectAttachmentsFromNewSearch(
+      SectionInfo info, String attachmentUuids, ItemId itemId, String extensionType) {
+    prepareAttachmentSelection(info, itemId);
+
+    for (String attachmentUuid : attachmentUuids.split(",")) {
+      final SelectedResourceKey key =
+          new SelectedResourceKey(itemId, attachmentUuid, extensionType);
+      if (!selectionService.getCurrentSession(info).containsResource(key, false)) {
+        addAttachment(info, attachmentUuid, itemId, extensionType);
+      }
+    }
+  }
+
+  @EventHandlerMethod
+  public void selectAttachment(
+      SectionInfo info, String attachmentUuid, ItemId itemId, String extensionType) {
+    prepareAttachmentSelection(info, itemId);
     final SelectedResourceKey key = new SelectedResourceKey(itemId, attachmentUuid, extensionType);
     final SelectionSession ss = selectionService.getCurrentSession(info);
     if (ss == null) {
@@ -405,18 +438,7 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<
     if (ss.containsResource(key, false)) {
       selectionService.removeSelectedResource(info, key);
     } else {
-      final IAttachment attachment =
-          new UnmodifiableAttachments(getCachedItem(info, itemId))
-              .getAttachmentByUuid(attachmentUuid);
-      if (attachment != null) {
-        final ViewableItem<I> viewableItem = getViewableItem(getItem(itemId));
-        final SelectAttachmentHandler selectAttachmentHandler =
-            selectionService.getSelectAttachmentHandler(info, viewableItem, attachmentUuid);
-        if (selectAttachmentHandler != null) {
-          selectAttachmentHandler.handleAttachmentSelection(
-              info, itemId, attachment, extensionType, true);
-        }
-      }
+      addAttachment(info, attachmentUuid, itemId, extensionType);
     }
   }
 

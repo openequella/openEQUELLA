@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { getRenderData } from "../AppConfig";
 import HtmlParser from "react-html-parser";
 import {
   BrowserRouter,
@@ -38,7 +39,6 @@ import { LegacyForm } from "../legacycontent/LegacyForm";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
-import { RenderData } from "./index";
 import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
@@ -46,7 +46,7 @@ import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 
-declare const renderData: RenderData | undefined;
+const renderData = getRenderData();
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";

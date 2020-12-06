@@ -17,6 +17,7 @@
  */
 import { createMuiTheme } from "@material-ui/core";
 import { ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
+import { getRenderData } from "../AppConfig";
 
 export interface IThemeSettings {
   primaryColor: string;
@@ -30,12 +31,6 @@ export interface IThemeSettings {
   menuTextColor: string;
   fontSize: number;
 }
-
-declare const renderData:
-  | {
-      autotestMode: boolean;
-    }
-  | undefined;
 
 declare const themeSettings: IThemeSettings;
 
@@ -67,6 +62,7 @@ const standardThemeSettings: ThemeOptions = {
   },
 } as ThemeOptions;
 
+const renderData = getRenderData();
 export const autoTestOptions: ThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {

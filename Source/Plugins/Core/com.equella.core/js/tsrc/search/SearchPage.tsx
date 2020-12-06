@@ -55,6 +55,13 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import {
+  isSelectionSessionOpen,
+  prepareDraggable,
+  buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionRemoteSearchLink,
+  isSelectionSessionInStructured,
+} from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -147,7 +154,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      queryStringParamsToSearchOptions(location),
+      // Do not convert query string params to search options in Selection Session.
+      isSelectionSessionOpen()
+        ? Promise.resolve(undefined)
+        : queryStringParamsToSearchOptions(location),
     ]).then((results) => {
       const [searchSettings, queryStringSearchOptions] = results;
       setSearchSettings(searchSettings);
@@ -184,6 +194,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       state: { searchPageOptions, filterExpansion },
     });
   }, [filterExpansion, pagedSearchResult]);
+
+  // In Selection Session, once a new search result is returned, make each
+  // new search result Item draggable.
+  useEffect(() => {
+    if (isSelectionSessionInStructured()) {
+      pagedSearchResult.results.forEach(({ uuid }) => {
+        prepareDraggable(uuid);
+      });
+    }
+  }, [pagedSearchResult]);
 
   // When Search options get changed, also update the Classification list.
   useEffect(() => {
@@ -387,7 +407,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <AuxiliarySearchSelector
           auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
-          urlGenerator={routes.AdvancedSearch.to}
+          urlGeneratorForRouteLink={routes.AdvancedSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
         />
       ),
       disabled: false,
@@ -399,7 +420,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <AuxiliarySearchSelector
           auxiliarySearchesSupplier={getRemoteSearchesFromServer}
-          urlGenerator={routes.RemoteSearch.to}
+          urlGeneratorForRouteLink={routes.RemoteSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
         />
       ),
       disabled: false,

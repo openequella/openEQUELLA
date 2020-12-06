@@ -22,9 +22,11 @@ import {
   Badge,
   Divider,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
   Theme,
   Typography,
@@ -34,26 +36,38 @@ import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
+import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
+  buildSelectionSessionItemSummaryLink,
+  selectResource,
+  isSelectionSessionOpen,
+  isSelectSummaryButtonDisabled,
+  prepareDraggable,
+  getSearchPageItemClass,
+  getSearchPageAttachmentClass,
+  isSelectionSessionInStructured,
+} from "../../modules/LegacySelectionSessionModule";
+import { formatSize, languageStrings } from "../../util/langstrings";
+import { highlight } from "../../util/TextUtils";
+import { ResourceSelector } from "./ResourceSelector";
+import {
   determineAttachmentViewUrl,
   determineViewer,
 } from "../../modules/ViewerModule";
-import { formatSize, languageStrings } from "../../util/langstrings";
-import { highlight } from "../../util/TextUtils";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -86,6 +100,9 @@ const useStyles = makeStyles((theme: Theme) => {
       backgroundColor: theme.palette.background.paper,
       color: theme.palette.secondary.main,
       borderRadius: "50%",
+    },
+    attachmentListItem: {
+      width: "100%",
     },
     highlight: {
       color: theme.palette.secondary.main,
@@ -140,11 +157,15 @@ export default function SearchResult({
     attachment: OEQ.Search.Attachment;
     viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
   }
-
+  const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
+  const inSelectionSession: boolean = isSelectionSessionOpen();
+  const inStructured = isSelectionSessionInStructured();
 
   const [attachExpanded, setAttachExpanded] = useState(
-    displayOptions?.standardOpen ?? false
+    (inSelectionSession
+      ? displayOptions?.integrationOpen
+      : displayOptions?.standardOpen) ?? false
   );
   const [
     attachmentsWithViewerDetails,
@@ -155,6 +176,7 @@ export default function SearchResult({
     searchResult: searchResultStrings,
     comments: commentStrings,
     starRatings: ratingStrings,
+    selectResource: selectResourceStrings,
   } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
@@ -202,10 +224,26 @@ export default function SearchResult({
     };
   }, [attachments, getViewerDetails]);
 
+  // In Selection Session, make each attachment draggable.
+  useEffect(() => {
+    if (inStructured) {
+      attachmentsWithViewerDetails.forEach(({ attachment }) => {
+        prepareDraggable(attachment.id, false);
+      });
+    }
+  }, [attachmentsWithViewerDetails]);
+
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
     setAttachExpanded(!attachExpanded);
+  };
+
+  const handleSelectResource = (
+    itemKey: string,
+    attachments: string[] = []
+  ) => {
+    selectResource(itemKey, attachments).catch((error) => handleError(error));
   };
 
   const generateItemMetadata = () => {
@@ -306,9 +344,17 @@ export default function SearchResult({
           filePath
         );
         return (
-          <ListItem key={id} button className={classes.nested}>
+          <ListItem
+            key={id}
+            id={id}
+            button
+            className={`${classes.nested} ${getSearchPageAttachmentClass()}`} // Give a class so each attachment can be dropped to the course list.
+            data-itemuuid={uuid} // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
+            data-itemversion={version}
+            data-attachmentuuid={id}
+          >
             <ListItemIcon>
-              <InsertDriveFile />
+              {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
             </ListItemIcon>
             <ItemAttachmentLink
               description={description}
@@ -322,9 +368,44 @@ export default function SearchResult({
             >
               <ListItemText color="primary" primary={description} />
             </ItemAttachmentLink>
+            {inSelectionSession && (
+              <ListItemSecondaryAction>
+                <ResourceSelector
+                  labelText={selectResourceStrings.attachment}
+                  isStopPropagation
+                  onClick={() => {
+                    handleSelectResource(itemKey, [id]);
+                  }}
+                />
+              </ListItemSecondaryAction>
+            )}
           </ListItem>
         );
       }
+    );
+
+    const accordionText = (
+      <Typography>{searchResultStrings.attachments}</Typography>
+    );
+
+    const accordionSummaryContent = inSelectionSession ? (
+      <Grid container alignItems="center">
+        <Grid item>{accordionText}</Grid>
+        <Grid>
+          <ResourceSelector
+            labelText={selectResourceStrings.allAttachments}
+            isStopPropagation
+            onClick={() => {
+              const attachments = attachmentsWithViewerDetails.map(
+                ({ attachment }) => attachment.id
+              );
+              handleSelectResource(itemKey, attachments);
+            }}
+          />
+        </Grid>
+      </Grid>
+    ) : (
+      accordionText
     );
 
     const attachFileBadge = (includeIndicator: boolean) => (
@@ -359,13 +440,11 @@ export default function SearchResult({
           <AccordionSummary expandIcon={<ExpandMore />}>
             <Grid container spacing={2} alignItems="center">
               <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
-              <Grid item>
-                <Typography>{searchResultStrings.attachments}</Typography>
-              </Grid>
+              <Grid item>{accordionSummaryContent}</Grid>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
-            <List component="div" disablePadding>
+            <List disablePadding className={classes.attachmentListItem}>
               {attachmentsList}
             </List>
           </AccordionDetails>
@@ -377,11 +456,56 @@ export default function SearchResult({
   const highlightField = (fieldValue: string) =>
     ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
 
-  const itemLink = (
-    <Link to={routes.ViewItem.to(uuid, version)}>
-      {name ? highlightField(name) : uuid}
-    </Link>
+  const itemLink = () => {
+    const itemTitle = name ? highlightField(name) : uuid;
+    return (
+      <OeqLink
+        routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
+        muiLinkUrlProvider={() =>
+          buildSelectionSessionItemSummaryLink(uuid, version)
+        }
+      >
+        {itemTitle}
+      </OeqLink>
+    );
+  };
+
+  // In Selection Session, if the Select Summary button is enabled, add 'ResourceSelector'
+  // to the content. On top of that, if Selection Session is in 'structured', add one
+  // 'Drag indicator' icon.
+  const selectSessionItemContent = (
+    <Grid
+      id={uuid}
+      container
+      alignItems="center"
+      className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
+      data-itemuuid={uuid}
+      data-itemversion={version}
+    >
+      {inStructured && (
+        <Grid item>
+          <IconButton>
+            <DragIndicatorIcon />
+          </IconButton>
+        </Grid>
+      )}
+      <Grid item>{itemLink()}</Grid>
+      <Grid item>
+        <ResourceSelector
+          labelText={selectResourceStrings.summaryPage}
+          isStopPropagation
+          onClick={() => {
+            handleSelectResource(itemKey);
+          }}
+        />
+      </Grid>
+    </Grid>
   );
+
+  const itemPrimaryContent =
+    inSelectionSession && !isSelectSummaryButtonDisabled()
+      ? selectSessionItemContent
+      : itemLink();
 
   return (
     <ListItem alignItems="flex-start" divider>
@@ -390,7 +514,7 @@ export default function SearchResult({
         showPlaceholder={displayOptions?.disableThumbnail ?? false}
       />
       <ListItemText
-        primary={itemLink}
+        primary={itemPrimaryContent}
         secondary={
           <>
             <Typography className={classes.itemDescription}>

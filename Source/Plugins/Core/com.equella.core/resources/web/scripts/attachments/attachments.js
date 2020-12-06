@@ -156,7 +156,13 @@ var Attachments = (function()
 				CourseList.scrollToSelected();
 				CourseList.transfer($ul);
 			}
-			selectAllCallback(uuids, itemId, itemExtensionType);
+
+      // To support using the standard reload function for selecting all attachment,
+      // we need to convert the array of UUID to a string; otherwise the JSON parser
+      // will complain: Expected a string but was BEGIN_ARRAY.
+      // More details can be found in 'Conversion.java' and 'CourseListFolderAjaxUpdateData.java'.
+
+			selectAllCallback(uuids.toString(), itemId, itemExtensionType);
 		},
 
 		selectPackage : function($button, selectPackageCallback, itemId, controlId)
@@ -177,7 +183,7 @@ var Attachments = (function()
 			var $ul = $attachDiv.find('ul');
 
 			$attachDiv.addClass('modal-attachments');
-			
+
 			var $overlay = $('<div id="overlay_' + attachDivId + '" class="overlay" tabindex="-1"></div>');
 			$overlay.hide();
 			$attachDiv.after($overlay);
@@ -186,11 +192,11 @@ var Attachments = (function()
 			// For each li, clone it and remove all click handlers
 			$ul.find("li.attachmentrow").each(function()
 			{
-				var $li = $(this); 
+				var $li = $(this);
 				var $clone = $li.clone(true);
 				$clone.find("a.defaultviewer, div.attachments-thumb a, div.thumbnail a").each(function()
 				{
-					var $cloneSubElement = $(this); 
+					var $cloneSubElement = $(this);
 					$cloneSubElement.attr("onclick", "");
 					$cloneSubElement.off("click");
 					$cloneSubElement.on("click", function(e)
@@ -201,7 +207,7 @@ var Attachments = (function()
 				});
 				$clone.find("a.droparrow").remove();
 				$clone.addClass("clone");
-				
+
 				$clone.off("mousedown.attachments_reorder");
 				$clone.on("mousedown.attachments_reorder", function()
 				{
@@ -222,7 +228,7 @@ var Attachments = (function()
 				$li.after($clone);
 				$li.toggleClass("modal-hide");
 			});
-			
+
 			function sortCallback(event, ui)
 			{
 				if ($.browser.mozilla && ui.helper !== undefined)
@@ -254,12 +260,12 @@ var Attachments = (function()
 				scrollSensitivity: 80,
 				scrollSpeed: 2
 			});
-			
+
 			$ul.sortable('enable');
 			$ul.find("li.clone").css('cursor', 'move');
 			$ul.find("li.clone a").css('cursor', 'move');
 			$ul.find("a.viewer").toggleClass("modal-hide");
-			var $modalCancel = $("<a class='modal-control modal-cancel' tabindex='0'>" + cancelLabel + "</a>"); 
+			var $modalCancel = $("<a class='modal-control modal-cancel' tabindex='0'>" + cancelLabel + "</a>");
 			var $modalSave = $("<a class='modal-control modal-save' tabindex='0'>" + saveLabel + "</a>");
 			$attachDiv.after($modalCancel);
 			$attachDiv.after($modalSave);
@@ -302,19 +308,19 @@ var Attachments = (function()
 			{
 				var $firstTabbable = $tabbables.filter(":first");
 				var $lastTabbable = $tabbables.filter(":last");
-				
-				if ( event.keyCode !== $.ui.keyCode.TAB ) 
+
+				if ( event.keyCode !== $.ui.keyCode.TAB )
 				{
 					return;
 				}
-				if ( ( event.target === $lastTabbable[0] || event.target === $attachDiv[0] ) 
-						&& !event.shiftKey ) 
+				if ( ( event.target === $lastTabbable[0] || event.target === $attachDiv[0] )
+						&& !event.shiftKey )
 				{
 					$firstTabbable.focus( 1 );
 					event.preventDefault();
-				} 
-				else if ( ( event.target === $firstTabbable[0] || event.target === $attachDiv[0] ) 
-						&& event.shiftKey ) 
+				}
+				else if ( ( event.target === $firstTabbable[0] || event.target === $attachDiv[0] )
+						&& event.shiftKey )
 				{
 					$lastTabbable.focus( 1 );
 					event.preventDefault();
