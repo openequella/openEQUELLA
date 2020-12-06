@@ -4865,6 +4865,8 @@ div#sssh_finishedButton {
   padding: 5px;
   width: 20%; // The LMS side panel takes 20 percent of its parent div width.
   margin-right: $doubleMargin;
+  position: sticky;
+  top: 50px;
 }
 
 .icon-plus:before {
