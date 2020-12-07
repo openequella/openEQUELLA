@@ -19,6 +19,11 @@
 package com.tle.web.controls.youtube;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+import java.util.Optional;
 
 @SuppressWarnings("nls")
 public final class YoutubeUtils {
@@ -34,7 +39,6 @@ public final class YoutubeUtils {
   public static final String PROPERTY_THUMB_URL = "thumbUrl";
 
   @Deprecated public static final String PROPERTY_TAGS = "tags";
-
   // ISO-8601 Duration string
   public static final String PROPERTY_DURATION = "duration";
   public static final String PROPERTY_PARAMETERS = "custom_parameters";
@@ -53,6 +57,43 @@ public final class YoutubeUtils {
     long seconds = minusHours.minus(Duration.ofMinutes(minutes)).getSeconds();
     String format = hours > 0 ? "%3$d:%2$02d:%1$02d" : "%2$d:%1$02d";
     return String.format(format, seconds, minutes, hours);
+  }
+
+  /**
+   * Parses a date string returned from the Youtube Data API V3's "modified"
+   * entry for a given Youtube search result.
+   * Returns a date epoch long.
+   * @param date The string to parse (Expects it to be in ISO_DATE_TIME format)
+   * @return a long containing the date represented as the number of milliseconds since midnight January 1, 1970.
+   * @throws RuntimeException when the date cannot be parsed.
+   * */
+  public static Optional<Long> parseDateModifiedToMillis(String date) {
+    Optional<Long> parsedDate;
+    try {
+      parsedDate =
+          Optional.of(
+              ZonedDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME)
+                  .toInstant()
+                  .toEpochMilli());
+    } catch (DateTimeParseException e) {
+      throw new RuntimeException("Unable to parse youtube date modified: " + date, e);
+    }
+    return parsedDate;
+  }
+
+  /**
+   * Wrapper for parseDateModifiedToMillis which if present will return
+   * the date as a java.util.Date.
+   * @param date The string to parse (Expects it to be in ISO_DATE_TIME format)
+   * @return The date represented as a java.util.Date.
+   */
+  public static Optional<Date> parseDateModifiedToDate(String date) {
+    Optional<Long> parsedLong = parseDateModifiedToMillis(date);
+    Optional<Date> parsedDate = Optional.empty();
+    if (parsedLong.isPresent()) {
+      parsedDate = Optional.of(new Date(parsedLong.get()));
+    }
+    return parsedDate;
   }
 
   private YoutubeUtils() {
