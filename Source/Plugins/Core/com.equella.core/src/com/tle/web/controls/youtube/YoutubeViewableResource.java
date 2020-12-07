@@ -44,7 +44,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import org.joda.time.format.ISODateTimeFormat;
+import java.util.Optional;
 
 @SuppressWarnings("nls")
 public class YoutubeViewableResource extends AbstractWrappedResource {
@@ -189,14 +189,13 @@ public class YoutubeViewableResource extends AbstractWrappedResource {
     }
 
     // Uploaded
-    Long date =
-        ISODateTimeFormat.dateTimeNoMillis()
-            .parseDateTime((String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE))
-            .getMillis();
-    if (date != null) {
-      commonDetails.add(
-          makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(new Date(date))));
-    }
+    Optional<Date> date =
+        YoutubeUtils.parseDateModifiedToDate(
+            (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE));
+    date.ifPresent(
+        parsedDate ->
+            commonDetails.add(
+                makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(parsedDate))));
 
     // Tags
     String tags = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TAGS);
