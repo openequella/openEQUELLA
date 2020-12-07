@@ -86,7 +86,7 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 
   private boolean restricted;
 
-  @Column(name = "errored_when_indexing")
+  @Column(name = "errored_when_indexing", nullable = false)
   private boolean erroredIndexing;
 
   // Explicit catch of CloneNotSupportedException from super.clone()

@@ -78,6 +78,7 @@ public class AddIndexingErrorColumnMigration extends AbstractHibernateSchemaMigr
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @Column boolean errored_when_indexing;
+    @Column(name = "errored_when_indexing", nullable = false)
+    boolean errored_when_indexing;
   }
 }
