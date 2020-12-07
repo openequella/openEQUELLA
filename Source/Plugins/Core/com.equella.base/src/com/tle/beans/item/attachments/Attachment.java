@@ -289,7 +289,7 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
     return erroredIndexing;
   }
 
-  public void setErroredIndexing(boolean skipIndexing) {
-    this.erroredIndexing = skipIndexing;
+  public void setErroredIndexing(boolean erroredIndexing) {
+    this.erroredIndexing = erroredIndexing;
   }
 }

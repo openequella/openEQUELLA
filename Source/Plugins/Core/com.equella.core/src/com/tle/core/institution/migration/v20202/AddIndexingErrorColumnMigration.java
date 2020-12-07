@@ -53,7 +53,7 @@ public class AddIndexingErrorColumnMigration extends AbstractHibernateSchemaMigr
 
   @Override
   protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
-    return helper.getAddNotNullSQL("attachment", "errored_when_indexing");
+    return null;
   }
 
   @Override
