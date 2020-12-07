@@ -87,7 +87,7 @@ public final class YoutubeUtils {
    * Wrapper for parseDateModifiedToMillis which if present will return the date as a
    * java.util.Date.
    *
-   * <p>Youtube Data API v3 returns ISO_DATE_TIME strings, but existing attachments returned from v2
+   * Youtube Data API v3 returns ISO_DATE_TIME strings, but existing attachments returned from v2
    * will be stored as epoch millis, so this function supports both.
    *
    * @param date The date object to parse (Expects it to be a string in ISO_DATE_TIME format, or an
