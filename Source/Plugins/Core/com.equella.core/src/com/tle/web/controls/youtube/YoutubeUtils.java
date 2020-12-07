@@ -77,7 +77,8 @@ public final class YoutubeUtils {
                   .toInstant()
                   .toEpochMilli());
     } catch (DateTimeParseException e) {
-      throw new RuntimeException("Unable to parse youtube date modified: " + date, e);
+      throw new DateTimeParseException(
+          "Unable to parse youtube date modified", date, e.getErrorIndex());
     }
     return parsedDate;
   }
@@ -86,14 +87,24 @@ public final class YoutubeUtils {
    * Wrapper for parseDateModifiedToMillis which if present will return the date as a
    * java.util.Date.
    *
-   * @param date The string to parse (Expects it to be in ISO_DATE_TIME format)
+   * <p>Youtube Data API v3 returns ISO_DATE_TIME strings, but existing attachments returned from v2
+   * will be stored as epoch millis, so this function supports both.
+   *
+   * @param date The date object to parse (Expects it to be a string in ISO_DATE_TIME format, or an
+   *     epoch long)
    * @return The date represented as a java.util.Date.
    */
-  public static Optional<Date> parseDateModifiedToDate(String date) {
-    Optional<Long> parsedLong = parseDateModifiedToMillis(date);
+  public static Optional<Date> parseDateModifiedToDate(Object date) {
     Optional<Date> parsedDate = Optional.empty();
-    if (parsedLong.isPresent()) {
-      parsedDate = Optional.of(new Date(parsedLong.get()));
+    if (date instanceof Long) {
+      // if its a long, assume its an epoch long
+      parsedDate = Optional.of(new Date((Long) date));
+    } else {
+      // assume its an ISO_DATE_TIME string
+      Optional<Long> parsedLong = parseDateModifiedToMillis((String) date);
+      if (parsedLong.isPresent()) {
+        parsedDate = Optional.of(new Date(parsedLong.get()));
+      }
     }
     return parsedDate;
   }

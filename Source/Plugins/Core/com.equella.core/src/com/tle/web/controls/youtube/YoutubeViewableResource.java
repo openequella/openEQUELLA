@@ -41,10 +41,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("nls")
 public class YoutubeViewableResource extends AbstractWrappedResource {
@@ -189,13 +187,11 @@ public class YoutubeViewableResource extends AbstractWrappedResource {
     }
 
     // Uploaded
-    Optional<Date> date =
-        YoutubeUtils.parseDateModifiedToDate(
-            (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE));
-    date.ifPresent(
-        parsedDate ->
-            commonDetails.add(
-                makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(parsedDate))));
+    YoutubeUtils.parseDateModifiedToDate(youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE))
+        .ifPresent(
+            parsedDate ->
+                commonDetails.add(
+                    makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(parsedDate))));
 
     // Tags
     String tags = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TAGS);

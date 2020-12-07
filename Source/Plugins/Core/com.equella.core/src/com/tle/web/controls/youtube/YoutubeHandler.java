@@ -86,9 +86,7 @@ import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("nls")
@@ -287,10 +285,8 @@ public class YoutubeHandler
 
               YoutubeResultOption result = new YoutubeResultOption(videoId);
               result.setAuthor(new KeyLabel(ADD_AUTHOR_LABEL, vidInfo.getChannelTitle()));
-              Optional<Date> parsedDate =
-                  YoutubeUtils.parseDateModifiedToDate(vidInfo.getPublishedAt());
-              parsedDate.ifPresent(
-                  date -> result.setDate(dateRendererFactory.createDateRenderer(date)));
+              YoutubeUtils.parseDateModifiedToDate(vidInfo.getPublishedAt())
+                  .ifPresent(date -> result.setDate(dateRendererFactory.createDateRenderer(date)));
               String description = vidInfo.getDescription();
               result.setDescription(
                   Check.isEmpty(description)
