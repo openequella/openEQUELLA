@@ -60,13 +60,14 @@ public final class YoutubeUtils {
   }
 
   /**
-   * Parses a date string returned from the Youtube Data API V3's "modified"
-   * entry for a given Youtube search result.
-   * Returns a date epoch long.
+   * Parses a date string returned from the Youtube Data API V3's "modified" entry for a given
+   * Youtube search result. Returns a date epoch long.
+   *
    * @param date The string to parse (Expects it to be in ISO_DATE_TIME format)
-   * @return a long containing the date represented as the number of milliseconds since midnight January 1, 1970.
+   * @return a long containing the date represented as the number of milliseconds since midnight
+   *     January 1, 1970.
    * @throws RuntimeException when the date cannot be parsed.
-   * */
+   */
   public static Optional<Long> parseDateModifiedToMillis(String date) {
     Optional<Long> parsedDate;
     try {
@@ -82,8 +83,9 @@ public final class YoutubeUtils {
   }
 
   /**
-   * Wrapper for parseDateModifiedToMillis which if present will return
-   * the date as a java.util.Date.
+   * Wrapper for parseDateModifiedToMillis which if present will return the date as a
+   * java.util.Date.
+   *
    * @param date The string to parse (Expects it to be in ISO_DATE_TIME format)
    * @return The date represented as a java.util.Date.
    */
