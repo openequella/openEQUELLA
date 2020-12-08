@@ -100,4 +100,11 @@ public abstract class AbstractAttachmentEditor implements AttachmentEditor {
   public String getAttachmentUuid() {
     return attachment.getUuid();
   }
+
+  @Override
+  public void editErroredIndexing(boolean erroredIndexing) {
+    if (hasBeenEdited(attachment.isErroredIndexing(), erroredIndexing)) {
+      attachment.setErroredIndexing(erroredIndexing);
+    }
+  }
 }
