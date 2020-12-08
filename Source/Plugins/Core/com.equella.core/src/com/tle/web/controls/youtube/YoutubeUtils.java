@@ -93,18 +93,22 @@ public final class YoutubeUtils {
    * @param date The date object to parse (Expects it to be a string in ISO_DATE_TIME format, or an
    *     epoch long)
    * @return The date represented as a java.util.Date.
+   * @throws IllegalArgumentException if passed in Object is not an instance of long or string
    */
   public static Optional<Date> parseDateModifiedToDate(Object date) {
     Optional<Date> parsedDate = Optional.empty();
     if (date instanceof Long) {
       // if its a long, assume its an epoch long
       parsedDate = Optional.of(new Date((Long) date));
-    } else {
+    } else if (date instanceof String) {
       // assume its an ISO_DATE_TIME string
       Optional<Long> parsedLong = parseDateModifiedToMillis((String) date);
       if (parsedLong.isPresent()) {
         parsedDate = Optional.of(new Date(parsedLong.get()));
       }
+    } else {
+      throw new IllegalArgumentException(
+          "Date object must be a long or a string. Unable to parse " + date + "as a date.");
     }
     return parsedDate;
   }
