@@ -540,6 +540,11 @@ select[multiple="multiple"] {
   width: 200px;
 }
 
+#youtube-query ~ .modal-search-results {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
 .modal-search-result li {
   position: relative;
   margin: 0 0 10px 0;
