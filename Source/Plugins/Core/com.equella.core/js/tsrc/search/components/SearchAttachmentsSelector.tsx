@@ -19,7 +19,7 @@ import { Button, ButtonGroup } from "@material-ui/core";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
-interface SearchAttachmentsSelectorProps {
+export interface SearchAttachmentsSelectorProps {
   /**
    * A boolean value indicating whether 'yes' or 'no' is selected.
    */

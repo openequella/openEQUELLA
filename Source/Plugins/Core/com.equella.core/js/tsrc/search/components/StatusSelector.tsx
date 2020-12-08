@@ -22,7 +22,7 @@ import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
-interface StatusSelectorProps {
+export interface StatusSelectorProps {
   /**
    * A list of the currently selected statuses. This list is then used to determine one of two
    * possible sets: live OR all. The main reason to not simply abstract this out to a boolean, is
