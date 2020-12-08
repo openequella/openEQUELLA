@@ -102,10 +102,9 @@ public final class YoutubeUtils {
       parsedDate = Optional.of(new Date((Long) date));
     } else if (date instanceof String) {
       // assume its an ISO_DATE_TIME string
-      Optional<Long> parsedLong = parseDateModifiedToMillis((String) date);
-      if (parsedLong.isPresent()) {
-        parsedDate = Optional.of(new Date(parsedLong.get()));
-      }
+      parsedDate =
+          parseDateModifiedToMillis((String) date).flatMap(millis -> Optional.of(new Date(millis)));
+
     } else {
       throw new IllegalArgumentException(
           "Date object must be a long or a string. Unable to parse " + date + "as a date.");
