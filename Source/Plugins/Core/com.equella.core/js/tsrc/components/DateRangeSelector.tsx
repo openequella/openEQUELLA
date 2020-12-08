@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   FormControl,
   Grid,
@@ -48,6 +49,15 @@ interface DatePickerProps {
    */
   value?: Date;
 }
+
+const useStyles = makeStyles({
+  hideCalenderIcon: {
+    display: "none",
+  },
+  datePickerWidth: {
+    width: "100%",
+  },
+});
 
 export interface DateRangeSelectorProps {
   /**
@@ -96,6 +106,8 @@ export const DateRangeSelector = ({
   startDatePickerLabel,
   endDatePickerLabel,
 }: DateRangeSelectorProps) => {
+  const classes = useStyles();
+
   const {
     quickOptionSwitchLabel,
     quickOptionLabels,
@@ -114,6 +126,7 @@ export const DateRangeSelector = ({
   const [stateDateRange, setStateDateRange] = useState<DateRange | undefined>(
     dateRange
   );
+  const [showCalenderIcon, setShowCalenderIcon] = useState<boolean>(false);
 
   const isInitialRender = useRef(true);
   useEffect(() => {
@@ -268,11 +281,15 @@ export const DateRangeSelector = ({
     return dateRangePickers.map(({ field, label, value }) => {
       const isStart = field === "start";
       return (
-        <Grid item key={field} xs={12} md={6}>
+        <Grid item key={field} xs={12} xl={6}>
           <KeyboardDatePicker
+            className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
             disableFuture
             variant="dialog"
             clearable
+            KeyboardButtonProps={{
+              className: showCalenderIcon ? "" : classes.hideCalenderIcon,
+            }}
             inputVariant="outlined"
             autoOk
             // Show date in ISO format string, or nothing if date is null.
@@ -304,7 +321,20 @@ export const DateRangeSelector = ({
       utils={LuxonUtils}
       locale={DateTime.local().locale}
     >
-      <Grid container spacing={2}>
+      <Grid
+        container
+        spacing={2}
+        // The reason for putting these two events here is because this Grid contains two date pickers.
+        // Either one receives the focus should make both display their calendar icons.
+        // And swapping focus between the two pickers should still keep the icon.
+        onFocus={() => setShowCalenderIcon(true)}
+        onBlur={(event) => {
+          const { relatedTarget } = event;
+          if (!event.currentTarget.contains(relatedTarget as Node)) {
+            setShowCalenderIcon(false);
+          }
+        }}
+      >
         {getDatePickers()}
       </Grid>
     </MuiPickersUtilsProvider>
