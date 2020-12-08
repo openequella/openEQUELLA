@@ -15,13 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ErrorResponse } from "../api/errors";
-import MenuIcon from "@material-ui/icons/Menu";
-import BackIcon from "@material-ui/icons/ArrowBack";
-import AccountIcon from "@material-ui/icons/AccountCircle";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import {
   AppBar,
   Badge,
@@ -43,14 +36,21 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { languageStrings } from "../util/langstrings";
-import MessageInfo from "../components/MessageInfo";
-import { Link } from "react-router-dom";
-import { LocationDescriptor } from "history";
-import { routes } from "./routes";
+import AccountIcon from "@material-ui/icons/AccountCircle";
+import BackIcon from "@material-ui/icons/ArrowBack";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import MenuIcon from "@material-ui/icons/Menu";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 import * as OEQ from "@openequella/rest-api-client";
+import { LocationDescriptor } from "history";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { ErrorResponse } from "../api/errors";
+import MessageInfo from "../components/MessageInfo";
 import { guestUser } from "../legacycontent/LegacyContent";
+import { languageStrings } from "../util/langstrings";
+import { routes } from "./routes";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -364,6 +364,7 @@ export const Template = React.memo(function Template({
   ) {
     return (
       <MenuItem
+        onClick={() => setMenuAnchorEl(undefined)}
         component={(p) =>
           serverSide ? (
             <a {...p} href={link as string}>
