@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
-import UserSearch from "../../tsrc/components/UserSearch";
+import UserSearch, { UserSearchProps } from "../../tsrc/components/UserSearch";
 import { action } from "@storybook/addon-actions";
 import * as React from "react";
 import { number } from "@storybook/addon-knobs";
@@ -24,7 +25,7 @@ import { number } from "@storybook/addon-knobs";
 export default {
   title: "UserSearch",
   component: UserSearch,
-};
+} as Meta<UserSearchProps>;
 
 export const DefaultState = () => (
   <UserSearch

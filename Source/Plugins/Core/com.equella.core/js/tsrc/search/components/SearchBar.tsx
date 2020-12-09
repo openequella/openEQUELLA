@@ -47,7 +47,7 @@ const useStyles = makeStyles({
   },
 });
 
-interface SearchBarProps {
+export interface SearchBarProps {
   /** Current value for the search field. */
   query: string;
 

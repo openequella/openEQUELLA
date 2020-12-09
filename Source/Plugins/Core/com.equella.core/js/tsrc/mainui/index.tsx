@@ -26,7 +26,7 @@ export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 // before loading of the full app.
 const App = React.lazy(() => import("./App"));
 
-export default function (entry: EntryPage) {
+export default function main(entry: EntryPage) {
   initStrings();
   ReactDOM.render(
     <React.Suspense fallback={<>loading</>}>

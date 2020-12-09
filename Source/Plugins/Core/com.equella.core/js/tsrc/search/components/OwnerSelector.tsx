@@ -37,7 +37,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import UserSearch from "../../components/UserSearch";
 import { languageStrings } from "../../util/langstrings";
 
-interface OwnerSelectorProps {
+export interface OwnerSelectorProps {
   /** The currently selected user or undefined if none. */
   value?: OEQ.UserQuery.UserDetails;
   /** Handler for when current selection is cleared. */
