@@ -855,10 +855,20 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       return Optional.absent();
     }
 
-    return convert(
-        folders.get().stream()
-            .filter(folder -> ConnectorEntityUtils.findFolder(folder, folderId).isPresent())
-            .findFirst());
+    for (ConnectorFolder topLevelFolder : folders.get()) {
+      // Interesting bit here - we are looping through the top level folders looking
+      //  for a folder - the `foundFolder` _may_ be the `folder`, or it _may_ be a
+      //  descendant of the `folder`.
+      // Due to findFolder possibly returning a descendant of `folder`, it's not
+      //  suited well for the `streams` api.
+      Optional<ConnectorFolder> possibleFoundFolder =
+          ConnectorEntityUtils.findFolder(topLevelFolder, folderId);
+      if (possibleFoundFolder.isPresent()) {
+        return possibleFoundFolder;
+      }
+    }
+
+    return Optional.absent();
   }
 
   private Optional<Course> getCachedCourse(Connector connector, String courseId) {

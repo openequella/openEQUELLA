@@ -144,6 +144,9 @@ public class ConnectorEntityUtils {
    */
   public static Optional<ConnectorFolder> findFolder(ConnectorFolder folder, String folderId) {
     if (folder.getId().equals(folderId)) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("With ID=" + folderId + ", found: " + folder);
+      }
       return Optional.of(folder);
     }
 
@@ -151,6 +154,9 @@ public class ConnectorEntityUtils {
     for (ConnectorFolder subFolder : folder.getFolders()) {
       Optional<ConnectorFolder> possibleSubFolder = findFolder(subFolder, folderId);
       if (possibleSubFolder.isPresent()) {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("With ID=" + folderId + ", found subfolder: " + possibleSubFolder.get());
+        }
         return possibleSubFolder;
       }
     }
