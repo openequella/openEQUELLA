@@ -193,4 +193,31 @@ public class Course implements Serializable {
       this.force = force;
     }
   }
+
+  public String toString() {
+
+    return "Course(id="
+        + id
+        + ", externalId="
+        + externalId
+        + ", dataSourceId="
+        + dataSourceId
+        + ", courseId="
+        + courseId
+        + ", name="
+        + name
+        + ", created="
+        + created
+        + ", organization="
+        + organization
+        + ", ultraStatus="
+        + ultraStatus
+        + ", allowGuests="
+        + allowGuests
+        + ", readOnly="
+        + readOnly
+        + ", "
+        + availability
+        + ")";
+  }
 }

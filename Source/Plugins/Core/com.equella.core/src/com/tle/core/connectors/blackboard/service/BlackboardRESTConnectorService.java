@@ -20,6 +20,7 @@ package com.tle.core.connectors.blackboard.service;
 
 import com.tle.annotation.Nullable;
 import com.tle.common.connectors.entity.Connector;
+import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 
 public interface BlackboardRESTConnectorService extends ConnectorRepositoryImplementation {
@@ -46,16 +47,16 @@ public interface BlackboardRESTConnectorService extends ConnectorRepositoryImple
    * The connector object will need to store an encrypted admin token in the DB. Use this method to
    * encrypt the one returned from Blackboard.
    *
-   * @param token
+   * @param data
    * @return
    */
   String encrypt(String data);
 
   String decrypt(String encryptedData);
 
-  void setToken(Connector connector, String value);
+  String encryptKeyAndSecret(Connector connector);
 
-  void setUserId(Connector connector, String value);
+  void setAuth(Connector connector, Token token);
 
   void removeCachedCoursesForConnector(Connector connector);
 }

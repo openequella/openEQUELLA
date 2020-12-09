@@ -29,7 +29,8 @@ public class BlackboardRestAppContext {
   private static final String KEY_VALUE_RESPONSE_TYPE_CODE = "response_type=code";
   private static final String FIELD_CLIENT_ID = "client_id";
   private static final String FIELD_SCOPE = "scope";
-  private static final String VALUE_READ_WRITE_DELETE = "read write delete";
+  // Scope `offline` is required to obtain refresh tokens
+  private static final String VALUE_READ_WRITE_DELETE = "read write delete offline";
 
   private final String _appId;
   private final String _appKey;

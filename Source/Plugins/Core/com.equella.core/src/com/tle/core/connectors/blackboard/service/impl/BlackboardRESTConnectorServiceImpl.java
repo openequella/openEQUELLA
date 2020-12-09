@@ -34,7 +34,6 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ViewableItemType;
 import com.tle.common.Check;
-import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import com.tle.common.connectors.ConnectorContent;
 import com.tle.common.connectors.ConnectorCourse;
@@ -54,6 +53,7 @@ import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.connectors.utils.ConnectorEntityUtils;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
@@ -72,7 +72,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -113,16 +112,15 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   @Inject private InstitutionService institutionService;
   @Inject private AuditLogService auditService;
   @Inject private UserSessionService userSessionService;
+  @Inject private EncryptionService encryptionService;
 
   private static final String CACHE_ID_COURSE = "BbRestCoursesByUser";
   private static final String CACHE_ID_COURSE_FOLDERS = "BbRestFoldersByUserAndCourse";
-  private static final String CACHE_ID_TOKEN = "BbRestTokensByUser";
-  private static final String CACHE_ID_USERID = "BbRestIdsByUser";
+  private static final String CACHE_ID_AUTH = "BbRestAuthByUser";
 
   private ReplicatedCache<ImmutableList<Course>> courseCache;
   private ReplicatedCache<ImmutableList<ConnectorFolder>> courseFoldersCache;
-  private ReplicatedCache<String> tokenCache;
-  private ReplicatedCache<String> uidCache;
+  private ReplicatedCache<Token> authCache;
 
   private static final ObjectMapper jsonMapper = new ObjectMapper();
   private static final ObjectMapper prettyJsonMapper = new ObjectMapper();
@@ -138,10 +136,15 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   @PostConstruct
   public void setupCache() {
-    courseCache = cacheService.getCache(CACHE_ID_COURSE, 1000, 10, TimeUnit.MINUTES);
-    courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 1000, 10, TimeUnit.MINUTES);
-    tokenCache = cacheService.getCache(CACHE_ID_TOKEN, 1000, 60, TimeUnit.MINUTES);
-    uidCache = cacheService.getCache(CACHE_ID_USERID, 1000, 60, TimeUnit.MINUTES);
+    // These two caches can be easily rebuilt, and the original
+    //  data on the Bb servers can frequently change
+    courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 2, TimeUnit.MINUTES);
+    courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 100, 2, TimeUnit.MINUTES);
+    // Depending on usage, setting this values (size and ttl) too low will break the
+    //  FU / MER / AES flows. Setting it higher to be safe.  Bb tokens expire after 60
+    //  minutes, and since we use the refresh_token flows, refreshing a token is less
+    //  noticeable to the user then requesting a new access token
+    authCache = cacheService.getCache(CACHE_ID_AUTH, 1000, 90, TimeUnit.MINUTES);
   }
 
   public BlackboardRESTConnectorServiceImpl() {
@@ -166,10 +169,18 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return false;
   }
 
+  /**
+   * Calling this method loads the auth Token into the user session.
+   *
+   * @param connector
+   * @return
+   */
   @Override
   public boolean isRequiresAuthentication(Connector connector) {
-    if (getToken(connector).isPresent() && getUserId(connector).isPresent()) {
+    Optional<Token> auth = getAuth(connector);
+    if (auth.isPresent()) {
       LOGGER.debug("User has the needed cached details, no authorization needed");
+      setUserSessionAuth(auth);
       return false;
     }
 
@@ -249,55 +260,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       boolean editableOnly,
       boolean archived,
       boolean management) {
-    if (!isCoursesCached(connector)) {
-      String url =
-          API_ROOT_V1
-              + "users/"
-              + getUserIdType()
-              + getUserId(connector).get()
-              + "/courses?fields=course";
-
-      final List<Course> allCourses = new ArrayList<>();
-      // TODO (post new UI): a more generic way of doing paged results. Contents also does paging
-      CoursesByUser courses =
-          sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
-      for (CourseByUser cbu : courses.getResults()) {
-        allCourses.add(cbu.getCourse());
-      }
-      Paging paging = courses.getPaging();
-
-      while (paging != null && paging.getNextPage() != null) {
-        courses =
-            sendBlackboardData(
-                connector, paging.getNextPage(), CoursesByUser.class, null, Request.Method.GET);
-        for (CourseByUser cbu : courses.getResults()) {
-          allCourses.add(cbu.getCourse());
-        }
-        paging = courses.getPaging();
-      }
-
-      setCachedCourses(connector, ImmutableList.copyOf(allCourses));
-    }
-    return getWrappedCachedCourses(connector, archived);
-  }
-
-  private boolean isCoursesCached(Connector connector) {
-    return getCachedCourses(connector).isPresent();
-  }
-
-  private List<ConnectorCourse> getWrappedCachedCourses(
-      Connector connector, boolean includeArchived) {
     final List<ConnectorCourse> list = new ArrayList<>();
-    final Optional<ImmutableList<Course>> allCourses = getCachedCourses(connector);
-    if (!allCourses.isPresent()) {
-      return Collections.emptyList();
-    }
+    final ImmutableList<Course> allCourses = getCachedCourses(connector);
 
-    return allCourses.get().stream()
+    return allCourses.stream()
         // Display all courses if the archived flag is set, otherwise, just the 'available' ones
         .filter(
-            course ->
-                includeArchived || Availability.YES.equals(course.getAvailability().getAvailable()))
+            course -> archived || Availability.YES.equals(course.getAvailability().getAvailable()))
         // Convert Course to ConnectorCourse
         .map(
             course -> {
@@ -346,13 +315,27 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       return cachedFolders.get();
     }
 
+    // No cached folders available.  Pull latest from Blackboard.
     final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
-    final Contents contents =
+    final List<Content> allContent = new ArrayList<>();
+    Contents contents =
         sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
+    allContent.addAll(contents.getResults());
+
+    Paging paging = contents.getPaging();
+
+    while (paging != null && paging.getNextPage() != null) {
+      contents =
+          sendBlackboardData(
+              connector, paging.getNextPage(), Contents.class, null, Request.Method.GET);
+      allContent.addAll(contents.getResults());
+
+      paging = contents.getPaging();
+    }
+
     final ConnectorCourse course = new ConnectorCourse(courseId);
-    final List<Content> results = contents.getResults();
-    ImmutableList<ConnectorFolder> folders =
-        ImmutableList.copyOf(ConnectorEntityUtils.parseFolders(results, course));
+    final ImmutableList<ConnectorFolder> folders =
+        ImmutableList.copyOf(ConnectorEntityUtils.parseFolders(allContent, course));
     setCachedCourseFolders(connector, courseId, folders);
     return folders;
   }
@@ -548,29 +531,35 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       } else {
         body = "";
       }
-      request.setBody(body);
-      if (body.length() > 0) {
-        request.addHeader("Content-Type", "application/json");
+
+      if ("grant_type=refresh_token".equals(data)) {
+        request.setMimeType("application/x-www-form-urlencoded");
+      } else {
+        if (body.length() > 0) {
+          request.addHeader("Content-Type", "application/json");
+        }
       }
+      request.setBody(body);
+
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Sending " + prettyJson(body));
       }
 
-      // attach cached token.
-      final Optional<String> token = getToken(connector);
-      if (!token.isPresent()) {
-        throw new AuthenticationException("User token is not present");
+      if ("grant_type=refresh_token".equals(data)) {
+        request.addHeader("Authorization", "Basic " + encryptKeyAndSecret(connector));
+      } else {
+        // attach cached token.
+        Token auth = getUserSessionAuth();
+        final String authHeaderValue = "Bearer " + auth.getAccessToken();
+        LOGGER.trace(
+            "Setting Authorization header to ["
+                + authHeaderValue
+                + "].  Connector ["
+                + connector.getUuid()
+                + "]");
+
+        request.addHeader("Authorization", authHeaderValue);
       }
-
-      final String authHeaderValue = "Bearer " + getToken(connector).get();
-      LOGGER.trace(
-          "Setting Authorization header to ["
-              + authHeaderValue
-              + "].  Connector ["
-              + connector.getUuid()
-              + "]");
-
-      request.addHeader("Authorization", authHeaderValue);
 
       try (Response response =
           httpService.getWebContent(request, configService.getProxyDetails())) {
@@ -578,8 +567,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         captureBlackboardRateLimitMetrics(uri.toString(), response);
         final int code = response.getCode();
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("Received from Blackboard (" + code + "):");
-          LOGGER.debug(prettyJson(responseBody));
+          LOGGER.debug("Received from Blackboard (" + code + "):" + prettyJson(responseBody));
         }
         if (code == 401 && firstTime) {
           // Unauthorized request.  Retry once to obtain a new token (assumes the current token is
@@ -587,8 +575,10 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
           LOGGER.debug(
               "Received a 401 from Blackboard.  Token for connector ["
                   + connector.getUuid()
-                  + "] is likely expired.  Retrying...");
-          removeCachedValuesForConnector(connector);
+                  + "] is likely expired.  Trying to refresh...");
+          refreshBlackboardToken(connector);
+
+          // Retry original call
           return sendBlackboardData(connector, path, returnType, data, method, false);
         }
         if (code >= 300) {
@@ -603,6 +593,56 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       }
     } catch (IOException ex) {
       throw Throwables.propagate(ex);
+    }
+  }
+
+  private Token getUserSessionAuth() {
+    Optional<Token> auth =
+        userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY);
+    if (!auth.isPresent()) {
+      throw new AuthenticationException(
+          "User authentication details are not available in the session");
+    }
+    return auth.get();
+  }
+
+  private void setUserSessionAuth(Optional<Token> t) {
+    userSessionService.setAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY, t);
+  }
+
+  private void setUserSessionAuth(Token t) {
+    setUserSessionAuth(Optional.fromNullable(t));
+  }
+
+  private void refreshBlackboardToken(Connector connector) {
+    Token expAuth = getUserSessionAuth();
+
+    // Make a reasonable effort to obtain the latest refresh token
+    Optional<Token> cachedAuth = getAuth(connector);
+    if (cachedAuth.isPresent()) {
+      expAuth = cachedAuth.get();
+    }
+
+    final String path =
+        "learn/api/public/v1/oauth2/token?grant_type=refresh_token&refresh_token="
+            + expAuth.getRefreshToken();
+
+    try {
+      // Setting 'firstTime' to false - if the token refresh fails, it's likely not recoverable.
+      setAuth(
+          connector,
+          sendBlackboardData(
+              connector,
+              path,
+              Token.class,
+              "grant_type=refresh_token",
+              Request.Method.POST,
+              false));
+    } catch (Exception exception) {
+      LOGGER.error(exception.getMessage());
+      // Likely an expired auth token that failed to refresh.  Guide the user to try again
+      removeCachedValue(authCache, buildCacheKey(CACHE_ID_AUTH, connector));
+      new AuthenticationException("Unable to refresh auth token.  Please retry action.");
     }
   }
 
@@ -687,25 +727,38 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return encryptedData;
   }
 
-  public Optional<String> getToken(Connector connector) {
-    return getCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
+  @Override
+  public String encryptKeyAndSecret(Connector connector) {
+    final String apiKey = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY);
+    final String apiSecret =
+        encryptionService.decrypt(
+            connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET));
+    return new Base64()
+        .encode((apiKey + ":" + apiSecret).getBytes())
+        .replace("\n", "")
+        .replace("\r", "");
   }
 
-  public Optional<String> getUserId(Connector connector) {
-    return getCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
+  public Optional<Token> getAuth(Connector connector) {
+    return getCachedValue(authCache, buildCacheKey(CACHE_ID_AUTH, connector));
   }
 
   private void removeCachedValuesForConnector(Connector connector) {
     removeCachedCoursesForConnector(connector);
-    removeCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector));
-    removeCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector));
+    removeCachedValue(authCache, buildCacheKey(CACHE_ID_AUTH, connector));
   }
 
   public void removeCachedCoursesForConnector(Connector connector) {
-    removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
-    for (Pair<String, ImmutableList<ConnectorFolder>> pair :
-        courseFoldersCache.iterate(buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector))) {
-      removeCachedValue(courseFoldersCache, pair.getFirst());
+    final Optional<ImmutableList<Course>> cached =
+        getCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
+    if (cached.isPresent()) {
+      removeCachedValue(courseCache, buildCacheKey(CACHE_ID_COURSE, connector));
+      cached.get().stream()
+          .forEach(
+              c ->
+                  removeCachedValue(
+                      courseFoldersCache,
+                      buildCacheKey(CACHE_ID_COURSE_FOLDERS, c.getId(), connector)));
     }
   }
 
@@ -715,12 +768,15 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     return "uuid:";
   }
 
-  public void setToken(Connector connector, String token) {
-    setCachedValue(tokenCache, buildCacheKey(CACHE_ID_TOKEN, connector), token);
-  }
-
-  public void setUserId(Connector connector, String userId) {
-    setCachedValue(uidCache, buildCacheKey(CACHE_ID_USERID, connector), userId);
+  /**
+   * Sets both caches (replicated and user session) to the token
+   *
+   * @param connector
+   * @param token
+   */
+  public void setAuth(Connector connector, Token token) {
+    setCachedValue(authCache, buildCacheKey(CACHE_ID_AUTH, connector), token);
+    setUserSessionAuth(token);
   }
 
   private void setCachedCourses(Connector connector, ImmutableList<Course> courses) {
@@ -730,34 +786,67 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     setCachedValue(courseCache, key, courses);
   }
 
-  private Optional<ImmutableList<Course>> getCachedCourses(Connector connector) {
+  /**
+   * First tries to return the cached courses. If none are available, request them from Blackboard,
+   * cache them, and return the now cached courses.
+   *
+   * @param connector
+   * @return
+   */
+  private ImmutableList<Course> getCachedCourses(Connector connector) {
     final String key = buildCacheKey(CACHE_ID_COURSE, connector);
-    return getCachedValue(courseCache, key);
+    final Optional<ImmutableList<Course>> cached = getCachedValue(courseCache, key);
+    if (cached.isPresent()) {
+      return cached.get();
+    }
+
+    // Not cached - get a fresh copy
+    String url =
+        API_ROOT_V1
+            + "users/"
+            + getUserIdType()
+            + getUserSessionAuth().getUserId()
+            + "/courses?fields=course";
+
+    final List<Course> allCourses = new ArrayList<>();
+    CoursesByUser courses =
+        sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
+    for (CourseByUser cbu : courses.getResults()) {
+      allCourses.add(cbu.getCourse());
+    }
+    Paging paging = courses.getPaging();
+
+    while (paging != null && paging.getNextPage() != null) {
+      courses =
+          sendBlackboardData(
+              connector, paging.getNextPage(), CoursesByUser.class, null, Request.Method.GET);
+      for (CourseByUser cbu : courses.getResults()) {
+        allCourses.add(cbu.getCourse());
+      }
+      paging = courses.getPaging();
+    }
+
+    final ImmutableList<Course> lockedList = ImmutableList.copyOf(allCourses);
+    setCachedCourses(connector, lockedList);
+    return lockedList;
   }
 
   private void setCachedCourseFolders(
       Connector connector, String courseId, ImmutableList<ConnectorFolder> folders) {
-    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
-    LOGGER.debug(
-        "Setting cache "
-            + key
-            + "."
-            + courseId
-            + " - number of cached folders ["
-            + folders.size()
-            + "]");
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, courseId, connector);
+    LOGGER.debug("Setting cache " + key + " - number of cached folders [" + folders.size() + "]");
     setCachedValue(courseFoldersCache, key, folders);
   }
 
   private Optional<ImmutableList<ConnectorFolder>> getCachedCourseFolders(
       Connector connector, String courseId) {
-    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, courseId, connector);
     return getCachedValue(courseFoldersCache, key);
   }
 
   private Optional<ConnectorFolder> getCachedCourseFolder(
       Connector connector, String courseId, String folderId) {
-    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, connector) + ".CID" + courseId;
+    final String key = buildCacheKey(CACHE_ID_COURSE_FOLDERS, courseId, connector);
 
     final Optional<ImmutableList<ConnectorFolder>> folders =
         getCachedValue(courseFoldersCache, key);
@@ -773,13 +862,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private Optional<Course> getCachedCourse(Connector connector, String courseId) {
-    final Optional<ImmutableList<Course>> cached = getCachedCourses(connector);
+    final ImmutableList<Course> cached = getCachedCourses(connector);
 
-    if (!cached.isPresent()) {
-      return Optional.absent();
-    }
-
-    return convert(cached.get().stream().filter(c -> c.getId().equals(courseId)).findFirst());
+    return convert(cached.stream().filter(c -> c.getId().equals(courseId)).findFirst());
   }
 
   /**
@@ -795,6 +880,16 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     } else {
       return Optional.absent();
     }
+  }
+
+  private String buildCacheKey(String cacheId, String courseId, Connector connector) {
+    return cacheId
+        + "-C:"
+        + connector.getUuid()
+        + "-U:"
+        + CurrentUser.getUserID()
+        + "-CID:"
+        + courseId;
   }
 
   private String buildCacheKey(String cacheId, Connector connector) {

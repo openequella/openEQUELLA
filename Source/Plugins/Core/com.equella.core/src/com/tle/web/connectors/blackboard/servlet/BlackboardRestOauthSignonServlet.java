@@ -18,7 +18,6 @@
 
 package com.tle.web.connectors.blackboard.servlet;
 
-import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -102,15 +101,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
 
     // Ask for the token.
     final Connector connector = connectorService.getByUuid(connectorUuid);
-    final String apiKey = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY);
-    final String apiSecret =
-        encryptionService.decrypt(
-            connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET));
-    final String b64 =
-        new Base64()
-            .encode((apiKey + ":" + apiSecret).getBytes())
-            .replace("\n", "")
-            .replace("\r", "");
+    final String b64 = blackboardRestConnectorService.encryptKeyAndSecret(connector);
 
     final Request oauthReq =
         new Request(
@@ -131,8 +122,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
         LOGGER.trace("Blackboard response: " + resp2.getBody());
         final Token tokenJson = jsonMapper.readValue(resp2.getBody(), Token.class);
         LOGGER.warn("Gathered Blackboard access token for [" + connectorUuid + "]");
-        blackboardRestConnectorService.setToken(connector, tokenJson.getAccessToken());
-        blackboardRestConnectorService.setUserId(connector, tokenJson.getUserId());
+        blackboardRestConnectorService.setAuth(connector, tokenJson);
 
       } else {
         final ErrorResponse bbErr = jsonMapper.readValue(resp2.getBody(), ErrorResponse.class);
