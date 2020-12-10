@@ -15,12 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ErrorResponse, fromAxiosResponse } from "../api/errors";
-import Axios from "axios";
-import { v4 } from "uuid";
-import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
+import Axios from "axios";
+import * as React from "react";
+import { v4 } from "uuid";
+import {
+  ErrorResponse,
+  fromAxiosResponse,
+  generateFromError,
+} from "../api/errors";
+import { API_BASE_URL } from "../AppConfig";
 
 declare global {
   interface Window {
@@ -196,7 +200,11 @@ export const LegacyContent = React.memo(function LegacyContent({
         }
       })
       .catch((error) => {
-        onError({ error: fromAxiosResponse(error.response), fullScreen });
+        const errorResponse: ErrorResponse =
+          error.response !== undefined
+            ? fromAxiosResponse(error.response)
+            : generateFromError(error);
+        onError({ error: errorResponse, fullScreen });
       });
   }
 

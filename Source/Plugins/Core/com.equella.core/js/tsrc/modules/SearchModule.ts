@@ -191,7 +191,7 @@ export const defaultSearchOptions: SearchOptions = {
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
   length: 10,
-  available: 10,
+  available: 0,
   results: [],
   highlight: [],
 };
