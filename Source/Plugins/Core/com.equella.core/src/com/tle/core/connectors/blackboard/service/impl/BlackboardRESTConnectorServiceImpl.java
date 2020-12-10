@@ -140,11 +140,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     //  data on the Bb servers can frequently change
     courseCache = cacheService.getCache(CACHE_ID_COURSE, 100, 2, TimeUnit.MINUTES);
     courseFoldersCache = cacheService.getCache(CACHE_ID_COURSE_FOLDERS, 100, 2, TimeUnit.MINUTES);
-    // Depending on usage, setting this values (size and ttl) too low will break the
-    //  FU / MER / AES flows. Setting it higher to be safe.  Bb tokens expire after 60
-    //  minutes, and since we use the refresh_token flows, refreshing a token is less
-    //  noticeable to the user then requesting a new access token
-    authCache = cacheService.getCache(CACHE_ID_AUTH, 1000, 90, TimeUnit.MINUTES);
+    // Bb tokens expire after 60 minutes.  We also leverage the refresh_token flow, since
+    //  refreshing a token is less noticeable to the user then requesting a new access token
+    authCache = cacheService.getCache(CACHE_ID_AUTH, 1000, 60, TimeUnit.MINUTES);
   }
 
   public BlackboardRESTConnectorServiceImpl() {
@@ -170,17 +168,19 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   /**
-   * Calling this method loads the auth Token into the user session.
+   * See {@link
+   * com.tle.core.connectors.service.ConnectorRepositoryImplementation#isRequiresAuthentication(Connector)}
+   * Also loads the auth Token into the user session
    *
-   * @param connector
-   * @return
+   * @param connector external system connector for authorization details
+   * @return if an auth dialog needs to be displayed to continue
    */
   @Override
   public boolean isRequiresAuthentication(Connector connector) {
     Optional<Token> auth = getAuth(connector);
     if (auth.isPresent()) {
       LOGGER.debug("User has the needed cached details, no authorization needed");
-      setUserSessionAuth(auth);
+      setUserSessionAuth(auth.get());
       return false;
     }
 
@@ -316,22 +316,15 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     }
 
     // No cached folders available.  Pull latest from Blackboard.
-    final String url = API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true";
+    Optional<String> url =
+        Optional.of(API_ROOT_V1 + "courses/" + courseId + "/contents?recursive=true");
     final List<Content> allContent = new ArrayList<>();
-    Contents contents =
-        sendBlackboardData(connector, url, Contents.class, null, Request.Method.GET);
-    allContent.addAll(contents.getResults());
-
-    Paging paging = contents.getPaging();
-
-    while (paging != null && paging.getNextPage() != null) {
-      contents =
-          sendBlackboardData(
-              connector, paging.getNextPage(), Contents.class, null, Request.Method.GET);
+    do {
+      Contents contents =
+          sendBlackboardData(connector, url.get(), Contents.class, null, Request.Method.GET);
       allContent.addAll(contents.getResults());
-
-      paging = contents.getPaging();
-    }
+      url = Optional.ofNullable(contents.getPaging()).map(Paging::getNextPage);
+    } while (url.isPresent());
 
     final ConnectorCourse course = new ConnectorCourse(courseId);
     final ImmutableList<ConnectorFolder> folders =
@@ -516,55 +509,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Request.Method method,
       boolean firstTime) {
     try {
-      final URI uri = URI.create(PathUtils.urlPath(connector.getServerUrl(), path));
-
-      final Request request = new Request(uri.toString());
-      request.setMethod(method);
-      request.addHeader("Accept", "application/json");
-      if (LOGGER.isTraceEnabled()) {
-        LOGGER.trace(method + " to Blackboard: " + request.getUrl());
-      }
-
-      final String body;
-      if (data != null) {
-        body = jsonMapper.writeValueAsString(data);
-      } else {
-        body = "";
-      }
-
-      if ("grant_type=refresh_token".equals(data)) {
-        request.setMimeType("application/x-www-form-urlencoded");
-      } else {
-        if (body.length() > 0) {
-          request.addHeader("Content-Type", "application/json");
-        }
-      }
-      request.setBody(body);
-
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Sending " + prettyJson(body));
-      }
-
-      if ("grant_type=refresh_token".equals(data)) {
-        request.addHeader("Authorization", "Basic " + encryptKeyAndSecret(connector));
-      } else {
-        // attach cached token.
-        Token auth = getUserSessionAuth();
-        final String authHeaderValue = "Bearer " + auth.getAccessToken();
-        LOGGER.trace(
-            "Setting Authorization header to ["
-                + authHeaderValue
-                + "].  Connector ["
-                + connector.getUuid()
-                + "]");
-
-        request.addHeader("Authorization", authHeaderValue);
-      }
+      final Request request = prepareBlackboardCall(connector, path, data, method);
 
       try (Response response =
           httpService.getWebContent(request, configService.getProxyDetails())) {
         final String responseBody = response.getBody();
-        captureBlackboardRateLimitMetrics(uri.toString(), response);
+        captureBlackboardRateLimitMetrics(request.getUrl(), response);
         final int code = response.getCode();
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Received from Blackboard (" + code + "):" + prettyJson(responseBody));
@@ -596,21 +546,53 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     }
   }
 
+  private <T> Request prepareBlackboardCall(
+      Connector connector, String path, @Nullable Object data, Request.Method method)
+      throws JsonProcessingException {
+    final URI uri = URI.create(PathUtils.urlPath(connector.getServerUrl(), path));
+
+    final Request request = new Request(uri.toString());
+    request.setMethod(method);
+    request.addHeader("Accept", "application/json");
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace(method + " to Blackboard: " + request.getUrl());
+    }
+
+    // Setup request body
+    request.setBody((data != null) ? jsonMapper.writeValueAsString(data) : "");
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Sending " + prettyJson(request.getBody()));
+    }
+
+    if ("grant_type=refresh_token".equals(data)) {
+      request.setMimeType("application/x-www-form-urlencoded");
+      request.addHeader("Authorization", "Basic " + buildBasicAuthorizationCredentials(connector));
+    } else {
+      // Normal request flow
+      if (request.getBody().length() > 0) {
+        request.addHeader("Content-Type", "application/json");
+      }
+      // attach cached token
+      final String authHeaderValue = "Bearer " + getUserSessionAuth().getAccessToken();
+      request.addHeader("Authorization", authHeaderValue);
+    }
+
+    return request;
+  }
+
   private Token getUserSessionAuth() {
     final Optional<Token> toRet =
-        userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY);
+        Optional.ofNullable(
+            userSessionService.getAttribute(
+                BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY));
     return toRet.orElseThrow(
         () ->
             new AuthenticationException(
                 "User authentication details are not available in the session"));
   }
 
-  private void setUserSessionAuth(Optional<Token> t) {
-    userSessionService.setAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY, t);
-  }
-
   private void setUserSessionAuth(Token t) {
-    setUserSessionAuth(Optional.ofNullable(t));
+    userSessionService.setAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY, t);
   }
 
   private void refreshBlackboardToken(Connector connector) {
@@ -722,7 +704,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   @Override
-  public String encryptKeyAndSecret(Connector connector) {
+  public String buildBasicAuthorizationCredentials(Connector connector) {
     final String apiKey = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY);
     final String apiSecret =
         encryptionService.decrypt(
@@ -795,30 +777,22 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     }
 
     // Not cached - get a fresh copy
-    String url =
-        API_ROOT_V1
-            + "users/"
-            + getUserIdType()
-            + getUserSessionAuth().getUserId()
-            + "/courses?fields=course";
+    Optional<String> url =
+        Optional.of(
+            API_ROOT_V1
+                + "users/"
+                + getUserIdType()
+                + getUserSessionAuth().getUserId()
+                + "/courses?fields=course");
 
     final List<Course> allCourses = new ArrayList<>();
-    CoursesByUser courses =
-        sendBlackboardData(connector, url, CoursesByUser.class, null, Request.Method.GET);
-    for (CourseByUser cbu : courses.getResults()) {
-      allCourses.add(cbu.getCourse());
-    }
-    Paging paging = courses.getPaging();
-
-    while (paging != null && paging.getNextPage() != null) {
-      courses =
-          sendBlackboardData(
-              connector, paging.getNextPage(), CoursesByUser.class, null, Request.Method.GET);
-      for (CourseByUser cbu : courses.getResults()) {
-        allCourses.add(cbu.getCourse());
-      }
-      paging = courses.getPaging();
-    }
+    do {
+      CoursesByUser courses =
+          sendBlackboardData(connector, url.get(), CoursesByUser.class, null, Request.Method.GET);
+      allCourses.addAll(
+          courses.getResults().stream().map(CourseByUser::getCourse).collect(Collectors.toList()));
+      url = Optional.ofNullable(courses.getPaging()).map(Paging::getNextPage);
+    } while (url.isPresent());
 
     final ImmutableList<Course> lockedList = ImmutableList.copyOf(allCourses);
     setCachedCourses(connector, lockedList);

@@ -101,7 +101,7 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
 
     // Ask for the token.
     final Connector connector = connectorService.getByUuid(connectorUuid);
-    final String b64 = blackboardRestConnectorService.encryptKeyAndSecret(connector);
+    final String b64 = blackboardRestConnectorService.buildBasicAuthorizationCredentials(connector);
 
     final Request oauthReq =
         new Request(

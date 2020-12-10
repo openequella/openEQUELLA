@@ -24,8 +24,6 @@ import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 
 public interface BlackboardRESTConnectorService extends ConnectorRepositoryImplementation {
-  // TODO may need more method sigs
-
   /**
    * Admin setup function
    *
@@ -47,14 +45,20 @@ public interface BlackboardRESTConnectorService extends ConnectorRepositoryImple
    * The connector object will need to store an encrypted admin token in the DB. Use this method to
    * encrypt the one returned from Blackboard.
    *
-   * @param data
-   * @return
+   * @param data content to encrypt
+   * @return encrypted content
    */
   String encrypt(String data);
 
   String decrypt(String encryptedData);
 
-  String encryptKeyAndSecret(Connector connector);
+  /**
+   * Creates a Base 64 encoded string of the connector's key and secret.
+   *
+   * @param connector used to launch this REST flow
+   * @return encoded string of connector key and secret
+   */
+  String buildBasicAuthorizationCredentials(Connector connector);
 
   void setAuth(Connector connector, Token token);
 
