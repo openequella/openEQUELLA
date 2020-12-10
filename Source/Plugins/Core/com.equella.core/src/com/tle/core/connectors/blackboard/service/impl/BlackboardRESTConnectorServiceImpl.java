@@ -597,13 +597,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private Token getUserSessionAuth() {
-    Optional<Token> auth =
-        userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY);
-    if (!auth.isPresent()) {
-      throw new AuthenticationException(
-          "User authentication details are not available in the session");
-    }
-    return auth.get();
+    return userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY)
+      .orElseThrow(
+        () -> new AuthenticationException("User authentication details are not available in the session"));
   }
 
   private void setUserSessionAuth(Optional<Token> t) {
