@@ -611,13 +611,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private void refreshBlackboardToken(Connector connector) {
-    Token expAuth = getUserSessionAuth();
-
-    // Make a reasonable effort to obtain the latest refresh token
-    Optional<Token> cachedAuth = getAuth(connector);
-    if (cachedAuth.isPresent()) {
-      expAuth = cachedAuth.get();
-    }
+    Token expAuth = getAuth(connector)
+      .orElse(() -> getUserSessionAuth());
 
     final String path =
         "learn/api/public/v1/oauth2/token?grant_type=refresh_token&refresh_token="
