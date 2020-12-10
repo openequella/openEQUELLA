@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.utils;
 
-import com.google.common.base.Optional;
 import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.ConnectorFolder;
 import com.tle.core.connectors.blackboard.beans.Availability;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.log4j.Logger;
 
 // Thread safe, and currently leveraged for the generic LTI flows
@@ -38,7 +38,7 @@ public class ConnectorEntityUtils {
       Content currentRawFolder, ConnectorCourse course, Map<String, List<Content>> folderMap) {
     if (currentRawFolder == null) {
       LOGGER.error("currentRawFolder is null.");
-      return Optional.absent();
+      return Optional.empty();
     }
     final Content.ContentHandler handler = currentRawFolder.getContentHandler();
     if (handler != null
@@ -77,7 +77,7 @@ public class ConnectorEntityUtils {
       return Optional.of(cc);
     }
     // Not a content folder.  Caller is responsible for checking null.
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**
@@ -162,6 +162,6 @@ public class ConnectorEntityUtils {
     }
 
     // The folder and its subfolders do not contain the folderId
-    return Optional.absent();
+    return Optional.empty();
   }
 }

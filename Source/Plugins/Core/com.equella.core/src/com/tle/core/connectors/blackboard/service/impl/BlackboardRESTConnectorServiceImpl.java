@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -73,6 +72,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -597,9 +597,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private Token getUserSessionAuth() {
-    return userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY)
-      .orElseThrow(
-        () -> new AuthenticationException("User authentication details are not available in the session"));
+    final Optional<Token> toRet =
+        userSessionService.getAttribute(BlackboardRESTConnectorConstants.USER_SESSION_AUTH_KEY);
+    return toRet.orElseThrow(
+        () ->
+            new AuthenticationException(
+                "User authentication details are not available in the session"));
   }
 
   private void setUserSessionAuth(Optional<Token> t) {
@@ -607,12 +610,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   private void setUserSessionAuth(Token t) {
-    setUserSessionAuth(Optional.fromNullable(t));
+    setUserSessionAuth(Optional.ofNullable(t));
   }
 
   private void refreshBlackboardToken(Connector connector) {
-    Token expAuth = getAuth(connector)
-      .orElse(() -> getUserSessionAuth());
+    // Make a reasonable effort to obtain the latest refresh token
+    Token expAuth = getAuth(connector).orElse(getUserSessionAuth());
 
     final String path =
         "learn/api/public/v1/oauth2/token?grant_type=refresh_token&refresh_token="
@@ -843,7 +846,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         getCachedValue(courseFoldersCache, key);
 
     if (!folders.isPresent()) {
-      return Optional.absent();
+      return Optional.empty();
     }
 
     for (ConnectorFolder topLevelFolder : folders.get()) {
@@ -859,13 +862,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       }
     }
 
-    return Optional.absent();
+    return Optional.empty();
   }
 
   private Optional<Course> getCachedCourse(Connector connector, String courseId) {
-    final ImmutableList<Course> cached = getCachedCourses(connector);
-
-    return convert(cached.stream().filter(c -> c.getId().equals(courseId)).findFirst());
+    return getCachedCourses(connector).stream().filter(c -> c.getId().equals(courseId)).findFirst();
   }
 
   /**
@@ -875,11 +876,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
    * @param <T>
    * @return
    */
-  private <T> Optional<T> convert(java.util.Optional<T> obj) {
+  private <T> Optional<T> convert(com.google.common.base.Optional<T> obj) {
     if (obj.isPresent()) {
       return Optional.of(obj.get());
     } else {
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 
@@ -899,7 +900,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
   private <T extends Serializable> Optional<T> getCachedValue(
       ReplicatedCache<T> cache, String key) {
-    final Optional<T> cachedValue = cache.get(key);
+    final Optional<T> cachedValue = convert(cache.get(key));
     if (LOGGER.isDebugEnabled()) {
       if (!cachedValue.isPresent()) {
         LOGGER.debug("No cache available for " + key);
