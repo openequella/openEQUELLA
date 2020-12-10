@@ -92,12 +92,16 @@ public final class ExecUtils {
         LOGGER.debug("getChildPid function did not run properly.\n" + errorOutput);
       }
       getChildPid.destroy();
-      // convert string to array of ints
-      pids =
-          Optional.of(
-              Arrays.stream(childPid.toString().replaceAll("\n", " ").split(" "))
-                  .mapToInt(Integer::parseInt)
-                  .toArray());
+
+      String childPidInfo = childPid.toString();
+      if (!childPidInfo.isEmpty()) {
+        // convert string to array of ints
+        pids =
+            Optional.of(
+                Arrays.stream(childPidInfo.replaceAll("\n", " ").split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray());
+      }
     } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
     } catch (NumberFormatException e) {
@@ -257,8 +261,8 @@ public final class ExecUtils {
       int pid = getPidOfProcess(proc).orElse(0);
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
-      proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
-      if (!stdErr.isFinished() || !stdOut.isFinished()) {
+      boolean isFinished = proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
+      if (!isFinished) {
         String platform = determinePlatform();
         if (platform.equals(PLATFORM_LINUX) || platform.equals(PLATFORM_LINUX64)) {
           killLinuxProcessTree(pid);
