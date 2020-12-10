@@ -636,7 +636,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       LOGGER.error(exception.getMessage());
       // Likely an expired auth token that failed to refresh.  Guide the user to try again
       removeCachedValue(authCache, buildCacheKey(CACHE_ID_AUTH, connector));
-      new AuthenticationException("Unable to refresh auth token.  Please retry action.");
+      throw new AuthenticationException("Unable to refresh auth token.  Please retry action.");
     }
   }
 
