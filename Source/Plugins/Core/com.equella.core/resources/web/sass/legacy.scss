@@ -63,6 +63,7 @@ $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
+$youtubeSearchOffset: -275px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -540,9 +541,16 @@ select[multiple="multiple"] {
   width: 200px;
 }
 
-#youtube-query ~ .modal-search-results {
-  max-height: 300px;
-  overflow-y: scroll;
+.youTubeHandler {
+  @include buttonShadowBorder;
+  //make room for more search results with a negative margin
+  margin-top: $youtubeSearchOffset;
+  .modal_close {
+    margin-top: $youtubeSearchOffset;
+  }
+  .modal-content-inner {
+    max-height: 75vh;
+  }
 }
 
 .modal-search-result li {
@@ -3314,7 +3322,7 @@ button + .repeater-groups {
 
   input[type="text"],
   #youtube-query select {
-    width: 528px;
+    width: 515px;
   }
 }
 
