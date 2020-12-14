@@ -35,7 +35,7 @@ import * as UserModule from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { sprintf } from "sprintf-js";
 
-interface UserSearchProps {
+export interface UserSearchProps {
   /** An optional `id` attribute for the component. Will also be used to prefix core child elements. */
   id?: string;
   /** How high (in pixels) the list of users should be. */

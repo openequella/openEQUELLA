@@ -16,14 +16,17 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
+import { Meta } from "@storybook/react";
 import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
-import StatusSelector from "../../tsrc/search/components/StatusSelector";
+import StatusSelector, {
+  StatusSelectorProps,
+} from "../../tsrc/search/components/StatusSelector";
 
 export default {
   title: "Search/StatusSelector",
   component: StatusSelector,
-};
+} as Meta<StatusSelectorProps>;
 
 const commonParams = {
   onChange: action("onChange"),

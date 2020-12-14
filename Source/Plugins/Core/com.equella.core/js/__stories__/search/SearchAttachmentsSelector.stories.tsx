@@ -15,14 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as React from "react";
 import { action } from "@storybook/addon-actions";
-import { SearchAttachmentsSelector } from "../../tsrc/search/components/SearchAttachmentsSelector";
+import {
+  SearchAttachmentsSelector,
+  SearchAttachmentsSelectorProps,
+} from "../../tsrc/search/components/SearchAttachmentsSelector";
 
 export default {
   title: "Search/SearchAttachmentsSelector",
   component: SearchAttachmentsSelector,
-};
+} as Meta<SearchAttachmentsSelectorProps>;
 
 const commonParams = {
   onChange: action("onChange"),

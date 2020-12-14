@@ -28,7 +28,6 @@ import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.serializer.AbstractAttachmentSerializer;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 import java.time.Duration;
-import java.util.Date;
 import java.util.Map;
 
 @Bind
@@ -45,10 +44,8 @@ public class YoutubeAttachmentSerializer extends AbstractAttachmentSerializer {
     ybean.setThumbUrl((String) cattach.getData(YoutubeUtils.PROPERTY_THUMB_URL));
     ybean.setViewUrl((String) cattach.getData(YoutubeUtils.PROPERTY_PLAY_URL));
     ybean.setCustomParameters((String) cattach.getData(YoutubeUtils.PROPERTY_PARAMETERS));
-    final Long date = (Long) cattach.getData(YoutubeUtils.PROPERTY_DATE);
-    if (date != null) {
-      ybean.setUploadedDate(new Date(date));
-    }
+    YoutubeUtils.parseDateModifiedToDate(cattach.getData(YoutubeUtils.PROPERTY_DATE))
+        .ifPresent(ybean::setUploadedDate);
     ybean.setUploader((String) cattach.getData(YoutubeUtils.PROPERTY_AUTHOR));
     final Object durationData = cattach.getData(YoutubeUtils.PROPERTY_DURATION);
     String duration = null;
