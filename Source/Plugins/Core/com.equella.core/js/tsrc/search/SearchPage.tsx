@@ -142,6 +142,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const location = useLocation();
 
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  };
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -158,24 +162,28 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       isSelectionSessionOpen()
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
-    ]).then((results) => {
-      const [searchSettings, queryStringSearchOptions] = results;
-      setSearchSettings(searchSettings);
-      if (queryStringSearchOptions)
-        setSearchPageOptions({
-          ...queryStringSearchOptions,
-          dateRangeQuickModeEnabled: false,
-          sortOrder:
-            queryStringSearchOptions.sortOrder ??
-            searchSettings.defaultSearchSort,
-        });
-      else
-        setSearchPageOptions({
-          ...searchPageOptions,
-          sortOrder:
-            searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
-        });
-    });
+    ])
+      .then(([searchSettings, queryStringSearchOptions]) => {
+        setSearchSettings(searchSettings);
+        if (queryStringSearchOptions)
+          setSearchPageOptions({
+            ...queryStringSearchOptions,
+            dateRangeQuickModeEnabled: false,
+            sortOrder:
+              queryStringSearchOptions.sortOrder ??
+              searchSettings.defaultSearchSort,
+          });
+        else
+          setSearchPageOptions({
+            ...searchPageOptions,
+            sortOrder:
+              searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+          });
+      })
+      .catch((e) => {
+        setShowSpinner(false);
+        handleError(e);
+      });
   }, []);
 
   const isInitialSearch = useRef(true);
@@ -208,15 +216,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // When Search options get changed, also update the Classification list.
   useEffect(() => {
     if (!isInitialSearch.current) {
-      listClassifications(searchPageOptions).then((classifications) =>
-        setClassifications(classifications)
-      );
+      listClassifications(searchPageOptions)
+        .then((classifications) => setClassifications(classifications))
+        .catch(handleError);
     }
   }, [searchPageOptions]);
-
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
 
   /**
    * Search items with specified search criteria and show a spinner when the search is in progress.
@@ -394,6 +398,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
+          onError={handleError}
           onSelectionChange={handleCollectionSelectionChanged}
           value={searchPageOptions.collections}
         />

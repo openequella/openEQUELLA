@@ -30,6 +30,11 @@ import { languageStrings } from "../../util/langstrings";
 
 interface CollectionSelectorProps {
   /**
+   * Fires if an error is caught that should be reported up.
+   * @param error the caught error.
+   */
+  onError: (error: Error) => void;
+  /**
    * Fires when collection selections are changed.
    * @param collections Selected collections.
    */
@@ -45,6 +50,7 @@ interface CollectionSelectorProps {
  * The initially selected collections are either provided through props or an empty array.
  */
 export const CollectionSelector = ({
+  onError,
   onSelectionChange,
   value,
 }: CollectionSelectorProps) => {
@@ -53,9 +59,9 @@ export const CollectionSelector = ({
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    collectionListSummary([
-      OEQ.Acl.ACL_SEARCH_COLLECTION,
-    ]).then((collections: Collection[]) => setCollections(collections));
+    collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
+      .then((collections: Collection[]) => setCollections(collections))
+      .catch(onError);
   }, []);
 
   return (

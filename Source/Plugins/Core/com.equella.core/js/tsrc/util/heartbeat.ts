@@ -19,10 +19,17 @@ import Axios from "axios";
 
 export function startHeartbeat() {
   setInterval(function () {
-    Axios.get<string>("api/status/heartbeat").then((resp) => {
-      if (resp.data !== "OK") {
-        console.log(resp.data);
-      }
-    });
+    Axios.get<string>("api/status/heartbeat")
+      .then((resp) => {
+        if (resp.data !== "OK") {
+          throw new Error(
+            `Unexpected heartbeat response from openEQUELLA server: ${resp.data}`
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Attempt to communicate with openEQUELLA server failed");
+        console.error(error);
+      });
   }, 2 * 60 * 1000);
 }
