@@ -57,4 +57,8 @@ public class Availability implements Serializable {
       this.type = type;
     }
   }
+
+  public String toString() {
+    return "available=" + available;
+  }
 }

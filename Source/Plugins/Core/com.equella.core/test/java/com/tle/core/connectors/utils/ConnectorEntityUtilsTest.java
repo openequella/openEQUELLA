@@ -4,7 +4,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-import com.google.common.base.Optional;
 import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.ConnectorFolder;
 import com.tle.core.connectors.blackboard.beans.Availability;
@@ -12,6 +11,7 @@ import com.tle.core.connectors.blackboard.beans.Content;
 import com.tle.core.connectors.blackboard.beans.Content.ContentHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Test;
 
 @SuppressWarnings("nls")

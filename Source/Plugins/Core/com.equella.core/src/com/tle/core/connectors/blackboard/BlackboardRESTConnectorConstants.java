@@ -36,6 +36,8 @@ public final class BlackboardRESTConnectorConstants {
 
   public static final String AUTH_URL = "blackboardrestauth";
 
+  public static final String USER_SESSION_AUTH_KEY = "USER_AUTH";
+
   private BlackboardRESTConnectorConstants() {
     throw new Error();
   }
