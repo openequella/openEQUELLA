@@ -89,15 +89,19 @@ public final class ExecUtils {
       } else {
         StringBuilder errorOutput = new StringBuilder();
         CharStreams.copy(new InputStreamReader(getChildPid.getErrorStream()), errorOutput);
-        LOGGER.debug("getChildPid function did not run properly.\n" + errorOutput);
+        LOGGER.warn("getChildPid function did not run properly.\n" + errorOutput);
       }
       getChildPid.destroy();
-      // convert string to array of ints
-      pids =
-          Optional.of(
-              Arrays.stream(childPid.toString().replaceAll("\n", " ").split(" "))
-                  .mapToInt(Integer::parseInt)
-                  .toArray());
+
+      String childPidInfo = childPid.toString();
+      if (!childPidInfo.isEmpty()) {
+        // convert string to array of ints
+        pids =
+            Optional.of(
+                Arrays.stream(childPidInfo.replaceAll("\n", " ").split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray());
+      }
     } catch (IOException | InterruptedException e) {
       LOGGER.error("Error getting child processes for: " + pid, e);
     } catch (NumberFormatException e) {
@@ -257,8 +261,10 @@ public final class ExecUtils {
       int pid = getPidOfProcess(proc).orElse(0);
       final StreamReader stdOut = cp.getSecond();
       final StreamReader stdErr = cp.getThird();
-      proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
-      if (!stdErr.isFinished() || !stdOut.isFinished()) {
+      final boolean timeout = !proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
+      if (timeout) {
+        // If the process is not terminated before the given timeout is reached,
+        // kill the process and throw an InterruptedException.
         String platform = determinePlatform();
         if (platform.equals(PLATFORM_LINUX) || platform.equals(PLATFORM_LINUX64)) {
           killLinuxProcessTree(pid);
