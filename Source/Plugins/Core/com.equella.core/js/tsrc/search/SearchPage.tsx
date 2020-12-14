@@ -163,8 +163,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
-      .then((results) => {
-        const [searchSettings, queryStringSearchOptions] = results;
+      .then(([searchSettings, queryStringSearchOptions]) => {
         setSearchSettings(searchSettings);
         if (queryStringSearchOptions)
           setSearchPageOptions({
