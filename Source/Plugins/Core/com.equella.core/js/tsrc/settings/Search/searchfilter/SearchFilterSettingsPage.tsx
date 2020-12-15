@@ -15,14 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { useEffect, useState } from "react";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../../../mainui/Template";
-import { routes } from "../../../mainui/routes";
 import {
   Card,
   CardActions,
@@ -34,19 +26,24 @@ import {
   ListItemText,
   makeStyles,
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
-import { languageStrings } from "../../../util/langstrings";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { generateFromError } from "../../../api/errors";
+import MessageDialog from "../../../components/MessageDialog";
+import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
+import SettingsListHeading from "../../../components/SettingsListHeading";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
+import { routes } from "../../../mainui/routes";
 import {
-  defaultSearchSettings,
-  getSearchSettingsFromServer,
-  saveSearchSettingsToServer,
-  SearchSettings,
-} from "../../../modules/SearchSettingsModule";
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps,
+} from "../../../mainui/Template";
 import {
   batchDelete,
   batchUpdateOrAdd,
@@ -54,19 +51,21 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../../../modules/SearchFilterSettingsModule";
-import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
-import { generateFromError } from "../../../api/errors";
-import { AxiosError } from "axios";
+import {
+  defaultSearchSettings,
+  getSearchSettingsFromServer,
+  saveSearchSettingsToServer,
+  SearchSettings,
+} from "../../../modules/SearchSettingsModule";
+import { commonString } from "../../../util/commonstrings";
+import { idExtractor } from "../../../util/idExtractor";
 import {
   addElement,
   deleteElement,
   replaceElement,
 } from "../../../util/ImmutableArrayUtil";
-import MessageDialog from "../../../components/MessageDialog";
-import SettingPageTemplate from "../../../components/SettingPageTemplate";
-import { commonString } from "../../../util/commonstrings";
-import SettingsListHeading from "../../../components/SettingsListHeading";
-import { idExtractor } from "../../../util/idExtractor";
+import { languageStrings } from "../../../util/langstrings";
+import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -118,15 +117,50 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [messageDialogMessages, setMessageDialogMessages] = useState<string[]>(
     []
   );
+  const [reset, setReset] = useState<boolean>(true);
 
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchFilterStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
+  }, [searchFilterStrings.name, updateTemplate]);
+
+  useEffect(() => {
+    const onError = (error: Error) => {
+      updateTemplate(templateError(generateFromError(error)));
+    };
+
+    /**
+     * Fetch the general Search Settings from the Server.
+     * Set the initial values of the Owner filter and Date modified filter to state.
+     */
+    const getSearchSettings = () => {
+      getSearchSettingsFromServer()
+        .then((settings) => {
+          setSearchSettings(settings);
+          setInitialSearchSettings(settings);
+        })
+        .catch(onError);
+    };
+
+    /**
+     * Fetch MIME type filters from the Server and set them to state.
+     * Clear the two collections of changed and deleted MIME type filters.
+     */
+    const getMimeTypeFilters = () => {
+      getMimeTypeFiltersFromServer()
+        .then((filters: MimeTypeFilter[]) => {
+          setMimeTypeFilters(filters);
+          setDeletedMimeTypeFilters([]);
+          setChangedMimeTypeFilters([]);
+        })
+        .catch(onError);
+    };
+
     getSearchSettings();
     getMimeTypeFilters();
-  }, []);
+  }, [reset, updateTemplate]);
 
   const mimeTypeFilterChanged =
     deletedMimeTypeFilters.length || changedMimeTypeFilters.length;
@@ -138,32 +172,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchSettings.searchingDisableDateModifiedFilter;
 
   const changesUnsaved = !!mimeTypeFilterChanged || generalSearchSettingChanged;
-  /**
-   * Fetch the general Search Settings from the Server.
-   * Set the initial values of the Owner filter and Date modified filter to state.
-   */
-  const getSearchSettings = () => {
-    getSearchSettingsFromServer()
-      .then((settings) => {
-        setSearchSettings(settings);
-        setInitialSearchSettings(settings);
-      })
-      .catch((error: AxiosError) => handleError(error));
-  };
-
-  /**
-   * Fetch MIME type filters from the Server and set them to state.
-   * Clear the two collections of changed and deleted MIME type filters.
-   */
-  const getMimeTypeFilters = () => {
-    getMimeTypeFiltersFromServer()
-      .then((filters: MimeTypeFilter[]) => {
-        setMimeTypeFilters(filters);
-        setDeletedMimeTypeFilters([]);
-        setChangedMimeTypeFilters([]);
-      })
-      .catch((error: AxiosError) => handleError(error));
-  };
 
   /**
    * Visually add or update a filter.
@@ -264,8 +272,8 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       })
       .catch(() => {}) // Errors have been handled and subsequent promises have skipped.
       .finally(() => {
-        getMimeTypeFilters();
-        getSearchSettings();
+        // Toggle `reset` to trigger effect
+        setReset(!reset);
       });
   };
 
@@ -274,6 +282,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // The reason for throwing an error again is to prevent subsequent REST calls.
     throw new Error(error.message);
   };
+
   return (
     <SettingPageTemplate
       onSave={save}
