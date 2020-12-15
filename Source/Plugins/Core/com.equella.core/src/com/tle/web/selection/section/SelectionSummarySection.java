@@ -67,7 +67,7 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.event.AttachmentSelectorEvent;
 import com.tle.web.selection.event.AttachmentSelectorEventListener;
-import com.tle.web.settings.UISettingsJava;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import javax.inject.Inject;
@@ -127,7 +127,7 @@ public class SelectionSummarySection
     JSHandler unselectHandler =
         // In new search UI, put "unselectAll" in an ajax update function in order not to refresh
         // the page
-        UISettingsJava.getUISettings().isNewSearchActive()
+        RenderNewTemplate.isNewSearchPageEnabled()
             ? new OverrideHandler(getUpdateSelection(tree, events.getEventHandler("unselectAll")))
             : events.getNamedHandler("unselectAll");
     unselectAllLink.setClickHandler(unselectHandler);
