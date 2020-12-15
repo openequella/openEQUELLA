@@ -33,6 +33,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
@@ -94,6 +95,7 @@ export const SearchResultList = ({
 }: SearchResultListProps) => {
   const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
+  const inSelectionSession: boolean = isSelectionSessionOpen();
 
   /**
    * A list that consists of search result items. Lower the list's opacity when spinner displays.
@@ -129,13 +131,15 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid item>
-              <Tooltip title={searchPageStrings.shareSearchHelperText}>
-                <IconButton onClick={onCopySearchLink}>
-                  <Share />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {!inSelectionSession ? (
+              <Grid item>
+                <Tooltip title={searchPageStrings.shareSearchHelperText}>
+                  <IconButton onClick={onCopySearchLink}>
+                    <Share />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : undefined}
           </Grid>
         }
       />
