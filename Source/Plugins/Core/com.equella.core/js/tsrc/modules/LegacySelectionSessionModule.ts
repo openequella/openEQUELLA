@@ -18,11 +18,18 @@
 import Axios from "axios";
 import {
   API_BASE_URL,
+  AppConfig,
   getBaseUrl,
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
-import { LegacyContentResponse } from "../legacycontent/LegacyContent";
+import {
+  ChangeRoute,
+  isChangeRoute,
+  isPageContent,
+  LegacyContentResponse,
+  SubmitResponse,
+} from "../legacycontent/LegacyContent";
 import { routes } from "../mainui/routes";
 
 /**
@@ -272,6 +279,17 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 };
 
 /**
+ * Navigate to Selection Session Checkout page. This function is mostly called
+ * when Selection Session is in 'selectOrAdd'.
+ *
+ * Due to no available React Routes in the context of using new Search UI in
+ * Selection Session, this function concatenates the route with base URL and
+ * then uses 'window.location.href' to achieve the navigation.
+ */
+const navigateToCheckout = ({ route }: ChangeRoute) =>
+  (window.location.href = `${AppConfig.baseUrl}${route}`);
+
+/**
  * Build an object of SelectionSessionPostData for 'structured'.
  */
 export const buildPostDataForStructured = (
@@ -356,11 +374,18 @@ export const selectResourceForNonCourseList = (
     itemKey,
     attachmentUUIDs
   );
+  const callback = (response: SubmitResponse) => {
+    if (isChangeRoute(response)) {
+      navigateToCheckout(response);
+    } else if (isPageContent(response)) {
+      updateSelectionSummary(response);
+    }
+  };
 
-  return submitSelection<LegacyContentResponse>(
+  return submitSelection<SubmitResponse>(
     `${submitBaseUrl}/selectoradd/searching.do`,
     postData,
-    updateSelectionSummary
+    callback
   );
 };
 

@@ -55,7 +55,7 @@ interface ExternalRedirect {
   href: string;
 }
 
-interface ChangeRoute {
+export interface ChangeRoute {
   route: string;
   userUpdated: boolean;
 }
@@ -114,22 +114,24 @@ export interface LegacyContentProps {
   children?: never;
 }
 
-type SubmitResponse = ExternalRedirect | LegacyContentResponse | ChangeRoute;
+export type SubmitResponse =
+  | ExternalRedirect
+  | LegacyContentResponse
+  | ChangeRoute;
 
-function isPageContent(
+export function isPageContent(
   response: SubmitResponse
 ): response is LegacyContentResponse {
   return (response as LegacyContentResponse).html !== undefined;
 }
 
-function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
+export function isChangeRoute(
+  response: SubmitResponse
+): response is ChangeRoute {
   return (response as ChangeRoute).route !== undefined;
 }
 
-export function submitRequest(
-  path: string,
-  vals: StateData
-): Promise<SubmitResponse> {
+function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
     vals
