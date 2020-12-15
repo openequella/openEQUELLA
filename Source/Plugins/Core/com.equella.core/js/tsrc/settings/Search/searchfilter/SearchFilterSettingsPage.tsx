@@ -240,7 +240,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
     (generalSearchSettingChanged
       ? saveSearchSettingsToServer(searchSettings).catch((error) =>
-          handleError(error)
+          handleError(error, true)
         )
       : Promise.resolve()
     )
@@ -249,7 +249,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           changedMimeTypeFilters.length
             ? batchUpdateOrAdd(changedMimeTypeFilters)
                 .then((messages) => errorMessages.push(...messages))
-                .catch((error) => handleError(error))
+                .catch((error) => handleError(error, true))
             : Promise.resolve()
       )
       .then(
@@ -258,7 +258,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           deletedMimeTypeFilters.length
             ? batchDelete(deletedMimeTypeFilters.map(idExtractor))
                 .then((messages) => errorMessages.push(...messages))
-                .catch((error) => handleError(error))
+                .catch((error) => handleError(error, true))
             : Promise.resolve()
       )
       .then(() => {
@@ -277,10 +277,14 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
       });
   };
 
-  const handleError = (error: Error) => {
+  const handleError = (error: Error, withRethrow = false) => {
     updateTemplate(templateError(generateFromError(error)));
     // The reason for throwing an error again is to prevent subsequent REST calls.
-    throw new Error(error.message);
+    // Is this a sign of a more fundamental issue? Leaving for now, as now's not
+    // the time to drastically change such things
+    if (withRethrow) {
+      throw new Error(error.message);
+    }
   };
 
   return (
@@ -375,13 +379,19 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </CardActions>
       </Card>
 
-      <MimeTypeFilterEditingDialog
-        open={openMimeTypeFilterEditor}
-        onClose={closeMimeTypeFilterDialog}
-        addOrUpdate={addOrUpdateMimeTypeFilter}
-        mimeTypeFilter={selectedMimeTypeFilter}
-        handleError={handleError}
-      />
+      {
+        // Delay creation of the MimeTypeFilterEditingDialog so that related REST calls are only
+        // made when needed.
+        openMimeTypeFilterEditor && (
+          <MimeTypeFilterEditingDialog
+            open={openMimeTypeFilterEditor}
+            onClose={closeMimeTypeFilterDialog}
+            addOrUpdate={addOrUpdateMimeTypeFilter}
+            mimeTypeFilter={selectedMimeTypeFilter}
+            handleError={handleError}
+          />
+        )
+      }
 
       <MessageDialog
         open={openMessageDialog}

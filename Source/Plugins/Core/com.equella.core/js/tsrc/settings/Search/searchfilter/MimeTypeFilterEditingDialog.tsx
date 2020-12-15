@@ -34,6 +34,7 @@ import {
 import { commonString } from "../../../util/commonstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
+import useError from "../../../util/useError";
 import MimeTypeList from "./MimeTypeList";
 
 export interface MimeTypeFilterEditingDialogProps {
@@ -82,25 +83,22 @@ const MimeTypeFilterEditingDialog = ({
     OEQ.MimeType.MimeTypeEntry[]
   >([]);
   // Used to store the name of a MIME type filter.
-  const [filterName, setFilterName] = useState<string>("");
+  const [filterName, setFilterName] = useState<string>(
+    mimeTypeFilter ? mimeTypeFilter.name : ""
+  );
   // Used to store the MIME types of a MIME type filter.
-  const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>([]);
+  const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>(
+    mimeTypeFilter ? mimeTypeFilter.mimeTypes : []
+  );
+  const setError = useError(handleError);
 
   const isNameValid = validateMimeTypeName(filterName);
 
   useEffect(() => {
     mimeTypeSupplier()
       .then((mimeTypes) => setMimeTypeEntries(mimeTypes))
-      .catch((error) => handleError(error));
-  }, [mimeTypeSupplier]);
-
-  /**
-   * Clean up previously edited filter, depending on 'onClose'.
-   */
-  useEffect(() => {
-    setFilterName(mimeTypeFilter ? mimeTypeFilter.name : "");
-    setSelectedMimeTypes(mimeTypeFilter ? mimeTypeFilter.mimeTypes : []);
-  }, [onClose]);
+      .catch(setError);
+  }, [mimeTypeSupplier, setError]);
 
   /**
    * If a MIME type is selected and it doesn't exist in the collection of selected MIME types,
