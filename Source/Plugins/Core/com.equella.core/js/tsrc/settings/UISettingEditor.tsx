@@ -61,6 +61,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
+  const [error, setError] = useState<Error>();
 
   useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
@@ -74,13 +75,20 @@ const UISettingEditor = (props: UISettingEditorProps) => {
         }
       })
       .catch((error) => {
-        handleError(error);
+        setError(error);
       });
 
     return () => {
       cleanupTriggered = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (error !== undefined) {
+      handleError(error);
+      setError(undefined);
+    }
+  }, [error, handleError]);
 
   const setNewUI = (enabled: boolean) => {
     setNewUIEnabled(enabled);
