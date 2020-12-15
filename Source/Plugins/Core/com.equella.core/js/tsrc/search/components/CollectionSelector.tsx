@@ -27,6 +27,7 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
+import useError from "../../util/useError";
 
 interface CollectionSelectorProps {
   /**
@@ -57,12 +58,13 @@ export const CollectionSelector = ({
   const collectionSelectorStrings =
     languageStrings.searchpage.collectionSelector;
   const [collections, setCollections] = useState<Collection[]>([]);
+  const handleError = useError(onError);
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
       .then((collections: Collection[]) => setCollections(collections))
-      .catch(onError);
-  }, []);
+      .catch(handleError);
+  }, [handleError]);
 
   return (
     <Autocomplete
