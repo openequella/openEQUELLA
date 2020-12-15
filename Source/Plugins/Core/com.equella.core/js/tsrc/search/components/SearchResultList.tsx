@@ -131,7 +131,7 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            {!inSelectionSession ? (
+            {!inSelectionSession && (
               <Grid item>
                 <Tooltip title={searchPageStrings.shareSearchHelperText}>
                   <IconButton onClick={onCopySearchLink}>
@@ -139,7 +139,7 @@ export const SearchResultList = ({
                   </IconButton>
                 </Tooltip>
               </Grid>
-            ) : undefined}
+            )}
           </Grid>
         }
       />
