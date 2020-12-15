@@ -38,8 +38,8 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
 import com.tle.web.selection.SelectionSession;
-import com.tle.web.settings.UISettingsJava;
 import com.tle.web.template.RenderNewSearchPage;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import javax.inject.Inject;
@@ -123,7 +123,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 
   private boolean isNewSearchUIInSelectionSession(SelectionSession selectionSession) {
     if (selectionSession != null) {
-      return UISettingsJava.getUISettings().isNewSearchActive();
+      return RenderNewTemplate.isNewSearchPageEnabled();
     }
     return false;
   }

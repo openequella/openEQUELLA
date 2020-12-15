@@ -28,7 +28,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
-import com.tle.web.settings.UISettingsJava;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -54,7 +54,7 @@ public class SearchSelectable extends AbstractSelectionNavAction {
 
   @SuppressWarnings("nls")
   protected SectionInfo getSearchTree(SectionInfo info) {
-    if (UISettingsJava.getUISettings().newUI().enabled()) {
+    if (RenderNewTemplate.isNewUIEnabled()) {
       return controller.createForward(info, NEW_FORWARD_PATH);
     }
     return controller.createForward(info, LEGACY_FORWARD_PATH);

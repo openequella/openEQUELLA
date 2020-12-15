@@ -104,8 +104,7 @@ object RenderNewTemplate {
     RunWithDB
       .executeIfInInstitution(UISettings.cachedUISettings)
       .getOrElse(UISettings.defaultSettings)
-      .newUI
-      .newSearch
+      .isNewSearchActive
   }
 
   // Check if New UI is being used, but there is no guarantee that New UI is enabled.
