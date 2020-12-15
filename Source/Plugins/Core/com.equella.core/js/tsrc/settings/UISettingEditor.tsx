@@ -34,6 +34,7 @@ import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
 import { AppConfig } from "../AppConfig";
 import { useEffect, useState } from "react";
+import useError from "../util/useError";
 
 const useStyles = makeStyles({
   fab: {
@@ -61,7 +62,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
+  const setError = useError(handleError);
 
   useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
@@ -81,14 +82,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
     return () => {
       cleanupTriggered = true;
     };
-  }, []);
-
-  useEffect(() => {
-    if (error !== undefined) {
-      handleError(error);
-      setError(undefined);
-    }
-  }, [error, handleError]);
+  }, [setError]);
 
   const setNewUI = (enabled: boolean) => {
     setNewUIEnabled(enabled);
