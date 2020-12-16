@@ -90,7 +90,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    * @see com.tle.core.dao.GenericDao#update(null)
    */
   @Override
-  @Transactional(propagation = Propagation.MANDATORY)
+  @Transactional(propagation = Propagation.REQUIRED)
   public void update(T entity) {
     getHibernateTemplate().update(entity);
     postSave(entity);

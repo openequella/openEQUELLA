@@ -69,6 +69,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
         bean = fbean;
         fbean.setParentZip((String) fattach.getData(ZipAttachment.KEY_ZIP_ATTACHMENT_UUID));
         fbean.setConversion(fattach.isConversion());
+        fbean.setErroredIndexing(fattach.isErroredIndexing());
         copyFileData(fattach, fbean);
         break;
       case ZIP:
@@ -164,6 +165,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
         editor.editZipParent(fattach.getParentZip());
         editor.editFilename(fattach.getFilename());
         editor.editConversion(fattach.isConversion());
+        editor.editErroredIndexing(fattach.isErroredIndexing());
         break;
       case LINK:
         UrlAttachmentBean uattach = (UrlAttachmentBean) attachBean;

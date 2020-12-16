@@ -87,7 +87,11 @@ public class MimeTypesTest extends AbstractCleanupTest {
     assertTrue(attachments.attachmentDetails(ATTACHMENT_NAME).contains("application/octet-stream"));
   }
 
-  @Test
+  /* temporarily disabled due to flakiness,
+  caused by sendKeys in uploadIcon intermittently failing on CI.
+  To be fixed and re-enabled.
+  */
+  @Test(enabled = false)
   public void changeIconTest() {
     MimeSearchPage mimePage = new MimeSearchPage(context).load();
     addMime("IconMime", "app/icontest", "icon");

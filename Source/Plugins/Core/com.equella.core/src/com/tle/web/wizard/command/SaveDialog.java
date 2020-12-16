@@ -191,6 +191,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     WorkflowOperation[] ops = new WorkflowOperation[] {};
     boolean doSubmit = type.equals("submit");
     boolean doCheck = type.equals("check");
+    boolean doDraft = type.equals("draft");
 
     if (doSubmit || !state.isInDraft() || doCheck) {
       if (!wizardBodySection.isSaveable(info) && wizardBodySection.goToFirstUnfinished(info)) {
@@ -200,15 +201,15 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     if (doCheck) {
       return;
     }
-    boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
+    boolean leaveWizard = state.isEntryThroughEdit() || state.isNewItem() || doDraft;
     if (doSubmit) {
       ops = new WorkflowOperation[] {workflowFactory.submit(message)};
-      stayInWizard = false;
+      leaveWizard = true;
     }
 
     wizardService.doSave(state, true, ops);
 
-    if (!stayInWizard) {
+    if (leaveWizard) {
       webWizardService.forwardToViewItem(info, state);
       receiptService.setReceipt(LABEL_SUCCESS_RECEIPT);
     } else {

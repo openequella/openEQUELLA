@@ -27,13 +27,15 @@ import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo from "../components/MessageInfo";
-import type { RenderData } from "../mainui";
+import { routes } from "../mainui/routes";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
+import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
 import {
   Classification,
   listClassifications,
@@ -53,8 +55,16 @@ import {
   SearchSettings,
   SortOrder,
 } from "../modules/SearchSettingsModule";
+import {
+  isSelectionSessionOpen,
+  prepareDraggable,
+  buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionRemoteSearchLink,
+  isSelectionSessionInStructured,
+} from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
+import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -62,15 +72,12 @@ import {
   RefinePanelControl,
   RefineSearchPanel,
 } from "./components/RefineSearchPanel";
-import { RemoteSearchSelector } from "./components/RemoteSearchSelector";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
-
-declare const renderData: RenderData | undefined;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -135,6 +142,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const location = useLocation();
 
+  const handleError = (error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  };
+
   /**
    * Update the page title and retrieve Search settings.
    */
@@ -147,25 +158,32 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      queryStringParamsToSearchOptions(location),
-    ]).then((results) => {
-      const [searchSettings, queryStringSearchOptions] = results;
-      setSearchSettings(searchSettings);
-      if (queryStringSearchOptions)
-        setSearchPageOptions({
-          ...queryStringSearchOptions,
-          dateRangeQuickModeEnabled: false,
-          sortOrder:
-            queryStringSearchOptions.sortOrder ??
-            searchSettings.defaultSearchSort,
-        });
-      else
-        setSearchPageOptions({
-          ...searchPageOptions,
-          sortOrder:
-            searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
-        });
-    });
+      // Do not convert query string params to search options in Selection Session.
+      isSelectionSessionOpen()
+        ? Promise.resolve(undefined)
+        : queryStringParamsToSearchOptions(location),
+    ])
+      .then(([searchSettings, queryStringSearchOptions]) => {
+        setSearchSettings(searchSettings);
+        if (queryStringSearchOptions)
+          setSearchPageOptions({
+            ...queryStringSearchOptions,
+            dateRangeQuickModeEnabled: false,
+            sortOrder:
+              queryStringSearchOptions.sortOrder ??
+              searchSettings.defaultSearchSort,
+          });
+        else
+          setSearchPageOptions({
+            ...searchPageOptions,
+            sortOrder:
+              searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+          });
+      })
+      .catch((e) => {
+        setShowSpinner(false);
+        handleError(e);
+      });
   }, []);
 
   const isInitialSearch = useRef(true);
@@ -185,18 +203,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   }, [filterExpansion, pagedSearchResult]);
 
+  // In Selection Session, once a new search result is returned, make each
+  // new search result Item draggable.
+  useEffect(() => {
+    if (isSelectionSessionInStructured()) {
+      pagedSearchResult.results.forEach(({ uuid }) => {
+        prepareDraggable(uuid);
+      });
+    }
+  }, [pagedSearchResult]);
+
   // When Search options get changed, also update the Classification list.
   useEffect(() => {
     if (!isInitialSearch.current) {
-      listClassifications(searchPageOptions).then((classifications) =>
-        setClassifications(classifications)
-      );
+      listClassifications(searchPageOptions)
+        .then((classifications) => setClassifications(classifications))
+        .catch(handleError);
     }
   }, [searchPageOptions]);
-
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
 
   /**
    * Search items with specified search criteria and show a spinner when the search is in progress.
@@ -374,16 +398,37 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
+          onError={handleError}
           onSelectionChange={handleCollectionSelectionChanged}
           value={searchPageOptions.collections}
         />
       ),
       disabled: false,
+      alwaysVisible: true,
+    },
+    {
+      idSuffix: "AdvancedSearchSelector",
+      title: searchStrings.advancedSearchSelector.title,
+      component: (
+        <AuxiliarySearchSelector
+          auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
+          urlGeneratorForRouteLink={routes.AdvancedSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
+        />
+      ),
+      disabled: false,
+      alwaysVisible: true,
     },
     {
       idSuffix: "RemoteSearchSelector",
       title: searchStrings.remoteSearchSelector.title,
-      component: <RemoteSearchSelector />,
+      component: (
+        <AuxiliarySearchSelector
+          auxiliarySearchesSupplier={getRemoteSearchesFromServer}
+          urlGeneratorForRouteLink={routes.RemoteSearch.to}
+          urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
+        />
+      ),
       disabled: false,
     },
     {

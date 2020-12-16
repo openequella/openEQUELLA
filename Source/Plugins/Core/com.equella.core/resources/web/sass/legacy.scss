@@ -56,10 +56,14 @@ $activeBackgroundColor: transparentize(#000, 0.7);
 $modalFooterHeight: 50px;
 $iframeDialogWidth: 1175px;
 $iframeDialogHeight: 650px;
+$minimalMargin: 4px;
 $singleMargin: 8px;
 $doubleMargin: 16px;
 $col2Width: 250px;
+$standardBorderRadius: 4px;
+$roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
+$youtubeSearchOffset: -275px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -68,9 +72,9 @@ $termSelectorHeight: 68px;
 }
 
 @mixin curvedCorners {
-  border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
+  border-radius: $standardBorderRadius;
+  -webkit-border-radius: $standardBorderRadius;
+  -moz-border-radius: $standardBorderRadius;
 }
 
 @mixin editAttachmentDialogStyles {
@@ -100,6 +104,28 @@ $termSelectorHeight: 68px;
     background-color: $activeBackgroundColor;
   }
 }
+@mixin roundButton($hasText: bool) {
+  @include boxShadow;
+  &:hover {
+    @include typography-button;
+    //need a smaller line-height because this is a round button
+    line-height: 1.45em;
+    text-transform: uppercase;
+    width: unset;
+    @if $hasText {
+      // The padding is only needed if the button has text that will be shown on hover
+      padding-right: $singleMargin;
+      padding-left: $singleMargin;
+    }
+  }
+  min-width: unset;
+  border-radius: $roundButtonRadius;
+  -moz-border-radius: $roundButtonRadius;
+  -webkit-border-radius: $roundButtonRadius;
+  line-height: 1.3rem;
+  padding: $minimalMargin;
+}
+
 @font-face {
   font-family: "Material Icons";
   font-style: normal;
@@ -428,14 +454,15 @@ Buttons
 Inputs
 *****************************************************************************/
 
-input[type="text"],
-input[type="password"],
-input[type="number"],
+// Don't apply below styles to MUI inputs,
+input[type="text"]:not(.MuiInputBase-input),
+input[type="password"]:not(.MuiInputBase-input),
+input[type="number"]:not(.MuiInputBase-input),
 textarea,
 select[multiple="multiple"] {
   border: 1px solid #f5f5f5;
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-  border-radius: 4px 4px 0 0;
+  border-radius: $standardBorderRadius $standardBorderRadius 0 0;
   background-color: #f5f5f5;
   &:not(#q):not(.prompt) {
     //so as to avoid affecting searchbars
@@ -452,7 +479,7 @@ select[multiple="multiple"] {
   }
 }
 .calendar {
-  padding-top: 4px;
+  padding-top: $minimalMargin;
   display: inline;
   img {
     @include replaceImageTag("date-picker.png", 41px, 41px);
@@ -460,7 +487,7 @@ select[multiple="multiple"] {
     border: 1px solid #fff;
     margin-left: $doubleMargin;
     vertical-align: middle;
-    margin-bottom: 4px;
+    margin-bottom: $minimalMargin;
     cursor: pointer;
   }
 }
@@ -514,6 +541,18 @@ select[multiple="multiple"] {
   width: 200px;
 }
 
+.youTubeHandler {
+  @include buttonShadowBorder;
+  //make room for more search results with a negative margin
+  margin-top: $youtubeSearchOffset;
+  .modal_close {
+    margin-top: $youtubeSearchOffset;
+  }
+  .modal-content-inner {
+    max-height: 75vh;
+  }
+}
+
 .modal-search-result li {
   position: relative;
   margin: 0 0 10px 0;
@@ -533,14 +572,14 @@ select[multiple="multiple"] {
 .modal-search-result h4,
 .modal-search-result li label {
   font-size: 13px;
-  margin: 0 0 4px 0;
+  margin: 0 0 $minimalMargin 0;
   font-weight: bold;
 }
 
 .modal-search-result.youtube img {
   @include curvedCorners;
   margin: 0 20px 10px 0;
-  padding: 4px;
+  padding: $minimalMargin;
   background: #fff;
   border: 1px solid #ddd;
   float: left;
@@ -551,7 +590,7 @@ select[multiple="multiple"] {
 }
 
 .modal-search-result.youtube h4 {
-  margin-top: 4px;
+  margin-top: $minimalMargin;
   font-weight: normal;
   line-height: 1.3;
 }
@@ -575,7 +614,7 @@ select[multiple="multiple"] {
 
 .displayname {
   font-size: 13px;
-  margin: 0 0 4px 0;
+  margin: 0 0 $minimalMargin 0;
   font-weight: bold;
 }
 
@@ -588,7 +627,7 @@ select[multiple="multiple"] {
   padding-top: $singleMargin;
   label {
     padding-right: $singleMargin;
-    padding-left: 4px;
+    padding-left: $minimalMargin;
   }
 }
 
@@ -597,8 +636,8 @@ select[multiple="multiple"] {
 }
 
 ul.select_options li {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: $minimalMargin;
+  padding-bottom: $minimalMargin;
   input[disabled="disabled"] {
     position: static;
   }
@@ -647,7 +686,7 @@ ul.select_options li {
 Contribution wizard inputs
 *****************************************************************************/
 .wizard-controls {
-  margin: 4px 0;
+  margin: $minimalMargin 0;
 }
 
 .wizard-controls .control {
@@ -848,7 +887,7 @@ Contribution wizard inputs
   background: url(../../images/repeater-remove.png) no-repeat 0px 0px;
   font-size: 20px;
   color: #000000;
-  padding-right: 4px;
+  padding-right: $minimalMargin;
   margin-left: 3px;
   cursor: pointer;
   height: 17px;
@@ -861,7 +900,7 @@ a[title="move-up"]:before {
   font-family: "Material Icons";
   font-size: 20px;
   color: #000000;
-  padding-right: 4px;
+  padding-right: $minimalMargin;
   margin-left: 3px;
   cursor: pointer;
   height: 17px;
@@ -873,7 +912,7 @@ a[title="move-down"]:before {
   font-family: "Material Icons";
   font-size: 20px;
   color: #000000;
-  padding-right: 4px;
+  padding-right: $minimalMargin;
   margin-left: 3px;
   cursor: pointer;
   height: 17px;
@@ -885,7 +924,7 @@ a[title="move-down"]:before {
   height: 17px;
   float: right;
   width: 17px;
-  padding-left: 4px;
+  padding-left: $minimalMargin;
   background-position: center;
 }
 
@@ -1061,7 +1100,7 @@ div.area {
   @include boxShadow;
   background: $paperColor;
   padding: 25px 33px 33px;
-  border-radius: 4px;
+  border-radius: $minimalMargin;
   border: none;
 }
 
@@ -1088,8 +1127,14 @@ div.area {
 }
 
 #mainDiv #selection-content-inner {
-  padding: 0px 17px 0;
+  padding: 0;
   display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+#mainDiv #selection-content-bottom #selection-content-inner {
+  padding: 0; // Override padding if it's wrapped by #selection-content-bottom
 }
 
 #mainDiv #selection-content #breadcrumbs {
@@ -1121,7 +1166,10 @@ div.area {
 
 #selection-content-inner.search-layout .mainCols #col2 #selection-summary {
   position: sticky;
-  top: 70px;
+}
+
+#selection-content-inner.search-layout .mainCols #col2 #selection-summary .box {
+  width: auto;
 }
 
 #fancybox-wrap {
@@ -1138,13 +1186,11 @@ div.area {
 }
 
 #fancybox-left {
-  display: flex;
   align-content: flex-end;
   @include replaceImageTag("material_design_chevron_left.png", 18px, 18px);
 }
 
 #fancybox-right {
-  display: flex;
   align-content: flex-end;
   @include replaceImageTag("material_design_chevron_right.png", 18px, 18px);
 }
@@ -1172,6 +1218,10 @@ div.area {
   #col2 {
     min-width: 0;
   }
+}
+
+#selection-content-inner .mainCols {
+  margin-left: $doubleMargin;
 }
 
 #mainDiv .selectiondashboard #col1 {
@@ -1254,8 +1304,8 @@ div.rightPanel {
 
   .control {
     li {
-      padding-top: 4px;
-      padding-bottom: 4px;
+      padding-top: $minimalMargin;
+      padding-bottom: $minimalMargin;
     }
   }
 
@@ -1263,8 +1313,8 @@ div.rightPanel {
     :first-child {
       padding-top: $singleMargin;
     }
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: $minimalMargin;
+    padding-bottom: $minimalMargin;
   }
 
   .customfile {
@@ -1615,7 +1665,7 @@ table.zebra tr td a.position {
 }
 
 .area h3 + table.zebra {
-  margin-top: 4px;
+  margin-top: $minimalMargin;
 }
 
 table.zebra th.sortable {
@@ -1722,7 +1772,7 @@ Search page
 
   #col2 {
     width: 221px;
-    margin-left: 14px;
+    margin-left: $doubleMargin;
 
     .box hr {
       border-color: #c1beb0;
@@ -1769,7 +1819,7 @@ Search page
       h3 {
         color: #f6a03d;
         font-size: 12px;
-        padding: 4px 0;
+        padding: $minimalMargin 0;
       }
 
       p {
@@ -1820,7 +1870,7 @@ Search page
 
 .search-layout .sortandfilter div.input.select select {
   width: 166px;
-  margin: 0 4px 0 0;
+  margin: 0 $minimalMargin 0 0;
 }
 
 .search-layout .sortandfilter div.input.date div.calendar input[type="text"] {
@@ -1988,7 +2038,7 @@ div.skinnysearch {
 }
 
 #searchform #wherecontainer #searchform-where ul li:last-child {
-  margin-bottom: 4px;
+  margin-bottom: $minimalMargin;
 }
 
 #searchtabs {
@@ -2023,7 +2073,7 @@ div.skinnysearch {
 
 .strip {
   text-align: center;
-  padding: 4px;
+  padding: $minimalMargin;
   margin: 0 0 10px 0;
 }
 
@@ -2033,7 +2083,7 @@ div.skinnysearch {
 }
 
 .queryactions div.query-action {
-  padding: 4px;
+  padding: $minimalMargin;
 }
 
 #searchresults > img {
@@ -2187,7 +2237,7 @@ ul.ui-autocomplete {
   font-size: 24px;
   color: $menuItemIconColor;
   vertical-align: -26%;
-  padding-right: 4px;
+  padding-right: $minimalMargin;
 }
 
 #searchresults-outer-div {
@@ -2250,7 +2300,7 @@ ul.ui-autocomplete {
       font-family: "Material Icons";
       font-size: 24px;
       color: $menuItemIconColor;
-      padding-right: 4px;
+      padding-right: $minimalMargin;
     }
 
     &#sra_sort:before {
@@ -2327,7 +2377,7 @@ ul.ui-autocomplete {
       font-family: "Material Icons";
       font-size: 24px;
       color: set-text-color($primaryColor);
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
     }
@@ -2337,7 +2387,7 @@ ul.ui-autocomplete {
       font-family: "Material Icons";
       font-size: 24px;
       color: set-text-color($primaryColor);
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
     }
@@ -2391,12 +2441,12 @@ ul.ui-autocomplete {
   #date-range-filter
   div.input.select
   select {
-  margin: 0 4px 0 0;
+  margin: 0 $minimalMargin 0 0;
   width: 160px;
 }
 
 #searchresults-actions #actioncontent div.input.select select {
-  margin: 0 4px 0 0;
+  margin: 0 $minimalMargin 0 0;
   width: 300px;
 }
 
@@ -2474,7 +2524,7 @@ ul.ui-autocomplete {
 //cloud search
 
 .glyphicon-cloud {
-  padding-top: 4px;
+  padding-top: $minimalMargin;
   padding-right: $singleMargin;
 
   &:before {
@@ -2484,7 +2534,7 @@ ul.ui-autocomplete {
     color: $menuItemIconColor;
     font-style: normal;
     vertical-align: middle;
-    padding-top: 4px;
+    padding-top: $minimalMargin;
   }
 }
 
@@ -2659,14 +2709,10 @@ html.wait {
 }
 
 #selection-page .itemresult-rating div.float-right .btn {
-  @include buttonShadowBorder;
+  @include roundButton(true);
   margin-left: 0 !important;
-  margin-right: 4px;
+  margin-right: $minimalMargin;
   vertical-align: middle;
-  min-width: 0;
-  border-radius: 50px;
-  padding: 4px;
-  line-height: 1.3rem;
 }
 
 .itemresult-rating div.float-right .button-expandable.unselect:hover {
@@ -2693,9 +2739,8 @@ html.wait {
 
 #sc_attachments_selectAllAttachmentButton:hover,
 #sc_attachments_selectPackageButton:hover {
+  @include roundButton(true);
   width: 215px;
-  line-height: 1.3rem;
-  font-size: 12px;
   padding-right: $singleMargin;
 }
 
@@ -2735,7 +2780,7 @@ html.wait {
 
   ul li {
     display: inline;
-    margin: 0 4px;
+    margin: 0 $minimalMargin;
     list-style-type: none;
     text-transform: capitalize;
   }
@@ -2830,9 +2875,9 @@ input.term-paths {
 .box_content_inner {
   .blue {
     li {
-      padding-bottom: 4px;
-      padding-top: 4px;
-      padding-left: 4px;
+      padding-bottom: $minimalMargin;
+      padding-top: $minimalMargin;
+      padding-left: $minimalMargin;
     }
   }
 }
@@ -3045,7 +3090,7 @@ button + .repeater-groups {
 }
 
 .ctrlbutton {
-  margin-top: 4px;
+  margin-top: $minimalMargin;
 
   i.icon-plus {
     &:before {
@@ -3054,7 +3099,7 @@ button + .repeater-groups {
       font-size: 24px;
       color: set-text-color($primaryColor);
       vertical-align: top;
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
     }
   }
@@ -3093,7 +3138,7 @@ button + .repeater-groups {
 .customfile-feedback {
   text-align: left;
   background: none;
-  padding-left: 4px;
+  padding-left: $minimalMargin;
   font-style: normal;
   @include typography-subtitle-1;
 
@@ -3156,7 +3201,7 @@ button + .repeater-groups {
 
 #r_resume {
   @include buttonShadowBorder;
-  margin-bottom: 4px;
+  margin-bottom: $minimalMargin;
 }
 
 #d_discard {
@@ -3239,7 +3284,7 @@ button + .repeater-groups {
 
 .shuffle-box-controls {
   button {
-    margin: 4px 0;
+    margin: $minimalMargin 0;
   }
 }
 
@@ -3269,7 +3314,7 @@ button + .repeater-groups {
       font-family: "Material Icons";
       font-size: 24px;
       color: set-text-color($primaryColor);
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
     }
@@ -3277,7 +3322,7 @@ button + .repeater-groups {
 
   input[type="text"],
   #youtube-query select {
-    width: 528px;
+    width: 515px;
   }
 }
 
@@ -3307,7 +3352,7 @@ button + .repeater-groups {
       font-size: 24px;
       color: set-text-color($primaryColor);
       vertical-align: top;
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
     }
   }
@@ -3328,7 +3373,7 @@ i.icon-remove {
     font-size: 24px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
   }
 }
@@ -3340,7 +3385,7 @@ i.icon-pencil {
     font-size: 24px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
   }
 }
@@ -3352,7 +3397,7 @@ i.icon-ban-circle {
     font-size: 24px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
   }
 }
@@ -3375,7 +3420,7 @@ i.icon-arrow-left {
     font-size: 24px;
     color: set-text-color($primaryColor);
     vertical-align: top;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
   }
 }
@@ -3408,7 +3453,7 @@ i.icon-arrow-left {
         font-size: 24px;
         color: $secondaryColor;
         vertical-align: top;
-        padding-right: 4px;
+        padding-right: $minimalMargin;
         font-style: normal;
       }
     }
@@ -3422,7 +3467,7 @@ i.icon-arrow-left {
         font-size: 24px;
         color: $secondaryColor;
         vertical-align: top;
-        padding-right: 4px;
+        padding-right: $minimalMargin;
         font-style: normal;
       }
     }
@@ -3449,7 +3494,7 @@ ul.treeview {
       font-size: 24px;
       color: $menuItemIconColor;
       vertical-align: top;
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
     }
   }
@@ -3461,7 +3506,7 @@ ul.treeview {
       font-size: 24px;
       color: $menuItemIconColor;
       vertical-align: top;
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
     }
   }
@@ -3486,7 +3531,7 @@ a.unselect {
     font-size: 24px;
     color: $menuItemIconColor;
     vertical-align: top;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
   }
 }
@@ -3512,7 +3557,7 @@ Item summary styling
         font-family: "Material Icons";
         font-size: 24px;
         color: $primaryTextColor;
-        padding-right: 4px;
+        padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
       }
@@ -3522,7 +3567,7 @@ Item summary styling
         font-family: "Material Icons";
         font-size: 24px;
         color: $primaryTextColor;
-        padding-right: 4px;
+        padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
       }
@@ -3577,7 +3622,7 @@ Item summary styling
   background-image: url(../../images/baseline_code_white_18dp.png);
 }
 
-.itemsummary-layout hr {
+#selection-page .foldertreeline {
   display: none;
 }
 
@@ -3623,7 +3668,7 @@ Item summary styling
 
 .itemsummary-layout #col2 ul li {
   line-height: 1.5;
-  margin: 4px $singleMargin;
+  margin: $minimalMargin $singleMargin;
 }
 
 .itemsummary-layout .box {
@@ -3632,7 +3677,7 @@ Item summary styling
 
 .itemsummary-layout #col1 ul.moderators {
   list-style: disc;
-  margin-top: 4px;
+  margin-top: $minimalMargin;
   padding-left: 2.5em;
   padding-right: 2.5em;
 }
@@ -3896,7 +3941,7 @@ table.versions td {
   width: 99%;
   border: 1px solid #f5f5f5;
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-  border-radius: 4px 4px 0 0;
+  border-radius: $standardBorderRadius $standardBorderRadius 0 0;
   background-color: #f5f5f5;
   height: 56px;
 
@@ -3912,7 +3957,7 @@ table.versions td {
 
 .comment-form button {
   @include buttonShadowBorder;
-  margin-top: 4px;
+  margin-top: $minimalMargin;
   float: right;
 }
 
@@ -3978,12 +4023,8 @@ td.sectionAction {
 }
 
 .selection .selectable .attachments-browse.structured li .button-div .btn {
-  @include buttonShadowBorder;
-  border-radius: 50px;
-  min-width: unset;
-  line-height: 1.3rem;
-  padding: 4px;
-  margin: 4px 0;
+  @include roundButton(false);
+  margin: $minimalMargin 0;
 }
 
 .settingContainer.skinny {
@@ -4407,7 +4448,7 @@ img.warningimg {
   background-color: $primaryColor;
   text-align: center;
   background-size: 26px 26px;
-  background-position: left 3px top 4px;
+  background-position: left 3px top $minimalMargin;
   @include buttonShadowBorder;
 
   &:hover {
@@ -4462,6 +4503,7 @@ img.warningimg {
   overflow: hidden;
   text-indent: -9999px;
   background-size: 100px;
+  display: block;
 }
 
 #selection-header-content .selectactions {
@@ -4479,20 +4521,28 @@ img.warningimg {
 }
 
 #selection-page {
-  margin: 0 auto;
-  width: 784px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
 }
 
 #selection-content {
   background: url(../images/content-middle.gif) repeat-y 0px 0px;
-  position: relative;
-  width: 784px;
-  float: left;
+  width: 100%;
 }
 
 #selection-content #breadcrumb-inner {
   margin-left: 18px;
+}
+
+#selection-content #col1 #searchPage {
+  width: 100%; // Override the width if new search UI is also wrapped by 'col1'
+}
+
+#selection-content #contribution_panel {
+  width: 100%;
+  margin: 0 $doubleMargin;
 }
 
 #selection-header-content h3 a {
@@ -4507,7 +4557,6 @@ img.warningimg {
 
 #selection-content-bottom {
   background: url(../images/content-bottom.gif) no-repeat 1px 100%;
-  float: left;
   /* This is to ensure the above background logo shows */
   padding-bottom: 90px;
 }
@@ -4517,7 +4566,6 @@ img.warningimg {
   min-height: 400px;
   padding: 32px 17px 0;
   float: left;
-  width: 750px;
 }
 
 /*****************************************************************************
@@ -4529,7 +4577,6 @@ img.warningimg {
 
 .selectiondashboard #col2 {
   width: 368px;
-  margin-left: $doubleMargin;
 }
 
 //Search query portlet
@@ -4555,7 +4602,7 @@ img.warningimg {
 
 .compactQuery input {
   margin: 0 3px 0 0;
-  padding: 5px 5px 4px;
+  padding: 5px 5px $minimalMargin;
   box-sizing: border-box;
 }
 
@@ -4584,7 +4631,7 @@ input[disabled="disabled"] {
   background: none repeat scroll 0 0 #fbfbfb;
   border: 1px solid #e9e9e6;
   @include typography-subtitle-1;
-  padding: 4px;
+  padding: $minimalMargin;
 }
 
 .recent-portal .box_content_inner,
@@ -4621,11 +4668,8 @@ input[disabled="disabled"] {
 }
 
 #selection-page button.package-select {
+  @include roundButton(true);
   margin: 0;
-  border-radius: 50px;
-  min-width: unset;
-  padding: 4px;
-  line-height: 1.3rem;
 }
 
 .browse-topics ul li span {
@@ -4645,7 +4689,7 @@ input[disabled="disabled"] {
 
 div#sssh_finishedButton {
   text-align: right !important;
-  padding-top: 4px;
+  padding-top: $minimalMargin;
 }
 
 .alt-links a.favourites {
@@ -4654,7 +4698,7 @@ div#sssh_finishedButton {
     font-family: "Material Icons";
     font-size: 20px;
     color: $secondaryColor;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
   }
 }
 
@@ -4689,6 +4733,7 @@ div#sssh_finishedButton {
   display: flex;
   align-content: space-around;
   justify-content: center;
+  padding-top: $doubleMargin;
 }
 
 #selection-header .navbar-equella-selection.normal,
@@ -4702,6 +4747,7 @@ div#sssh_finishedButton {
     justify-content: center;
     align-items: flex-end;
     @include typography-button;
+    height: 25px;
   }
 
   li {
@@ -4710,21 +4756,21 @@ div#sssh_finishedButton {
 }
 
 .nav.pull-right {
+  width: -moz-fit-content;
   width: fit-content;
   right: 0;
   position: absolute;
 }
 
 .box {
-  border: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  @include buttonShadowBorder;
   background: none;
 }
 
 .box_head {
+  @include curvedCorners;
   background-color: white;
   border: none;
-
   &:hover {
     background: none;
   }
@@ -4736,6 +4782,7 @@ div#sssh_finishedButton {
 }
 
 .box_content {
+  @include curvedCorners;
   background: none;
   border: none;
   background-color: white;
@@ -4760,10 +4807,10 @@ div#sssh_finishedButton {
       font-family: "Material Icons";
       font-size: 20px;
       color: set-text-color($primaryColor);
-      padding-right: 4px;
+      padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
-      padding-top: 4px;
+      padding-top: $minimalMargin;
     }
   }
 }
@@ -4778,10 +4825,10 @@ div#sssh_finishedButton {
     font-family: "Material Icons";
     font-size: 20px;
     color: $primaryColor;
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;
-    padding-top: 4px;
+    padding-top: $minimalMargin;
   }
 }
 
@@ -4791,15 +4838,11 @@ div#sssh_finishedButton {
     font-family: "Material Icons";
     font-size: 20px;
     color: set-text-color($primaryColor);
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;
-    padding-top: 4px;
+    padding-top: $minimalMargin;
   }
-}
-
-#selection-content-inner .mainCols #col1 {
-  margin-right: $doubleMargin;
 }
 
 /*****************************************************************************
@@ -4810,7 +4853,7 @@ div#sssh_finishedButton {
 
   .btn {
     float: right;
-    margin-left: 4px;
+    margin-left: $minimalMargin;
     margin-right: 0;
   }
 }
@@ -4819,6 +4862,7 @@ div#sssh_finishedButton {
   padding-top: 50px;
   float: right;
   width: 100%;
+  margin-right: $doubleMargin;
   display: grid;
   justify-items: end;
 
@@ -4827,6 +4871,15 @@ div#sssh_finishedButton {
     background-color: transparent;
     color: $primaryColor;
   }
+}
+
+.selection-lmscontent {
+  @extend div.area;
+  padding: $minimalMargin;
+  width: 20%; // The LMS side panel takes 20 percent of its parent div width.
+  margin-right: $doubleMargin;
+  position: sticky;
+  top: 50px;
 }
 
 .icon-plus:before {
@@ -4843,10 +4896,10 @@ div#sssh_finishedButton {
   font-family: "Material Icons";
   font-size: 20px;
   color: set-text-color($primaryColor);
-  padding-right: 4px;
+  padding-right: $minimalMargin;
   font-style: normal;
   vertical-align: middle;
-  padding-top: 4px;
+  padding-top: $minimalMargin;
 }
 
 .icon-chevron-down:before {
@@ -4854,10 +4907,10 @@ div#sssh_finishedButton {
   font-family: "Material Icons";
   font-size: 20px;
   color: set-text-color($primaryColor);
-  padding-right: 4px;
+  padding-right: $minimalMargin;
   font-style: normal;
   vertical-align: middle;
-  padding-top: 4px;
+  padding-top: $minimalMargin;
 }
 
 /*****************************************************************************
@@ -4867,13 +4920,33 @@ div#sssh_finishedButton {
   width: auto;
 }
 
-.selection-courses-inner .folder.rootfolder {
-  @include typography-subtitle-2;
-  padding-top: 4px;
+// Override the margin of mainCols if it's in selection-content-bottom
+#selection-content-bottom #selection-content-inner .mainCols {
+  margin: 0 $doubleMargin;
+}
+
+#selection-content-bottom #selection-content-inner .mainCols #col2 {
+  // Override styles of 'col2' if it's also wrapped by 'selection-content-bottom'
+  width: 20%;
+  margin-left: $doubleMargin;
+}
+
+.selection-courses {
+  width: 100%;
+  /*there shouldn't be any*/
+  overflow: hidden;
+}
+
+.selection-courses-inner {
+  padding-top: 0;
+  .folder.rootfolder {
+    @include typography-subtitle-2;
+    padding-top: $minimalMargin;
+  }
 }
 
 .folders {
-  padding-top: 4px;
+  padding-top: $minimalMargin;
 }
 
 .folderlist {
@@ -4900,10 +4973,10 @@ div#sssh_finishedButton {
     font-family: "Material Icons";
     font-size: 20px;
     color: set-text-color($primaryColor);
-    padding-right: 4px;
+    padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;
-    padding-top: 4px;
+    padding-top: $minimalMargin;
   }
 }
 
@@ -4921,6 +4994,7 @@ div#sssh_finishedButton {
 
 #selection-content-inner.itemsummary-layout #col2 {
   width: fit-content;
+  width: -moz-fit-content;
   max-width: 260px;
 }
 
@@ -5286,11 +5360,11 @@ ul.treeview li.collapsable a.hitarea::before {
 }
 
 $loginLabelWidth: 100px;
-$whitespaceWidth: 4px;
 $loginTextBoxWidth: 200px;
+
 #_logonButton {
   display: block;
-  margin-left: $loginLabelWidth + $whitespaceWidth;
+  margin-left: $loginLabelWidth + $minimalMargin;
   margin-top: $doubleMargin;
   width: $loginTextBoxWidth;
   @include boxShadow;
@@ -5451,6 +5525,28 @@ button:focus {
 #ed_fin,
 #ed_fan {
   width: 200px;
+}
+
+#selection-page #bluebar_help {
+  margin-left: $doubleMargin;
+  margin-bottom: $doubleMargin;
+}
+
+#summary-details-tabs .nav.nav-tabs {
+  width: 100%;
+}
+
+.item-title-and-desc .selectitem button {
+  @include roundButton(true);
+  float: right;
+}
+
+.itemsummary-layout .selection-lmscontent {
+  margin-top: 63px;
+}
+
+#selection-page .itemsummary-layout .comment-form textarea {
+  width: 97%;
 }
 
 #wizard-controls

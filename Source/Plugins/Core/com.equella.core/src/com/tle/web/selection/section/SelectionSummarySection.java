@@ -45,11 +45,13 @@ import com.tle.web.sections.equella.render.EquellaButtonExtension;
 import com.tle.web.sections.equella.search.AbstractSearchActionsSection;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
+import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.events.js.ParameterizedEvent;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.events.js.SubmitValuesHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
 import com.tle.web.sections.js.generic.function.SimpleFunction;
@@ -65,6 +67,7 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.event.AttachmentSelectorEvent;
 import com.tle.web.selection.event.AttachmentSelectorEventListener;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import javax.inject.Inject;
@@ -120,7 +123,14 @@ public class SelectionSummarySection
     box.setNoMinMaxOnHeader(true);
 
     viewSelectedLink.setClickHandler(checkoutFunc);
-    unselectAllLink.setClickHandler(events.getNamedHandler("unselectAll"));
+
+    JSHandler unselectHandler =
+        // In new search UI, put "unselectAll" in an ajax update function in order not to refresh
+        // the page
+        RenderNewTemplate.isNewSearchPageEnabled()
+            ? new OverrideHandler(getUpdateSelection(tree, events.getEventHandler("unselectAll")))
+            : events.getNamedHandler("unselectAll");
+    unselectAllLink.setClickHandler(unselectHandler);
     finishedButton.setClickHandler(checkoutFunc);
 
     if (!finishedInBox) {

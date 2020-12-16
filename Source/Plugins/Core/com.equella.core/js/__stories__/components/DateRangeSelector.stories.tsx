@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as React from "react";
 import {
   DateRangeSelector,
@@ -28,7 +29,7 @@ import LuxonUtils from "@date-io/luxon";
 export default {
   title: "DateRangeSelector",
   component: DateRangeSelector,
-};
+} as Meta<DateRangeSelectorProps>;
 
 const actions: DateRangeSelectorProps = {
   onDateRangeChange: action("onDateRangeChange called"),

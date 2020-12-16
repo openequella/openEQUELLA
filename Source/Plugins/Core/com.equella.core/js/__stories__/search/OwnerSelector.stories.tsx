@@ -15,15 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as React from "react";
-import OwnerSelector from "../../tsrc/search/components/OwnerSelector";
+import OwnerSelector, {
+  OwnerSelectorProps,
+} from "../../tsrc/search/components/OwnerSelector";
 import { action } from "@storybook/addon-actions";
 import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 
 export default {
   title: "Search/OwnerSelector",
   component: OwnerSelector,
-};
+} as Meta<OwnerSelectorProps>;
 
 const commonParams = {
   onClearSelect: action("onClearSelect"),

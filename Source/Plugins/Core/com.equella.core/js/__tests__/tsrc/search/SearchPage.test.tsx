@@ -30,6 +30,7 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
+import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
@@ -39,8 +40,10 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
+import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
@@ -54,8 +57,11 @@ import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModul
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
+import { updateMockGlobalCourseList } from "../CourseListHelper";
 import { selectOption } from "../MuiTestHelpers";
+import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
   clearSelection,
   selectUser,
@@ -111,6 +117,11 @@ jest
 jest
   .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
   .mockResolvedValue(getRemoteSearchesFromServerResult);
+
+// Mock out collaborator which populates the Advanced Search selector
+jest
+  .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
+  .mockResolvedValue(getAdvancedSearchesFromServerResult);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -735,5 +746,37 @@ describe("conversion of parameters to SearchPageOptions", () => {
     expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
       1
     );
+  });
+});
+
+describe("In Selection Session", () => {
+  beforeAll(() => {
+    updateMockGlobalCourseList();
+    updateMockGetBaseUrl();
+  });
+
+  it("should make each Search result Item draggable", async () => {
+    updateMockGetRenderData(basicRenderData);
+    mockSearch.mockResolvedValue(getSearchResult);
+    await renderSearchPage();
+
+    const searchResults = getSearchResult.results;
+    // Make sure the search result definitely has Items.
+    expect(searchResults.length).toBeGreaterThan(0);
+
+    searchResults.forEach(({ uuid }) => {
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).toHaveBeenCalledWith(`#${uuid}`, true);
+    });
+  });
+
+  it("should not show the share search button", async () => {
+    updateMockGetRenderData(basicRenderData);
+    mockSearch.mockResolvedValue(getSearchResult);
+    const copySearchButton = screen.queryByTitle(
+      languageStrings.searchpage.shareSearchHelperText
+    );
+    expect(copySearchButton).not.toBeInTheDocument();
   });
 });

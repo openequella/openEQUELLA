@@ -23,10 +23,10 @@
     "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.8.2",
-    "@typescript-eslint/parser": "4.8.2",
+    "@typescript-eslint/eslint-plugin": "4.9.0",
+    "@typescript-eslint/parser": "4.9.0",
     "babel-eslint": "10.1.0",
-    "cross-env": "7.0.2",
+    "cross-env": "7.0.3",
     "eslint": "7.14.0",
     "eslint-config-prettier": "6.15.0",
     "eslint-config-react-app": "6.0.0",

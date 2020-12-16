@@ -319,8 +319,8 @@ public abstract class AbstractAttachmentsSection<
 
   @EventHandlerMethod
   public void selectAllAttachments(
-      SectionInfo info, List<String> uuids, ItemId itemId, String extensionType) {
-    for (String uuid : uuids) {
+      SectionInfo info, String uuids, ItemId itemId, String extensionType) {
+    for (String uuid : uuids.split(",")) {
       final ViewableItem<I> vitem = getViewableItem(info);
       final SelectedResourceKey key =
           new SelectedResourceKey(vitem.getItemId(), uuid, extensionType);

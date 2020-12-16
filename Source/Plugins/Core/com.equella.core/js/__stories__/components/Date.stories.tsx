@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as React from "react";
 import { boolean, date } from "@storybook/addon-knobs";
-import { Date as DateDisplay } from "../../tsrc/components/Date";
+import { Date as DateDisplay, DateProps } from "../../tsrc/components/Date";
 
 export default {
   title: "DateDisplay",
   component: DateDisplay,
-};
+} as Meta<DateProps>;
 
 function dateKnob(name: string) {
   const timestamp = date(name);

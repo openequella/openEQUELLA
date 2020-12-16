@@ -15,21 +15,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
-import * as React from "react";
-import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
-import type { RemoteSearchSelectorProps } from "../../tsrc/search/components/RemoteSearchSelector";
-import { RemoteSearchSelector } from "../../tsrc/search/components/RemoteSearchSelector";
-
-export default {
-  title: "Search/RemoteSearchSelector",
-  component: RemoteSearchSelector,
-} as Meta<RemoteSearchSelectorProps>;
-
-export const standard: Story<RemoteSearchSelectorProps> = (
-  args: RemoteSearchSelectorProps
-) => <RemoteSearchSelector {...args} />;
-standard.args = {
-  remoteSearchesSupplier: () =>
-    Promise.resolve(getRemoteSearchesFromServerResult),
-};
+require("../../target/uploadlist.js");

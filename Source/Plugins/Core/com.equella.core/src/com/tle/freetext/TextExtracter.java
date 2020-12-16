@@ -35,6 +35,7 @@ import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.AttachmentDao;
 import com.tle.core.item.service.ItemFileService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.inject.Singleton;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Fieldable;
@@ -81,6 +83,8 @@ public class TextExtracter {
   @Named("textExtracter.indexAttachments")
   private boolean indexAttachments = true;
 
+  @Inject AttachmentDao attachmentDao;
+
   @Inject(optional = true)
   @Named("textExtracter.indexImsPackages")
   private boolean indexImsPackages = true;
@@ -107,16 +111,17 @@ public class TextExtracter {
           switch (attach.getAttachmentType()) {
             case FILE:
               {
-                final String filename = attach.getUrl();
+                if (!attach.isErroredIndexing()) {
+                  final String filename = attach.getUrl();
 
-                // Allow for searching by the filename
-                sbuf.append(filename);
-                sbuf.append(' ');
+                  // Allow for searching by the filename
+                  sbuf.append(filename);
+                  sbuf.append(' ');
 
-                indexSingleFile(item, sbuf, filename);
+                  indexSingleFile(item, sbuf, filename);
+                }
                 break;
               }
-
             case HTML:
               {
                 final HtmlAttachment htmlAttach = (HtmlAttachment) attach;
@@ -249,6 +254,16 @@ public class TextExtracter {
                 + attach.getAttachmentSignature()
                 + " could not be found: "
                 + ex.getMessage()); // $NON-NLS-1$
+      } catch (TimeoutException timeoutException) {
+        LOGGER.error(
+            "Error indexing attachment "
+                + attach.getAttachmentSignature()
+                + "due to timeout. Setting attachment to be skipped for future indexing.",
+            timeoutException);
+
+        Attachment newAttachment = (Attachment) attach.clone();
+        newAttachment.setErroredIndexing(true);
+        attachmentDao.update(newAttachment);
       } catch (Exception t) {
         LOGGER.error("Error indexing attachment " + attach.getAttachmentSignature() + ": ", t);
       } catch (Throwable tt) {

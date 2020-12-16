@@ -197,9 +197,11 @@
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
+    <parameter id="class" value="com.tle.web.searching.guice.SelectOrAddSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SkinnySearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.StandardSearchModule" />
+    <parameter id="class" value="com.tle.web.searching.guice.AdvancedSearchModule" />
     <parameter id="class" value="com.tle.web.sections.equella.guice.SectionsEquellaModule" />
     <parameter id="class" value="com.tle.web.sections.equella.guice.SimpleEquellaModule" />
     <parameter id="class" value="com.tle.web.selection.guice.SelectionModule" />
@@ -2400,6 +2402,14 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching">
     <parameter id="path" value="/searching.do" />
     <parameter id="root" value="bean:/searching" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="selectoradd-searching">
+    <parameter id="path" value="/selectoradd/searching.do" />
+    <parameter id="root" value="bean:/selectoradd/search" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="advanced-searching">
+    <parameter id="path" value="/advanced/searching.do" />
+    <parameter id="root" value="bean:/advanced/search" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="skinny-searching">
     <parameter id="path" value="/access/skinny/searching.do" />
@@ -6045,6 +6055,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.RemoveLastKnownUserConstraint" />
     <parameter id="date" value="2020-06-10" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddSkipIndexingColumnMigration">
+    <parameter id="id" value="com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
+    <parameter id="date" value="2020-11-18"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

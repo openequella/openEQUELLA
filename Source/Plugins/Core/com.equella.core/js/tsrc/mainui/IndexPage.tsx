@@ -15,36 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { RenderData } from "./index";
-import HtmlParser from "react-html-parser";
 import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { getRenderData } from "../AppConfig";
+import HtmlParser from "react-html-parser";
 import {
+  BrowserRouter,
   Prompt,
   Redirect,
   Route,
   RouteComponentProps,
   Switch,
-  BrowserRouter,
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
-
-import { getCurrentUserDetails } from "../modules/UserModule";
 import { ErrorResponse } from "../api/errors";
 import {
   LegacyContent,
   LegacyContentProps,
   PageContent,
 } from "../legacycontent/LegacyContent";
-import { Template, TemplateProps, TemplateUpdate } from "./Template";
-import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
-import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
+import { LegacyForm } from "../legacycontent/LegacyForm";
+
+import { getCurrentUserDetails } from "../modules/UserModule";
+import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
 import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
-import { LegacyForm } from "../legacycontent/LegacyForm";
-import { basePath } from "./App";
+import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
+import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
+import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
-declare const renderData: RenderData | undefined;
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
+
+const renderData = getRenderData();
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
@@ -159,7 +161,56 @@ export default function IndexPage() {
     setFullPageError(err);
   }, []);
 
-  function routeSwitch(content?: PageContent) {
+  const routeSwitch = (content?: PageContent) => {
+    const oldSearchPagePath = "/searching.do";
+    const newSearchPagePath = "/page/search";
+
+    /**
+     * Determine whether the **new** search page or the **old/legacy** search page should be
+     * displayed. This is based on the requested path (route) as well as the request params.
+     * This is somewhat complicated due to the need to support shared searches from legacy UI, and
+     * the need to support Advanced Searches in legacy UI which are accessed via `searching.do`.
+     *
+     * (In the future, when all is New UI, this will not be needed.)
+     *
+     * The truth table would look like:
+     *
+     * - path is `newSearchPagePath` : true
+     * - path is **not** `newSearchPagePath` but New Search is enabled and there are no advanced
+     *   search params : true
+     * - path is **not** `newSearchPagePath` but New Search is enabled and there **are** advanced
+     *   search params : false
+     * - and anything else : false
+     *
+     * @param location the applicable `window.location` state
+     * @return `true` for new, or `false` for old
+     */
+    const newOrOldSearch = (location: Location): boolean => {
+      const currentParams = new URLSearchParams(location.search);
+      const currentPath = location.pathname;
+
+      const advancedSearchParamsPresent: boolean =
+        currentParams.get("in")?.startsWith("P") ?? false;
+      const advancedSearchRequested: boolean =
+        currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
+      // TODO: Before we release 2020.2 this can be removed, as the 'newSearch' toggle wil be removed
+      const newSearchEnabled: boolean =
+        typeof renderData !== "undefined" && renderData?.newSearch;
+
+      return (
+        currentPath.match(newSearchPagePath) !== null ||
+        (newSearchEnabled && !advancedSearchRequested)
+      );
+    };
+
+    const renderLegacyPage = (p: RouteComponentProps) => (
+      <LegacyPage
+        {...mkRouteProps(p)}
+        errorCallback={errorCallback}
+        legacyContent={{ content, setLegacyContentProps }}
+      />
+    );
+
     return (
       <Switch>
         {fullPageError && (
@@ -172,17 +223,19 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          render={(p) => (
-            <LegacyPage
-              {...mkRouteProps(p)}
-              errorCallback={errorCallback}
-              legacyContent={{ content, setLegacyContentProps }}
-            />
-          )}
+          path={[newSearchPagePath, oldSearchPagePath]}
+          render={(p) =>
+            newOrOldSearch(window.location) ? (
+              <SearchPage {...mkRouteProps(p)} />
+            ) : (
+              renderLegacyPage(p)
+            )
+          }
         />
+        <Route render={renderLegacyPage} />
       </Switch>
     );
-  }
+  };
 
   return (
     <BrowserRouter

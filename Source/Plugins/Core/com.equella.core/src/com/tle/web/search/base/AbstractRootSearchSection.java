@@ -36,6 +36,7 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
@@ -80,31 +81,52 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
     CombinedTemplateResult templateResult = new CombinedTemplateResult();
     M model = getModel(info);
     SectionId modalSection = model.getModalSection();
+    SimpleSectionResult newSearchUIContent = model.getNewSearchUIContent();
+
     if (modalSection != null) {
       templateResult.addNamedResult(
           OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
       templateResult.addResult(
           OneColumnLayout.BODY, SectionUtils.renderSectionResult(info, modalSection));
-      return templateResult;
     }
 
-    SectionRenderable bodyHeader = getBodyHeader(info);
-    if (bodyHeader != null) {
-      templateResult.addNamedResult(OneColumnLayout.BODY, bodyHeader);
-    }
-    List<SectionId> children = getChildIds(info);
-    for (SectionId childId : children) {
-      String side = info.getLayout(childId.getSectionId());
+    // The only case where newSearchUIContent is NOT null is rendering the new Search UI
+    // in selection session and selection session is using the NORMAL layout. This layout
+    // contains two named columns: left and right.
+    else if (newSearchUIContent != null) {
+      // Firstly, find out child sections which use 'TwoColumnLayout.RIGHT', and
+      // add their contents to the 'right' column.
+      // Secondly, add the new search UI content with a name being 'body' to the template,
+      // and 'body' will get merged to 'left' column later in method 'setupTemplate'.
 
-      if (!TwoColumnLayout.RIGHT.equals(side)) {
-        side = OneColumnLayout.BODY;
+      getChildIds(info).stream()
+          .filter(childId -> TwoColumnLayout.RIGHT.equals(info.getLayout(childId.getSectionId())))
+          .forEach(
+              childId ->
+                  templateResult.addResult(
+                      TwoColumnLayout.RIGHT, SectionUtils.renderSectionResult(info, childId)));
+
+      templateResult.addNamedResult(OneColumnLayout.BODY, newSearchUIContent);
+    } else {
+      SectionRenderable bodyHeader = getBodyHeader(info);
+      if (bodyHeader != null) {
+        templateResult.addNamedResult(OneColumnLayout.BODY, bodyHeader);
       }
-      templateResult.addResult(side, SectionUtils.renderSectionResult(info, childId));
-    }
-    templateResult.addNamedResult(
-        OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
+      List<SectionId> children = getChildIds(info);
+      for (SectionId childId : children) {
+        String side = info.getLayout(childId.getSectionId());
 
-    addBlueBarBits(info, templateResult);
+        if (!TwoColumnLayout.RIGHT.equals(side)) {
+          side = OneColumnLayout.BODY;
+        }
+        templateResult.addResult(side, SectionUtils.renderSectionResult(info, childId));
+      }
+      templateResult.addNamedResult(
+          OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
+
+      addBlueBarBits(info, templateResult);
+    }
+
     return templateResult;
   }
 
@@ -142,6 +164,7 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
   public static class Model extends TwoColumnLayout.TwoColumnModel {
     private InfoBookmark permanentUrl;
+    private SimpleSectionResult newSearchUIContent;
 
     public InfoBookmark getPermanentUrl() {
       return permanentUrl;
@@ -149,6 +172,14 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
     public void setPermanentUrl(InfoBookmark permanentUrl) {
       this.permanentUrl = permanentUrl;
+    }
+
+    public SimpleSectionResult getNewSearchUIContent() {
+      return newSearchUIContent;
+    }
+
+    public void setNewSearchUIContent(SimpleSectionResult newSearchUIContent) {
+      this.newSearchUIContent = newSearchUIContent;
     }
   }
 }

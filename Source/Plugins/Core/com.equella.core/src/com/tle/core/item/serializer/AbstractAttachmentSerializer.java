@@ -28,5 +28,6 @@ public abstract class AbstractAttachmentSerializer implements AttachmentSerializ
     editor.editViewer(attachment.getViewer());
     editor.editRestricted(attachment.isRestricted());
     editor.editThumbnail(attachment.getThumbnail());
+    editor.editErroredIndexing(attachment.isErroredIndexing());
   }
 }

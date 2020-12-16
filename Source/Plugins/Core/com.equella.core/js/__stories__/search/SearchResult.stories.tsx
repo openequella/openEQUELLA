@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Story } from "@storybook/react";
+import type { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {
@@ -25,7 +25,7 @@ import SearchResult, {
 export default {
   title: "Search/SearchResult",
   component: SearchResult,
-};
+} as Meta<SearchResultProps>;
 
 export const BasicSearchResult: Story<SearchResultProps> = (args) => (
   <SearchResult {...args} />

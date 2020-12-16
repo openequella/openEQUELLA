@@ -118,8 +118,13 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
     // This regex matches the relative url of Item Summary page
     // For example 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/'
     // The last forward slash does not exist in some cases
+
+    // This regex also works for those that have query params.
+    // For example, in Selection Session, the URL would be
+    // 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/?_sl.stateId=1&_int.id=2'.
+
     val itemSummaryUrlPattern =
-      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?".r
+      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?\\??.+".r
 
     // This regex explicitly matches the relative Url of logon
     // For example, 'logon.do' or 'logon.do?.page=home.do'

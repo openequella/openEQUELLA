@@ -48,6 +48,10 @@ export interface RefinePanelControl {
    * True if the control is configured not to be showed.
    */
   disabled?: boolean;
+  /**
+   * True if the control should be outside the 'show more' section.
+   */
+  alwaysVisible?: boolean;
 }
 
 interface RefinePanelProps {
@@ -79,9 +83,24 @@ export const RefineSearchPanel = ({
 
   const { showMore, showLess } = languageStrings.common.action;
 
-  const [alwaysVisibleControl, ...collapsedControls] = controls.filter(
-    (c) => !c.disabled
-  );
+  const {
+    visible: alwaysVisibleControls,
+    collapsed: collapsedControls,
+  } = controls
+    .filter((c) => !c.disabled)
+    .reduce(
+      (acc, cur: RefinePanelControl) => {
+        (cur.alwaysVisible ? acc.visible : acc.collapsed).push(cur);
+        return acc;
+      },
+      {
+        visible: [] as RefinePanelControl[],
+        collapsed: [] as RefinePanelControl[],
+      }
+    );
+
+  const alwaysVisibleSection = (controls: RefinePanelControl[]) =>
+    controls.map((control) => renderRefineControl(control));
 
   const collapsibleSection = (controls: RefinePanelControl[]) => {
     return (
@@ -129,7 +148,7 @@ export const RefineSearchPanel = ({
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <List>
-          {renderRefineControl(alwaysVisibleControl)}
+          {alwaysVisibleSection(alwaysVisibleControls)}
           {collapsibleSection(collapsedControls)}
         </List>
       </CardContent>

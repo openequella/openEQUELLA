@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateRange } from "@material-ui/icons";
+
 import * as OEQ from "@openequella/rest-api-client";
 import { Location } from "history";
 import { pick } from "lodash";
@@ -191,7 +191,7 @@ export const defaultSearchOptions: SearchOptions = {
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
   length: 10,
-  available: 10,
+  available: 0,
   results: [],
   highlight: [],
 };
@@ -408,14 +408,14 @@ export const legacyQueryStringToSearchOptions = async (
   const datePrimary = getQueryParam("dp");
   const dateSecondary = getQueryParam("ds");
 
-  const RangeType = Union(
+  const RangeTypeLiterals = Union(
     Literal("between"),
     Literal("after"),
     Literal("before"),
     Literal("on")
   );
 
-  type RangeType = Static<typeof RangeType>;
+  type RangeType = Static<typeof RangeTypeLiterals>;
 
   const getLastModifiedDateRange = (
     rangeType: RangeType,

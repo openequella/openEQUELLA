@@ -15,14 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meta } from "@storybook/react";
 import * as React from "react";
-import SearchBar from "../../tsrc/search/components/SearchBar";
 import { action } from "@storybook/addon-actions";
+import SearchBar, {
+  SearchBarProps,
+} from "../../tsrc/search/components/SearchBar";
 
 export default {
   title: "SearchBar",
   component: SearchBar,
-};
+} as Meta<SearchBarProps>;
 
 const actions = {
   onQueryChange: action("onQueryChange called"),

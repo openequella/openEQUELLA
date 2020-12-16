@@ -16,24 +16,45 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-
 import "@testing-library/jest-dom/extend-expect";
-import { render } from "@testing-library/react";
+import { render, RenderResult, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
+import type { RenderData } from "../../../../tsrc/AppConfig";
+import {
+  getGlobalCourseList,
+  selectResourceForCourseList,
+  selectResourceForNonCourseList,
+} from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { defaultBaseUrl, updateMockGetBaseUrl } from "../../BaseUrlHelper";
+import { updateMockGlobalCourseList } from "../../CourseListHelper";
+import {
+  basicRenderData,
+  renderDataForSelectOrAdd,
+  selectSummaryButtonDisabled,
+  updateMockGetRenderData,
+  withIntegId,
+} from "../../RenderDataHelper";
 
 const defaultViewerPromise = jest
   .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
   .mockResolvedValue({
     viewerId: "fancy",
   } as OEQ.MimeType.MimeTypeViewerDetail);
+
+const {
+  summaryPage: selectSummaryPageString,
+  allAttachments: selectAllAttachmentsString,
+  attachment: selectAttachmentString,
+} = languageStrings.searchpage.selectResource;
 
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
@@ -133,5 +154,176 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(languageStrings.common.action.openInNewWindow)
     ).toBeInTheDocument();
+  });
+
+  it.each<[string]>([
+    [selectSummaryPageString],
+    [selectAllAttachmentsString],
+    [selectAttachmentString],
+  ])(
+    "should hide %s button in non-Selection session",
+    async (selectorLabel: string) => {
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(selectorLabel)).not.toBeInTheDocument();
+    }
+  );
+
+  it("should use different link to open ItemSummary page, depending on renderData", async () => {
+    updateMockGetBaseUrl();
+    updateMockGlobalCourseList();
+    const item = mockData.basicSearchObj;
+    const checkItemTitleLink = (page: RenderResult, url: string) => {
+      expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
+        "href",
+        url
+      );
+    };
+    const basicURL = `items/${item.uuid}/${item.version}/`;
+
+    let page = await renderSearchResult(item);
+    checkItemTitleLink(page, `/${basicURL}`);
+
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: withIntegId,
+    });
+    page.unmount();
+    page = await renderSearchResult(item);
+    checkItemTitleLink(
+      page,
+      `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
+    );
+  });
+
+  describe("In Selection Session", () => {
+    beforeAll(() => {
+      updateMockGlobalCourseList();
+      updateMockGetBaseUrl();
+    });
+
+    const mockSelectResourceForCourseList = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForCourseList"
+    );
+    mockSelectResourceForCourseList.mockResolvedValue();
+
+    const mockSelectResourceForNonCourseList = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForNonCourseList"
+    );
+    mockSelectResourceForNonCourseList.mockResolvedValue();
+
+    const STRUCTURED = "structured";
+    const SELECT_OR_ADD = "selectOrAdd";
+    const selectForCourseFunc = selectResourceForCourseList;
+    const selectForNonCourseFunc = selectResourceForNonCourseList;
+
+    const makeSelection = (findSelector: () => HTMLElement | null) => {
+      const selectorControl = findSelector();
+      // First, make sure the selector control is active
+      expect(selectorControl).toBeInTheDocument();
+      // And then make a selection by clicking it.
+      // Above expect can make sure selectorControl is not null.
+      fireEvent.click(selectorControl!);
+    };
+
+    it.each([
+      [
+        selectSummaryPageString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectAllAttachmentsString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectAttachmentString,
+        STRUCTURED,
+        selectForCourseFunc,
+        basicRenderData,
+      ],
+      [
+        selectSummaryPageString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+      [
+        selectAllAttachmentsString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+      [
+        selectAttachmentString,
+        SELECT_OR_ADD,
+        selectForNonCourseFunc,
+        renderDataForSelectOrAdd,
+      ],
+    ])(
+      "supports %s in %s mode",
+      async (
+        resourceType: string,
+        selectionSessionMode: string,
+        selectResourceFunc: (
+          itemKey: string,
+          attachmentUUIDs: string[]
+        ) => Promise<void>,
+        renderData: RenderData
+      ) => {
+        updateMockGetRenderData(renderData);
+
+        const { queryByLabelText } = await renderSearchResult(
+          mockData.attachSearchObj
+        );
+        makeSelection(() => queryByLabelText(resourceType));
+        expect(selectResourceFunc).toHaveBeenCalled();
+      }
+    );
+
+    it("should hide the Select Summary button if it's disabled", async () => {
+      updateMockGetRenderData({
+        ...basicRenderData,
+        selectionSessionInfo: selectSummaryButtonDisabled,
+      });
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(queryByLabelText(selectSummaryPageString)).toBeNull();
+    });
+
+    it("should respect the integrationOpen displayOption", async () => {
+      updateMockGetRenderData(basicRenderData);
+
+      const expandedAttachment = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      const collapsedAttachment = await renderSearchResult(
+        mockData.keywordFoundInAttachmentObj
+      );
+      expect(expandedAttachment.queryByText("image.png")).toBeVisible();
+      expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
+    });
+
+    it("should make each attachment draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.attachSearchObj);
+
+      const attachments = mockData.attachSearchObj.attachments!;
+      // Make sure there are attachments in the SearchResult.
+      expect(attachments.length).toBeGreaterThan(0);
+
+      attachments.forEach((attachment) => {
+        expect(
+          getGlobalCourseList().prepareDraggableAndBind
+        ).toHaveBeenCalledWith(`#${attachment.id}`, false);
+      });
+    });
   });
 });

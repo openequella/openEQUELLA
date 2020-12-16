@@ -15,12 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ErrorResponse, fromAxiosResponse } from "../api/errors";
-import Axios from "axios";
-import { v4 } from "uuid";
-import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
+import Axios from "axios";
+import * as React from "react";
+import { v4 } from "uuid";
+import {
+  ErrorResponse,
+  fromAxiosResponse,
+  generateFromError,
+} from "../api/errors";
+import { API_BASE_URL } from "../AppConfig";
 
 declare global {
   interface Window {
@@ -51,7 +55,7 @@ interface ExternalRedirect {
   href: string;
 }
 
-interface ChangeRoute {
+export interface ChangeRoute {
   route: string;
   userUpdated: boolean;
 }
@@ -65,7 +69,7 @@ interface FormUpdate {
   partial: boolean;
 }
 
-interface LegacyContentResponse {
+export interface LegacyContentResponse {
   html: { [key: string]: string };
   state: StateData;
   css?: string[];
@@ -110,22 +114,24 @@ export interface LegacyContentProps {
   children?: never;
 }
 
-type SubmitResponse = ExternalRedirect | LegacyContentResponse | ChangeRoute;
+export type SubmitResponse =
+  | ExternalRedirect
+  | LegacyContentResponse
+  | ChangeRoute;
 
-function isPageContent(
+export function isPageContent(
   response: SubmitResponse
 ): response is LegacyContentResponse {
   return (response as LegacyContentResponse).html !== undefined;
 }
 
-function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
+export function isChangeRoute(
+  response: SubmitResponse
+): response is ChangeRoute {
   return (response as ChangeRoute).route !== undefined;
 }
 
-export function submitRequest(
-  path: string,
-  vals: StateData
-): Promise<SubmitResponse> {
+function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
     vals
@@ -196,7 +202,11 @@ export const LegacyContent = React.memo(function LegacyContent({
         }
       })
       .catch((error) => {
-        onError({ error: fromAxiosResponse(error.response), fullScreen });
+        const errorResponse: ErrorResponse =
+          error.response !== undefined
+            ? fromAxiosResponse(error.response)
+            : generateFromError(error);
+        onError({ error: errorResponse, fullScreen });
       });
   }
 
