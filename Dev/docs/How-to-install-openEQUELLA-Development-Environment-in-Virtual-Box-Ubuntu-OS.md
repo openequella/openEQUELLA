@@ -79,11 +79,11 @@ Now you can download Oracle Virtual Box
 
 ![Create Virtual Hard Disk2](images/09.5%20Create%20Virtual%20Hard%20Disk2.PNG)
 
-11. Select “Dynamically allocated”
+13. Select “Dynamically allocated”
 
 ![Dynamic Allocation](images/09.7%20Dynamic%20Allocation.PNG)
 
-12. Set disk size to at least 25 gigabytes.
+14. Set disk size to at least 25 gigabytes.
 
 ![Set disk size](images/10%20Set%20disk%20size.PNG)
 
@@ -553,4 +553,3 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 20. You have now successfully created the openEQUELLA dev environment.
 
 ![dev complete](images/postgresql/eq%2013%20welcome.png)
-
