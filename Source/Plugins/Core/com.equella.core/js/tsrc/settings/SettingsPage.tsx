@@ -42,6 +42,7 @@ import {
 import { fetchSettings } from "../modules/GeneralSettingsModule";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
 import { languageStrings } from "../util/langstrings";
+import useError from "../util/useError";
 import { groupMap, SettingGroup } from "./SettingGroups";
 import UISettingEditor from "./UISettingEditor";
 
@@ -78,7 +79,9 @@ const SettingsPage = ({
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
-  const [error, setError] = useState<Error>();
+  const setError = useError((error: Error) =>
+    updateTemplate(templateError(generateFromError(error)))
+  );
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -108,14 +111,7 @@ const SettingsPage = ({
     return () => {
       cleanupTriggered = true;
     };
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      updateTemplate(templateError(generateFromError(error)));
-      setError(undefined);
-    }
-  }, [error, updateTemplate]);
+  }, [setError]);
 
   /**
    * Create the UI content for setting category
