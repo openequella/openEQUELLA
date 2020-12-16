@@ -770,4 +770,13 @@ describe("In Selection Session", () => {
       ).toHaveBeenCalledWith(`#${uuid}`, true);
     });
   });
+
+  it("should not show the share search button", async () => {
+    updateMockGetRenderData(basicRenderData);
+    mockSearch.mockResolvedValue(getSearchResult);
+    const copySearchButton = screen.queryByTitle(
+      languageStrings.searchpage.shareSearchHelperText
+    );
+    expect(copySearchButton).not.toBeInTheDocument();
+  });
 });
