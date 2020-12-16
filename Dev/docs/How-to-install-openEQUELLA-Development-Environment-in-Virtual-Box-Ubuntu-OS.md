@@ -273,8 +273,10 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-
 
 7. Set the password for the use postgres. To do this follow the commands below.
 
-`$ sudo -u postgres psql postgres`</br>
-`# \password postgres`
+```bash
+sudo -u postgres psql postgres
+# \password postgres
+```
 
 The output will look like this.
 
