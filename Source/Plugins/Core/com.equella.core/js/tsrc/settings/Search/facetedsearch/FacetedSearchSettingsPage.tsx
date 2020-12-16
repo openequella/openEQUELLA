@@ -15,14 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ReactElement, useEffect, useState } from "react";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../../../mainui/Template";
-import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import {
   Card,
   CardActions,
@@ -35,7 +27,29 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { languageStrings } from "../../../util/langstrings";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import * as React from "react";
+import { ReactElement, useEffect, useState } from "react";
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DroppableProvided,
+  DropResult,
+} from "react-beautiful-dnd";
+import { generateFromError } from "../../../api/errors";
+import MessageDialog from "../../../components/MessageDialog";
+import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import SettingsListHeading from "../../../components/SettingsListHeading";
+import { routes } from "../../../mainui/routes";
+import {
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps,
+} from "../../../mainui/Template";
 import {
   batchDelete,
   batchUpdateOrAdd,
@@ -46,25 +60,12 @@ import {
   removeFacetFromList,
   reorder,
 } from "../../../modules/FacetedSearchSettingsModule";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import FacetDialog from "./FacetDialog";
-import { routes } from "../../../mainui/routes";
-import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
-import { generateFromError } from "../../../api/errors";
-import MessageDialog from "../../../components/MessageDialog";
 import { commonString } from "../../../util/commonstrings";
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-  DropResult,
-} from "react-beautiful-dnd";
-import SettingsListHeading from "../../../components/SettingsListHeading";
 import { idExtractor } from "../../../util/idExtractor";
+import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
+import { languageStrings } from "../../../util/langstrings";
+import useError from "../../../util/useError";
+import FacetDialog from "./FacetDialog";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -89,6 +90,10 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [currentFacet, setCurrentFacet] = useState<
     FacetWithFlags | undefined
   >();
+  const [reset, setReset] = useState<boolean>(true);
+  const handleError = useError((error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  });
 
   const listOfUpdates: FacetWithFlags[] = facets.filter(
     (facet) => facet.updated && !facet.deleted
@@ -106,13 +111,12 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(facetedsearchsettingStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-    getFacets();
-  }, []);
+  }, [updateTemplate, facetedsearchsettingStrings.name]);
 
   /**
    * Get facets from the server, sort them by order index, and add flags to them.
    */
-  const getFacets = () => {
+  useEffect(() => {
     getFacetsFromServer()
       .then((facets) =>
         setFacets(
@@ -121,8 +125,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           })
         )
       )
-      .catch((error: Error) => handleError(error));
-  };
+      .catch(handleError);
+  }, [reset, handleError]);
 
   /**
    * Save updated/deleted facets to the server.
@@ -147,8 +151,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setShowSnackBar(true);
         }
       })
-      .catch((error) => handleError(error))
-      .finally(() => getFacets());
+      .catch(handleError)
+      .finally(() => setReset(!reset));
   };
 
   /**
@@ -189,13 +193,6 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   const deleteFacet = (deletedfacet: FacetWithFlags) => {
     setFacets(removeFacetFromList(facets, deletedfacet.orderIndex));
-  };
-
-  /**
-   * Error handling which throws a new error in order to break chained 'then'.
-   */
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
   };
 
   /**
