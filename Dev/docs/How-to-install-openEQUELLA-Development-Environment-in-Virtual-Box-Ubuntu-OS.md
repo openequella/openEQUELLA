@@ -256,7 +256,9 @@ curl -s "https://get.sdkman.io" | bash
 
 4. Now add the repository.
 
-`$ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -`
+```bash
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+```
 
 5. Install postgresql
 
