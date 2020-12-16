@@ -100,8 +100,6 @@ Now you can download Oracle Virtual Box
 ![Add Ubuntu Image](images/14%20Add%20Ubuntu%20Image.PNG)
 
 15. Browse to and select the Ubuntu install you downloaded earlier.
-
-
 ![choose ubuntu](images/15%20choose%20ubuntu.PNG)
 
 16. Install Ubuntu
