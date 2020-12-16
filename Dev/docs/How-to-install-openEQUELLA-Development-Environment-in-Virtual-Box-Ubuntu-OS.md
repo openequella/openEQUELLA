@@ -186,7 +186,9 @@ Now you can download Oracle Virtual Box
 
 6. In the terminal window type the following command.
 
-`$ curl -s "https://get.sdkman.io" | bash`
+```bash
+curl -s "https://get.sdkman.io" | bash
+```
 
 ![get curl](images/37%20get%20curl.PNG)
 
