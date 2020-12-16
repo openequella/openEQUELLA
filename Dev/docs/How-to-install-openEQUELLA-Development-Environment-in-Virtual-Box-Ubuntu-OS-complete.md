@@ -37,7 +37,7 @@
 
 ### <a id="user-content-install-oracle" class="anchor" aria-hidden="true" href="#install-oracle"></a> Install Oracle Virtual Box VM Software
 
-Before installing Virtual Box on Windows 10 you must change turn of the Containers and Hyper-V features.
+Before installing Virtual Box on Windows 10 you must turn off the Containers and Hyper-V features.
 
 1. To do this click on the Windows Start Menu and type “Turn Windows” which should bring up the option you see below.
 2. Click on “Open.
@@ -627,4 +627,3 @@ NOTE:  If you cannot cannot see **.sbtopts** from the file manager you can type 
 20. You have now successfully created the openEQUELLA dev environment.
 
 ![dev complete](images/postgresql/eq%2013%20welcome.png)
-
