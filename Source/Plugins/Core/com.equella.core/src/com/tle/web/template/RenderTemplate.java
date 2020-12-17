@@ -301,7 +301,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
     return "temp";
   }
 
-  public static void formSubmitBinding(FormTag form) {
+  public static void addFormSubmitBinding(FormTag form) {
     form.addReadyStatements(
         new JQueryStatement(
             form, "bind('submit', function(){if (!g_bSubmitting) return false; })"));
@@ -321,7 +321,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
     }
     preRenderer.preRender(StandardExpressions.SUBMIT_JS);
     FormTag form = info.getRootRenderContext().getForm();
-    formSubmitBinding(form);
+    addFormSubmitBinding(form);
 
     final Decorations decorations = Decorations.getDecorations(info);
     for (LayoutSelector layoutSelector : InnerLayout.getLayoutSelectors(info)) {

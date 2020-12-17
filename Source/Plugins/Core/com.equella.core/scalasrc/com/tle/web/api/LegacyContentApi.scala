@@ -215,7 +215,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
       formTag.setId(StandardExpressions.FORM_NAME)
       helper.setFormExpression(StandardExpressions.FORM_EXPRESSION)
     }
-    RenderTemplate.formSubmitBinding(formTag)
+    RenderTemplate.addFormSubmitBinding(formTag)
     if (!helper.isSubmitFunctionsSet) {
       helper.setSubmitFunctions(
         new ExternallyDefinedFunction("EQ.event"),
