@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Location } from "history";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { Prompt, useHistory } from "react-router";
-import ConfirmDialog from "./ConfirmDialog";
-import { Location } from "history";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
+import ConfirmDialog from "./ConfirmDialog";
 
 /**
  * Prevent navigations triggered by Browsers' behaviours when this's required.
@@ -62,7 +62,7 @@ export const NavigationGuard = ({ when }: NavigationGuardProps) => {
     if (confirmedNavigation && navigateTo) {
       history.push(navigateTo.pathname);
     }
-  }, [confirmedNavigation, navigateTo]);
+  }, [confirmedNavigation, navigateTo, history]);
 
   /**
    * Handle 'beforeunload' event when preventing navigation is required.

@@ -83,13 +83,15 @@ const FacetDialog = ({
   const isSchemaNodeInvalid = validateFacetFields(schemaNode);
 
   /**
-   * Initialise textfields' values, depending on 'onClose'.
+   * Initialise `textfields` values when the dialog is opened.
    */
   useEffect(() => {
-    setName(facet?.name ?? "");
-    setSchemaNode(facet?.schemaNode ?? "");
-    setMaxResults(facet?.maxResults);
-  }, [onClose]);
+    if (open) {
+      setName(facet?.name ?? "");
+      setSchemaNode(facet?.schemaNode ?? "");
+      setMaxResults(facet?.maxResults);
+    }
+  }, [open, facet]);
 
   const onAddOrEdit = () => {
     addOrEdit(name, schemaNode, maxResults);

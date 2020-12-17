@@ -15,35 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
-  Theme,
+  CircularProgress,
   ExpansionPanel,
-  ExpansionPanelSummary,
   ExpansionPanelDetails,
-  Typography,
+  ExpansionPanelSummary,
   List,
   ListItem,
   ListItemText,
-  CircularProgress,
+  Theme,
+  Typography,
 } from "@material-ui/core";
+import MUILink from "@material-ui/core/Link";
+import { makeStyles } from "@material-ui/core/styles";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { ReactElement, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { generateFromError } from "../api/errors";
 import {
   templateDefaults,
   templateError,
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { fetchSettings } from "../modules/GeneralSettingsModule";
-import { languageStrings } from "../util/langstrings";
-import MUILink from "@material-ui/core/Link";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
-import { ReactElement, useEffect, useState } from "react";
-import UISettingEditor from "./UISettingEditor";
-import { generateFromError } from "../api/errors";
+import { languageStrings } from "../util/langstrings";
+import useError from "../util/useError";
 import { groupMap, SettingGroup } from "./SettingGroups";
-import * as OEQ from "@openequella/rest-api-client";
+import UISettingEditor from "./UISettingEditor";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -78,16 +79,19 @@ const SettingsPage = ({
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
+  const setError = useError((error: Error) =>
+    updateTemplate(templateError(generateFromError(error)))
+  );
 
   React.useEffect(() => {
     if (isReloadNeeded) {
       window.location.reload();
     }
-  }, []);
+  }, [isReloadNeeded]);
 
   useEffect(() => {
     updateTemplate(templateDefaults(languageStrings["com.equella.core"].title));
-  }, []);
+  }, [updateTemplate]);
 
   useEffect(() => {
     // Use a flag to prevent setting state when component is being unmounted
@@ -100,18 +104,14 @@ const SettingsPage = ({
         }
       })
       .catch((error) => {
-        handleError(error);
+        setError(error);
         setLoading(false);
       });
 
     return () => {
       cleanupTriggered = true;
     };
-  }, []);
-
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
+  }, [setError]);
 
   /**
    * Create the UI content for setting category
@@ -125,7 +125,7 @@ const SettingsPage = ({
   }: SettingGroup): ReactElement => {
     if (category.name === languageStrings.settings.ui.name) {
       return (
-        <UISettingEditor refreshUser={refreshUser} handleError={handleError} />
+        <UISettingEditor refreshUser={refreshUser} handleError={setError} />
       );
     }
     return (

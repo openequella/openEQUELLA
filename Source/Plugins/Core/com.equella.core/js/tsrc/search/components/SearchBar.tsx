@@ -25,11 +25,11 @@ import {
   Switch,
   Tooltip,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import SearchIcon from "@material-ui/icons/Search";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
-import SearchIcon from "@material-ui/icons/Search";
 import { languageStrings } from "../../util/langstrings";
-import { makeStyles } from "@material-ui/core/styles";
 
 const ESCAPE_KEY_CODE = 27;
 
@@ -88,8 +88,14 @@ export default function SearchBar({
   const searchStrings = languageStrings.searchpage;
   const [currentQuery, setCurrentQuery] = useState<string>(query);
 
+  // The line below triggers the warning:
+  // > React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead
+  // It was not obvious how to do this with `debounce`, however attempts were made to manually
+  // validate the dependencies.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), [
     doSearch,
+    onQueryChange,
   ]);
 
   // Update state when search query is cleared.
