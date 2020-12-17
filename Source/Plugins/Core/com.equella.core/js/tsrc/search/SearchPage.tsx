@@ -120,15 +120,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
   };
-
+  const searchPageHistoryState: SearchPageHistoryState | undefined = history
+    .location.state as SearchPageHistoryState;
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    (history.location.state as SearchPageHistoryState)?.searchPageOptions ??
+    searchPageHistoryState?.searchPageOptions ??
       defaultSearchPageHistory.searchPageOptions
   );
   const [filterExpansion, setFilterExpansion] = useState(
-    (history.location.state as SearchPageHistoryState)?.filterExpansion ??
+    searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
@@ -157,7 +158,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      queryStringParamsToSearchOptions(location),
+      searchPageHistoryState
+        ? Promise.resolve(undefined)
+        : queryStringParamsToSearchOptions(location),
     ])
       .then(([searchSettings, queryStringSearchOptions]) => {
         setSearchSettings(searchSettings);
