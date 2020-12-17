@@ -86,9 +86,11 @@ const FacetDialog = ({
    * Initialise `textfields` values when the dialog is opened.
    */
   useEffect(() => {
-    setName(facet?.name ?? "");
-    setSchemaNode(facet?.schemaNode ?? "");
-    setMaxResults(facet?.maxResults);
+    if (open) {
+      setName(facet?.name ?? "");
+      setSchemaNode(facet?.schemaNode ?? "");
+      setMaxResults(facet?.maxResults);
+    }
   }, [open, facet]);
 
   const onAddOrEdit = () => {
