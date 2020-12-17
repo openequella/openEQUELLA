@@ -40,7 +40,7 @@ public class SearchSelectable extends AbstractSelectionNavAction {
   }
 
   private static final String LEGACY_FORWARD_PATH = "/searching.do";
-  private static final String NEW_FORWARD_PATH = "/selectoradd/searching.do";
+  public static final String NEW_FORWARD_PATH = "/selectoradd/searching.do";
 
   @PlugKey("searching.search.title")
   private static Label LABEL_SEARCH;

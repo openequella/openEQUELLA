@@ -52,6 +52,7 @@ import com.tle.web.searching.OnSearchExtensionHandler;
 import com.tle.web.searching.SearchWhereModel;
 import com.tle.web.searching.SearchWhereModel.WhereEntry;
 import com.tle.web.searching.WithinType;
+import com.tle.web.searching.selection.SearchSelectable;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -81,6 +82,7 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
+import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
@@ -146,9 +148,9 @@ public class SearchQuerySection
   @PlugKey("query.hint")
   private static Label LABEL_QUERY_HINT;
 
-  private static Label LABEL_SEARCH = new KeyLabel("item.section.query.search");
+  private static final Label LABEL_SEARCH = new KeyLabel("item.section.query.search");
 
-  private static IncludeFile UPDATE_INCLUDE =
+  private static final IncludeFile UPDATE_INCLUDE =
       new IncludeFile(resources.url("scripts/updateinterface.js"));
 
   @EventFactory private EventGenerator events;
@@ -415,9 +417,7 @@ public class SearchQuerySection
 
   public DefaultSearch createDefaultSearch(SectionInfo info, boolean includeQuery) {
     boolean nonLive =
-        getSearchSettings().isSearchingShowNonLiveCheckbox()
-            ? includeNonLive.isChecked(info)
-            : false;
+        getSearchSettings().isSearchingShowNonLiveCheckbox() && includeNonLive.isChecked(info);
     boolean dynamicCollection = false;
 
     String queryText = null;
@@ -621,6 +621,22 @@ public class SearchQuerySection
     collectionList.setSelectedStringValue(info, null);
     changedWhere(info);
     searchResults.startSearch(info);
+  }
+
+  public static void basicSearchForNewSearch(
+      SectionInfo from, String query, boolean inSelectOrAdd) {
+    // In selectOrAdd the endpoint is '/selectoradd/searching.do'.
+    SectionInfo info =
+        inSelectOrAdd
+            ? from.createForward(SearchSelectable.NEW_FORWARD_PATH)
+            : RootSearchSection.createForward(from);
+    String basicUrl = info.getPublicBookmark().getHref();
+
+    String queryString = ((InfoBookmark) info.getPublicBookmark()).getQuery();
+    if (queryString.isEmpty()) {
+      basicUrl = basicUrl + "?";
+    }
+    from.forwardToUrl(basicUrl + "&q=" + query);
   }
 
   public static void basicSearch(SectionInfo from, String query) {
