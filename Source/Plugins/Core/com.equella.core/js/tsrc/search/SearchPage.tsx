@@ -158,6 +158,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
+      // If the search option already exists, don't do query string conversion.
       searchPageHistoryState
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
@@ -196,10 +197,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [searchPageOptions]);
 
   useEffect(() => {
-    history.replace({
-      ...history.location,
-      state: { searchPageOptions, filterExpansion },
-    });
+    // Don't manipulate the history for the initial search if the search
+    // option is the default one.
+    if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
+      return;
+    } else {
+      history.replace({
+        ...history.location,
+        state: { searchPageOptions, filterExpansion },
+      });
+    }
   }, [filterExpansion, pagedSearchResult]);
 
   // In Selection Session, once a new search result is returned, make each
