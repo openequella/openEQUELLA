@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { Location } from "history";
 import { pick } from "lodash";
 import {
-  Array,
+  Array as RuntypeArray,
   Boolean,
   Guard,
   Literal,
@@ -130,13 +130,13 @@ const DehydratedSearchOptionsRunTypes = Partial({
   rowsPerPage: Number,
   currentPage: Number,
   sortOrder: SortOrder,
-  collections: Array(Record({ uuid: String })),
+  collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
   lastModifiedDateRange: Record({ start: Guard(isDate), end: Guard(isDate) }),
   owner: Record({ id: String }),
   // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
   // So the Union of Literals has been copied from the OEQ.Common module.
-  status: Array(
+  status: RuntypeArray(
     Union(
       Literal("ARCHIVED"),
       Literal("DELETED"),
@@ -149,10 +149,10 @@ const DehydratedSearchOptionsRunTypes = Partial({
       Literal("SUSPENDED")
     )
   ),
-  selectedCategories: Array(
+  selectedCategories: RuntypeArray(
     Record({
       id: Number,
-      categories: Array(String),
+      categories: RuntypeArray(String),
     })
   ),
   searchAttachments: Boolean,
@@ -249,6 +249,11 @@ export const queryStringParamsToSearchOptions = async (
 ): Promise<SearchOptions | undefined> => {
   if (!location.search) return undefined;
   const params = new URLSearchParams(location.search);
+
+  // If no query strings is of type LegacySearchParams, return undefined.
+  if (!Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))) {
+    return undefined;
+  }
 
   if (location.pathname.endsWith("searching.do")) {
     return await legacyQueryStringToSearchOptions(params);

@@ -56,7 +56,6 @@ import {
   SortOrder,
 } from "../modules/SearchSettingsModule";
 import {
-  isSelectionSessionOpen,
   prepareDraggable,
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -158,10 +157,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      // Do not convert query string params to search options in Selection Session.
-      isSelectionSessionOpen()
-        ? Promise.resolve(undefined)
-        : queryStringParamsToSearchOptions(location),
+      queryStringParamsToSearchOptions(location),
     ])
       .then(([searchSettings, queryStringSearchOptions]) => {
         setSearchSettings(searchSettings);
