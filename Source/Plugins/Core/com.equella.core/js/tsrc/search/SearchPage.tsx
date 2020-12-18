@@ -204,12 +204,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // are displayed in the page.
     if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
       return;
-    } else {
-      history.replace({
-        ...history.location,
-        state: { searchPageOptions, filterExpansion },
-      });
     }
+    history.replace({
+      ...history.location,
+      state: { searchPageOptions, filterExpansion },
+    });
   }, [filterExpansion, pagedSearchResult]);
 
   // In Selection Session, once a new search result is returned, make each
