@@ -158,7 +158,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      // If the search option already exists, don't do query string conversion.
+      // If the search options are available from browser history, ignore those in the query string.
       searchPageHistoryState
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
@@ -197,8 +197,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [searchPageOptions]);
 
   useEffect(() => {
-    // Don't manipulate the history for the initial search if the search
-    // option is the default one.
+    // If search page is open from a URL which has some query params, updating browser
+    // history for the initial search will produce wrong search option for the second
+    // render. This is because in the second render, we ignore the query param conversion
+    // as the history data has higher priority. So the end result is wrong search options
+    // are displayed in the page.
     if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
       return;
     } else {
