@@ -82,7 +82,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
-import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
@@ -111,6 +110,8 @@ import com.tle.web.wizard.page.PageUpdateCallback;
 import com.tle.web.wizard.page.WebWizardPageState;
 import com.tle.web.wizard.page.WizardPage;
 import com.tle.web.wizard.page.WizardPageService;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -630,13 +631,16 @@ public class SearchQuerySection
         inSelectOrAdd
             ? from.createForward(SearchSelectable.NEW_FORWARD_PATH)
             : RootSearchSection.createForward(from);
-    String basicUrl = info.getPublicBookmark().getHref();
 
-    String queryString = ((InfoBookmark) info.getPublicBookmark()).getQuery();
-    if (queryString.isEmpty()) {
-      basicUrl = basicUrl + "?";
+    try {
+      URL basicUrl = new URL(info.getPublicBookmark().getHref());
+      String queryString = basicUrl.getQuery();
+      String queryStringPrefix = queryString == null || queryString.isEmpty() ? "?" : "&";
+      String fullUrl = basicUrl.toString() + queryStringPrefix + "q=" + query;
+      from.forwardToUrl(fullUrl);
+    } catch (MalformedURLException e) {
+      LOGGER.error("Failed to generate a URL for endpoint '/selectoradd/searching.do'. ");
     }
-    from.forwardToUrl(basicUrl + "&q=" + query);
   }
 
   public static void basicSearch(SectionInfo from, String query) {
