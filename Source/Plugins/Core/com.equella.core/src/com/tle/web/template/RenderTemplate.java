@@ -78,7 +78,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("nls")
 public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.RenderTemplateModel>
     implements HtmlRenderer, ForwardEventListener, BeforeEventsListener {
-  private static Log LOGGER = LogFactory.getLog(RenderTemplate.class);
+  private static final Log LOGGER = LogFactory.getLog(RenderTemplate.class);
 
   public static final String XSRF_PARAM = "__xsrf";
 
@@ -301,6 +301,12 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
     return "temp";
   }
 
+  public static void addFormSubmitBinding(FormTag form) {
+    form.addReadyStatements(
+        new JQueryStatement(
+            form, "bind('submit', function(){if (!g_bSubmitting) return false; })"));
+  }
+
   private TemplateResult selectInnerLayout(RenderContext info, TemplateResult templateResult)
       throws Exception {
     PreRenderContext preRenderer = info.getPreRenderContext();
@@ -315,9 +321,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
     }
     preRenderer.preRender(StandardExpressions.SUBMIT_JS);
     FormTag form = info.getRootRenderContext().getForm();
-    form.addReadyStatements(
-        new JQueryStatement(
-            form, "bind('submit', function(){if (!g_bSubmitting) return false; })"));
+    addFormSubmitBinding(form);
 
     final Decorations decorations = Decorations.getDecorations(info);
     for (LayoutSelector layoutSelector : InnerLayout.getLayoutSelectors(info)) {
