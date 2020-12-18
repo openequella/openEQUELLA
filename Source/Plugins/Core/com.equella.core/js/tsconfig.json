@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "esModuleInterop": true,
     "target": "es5",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowJs": true,

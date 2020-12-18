@@ -52,6 +52,7 @@ import com.tle.web.searching.OnSearchExtensionHandler;
 import com.tle.web.searching.SearchWhereModel;
 import com.tle.web.searching.SearchWhereModel.WhereEntry;
 import com.tle.web.searching.WithinType;
+import com.tle.web.searching.selection.SearchSelectable;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -109,6 +110,8 @@ import com.tle.web.wizard.page.PageUpdateCallback;
 import com.tle.web.wizard.page.WebWizardPageState;
 import com.tle.web.wizard.page.WizardPage;
 import com.tle.web.wizard.page.WizardPageService;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -146,9 +149,9 @@ public class SearchQuerySection
   @PlugKey("query.hint")
   private static Label LABEL_QUERY_HINT;
 
-  private static Label LABEL_SEARCH = new KeyLabel("item.section.query.search");
+  private static final Label LABEL_SEARCH = new KeyLabel("item.section.query.search");
 
-  private static IncludeFile UPDATE_INCLUDE =
+  private static final IncludeFile UPDATE_INCLUDE =
       new IncludeFile(resources.url("scripts/updateinterface.js"));
 
   @EventFactory private EventGenerator events;
@@ -415,9 +418,7 @@ public class SearchQuerySection
 
   public DefaultSearch createDefaultSearch(SectionInfo info, boolean includeQuery) {
     boolean nonLive =
-        getSearchSettings().isSearchingShowNonLiveCheckbox()
-            ? includeNonLive.isChecked(info)
-            : false;
+        getSearchSettings().isSearchingShowNonLiveCheckbox() && includeNonLive.isChecked(info);
     boolean dynamicCollection = false;
 
     String queryText = null;
@@ -621,6 +622,25 @@ public class SearchQuerySection
     collectionList.setSelectedStringValue(info, null);
     changedWhere(info);
     searchResults.startSearch(info);
+  }
+
+  public static void basicSearchForNewSearch(
+      SectionInfo from, String query, boolean inSelectOrAdd) {
+    // In selectOrAdd the endpoint is '/selectoradd/searching.do'.
+    SectionInfo info =
+        inSelectOrAdd
+            ? from.createForward(SearchSelectable.NEW_FORWARD_PATH)
+            : RootSearchSection.createForward(from);
+
+    try {
+      URL basicUrl = new URL(info.getPublicBookmark().getHref());
+      String queryString = basicUrl.getQuery();
+      String queryStringPrefix = queryString == null || queryString.isEmpty() ? "?" : "&";
+      String fullUrl = basicUrl.toString() + queryStringPrefix + "q=" + query;
+      from.forwardToUrl(fullUrl);
+    } catch (MalformedURLException e) {
+      LOGGER.error("Failed to generate a URL for endpoint '/selectoradd/searching.do'. ");
+    }
   }
 
   public static void basicSearch(SectionInfo from, String query) {

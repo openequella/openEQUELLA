@@ -56,7 +56,6 @@ import {
   SortOrder,
 } from "../modules/SearchSettingsModule";
 import {
-  isSelectionSessionOpen,
   prepareDraggable,
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -121,15 +120,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
   };
-
+  const searchPageHistoryState: SearchPageHistoryState | undefined = history
+    .location.state as SearchPageHistoryState;
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    (history.location.state as SearchPageHistoryState)?.searchPageOptions ??
+    searchPageHistoryState?.searchPageOptions ??
       defaultSearchPageHistory.searchPageOptions
   );
   const [filterExpansion, setFilterExpansion] = useState(
-    (history.location.state as SearchPageHistoryState)?.filterExpansion ??
+    searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
   const [pagedSearchResult, setPagedSearchResult] = useState<
@@ -158,8 +158,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
-      // Do not convert query string params to search options in Selection Session.
-      isSelectionSessionOpen()
+      // If the search options are available from browser history, ignore those in the query string.
+      searchPageHistoryState
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
@@ -197,6 +197,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [searchPageOptions]);
 
   useEffect(() => {
+    // If search page is open from a URL which has some query params, updating browser
+    // history for the initial search will produce wrong search option for the second
+    // render. This is because in the second render, we ignore the query param conversion
+    // as the history data has higher priority. So the end result is wrong search options
+    // are displayed in the page.
+    if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
+      return;
+    }
     history.replace({
       ...history.location,
       state: { searchPageOptions, filterExpansion },

@@ -48,6 +48,8 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
+import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 
 /** @author aholland */
@@ -118,7 +120,15 @@ public class SearchPortletRenderer extends PortletContentRenderer<Object> {
 
   @EventHandlerMethod
   public void doSearch(SectionInfo info) {
-    SearchQuerySection.basicSearch(info, query.getValue(info));
+    if (RenderNewTemplate.isNewSearchPageEnabled()) {
+      // In Selection Session, the quick search portlet is only available in 'selectOrAdd'.
+      SelectionSession selectionSession = selectionService.getCurrentSession(info);
+      boolean isSelectOrAdd =
+          selectionSession != null && selectionSession.getLayout() == Layout.NORMAL;
+      SearchQuerySection.basicSearchForNewSearch(info, query.getValue(info), isSelectOrAdd);
+    } else {
+      SearchQuerySection.basicSearch(info, query.getValue(info));
+    }
   }
 
   public TextField getQuery() {
